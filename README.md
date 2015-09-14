@@ -15,6 +15,7 @@ Goals
 Architecture
 ============
 * Keep the "Russian Doll" model
+  * A pipeline chain of "behaviors" (much like middleware in [OWIN](http://owin.org/))
 * Combine FubuMVC and FubuTransportation into one library
 * Use OWIN AppFunc as the new "Behavior", which effectively means "async by default"
 * Build on top of the new DNX .Net runtime. Hopefully shoot for CoreCLR support
