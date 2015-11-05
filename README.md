@@ -1,6 +1,8 @@
 jasper
 ======
 
+[![Join the chat at https://gitter.im/JasperFx/jasper](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/JasperFx/jasper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Next generation application development framework for .Net. Jasper is being built on the new DNX platform as the successor to [FubuMVC](https://github.com/DarthFubuMVC/fubumvc) and [FubuTransportation](https://github.com/DarthFubuMVC/fubutransportation).
 
 Goals
