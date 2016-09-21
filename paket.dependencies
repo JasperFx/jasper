@@ -1,8 +1,0 @@
-source https://nuget.org/api/v2
-nuget Alba
-nuget Baseline
-nuget Shouldly
-nuget storyteller 3.0.0.293-alpha
-nuget structuremap
-nuget xunit
-nuget xunit.runner.console
