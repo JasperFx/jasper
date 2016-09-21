@@ -3,13 +3,25 @@
   "buildOptions": {
     "debugType": "portable"
   },
-  "dependencies": {},
+  "dependencies": {
+    "Baseline": "1.1.0",
+    "Microsoft.CodeAnalysis.CSharp": "2.0.0-beta3",
+    "Microsoft.CodeAnalysis.Scripting": "2.0.0-beta3"
+    
+  },
   "frameworks": {
-    "net46": {},
-    "netstandard1.6": {
-      "dependencies": {
-        "NETStandard.Library": "1.6.0"
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Xml": "", 
       }
+    }, 
+    "netstandard1.5": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Runtime.Loader": "4.0.0",
+        "System.Reflection": "4.1.0" 
+      },
+      "imports": [ "dnxcore50" ] 
     }
   }
 }

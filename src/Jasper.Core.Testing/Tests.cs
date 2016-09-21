@@ -1,7 +1,6 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 
-namespace Tests
+namespace Jasper.Core.Testing
 {
     public class Tests
     {
