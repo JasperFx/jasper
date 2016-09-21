@@ -6,8 +6,8 @@
   "dependencies": {
     "Baseline": "1.1.0",
     "Microsoft.CodeAnalysis.CSharp": "2.0.0-beta3",
-    "Microsoft.CodeAnalysis.Scripting": "2.0.0-beta3"
-    
+    "Microsoft.CodeAnalysis.Scripting": "2.0.0-beta3",
+    "StructureMap": "4.4.1" 
   },
   "frameworks": {
     "net46": {

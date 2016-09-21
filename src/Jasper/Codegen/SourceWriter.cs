@@ -1,15 +1,20 @@
-using System;
 using System.IO;
 using Baseline;
 
 namespace Jasper.Codegen
 {
-    public class SourceWriter
+    public interface ISourceWriter
+    {
+        void BlankLine();
+        void Write(string text = null);
+    }
+
+    public class SourceWriter : ISourceWriter
     {
         private readonly StringWriter _writer = new StringWriter();
-
-        private int _level = 0;
         private string _leadingSpaces = "";
+
+        private int _level;
 
         public int IndentionLevel
         {
@@ -17,13 +22,8 @@ namespace Jasper.Codegen
             set
             {
                 _level = value;
-                _leadingSpaces = "".PadRight(_level * 4);
+                _leadingSpaces = "".PadRight(_level*4);
             }
-        }
-
-        public void WriteLine(string text)
-        {
-            _writer.WriteLine(_leadingSpaces + text);
         }
 
         public void BlankLine()
@@ -60,21 +60,16 @@ namespace Jasper.Codegen
                 {
                     WriteLine(line);
                 }
-
             });
-
-
         }
 
-        public void StartNamespace(string @namespace)
+        public void WriteLine(string text)
         {
-            WriteLine($"namespace {@namespace}");
-            StartBlock();
+            _writer.WriteLine(_leadingSpaces + text);
         }
 
         private void StartBlock()
         {
-
             WriteLine("{");
             IndentionLevel++;
         }
@@ -84,34 +79,12 @@ namespace Jasper.Codegen
             IndentionLevel--;
 
             if (extra.IsEmpty())
-            {
                 WriteLine("}");
-            }
             else
-            {
                 WriteLine("}" + extra);
-            }
 
 
             BlankLine();
-        }
-
-        public IDisposable InBlock(string declaration = null)
-        {
-            if (declaration.IsNotEmpty())
-            {
-                WriteLine(declaration);
-            }
-
-            StartBlock();
-
-            return new BlockMarker(this);
-        }
-
-        public IDisposable StartClass(string declaration)
-        {
-            WriteLine(declaration);
-            return InBlock();
         }
 
         public string Code()
