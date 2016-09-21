@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Jasper.Core.Codegen;
+using Jasper.Codegen;
 using Xunit;
 
-namespace Jasper.Core.Testing.Codegen
+namespace Jasper.Testing.Codegen
 {
     public class code_compilation_smoke_test
     {

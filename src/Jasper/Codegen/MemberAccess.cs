@@ -1,4 +1,4 @@
-namespace Jasper.Core.Codegen
+namespace Jasper.Codegen
 {
     public enum MemberAccess
     {

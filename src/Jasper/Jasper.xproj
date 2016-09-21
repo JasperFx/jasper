@@ -6,8 +6,8 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>d0858f50-6980-4b81-b936-de94a68002e4</ProjectGuid>
-    <RootNamespace>Jasper.Core</RootNamespace>
+    <ProjectGuid>e617b35a-b0d2-43bb-a723-d29b992ee744</ProjectGuid>
+    <RootNamespace>Jasper</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
   </PropertyGroup>

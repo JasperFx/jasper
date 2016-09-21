@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Baseline;
 
-namespace Jasper.Core.Codegen
+namespace Jasper.Codegen
 {
     public class SourceWriter
     {

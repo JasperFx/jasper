@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Baseline;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 #if !NET46
 using System.Runtime.Loader;
 #endif
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
-namespace Jasper.Core.Codegen
+namespace Jasper.Codegen
 {
     public class AssemblyGenerator
     {
@@ -136,6 +136,7 @@ namespace Jasper.Core.Codegen
         }
     }
 
+#if !NET46
     public class CustomAssemblyLoadContext : System.Runtime.Loader.AssemblyLoadContext
     {
         protected override Assembly Load(AssemblyName assemblyName)
@@ -143,4 +144,5 @@ namespace Jasper.Core.Codegen
             return Assembly.Load(assemblyName);
         }
     }
+#endif
 }

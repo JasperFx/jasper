@@ -1,6 +1,6 @@
 using System;
 
-namespace Jasper.Core.Codegen
+namespace Jasper.Codegen
 {
     internal class BlockMarker : IDisposable
     {

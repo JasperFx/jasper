@@ -1,7 +1,7 @@
 using System;
 using Baseline;
 
-namespace Jasper.Core.Codegen
+namespace Jasper.Codegen
 {
     public class Arg
     {
