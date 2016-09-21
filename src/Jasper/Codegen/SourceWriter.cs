@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Baseline;
 
@@ -90,6 +91,21 @@ namespace Jasper.Codegen
         public string Code()
         {
             return _writer.ToString();
+        }
+
+        internal class BlockMarker : IDisposable
+        {
+            private readonly SourceWriter _parent;
+
+            public BlockMarker(SourceWriter parent)
+            {
+                _parent = parent;
+            }
+
+            public void Dispose()
+            {
+                _parent.FinishBlock();
+            }
         }
     }
 }
