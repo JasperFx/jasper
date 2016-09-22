@@ -2,14 +2,8 @@ using System;
 using System.IO;
 using Baseline;
 
-namespace Jasper.Codegen
+namespace Jasper.Codegen.Compilation
 {
-    public interface ISourceWriter
-    {
-        void BlankLine();
-        void Write(string text = null);
-    }
-
     public class SourceWriter : ISourceWriter
     {
         private readonly StringWriter _writer = new StringWriter();
