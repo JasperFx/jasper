@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Threading.Tasks;
 using Jasper.Codegen;
 using Shouldly;
 using Xunit;
@@ -57,6 +58,38 @@ namespace Jasper.Testing.Codegen
             input.DifferentWasCalled.ShouldBeTrue();
         }
 
+        public static void TouchInput(MainInput input)
+        {
+            input.Touch();
+        }
 
+        [Fact]
+        public async Task generate_with_sync_static_method()
+        {
+            var method = GetType().GetMethod(nameof(TouchInput), BindingFlags.Public | BindingFlags.Static);
+
+            theChain.AddToEnd(new MethodCall(GetType(), method));
+
+            var input = await afterRunning();
+
+            input.WasTouched.ShouldBeTrue();
+        }
+
+        public static void TouchInputAsync(MainInput input)
+        {
+            input.Touch();
+        }
+
+        [Fact]
+        public async Task generate_with_async_static_method()
+        {
+            var method = GetType().GetMethod(nameof(TouchInputAsync), BindingFlags.Public | BindingFlags.Static);
+
+            theChain.AddToEnd(new MethodCall(GetType(), method));
+
+            var input = await afterRunning();
+
+            input.WasTouched.ShouldBeTrue();
+        }
     }
 }

@@ -59,6 +59,8 @@ namespace Jasper.Testing.Codegen
 
             return handler.Handle(input).ContinueWith(t => input);
         }
+
+
     }
 
     public interface IInputHandler : IHandler<MainInput>
