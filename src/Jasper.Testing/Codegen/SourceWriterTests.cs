@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Baseline;
-using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
 using Shouldly;
 using Xunit;

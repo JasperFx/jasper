@@ -7,14 +7,9 @@
     "Baseline": "1.1.0",
     "Microsoft.CodeAnalysis.CSharp": "2.0.0-beta3",
     "Microsoft.CodeAnalysis.Scripting": "2.0.0-beta3",
-    "StructureMap": "4.4.1" 
+    "StructureMap": "4.4.2"
   },
   "frameworks": {
-    "net46": {
-      "frameworkAssemblies": {
-        "System.Xml": "", 
-      }
-    }, 
     "netstandard1.5": {
       "dependencies": {
         "NETStandard.Library": "1.6.0",
