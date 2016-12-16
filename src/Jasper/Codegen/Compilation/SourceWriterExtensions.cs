@@ -1,3 +1,4 @@
+
 namespace Jasper.Codegen.Compilation
 {
     public static class SourceWriterExtensions
@@ -7,6 +8,9 @@ namespace Jasper.Codegen.Compilation
             writer.Write($"BLOCK:namespace {@namespace}");
         }
 
-        
+        public static void Using<T>(this ISourceWriter writer)
+        {
+            writer.Write($"using {typeof(T).Namespace};");
+        }
     }
 }

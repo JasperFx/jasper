@@ -1,91 +1,87 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Baseline;
 using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
+using Jasper.Internal;
 
 namespace Jasper.Codegen
 {
-    // Used to track the compilation within a single chain
-    public class HandlerGeneration : Variable
-    {
-        private readonly GenerationConfig _config;
-
-        public HandlerGeneration(GenerationConfig config, Type inputType, string inputArg)
-        : base(inputType, inputArg)
-        {
-            _config = config;
-        }
-
-        // TODO -- may need to track name as well
-        public Variable FindVariable(Type type)
-        {
-            if (type == VariableType) return this;
-
-            var source = _config.Sources.FirstOrDefault(x => x.Matches(type));
-            if (source == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(type), $"Jasper doesn't know how to build a variable of type '{type.FullName}'");
-            }
-
-            return source.Create(type);
-        }
-
-        public readonly IList<InjectedField> Fields = new List<InjectedField>();
-
-    }
-
-
-
     public class HandlerChain : Chain<Frame, HandlerChain>
     {
         private readonly Type _handlerInterface;
 
         public HandlerChain(string className, Type handlerInterface)
         {
+            if (!handlerInterface.Closes(typeof(IHandler<>)))
+            {
+                throw new ArgumentOutOfRangeException(nameof(handlerInterface), "Type must close IHandler<T>");
+            }
+
             _handlerInterface = handlerInterface;
+
+            InputType = handlerInterface.FindInterfaceThatCloses(typeof(IHandler<>))
+                .GetGenericArguments()[0];
             ClassName = className;
         }
+
+        public Type InputType { get; }
 
         public string ClassName { get; }
 
         public void Write(HandlerGeneration generation, ISourceWriter writer)
         {
+            foreach (var frame in this)
+            {
+                // TODO -- may need to tell the generation what the current frame is
+                frame.ResolveVariables(generation);
+            }
+
             writeClassDeclaration(generation, writer);
-
-            /*
-            1.) Call Frame.ResolveVariables on each
-            2.) Frame should keep track of which variables are first used in that frame
-            3.) Go through each frame, find all variables not previously encountered, and in variable order, have it optionally add frames
-            4.) Generate code by calling through the first frame
-
-            */
-
-            // Namespace declaration
-            writer.FinishBlock();
-        }
-
-        private void writeClassDeclaration(HandlerGeneration generation, ISourceWriter writer)
-        {
-            writer.Write($"BLOCK:public class {ClassName} : {_handlerInterface.FullName}");
-
             writeFields(generation, writer);
+
+            writer.BlankLine();
+
             writeConstructor(generation, writer);
 
             writer.BlankLine();
 
             writeHandleMethod(generation, writer);
 
-            // Class declaration
             writer.FinishBlock();
+
+            /*
+            2.) Frame should keep track of which variables are first used in that frame
+            3.) Go through each frame, find all variables not previously encountered, and in variable order, have it optionally add frames
+            4.) Generate code by calling through the first frame
+
+            */
+
+
         }
+
+        private void writeClassDeclaration(HandlerGeneration generation, ISourceWriter writer)
+        {
+            writer.Write($"BLOCK:public class {ClassName} : {_handlerInterface.FullName}");
+        }
+
 
         private void writeHandleMethod(HandlerGeneration generation, ISourceWriter writer)
         {
-            writer.Write($"BLOCK:public async Task Handle({generation.VariableType.FullName} {generation.Name})");
+            var returnValue = generation.AsyncMode == AsyncMode.AsyncTask
+                ? "async Task"
+                : "Task";
+
+            writer.Write($"BLOCK:public {returnValue} Handle({generation.VariableType.FullName} {generation.Name})");
 
             Top.GenerateCode(generation, writer);
+
+            if (generation.AsyncMode == AsyncMode.ReturnCompletedTask)
+            {
+                writer.Write("return Task.CompletedTask;");
+            }
 
             writer.FinishBlock();
         }
@@ -103,7 +99,7 @@ namespace Jasper.Codegen
         private void writeConstructor(HandlerGeneration generation, ISourceWriter writer)
         {
             var ctorArgs = generation.Fields.Select(x => x.CtorArgDeclaration).Join(", ");
-            writer.Write($"BLOCK:public class {ClassName}({ctorArgs})");
+            writer.Write($"BLOCK:public {ClassName}({ctorArgs})");
 
             foreach (var field in generation.Fields)
             {
@@ -111,6 +107,19 @@ namespace Jasper.Codegen
             }
 
             writer.FinishBlock();
+        }
+
+        /// <summary>
+        /// Adds a MethodCall to the end of this chain
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <exception cref="NotImplementedException"></exception>
+        public void Call<T>(Expression<Action<T>> expression)
+        {
+            var call = MethodCall.For(expression);
+
+            AddToEnd(call);
         }
     }
 }

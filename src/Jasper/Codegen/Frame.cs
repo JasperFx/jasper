@@ -21,11 +21,11 @@ Types of Frame:
             IsAsync = isAsync;
         }
 
-        public abstract void GenerateCode(HandlerGeneration chain, ISourceWriter writer);
+        public abstract void GenerateCode(HandlerGeneration generation, ISourceWriter writer);
 
         // Going to say that other policies will deal w/ the existence of wrappers
         // Go find necessary variables, add any necessary wrappers
-        public virtual void ResolveVariables(HandlerChain chain)
+        public virtual void ResolveVariables(HandlerGeneration chain)
         {
             // nothing
         }
@@ -34,6 +34,6 @@ Types of Frame:
         // including dependents
         // Use a visitor to find that?
 
-
+        public virtual bool CanReturnTask() => false;
     }
 }

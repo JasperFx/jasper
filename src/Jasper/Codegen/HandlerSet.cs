@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Jasper.Codegen.Compilation;
 
 namespace Jasper.Codegen
@@ -25,7 +26,7 @@ namespace Jasper.Codegen
 
         public Type[] CompileAll()
         {
-            var code = generateCode();
+            var code = GenerateCode();
 
             var generator = buildGenerator();
 
@@ -38,22 +39,29 @@ namespace Jasper.Codegen
         {
             var generator = new AssemblyGenerator();
             generator.ReferenceAssembly(GetType().GetTypeInfo().Assembly);
+            generator.ReferenceAssembly(typeof(Task).GetTypeInfo().Assembly);
+
             foreach (var assembly in Config.Assemblies)
             {
                 generator.ReferenceAssembly(assembly);
             }
+
             return generator;
         }
 
-        private string generateCode()
+        public string GenerateCode()
         {
             var writer = new SourceWriter();
+
+
+            writer.Using<Task>();
+            writer.BlankLine();
 
             writer.Namespace(Config.ApplicationNamespace);
 
             foreach (var chain in _chains)
             {
-                var generation = new HandlerGeneration(Config, typeof(TInput), _inputArgName);
+                var generation = new HandlerGeneration(chain, Config, _inputArgName);
                 chain.Write(generation, writer);
 
                 writer.WriteLine("");

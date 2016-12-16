@@ -71,6 +71,11 @@ namespace Jasper.Codegen.Compilation
 
         public void FinishBlock(string extra = null)
         {
+            if (IndentionLevel == 0)
+            {
+                throw new InvalidOperationException("Not currently in a code block");
+            }
+
             IndentionLevel--;
 
             if (extra.IsEmpty())

@@ -17,12 +17,25 @@ namespace Jasper.Testing.Codegen
         public CompilationContext()
         {
             theChain = new HandlerChain($"Handler{++_number}",
-                typeof(IMainInputHandler));
-
-
+                typeof(IInputHandler));
         }
 
-        private IHandler<MainInput> generate()
+        protected string theGeneratedCode
+        {
+            get
+            {
+                var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
+                config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+
+                var @set = new HandlerSet<MainInput, HandlerChain>(config, "input");
+
+                @set.Add(theChain);
+
+                return @set.GenerateCode();
+            }
+        }
+
+        private IInputHandler generate()
         {
             var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
             config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
@@ -31,9 +44,12 @@ namespace Jasper.Testing.Codegen
 
             @set.Add(theChain);
 
+            var code = @set.GenerateCode();
+            Console.WriteLine(code);
+
             var type = @set.CompileAll().Single();
 
-            return (IHandler<MainInput>) Activator.CreateInstance(type);
+            return (IInputHandler) Activator.CreateInstance(type);
         }
 
         protected Task<MainInput> afterRunning()
@@ -45,7 +61,7 @@ namespace Jasper.Testing.Codegen
         }
     }
 
-    public interface IMainInputHandler : IHandler<MainInput>
+    public interface IInputHandler : IHandler<MainInput>
     {
 
     }
@@ -59,9 +75,23 @@ namespace Jasper.Testing.Codegen
             WasTouched = true;
         }
 
+        public void DoSync()
+        {
+
+        }
+
         public Task TouchAsync()
         {
             return Task.Factory.StartNew(Touch);
         }
+
+        public Task DifferentAsync()
+        {
+            DifferentWasCalled = true;
+            return Task.CompletedTask;
+        }
+
+        public bool DifferentWasCalled { get; set; }
     }
+
 }
