@@ -2,8 +2,12 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Codegen;
+using Jasper.Codegen.StructureMap;
+using Jasper.Configuration;
 using Jasper.Internal;
+using StructureMap;
 
 namespace Jasper.Testing.Codegen
 {
@@ -13,11 +17,14 @@ namespace Jasper.Testing.Codegen
 
         private static int _number = 0;
         public readonly HandlerChain theChain;
+        public readonly ServiceRegistry services = new ServiceRegistry();
 
         public CompilationContext()
         {
             theChain = new HandlerChain($"Handler{++_number}",
                 typeof(IInputHandler));
+
+
         }
 
         protected string theGeneratedCode
@@ -38,6 +45,10 @@ namespace Jasper.Testing.Codegen
         private IInputHandler generate()
         {
             var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
+
+            var container = new Container(services);
+            config.Sources.Add(new StructureMapServices(container));
+
             config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
             var @set = new HandlerSet<MainInput, HandlerChain>(config, "input");
@@ -49,7 +60,7 @@ namespace Jasper.Testing.Codegen
 
             var type = @set.CompileAll().Single();
 
-            return (IInputHandler) Activator.CreateInstance(type);
+            return container.GetInstance(type).As<IInputHandler>();
         }
 
         protected Task<MainInput> afterRunning()

@@ -6,9 +6,11 @@ using StructureMap.Pipeline;
 
 namespace Jasper.Codegen.StructureMap
 {
-    /*
-    public class StructureMapServices : IVariableSource, IVariable
+
+    public class StructureMapServices : IVariableSource
     {
+        public static readonly NestedContainerVariable Nested = new NestedContainerVariable();
+
         private readonly IContainer _container;
 
         public StructureMapServices(IContainer container)
@@ -18,14 +20,18 @@ namespace Jasper.Codegen.StructureMap
 
         public bool Matches(Type type)
         {
-            return !type.IsSimple();
+            if (type.IsSimple()) return false;
+
+            if (type == typeof(IContainer)) return true;
+
+            return !type.IsSimple() && _container.Model.HasDefaultImplementationFor(type);
         }
 
-        public IVariable Create(Type type)
+        public Variable Create(Type type)
         {
             if (type == typeof(IContainer))
             {
-                return new InjectedField(type);
+                return Nested;
             }
 
             if (_container.Model.HasDefaultImplementationFor(type))
@@ -34,32 +40,24 @@ namespace Jasper.Codegen.StructureMap
                 {
                     return new InjectedField(type);
                 }
+
+                return new ServiceVariable(type, Nested);
             }
 
-
-
-
-
-            throw new NotImplementedException();
+            return null;
         }
-
-        public string Name { get; } = "parent";
-        public Type VariableType { get; } = typeof(IContainer);
     }
 
-    public class NestedContainerVariable : IDependentVariable
+    public class ServiceVariable : Variable
     {
-        private readonly IVariable _parent;
+        private readonly NestedContainerVariable _parent;
 
-        public NestedContainerVariable(IVariable parent)
+        public ServiceVariable(Type argType, NestedContainerVariable parent) : base(argType)
         {
             _parent = parent;
         }
 
-        public string Name { get; } = "nested";
-        public Type VariableType { get; } = typeof(IContainer);
-
-        public IEnumerable<IVariable> Dependencies
+        public override IEnumerable<Variable> Dependencies
         {
             get
             {
@@ -67,6 +65,21 @@ namespace Jasper.Codegen.StructureMap
             }
         }
     }
-*/
+
+    public class NestedContainerVariable : Variable
+    {
+        public NestedContainerVariable() : base(typeof(IContainer), "nested")
+        {
+        }
+
+        public override IEnumerable<Variable> Dependencies
+        {
+            get
+            {
+                yield return new InjectedField(typeof(IContainer), "root");
+            }
+        }
+    }
+
 
 }

@@ -34,7 +34,10 @@ namespace Jasper.Codegen
         public Variable FindVariable(Type type)
         {
             if (type == VariableType) return this;
-
+            foreach (var configSource in _config.Sources)
+            {
+                Console.WriteLine(configSource);
+            }
             var source = _config.Sources.FirstOrDefault(x => x.Matches(type));
             if (source == null)
             {
