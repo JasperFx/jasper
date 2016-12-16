@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Jasper.Codegen.Compilation;
 
 namespace Jasper.Codegen
@@ -20,7 +19,6 @@ namespace Jasper.Codegen
 
         public string CtorArg { get; }
 
-        public IEnumerable<IVariable> Dependencies => new IVariable[0];
         public string CtorArgDeclaration => $"{ArgType.FullName} {CtorArg}";
 
         public void WriteDeclaration(ISourceWriter writer)

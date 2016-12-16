@@ -7,44 +7,21 @@ using Jasper.Configuration;
 
 namespace Jasper.Codegen
 {
-    public class HandlerChain : Chain<Frame, HandlerChain>, IVariableSource, IVariable
+    // Used to track the compilation within a single chain
+    public class HandlerGeneration : Variable
     {
         private readonly GenerationConfig _config;
-        private readonly Type _inputType;
-        private readonly string _inputArg;
-        private readonly Type _handlerInterface;
 
-        public HandlerChain(GenerationConfig config, string className, Type inputType, string inputArg, Type handlerInterface)
+        public HandlerGeneration(GenerationConfig config, Type inputType, string inputArg)
+        : base(inputType, inputArg)
         {
             _config = config;
-            _inputType = inputType;
-            _inputArg = inputArg;
-            _handlerInterface = handlerInterface;
-            ClassName = className;
         }
 
-        public string ClassName { get; }
-
-        public readonly IList<InjectedField> Fields = new List<InjectedField>();
-
-        bool IVariableSource.Matches(Type type)
+        // TODO -- may need to track name as well
+        public Variable FindVariable(Type type)
         {
-            return type == _inputType;
-        }
-
-        IVariable IVariableSource.Create(Type type)
-        {
-            return this;
-        }
-
-        string IVariable.Name => _inputArg;
-
-        Type IVariable.VariableType => _inputType;
-
-        public IVariable FindVariable(Type type)
-        {
-            // TODO -- needs to cache the variables!!!!!
-            if (type == _inputType) return this;
+            if (type == VariableType) return this;
 
             var source = _config.Sources.FirstOrDefault(x => x.Matches(type));
             if (source == null)
@@ -55,43 +32,67 @@ namespace Jasper.Codegen
             return source.Create(type);
         }
 
-        public void Write(ISourceWriter writer)
-        {
-            writer.Namespace(_config.ApplicationNamespace);
+        public readonly IList<InjectedField> Fields = new List<InjectedField>();
 
-            writeClassDeclaration(writer);
+    }
+
+
+
+    public class HandlerChain : Chain<Frame, HandlerChain>
+    {
+        private readonly Type _handlerInterface;
+
+        public HandlerChain(string className, Type handlerInterface)
+        {
+            _handlerInterface = handlerInterface;
+            ClassName = className;
+        }
+
+        public string ClassName { get; }
+
+        public void Write(HandlerGeneration generation, ISourceWriter writer)
+        {
+            writeClassDeclaration(generation, writer);
+
+            /*
+            1.) Call Frame.ResolveVariables on each
+            2.) Frame should keep track of which variables are first used in that frame
+            3.) Go through each frame, find all variables not previously encountered, and in variable order, have it optionally add frames
+            4.) Generate code by calling through the first frame
+
+            */
 
             // Namespace declaration
             writer.FinishBlock();
         }
 
-        private void writeClassDeclaration(ISourceWriter writer)
+        private void writeClassDeclaration(HandlerGeneration generation, ISourceWriter writer)
         {
             writer.Write($"BLOCK:public class {ClassName} : {_handlerInterface.FullName}");
 
-            writeFields(writer);
-            writeConstructor(writer);
+            writeFields(generation, writer);
+            writeConstructor(generation, writer);
 
             writer.BlankLine();
 
-            writeHandleMethod(writer);
+            writeHandleMethod(generation, writer);
 
             // Class declaration
             writer.FinishBlock();
         }
 
-        private void writeHandleMethod(ISourceWriter writer)
+        private void writeHandleMethod(HandlerGeneration generation, ISourceWriter writer)
         {
-            writer.Write($"BLOCK:public async Task Handle({_inputType.FullName} {_inputArg})");
+            writer.Write($"BLOCK:public async Task Handle({generation.VariableType.FullName} {generation.Name})");
 
-            Top.GenerateCode(this, writer);
+            Top.GenerateCode(generation, writer);
 
             writer.FinishBlock();
         }
 
-        private void writeFields(ISourceWriter writer)
+        private void writeFields(HandlerGeneration generation, ISourceWriter writer)
         {
-            foreach (var field in Fields)
+            foreach (var field in generation.Fields)
             {
                 field.WriteDeclaration(writer);
             }
@@ -99,12 +100,12 @@ namespace Jasper.Codegen
             writer.BlankLine();
         }
 
-        private void writeConstructor(ISourceWriter writer)
+        private void writeConstructor(HandlerGeneration generation, ISourceWriter writer)
         {
-            var ctorArgs = Fields.Select(x => x.CtorArgDeclaration).Join(", ");
+            var ctorArgs = generation.Fields.Select(x => x.CtorArgDeclaration).Join(", ");
             writer.Write($"BLOCK:public class {ClassName}({ctorArgs})");
 
-            foreach (var field in Fields)
+            foreach (var field in generation.Fields)
             {
                 field.WriteAssignment(writer);
             }

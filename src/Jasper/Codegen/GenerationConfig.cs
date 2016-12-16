@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace Jasper.Codegen
 {
@@ -12,5 +13,7 @@ namespace Jasper.Codegen
         public string ApplicationNamespace { get; }
 
         public readonly IList<IVariableSource> Sources = new List<IVariableSource>();
+
+        public readonly IList<Assembly> Assemblies = new List<Assembly>();
     }
 }

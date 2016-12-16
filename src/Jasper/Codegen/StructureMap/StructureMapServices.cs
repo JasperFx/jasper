@@ -6,6 +6,7 @@ using StructureMap.Pipeline;
 
 namespace Jasper.Codegen.StructureMap
 {
+    /*
     public class StructureMapServices : IVariableSource, IVariable
     {
         private readonly IContainer _container;
@@ -66,6 +67,6 @@ namespace Jasper.Codegen.StructureMap
             }
         }
     }
-
+*/
 
 }
