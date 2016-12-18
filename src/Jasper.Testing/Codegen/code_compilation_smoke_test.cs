@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Jasper.Codegen;
+using Jasper.Codegen.Compilation;
 using Xunit;
 
 namespace Jasper.Testing.Codegen

@@ -33,11 +33,7 @@ namespace Jasper.Codegen
 
         public void Write(HandlerGeneration generation, ISourceWriter writer)
         {
-            foreach (var frame in this)
-            {
-                // TODO -- may need to tell the generation what the current frame is
-                frame.ResolveVariables(generation);
-            }
+            generation.ResolveVariables(this);
 
             writeClassDeclaration(generation, writer);
             writeFields(generation, writer);
@@ -51,15 +47,6 @@ namespace Jasper.Codegen
             writeHandleMethod(generation, writer);
 
             writer.FinishBlock();
-
-            /*
-            2.) Frame should keep track of which variables are first used in that frame
-            3.) Go through each frame, find all variables not previously encountered, and in variable order, have it optionally add frames
-            4.) Generate code by calling through the first frame
-
-            */
-
-
         }
 
         private void writeClassDeclaration(HandlerGeneration generation, ISourceWriter writer)

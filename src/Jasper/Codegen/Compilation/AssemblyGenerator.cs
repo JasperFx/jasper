@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using Baseline;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using StructureMap;
 #if !NET46
-using System.Runtime.Loader;
+
 #endif
 
-namespace Jasper.Codegen
+namespace Jasper.Codegen.Compilation
 {
     public class AssemblyGenerator
     {
@@ -25,6 +27,9 @@ namespace Jasper.Codegen
         {
             ReferenceAssemblyContainingType<object>();
             ReferenceAssembly(typeof(Enumerable).GetTypeInfo().Assembly);
+
+            // This might be temporary
+            ReferenceAssembly(typeof(IContainer).GetTypeInfo().Assembly);
         }
 
         public void ReferenceAssembly(Assembly assembly)

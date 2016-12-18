@@ -11,6 +11,7 @@ namespace Jasper.Codegen.StructureMap
     public class StructureMapServices : IVariableSource
     {
         public static readonly NestedContainerVariable Nested = new NestedContainerVariable();
+        public static readonly Variable Root = new InjectedField(typeof(IContainer), "root");
 
         private readonly IContainer _container;
 
@@ -53,7 +54,7 @@ namespace Jasper.Codegen.StructureMap
     {
         private readonly NestedContainerVariable _parent;
 
-        public ServiceVariable(Type argType, NestedContainerVariable parent) : base(argType)
+        public ServiceVariable(Type argType, NestedContainerVariable parent) : base(argType, VariableCreation.BuiltByFrame)
         {
             _parent = parent;
         }
@@ -65,7 +66,30 @@ namespace Jasper.Codegen.StructureMap
                 yield return _parent;
             }
         }
+
+        protected override Frame toInstantiationFrame()
+        {
+            return new ResolveFromNestedContainer(this);
+        }
     }
+
+    public class ResolveFromNestedContainer : Frame
+    {
+        private readonly Variable _variable;
+
+        public ResolveFromNestedContainer(Variable variable) : base(false)
+        {
+            _variable = variable;
+        }
+
+        public override void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
+        {
+            writer.Write($"var {_variable.Name} = {StructureMapServices.Nested.Name}.GetInstance<{_variable.VariableType.FullName}>();");
+            Next?.GenerateCode(generation, writer);
+        }
+    }
+
+
 
     public class NestedContainerVariable : Variable
     {
@@ -75,13 +99,10 @@ namespace Jasper.Codegen.StructureMap
 
         public override IEnumerable<Variable> Dependencies
         {
-            get
-            {
-                yield return new InjectedField(typeof(IContainer), "root");
-            }
+            get { yield return StructureMapServices.Root; }
         }
 
-        public override Frame CreateInstantiationFrame()
+        protected override Frame toInstantiationFrame()
         {
             return new NestedContainerCreation();
         }

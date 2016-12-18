@@ -32,6 +32,9 @@ namespace Jasper.Testing.Codegen
             get
             {
                 var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
+                var container = new Container(services);
+                config.Sources.Add(new StructureMapServices(container));
+
                 config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
                 var @set = new HandlerSet<MainInput, HandlerChain>(config, "input");

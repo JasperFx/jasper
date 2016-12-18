@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Baseline;
 using Jasper.Util;
 
@@ -35,7 +36,13 @@ namespace Jasper.Codegen
         // Use camel casing instead
         public static string DefaultArgName(Type argType)
         {
-            return argType.Name.SplitPascalCase().ToLower().Replace(" ", "_");
+            var parts = argType.Name.SplitPascalCase().Split(' ');
+            if (argType.GetTypeInfo().IsInterface && parts.First() == "I")
+            {
+                parts = parts.Skip(1).ToArray();
+            }
+
+            return parts.First().ToLower() + parts.Skip(1).Join("");
         }
 
         public Variable(Type argType, VariableCreation creation = VariableCreation.Injected)
@@ -54,6 +61,12 @@ namespace Jasper.Codegen
         public VariableCreation Creation { get; }
         public Type VariableType { get; }
 
+        internal void AttachFrame(Frame frameUsingVariable)
+        {
+            var frame = toInstantiationFrame();
+            frameUsingVariable.AddBefore(frame);
+        }
+
         public virtual IEnumerable<Variable> Dependencies
         {
             get
@@ -62,7 +75,7 @@ namespace Jasper.Codegen
             }
         }
 
-        public virtual Frame CreateInstantiationFrame()
+        protected virtual Frame toInstantiationFrame()
         {
             return null;
         }
