@@ -1,4 +1,6 @@
 
+using System;
+
 namespace Jasper.Codegen.Compilation
 {
     public static class SourceWriterExtensions
@@ -8,9 +10,18 @@ namespace Jasper.Codegen.Compilation
             writer.Write($"BLOCK:namespace {@namespace}");
         }
 
-        public static void Using<T>(this ISourceWriter writer)
+        public static void UsingNamespace<T>(this ISourceWriter writer)
         {
             writer.Write($"using {typeof(T).Namespace};");
+        }
+
+        public static void UsingBlock(this ISourceWriter writer, string declaration, Action<ISourceWriter> inner)
+        {
+            writer.Write($"BLOCK:using ({declaration})");
+
+            inner(writer);
+
+            writer.FinishBlock();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Jasper.Codegen
         {
         }
 
-        public InjectedField(Type argType, string name) : base(argType, "_" + name)
+        public InjectedField(Type argType, string name) : base(argType, "_" + name, VariableCreation.Injected)
         {
             CtorArg = name;
             ArgType = argType;

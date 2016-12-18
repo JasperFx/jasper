@@ -16,7 +16,7 @@ namespace Jasper.Codegen
         private readonly GenerationConfig _config;
 
         public HandlerGeneration(HandlerChain chain, GenerationConfig config, string inputArg)
-            : base(chain.InputType, inputArg)
+            : base(chain.InputType, inputArg, VariableCreation.Injected)
         {
             _config = config;
 

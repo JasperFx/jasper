@@ -54,7 +54,7 @@ namespace Jasper.Codegen
             var writer = new SourceWriter();
 
 
-            writer.Using<Task>();
+            writer.UsingNamespace<Task>();
             writer.BlankLine();
 
             writer.Namespace(Config.ApplicationNamespace);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Jasper.Codegen.Compilation;
 using StructureMap;
 using StructureMap.Pipeline;
 
@@ -68,7 +69,7 @@ namespace Jasper.Codegen.StructureMap
 
     public class NestedContainerVariable : Variable
     {
-        public NestedContainerVariable() : base(typeof(IContainer), "nested")
+        public NestedContainerVariable() : base(typeof(IContainer), "nested", VariableCreation.BuiltByFrame)
         {
         }
 
@@ -78,6 +79,26 @@ namespace Jasper.Codegen.StructureMap
             {
                 yield return new InjectedField(typeof(IContainer), "root");
             }
+        }
+
+        public override Frame CreateInstantiationFrame()
+        {
+            return new NestedContainerCreation();
+        }
+    }
+
+    public class NestedContainerCreation : Frame
+    {
+        public NestedContainerCreation() : base(false)
+        {
+        }
+
+        public override void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
+        {
+            writer.UsingBlock("var nested = root.GetNestedContainer()", w =>
+            {
+                Next?.GenerateCode(generation, writer);
+            });
         }
     }
 

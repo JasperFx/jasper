@@ -3,15 +3,6 @@ using Jasper.Configuration;
 
 namespace Jasper.Codegen
 {
-    /*
-Types of Frame:
-* Plain call
-* Wrapping operation
-
-
-
-*/
-
     public abstract class Frame : Node<Frame, HandlerChain>
     {
         public bool IsAsync { get; }
