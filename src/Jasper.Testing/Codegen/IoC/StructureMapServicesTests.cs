@@ -5,7 +5,7 @@ using Shouldly;
 using StructureMap;
 using Xunit;
 
-namespace Jasper.Testing.Codegen.StructureMap
+namespace Jasper.Testing.Codegen.IoC
 {
     public class StructureMapServicesTests
     {

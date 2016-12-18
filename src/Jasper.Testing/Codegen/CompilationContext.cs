@@ -18,52 +18,59 @@ namespace Jasper.Testing.Codegen
         private static int _number = 0;
         public readonly HandlerChain theChain;
         public readonly ServiceRegistry services = new ServiceRegistry();
+        private string _code = null;
 
         public CompilationContext()
         {
             theChain = new HandlerChain($"Handler{++_number}",
                 typeof(IInputHandler));
 
-
+            _container = new Lazy<IContainer>(() => new Container(services));
         }
 
         protected string theGeneratedCode
         {
             get
             {
-                var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
-                var container = new Container(services);
-                config.Sources.Add(new StructureMapServices(container));
+                if (_code == null)
+                {
+                    var set = buildHandlerSet();
 
-                config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+                    _code = @set.GenerateCode();
+                }
 
-                var @set = new HandlerSet<MainInput, HandlerChain>(config, "input");
-
-                @set.Add(theChain);
-
-                return @set.GenerateCode();
+                return _code;
             }
         }
 
-        private IInputHandler generate()
+        private Lazy<IContainer> _container;
+
+        private HandlerSet<MainInput, HandlerChain> buildHandlerSet()
         {
             var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
-
-            var container = new Container(services);
+            var container = _container.Value;
             config.Sources.Add(new StructureMapServices(container));
 
+            config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
             config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
             var @set = new HandlerSet<MainInput, HandlerChain>(config, "input");
 
             @set.Add(theChain);
 
+            return set;
+        }
+
+        private IInputHandler generate()
+        {
+            var @set = buildHandlerSet();
+
             var code = @set.GenerateCode();
             Console.WriteLine(code);
 
             var type = @set.CompileAll().Single();
 
-            return container.GetInstance(type).As<IInputHandler>();
+            return _container.Value.GetInstance(type).As<IInputHandler>();
         }
 
         protected Task<MainInput> afterRunning()

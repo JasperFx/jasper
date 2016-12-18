@@ -1,4 +1,5 @@
-﻿using Jasper.Codegen.Compilation;
+﻿using System.Linq;
+using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
 
 namespace Jasper.Codegen
@@ -12,7 +13,19 @@ namespace Jasper.Codegen
             IsAsync = isAsync;
         }
 
-        public abstract void GenerateCode(HandlerGeneration generation, ISourceWriter writer);
+        public void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
+        {
+            if (Instantiates.Any())
+            {
+                Instantiates[0].GenerateCreationCode(generation, this, writer);
+            }
+            else
+            {
+                generateCode(generation, writer);
+            }
+        }
+
+        internal abstract void generateCode(HandlerGeneration generation, ISourceWriter writer);
 
         // Going to say that other policies will deal w/ the existence of wrappers
         // Go find necessary variables, add any necessary wrappers
@@ -26,5 +39,7 @@ namespace Jasper.Codegen
         // Use a visitor to find that?
 
         public virtual bool CanReturnTask() => false;
+
+        public Variable[] Instantiates { get; set; } = new Variable[0];
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 
 namespace Jasper.Codegen
 {
@@ -83,13 +84,11 @@ namespace Jasper.Codegen
             frame.ResolveVariables(this);
 
             var ordered = GatherAllDependencies(_variables.Values.ToArray())
-                .Where(x => x.Creation == VariableCreation.BuiltByFrame && !_created.Contains(x));
+                .Where(x => x.Creation == VariableCreation.BuiltByFrame && !_created.Contains(x))
+                .ToArray();
 
-            foreach (var variable in ordered)
-            {
-                _created.Add(variable);
-                variable.AttachFrame(frame);
-            }
+            _created.AddRange(ordered);
+            frame.Instantiates = ordered;
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using StructureMap;
+﻿using System.Threading.Tasks;
 using Xunit;
 
-namespace Jasper.Testing.Codegen.StructureMap
+namespace Jasper.Testing.Codegen.IoC
 {
     public class end_to_end_structuremap_usage : CompilationContext
     {
@@ -34,9 +32,9 @@ namespace Jasper.Testing.Codegen.StructureMap
             theChain.Call<ITouchService>(x => x.Touch(null));
 
             theGeneratedCode
-                .ShouldContain($"using (var nested = root.GetNestedContainer())");
+                .ShouldContain($"using (var nested = _root.GetNestedContainer())");
 
-            theGeneratedCode.ShouldContain("var touchService = nested.GetInstance<Jasper.Testing.Codegen.StructureMap.ITouchService>();");
+            theGeneratedCode.ShouldContain("var touchService = nested.GetInstance<Jasper.Testing.Codegen.IoC.ITouchService>();");
 
             var input = await afterRunning();
 

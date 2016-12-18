@@ -1,5 +1,5 @@
 ﻿using Jasper.Codegen;
-using Jasper.Testing.Codegen.StructureMap;
+using Jasper.Testing.Codegen.IoC;
 using Shouldly;
 using Xunit;
 

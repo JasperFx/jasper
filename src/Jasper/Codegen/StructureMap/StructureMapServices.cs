@@ -67,27 +67,14 @@ namespace Jasper.Codegen.StructureMap
             }
         }
 
-        protected override Frame toInstantiationFrame()
+
+        protected override void generateCreation(ISourceWriter writer, Action<ISourceWriter> continuation)
         {
-            return new ResolveFromNestedContainer(this);
+            writer.Write($"var {Name} = {StructureMapServices.Nested.Name}.GetInstance<{VariableType.FullName}>();");
+            continuation(writer);
         }
     }
 
-    public class ResolveFromNestedContainer : Frame
-    {
-        private readonly Variable _variable;
-
-        public ResolveFromNestedContainer(Variable variable) : base(false)
-        {
-            _variable = variable;
-        }
-
-        public override void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
-        {
-            writer.Write($"var {_variable.Name} = {StructureMapServices.Nested.Name}.GetInstance<{_variable.VariableType.FullName}>();");
-            Next?.GenerateCode(generation, writer);
-        }
-    }
 
 
 
@@ -102,24 +89,9 @@ namespace Jasper.Codegen.StructureMap
             get { yield return StructureMapServices.Root; }
         }
 
-        protected override Frame toInstantiationFrame()
+        protected override void generateCreation(ISourceWriter writer, Action<ISourceWriter> continuation)
         {
-            return new NestedContainerCreation();
-        }
-    }
-
-    public class NestedContainerCreation : Frame
-    {
-        public NestedContainerCreation() : base(false)
-        {
-        }
-
-        public override void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
-        {
-            writer.UsingBlock("var nested = root.GetNestedContainer()", w =>
-            {
-                Next?.GenerateCode(generation, writer);
-            });
+            writer.UsingBlock("var nested = _root.GetNestedContainer()", continuation);
         }
     }
 

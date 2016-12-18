@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
+using Jasper.Codegen.Compilation;
 using Jasper.Util;
 
 namespace Jasper.Codegen
@@ -32,8 +33,6 @@ namespace Jasper.Codegen
             }
         }
 
-        // TODO -- change this. Too ugly. Strip out the initial "I" if an interface
-        // Use camel casing instead
         public static string DefaultArgName(Type argType)
         {
             var parts = argType.Name.SplitPascalCase().Split(' ');
@@ -61,12 +60,6 @@ namespace Jasper.Codegen
         public VariableCreation Creation { get; }
         public Type VariableType { get; }
 
-        internal void AttachFrame(Frame frameUsingVariable)
-        {
-            var frame = toInstantiationFrame();
-            frameUsingVariable.AddBefore(frame);
-        }
-
         public virtual IEnumerable<Variable> Dependencies
         {
             get
@@ -75,10 +68,23 @@ namespace Jasper.Codegen
             }
         }
 
-        protected virtual Frame toInstantiationFrame()
+
+        public void GenerateCreationCode(HandlerGeneration generation, Frame frame, ISourceWriter writer)
         {
-            return null;
+            if (ReferenceEquals(this, frame.Instantiates.Last()))
+            {
+                generateCreation(writer, w => frame.generateCode(generation, writer));
+                return;
+            }
+
+            var index = Array.IndexOf(frame.Instantiates, this);
+            var next = frame.Instantiates[index + 1];
+            generateCreation(writer, w => next.GenerateCreationCode(generation, frame, writer));
         }
 
+        protected virtual void generateCreation(ISourceWriter writer, Action<ISourceWriter> continuation)
+        {
+            throw new NotSupportedException("This feature has to be implemented for this type of Variable");
+        }
     }
 }
