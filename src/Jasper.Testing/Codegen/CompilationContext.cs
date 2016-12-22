@@ -13,7 +13,7 @@ namespace Jasper.Testing.Codegen
 {
     public class CompilationContext
     {
-        private readonly GenerationConfig Config = new GenerationConfig("JasperCompilationTesting");
+        protected readonly GenerationConfig Config = new GenerationConfig("JasperCompilationTesting");
 
         private static int _number = 0;
         public readonly HandlerChain theChain;

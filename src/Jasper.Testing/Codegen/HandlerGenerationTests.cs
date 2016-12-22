@@ -1,4 +1,5 @@
-﻿using Jasper.Codegen;
+﻿using System;
+using Jasper.Codegen;
 using Shouldly;
 using Xunit;
 
@@ -38,6 +39,27 @@ namespace Jasper.Testing.Codegen
             theChain.Call<MainInput>(x => x.TouchAsync());
 
             theAsyncMode.ShouldBe(AsyncMode.ReturnFromLastNode);
+        }
+
+        [Fact]
+        public void find_variable_caches_the_values()
+        {
+            throw new NotImplementedException("Do.");
+        }
+
+        [Fact]
+        public void can_find_variables_built_by_one_of_the_existing_frames()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void can_find_input_variable()
+        {
+            var generation = new HandlerGeneration(theChain, Config, "input");
+
+            generation.FindVariable(typeof(MainInput))
+                .ShouldBeSameAs(generation);
         }
     }
 }

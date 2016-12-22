@@ -27,16 +27,10 @@ namespace Jasper.Codegen
 
         internal abstract void generateCode(HandlerGeneration generation, ISourceWriter writer);
 
-        // Going to say that other policies will deal w/ the existence of wrappers
-        // Go find necessary variables, add any necessary wrappers
         public virtual void ResolveVariables(HandlerGeneration chain)
         {
             // nothing
         }
-
-        // Needs to expose all variables used by this frame,
-        // including dependents
-        // Use a visitor to find that?
 
         public virtual bool CanReturnTask() => false;
 

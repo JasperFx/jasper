@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Baseline;
-using Jasper.Codegen.Compilation;
 using StructureMap;
 using StructureMap.Pipeline;
 
@@ -49,51 +47,4 @@ namespace Jasper.Codegen.StructureMap
             return null;
         }
     }
-
-    public class ServiceVariable : Variable
-    {
-        private readonly NestedContainerVariable _parent;
-
-        public ServiceVariable(Type argType, NestedContainerVariable parent) : base(argType, VariableCreation.BuiltByFrame)
-        {
-            _parent = parent;
-        }
-
-        public override IEnumerable<Variable> Dependencies
-        {
-            get
-            {
-                yield return _parent;
-            }
-        }
-
-
-        protected override void generateCreation(ISourceWriter writer, Action<ISourceWriter> continuation)
-        {
-            writer.Write($"var {Name} = {StructureMapServices.Nested.Name}.GetInstance<{VariableType.FullName}>();");
-            continuation(writer);
-        }
-    }
-
-
-
-
-    public class NestedContainerVariable : Variable
-    {
-        public NestedContainerVariable() : base(typeof(IContainer), "nested", VariableCreation.BuiltByFrame)
-        {
-        }
-
-        public override IEnumerable<Variable> Dependencies
-        {
-            get { yield return StructureMapServices.Root; }
-        }
-
-        protected override void generateCreation(ISourceWriter writer, Action<ISourceWriter> continuation)
-        {
-            writer.UsingBlock("var nested = _root.GetNestedContainer()", continuation);
-        }
-    }
-
-
 }
