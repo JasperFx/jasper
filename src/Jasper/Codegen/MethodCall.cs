@@ -44,7 +44,7 @@ namespace Jasper.Codegen
             }
         }
 
-        internal override void generateCode(HandlerGeneration generation, ISourceWriter writer)
+        public override void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
         {
             var callingCode = $"{_method.Name}({_variables.Select(x => x.Name).Join(", ")})";
             var target = _method.IsStatic
@@ -72,7 +72,7 @@ namespace Jasper.Codegen
 
             writer.Write($"{returnValue}{target}.{callingCode}{suffix};");
 
-            Next?.GenerateCode(generation, writer);
+            Next?.GenerateAllCode(generation, writer);
         }
 
 

@@ -63,7 +63,7 @@ namespace Jasper.Codegen
 
             writer.Write($"BLOCK:public {returnValue} Handle({generation.VariableType.FullName} {generation.Name})");
 
-            Top.GenerateCode(generation, writer);
+            Top.GenerateAllCode(generation, writer);
 
             if (generation.AsyncMode == AsyncMode.ReturnCompletedTask)
             {

@@ -17,6 +17,7 @@ namespace Jasper.Codegen
         private readonly GenerationConfig _config;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
         private readonly IList<Variable> _created = new List<Variable>();
+        private HandlerChain _chain;
 
         public HandlerGeneration(HandlerChain chain, GenerationConfig config, string inputArg)
             : base(chain.InputType, inputArg, VariableCreation.Injected)
@@ -31,6 +32,8 @@ namespace Jasper.Codegen
             {
                 AsyncMode = AsyncMode.ReturnFromLastNode;
             }
+
+            _chain = chain;
         }
 
         public Variable FindVariable(Type type)
@@ -49,6 +52,13 @@ namespace Jasper.Codegen
         private Variable findVariable(Type type)
         {
             if (type == VariableType) return this;
+
+            var created = _chain.SelectMany(x => x.Creates).FirstOrDefault(x => x.VariableType == type);
+            if (created != null)
+            {
+                return created;
+            }
+
 
             var source = _config.Sources.FirstOrDefault(x => x.Matches(type));
             if (source == null)

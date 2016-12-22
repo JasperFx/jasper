@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jasper.Codegen;
+using Jasper.Codegen.Compilation;
+using Jasper.Testing.Codegen.IoC;
 using Shouldly;
 using Xunit;
 
@@ -44,13 +47,48 @@ namespace Jasper.Testing.Codegen
         [Fact]
         public void find_variable_caches_the_values()
         {
-            throw new NotImplementedException("Do.");
+            Config.Sources.Add(new FakeSource());
+
+            var generation = new HandlerGeneration(theChain, Config, "input");
+
+            var variable1 = generation.FindVariable(typeof(ITouchService));
+            var variable2 = generation.FindVariable(typeof(ITouchService));
+
+            variable1.ShouldBeTheSameAs(variable2);
         }
+
+        public class FakeSource : IVariableSource
+        {
+            public bool Matches(Type type)
+            {
+                return true;
+            }
+
+            public Variable Create(Type type)
+            {
+                return new FakeVariable(type);
+            }
+        }
+
+        public class FakeVariable : Variable
+        {
+            public FakeVariable(Type argType) : base(argType)
+            {
+            }
+        }
+
+
 
         [Fact]
         public void can_find_variables_built_by_one_of_the_existing_frames()
         {
-            throw new NotImplementedException();
+            theChain.Call<MainInput>(x => x.DoSync());
+            theChain.AddToEnd(new CreatingFrame());
+
+            var generation = new HandlerGeneration(theChain, Config, "input");
+
+            generation.FindVariable(typeof(ITouchService))
+                .ShouldBeOfType<FakeVariable>();
         }
 
         [Fact]
@@ -60,6 +98,28 @@ namespace Jasper.Testing.Codegen
 
             generation.FindVariable(typeof(MainInput))
                 .ShouldBeSameAs(generation);
+        }
+    }
+
+    public class CreatingFrame : Frame
+    {
+        private readonly HandlerGenerationTests.FakeVariable _variable
+            = new HandlerGenerationTests.FakeVariable(typeof(ITouchService));
+
+        public CreatingFrame() : base(false)
+        {
+
+        }
+
+        public override IEnumerable<Variable> Creates
+        {
+            get { yield return _variable; }
+        }
+
+
+        public override void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
+        {
+            Next?.GenerateAllCode(generation, writer);
         }
     }
 }

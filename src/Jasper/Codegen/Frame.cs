@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
 
@@ -13,7 +14,15 @@ namespace Jasper.Codegen
             IsAsync = isAsync;
         }
 
-        public void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
+        public virtual IEnumerable<Variable> Creates
+        {
+            get
+            {
+                yield break;
+            }
+        }
+
+        public void GenerateAllCode(HandlerGeneration generation, ISourceWriter writer)
         {
             if (Instantiates.Any())
             {
@@ -21,11 +30,11 @@ namespace Jasper.Codegen
             }
             else
             {
-                generateCode(generation, writer);
+                GenerateCode(generation, writer);
             }
         }
 
-        internal abstract void generateCode(HandlerGeneration generation, ISourceWriter writer);
+        public abstract void GenerateCode(HandlerGeneration generation, ISourceWriter writer);
 
         public virtual void ResolveVariables(HandlerGeneration chain)
         {

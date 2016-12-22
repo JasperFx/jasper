@@ -73,7 +73,7 @@ namespace Jasper.Codegen
         {
             if (ReferenceEquals(this, frame.Instantiates.Last()))
             {
-                generateCreation(writer, w => frame.generateCode(generation, writer));
+                generateCreation(writer, w => frame.GenerateCode(generation, writer));
                 return;
             }
 
