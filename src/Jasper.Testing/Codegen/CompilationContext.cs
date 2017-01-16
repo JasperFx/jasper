@@ -66,7 +66,7 @@ namespace Jasper.Testing.Codegen
             var @set = buildHandlerSet();
 
             var code = @set.GenerateCode();
-            Console.WriteLine(code);
+            //Console.WriteLine(code);
 
             var type = @set.CompileAll().Single();
 

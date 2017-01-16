@@ -24,6 +24,20 @@ namespace Jasper.Testing
             registry.ApplicationAssembly.ShouldBe(typeof(JasperRegistryTests).GetAssembly());
         }
 
+        [Fact]
+        public void sets_up_the_container_with_services()
+        {
+            var registry = new JasperRegistry();
+            registry.Services.For<IFoo>().Use<Foo>();
+
+            var runtime = JasperRuntime.For(registry);
+
+            runtime.Container.Model.DefaultTypeFor<IFoo>().ShouldBe(typeof(Foo));
+        }
+
+        public interface IFoo { }
+        public class Foo : IFoo { }
+
         public class MyRegistry : JasperRegistry
         {
             

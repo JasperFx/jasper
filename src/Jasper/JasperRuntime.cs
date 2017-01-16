@@ -5,13 +5,21 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
+using StructureMap;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
 
 namespace Jasper
 {
-    public class JasperRuntime
+    public class JasperRuntime : IDisposable
     {
+
+        public JasperRuntime(JasperRegistry registry)
+        {
+            Container = new Container(registry.Services);
+            Container.DisposalLock = DisposalLock.Ignore;
+        }
+
         public static JasperRuntime Basic()
         {
             var assembly = determineTheCallingAssembly();
@@ -69,8 +77,12 @@ Questions:
 
             // TODO -- apply all the settings alterations
 
-            return new JasperRuntime();
+            var runtime = new JasperRuntime(registry);
+
+            return runtime;
         }
+
+        public Container Container { get;}
 
         private static async Task applyExtensions(JasperRegistry registry, IEnumerable<Assembly> assemblies)
         {
@@ -84,6 +96,12 @@ Questions:
                 var extension = Activator.CreateInstance(extensionType).As<IJasperExtension>();
                 extension.Configure(registry);
             }
+        }
+
+        public void Dispose()
+        {
+            Container.DisposalLock = DisposalLock.Unlocked;
+            Container?.Dispose();
         }
     }
 }
