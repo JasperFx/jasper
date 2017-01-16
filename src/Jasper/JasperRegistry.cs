@@ -1,4 +1,6 @@
-﻿namespace Jasper.Configuration
+﻿using Jasper.Configuration;
+
+namespace Jasper
 {
     public class JasperRegistry
     {
