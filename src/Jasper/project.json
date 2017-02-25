@@ -7,14 +7,14 @@
     "Baseline": "1.1.0",
     "Microsoft.CodeAnalysis.CSharp": "2.0.0-beta3",
     "Microsoft.CodeAnalysis.Scripting": "2.0.0-beta3",
-    "StructureMap": "4.4.2"
+    "StructureMap": "4.4.2",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.1.0" 
   },
   "frameworks": {
     "netstandard1.5": {
       "dependencies": {
-        "NETStandard.Library": "1.6.0",
-        "System.Runtime.Loader": "4.0.0",
-        "System.Reflection": "4.1.0" 
+        "NETStandard.Library": "1.6.1",
+        "System.Runtime.Loader": "4.0.0"
       },
       "imports": [ "dnxcore50" ] 
     }
