@@ -9,27 +9,34 @@ using Jasper.Internal;
 
 namespace Jasper.Codegen
 {
-    public class HandlerChain : Chain<Frame, HandlerChain>
+    public class MethodChain : Chain<Frame, MethodChain>
     {
         private readonly Type _handlerInterface;
 
-        public HandlerChain(string className, Type handlerInterface)
+        public MethodChain(string className, Type baseType)
         {
-            if (!handlerInterface.Closes(typeof(IHandler<>)))
+            var handlerInterface = baseType.Closes(typeof(IHandler<>))
+                ? baseType
+                : baseType.FindInterfaceThatCloses(typeof(IHandler<>));
+
+            if (handlerInterface == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(handlerInterface), "Type must close IHandler<T>");
+                throw new ArgumentOutOfRangeException(nameof(baseType), "Type must close IHandler<T>");
             }
 
             _handlerInterface = handlerInterface;
 
             InputType = handlerInterface.FindInterfaceThatCloses(typeof(IHandler<>))
                 .GetGenericArguments()[0];
+
             ClassName = className;
+            BaseType = baseType;
         }
 
         public Type InputType { get; }
 
         public string ClassName { get; }
+        public Type BaseType { get; }
 
         public void Write(HandlerGeneration generation, ISourceWriter writer)
         {
@@ -51,7 +58,7 @@ namespace Jasper.Codegen
 
         private void writeClassDeclaration(HandlerGeneration generation, ISourceWriter writer)
         {
-            writer.Write($"BLOCK:public class {ClassName} : {_handlerInterface.FullName}");
+            writer.Write($"BLOCK:public class {ClassName} : {BaseType.FullName}");
         }
 
 

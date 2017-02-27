@@ -17,9 +17,9 @@ namespace Jasper.Codegen
         private readonly GenerationConfig _config;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
         private readonly IList<Variable> _created = new List<Variable>();
-        private HandlerChain _chain;
+        private MethodChain _chain;
 
-        public HandlerGeneration(HandlerChain chain, GenerationConfig config, string inputArg)
+        public HandlerGeneration(MethodChain chain, GenerationConfig config, string inputArg)
             : base(chain.InputType, inputArg, VariableCreation.Injected)
         {
             _config = config;
@@ -74,7 +74,7 @@ namespace Jasper.Codegen
 
         public InjectedField[] Fields { get; private set; } = new InjectedField[0];
 
-        public void ResolveVariables(HandlerChain chain)
+        public void ResolveVariables(MethodChain chain)
         {
             var frames = chain.ToArray();
 

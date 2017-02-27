@@ -7,7 +7,7 @@ using Jasper.Codegen.Compilation;
 
 namespace Jasper.Codegen
 {
-    public class HandlerSet<TInput, THandlerChain> where THandlerChain : HandlerChain
+    public class HandlerSet<TInput, THandlerChain> where THandlerChain : MethodChain
     {
         private readonly string _inputArgName;
         public GenerationConfig Config { get; set; }

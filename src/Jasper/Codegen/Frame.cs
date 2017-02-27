@@ -5,7 +5,7 @@ using Jasper.Configuration;
 
 namespace Jasper.Codegen
 {
-    public abstract class Frame : Node<Frame, HandlerChain>
+    public abstract class Frame : Node<Frame, MethodChain>
     {
         public bool IsAsync { get; }
 

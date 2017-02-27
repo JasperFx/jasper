@@ -81,13 +81,12 @@ namespace JasperBus.Runtime
 
         public virtual Envelope ForSend(object message)
         {
-            var child = new Envelope
+            return new Envelope
             {
                 Message = message,
                 OriginalId = OriginalId ?? CorrelationId,
                 ParentId = CorrelationId
             };
-            return child;
         }
 
         public override string ToString()
