@@ -40,7 +40,6 @@ namespace Jasper.Binding
 
         public bool HasChild(string key)
         {
-            return _provider.
             throw new System.NotImplementedException();
         }
 
