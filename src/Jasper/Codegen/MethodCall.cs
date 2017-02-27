@@ -10,6 +10,9 @@ namespace Jasper.Codegen
 {
     public class MethodCall : Frame
     {
+        public Type HandlerType { get; }
+        public MethodInfo Method { get; }
+
         public static MethodCall For<T>(Expression<Action<T>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
@@ -17,8 +20,6 @@ namespace Jasper.Codegen
             return new MethodCall(typeof(T), method);
         }
 
-        private readonly Type _handlerType;
-        private readonly MethodInfo _method;
         private Variable[] _variables = new Variable[0];
         private Variable _target;
 
@@ -28,27 +29,27 @@ namespace Jasper.Codegen
 
         public MethodCall(Type handlerType, MethodInfo method) : base(method.IsAsync())
         {
-            _handlerType = handlerType;
-            _method = method;
+            HandlerType = handlerType;
+            Method = method;
         }
 
         public override void ResolveVariables(HandlerGeneration chain)
         {
-            _variables = _method.GetParameters()
+            _variables = Method.GetParameters()
                 .Select(param => chain.FindVariable(param.ParameterType))
                 .ToArray();
 
-            if (!_method.IsStatic)
+            if (!Method.IsStatic)
             {
-                _target = chain.FindVariable(_handlerType);
+                _target = chain.FindVariable(HandlerType);
             }
         }
 
         public override void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
         {
-            var callingCode = $"{_method.Name}({_variables.Select(x => x.Name).Join(", ")})";
-            var target = _method.IsStatic
-                ? _handlerType.FullName
+            var callingCode = $"{Method.Name}({_variables.Select(x => x.Name).Join(", ")})";
+            var target = Method.IsStatic
+                ? HandlerType.FullName
                 : _target.Name;
 
             var returnValue = "";

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Reflection;
 using Jasper.Codegen;
 using Jasper.Internal;
 using JasperBus.Runtime.Invocation;
@@ -26,7 +27,26 @@ namespace JasperBus.Model
     {
         public static HandlerChain For<T>(Expression<Action<T>> expression)
         {
-            throw new NotImplementedException();
+            var method = ReflectionHelper.GetMethod(expression);
+            var call = new MethodCall(typeof(T), method);
+
+            return new HandlerChain(call);
+        }
+
+        public static HandlerChain For<T>(string methodName)
+        {
+            var handlerType = typeof(T);
+            var method = handlerType.GetMethod(methodName,
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+
+            if (method == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(methodName), $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
+            }
+
+            var call = new MethodCall(handlerType, method);
+
+            return new HandlerChain(call);
         }
 
         public Type MessageType { get; }
@@ -62,6 +82,11 @@ namespace JasperBus.Model
         }
 
         private string _code;
+
+        private HandlerChain(MethodCall @call) : this(@call.Method.MessageType())
+        {
+            Handlers.Add(@call);
+        }
 
         string IGenerates<MessageHandler>.SourceCode
         {
