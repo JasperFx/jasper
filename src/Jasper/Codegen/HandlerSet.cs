@@ -4,14 +4,18 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Codegen.Compilation;
+using Jasper.Internal;
+using StructureMap;
 
 namespace Jasper.Codegen
 {
-    public class HandlerSet<TInput, THandlerChain> where THandlerChain : HandlerCode
+    public class HandlerSet<TChain, TInput, THandler>
+        where THandler : IHandler<TInput>
+        where TChain : IGenerates<THandler>
     {
         private readonly string _inputArgName;
         public GenerationConfig Config { get; set; }
-        private readonly IList<THandlerChain> _chains = new List<THandlerChain>();
+        private readonly IList<TChain> _chains = new List<TChain>();
 
         public HandlerSet(GenerationConfig config, string inputArgName)
         {
@@ -19,9 +23,15 @@ namespace Jasper.Codegen
             Config = config;
         }
 
-        public void Add(THandlerChain chain)
+        public void Add(TChain chain)
         {
             _chains.Add(chain);
+        }
+
+        public THandler[] CompileAndBuildAll(IContainer container)
+        {
+            var types = CompileAll();
+            return _chains.Select(x => x.Create(types, container)).ToArray();
         }
 
         public Type[] CompileAll()
@@ -61,8 +71,14 @@ namespace Jasper.Codegen
 
             foreach (var chain in _chains)
             {
-                var generation = new HandlerGeneration(chain, Config, _inputArgName);
-                chain.Write(generation, writer);
+                var handlerCode = chain.ToHandlerCode();
+
+                var generation = new HandlerGeneration(handlerCode, Config, _inputArgName);
+
+                // TODO -- figure out how to get the source code for each handler
+                writer.WriteLine($"// START: {chain.TypeName}");
+                handlerCode.Write(generation, writer);
+                writer.WriteLine($"// END: {chain.TypeName}");
 
                 writer.WriteLine("");
                 writer.WriteLine("");

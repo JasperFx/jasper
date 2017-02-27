@@ -19,7 +19,7 @@ namespace JasperBus.Tests.Model
             methodCall.Method.Name.ShouldBe(nameof(Target.Go));
 
         }
-        
+
         [Fact]
         public void create_by_static_method()
         {

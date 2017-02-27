@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System;
 using StructureMap;
 
 namespace Jasper.Codegen
@@ -9,6 +9,8 @@ namespace Jasper.Codegen
 
         string SourceCode { get; set; }
 
-        T Create(Assembly assembly, IContainer container);
+        T Create(Type[] types, IContainer container);
+
+        string TypeName { get; }
     }
 }

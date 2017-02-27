@@ -11,22 +11,48 @@ using StructureMap;
 
 namespace Jasper.Testing.Codegen
 {
+    public class SimpleChain : IGenerates<IInputHandler>
+    {
+        private static int _number = 0;
+
+        public readonly HandlerCode HandlerCode = new HandlerCode($"Handler{++_number}",
+            typeof(IInputHandler));
+
+        public HandlerCode ToHandlerCode()
+        {
+            return HandlerCode;
+        }
+
+        public string SourceCode { get; set; }
+
+        public IInputHandler Create(Type[] types, IContainer container)
+        {
+            var type = types.FirstOrDefault(x => x.Name == HandlerCode.ClassName);
+            return container.GetInstance(type).As<IInputHandler>();
+        }
+
+        public string TypeName => HandlerCode.ClassName;
+    }
+
+
     public class CompilationContext
     {
         protected readonly GenerationConfig Config = new GenerationConfig("JasperCompilationTesting");
 
         private static int _number = 0;
-        public readonly HandlerCode theChain;
+        public readonly SimpleChain _parent;
+
         public readonly ServiceRegistry services = new ServiceRegistry();
         private string _code = null;
 
         public CompilationContext()
         {
-            theChain = new HandlerCode($"Handler{++_number}",
-                typeof(IInputHandler));
+            _parent = new SimpleChain();
 
             _container = new Lazy<IContainer>(() => new Container(services));
         }
+
+        protected HandlerCode theChain => _parent.HandlerCode;
 
         protected string theGeneratedCode
         {
@@ -43,9 +69,9 @@ namespace Jasper.Testing.Codegen
             }
         }
 
-        private Lazy<IContainer> _container;
+        private readonly Lazy<IContainer> _container;
 
-        private HandlerSet<MainInput, HandlerCode> buildHandlerSet()
+        private HandlerSet<SimpleChain, MainInput, IInputHandler> buildHandlerSet()
         {
             var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
             var container = _container.Value;
@@ -54,9 +80,9 @@ namespace Jasper.Testing.Codegen
             config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
             config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
-            var @set = new HandlerSet<MainInput, HandlerCode>(config, "input");
+            var @set = new HandlerSet<SimpleChain, MainInput, IInputHandler>(config, "input");
 
-            @set.Add(theChain);
+            @set.Add(_parent);
 
             return set;
         }
@@ -65,12 +91,7 @@ namespace Jasper.Testing.Codegen
         {
             var @set = buildHandlerSet();
 
-            var code = @set.GenerateCode();
-            //Console.WriteLine(code);
-
-            var type = @set.CompileAll().Single();
-
-            return _container.Value.GetInstance(type).As<IInputHandler>();
+            return @set.CompileAndBuildAll(_container.Value).Single();
         }
 
         protected Task<MainInput> afterRunning()
@@ -83,6 +104,8 @@ namespace Jasper.Testing.Codegen
 
 
     }
+
+
 
     public interface IInputHandler : IHandler<MainInput>
     {

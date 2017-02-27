@@ -13,8 +13,6 @@ using StructureMap;
 
 namespace JasperBus.Model
 {
-
-
     public abstract class MessageHandler : IHandler<IInvocationContext>
     {
         public HandlerChain Chain { get; set; }
@@ -94,12 +92,12 @@ namespace JasperBus.Model
             set { _code = value; }
         }
 
-        MessageHandler IGenerates<MessageHandler>.Create(Assembly assembly, IContainer container)
+        MessageHandler IGenerates<MessageHandler>.Create(Type[] types, IContainer container)
         {
-            var type = assembly.GetExportedTypes().FirstOrDefault(x => x.Name == TypeName);
+            var type = types.FirstOrDefault(x => x.Name == TypeName);
             if (type == null)
             {
-                throw new ArgumentOutOfRangeException(nameof(assembly), $"Could not find a type named '{TypeName}' in this assembly");
+                throw new ArgumentOutOfRangeException(nameof(types), $"Could not find a type named '{TypeName}' in this assembly");
             }
 
             var handler = container.GetInstance(type).As<MessageHandler>();
