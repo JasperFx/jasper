@@ -9,11 +9,11 @@ using Jasper.Internal;
 
 namespace Jasper.Codegen
 {
-    public class MethodChain : Chain<Frame, MethodChain>
+    public class HandlerCode : Chain<Frame, HandlerCode>
     {
         private readonly Type _handlerInterface;
 
-        public MethodChain(string className, Type baseType)
+        public HandlerCode(string className, Type baseType)
         {
             var handlerInterface = baseType.Closes(typeof(IHandler<>))
                 ? baseType

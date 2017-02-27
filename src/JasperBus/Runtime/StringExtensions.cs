@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Baseline;
 
 namespace JasperBus.Runtime
@@ -8,6 +9,11 @@ namespace JasperBus.Runtime
         public static Uri ToUri(this string uriString)
         {
             return uriString.IsEmpty() ? null : new Uri(uriString);
+        }
+
+        public static bool IsIn(this string text, params string[] values)
+        {
+            return values.Contains(text);
         }
     }
 }

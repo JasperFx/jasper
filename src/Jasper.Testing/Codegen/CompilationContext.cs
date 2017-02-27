@@ -16,13 +16,13 @@ namespace Jasper.Testing.Codegen
         protected readonly GenerationConfig Config = new GenerationConfig("JasperCompilationTesting");
 
         private static int _number = 0;
-        public readonly MethodChain theChain;
+        public readonly HandlerCode theChain;
         public readonly ServiceRegistry services = new ServiceRegistry();
         private string _code = null;
 
         public CompilationContext()
         {
-            theChain = new MethodChain($"Handler{++_number}",
+            theChain = new HandlerCode($"Handler{++_number}",
                 typeof(IInputHandler));
 
             _container = new Lazy<IContainer>(() => new Container(services));
@@ -45,7 +45,7 @@ namespace Jasper.Testing.Codegen
 
         private Lazy<IContainer> _container;
 
-        private HandlerSet<MainInput, MethodChain> buildHandlerSet()
+        private HandlerSet<MainInput, HandlerCode> buildHandlerSet()
         {
             var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
             var container = _container.Value;
@@ -54,7 +54,7 @@ namespace Jasper.Testing.Codegen
             config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
             config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
-            var @set = new HandlerSet<MainInput, MethodChain>(config, "input");
+            var @set = new HandlerSet<MainInput, HandlerCode>(config, "input");
 
             @set.Add(theChain);
 

@@ -14,7 +14,7 @@ namespace JasperBus.Tests.Runtime.Invocation
         [Fact]
         public void enqueue()
         {
-            var messages = new InvocationContext(new Envelope{Message = new Message1()}, new HandlerChain());
+            var messages = new InvocationContext(new Envelope{Message = new Message1()}, new HandlerChain(typeof(Message1)));
             var m1 = new Message1();
             var m2 = new Message2();
 
@@ -27,7 +27,7 @@ namespace JasperBus.Tests.Runtime.Invocation
         [Fact]
         public void ignores_nulls_just_fine()
         {
-            var messages = new InvocationContext(new Envelope { Message = new Message1() }, new HandlerChain());
+            var messages = new InvocationContext(new Envelope { Message = new Message1() }, new HandlerChain(typeof(Message1)));
             messages.EnqueueCascading(null);
 
             messages.OutgoingMessages().Any().ShouldBeFalse();
@@ -36,7 +36,7 @@ namespace JasperBus.Tests.Runtime.Invocation
         [Fact]
         public void enqueue_an_oject_array()
         {
-            var messages = new InvocationContext(new Envelope{Message = new Message1()}, new HandlerChain());
+            var messages = new InvocationContext(new Envelope{Message = new Message1()}, new HandlerChain(typeof(Message1)));
             var m1 = new Message1();
             var m2 = new Message2();
 
