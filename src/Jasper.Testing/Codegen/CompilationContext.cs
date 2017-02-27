@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -32,6 +33,21 @@ namespace Jasper.Testing.Codegen
         }
 
         public string TypeName => HandlerCode.ClassName;
+    }
+
+    public class SimpleHandlerSet : HandlerSet<SimpleChain, MainInput, IInputHandler>
+    {
+        public SimpleHandlerSet(GenerationConfig config, string inputArgName) : base(config, inputArgName)
+        {
+        }
+
+        private readonly IList<SimpleChain> _chains = new List<SimpleChain>();
+        public void Add(SimpleChain chain)
+        {
+            _chains.Add(chain);
+        }
+
+        protected override SimpleChain[] chains => _chains.ToArray();
     }
 
 
@@ -80,7 +96,7 @@ namespace Jasper.Testing.Codegen
             config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
             config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
-            var @set = new HandlerSet<SimpleChain, MainInput, IInputHandler>(config, "input");
+            var @set = new SimpleHandlerSet(config, "input");
 
             @set.Add(_parent);
 

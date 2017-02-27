@@ -3,24 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
-using Jasper.Internal;
-using JasperBus.Runtime.Invocation;
 using StructureMap;
 
 namespace JasperBus.Model
 {
-    public abstract class MessageHandler : IHandler<IInvocationContext>
-    {
-        public HandlerChain Chain { get; set; }
-
-        public abstract Task Handle(IInvocationContext input);
-    }
-
-
     public class HandlerChain : IGenerates<MessageHandler>
     {
         public static HandlerChain For<T>(Expression<Action<T>> expression)
@@ -86,6 +75,11 @@ namespace JasperBus.Model
             Handlers.Add(@call);
         }
 
+        public HandlerChain(IGrouping<Type, HandlerCall> grouping) : this(grouping.Key)
+        {
+            Handlers.AddRange(grouping);
+        }
+
         string IGenerates<MessageHandler>.SourceCode
         {
             get { return _code; }
@@ -105,6 +99,12 @@ namespace JasperBus.Model
             handler.Chain = this;
 
             return handler;
+        }
+
+        public void AddAbstractedHandler(HandlerCall call)
+        {
+            var clone = call.Clone();
+            clone.ActualMessageType = MessageType;
         }
     }
 }

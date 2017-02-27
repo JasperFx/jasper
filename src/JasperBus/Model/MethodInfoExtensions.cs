@@ -22,7 +22,7 @@ namespace JasperBus.Model
                 if (type.IsConcrete()) return type;
             }
 
-            var first = parameters.FirstOrDefault(x => x.ParameterType.IsConcrete() && x.Name.IsIn("message", "input"));
+            var first = parameters.FirstOrDefault(x => x.Name.IsIn("message", "input"));
 
             if (first != null) return first.ParameterType;
 
