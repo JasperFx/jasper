@@ -8,10 +8,16 @@ namespace Jasper.Codegen.StructureMap
 
     public class StructureMapServices : IVariableSource
     {
-        public static readonly NestedContainerVariable Nested = new NestedContainerVariable();
-        public static readonly Variable Root = new InjectedField(typeof(IContainer), "root");
+        public static readonly NestedContainerVariable Nested;
+        public static readonly Variable Root;
 
         private readonly IContainer _container;
+
+        static StructureMapServices()
+        {
+            Root = new InjectedField(typeof(IContainer), "root");
+            Nested = new NestedContainerVariable(Root);
+        }
 
         public StructureMapServices(IContainer container)
         {

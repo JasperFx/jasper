@@ -18,9 +18,9 @@ namespace Jasper.Codegen.StructureMap
 
     public class NestedContainerVariable : Variable
     {
-        public NestedContainerVariable() : base(typeof(IContainer), "nested", new NestedContainerCreation())
+        public NestedContainerVariable(Variable root) : base(typeof(IContainer), "nested", new NestedContainerCreation())
         {
-            Dependencies.Add(StructureMapServices.Root);
+            Dependencies.Add(root);
         }
     }
 }

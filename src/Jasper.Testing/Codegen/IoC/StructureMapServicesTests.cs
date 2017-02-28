@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Baseline;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Shouldly;
@@ -29,7 +31,8 @@ namespace Jasper.Testing.Codegen.IoC
         [Fact]
         public void nested_variable_has_the_root_container_as_a_dependent_variable()
         {
-            var field = StructureMapServices.Nested.Dependencies.Single()
+            var field = StructureMapServices.Nested.Dependencies
+                .Single()
                 .ShouldBeOfType<InjectedField>();
 
             field.ArgType.ShouldBe(typeof(IContainer));

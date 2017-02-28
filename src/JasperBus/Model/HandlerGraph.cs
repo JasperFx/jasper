@@ -10,6 +10,7 @@ namespace JasperBus.Model
 {
     public class HandlerGraph : HandlerSet<HandlerChain, IInvocationContext, MessageHandler>
     {
+        private bool _hasGrouped = false;
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
         private readonly Dictionary<Type, HandlerChain> _chains = new Dictionary<Type, HandlerChain>();
         private readonly Dictionary<Type, MessageHandler> _handlers = new Dictionary<Type, MessageHandler>();
@@ -19,13 +20,20 @@ namespace JasperBus.Model
             
         }
 
+        private void assertNotGrouped()
+        {
+            if (_hasGrouped) throw new InvalidOperationException("This HandlerGraph has already been grouped");
+        }
+
         public void Add(HandlerCall call)
         {
+            assertNotGrouped();
             _calls.Add(call);
         }
 
         public void AddRange(IEnumerable<HandlerCall> calls)
         {
+            assertNotGrouped();
             _calls.AddRange(calls);
         }
 
@@ -38,30 +46,44 @@ namespace JasperBus.Model
 
         public void Compile(IContainer container)
         {
-            _calls.Where(x => x.MessageType.IsConcrete())
-                .GroupBy(x => x.MessageType)
-                .Select(group => new HandlerChain(group))
-                .Each(
-                    chain =>
-                    {
-                        _chains.Add(chain.MessageType, chain);
-                    });
-
-            _calls.Where(x => !x.MessageType.IsConcrete())
-                .Each(call =>
-                {
-                    _chains.Where(pair => call.CouldHandleOtherMessageType(pair.Key))
-                        .Each(chain =>
-                        {
-                            chain.Value.AddAbstractedHandler(call);
-                        });
-                });
+            if (!_hasGrouped)
+            {
+                Group();
+            }
 
             var handlers = CompileAndBuildAll(container);
             foreach (var handler in handlers)
             {
                 _handlers.Add(handler.Chain.MessageType, handler);
             }
+        }
+
+        protected override void beforeGeneratingCode()
+        {
+            if (!_hasGrouped)
+            {
+                Group();
+            }
+        }
+
+        public void Group()
+        {
+            assertNotGrouped();
+
+            _calls.Where(x => x.MessageType.IsConcrete())
+                .GroupBy(x => x.MessageType)
+                .Select(group => new HandlerChain(@group))
+                .Each(
+                    chain => { _chains.Add(chain.MessageType, chain); });
+
+            _calls.Where(x => !x.MessageType.IsConcrete())
+                .Each(call =>
+                {
+                    _chains.Where(pair => call.CouldHandleOtherMessageType(pair.Key))
+                        .Each(chain => { chain.Value.AddAbstractedHandler(call); });
+                });
+
+            _hasGrouped = true;
         }
     }
 }

@@ -32,6 +32,7 @@ namespace Jasper.Codegen
 
         public Type[] CompileAll()
         {
+            beforeGeneratingCode();
             var code = GenerateCode();
 
             var generator = buildGenerator();
@@ -40,6 +41,8 @@ namespace Jasper.Codegen
 
             return assembly.GetExportedTypes().ToArray();
         }
+
+        protected abstract void beforeGeneratingCode();
 
         private AssemblyGenerator buildGenerator()
         {

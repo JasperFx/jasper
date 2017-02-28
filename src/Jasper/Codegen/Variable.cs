@@ -37,5 +37,10 @@ namespace Jasper.Codegen
 
             Creator.creates.Fill(this);
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(VariableType)}: {VariableType}, {nameof(Usage)}: {Usage}";
+        }
     }
 }
