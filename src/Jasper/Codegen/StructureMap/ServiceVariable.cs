@@ -17,13 +17,12 @@ namespace Jasper.Codegen.StructureMap
         public override void GenerateCode(IHandlerGeneration generation, ISourceWriter writer)
         {
             writer.Write($"var {Service.Usage} = {StructureMapServices.Nested.Usage}.GetInstance<{Service.VariableType.FullName}>();");
+            Next?.GenerateCode(generation, writer);
         }
     }
     
     public class ServiceVariable : Variable
     {
-        private readonly NestedContainerVariable _parent;
-
         public ServiceVariable(Type argType, NestedContainerVariable parent) : base(argType, DefaultArgName(argType))
         {
             Dependencies.Add(parent);

@@ -30,7 +30,7 @@ namespace Jasper.Codegen.StructureMap
 
             if (type == typeof(IContainer)) return true;
 
-            return !type.IsSimple() && _container.Model.HasDefaultImplementationFor(type);
+            return !type.IsSimple() && (_container.Model.HasDefaultImplementationFor(type) || type.IsConcrete());
         }
 
         public Variable Create(Type type)
@@ -47,6 +47,11 @@ namespace Jasper.Codegen.StructureMap
                     return new InjectedField(type);
                 }
 
+                return new ServiceVariable(type, Nested);
+            }
+
+            if (type.IsConcrete())
+            {
                 return new ServiceVariable(type, Nested);
             }
 

@@ -62,6 +62,8 @@ namespace Jasper.Codegen
             // Step 2, calculate dependencies
             var dependencies = new DependencyGatherer(frames);
 
+            findInjectedFields(dependencies);
+
             // Step 3, gather any missing frames and
             // add to the beginning of the list
             dependencies.Dependencies.GetAll().SelectMany(x => x).Distinct()
@@ -70,6 +72,20 @@ namespace Jasper.Codegen
 
             // Step 4, topological sort in dependency order
             return frames.TopologicalSort(x => dependencies.Dependencies[x], true).ToArray();
+        }
+
+        private void findInjectedFields(DependencyGatherer dependencies)
+        {
+            // Stupid. Can't believe I haven't fixed this in Baseline
+            var list = new List<InjectedField>();
+            dependencies.Variables.Each((key, _) =>
+            {
+                if (key is InjectedField)
+                {
+                    list.Add(key.As<InjectedField>());
+                }
+            });
+            Fields = list.ToArray();
         }
 
         private Frame chainFrames(Frame[] frames)
@@ -130,6 +146,6 @@ namespace Jasper.Codegen
             return source.Create(type);
         }
 
-        public InjectedField[] Fields => _variables.Values.OfType<InjectedField>().ToArray();
+        public InjectedField[] Fields { get; protected set; } = new InjectedField[0];
     }
 }

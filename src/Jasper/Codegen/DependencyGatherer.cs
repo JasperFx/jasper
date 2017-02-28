@@ -6,22 +6,22 @@ namespace Jasper.Codegen
 {
     public class DependencyGatherer
     {
-        private readonly IList<Frame> _frames;
-        private readonly IList<Variable> _variables = new List<Variable>();
 
         public readonly LightweightCache<Frame, List<Frame>> Dependencies = new LightweightCache<Frame, List<Frame>>();
+        public readonly LightweightCache<Variable, List<Frame>> Variables = new LightweightCache<Variable, List<Frame>>();
 
         public DependencyGatherer(IList<Frame> frames)
         {
-            _frames = frames;
-
             Dependencies.OnMissing = frame => new List<Frame>(findDependencies(frame).Distinct());
+            Variables.OnMissing = v => new List<Frame>(findDependencies(v).Distinct());
 
             foreach (var frame in frames)
             {
                 Dependencies.FillDefault(frame);
             }
         }
+
+
 
         private IEnumerable<Frame> findDependencies(Frame frame)
         {
@@ -37,13 +37,30 @@ namespace Jasper.Codegen
 
             foreach (var variable in frame.Uses)
             {
-                if (variable.Creator == null) continue;
-
-                yield return variable.Creator;
-
-                foreach (var child in Dependencies[variable.Creator])
+                foreach (var dependency in Variables[variable])
                 {
-                    yield return child;
+                    yield return dependency;
+                }
+            }
+
+        }
+
+        private IEnumerable<Frame> findDependencies(Variable variable)
+        {
+            if (variable.Creator != null)
+            {
+                yield return variable.Creator;
+                foreach (var frame in Dependencies[variable.Creator])
+                {
+                    yield return frame;
+                }
+            }
+
+            foreach (var dependency in variable.Dependencies)
+            {
+                foreach (var frame in Variables[dependency])
+                {
+                    yield return frame;
                 }
             }
         }
