@@ -8,7 +8,7 @@ using StructureMap;
 
 namespace JasperBus.Model
 {
-    public class HandlerGraph : HandlerSet<HandlerChain, IInvocationContext, MessageHandler>
+    public class MessageHandlerGraph : HandlerSet<HandlerChain, IInvocationContext, MessageHandler>
     {
         public static readonly string Context = "context";
 
@@ -17,7 +17,7 @@ namespace JasperBus.Model
         private readonly Dictionary<Type, HandlerChain> _chains = new Dictionary<Type, HandlerChain>();
         private readonly Dictionary<Type, MessageHandler> _handlers = new Dictionary<Type, MessageHandler>();
 
-        public HandlerGraph(GenerationConfig generation) : base(generation)
+        public MessageHandlerGraph(GenerationConfig generation) : base(generation)
         {
             
         }

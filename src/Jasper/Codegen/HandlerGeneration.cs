@@ -60,21 +60,16 @@ namespace Jasper.Codegen
             }
 
             // Step 2, calculate dependencies
-            foreach (var frame in frames)
-            {
-                frame.DetermineDependencies(this);
-            }
+            var dependencies = new DependencyGatherer(frames);
 
             // Step 3, gather any missing frames and
             // add to the beginning of the list
-            frames
-                .SelectMany(x => x.Dependencies)
-                .Distinct()
+            dependencies.Dependencies.GetAll().SelectMany(x => x).Distinct()
                 .Where(x => !frames.Contains(x))
                 .Each(x => frames.Insert(0, x));
 
             // Step 4, topological sort in dependency order
-            return frames.TopologicalSort(x => x.Dependencies, true).ToArray();
+            return frames.TopologicalSort(x => dependencies.Dependencies[x], true).ToArray();
         }
 
         private Frame chainFrames(Frame[] frames)

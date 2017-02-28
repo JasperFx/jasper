@@ -32,7 +32,7 @@ namespace Jasper.Codegen
 
         public Type[] CompileAll()
         {
-            beforeGeneratingCode();
+            
             var code = GenerateCode();
 
             var generator = buildGenerator();
@@ -60,6 +60,8 @@ namespace Jasper.Codegen
 
         public string GenerateCode()
         {
+            beforeGeneratingCode();
+
             var writer = new SourceWriter();
 
             writer.UsingNamespace<Task>();

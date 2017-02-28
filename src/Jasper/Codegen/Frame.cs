@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using Jasper.Codegen.Compilation;
 
 namespace Jasper.Codegen
@@ -9,6 +10,7 @@ namespace Jasper.Codegen
     {
         protected readonly IList<Frame> dependencies = new List<Frame>();
         internal readonly IList<Variable> creates = new List<Variable>();
+        internal readonly IList<Variable> uses = new List<Variable>();
 
         public bool IsAsync { get; }
 
@@ -19,21 +21,25 @@ namespace Jasper.Codegen
             IsAsync = isAsync;
         }
 
+        public IEnumerable<Variable> Uses => uses;
+
         public virtual IEnumerable<Variable> Creates => creates;
 
         public abstract void GenerateCode(IHandlerGeneration generation, ISourceWriter writer);
 
-        public virtual void ResolveVariables(IHandlerGeneration chain)
+        public void ResolveVariables(IHandlerGeneration chain)
         {
-            // Nothing
+            var variables = resolveVariables(chain);
+            uses.AddRange(variables);
+        }
+
+        protected virtual IEnumerable<Variable> resolveVariables(IHandlerGeneration chain)
+        {
+            yield break;
         }
 
         public virtual bool CanReturnTask() => false;
 
-        public virtual void DetermineDependencies(IHandlerGeneration generation)
-        {
-            // Nothing
-        }
 
         public Frame[] Dependencies => dependencies.ToArray();
     }

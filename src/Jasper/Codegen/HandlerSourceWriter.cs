@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Baseline;
 using Jasper.Codegen.Compilation;
+using StructureMap.TypeRules;
 
 namespace Jasper.Codegen.New
 {
@@ -32,6 +33,11 @@ namespace Jasper.Codegen.New
             var returnValue = generation.AsyncMode == AsyncMode.AsyncTask
                 ? "async Task"
                 : "Task";
+
+            if (generation.BaseType.IsInterfaceOrAbstract())
+            {
+                returnValue = "override " + returnValue;
+            }
 
             var variable = generation.InputVariable;
             writer.Write($"BLOCK:public {returnValue} Handle({variable.VariableType.FullName} {variable.Usage})");

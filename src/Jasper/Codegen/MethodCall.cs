@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -20,8 +21,8 @@ namespace Jasper.Codegen
             return new MethodCall(typeof(T), method);
         }
 
-        private Variable[] _variables = new Variable[0];
         private Variable _target;
+        private Variable[] _variables;
 
 
         // What's it got to know?
@@ -35,15 +36,21 @@ namespace Jasper.Codegen
 
 
 
-        public override void ResolveVariables(IHandlerGeneration chain)
+        protected override IEnumerable<Variable> resolveVariables(IHandlerGeneration chain)
         {
             _variables = Method.GetParameters()
                 .Select(param => chain.FindVariable(param.ParameterType))
                 .ToArray();
 
+            foreach (var variable in _variables)
+            {
+                yield return variable;
+            }
+
             if (!Method.IsStatic)
             {
                 _target = chain.FindVariable(HandlerType);
+                yield return _target;
             }
         }
 

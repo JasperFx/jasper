@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
 using JasperBus.Model;
+using Shouldly;
 using StructureMap;
 
 namespace JasperBus.Tests.Compilation
@@ -12,8 +14,10 @@ namespace JasperBus.Tests.Compilation
     public class CompilationContext<T>
     {
         private Lazy<IContainer> _container;
-        protected readonly HandlerGraph Graph;
+        protected readonly MessageHandlerGraph Graph;
         public readonly ServiceRegistry services = new ServiceRegistry();
+
+        protected Lazy<Dictionary<Type, MessageHandler>> _handlers;
 
         private readonly Lazy<string> _code;
 
@@ -28,7 +32,7 @@ namespace JasperBus.Tests.Compilation
             config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
             config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
-            Graph = new HandlerGraph(config);
+            Graph = new MessageHandlerGraph(config);
 
             var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
                 .Where(x => x.DeclaringType != typeof(object) && x != null);
@@ -39,8 +43,30 @@ namespace JasperBus.Tests.Compilation
             }
 
             _code = new Lazy<string>(() => Graph.GenerateCode());
+
+            _handlers = new Lazy<Dictionary<Type, MessageHandler>>(() =>
+            {
+                var handlers = Graph.CompileAndBuildAll(_container.Value);
+                var dict = new Dictionary<Type, MessageHandler>();
+                foreach (var handler in handlers)
+                {
+                    dict.Add(handler.Chain.MessageType, handler);
+                }
+
+                return dict;
+            });
         }
 
         public string theCode => _code.Value;
+
+        public void AllHandlersCompileSuccessfully()
+        {
+            _handlers.Value.Count.ShouldBeGreaterThan(0);
+        }
+
+        public MessageHandler HandlerFor<T>()
+        {
+            return _handlers.Value[typeof(T)];
+        }
     }
 }

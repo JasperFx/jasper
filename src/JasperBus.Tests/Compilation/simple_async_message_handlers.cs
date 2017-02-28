@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using JasperBus.Tests.Runtime;
 using Shouldly;
@@ -18,10 +17,9 @@ namespace JasperBus.Tests.Compilation
         }
 
         [Fact]
-        public void can_generate_the_code()
+        public void can_compile_all()
         {
-            theCode.ShouldNotBeEmpty();
-            Console.WriteLine(theCode);
+            AllHandlersCompileSuccessfully();
         }
 
 
@@ -34,6 +32,7 @@ namespace JasperBus.Tests.Compilation
             return Task.CompletedTask;
         }
     }
+
 
 
 }

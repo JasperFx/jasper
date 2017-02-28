@@ -7,7 +7,7 @@ namespace JasperBus.Model
     {
         public MessageVariable(Variable envelope, Type messageType) : base(messageType, DefaultArgName(messageType))
         {
-            Creator = new MessageFrame(messageType, envelope);
+            Creator = new MessageFrame(this, envelope);
         }
     }
 }
