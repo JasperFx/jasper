@@ -145,6 +145,15 @@ namespace JasperBus.Runtime
                 return hashCode;
             }
         }
+
+        public static Envelope ForMessage(object message)
+        {
+            // TODO -- this will change
+            return new Envelope(new byte[0], new Dictionary<string, string>(), null)
+            {
+                Message = message
+            };
+        }
     }
 
 }

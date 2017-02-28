@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
 using JasperBus.Model;
+using JasperBus.Runtime;
+using JasperBus.Runtime.Invocation;
 using Shouldly;
 using StructureMap;
 
@@ -67,6 +70,16 @@ namespace JasperBus.Tests.Compilation
         public MessageHandler HandlerFor<T>()
         {
             return _handlers.Value[typeof(T)];
+        }
+
+        public async Task<IInvocationContext> Execute<T>(T message)
+        {
+            var handler = HandlerFor<T>();
+            var context = new InvocationContext(Envelope.ForMessage(message), handler.Chain );
+
+            await handler.Handle(context);
+
+            return context;
         }
     }
 }
