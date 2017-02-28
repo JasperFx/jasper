@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
@@ -29,7 +30,9 @@ namespace JasperBus.Tests.Compilation
 
             Graph = new HandlerGraph(config);
 
-            var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+            var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                .Where(x => x.DeclaringType != typeof(object) && x != null);
+
             foreach (var method in methods)
             {
                 Graph.Add(new HandlerCall(typeof(T), method));

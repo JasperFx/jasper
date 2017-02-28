@@ -10,6 +10,8 @@ namespace JasperBus.Model
     {
         public static Type MessageType(this MethodInfo method)
         {
+            if (method == null) throw new ArgumentNullException(nameof(method));
+
             var parameters = method.GetParameters();
             if (!parameters.Any())
             {
