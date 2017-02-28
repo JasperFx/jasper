@@ -33,7 +33,9 @@ namespace Jasper.Codegen
             Method = method;
         }
 
-        public override void ResolveVariables(HandlerGeneration chain)
+
+
+        public override void ResolveVariables(IHandlerGeneration chain)
         {
             _variables = Method.GetParameters()
                 .Select(param => chain.FindVariable(param.ParameterType))
@@ -45,12 +47,12 @@ namespace Jasper.Codegen
             }
         }
 
-        public override void GenerateCode(HandlerGeneration generation, ISourceWriter writer)
+        public override void GenerateCode(IHandlerGeneration generation, ISourceWriter writer)
         {
-            var callingCode = $"{Method.Name}({_variables.Select(x => x.Name).Join(", ")})";
+            var callingCode = $"{Method.Name}({_variables.Select(x => x.Usage).Join(", ")})";
             var target = Method.IsStatic
                 ? HandlerType.FullName
-                : _target.Name;
+                : _target.Usage;
 
             var returnValue = "";
             var suffix = "";
@@ -73,7 +75,7 @@ namespace Jasper.Codegen
 
             writer.Write($"{returnValue}{target}.{callingCode}{suffix};");
 
-            Next?.GenerateAllCode(generation, writer);
+            Next?.GenerateCode(generation, writer);
         }
 
 

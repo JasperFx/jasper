@@ -51,21 +51,18 @@ namespace JasperBus.Model
 
         public List<MethodCall> Handlers = new List<MethodCall>();
 
-        HandlerCode IGenerates<MessageHandler>.ToHandlerCode()
+
+        public IHandlerGeneration ToHandlerCode(GenerationConfig config)
         {
             if (!Handlers.Any())
             {
                 throw new InvalidOperationException("No method handlers configured for message type " + MessageType.FullName);
             }
 
-            var chain = new HandlerCode(TypeName, typeof(MessageHandler));
+            // TODO -- add wrappers here
+            var frames = Handlers.OfType<Frame>().ToList();
 
-            foreach (var method in Handlers)
-            {
-                chain.AddToEnd(method);
-            }
-
-            return chain;
+            return new MessageHandlerGeneration(TypeName, config, frames);
         }
 
         private string _code;

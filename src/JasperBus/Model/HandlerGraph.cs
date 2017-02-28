@@ -14,7 +14,7 @@ namespace JasperBus.Model
         private readonly Dictionary<Type, HandlerChain> _chains = new Dictionary<Type, HandlerChain>();
         private readonly Dictionary<Type, MessageHandler> _handlers = new Dictionary<Type, MessageHandler>();
 
-        public HandlerGraph(GenerationConfig generation) : base(generation, "context")
+        public HandlerGraph(GenerationConfig generation) : base(generation)
         {
             
         }

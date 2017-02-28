@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Codegen.Compilation;
+using Jasper.Codegen.New;
 
 namespace Jasper.Codegen
 {
@@ -9,7 +10,7 @@ namespace Jasper.Codegen
         {
         }
 
-        public InjectedField(Type argType, string name) : base(argType, "_" + name, VariableCreation.Injected)
+        public InjectedField(Type argType, string name) : base(argType, "_" + name)
         {
             CtorArg = name;
             ArgType = argType;
@@ -23,12 +24,12 @@ namespace Jasper.Codegen
 
         public void WriteDeclaration(ISourceWriter writer)
         {
-            writer.Write($"private readonly {ArgType.FullName} {Name};");
+            writer.Write($"private readonly {ArgType.FullName} {Usage};");
         }
 
         public void WriteAssignment(ISourceWriter writer)
         {
-            writer.Write($"{Name} = {CtorArg};");
+            writer.Write($"{Usage} = {CtorArg};");
         }
     }
 }

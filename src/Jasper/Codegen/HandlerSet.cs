@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Codegen.Compilation;
+using Jasper.Codegen.New;
 using Jasper.Internal;
 using StructureMap;
 
@@ -12,13 +12,12 @@ namespace Jasper.Codegen
     public abstract class HandlerSet<TChain, TInput, THandler>
         where THandler : IHandler<TInput>
         where TChain : IGenerates<THandler>
+
     {
-        private readonly string _inputArgName;
         public GenerationConfig Config { get; set; }
 
-        public HandlerSet(GenerationConfig config, string inputArgName)
+        public HandlerSet(GenerationConfig config)
         {
-            _inputArgName = inputArgName;
             Config = config;
         }
 
@@ -60,7 +59,6 @@ namespace Jasper.Codegen
         {
             var writer = new SourceWriter();
 
-
             writer.UsingNamespace<Task>();
             writer.BlankLine();
 
@@ -68,13 +66,13 @@ namespace Jasper.Codegen
 
             foreach (var chain in chains)
             {
-                var handlerCode = chain.ToHandlerCode();
+                var generation = chain.ToHandlerCode(Config);
 
-                var generation = new HandlerGeneration(handlerCode, Config, _inputArgName);
 
                 // TODO -- figure out how to get the source code for each handler
                 writer.WriteLine($"// START: {chain.TypeName}");
-                handlerCode.Write(generation, writer);
+
+                HandlerSourceWriter.Write(generation, writer);
                 writer.WriteLine($"// END: {chain.TypeName}");
 
                 writer.WriteLine("");

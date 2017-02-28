@@ -1,24 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using Jasper.Codegen.Compilation;
+﻿using Jasper.Codegen.Compilation;
 using StructureMap;
 
 namespace Jasper.Codegen.StructureMap
 {
+    public class NestedContainerCreation : Frame
+    {
+        public NestedContainerCreation() : base(false)
+        {
+
+        }
+
+        public override void GenerateCode(IHandlerGeneration generation, ISourceWriter writer)
+        {
+            writer.UsingBlock("var nested = _root.GetNestedContainer()", w => Next?.GenerateCode(generation, writer));
+        }
+    }
+
     public class NestedContainerVariable : Variable
     {
-        public NestedContainerVariable() : base(typeof(IContainer), "nested", VariableCreation.BuiltByFrame)
+        public NestedContainerVariable() : base(typeof(IContainer), "nested", new NestedContainerCreation())
         {
-        }
-
-        public override IEnumerable<Variable> Dependencies
-        {
-            get { yield return StructureMapServices.Root; }
-        }
-
-        protected override void generateCreation(ISourceWriter writer, Action<ISourceWriter> continuation)
-        {
-            writer.UsingBlock("var nested = _root.GetNestedContainer()", continuation);
+            Dependencies.Add(StructureMapServices.Root);
         }
     }
 }

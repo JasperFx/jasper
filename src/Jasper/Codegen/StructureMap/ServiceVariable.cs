@@ -1,31 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
+using Baseline;
 using Jasper.Codegen.Compilation;
 
 namespace Jasper.Codegen.StructureMap
 {
+    public class NestedContainerServiceCreation : Frame
+    {
+        public ServiceVariable Service { get; }
+
+        public NestedContainerServiceCreation(ServiceVariable service) : base(false)
+        {
+            Service = service;
+            creates.Fill(service);
+        }
+
+        public override void GenerateCode(IHandlerGeneration generation, ISourceWriter writer)
+        {
+            writer.Write($"var {Service.Usage} = {StructureMapServices.Nested.Usage}.GetInstance<{Service.VariableType.FullName}>();");
+        }
+    }
+    
     public class ServiceVariable : Variable
     {
         private readonly NestedContainerVariable _parent;
 
-        public ServiceVariable(Type argType, NestedContainerVariable parent) : base(argType, VariableCreation.BuiltByFrame)
+        public ServiceVariable(Type argType, NestedContainerVariable parent) : base(argType, DefaultArgName(argType))
         {
-            _parent = parent;
-        }
-
-        public override IEnumerable<Variable> Dependencies
-        {
-            get
-            {
-                yield return _parent;
-            }
-        }
-
-
-        protected override void generateCreation(ISourceWriter writer, Action<ISourceWriter> continuation)
-        {
-            writer.Write($"var {Name} = {StructureMapServices.Nested.Name}.GetInstance<{VariableType.FullName}>();");
-            continuation(writer);
+            Dependencies.Add(parent);
+            Creator = new NestedContainerServiceCreation(this);
         }
     }
 }

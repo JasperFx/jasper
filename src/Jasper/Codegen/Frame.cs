@@ -1,48 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Jasper.Codegen.Compilation;
-using Jasper.Configuration;
 
 namespace Jasper.Codegen
 {
-    public abstract class Frame : Node<Frame, HandlerCode>
+    public abstract class Frame
     {
+        protected readonly IList<Frame> dependencies = new List<Frame>();
+        internal readonly IList<Variable> creates = new List<Variable>();
+
         public bool IsAsync { get; }
+
+        public Frame Next { get; set; }
 
         protected Frame(bool isAsync)
         {
             IsAsync = isAsync;
         }
 
-        public virtual IEnumerable<Variable> Creates
-        {
-            get
-            {
-                yield break;
-            }
-        }
+        public virtual IEnumerable<Variable> Creates => creates;
 
-        public void GenerateAllCode(HandlerGeneration generation, ISourceWriter writer)
-        {
-            if (Instantiates.Any())
-            {
-                Instantiates[0].GenerateCreationCode(generation, this, writer);
-            }
-            else
-            {
-                GenerateCode(generation, writer);
-            }
-        }
+        public abstract void GenerateCode(IHandlerGeneration generation, ISourceWriter writer);
 
-        public abstract void GenerateCode(HandlerGeneration generation, ISourceWriter writer);
-
-        public virtual void ResolveVariables(HandlerGeneration chain)
+        public virtual void ResolveVariables(IHandlerGeneration chain)
         {
-            // nothing
+            // Nothing
         }
 
         public virtual bool CanReturnTask() => false;
 
-        public Variable[] Instantiates { get; set; } = new Variable[0];
+        public virtual void DetermineDependencies(IHandlerGeneration generation)
+        {
+            // Nothing
+        }
+
+        public Frame[] Dependencies => dependencies.ToArray();
     }
 }

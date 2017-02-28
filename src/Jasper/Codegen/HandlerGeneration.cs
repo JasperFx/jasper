@@ -1,40 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Baseline;
+using Jasper.Internal;
+using Jasper.Util;
 
 namespace Jasper.Codegen
 {
-    public enum AsyncMode
+    public abstract class HandlerGeneration<T> : IHandlerGeneration
     {
-        ReturnCompletedTask,
-        AsyncTask,
-        ReturnFromLastNode
-    }
-
-    public class HandlerGeneration : Variable
-    {
-        private readonly GenerationConfig _config;
+        public GenerationConfig Config { get; }
+        public IList<Frame> Frames { get; }
+        private readonly IVariableSource _specific;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
-        private readonly IList<Variable> _created = new List<Variable>();
-        private HandlerCode _chain;
 
-        public HandlerGeneration(HandlerCode chain, GenerationConfig config, string inputArg)
-            : base(chain.InputType, inputArg, VariableCreation.Injected)
+        protected HandlerGeneration(string className, string inputName, IVariableSource specific, GenerationConfig config, IList<Frame> frames)
         {
-            _config = config;
+            if (!frames.Any())
+            {
+                throw new ArgumentOutOfRangeException(nameof(frames), "Cannot be an empty list");
+            }
 
-            if (chain.All(x => !x.IsAsync))
+            var handlerType = typeof(T).FindInterfaceThatCloses(typeof(IHandler<>));
+            if (handlerType == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(T), $"Type {typeof(T).FullName} does not implement IHandler<T>");
+            }
+
+            ClassName = className;
+            Config = config;
+            Frames = frames;
+            _specific = specific;
+
+            var inputType = handlerType.GetGenericArguments().Single();
+
+            InputVariable = new Variable(inputType, inputName);
+
+            var compiled = compileFrames(frames);
+
+            if (compiled.All(x => !x.IsAsync))
             {
                 AsyncMode = AsyncMode.ReturnCompletedTask;
             }
-            else if (chain.Count(x => x.IsAsync) == 1 && chain.Last().IsAsync && chain.Last().CanReturnTask())
+            else if (compiled.Count(x => x.IsAsync) == 1 && compiled.Last().IsAsync && compiled.Last().CanReturnTask())
             {
                 AsyncMode = AsyncMode.ReturnFromLastNode;
             }
 
-            _chain = chain;
+            Top = chainFrames(compiled);
         }
+
+        private Frame[] compileFrames(IList<Frame> frames)
+        {
+            // Step 1, resolve all the necessary variables
+            foreach (var frame in frames)
+            {
+                frame.ResolveVariables(this);
+            }
+
+            // Step 2, calculate dependencies
+            foreach (var frame in frames)
+            {
+                frame.DetermineDependencies(this);
+            }
+
+            // Step 3, gather any missing frames and
+            // add to the beginning of the list
+            frames
+                .SelectMany(x => x.Dependencies)
+                .Distinct()
+                .Where(x => !frames.Contains(x))
+                .Each(x => frames.Insert(0, x));
+
+            // Step 4, topological sort in dependency order
+            return frames.TopologicalSort(x => x.Dependencies, true).ToArray();
+        }
+
+        private Frame chainFrames(Frame[] frames)
+        {
+            // Step 5, put into a chain.
+            for (int i = 1; i < frames.Length; i++)
+            {
+                frames[i - 1].Next = frames[i];
+            }
+
+            return frames[0];
+        }
+
+        public Variable InputVariable { get; }
+        public Frame Top { get; }
+
+        public string ClassName { get; }
+        public Type BaseType => typeof(T);
+
+        public AsyncMode AsyncMode { get; } = AsyncMode.AsyncTask;
 
         public Variable FindVariable(Type type)
         {
@@ -51,16 +111,21 @@ namespace Jasper.Codegen
 
         private Variable findVariable(Type type)
         {
-            if (type == VariableType) return this;
+            if (type == InputVariable.VariableType) return InputVariable;
 
-            var created = _chain.SelectMany(x => x.Creates).FirstOrDefault(x => x.VariableType == type);
+            if (_specific.Matches(type))
+            {
+                return _specific.Create(type);
+            }
+
+            var created = Frames.SelectMany(x => x.Creates).FirstOrDefault(x => x.VariableType == type);
             if (created != null)
             {
                 return created;
             }
 
 
-            var source = _config.Sources.FirstOrDefault(x => x.Matches(type));
+            var source = Config.Sources.FirstOrDefault(x => x.Matches(type));
             if (source == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(type),
@@ -70,32 +135,6 @@ namespace Jasper.Codegen
             return source.Create(type);
         }
 
-        public AsyncMode AsyncMode { get; } = AsyncMode.AsyncTask;
-
-        public InjectedField[] Fields { get; private set; } = new InjectedField[0];
-
-        public void ResolveVariables(HandlerCode chain)
-        {
-            var frames = chain.ToArray();
-
-            foreach (var frame in frames)
-            {
-                resolveVariables(frame);
-            }
-
-            Fields = GatherAllDependencies(_variables.Values).OfType<InjectedField>().ToArray();
-        }
-
-        private void resolveVariables(Frame frame)
-        {
-            frame.ResolveVariables(this);
-
-            var ordered = GatherAllDependencies(_variables.Values.ToArray())
-                .Where(x => x.Creation == VariableCreation.BuiltByFrame && !_created.Contains(x))
-                .ToArray();
-
-            _created.AddRange(ordered);
-            frame.Instantiates = ordered;
-        }
+        public InjectedField[] Fields => _variables.Values.OfType<InjectedField>().ToArray();
     }
 }
