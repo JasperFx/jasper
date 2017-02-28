@@ -8,6 +8,11 @@ namespace Jasper.Codegen
 {
     public class Variable
     {
+        public static Variable For<T>()
+        {
+            return new Variable(typeof(T), DefaultArgName(typeof(T)));
+        }
+
         public static string DefaultArgName(Type argType)
         {
             var parts = argType.Name.SplitPascalCase().Split(' ');
@@ -19,7 +24,21 @@ namespace Jasper.Codegen
             return parts.First().ToLower() + parts.Skip(1).Join("");
         }
 
-        public Frame Creator { get; protected set; }
+        private Frame _frame;
+
+        public Frame Creator
+        {
+            get
+            {
+                return _frame;
+
+            }
+            protected set
+            {
+                _frame = value;
+                Creator?.creates.Fill(this);
+            }
+        }
         public Type VariableType { get; }
         public string Usage { get; }
 

@@ -10,6 +10,8 @@ namespace JasperBus.Model
 {
     public class HandlerGraph : HandlerSet<HandlerChain, IInvocationContext, MessageHandler>
     {
+        public static readonly string Context = "context";
+
         private bool _hasGrouped = false;
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
         private readonly Dictionary<Type, HandlerChain> _chains = new Dictionary<Type, HandlerChain>();

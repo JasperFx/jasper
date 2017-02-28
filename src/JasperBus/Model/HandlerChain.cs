@@ -62,7 +62,7 @@ namespace JasperBus.Model
             // TODO -- add wrappers here
             var frames = Handlers.OfType<Frame>().ToList();
 
-            return new MessageHandlerGeneration(TypeName, config, frames);
+            return new MessageHandlerGeneration(TypeName, MessageType, config, frames);
         }
 
         private string _code;
