@@ -16,10 +16,9 @@ using Xunit;
 namespace JasperBus.Tests.Compilation
 {
     [Collection("compilation")]
-    public class CompilationContext<T>
+    public abstract class CompilationContext<T>
     {
         private Lazy<IContainer> _container;
-        protected readonly MessageHandlerGraph Graph;
         public readonly ServiceRegistry services = new ServiceRegistry();
 
         protected Lazy<Dictionary<Type, MessageHandler>> _handlers;
@@ -27,26 +26,35 @@ namespace JasperBus.Tests.Compilation
         private readonly Lazy<string> _code;
         protected Envelope theEnvelope;
 
+        protected Lazy<MessageHandlerGraph> _graph;
+
         public CompilationContext()
         {
             _container = new Lazy<IContainer>(() => new Container(services));
 
-            var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
-            var container = _container.Value;
-            config.Sources.Add(new StructureMapServices(container));
-
-            config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
-            config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
-
-            Graph = new MessageHandlerGraph(config);
-
-            var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                .Where(x => x.DeclaringType != typeof(object) && x != null);
-
-            foreach (var method in methods)
+            _graph = new Lazy<MessageHandlerGraph>(() =>
             {
-                Graph.Add(new HandlerCall(typeof(T), method));
-            }
+                var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
+                var container = _container.Value;
+                config.Sources.Add(new StructureMapServices(container));
+
+                config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
+                config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+
+                var graph = new MessageHandlerGraph(config);
+
+                var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                    .Where(x => x.DeclaringType != typeof(object) && x != null && x.GetParameters().Any() && !x.IsSpecialName);
+
+                foreach (var method in methods)
+                {
+                    graph.Add(new HandlerCall(typeof(T), method));
+                }
+
+                return graph;
+            });
+
+
 
             _code = new Lazy<string>(() => Graph.GenerateCode());
 
@@ -61,6 +69,14 @@ namespace JasperBus.Tests.Compilation
 
                 return dict;
             });
+        }
+
+        public MessageHandlerGraph Graph => _graph.Value;
+
+        [Fact]
+        public void can_compile_all()
+        {
+            AllHandlersCompileSuccessfully();
         }
 
         public string theCode => _code.Value;

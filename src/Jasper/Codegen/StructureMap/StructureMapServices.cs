@@ -16,7 +16,7 @@ namespace Jasper.Codegen.StructureMap
         static StructureMapServices()
         {
             Root = new InjectedField(typeof(IContainer), "root");
-            Nested = new NestedContainerVariable(Root);
+            Nested = new NestedContainerVariable(new NestedContainerCreation(Root));
         }
 
         public StructureMapServices(IContainer container)

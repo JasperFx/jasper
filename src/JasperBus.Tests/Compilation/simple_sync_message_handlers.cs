@@ -8,11 +8,6 @@ namespace JasperBus.Tests.Compilation
 
     public class simple_sync_message_handlers : CompilationContext<SyncHandler>
     {
-        [Fact]
-        public void can_compile_all()
-        {
-            AllHandlersCompileSuccessfully();
-        }
 
         [Fact]
         public async Task execute_the_simplest_possible_chain()

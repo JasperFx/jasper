@@ -1,28 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using JasperBus.Tests.Runtime;
 using Shouldly;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace JasperBus.Tests.Compilation
 {
     public class simple_async_message_handlers : CompilationContext<AsyncHandler>
     {
-        private ITestOutputHelper _output;
 
-        public simple_async_message_handlers(Xunit.Abstractions.ITestOutputHelper output)
-        {
-            _output = output;
-        }
 
-        [Fact]
-        public void can_compile_all()
-        {
-            AllHandlersCompileSuccessfully();
-        }
 
         [Fact]
         public async Task execute_the_simplest_possible_static_chain()
