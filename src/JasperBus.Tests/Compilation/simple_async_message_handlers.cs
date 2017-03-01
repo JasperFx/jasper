@@ -11,13 +11,6 @@ namespace JasperBus.Tests.Compilation
     [Collection("compilation")]
     public class simple_async_message_handlers : CompilationContext<AsyncHandler>
     {
-
-        [Fact]
-        public void show_me_the_code()
-        {
-            Console.WriteLine(theCode);
-        }
-
         [Fact]
         public async Task execute_the_simplest_possible_static_chain()
         {

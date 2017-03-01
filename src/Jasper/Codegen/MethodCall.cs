@@ -107,6 +107,11 @@ namespace Jasper.Codegen
                 }
             }
 
+            if (ReturnVariable != null)
+            {
+                throw new NotImplementedException("Not done yet.");
+            }
+
             // TODO -- will need to see if it's IDisposable too
             // TODO -- will have to deal with frames that declare a variable
 
