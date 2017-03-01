@@ -22,11 +22,6 @@ namespace JasperBus.Tests.Compilation
             
         }
 
-        [Fact]
-        public void show_me_the_code()
-        {
-            Console.WriteLine(theCode);
-        }
 
         [Fact]
         public async Task wrapper_executes()
