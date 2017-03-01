@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JasperBus.Runtime;
+using JasperBus.Runtime.Invocation;
 using JasperBus.Tests.Runtime;
 using Shouldly;
 using Xunit;
@@ -39,12 +41,32 @@ namespace JasperBus.Tests.Compilation
 
             AsyncHandler.LastMessage2.ShouldBeSameAs(message);
         }
+
+        [Fact]
+        public async Task can_pass_in_the_envelope()
+        {
+            var message = new Message3();
+            await Execute(message);
+
+            AsyncHandler.LastEnvelope.ShouldBeSameAs(theEnvelope);
+        }
+
+        [Fact]
+        public async Task can_pass_in_the_invocation_context()
+        {
+            var message = new Message4();
+            var context = await Execute(message);
+
+            AsyncHandler.LastContext.ShouldBeSameAs(context);
+        }
     }
 
     public class AsyncHandler
     {
         public static Message1 LastMessage1;
         public static Message2 LastMessage2;
+        public static Envelope LastEnvelope;
+        public static IInvocationContext LastContext;
 
         public static Task Simple1(Message1 message)
         {
@@ -55,6 +77,18 @@ namespace JasperBus.Tests.Compilation
         public Task Simple2(Message2 message)
         {
             LastMessage2 = message;
+            return Task.CompletedTask;
+        }
+
+        public Task Simple3(Message3 message, Envelope envelope)
+        {
+            LastEnvelope = envelope;
+            return Task.CompletedTask;
+        }
+
+        public static Task Simple4(Message4 message, IInvocationContext context)
+        {
+            LastContext = context;
             return Task.CompletedTask;
         }
     }

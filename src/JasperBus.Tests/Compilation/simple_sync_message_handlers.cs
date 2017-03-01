@@ -5,6 +5,7 @@ using Xunit;
 
 namespace JasperBus.Tests.Compilation
 {
+
     public class simple_sync_message_handlers : CompilationContext<SyncHandler>
     {
         [Fact]

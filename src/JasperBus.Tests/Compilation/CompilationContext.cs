@@ -11,9 +11,11 @@ using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using Shouldly;
 using StructureMap;
+using Xunit;
 
 namespace JasperBus.Tests.Compilation
 {
+    [Collection("compilation")]
     public class CompilationContext<T>
     {
         private Lazy<IContainer> _container;
@@ -23,6 +25,7 @@ namespace JasperBus.Tests.Compilation
         protected Lazy<Dictionary<Type, MessageHandler>> _handlers;
 
         private readonly Lazy<string> _code;
+        protected Envelope theEnvelope;
 
         public CompilationContext()
         {
@@ -75,7 +78,8 @@ namespace JasperBus.Tests.Compilation
         public async Task<IInvocationContext> Execute<T>(T message)
         {
             var handler = HandlerFor<T>();
-            var context = new InvocationContext(Envelope.ForMessage(message), handler.Chain );
+            theEnvelope = Envelope.ForMessage(message);
+            var context = new InvocationContext(theEnvelope, handler.Chain );
 
             await handler.Handle(context);
 
