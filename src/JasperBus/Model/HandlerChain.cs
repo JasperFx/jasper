@@ -69,7 +69,10 @@ namespace JasperBus.Model
                 handlerType.ForAttribute<ModifyHandlerChainAttribute>(att => att.Modify(this));
             }
 
-            var frames = Wrappers.Concat(Handlers).ToList();
+            var cascadingHandlers = Handlers.Where(x => x.ReturnVariable != null)
+                .Select(x => new CaptureCascadingMessages(x.ReturnVariable));
+
+            var frames = Wrappers.Concat(Handlers).Concat(cascadingHandlers).ToList();
 
             return new MessageHandlerGenerationModel(TypeName, MessageType, config, frames);
         }
