@@ -3,26 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen.Compilation;
 
 namespace Jasper.Codegen
 {
-    public class CastVariable : Variable
-    {
-        public CastVariable(Variable parent, Type specificType) : base(specificType, $"(({specificType.FullName}){parent.Usage})")
-        {
-            Dependencies.Add(parent);
-        }
-    }
-
     public class MethodCall : Frame
     {
         public Dictionary<Type, Type> Aliases { get; } = new Dictionary<Type, Type>();
 
         public Type HandlerType { get; }
         public MethodInfo Method { get; }
+        public Variable ReturnVariable { get; private set; }
 
         public static MethodCall For<T>(Expression<Action<T>> expression)
         {
@@ -42,6 +36,19 @@ namespace Jasper.Codegen
         {
             HandlerType = handlerType;
             Method = method;
+
+            if (method.ReturnType != typeof(void) && method.ReturnType != typeof(Task))
+            {
+                var variableType = method.ReturnType.CanBeCastTo<Task>()
+                    ? method.ReturnType.GetGenericArguments().First()
+                    : method.ReturnType;
+
+                var name = variableType.IsSimple() || variableType == typeof(object) || variableType == typeof(object[])
+                    ? "result_of_" + method.Name
+                    : Variable.DefaultArgName(variableType);
+
+                ReturnVariable = new Variable(variableType, name, this);
+            }
         }
 
         private Variable findVariable(ParameterInfo param, IGenerationModel chain)
