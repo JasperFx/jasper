@@ -29,17 +29,6 @@ namespace Jasper.Testing.Codegen.IoC
         }
 
         [Fact]
-        public void nested_variable_has_the_root_container_as_a_dependent_variable()
-        {
-            var field = StructureMapServices.Nested.Dependencies
-                .Single()
-                .ShouldBeOfType<InjectedField>();
-
-            field.ArgType.ShouldBe(typeof(IContainer));
-            field.CtorArg.ShouldBe("root");
-        }
-
-        [Fact]
         public void do_not_match_any_kind_of_simple_type()
         {
             theServices.Matches(typeof(int)).ShouldBeFalse();

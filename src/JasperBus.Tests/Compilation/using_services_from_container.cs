@@ -37,6 +37,7 @@ namespace JasperBus.Tests.Compilation
         }
     }
 
+
     public class ServiceUsingHandler
     {
         public static void Clear()

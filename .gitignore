@@ -208,3 +208,5 @@ paket.lock
 .DS_Store
 
 .idea
+
+project.json.lock

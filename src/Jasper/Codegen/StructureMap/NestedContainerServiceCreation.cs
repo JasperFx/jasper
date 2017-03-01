@@ -7,10 +7,11 @@ namespace Jasper.Codegen.StructureMap
     {
         public ServiceVariable Service { get; }
 
-        public NestedContainerServiceCreation(ServiceVariable service) : base(false)
+        public NestedContainerServiceCreation(ServiceVariable service, NestedContainerVariable parent) : base(false)
         {
             Service = service;
             creates.Fill(service);
+            uses.Add(parent);
         }
 
         public override void GenerateCode(IHandlerGeneration generation, ISourceWriter writer)
