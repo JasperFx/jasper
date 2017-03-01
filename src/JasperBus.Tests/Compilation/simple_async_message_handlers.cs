@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using JasperBus.Tests.Runtime;
@@ -11,7 +12,11 @@ namespace JasperBus.Tests.Compilation
     public class simple_async_message_handlers : CompilationContext<AsyncHandler>
     {
 
-
+        [Fact]
+        public void show_me_the_code()
+        {
+            Console.WriteLine(theCode);
+        }
 
         [Fact]
         public async Task execute_the_simplest_possible_static_chain()
@@ -48,6 +53,12 @@ namespace JasperBus.Tests.Compilation
 
             AsyncHandler.LastContext.ShouldBeSameAs(context);
         }
+
+        [Fact]
+        public Task can_run_double_async_actions()
+        {
+            return Execute(new DoubleAction());
+        }
     }
 
     public class AsyncHandler
@@ -80,8 +91,25 @@ namespace JasperBus.Tests.Compilation
             LastContext = context;
             return Task.CompletedTask;
         }
+
+        public static Task Handle(DoubleAction action)
+        {
+            return Task.CompletedTask;
+        }
+
+        public static Task Handle(IDoubleAction action)
+        {
+            return Task.CompletedTask;
+        }
     }
 
+    public class DoubleAction : IDoubleAction
+    {
+        
+    }
 
-
+    public interface IDoubleAction
+    {
+        
+    }
 }

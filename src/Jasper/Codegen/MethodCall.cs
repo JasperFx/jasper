@@ -44,14 +44,6 @@ namespace Jasper.Codegen
             Method = method;
         }
 
-        private Type typeForParameter(ParameterInfo param)
-        {
-            var type = param.ParameterType;
-            if (Aliases.ContainsKey(type)) return Aliases[type];
-
-            return type;
-        }
-
         private Variable findVariable(ParameterInfo param, IGenerationModel chain)
         {
             var type = param.ParameterType;
