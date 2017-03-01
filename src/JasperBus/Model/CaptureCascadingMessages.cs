@@ -10,8 +10,9 @@ namespace JasperBus.Model
         private readonly Variable _messages;
         private Variable _context;
 
-        public CaptureCascadingMessages(Variable messages) : base(false)
+        public CaptureCascadingMessages(Variable messages, int position) : base(false)
         {
+            messages.OverrideName("outgoing" + position);
             _messages = messages;
         }
 

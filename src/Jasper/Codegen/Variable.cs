@@ -40,7 +40,16 @@ namespace Jasper.Codegen
             }
         }
         public Type VariableType { get; }
-        public string Usage { get; }
+        public string Usage { get; private set; }
+
+        /// <summary>
+        /// On rare occasions you may need to override the variable name
+        /// </summary>
+        /// <param name="variableName"></param>
+        public void OverrideName(string variableName)
+        {
+            Usage = variableName;
+        }
 
         public IList<Variable> Dependencies { get; } = new List<Variable>();
 

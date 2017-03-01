@@ -9,12 +9,6 @@ namespace JasperBus.Tests.Compilation
     public class cascading_messages : CompilationContext<CascadingHandler>
     {
         [Fact]
-        public void show_the_code()
-        {
-            Console.WriteLine(theCode);
-        }
-
-        [Fact]
         public async Task handle_a_single_cascading_message()
         {
             var input = new Incoming();
@@ -44,7 +38,7 @@ namespace JasperBus.Tests.Compilation
 
             var context = await Execute(input);
 
-            context.OutgoingMessages().Count().ShouldBe(4);
+            context.OutgoingMessages().Count().ShouldBe(2);
         }
     }
 
@@ -86,13 +80,17 @@ namespace JasperBus.Tests.Compilation
         Guid Id { get; }
     }
 
-    public class Incoming2 : Incoming, IInput{}
-    public class Incoming3 : Incoming, IInput{}
+    public class Incoming2 : Incoming, IIncoming{}
+    public class Incoming3 : Incoming, IIncoming{}
 
     public class Output1 : Incoming{}
     public class Output2 : Incoming{}
     public class Output3 : Incoming{}
     public class Output4 : Incoming{}
+
+
+
+
 
 
 }
