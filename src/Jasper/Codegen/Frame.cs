@@ -42,5 +42,16 @@ namespace Jasper.Codegen
 
 
         public Frame[] Dependencies => dependencies.ToArray();
+
+        public IEnumerable<Frame> AllFrames()
+        {
+            var frame = this;
+            while (frame != null)
+            {
+                yield return frame;
+                frame = frame.Next;
+            }
+
+        }
     }
 }

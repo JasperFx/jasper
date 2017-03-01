@@ -5,6 +5,7 @@ using Xunit;
 
 namespace JasperBus.Tests.Compilation
 {
+    [Collection("compilation")]
     public class using_services_from_container : CompilationContext<ServiceUsingHandler>
     {
         public using_services_from_container()

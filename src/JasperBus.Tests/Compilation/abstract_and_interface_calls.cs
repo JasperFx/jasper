@@ -5,6 +5,7 @@ using Xunit;
 
 namespace JasperBus.Tests.Compilation
 {
+    [Collection("compilation")]
     public class abstract_and_interface_calls : CompilationContext<HandlerWithMultipleCalls>
     {
         [Fact]

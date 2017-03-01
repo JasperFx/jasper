@@ -59,8 +59,17 @@ namespace JasperBus.Model
                 throw new InvalidOperationException("No method handlers configured for message type " + MessageType.FullName);
             }
 
-            // TODO -- add wrappers here
-            var frames = Handlers.OfType<Frame>().ToList();
+            foreach (var methodCall in Handlers.ToArray())
+            {
+                methodCall.Method.ForAttribute<ModifyHandlerChainAttribute>(att => att.Modify(this));
+            }
+
+            foreach (var handlerType in Handlers.Select(x => x.HandlerType).Distinct().ToArray())
+            {
+                handlerType.ForAttribute<ModifyHandlerChainAttribute>(att => att.Modify(this));
+            }
+
+            var frames = Wrappers.Concat(Handlers).ToList();
 
             return new MessageHandlerGenerationModel(TypeName, MessageType, config, frames);
         }
@@ -104,5 +113,7 @@ namespace JasperBus.Model
 
             Handlers.Add(clone);
         }
+
+        public readonly IList<Frame> Wrappers = new List<Frame>();
     }
 }

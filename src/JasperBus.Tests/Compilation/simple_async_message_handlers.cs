@@ -7,6 +7,7 @@ using Xunit;
 
 namespace JasperBus.Tests.Compilation
 {
+    [Collection("compilation")]
     public class simple_async_message_handlers : CompilationContext<AsyncHandler>
     {
 
