@@ -14,10 +14,10 @@ namespace Jasper.Codegen.StructureMap
             uses.Add(parent);
         }
 
-        public override void GenerateCode(IHandlerGeneration generation, ISourceWriter writer)
+        public override void GenerateCode(IGenerationModel generationModel, ISourceWriter writer)
         {
             writer.Write($"var {Service.Usage} = {StructureMapServices.Nested.Usage}.GetInstance<{Service.VariableType.FullName}>();");
-            Next?.GenerateCode(generation, writer);
+            Next?.GenerateCode(generationModel, writer);
         }
     }
 }

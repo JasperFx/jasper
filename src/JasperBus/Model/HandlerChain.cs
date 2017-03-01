@@ -52,7 +52,7 @@ namespace JasperBus.Model
         public List<MethodCall> Handlers = new List<MethodCall>();
 
 
-        public IHandlerGeneration ToHandlerCode(GenerationConfig config)
+        public IGenerationModel ToGenerationModel(GenerationConfig config)
         {
             if (!Handlers.Any())
             {
@@ -62,7 +62,7 @@ namespace JasperBus.Model
             // TODO -- add wrappers here
             var frames = Handlers.OfType<Frame>().ToList();
 
-            return new MessageHandlerGeneration(TypeName, MessageType, config, frames);
+            return new MessageHandlerGenerationModel(TypeName, MessageType, config, frames);
         }
 
         private string _code;
@@ -100,8 +100,9 @@ namespace JasperBus.Model
 
         public void AddAbstractedHandler(HandlerCall call)
         {
-            var clone = call.Clone();
-            clone.ActualMessageType = MessageType;
+            var clone = call.Clone(MessageType);
+
+            Handlers.Add(clone);
         }
     }
 }

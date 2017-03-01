@@ -4,9 +4,9 @@ using Jasper.Codegen;
 
 namespace JasperBus.Model
 {
-    public class MessageHandlerGeneration : HandlerGeneration<MessageHandler>
+    public class MessageHandlerGenerationModel : GenerationModel<MessageHandler>
     {
-        public MessageHandlerGeneration(string className, Type messageType, GenerationConfig config, IList<Frame> frames)
+        public MessageHandlerGenerationModel(string className, Type messageType, GenerationConfig config, IList<Frame> frames)
             : base(className, MessageHandlerGraph.Context, new MessageHandlerVariableSource(messageType), config, frames)
         {
         }

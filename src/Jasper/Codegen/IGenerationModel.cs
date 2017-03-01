@@ -2,7 +2,7 @@
 
 namespace Jasper.Codegen
 {
-    public interface IHandlerGeneration
+    public interface IGenerationModel
     {
         string ClassName { get; }
         Type BaseType { get; }

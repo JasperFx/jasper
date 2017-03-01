@@ -20,7 +20,6 @@ namespace JasperBus.Model
         }
 
         public Type MessageType { get; }
-        public Type ActualMessageType { get; internal set; }
 
         public bool CouldHandleOtherMessageType(Type messageType)
         {
@@ -29,9 +28,13 @@ namespace JasperBus.Model
             return messageType.CanBeCastTo(MessageType);
         }
 
-        public HandlerCall Clone()
+        internal HandlerCall Clone(Type messageType)
         {
-            return new HandlerCall(HandlerType, Method);
+            var clone = new HandlerCall(HandlerType, Method);
+            clone.Aliases.Add(MessageType, messageType);
+
+
+            return clone;
         }
     }
 }

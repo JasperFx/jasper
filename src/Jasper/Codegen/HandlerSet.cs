@@ -71,7 +71,7 @@ namespace Jasper.Codegen
 
             foreach (var chain in chains)
             {
-                var generation = chain.ToHandlerCode(Config);
+                var generation = chain.ToGenerationModel(Config);
 
 
                 // TODO -- figure out how to get the source code for each handler

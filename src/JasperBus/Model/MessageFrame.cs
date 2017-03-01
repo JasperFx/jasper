@@ -16,10 +16,10 @@ namespace JasperBus.Model
             _envelope = envelope;
         }
 
-        public override void GenerateCode(IHandlerGeneration generation, ISourceWriter writer)
+        public override void GenerateCode(IGenerationModel generationModel, ISourceWriter writer)
         {
             writer.Write($"var {_message.Usage} = ({_message.VariableType.FullName}){_envelope.Usage}.{nameof(Envelope.Message)};");
-            Next?.GenerateCode(generation, writer);
+            Next?.GenerateCode(generationModel, writer);
         }
     }
 }

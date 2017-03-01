@@ -9,9 +9,9 @@ namespace Jasper.Codegen.StructureMap
             uses.Add(root);
         }
 
-        public override void GenerateCode(IHandlerGeneration generation, ISourceWriter writer)
+        public override void GenerateCode(IGenerationModel generationModel, ISourceWriter writer)
         {
-            writer.UsingBlock("var nested = _root.GetNestedContainer()", w => Next?.GenerateCode(generation, writer));
+            writer.UsingBlock("var nested = _root.GetNestedContainer()", w => Next?.GenerateCode(generationModel, writer));
         }
     }
 }

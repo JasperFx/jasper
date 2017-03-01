@@ -7,44 +7,44 @@ namespace Jasper.Codegen.New
 {
     public static class HandlerSourceWriter
     {
-        public static void Write(IHandlerGeneration generation, ISourceWriter writer)
+        public static void Write(IGenerationModel generationModel, ISourceWriter writer)
         {
-            writeClassDeclaration(generation, writer);
-            writeFields(generation, writer);
+            writeClassDeclaration(generationModel, writer);
+            writeFields(generationModel, writer);
 
             writer.BlankLine();
 
-            writeConstructor(generation, writer);
+            writeConstructor(generationModel, writer);
 
             writer.BlankLine();
 
-            writeHandleMethod(generation, writer);
+            writeHandleMethod(generationModel, writer);
 
             writer.FinishBlock();
         }
 
-        private static void writeClassDeclaration(IHandlerGeneration generation, ISourceWriter writer)
+        private static void writeClassDeclaration(IGenerationModel generationModel, ISourceWriter writer)
         {
-            writer.Write($"BLOCK:public class {generation.ClassName} : {generation.BaseType.FullName}");
+            writer.Write($"BLOCK:public class {generationModel.ClassName} : {generationModel.BaseType.FullName}");
         }
 
-        private static void writeHandleMethod(IHandlerGeneration generation, ISourceWriter writer)
+        private static void writeHandleMethod(IGenerationModel generationModel, ISourceWriter writer)
         {
-            var returnValue = generation.AsyncMode == AsyncMode.AsyncTask
+            var returnValue = generationModel.AsyncMode == AsyncMode.AsyncTask
                 ? "async Task"
                 : "Task";
 
-            if (generation.BaseType.IsInterfaceOrAbstract())
+            if (generationModel.BaseType.IsInterfaceOrAbstract())
             {
                 returnValue = "override " + returnValue;
             }
 
-            var variable = generation.InputVariable;
+            var variable = generationModel.InputVariable;
             writer.Write($"BLOCK:public {returnValue} Handle({variable.VariableType.FullName} {variable.Usage})");
 
-            generation.Top.GenerateCode(generation, writer);
+            generationModel.Top.GenerateCode(generationModel, writer);
 
-            if (generation.AsyncMode == AsyncMode.ReturnCompletedTask)
+            if (generationModel.AsyncMode == AsyncMode.ReturnCompletedTask)
             {
                 writer.Write("return Task.CompletedTask;");
             }
@@ -52,9 +52,9 @@ namespace Jasper.Codegen.New
             writer.FinishBlock();
         }
 
-        private static void writeFields(IHandlerGeneration generation, ISourceWriter writer)
+        private static void writeFields(IGenerationModel generationModel, ISourceWriter writer)
         {
-            foreach (var field in generation.Fields)
+            foreach (var field in generationModel.Fields)
             {
                 field.WriteDeclaration(writer);
             }
@@ -62,12 +62,12 @@ namespace Jasper.Codegen.New
             writer.BlankLine();
         }
 
-        private static void writeConstructor(IHandlerGeneration generation, ISourceWriter writer)
+        private static void writeConstructor(IGenerationModel generationModel, ISourceWriter writer)
         {
-            var ctorArgs = generation.Fields.Select(x => x.CtorArgDeclaration).Join(", ");
-            writer.Write($"BLOCK:public {generation.ClassName}({ctorArgs})");
+            var ctorArgs = generationModel.Fields.Select(x => x.CtorArgDeclaration).Join(", ");
+            writer.Write($"BLOCK:public {generationModel.ClassName}({ctorArgs})");
 
-            foreach (var field in generation.Fields)
+            foreach (var field in generationModel.Fields)
             {
                 field.WriteAssignment(writer);
             }
