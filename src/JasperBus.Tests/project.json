@@ -3,13 +3,14 @@
     "buildOptions": {
         "debugType": "portable"
     },
-    "dependencies": {
-        "System.Runtime.Serialization.Primitives": "4.1.1",
-        "xunit": "2.2.0-beta2-build3300",
-        "dotnet-test-xunit": "2.2.0-preview2-build1029",
-        "JasperBus": { "target": "project" },
-        "Shouldly": "2.8.2"
-    },
+  "dependencies": {
+    "System.Runtime.Serialization.Primitives": "4.1.1",
+    "xunit": "2.2.0-beta2-build3300",
+    "dotnet-test-xunit": "2.2.0-preview2-build1029",
+    "JasperBus": { "target": "project" },
+    "Shouldly": "2.8.2",
+    "NSubstitute": "2.0.2"
+  },
     "testRunner": "xunit",
     "frameworks": {
         "netcoreapp1.0": {

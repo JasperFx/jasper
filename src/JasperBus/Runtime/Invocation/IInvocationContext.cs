@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace JasperBus.Runtime.Invocation
 {
@@ -20,5 +21,22 @@ namespace JasperBus.Runtime.Invocation
 
         Envelope Envelope { get; }
 
+    }
+
+    public interface IEnvelopeContext : IDisposable
+    {
+        void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages);
+
+        void SendOutgoingMessage(Envelope original, object cascadingMessage);
+
+        void SendFailureAcknowledgement(Envelope original, string message);
+
+        void Error(string correlationId, string message, Exception exception);
+        void Retry(Envelope envelope);
+    }
+
+    public interface IContinuation
+    {
+        void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow);
     }
 }
