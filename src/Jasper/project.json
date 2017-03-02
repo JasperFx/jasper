@@ -4,10 +4,10 @@
     "debugType": "portable"
   },
   "dependencies": {
-    "Baseline": "1.1.0",
-    "Microsoft.CodeAnalysis.CSharp": "2.0.0-beta3",
-    "Microsoft.CodeAnalysis.Scripting": "2.0.0-beta3",
-    "StructureMap": "4.4.2",
+    "Baseline": "1.2.0",
+    "Microsoft.CodeAnalysis.CSharp": "2.0.0-rc4",
+    "Microsoft.CodeAnalysis.Scripting": "2.0.0-rc4",
+    "StructureMap": "4.4.3",
     "Microsoft.Extensions.Configuration.Abstractions": "1.1.0" 
   },
   "frameworks": {

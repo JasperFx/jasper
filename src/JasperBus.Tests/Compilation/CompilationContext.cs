@@ -86,14 +86,14 @@ namespace JasperBus.Tests.Compilation
             _handlers.Value.Count.ShouldBeGreaterThan(0);
         }
 
-        public MessageHandler HandlerFor<T>()
+        public MessageHandler HandlerFor<TMessage>()
         {
-            return _handlers.Value[typeof(T)];
+            return _handlers.Value[typeof(TMessage)];
         }
 
-        public async Task<IInvocationContext> Execute<T>(T message)
+        public async Task<IInvocationContext> Execute<TMessage>(TMessage message)
         {
-            var handler = HandlerFor<T>();
+            var handler = HandlerFor<TMessage>();
             theEnvelope = Envelope.ForMessage(message);
             var context = new InvocationContext(theEnvelope, handler.Chain );
 
