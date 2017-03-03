@@ -39,6 +39,65 @@ namespace JasperBus.Runtime.Invocation
         void Retry(Envelope envelope);
     }
 
+    public class EnvelopeContext : IEnvelopeContext
+    {
+        private readonly IHandlerPipeline _pipeline;
+
+        public EnvelopeContext(IHandlerPipeline pipeline, Envelope envelope)
+        {
+            Envelope = envelope;
+            _pipeline = pipeline;
+        }
+
+        public void EnqueueCascading(object message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<object> OutgoingMessages()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Envelope Envelope { get; }
+
+        public void Dispose()
+        {
+        }
+
+        public void SendAllQueuedOutgoingMessages()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SendOutgoingMessage(Envelope original, object cascadingMessage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SendFailureAcknowledgement(Envelope original, string message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Error(string correlationId, string message, Exception exception)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Retry(Envelope envelope)
+        {
+            // Call back to the HandlerPipeline with itself to avoid unnecessary work here
+            // clear out all queued cascading messages first
+            throw new NotImplementedException();
+        }
+    }
+
     public interface IContinuation
     {
         void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow);

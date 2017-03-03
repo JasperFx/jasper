@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
@@ -13,11 +16,24 @@ namespace Jasper
 {
     public class JasperRuntime : IDisposable
     {
+        private readonly JasperRegistry _registry;
 
-        public JasperRuntime(JasperRegistry registry)
+        private JasperRuntime(JasperRegistry registry, Registry[] serviceRegistries)
         {
-            Container = new Container(registry.Services);
-            Container.DisposalLock = DisposalLock.Ignore;
+            _registry = registry;
+
+            Container = new Container(_ =>
+            {
+                _.AddRegistry(registry.Services);
+                foreach (var serviceRegistry in serviceRegistries)
+                {
+                    _.AddRegistry(serviceRegistry);
+                }
+            })
+            {
+                DisposalLock = DisposalLock.Ignore
+            };
+
         }
 
         public static JasperRuntime Basic()
@@ -47,8 +63,12 @@ namespace Jasper
             return bootstrap(assembly, registry).GetAwaiter().GetResult();
         }
 
+
+        public IJasperRegistry Registry => _registry;
+
         private static Assembly determineTheCallingAssembly()
         {
+            // TODO -- see if we can bring up the solution from StructureMap on this one
             return null;
         }
 
@@ -77,12 +97,18 @@ Questions:
 
             // TODO -- apply all the settings alterations
 
-            var runtime = new JasperRuntime(registry);
+            var features = registry.Features;
+
+            var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry))).ConfigureAwait(false);
+
+            var runtime = new JasperRuntime(registry, serviceRegistries);
+
+            await Task.WhenAll(features.Select(x => x.Activate(runtime))).ConfigureAwait(false);
 
             return runtime;
         }
 
-        public Container Container { get;}
+        public IContainer Container { get;}
 
         private static async Task applyExtensions(JasperRegistry registry, IEnumerable<Assembly> assemblies)
         {
@@ -100,6 +126,11 @@ Questions:
 
         public void Dispose()
         {
+            foreach (var feature in _registry.Features)
+            {
+                feature.Dispose();
+            }
+
             Container.DisposalLock = DisposalLock.Unlocked;
             Container?.Dispose();
         }

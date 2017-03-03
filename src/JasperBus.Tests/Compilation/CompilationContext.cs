@@ -26,13 +26,13 @@ namespace JasperBus.Tests.Compilation
         private readonly Lazy<string> _code;
         protected Envelope theEnvelope;
 
-        protected Lazy<MessageHandlerGraph> _graph;
+        protected Lazy<HandlerGraph> _graph;
 
         public CompilationContext()
         {
             _container = new Lazy<IContainer>(() => new Container(services));
 
-            _graph = new Lazy<MessageHandlerGraph>(() =>
+            _graph = new Lazy<HandlerGraph>(() =>
             {
                 var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
                 var container = _container.Value;
@@ -41,7 +41,7 @@ namespace JasperBus.Tests.Compilation
                 config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
                 config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
-                var graph = new MessageHandlerGraph(config);
+                var graph = new HandlerGraph(config);
 
                 var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
                     .Where(x => x.DeclaringType != typeof(object) && x != null && x.GetParameters().Any() && !x.IsSpecialName);
@@ -71,7 +71,7 @@ namespace JasperBus.Tests.Compilation
             });
         }
 
-        public MessageHandlerGraph Graph => _graph.Value;
+        public HandlerGraph Graph => _graph.Value;
 
         [Fact]
         public void can_compile_all()

@@ -17,7 +17,7 @@ namespace JasperBus.Model
         {
             MessageType = messageType;
 
-            Envelope = new Variable(typeof(Envelope), $"{MessageHandlerGraph.Context}.{nameof(IInvocationContext.Envelope)}");
+            Envelope = new Variable(typeof(Envelope), $"{HandlerGraph.Context}.{nameof(IInvocationContext.Envelope)}");
             Message = new MessageVariable(Envelope, messageType);
 
         }
