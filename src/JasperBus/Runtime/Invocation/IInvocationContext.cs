@@ -35,7 +35,7 @@ namespace JasperBus.Runtime.Invocation
 
         void Error(string correlationId, string message, Exception exception);
 
-        // doesn't need to be passed the envelope here, but maybe leave that one
+        // doesn't need to be passed the envelope here, but maybe leave this one
         void Retry(Envelope envelope);
     }
 

@@ -1,9 +1,7 @@
 ﻿using System;
-using JasperBus.Model;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace JasperBus.Tests.Runtime.Invocation
@@ -75,5 +73,7 @@ namespace JasperBus.Tests.Runtime.Invocation
 
         }
     }
+
+
 
 }
