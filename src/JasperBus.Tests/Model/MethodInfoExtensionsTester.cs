@@ -40,19 +40,13 @@ namespace JasperBus.Tests.Model
         [Fact]
         public void throw_exception_if_you_do_not_follow_that_convention()
         {
-            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() =>
-            {
-                methodFor(x => x.Go4(null, null)).MessageType();
-            });
+            methodFor(x => x.Go4(null, null)).MessageType().ShouldBeNull();
         }
 
         [Fact]
         public void throw_exception_if_you_have_no_parameters()
         {
-            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() =>
-            {
-                methodFor(x => x.Go5()).MessageType();
-            });
+            methodFor(x => x.Go5()).MessageType().ShouldBeNull();
         }
 
         public class Target

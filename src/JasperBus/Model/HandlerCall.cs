@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
@@ -11,6 +12,8 @@ namespace JasperBus.Model
     {
         public static bool IsCandidate(MethodInfo method)
         {
+            if (!method.GetParameters().Any()) return false;
+
             if (method.DeclaringType == typeof(object)) return false;
 
             if (method.IsSpecialName) return false;
@@ -31,6 +34,8 @@ namespace JasperBus.Model
         public HandlerCall(Type handlerType, MethodInfo method) : base(handlerType, method)
         {
             MessageType = method.MessageType();
+
+            if (MessageType == null) throw new ArgumentOutOfRangeException(nameof(method), $"Method {handlerType.FullName}.{method.Name} has no message type");
         }
 
         public Type MessageType { get; }
