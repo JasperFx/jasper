@@ -9,6 +9,20 @@ namespace JasperBus.Model
 {
     public class HandlerCall : MethodCall
     {
+        public static bool IsCandidate(MethodInfo method)
+        {
+            if (method.DeclaringType == typeof(object)) return false;
+
+            if (method.IsSpecialName) return false;
+
+            var messageType = method.MessageType();
+            if (messageType == null) return false;
+
+            bool hasOutput = method.ReturnType != typeof(void);
+
+            return !hasOutput || !method.ReturnType.GetTypeInfo().IsValueType;
+        }
+
         public new static HandlerCall For<T>(Expression<Action<T>> method)
         {
             return new HandlerCall(typeof(T), ReflectionHelper.GetMethod(method));
