@@ -8,12 +8,24 @@ using JasperBus.Configuration;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Serializers;
 using StoryTeller;
+using StoryTeller.Engine;
 using StoryTeller.Grammars.Tables;
 
 namespace StorytellerSpecs.Fixtures
 {
+    public class StorytellerSpecsSystem : NulloSystem{}
+
     public class SerializerSelectionFixture : StoryTeller.Fixture
     {
+        public static void TryIt()
+        {
+            using (var runner = StorytellerRunner.For<StorytellerSpecsSystem>())
+            {
+                runner.Run("Serialization Selection / Serialization Selection Rules");
+                runner.OpenResultsInBrowser();
+            }
+        }
+
         private IEnumerable<FakeSerializer> _serializers;
         private ChannelGraph _graph;
         private EnvelopeSerializer _envelopeSerializer;
