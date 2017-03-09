@@ -97,6 +97,20 @@ task :sln do
 	sh "start src/Jasper.sln"
 end
 
+desc "Run the storyteller specifications"
+task :storyteller => [:compile] do
+	Dir.chdir("src/StorytellerSpecs") do
+	  system "dotnet storyteller run -r artifacts"
+	end
+end
+
+desc "Run the storyteller specifications"
+task :open_st => [:compile] do
+	Dir.chdir("src/StorytellerSpecs") do
+	  system "dotnet storyteller open"
+	end
+end
+
 "Gets the documentation assets ready"
 task :prepare_docs => [:compile] do
 

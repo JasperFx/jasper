@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Baseline;
 using JasperBus.Configuration;
 using JasperBus.Model;
-using JasperBus.Serializers;
+using JasperBus.Runtime.Serializers;
 
 namespace JasperBus.Runtime.Invocation
 {

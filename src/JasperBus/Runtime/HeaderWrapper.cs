@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using Baseline;
+using JasperBus.Configuration;
 
 namespace JasperBus.Runtime
 {
@@ -48,7 +49,7 @@ namespace JasperBus.Runtime
         }
     }
 
-    public class HeaderWrapper
+    public class HeaderWrapper : IContentTypeAware
     {
         public Uri Source
         {
@@ -162,5 +163,7 @@ namespace JasperBus.Runtime
 
             return ExecutionTime.Value > utcNow;
         }
+
+        IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
     }
 }
