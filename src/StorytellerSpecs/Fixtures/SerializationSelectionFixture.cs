@@ -15,7 +15,7 @@ namespace StorytellerSpecs.Fixtures
 {
     public class StorytellerSpecsSystem : NulloSystem{}
 
-    public class SerializerSelectionFixture : StoryTeller.Fixture
+    public class SerializerSelectionFixture : Fixture
     {
         public static void TryIt()
         {
