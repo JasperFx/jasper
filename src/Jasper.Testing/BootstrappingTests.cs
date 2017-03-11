@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Codegen;
 using Jasper.Configuration;
 using Module1;
 using Shouldly;
@@ -168,7 +169,7 @@ namespace Jasper.Testing
             return Task.FromResult(Services);
         }
 
-        public Task Activate(JasperRuntime runtime)
+        public Task Activate(JasperRuntime runtime, GenerationConfig generation)
         {
             Runtime = runtime;
             WasActivated = true;

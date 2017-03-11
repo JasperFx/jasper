@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Codegen;
+using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
 using StructureMap;
 using StructureMap.Graph;
@@ -16,14 +16,11 @@ namespace Jasper
 {
     public class JasperRuntime : IDisposable
     {
-        public Assembly ApplicationAssembly { get; }
+        public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
         private readonly JasperRegistry _registry;
 
-        private JasperRuntime(JasperRegistry registry, Registry[] serviceRegistries, Assembly applicationAssembly)
+        private JasperRuntime(JasperRegistry registry, Registry[] serviceRegistries)
         {
-            ApplicationAssembly = applicationAssembly;
-            _registry = registry;
-
             Container = new Container(_ =>
             {
                 _.AddRegistry(registry.Services);
@@ -36,23 +33,22 @@ namespace Jasper
                 DisposalLock = DisposalLock.Ignore
             };
 
+            registry.Generation.Sources.Add(new StructureMapServices(Container));
+            registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+            registry.Generation.Assemblies.Add(registry.ApplicationAssembly);
+
+            _registry = registry;
+
         }
 
         public static JasperRuntime Basic()
         {
-            var assembly = findTheCallingAssembly();
-            return bootstrap(assembly, new JasperRegistry()).GetAwaiter().GetResult();
+            return bootstrap(new JasperRegistry()).GetAwaiter().GetResult();
         }
 
         public static JasperRuntime For(JasperRegistry registry)
         {
-            var assembly = registry.GetType().GetTypeInfo().Assembly;
-            if (assembly == typeof(JasperRuntime).GetTypeInfo().Assembly)
-            {
-                assembly = findTheCallingAssembly();
-            }
-
-            return bootstrap(assembly, registry).GetAwaiter().GetResult();
+            return bootstrap(registry).GetAwaiter().GetResult();
         }
 
         public static JasperRuntime For<T>(Action<T> configure = null) where T : JasperRegistry, new()
@@ -60,42 +56,15 @@ namespace Jasper
             var registry = new T();
             configure?.Invoke(registry);
 
-            var assembly = typeof(T).GetTypeInfo().Assembly;
-
-            return bootstrap(assembly, registry).GetAwaiter().GetResult();
+            return bootstrap(registry).GetAwaiter().GetResult();
         }
 
 
         public IJasperRegistry Registry => _registry;
 
-        private static Assembly findTheCallingAssembly()
-        {
-            string trace = Environment.StackTrace;
 
-            var parts = trace.Split('\n');
-            var candidate = parts[4].Trim().Substring(3);
 
-            Assembly assembly = null;
-            var names = candidate.Split('.');
-            for (var i = names.Length - 2; i > 0; i--) {
-                var possibility = string.Join(".", names.Take(i).ToArray());
-
-                try
-                {
-
-                    assembly = System.Reflection.Assembly.Load(new AssemblyName(possibility));
-                    break;
-                }
-                catch (Exception e)
-                {
-                    // Nothing
-                }
-            }
-
-            return assembly;
-        }
-
-        private async static Task<JasperRuntime> bootstrap(Assembly appAssembly, JasperRegistry registry)
+        private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
         {
             /*
 Questions:
@@ -122,11 +91,14 @@ Questions:
 
             var features = registry.Features;
 
-            var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry))).ConfigureAwait(false);
+            var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry)))
+                .ConfigureAwait(false);
 
-            var runtime = new JasperRuntime(registry, serviceRegistries, appAssembly);
+            var runtime = new JasperRuntime(registry, serviceRegistries);
 
-            await Task.WhenAll(features.Select(x => x.Activate(runtime))).ConfigureAwait(false);
+
+            await Task.WhenAll(features.Select(x => x.Activate(runtime, registry.Generation)))
+                .ConfigureAwait(false);
 
             return runtime;
         }

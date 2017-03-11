@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Baseline;
+﻿using System.Threading.Tasks;
 using Jasper;
 using Jasper.Codegen;
+using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
 using JasperBus.Model;
 using StructureMap;
-using StructureMap.Graph;
 
 namespace JasperBus
 {
@@ -27,11 +23,12 @@ namespace JasperBus
             return bootstrap(registry);
         }
 
-        Task IFeature.Activate(JasperRuntime runtime)
+        Task IFeature.Activate(JasperRuntime runtime, GenerationConfig generation)
         {
             return Task.Factory.StartNew(() =>
             {
-                _graph.CompileAndBuildAll(runtime.Container);
+                // TODO -- will need to be smart enough to do the conglomerate
+                _graph.CompileAndBuildAll(generation, runtime.Container);
 
                 // TODO
                 // 1. Start up transports
@@ -46,10 +43,8 @@ namespace JasperBus
         {
             var calls = await Handlers.FindCalls(registry).ConfigureAwait(false);
 
-            // TODO -- configure the generation config?
-            // TODO -- let it vary between features?
-            var generationConfig = new GenerationConfig(registry.ApplicationAssembly.GetName().Name + ".JasperGenerated");
-            _graph = new HandlerGraph(generationConfig);
+            // TODO -- this will have to merge in config from the service bus feature!!!
+            _graph = new HandlerGraph();
             _graph.AddRange(calls);
 
             
@@ -59,23 +54,6 @@ namespace JasperBus
             services.For<HandlerGraph>().Use(_graph);
 
             return services;
-        }
-    }
-
-    public class ActionMethodFilter : CompositeFilter<MethodInfo>
-    {
-        public ActionMethodFilter()
-        {
-            Excludes += method => method.DeclaringType == typeof(object);
-            Excludes += method => method.Name == nameof(IDisposable.Dispose);
-            Excludes += method => method.ContainsGenericParameters;
-            Excludes += method => method.GetParameters().Any(x => x.ParameterType.IsSimple());
-            Excludes += method => method.IsSpecialName;
-        }
-
-        public void IgnoreMethodsDeclaredBy<T>()
-        {
-            Excludes += x => x.DeclaringType == typeof (T);
         }
     }
 }

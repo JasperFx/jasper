@@ -15,8 +15,6 @@ namespace JasperBus
 {
     public class HandlerSource
     {
-        private readonly List<Assembly> _assemblies = new List<Assembly>();
-
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
 
@@ -24,6 +22,9 @@ namespace JasperBus
         {
             _methodFilters = new ActionMethodFilter();
             _methodFilters.Excludes += m => m.HasAttribute<NotHandlerAttribute>();
+
+            IncludeClassesSuffixedWith("Handler");
+            IncludeClassesSuffixedWith("Consumer");
         }
 
 
@@ -52,22 +53,6 @@ namespace JasperBus
         protected virtual HandlerCall buildHandler(Type type, MethodInfo method)
         {
             return new HandlerCall(type, method);
-        }
-
-        /// <summary>
-        /// Find Handlers on classes whose name ends on 'Consumer'
-        /// </summary>
-        public void IncludeClassesSuffixedWithConsumer()
-        {
-            IncludeClassesSuffixedWith("Consumer");
-        }
-
-        /// <summary>
-        /// Find Handlers from classes whose name ends with 'Consumer'
-        /// </summary>
-        public void IncludeClassesSuffixedWithHandler()
-        {
-            IncludeClassesSuffixedWith("Handler");
         }
 
         /// <summary>

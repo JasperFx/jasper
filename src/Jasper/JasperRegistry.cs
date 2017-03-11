@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
+using Jasper.Codegen;
 using Jasper.Configuration;
 using StructureMap.TypeRules;
 
@@ -23,25 +24,82 @@ namespace Jasper
         public JasperRegistry()
         {
             var assembly = this.GetType().GetAssembly();
-            if (assembly != typeof(JasperRegistry).GetAssembly())
+            var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
+            if (!Equals(assembly, typeof(JasperRegistry).GetAssembly()) && !isFeature)
             {
                 ApplicationAssembly = assembly;
             }
+            else
+            {
+                ApplicationAssembly = findTheCallingAssembly();
+            }
+
+            Generation = new GenerationConfig($"{ApplicationAssembly.GetName().Name}.Generated");
+        }
+
+        public GenerationConfig Generation { get; }
+
+        private static Assembly findTheCallingAssembly()
+        {
+            string trace = Environment.StackTrace;
+
+            var parts = trace.Split('\n');
+
+            for (int i = 4; i < parts.Length; i++)
+            {
+                var line = parts[i];
+                var assembly = findAssembly(line);
+                if (assembly != null && !isSystemAssembly(assembly))
+                {
+                    return assembly;
+                }
+            }
+
+            return null;
+        }
+
+        private static bool isSystemAssembly(Assembly assembly)
+        {
+            if (assembly == null) return false;
+
+            if (assembly.GetCustomAttributes<JasperFeatureAttribute>().Any()) return true;
+
+            if (assembly.GetName().Name == "Jasper") return true;
+
+            return assembly.GetName().Name.StartsWith("System.");
+        }
+
+        private static Assembly findAssembly(string stacktraceLine)
+        {
+            var candidate = stacktraceLine.Trim().Substring(3);
+
+            // Short circuit this
+            if (candidate.StartsWith("System.")) return null;
+
+            Assembly assembly = null;
+            var names = candidate.Split('.');
+            for (var i = names.Length - 2; i > 0; i--)
+            {
+                var possibility = string.Join(".", names.Take(i).ToArray());
+
+                try
+                {
+
+                    assembly = System.Reflection.Assembly.Load(new AssemblyName(possibility));
+                    break;
+                }
+                catch (Exception e)
+                {
+                    // Nothing
+                }
+            }
+
+            return assembly;
         }
 
         public Assembly ApplicationAssembly { get; private set; }
 
         public ServiceRegistry Services { get; } = new ServiceRegistry();
-
-        /// <summary>
-        /// Convenience method to set the application assembly by using a Type
-        /// contained in that Assembly
-        /// </summary>
-        /// <typeparam name="T">A type contained within the application assembly</typeparam>
-        public void ApplicationContains<T>()
-        {
-            ApplicationAssembly = typeof(T).GetAssembly();
-        }
 
         public void UseFeature<T>() where T : IFeature, new()
         {

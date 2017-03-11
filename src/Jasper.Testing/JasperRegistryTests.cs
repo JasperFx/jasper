@@ -14,17 +14,6 @@ namespace Jasper.Testing
         }
 
         [Fact]
-        public void can_explicitly_define_the_application_assembly()
-        {
-            var registry = new JasperRegistry();
-            registry.ApplicationAssembly.ShouldBeNull();
-
-            registry.ApplicationContains<MyRegistry>();
-
-            registry.ApplicationAssembly.ShouldBe(typeof(JasperRegistryTests).GetAssembly());
-        }
-
-        [Fact]
         public void sets_up_the_container_with_services()
         {
             var registry = new JasperRegistry();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Baseline;
 using Baseline.Reflection;
 using Jasper;
 using JasperBus.Model;
@@ -22,6 +23,11 @@ namespace JasperBus.Tests
         {
             Runtime = JasperRuntime.For(registry);
             _graph = Runtime.Container.GetInstance<HandlerGraph>();
+
+            _graph.Chains.Each(x =>
+            {
+                Console.WriteLine(x);
+            });
         }
 
         protected void with(Action<JasperRegistry> configuration)
@@ -53,24 +59,29 @@ namespace JasperBus.Tests
     {
         public static void ShouldHaveHandler<T>(this HandlerChain chain, Expression<Action<T>> expression)
         {
+            chain.ShouldNotBeNull();
+
             var method = ReflectionHelper.GetMethod(expression);
             chain.Handlers.Any(x => x.Method.Name == method.Name).ShouldBeTrue();
         }
 
         public static void ShouldHaveHandler<T>(this HandlerChain chain, string methodName)
         {
+            chain.ShouldNotBeNull();
             chain.Handlers.Any(x => x.Method.Name == methodName).ShouldBeTrue();
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, Expression<Action<T>> expression)
         {
+            if (chain == null) return;
+
             var method = ReflectionHelper.GetMethod(expression);
             chain.Handlers.Any(x => x.Method.Name == method.Name).ShouldBeFalse();
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, string methodName)
         {
-            chain.Handlers.Any(x => x.Method.Name == methodName).ShouldBeFalse();
+            chain?.Handlers.Any(x => x.Method.Name == methodName).ShouldBeFalse();
         }
     }
 }

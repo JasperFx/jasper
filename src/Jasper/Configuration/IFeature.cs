@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Codegen;
 using StructureMap;
 
 namespace Jasper.Configuration
@@ -7,6 +8,6 @@ namespace Jasper.Configuration
     public interface IFeature : IDisposable
     {
         Task<Registry> Bootstrap(JasperRegistry registry);
-        Task Activate(JasperRuntime runtime);
+        Task Activate(JasperRuntime runtime, GenerationConfig generation);
     }
 }

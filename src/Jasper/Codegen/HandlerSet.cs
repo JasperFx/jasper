@@ -14,28 +14,20 @@ namespace Jasper.Codegen
         where TChain : IGenerates<THandler>
 
     {
-        public GenerationConfig Config { get; set; }
-
-        public HandlerSet(GenerationConfig config)
-        {
-            Config = config;
-        }
-
-
         protected abstract TChain[] chains { get; }
 
-        public THandler[] CompileAndBuildAll(IContainer container)
+        public THandler[] CompileAndBuildAll(GenerationConfig generation, IContainer container)
         {
-            var types = CompileAll();
+            var types = CompileAll(generation);
             return chains.Select(x => x.Create(types, container)).ToArray();
         }
 
-        public Type[] CompileAll()
+        public Type[] CompileAll(GenerationConfig generation)
         {
             
-            var code = GenerateCode();
+            var code = GenerateCode(generation);
 
-            var generator = buildGenerator();
+            var generator = buildGenerator(generation);
 
             var assembly = generator.Generate(code);
 
@@ -44,13 +36,14 @@ namespace Jasper.Codegen
 
         protected abstract void beforeGeneratingCode();
 
-        private AssemblyGenerator buildGenerator()
+        private AssemblyGenerator buildGenerator(GenerationConfig generation)
         {
+            // TODO -- should probably do a lot more here. See GH-6
             var generator = new AssemblyGenerator();
             generator.ReferenceAssembly(GetType().GetTypeInfo().Assembly);
             generator.ReferenceAssembly(typeof(Task).GetTypeInfo().Assembly);
 
-            foreach (var assembly in Config.Assemblies)
+            foreach (var assembly in generation.Assemblies)
             {
                 generator.ReferenceAssembly(assembly);
             }
@@ -58,7 +51,7 @@ namespace Jasper.Codegen
             return generator;
         }
 
-        public string GenerateCode()
+        public string GenerateCode(GenerationConfig generation)
         {
             beforeGeneratingCode();
 
@@ -67,17 +60,17 @@ namespace Jasper.Codegen
             writer.UsingNamespace<Task>();
             writer.BlankLine();
 
-            writer.Namespace(Config.ApplicationNamespace);
+            writer.Namespace(generation.ApplicationNamespace);
 
             foreach (var chain in chains)
             {
-                var generation = chain.ToGenerationModel(Config);
+                var generationModel = chain.ToGenerationModel(generation);
 
 
                 // TODO -- figure out how to get the source code for each handler
                 writer.WriteLine($"// START: {chain.TypeName}");
 
-                HandlerSourceWriter.Write(generation, writer);
+                HandlerSourceWriter.Write(generationModel, writer);
                 writer.WriteLine($"// END: {chain.TypeName}");
 
                 writer.WriteLine("");

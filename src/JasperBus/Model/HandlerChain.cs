@@ -78,8 +78,6 @@ namespace JasperBus.Model
             return new MessageHandlerGenerationModel(TypeName, MessageType, config, frames);
         }
 
-        private string _code;
-
         private HandlerChain(MethodCall @call) : this(@call.Method.MessageType())
         {
             Handlers.Add(@call);
@@ -90,11 +88,7 @@ namespace JasperBus.Model
             Handlers.AddRange(grouping);
         }
 
-        string IGenerates<MessageHandler>.SourceCode
-        {
-            get { return _code; }
-            set { _code = value; }
-        }
+        string IGenerates<MessageHandler>.SourceCode { get; set; }
 
         MessageHandler IGenerates<MessageHandler>.Create(Type[] types, IContainer container)
         {
@@ -119,5 +113,10 @@ namespace JasperBus.Model
         }
 
         public readonly IList<Frame> Wrappers = new List<Frame>();
+
+        public override string ToString()
+        {
+            return $"{MessageType.Name} handled by {Handlers.Select(x => $"{x.HandlerType.Name}.{x.Method.Name}()").Join(", ")}";
+        }
     }
 }

@@ -27,21 +27,24 @@ namespace JasperBus.Tests.Compilation
         protected Envelope theEnvelope;
 
         protected Lazy<HandlerGraph> _graph;
+        private GenerationConfig config;
 
         public CompilationContext()
         {
             _container = new Lazy<IContainer>(() => new Container(services));
 
+
             _graph = new Lazy<HandlerGraph>(() =>
             {
-                var config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
+                config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
                 var container = _container.Value;
                 config.Sources.Add(new StructureMapServices(container));
 
                 config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
                 config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
-                var graph = new HandlerGraph(config);
+
+                var graph = new HandlerGraph();
 
                 var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
                     .Where(x => x.DeclaringType != typeof(object) && x != null && x.GetParameters().Any() && !x.IsSpecialName);
@@ -56,11 +59,11 @@ namespace JasperBus.Tests.Compilation
 
 
 
-            _code = new Lazy<string>(() => Graph.GenerateCode());
+            _code = new Lazy<string>(() => Graph.GenerateCode(config));
 
             _handlers = new Lazy<Dictionary<Type, MessageHandler>>(() =>
             {
-                var handlers = Graph.CompileAndBuildAll(_container.Value);
+                var handlers = Graph.CompileAndBuildAll(config, _container.Value);
                 var dict = new Dictionary<Type, MessageHandler>();
                 foreach (var handler in handlers)
                 {

@@ -17,11 +17,6 @@ namespace JasperBus.Model
         private readonly Dictionary<Type, HandlerChain> _chains = new Dictionary<Type, HandlerChain>();
         private readonly Dictionary<Type, MessageHandler> _handlers = new Dictionary<Type, MessageHandler>();
 
-        public HandlerGraph(GenerationConfig generation) : base(generation)
-        {
-            
-        }
-
         private void assertNotGrouped()
         {
             if (_hasGrouped) throw new InvalidOperationException("This HandlerGraph has already been grouped");
@@ -51,7 +46,7 @@ namespace JasperBus.Model
 
         public HandlerChain ChainFor(Type messageType)
         {
-            return _handlers.ContainsKey(messageType) ? _handlers[messageType].Chain : null;
+            return _chains.ContainsKey(messageType) ? _chains[messageType] : null;
         }
 
         public HandlerChain ChainFor<T>()
@@ -60,15 +55,16 @@ namespace JasperBus.Model
         }
 
         protected override HandlerChain[] chains => _chains.Values.ToArray();
+        public HandlerChain[] Chains => _chains.Values.ToArray();
 
-        public void Compile(IContainer container)
+        public void Compile(GenerationConfig generation, IContainer container)
         {
             if (!_hasGrouped)
             {
                 Group();
             }
 
-            var handlers = CompileAndBuildAll(container);
+            var handlers = CompileAndBuildAll(generation, container);
             foreach (var handler in handlers)
             {
                 _handlers.Add(handler.Chain.MessageType, handler);
