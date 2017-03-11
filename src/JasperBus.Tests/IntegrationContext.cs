@@ -15,7 +15,6 @@ namespace JasperBus.Tests
 
         protected void withAllDefaults()
         {
-            Runtime = JasperRuntime.Basic();
             _graph = Runtime.Container.GetInstance<HandlerGraph>();
         }
 

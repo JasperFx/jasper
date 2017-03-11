@@ -4,6 +4,7 @@ using Jasper.Configuration;
 using Module1;
 using Shouldly;
 using StructureMap;
+using StructureMap.TypeRules;
 using Xunit;
 
 namespace Jasper.Testing
@@ -21,6 +22,15 @@ namespace Jasper.Testing
             runtime.ShouldNotBeNull();
 
             Module1Extension.Registry.ShouldBe(registry);
+        }
+
+        [Fact]
+        public void can_determine_the_application_assembly()
+        {
+            using (var runtime = JasperRuntime.Basic())
+            {
+                runtime.ApplicationAssembly.ShouldBe(GetType().GetAssembly());
+            }
         }
     }
 

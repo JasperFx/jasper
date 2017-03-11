@@ -50,6 +50,9 @@ namespace JasperBus
             // TODO -- let it vary between features?
             var generationConfig = new GenerationConfig(registry.ApplicationAssembly.GetName().Name + ".JasperGenerated");
             _graph = new HandlerGraph(generationConfig);
+            _graph.AddRange(calls);
+
+            
 
             // TODO -- this will probably be a custom Registry later
             var services = new Registry();

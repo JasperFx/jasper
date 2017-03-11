@@ -135,6 +135,8 @@ Questions:
 
         private static async Task applyExtensions(JasperRegistry registry, IEnumerable<Assembly> assemblies)
         {
+            if (!assemblies.Any()) return;
+
             Func<Type, bool> filter = type => type.CanBeCastTo<IJasperExtension>() && type.IsConcreteWithDefaultCtor();
 
             var extensionTypes = await TypeRepository.FindTypes(assemblies,
