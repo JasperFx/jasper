@@ -44,6 +44,21 @@ namespace JasperBus.Model
             return _handlers.ContainsKey(messageType) ? _handlers[messageType] : null;
         }
 
+        public MessageHandler HandlerFor<T>()
+        {
+            return HandlerFor(typeof(T));
+        }
+
+        public HandlerChain ChainFor(Type messageType)
+        {
+            return _handlers.ContainsKey(messageType) ? _handlers[messageType].Chain : null;
+        }
+
+        public HandlerChain ChainFor<T>()
+        {
+            return ChainFor(typeof(T));
+        }
+
         protected override HandlerChain[] chains => _chains.Values.ToArray();
 
         public void Compile(IContainer container)

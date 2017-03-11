@@ -16,10 +16,12 @@ namespace Jasper
 {
     public class JasperRuntime : IDisposable
     {
+        public Assembly ApplicationAssembly { get; }
         private readonly JasperRegistry _registry;
 
-        private JasperRuntime(JasperRegistry registry, Registry[] serviceRegistries)
+        private JasperRuntime(JasperRegistry registry, Registry[] serviceRegistries, Assembly applicationAssembly)
         {
+            ApplicationAssembly = applicationAssembly;
             _registry = registry;
 
             Container = new Container(_ =>
@@ -38,7 +40,7 @@ namespace Jasper
 
         public static JasperRuntime Basic()
         {
-            var assembly = determineTheCallingAssembly();
+            var assembly = findTheCallingAssembly();
             return bootstrap(assembly, new JasperRegistry()).GetAwaiter().GetResult();
         }
 
@@ -47,7 +49,7 @@ namespace Jasper
             var assembly = registry.GetType().GetTypeInfo().Assembly;
             if (assembly == typeof(JasperRuntime).GetTypeInfo().Assembly)
             {
-                assembly = determineTheCallingAssembly();
+                assembly = findTheCallingAssembly();
             }
 
             return bootstrap(assembly, registry).GetAwaiter().GetResult();
@@ -66,10 +68,31 @@ namespace Jasper
 
         public IJasperRegistry Registry => _registry;
 
-        private static Assembly determineTheCallingAssembly()
+        private static Assembly findTheCallingAssembly()
         {
-            // TODO -- see if we can bring up the solution from StructureMap on this one
-            return null;
+            string trace = Environment.StackTrace;
+
+            var parts = trace.Split('\n');
+            var candidate = parts[4].Trim().Substring(3);
+
+            Assembly assembly = null;
+            var names = candidate.Split('.');
+            for (var i = names.Length - 2; i > 0; i--) {
+                var possibility = string.Join(".", names.Take(i).ToArray());
+
+                try
+                {
+
+                    assembly = System.Reflection.Assembly.Load(new AssemblyName(possibility));
+                    break;
+                }
+                catch (Exception e)
+                {
+                    // Nothing
+                }
+            }
+
+            return assembly;
         }
 
         private async static Task<JasperRuntime> bootstrap(Assembly appAssembly, JasperRegistry registry)
@@ -101,7 +124,7 @@ Questions:
 
             var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry))).ConfigureAwait(false);
 
-            var runtime = new JasperRuntime(registry, serviceRegistries);
+            var runtime = new JasperRuntime(registry, serviceRegistries, appAssembly);
 
             await Task.WhenAll(features.Select(x => x.Activate(runtime))).ConfigureAwait(false);
 
