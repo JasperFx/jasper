@@ -94,7 +94,7 @@ end
 
 desc "Launches VS to the Jasper solution file"
 task :sln do
-	sh "start src/Jasper.sln"
+	sh "start Jasper.sln"
 end
 
 desc "Run the storyteller specifications"
