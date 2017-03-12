@@ -6,7 +6,7 @@ namespace JasperBus
     /// Just directs JasperBus to ignore this method as a potential
     /// message handler
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public class NotHandlerAttribute : Attribute
     {
          

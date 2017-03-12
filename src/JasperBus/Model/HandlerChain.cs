@@ -52,7 +52,7 @@ namespace JasperBus.Model
         public List<MethodCall> Handlers = new List<MethodCall>();
 
 
-        public IGenerationModel ToGenerationModel(GenerationConfig config)
+        public IGenerationModel ToGenerationModel(IGenerationConfig config)
         {
             if (!Handlers.Any())
             {

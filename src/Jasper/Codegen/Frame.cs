@@ -12,7 +12,7 @@ namespace Jasper.Codegen
         internal readonly IList<Variable> creates = new List<Variable>();
         internal readonly IList<Variable> uses = new List<Variable>();
 
-        public bool IsAsync { get; }
+        public bool     IsAsync { get; }
 
         public Frame Next { get; set; }
 

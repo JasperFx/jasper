@@ -68,7 +68,7 @@ namespace JasperBus.Tests
         public static void ShouldHaveHandler<T>(this HandlerChain chain, string methodName)
         {
             chain.ShouldNotBeNull();
-            chain.Handlers.Any(x => x.Method.Name == methodName).ShouldBeTrue();
+            chain.Handlers.Any(x => x.Method.Name == methodName && x.HandlerType == typeof(T)).ShouldBeTrue();
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, Expression<Action<T>> expression)
@@ -76,7 +76,7 @@ namespace JasperBus.Tests
             if (chain == null) return;
 
             var method = ReflectionHelper.GetMethod(expression);
-            chain.Handlers.Any(x => x.Method.Name == method.Name).ShouldBeFalse();
+            chain.Handlers.Any(x => x.Method.Name == method.Name && x.HandlerType == typeof(T)).ShouldBeFalse();
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, string methodName)

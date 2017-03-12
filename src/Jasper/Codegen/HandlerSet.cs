@@ -16,13 +16,13 @@ namespace Jasper.Codegen
     {
         protected abstract TChain[] chains { get; }
 
-        public THandler[] CompileAndBuildAll(GenerationConfig generation, IContainer container)
+        public THandler[] CompileAndBuildAll(IGenerationConfig generation, IContainer container)
         {
             var types = CompileAll(generation);
             return chains.Select(x => x.Create(types, container)).ToArray();
         }
 
-        public Type[] CompileAll(GenerationConfig generation)
+        public Type[] CompileAll(IGenerationConfig generation)
         {
             
             var code = GenerateCode(generation);
@@ -36,7 +36,7 @@ namespace Jasper.Codegen
 
         protected abstract void beforeGeneratingCode();
 
-        private AssemblyGenerator buildGenerator(GenerationConfig generation)
+        private AssemblyGenerator buildGenerator(IGenerationConfig generation)
         {
             // TODO -- should probably do a lot more here. See GH-6
             var generator = new AssemblyGenerator();
@@ -51,7 +51,7 @@ namespace Jasper.Codegen
             return generator;
         }
 
-        public string GenerateCode(GenerationConfig generation)
+        public string GenerateCode(IGenerationConfig generation)
         {
             beforeGeneratingCode();
 

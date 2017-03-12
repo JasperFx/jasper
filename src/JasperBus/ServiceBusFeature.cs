@@ -13,6 +13,12 @@ namespace JasperBus
         private HandlerGraph _graph;
         public HandlerSource Handlers { get; } = new HandlerSource();
 
+        public GenerationConfig Generation { get; } = new GenerationConfig("JasperBus.Generated");
+
+        public ServiceBusFeature()
+        {
+        }
+
         public void Dispose()
         {
             // shut down transports
@@ -23,7 +29,7 @@ namespace JasperBus
             return bootstrap(registry);
         }
 
-        Task IFeature.Activate(JasperRuntime runtime, GenerationConfig generation)
+        Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
         {
             return Task.Factory.StartNew(() =>
             {

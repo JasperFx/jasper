@@ -25,6 +25,7 @@ namespace JasperBus
 
             IncludeClassesSuffixedWith("Handler");
             IncludeClassesSuffixedWith("Consumer");
+
         }
 
 
@@ -36,15 +37,16 @@ namespace JasperBus
             // TODO -- need to expose the module assemblies off of this
 
             var types = await TypeRepository.FindTypes(registry.ApplicationAssembly,
-                TypeClassification.Concretes | TypeClassification.Closed, _typeFilters.Matches);
+                TypeClassification.Concretes | TypeClassification.Closed, type => _typeFilters.Matches(type))
+                .ConfigureAwait(false);
 
 
-            return types.SelectMany(actionsFromType).ToArray();
+            return types.Where(x => !x.HasAttribute<NotHandlerAttribute>()).SelectMany(actionsFromType).ToArray();
         }
 
         private IEnumerable<HandlerCall> actionsFromType(Type type)
         {
-            return type.PublicInstanceMethods()
+            return type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
                 .Where(_methodFilters.Matches)
                 .Where(HandlerCall.IsCandidate)
                 .Select(m => buildHandler(type, m));

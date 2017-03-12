@@ -10,12 +10,12 @@ namespace Jasper.Codegen
 {
     public abstract class GenerationModel<T> : IGenerationModel
     {
-        public GenerationConfig Config { get; }
+        public IGenerationConfig Config { get; }
         public IList<Frame> Frames { get; }
         private readonly IVariableSource _specific;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
 
-        protected GenerationModel(string className, string inputName, IVariableSource specific, GenerationConfig config, IList<Frame> frames)
+        protected GenerationModel(string className, string inputName, IVariableSource specific, IGenerationConfig config, IList<Frame> frames)
         {
             if (!frames.Any())
             {

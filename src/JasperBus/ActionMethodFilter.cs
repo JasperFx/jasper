@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using StructureMap.Graph;
-using TypeExtensions = Baseline.TypeExtensions;
 
 namespace JasperBus
 {
@@ -14,7 +12,6 @@ namespace JasperBus
             Excludes += method => method.DeclaringType == typeof(object);
             Excludes += method => method.Name == nameof(IDisposable.Dispose);
             Excludes += method => method.ContainsGenericParameters;
-            Excludes += method => method.GetParameters().Any(x => TypeExtensions.IsSimple(x.ParameterType));
             Excludes += method => method.IsSpecialName;
         }
 
