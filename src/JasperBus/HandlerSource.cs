@@ -88,16 +88,6 @@ namespace JasperBus
         }
 
         /// <summary>
-        /// Handlers that match on the provided filter will be added to the runtime.
-        /// </summary>
-        public void IncludeMethods(Func<MethodInfo, bool> filter)
-        {
-            _methodFilters.Includes += filter;
-        }
-
-
-
-        /// <summary>
         /// Exclude types that match on the provided filter for finding Handlers
         /// </summary>
         public void ExcludeTypes(Func<Type, bool> filter)
@@ -111,15 +101,6 @@ namespace JasperBus
         public void ExcludeMethods(Func<MethodInfo, bool> filter)
         {
             _methodFilters.Excludes += filter;
-        }
-
-        /// <summary>
-        /// Ignore any methods that are declared by a super type or interface T
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void IgnoreMethodsDeclaredBy<T>()
-        {
-            _methodFilters.IgnoreMethodsDeclaredBy<T>();
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace JasperBus.Model
                 return parameters.First().ParameterType;
             }
 
-            var first = parameters.FirstOrDefault(x => x.Name.IsIn("message", "input"));
+            var first = parameters.FirstOrDefault(x => x.Name.IsIn("message", "input", "@event"));
 
             return first?.ParameterType;
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Baseline;
 using Baseline.Reflection;
 using Jasper;
 using JasperBus.Model;
@@ -16,29 +15,35 @@ namespace JasperBus.Tests
 
         protected void withAllDefaults()
         {
+            with(new JasperBusRegistry());
             _graph = Runtime.Container.GetInstance<HandlerGraph>();
         }
 
-        protected void with(JasperRegistry registry)
+        protected void with(JasperBusRegistry registry)
         {
-            Runtime = JasperRuntime.For(registry);
-            _graph = Runtime.Container.GetInstance<HandlerGraph>();
-
-            _graph.Chains.Each(x =>
+            registry.Services.Scan(_ =>
             {
-                Console.WriteLine(x);
+                _.TheCallingAssembly();
+                _.WithDefaultConventions();
             });
+
+            Runtime = JasperRuntime.For(registry);
+
+
+            _graph = Runtime.Container.GetInstance<HandlerGraph>();
         }
 
-        protected void with(Action<JasperRegistry> configuration)
+        protected void with(Action<JasperBusRegistry> configuration)
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperBusRegistry();
+
+
             configuration(registry);
 
             with(registry);
         }
 
-        protected void with<T>() where T : JasperRegistry, new()
+        protected void with<T>() where T : JasperBusRegistry, new()
         {
             var registry = new T();
             with(registry);

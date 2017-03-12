@@ -104,7 +104,7 @@ namespace Jasper.Codegen
 
         public string ClassName { get; }
         public Type BaseType => typeof(T);
-
+       
         public AsyncMode AsyncMode { get; } = AsyncMode.AsyncTask;
 
         public Variable FindVariable(Type type)
@@ -113,7 +113,6 @@ namespace Jasper.Codegen
             {
                 return _variables[type];
             }
-
             var variable = findVariable(type);
             _variables.Add(type, variable);
 

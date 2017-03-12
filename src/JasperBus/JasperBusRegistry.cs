@@ -8,5 +8,7 @@ namespace JasperBus
         {
             UseFeature<ServiceBusFeature>();
         }
+
+        public HandlerSource Handlers => Feature<ServiceBusFeature>().Handlers;
     }
 }
