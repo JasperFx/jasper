@@ -15,9 +15,7 @@ namespace JasperBus
 
         public GenerationConfig Generation { get; } = new GenerationConfig("JasperBus.Generated");
 
-        public ServiceBusFeature()
-        {
-        }
+        public Policies Policies { get; } = new Policies();
 
         public void Dispose()
         {
@@ -53,7 +51,8 @@ namespace JasperBus
             _graph = new HandlerGraph();
             _graph.AddRange(calls);
 
-            
+            _graph.Group();
+            Policies.Apply(_graph);
 
             // TODO -- this will probably be a custom Registry later
             var services = new Registry();
