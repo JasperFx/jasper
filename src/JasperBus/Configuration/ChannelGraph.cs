@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Baseline;
 using JasperBus.Runtime;
 
@@ -12,6 +13,7 @@ namespace JasperBus.Configuration
 
         public readonly List<string> AcceptedContentTypes = new List<string>();
         IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
+        public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
 
         internal void UseTransports(IEnumerable<ITransport> transports)
         {

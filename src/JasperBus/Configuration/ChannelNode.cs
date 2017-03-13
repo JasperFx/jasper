@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
@@ -20,6 +21,7 @@ namespace JasperBus.Configuration
         IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
         public IChannel Channel { get; internal set; }
         public bool Incoming { get; set; }
+        public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
 
         public IList<IRoutingRule> Rules = new List<IRoutingRule>();
     }

@@ -73,7 +73,7 @@ namespace JasperBus.Tests.Stubs
             var callback = new StubMessageCallback();
             Callbacks.Add(callback);
 
-            Receiver.Receive(data, headers, callback);
+            Receiver.Receive(data, headers, callback).Wait();
         }
     }
 
