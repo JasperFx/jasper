@@ -12,6 +12,4 @@ namespace JasperBus.Runtime
         void SendFailureAcknowledgement(Envelope original, string message);
 
     }
-
-
 }
