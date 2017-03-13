@@ -16,6 +16,8 @@ namespace JasperBus.Tests.Bootstrapping
                 _.Generation.Sources.Add(new SpecialServiceSource());
             });
 
+            
+
             chainFor<Message1>().ShouldHaveHandler<SpecialServiceUsingHandler>(x => x.Handle(null, null));
         }
     }

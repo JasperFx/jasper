@@ -6,13 +6,13 @@
   },
   "dependencies": {
       "JasperBus": { "target": "project" },
-      "Storyteller": "4.1.0-alpha-491"
+      "Storyteller": "4.1.0"
   },
 
 
   "tools": {
       "dotnet-storyteller": {
-          "version": "1.0.0"
+          "version": "1.1.0"
       }
   },
 

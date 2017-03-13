@@ -54,21 +54,17 @@ namespace StorytellerSpecs.Fixtures
             var theEnvelope = new Envelope
             {
                 ContentType = content,
-                AcceptedContentTypes = envelope
+                AcceptedContentTypes = envelope.Where(x => x.IsNotEmpty()).ToArray()
             };
 
             var theNode = new ChannelNode("memory://1".ToUri());
-            theNode.AcceptedContentTypes.AddRange(channel);
+            theNode.AcceptedContentTypes.AddRange(channel.Where(x => x.IsNotEmpty()));
 
             var contentType = _envelopeSerializer
                 .SelectSerializer(theEnvelope, theNode)
                 ?.ContentType;
 
             WriteTrace("contentType is " + contentType);
-
-            Console.WriteLine("I am running");
-
-            throw new NotImplementedException(contentType);
 
             return contentType;
         }

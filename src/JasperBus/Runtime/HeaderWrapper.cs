@@ -34,7 +34,7 @@ namespace JasperBus.Runtime
             }
             else
             {
-                dict.Add(key, value.ToString());
+                dict.Add(key, value?.ToString());
             }
         }
 
@@ -102,7 +102,13 @@ namespace JasperBus.Runtime
 
         public string[] AcceptedContentTypes
         {
-            get { return Headers.Get(Envelope.AcceptedContentTypesKey)?.Split(',') ?? new string[0]; }
+            get
+            {
+                var raw = Headers.Get(Envelope.AcceptedContentTypesKey);
+                if (raw.IsEmpty()) return new string[0];
+
+                return raw.Split(',');
+            }
             set { Headers.Set(Envelope.AcceptedContentTypesKey, value?.Join(",")); }
         }
 
