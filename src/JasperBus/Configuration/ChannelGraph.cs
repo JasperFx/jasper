@@ -60,6 +60,12 @@ namespace JasperBus.Configuration
             }
 
             _transports.Clear();
+
+            foreach (var channelNode in _nodes.Values)
+            {
+                channelNode.Channel.Dispose();
+            }
+
             _nodes.Clear();
         }
     }
