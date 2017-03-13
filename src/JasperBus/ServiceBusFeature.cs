@@ -23,7 +23,7 @@ namespace JasperBus
 
         public void Dispose()
         {
-            // shut down transports
+            Channels.Dispose();
         }
 
         Task<Registry> IFeature.Bootstrap(JasperRegistry registry)

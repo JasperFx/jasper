@@ -6,7 +6,7 @@ using JasperBus.Runtime;
 
 namespace JasperBus.Configuration
 {
-    public class ChannelGraph : IContentTypeAware
+    public class ChannelGraph : IContentTypeAware, IDisposable
     {
         private readonly ConcurrentDictionary<Uri, ChannelNode> _nodes = new ConcurrentDictionary<Uri, ChannelNode>();
 
@@ -50,6 +50,17 @@ namespace JasperBus.Configuration
             // Remember that this one has to use the volatile channel
             // idea from fubu
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            foreach (var transport in _transports.Values)
+            {
+                transport.Dispose();
+            }
+
+            _transports.Clear();
+            _nodes.Clear();
         }
     }
 }
