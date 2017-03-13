@@ -6,12 +6,14 @@ namespace JasperBus.Runtime.Routing
     public class LambdaRoutingRule : IRoutingRule
     {
         private readonly Func<Type, bool> _filter;
-        private readonly Expression<Func<Type, bool>> _expression;
+        private readonly Func<Type, bool> _expression;
+        private readonly string _description;
 
-        public LambdaRoutingRule(Expression<Func<Type, bool>> filter)
+        public LambdaRoutingRule(string description, Func<Type, bool> filter)
         {
-            _filter = filter.Compile();
+            _filter = filter;
             _expression = filter;
+            _description = description;
         }
 
         public bool Matches(Type type)
@@ -21,7 +23,7 @@ namespace JasperBus.Runtime.Routing
 
         public override string ToString()
         {
-            return "Messages matching " + _expression.ToString();
+            return "Messages matching " + _description;
         }
     }
 }

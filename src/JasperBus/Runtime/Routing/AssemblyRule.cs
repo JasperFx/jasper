@@ -7,21 +7,22 @@ namespace JasperBus.Runtime.Routing
 {
     public class AssemblyRule : IRoutingRule
     {
-        private readonly Assembly _assembly;
-
         public AssemblyRule(Assembly assembly)
         {
-            _assembly = assembly;
+            Assembly = assembly;
         }
+
+
+        public Assembly Assembly { get; }
 
         public bool Matches(Type type)
         {
-            return _assembly.Equals(type.GetTypeInfo().Assembly);
+            return Assembly.Equals(type.GetTypeInfo().Assembly);
         }
 
         public string Describe()
         {
-            return "Messages in Assembly " + _assembly.GetName().Name;
+            return "Messages in Assembly " + Assembly.GetName().Name;
         }
 
         public static AssemblyRule For<T>()
@@ -31,7 +32,7 @@ namespace JasperBus.Runtime.Routing
 
         protected bool Equals(AssemblyRule other)
         {
-            return Equals(_assembly, other._assembly);
+            return Equals(Assembly, other.Assembly);
         }
 
         public override bool Equals(object obj)
@@ -44,12 +45,12 @@ namespace JasperBus.Runtime.Routing
 
         public override int GetHashCode()
         {
-            return (_assembly != null ? _assembly.GetHashCode() : 0);
+            return (Assembly != null ? Assembly.GetHashCode() : 0);
         }
 
         public override string ToString()
         {
-            return $"Contained in assembly {_assembly.GetName().Name}";
+            return $"Contained in assembly {Assembly.GetName().Name}";
         }
     }
 

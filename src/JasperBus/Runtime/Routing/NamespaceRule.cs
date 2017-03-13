@@ -5,21 +5,21 @@ namespace JasperBus.Runtime.Routing
 {
     public class NamespaceRule : IRoutingRule
     {
-        private readonly string _ns;
-
         public NamespaceRule(string @namespace)
         {
-            _ns = @namespace;
+            Namespace = @namespace;
         }
+
+        public string Namespace { get; }
 
         public bool Matches(Type type)
         {
-            return type.IsInNamespace(_ns);
+            return type.IsInNamespace(Namespace);
         }
 
         public override string ToString()
         {
-            return "Messages from namespace " + _ns;
+            return "Messages from namespace " + Namespace;
         }
 
         public static NamespaceRule For<T>()
@@ -29,7 +29,7 @@ namespace JasperBus.Runtime.Routing
 
         protected bool Equals(NamespaceRule other)
         {
-            return string.Equals(_ns, other._ns);
+            return string.Equals(Namespace, other.Namespace);
         }
 
         public override bool Equals(object obj)
@@ -42,7 +42,7 @@ namespace JasperBus.Runtime.Routing
 
         public override int GetHashCode()
         {
-            return (_ns != null ? _ns.GetHashCode() : 0);
+            return (Namespace != null ? Namespace.GetHashCode() : 0);
         }
     }
 }

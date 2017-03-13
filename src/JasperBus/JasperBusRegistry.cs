@@ -1,43 +1,76 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Reflection;
 using Jasper;
-using JasperBus.Model;
+using JasperBus.Runtime.Routing;
+using StructureMap.TypeRules;
 
 namespace JasperBus
 {
     public class JasperBusRegistry : JasperRegistry
     {
+        private readonly ServiceBusFeature _feature;
+
         public JasperBusRegistry()
         {
             UseFeature<ServiceBusFeature>();
+
+            _feature = Feature<ServiceBusFeature>();
         }
 
-        public HandlerSource Handlers => Feature<ServiceBusFeature>().Handlers;
+        public HandlerSource Handlers => _feature.Handlers;
 
-        public Policies Policies => Feature<ServiceBusFeature>().Policies;
-    }
+        public Policies Policies => _feature.Policies;
 
-    public class Policies
-    {
-        private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
-
-        // TODO -- have a Local option later
-        public void Global<T>() where T : IHandlerPolicy, new()
+        public void ListenForMessagesFrom(Uri uri)
         {
-            Global(new T());
+            _feature.Channels[uri].Incoming = true;
         }
 
-        public void Global(IHandlerPolicy policy)
+        public SendExpression SendMessage<T>()
         {
-            _globals.Add(policy);
+            return new SendExpression(this, new SingleTypeRoutingRule<T>());
         }
 
-
-        internal void Apply(HandlerGraph graph)
+        public SendExpression SendMessages(string description, Func<Type, bool> filter)
         {
-            foreach (var policy in _globals)
+            return new SendExpression(this, new LambdaRoutingRule(description, filter));
+        }
+
+        public SendExpression SendMessagesInNamespace(string @namespace)
+        {
+            return new SendExpression(this, new NamespaceRule(@namespace));
+        }
+
+        public SendExpression SendMessagesInNamespaceContaining<T>()
+        {
+            return SendMessagesInNamespace(typeof(T).Namespace);
+        }
+
+        public SendExpression SendMessagesFromAssembly(Assembly assembly)
+        {
+            return new SendExpression(this, new AssemblyRule(assembly));
+        }
+
+        public SendExpression SendMessagesFromAssemblyContaining<T>()
+        {
+            return SendMessagesFromAssembly(typeof(T).GetAssembly());
+        }
+
+        public class SendExpression
+        {
+            private readonly JasperBusRegistry _parent;
+            private readonly IRoutingRule _routing;
+
+            public SendExpression(JasperBusRegistry parent, IRoutingRule routing)
             {
-                policy.Apply(graph);
+                _parent = parent;
+                _routing = routing;
+            }
+
+            public SendExpression To(Uri address)
+            {
+                _parent._feature.Channels[address].Rules.Add(_routing);
+                return this;
             }
         }
     }

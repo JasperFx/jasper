@@ -3,7 +3,9 @@ using Jasper;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
+using JasperBus.Configuration;
 using JasperBus.Model;
+using JasperBus.Runtime;
 using StructureMap;
 
 namespace JasperBus
@@ -14,6 +16,8 @@ namespace JasperBus
         public HandlerSource Handlers { get; } = new HandlerSource();
 
         public GenerationConfig Generation { get; } = new GenerationConfig("JasperBus.Generated");
+
+        public ChannelGraph Channels { get; } = new ChannelGraph();
 
         public Policies Policies { get; } = new Policies();
 
@@ -34,9 +38,14 @@ namespace JasperBus
                 // TODO -- will need to be smart enough to do the conglomerate
                 _graph.CompileAndBuildAll(generation, runtime.Container);
 
+                var transports = runtime.Container.GetAllInstances<ITransport>();
+
+                Channels.UseTransports(transports);
+
                 // TODO
                 // 1. Start up transports
                 // 2. Start up subscriptions when ready
+
 
             });
 
@@ -57,6 +66,7 @@ namespace JasperBus
             // TODO -- this will probably be a custom Registry later
             var services = new Registry();
             services.For<HandlerGraph>().Use(_graph);
+            services.For<ChannelGraph>().Use(Channels);
 
             return services;
         }

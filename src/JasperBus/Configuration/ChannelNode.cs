@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using JasperBus.Runtime;
+using JasperBus.Runtime.Routing;
 
 namespace JasperBus.Configuration
 {
@@ -16,6 +18,10 @@ namespace JasperBus.Configuration
         public readonly List<string> AcceptedContentTypes = new List<string>();
 
         IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
+        public IChannel Channel { get; internal set; }
+        public bool Incoming { get; set; }
+
+        public IList<IRoutingRule> Rules = new List<IRoutingRule>();
     }
 
     internal interface IContentTypeAware
