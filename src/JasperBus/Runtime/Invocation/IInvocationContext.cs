@@ -67,34 +67,34 @@ namespace JasperBus.Runtime.Invocation
 
         public void SendAllQueuedOutgoingMessages()
         {
-            throw new NotImplementedException();
+            // TODO -- actually do something here;)
         }
 
         public void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
         {
-            throw new NotImplementedException();
+            // TODO -- actually do something here;)
         }
 
         public void SendOutgoingMessage(Envelope original, object cascadingMessage)
         {
-            throw new NotImplementedException();
+            // TODO -- actually do something here;)
         }
 
         public void SendFailureAcknowledgement(Envelope original, string message)
         {
-            throw new NotImplementedException();
+            // TODO -- actually do something here;)
         }
 
         public void Error(string correlationId, string message, Exception exception)
         {
-            throw new NotImplementedException();
+            // TODO -- actually do something here;)
         }
 
         public void Retry(Envelope envelope)
         {
             // Call back to the HandlerPipeline with itself to avoid unnecessary work here
             // clear out all queued cascading messages first
-            throw new NotImplementedException();
+            // TODO -- actually do something here;)
         }
     }
 

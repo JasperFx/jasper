@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using JasperBus.Runtime;
+using JasperBus.Runtime.Invocation;
+using JasperBus.Runtime.Serializers;
 using JasperBus.Tests.Stubs;
 using Shouldly;
 using StructureMap.Pipeline;
@@ -37,6 +39,18 @@ namespace JasperBus.Tests.Bootstrapping
         public void should_have_the_service_bus_registered()
         {
             theRuntime.Container.DefaultRegistrationIs<IServiceBus, ServiceBus>();
+        }
+
+        [Fact]
+        public void should_have_the_envelope_serializer_registered()
+        {
+            theRuntime.Container.DefaultSingletonIs<IEnvelopeSerializer, EnvelopeSerializer>();
+        }
+
+        [Fact]
+        public void should_have_the_handler_pipeline_registered()
+        {
+            theRuntime.Container.DefaultRegistrationIs<IHandlerPipeline, HandlerPipeline>();
         }
     }
 }

@@ -111,5 +111,9 @@ namespace JasperBus.Configuration
             return node;
         }
 
+        public IEnumerable<ChannelNode> IncomingChannelsFor(string scheme)
+        {
+            return _nodes.Values.Where(x => x.Incoming && x.Uri.Scheme == scheme);
+        }
     }
 }

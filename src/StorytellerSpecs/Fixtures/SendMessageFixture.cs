@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Baseline;
+using Baseline.Reflection;
 using Jasper;
 using JasperBus;
+using JasperBus.Configuration;
+using JasperBus.Model;
 using JasperBus.Runtime;
 using StoryTeller;
 
@@ -45,12 +49,16 @@ namespace StorytellerSpecs.Fixtures
         {
             _registry = new JasperBusRegistry();
 
+            _registry.Services.AddService<ITransport, StubTransport>();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
         }
 
         public override void TearDown()
         {
             var runtime = JasperRuntime.For(_registry);
+
+            var graph = runtime.Container.GetInstance<HandlerGraph>();
+
             Context.State.Store(runtime);
         }
 
@@ -58,7 +66,10 @@ namespace StorytellerSpecs.Fixtures
         public void SendMessage([SelectionList("MessageTypes")] string messageType, [SelectionList("Channels")] Uri channel)
         {
             var type = messageTypeFor(messageType);
-            _registry.SendMessages(type.Name, t => t == type);
+            _registry.SendMessages(type.Name, t => t == type).To(channel);
+
+            // Just makes the test harness listen for things
+            _registry.ListenForMessagesFrom(channel);
         }
     }
 
@@ -131,7 +142,7 @@ namespace StorytellerSpecs.Fixtures
 
     public abstract class MessageHandler<T> where T : Message
     {
-        public static void Handle(T message, MessageTracker tracker, Envelope envelope)
+        public void Handle(T message, MessageTracker tracker, Envelope envelope)
         {
             tracker.Records.Add(new MessageRecord(envelope.ReceivedAt, message));
         }
@@ -142,7 +153,10 @@ namespace StorytellerSpecs.Fixtures
     public class Message3Handler : MessageHandler<Message3> { }
     public class Message4Handler : MessageHandler<Message4> { }
     public class Message5Handler : MessageHandler<Message5> { }
-    public class Message6Handler : MessageHandler<Message6> { }
+
+    public class Message6Handler : MessageHandler<Message6>
+    {
+    }
 
     public class MessageTracker
     {
@@ -164,5 +178,135 @@ namespace StorytellerSpecs.Fixtures
         public string Name { get; set; }
 
         public string MessageType { get; set; }
+    }
+
+
+    public class StubTransport : ITransport
+    {
+        public readonly LightweightCache<Uri, StubChannel> Channels = new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri));
+
+        public StubTransport(string scheme = "stub")
+        {
+            ReplyChannel = Channels[new Uri($"{scheme}://replies")];
+            Protocol = scheme;
+        }
+
+        public StubChannel ReplyChannel { get; set; }
+
+        public void Dispose()
+        {
+            WasDisposed = true;
+        }
+
+        public bool WasDisposed { get; set; }
+
+        public string Protocol { get; }
+        public Uri ReplyUriFor(Uri node)
+        {
+            return ReplyChannel.Address;
+        }
+
+        public void Send(Uri uri, byte[] data, Dictionary<string, string> headers)
+        {
+            Channels[uri].Send(data, headers);
+        }
+
+        public Uri ActualUriFor(ChannelNode node)
+        {
+            return (node.Uri.AbsoluteUri + "/actual").ToUri();
+        }
+
+        public void ReceiveAt(ChannelNode node, IReceiver receiver)
+        {
+            Channels[node.Uri].StartReceiving(receiver);
+        }
+
+        public Uri CorrectedAddressFor(Uri address)
+        {
+            return address;
+        }
+    }
+
+    public class StubChannel
+    {
+        public void Dispose()
+        {
+            WasDisposed = true;
+        }
+
+        public bool WasDisposed { get; set; }
+
+        public StubChannel(Uri address)
+        {
+            Address = address;
+        }
+
+        public Uri Address { get; }
+
+        public void StartReceiving(IReceiver receiver)
+        {
+            Receiver = receiver;
+        }
+
+        public IReceiver Receiver { get; set; }
+
+        public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
+
+        public void Send(byte[] data, Dictionary<string, string> headers)
+        {
+            var callback = new StubMessageCallback();
+            Callbacks.Add(callback);
+
+            Receiver?.Receive(data, headers, callback).Wait();
+        }
+    }
+
+    public class StubMessageCallback : IMessageCallback
+    {
+        public readonly IList<Envelope> Sent = new List<Envelope>();
+        public readonly IList<ErrorReport> Errors = new List<ErrorReport>();
+
+        public void MarkSuccessful()
+        {
+            MarkedSucessful = true;
+        }
+
+        public bool MarkedSucessful { get; set; }
+
+        public void MarkFailed(Exception ex)
+        {
+            MarkedFailed = true;
+            Exception = ex;
+        }
+
+        public Exception Exception { get; set; }
+
+        public bool MarkedFailed { get; set; }
+
+        public void MoveToDelayedUntil(DateTime time)
+        {
+            DelayedTo = time;
+        }
+
+        public DateTime? DelayedTo { get; set; }
+
+        public void MoveToErrors(ErrorReport report)
+        {
+            Errors.Add(report);
+        }
+
+        public void Requeue()
+        {
+            Requeued = true;
+        }
+
+        public bool Requeued { get; set; }
+
+        public void Send(Envelope envelope)
+        {
+            Sent.Add(envelope);
+        }
+
+        public bool SupportsSend { get; } = true;
     }
 }

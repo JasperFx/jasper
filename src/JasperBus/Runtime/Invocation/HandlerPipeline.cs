@@ -66,10 +66,6 @@ namespace JasperBus.Runtime.Invocation
 
                 }
             }
-
-
-
-            throw new System.NotImplementedException();
         }
 
         private async Task<IContinuation> executeChain(MessageHandler handler, EnvelopeContext context)
