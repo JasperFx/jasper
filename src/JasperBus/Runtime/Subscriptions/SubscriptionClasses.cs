@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Baseline;
-using JasperBus.Configuration;
 
 namespace JasperBus.Runtime.Subscriptions
 {
@@ -9,16 +11,34 @@ namespace JasperBus.Runtime.Subscriptions
     {
         void ClearAll();
 
-        Uri ReplyUriFor(ChannelNode destination);
-
-        /// <summary>
-        /// Called internally
-        /// </summary>
-        /// <param name="subscriptions"></param>
         void LoadSubscriptions(IEnumerable<Subscription> subscriptions);
 
-        IEnumerable<Subscription> ActiveSubscriptions { get; }
+        void Remove(Subscription subscription);
 
+        IEnumerable<Subscription> ActiveSubscriptions { get; }
+    }
+
+    // What if we said that the control channel has no parallelism?
+    public class InMemorySubscriptionCache : ISubscriptionCache
+    {
+        private readonly List<Subscription> _subscriptions = new List<Subscription>();
+
+        public void ClearAll()
+        {
+            _subscriptions.Clear();
+        }
+
+        public void LoadSubscriptions(IEnumerable<Subscription> subscriptions)
+        {
+            subscriptions.Where(x => !_subscriptions.Contains(x)).Each(x => _subscriptions.Add(x));
+        }
+
+        public void Remove(Subscription subscription)
+        {
+            _subscriptions.Remove(subscription);
+        }
+
+        public IEnumerable<Subscription> ActiveSubscriptions => _subscriptions.ToArray();
     }
 
     public class Subscription

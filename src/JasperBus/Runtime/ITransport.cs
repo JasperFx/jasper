@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JasperBus.Configuration;
 
 namespace JasperBus.Runtime
@@ -7,26 +8,12 @@ namespace JasperBus.Runtime
     {
         string Protocol { get; }
 
-        /// <summary>
-        /// Creates a channel for a known channel node upfront
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
-        IChannel CreateChannel(ChannelNode node);
+        Uri ReplyUriFor(ChannelNode node);
 
+        void Send(Uri uri, byte[] data, Dictionary<string, string> headers);
 
-        /// <summary>
-        /// Creates a functional node for a channel to the reply Uri of an incoming message
-        /// </summary>
-        /// <param name="destination"></param>
-        /// <returns></returns>
-        IChannel CreateDestinationChannel(Uri destination);
+        Uri ActualUriFor(ChannelNode node);
 
-        /// <summary>
-        /// An address that can be used as the "callback" Uri for messages
-        /// sent to a remote node
-        /// </summary>
-        /// <returns></returns>
-        Uri ReplyUri();
+        void ReceiveAt(ChannelNode node, IReceiver receiver);
     }
 }

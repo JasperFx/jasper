@@ -21,15 +21,6 @@ namespace JasperBus.Configuration
             {
                 _transports.SmartAdd(transport.Protocol, transport);
             }
-
-            foreach (var node in _nodes.Values)
-            {
-                var scheme = node.Uri.Scheme;
-                if (_transports.ContainsKey(scheme))
-                {
-                    node.Channel = _transports[scheme].CreateChannel(node);
-                }
-            }
         }
 
         private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
@@ -47,13 +38,6 @@ namespace JasperBus.Configuration
             return _nodes.ContainsKey(uri);
         }
 
-        public ChannelNode GetDestinationChannel(Uri uri)
-        {
-            // Remember that this one has to use the volatile channel
-            // idea from fubu
-            throw new NotImplementedException();
-        }
-
         public void Dispose()
         {
             foreach (var transport in _transports.Values)
@@ -62,11 +46,6 @@ namespace JasperBus.Configuration
             }
 
             _transports.Clear();
-
-            foreach (var channelNode in _nodes.Values)
-            {
-                channelNode.Channel.Dispose();
-            }
 
             _nodes.Clear();
         }

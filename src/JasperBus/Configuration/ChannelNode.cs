@@ -19,7 +19,6 @@ namespace JasperBus.Configuration
         public readonly List<string> AcceptedContentTypes = new List<string>();
 
         IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
-        public IChannel Channel { get; internal set; }
         public bool Incoming { get; set; }
         public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
 

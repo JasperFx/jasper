@@ -17,7 +17,6 @@ namespace JasperBus.Tests.Stubs
 
         public StubChannel ReplyChannel { get; set; }
 
-
         public void Dispose()
         {
             WasDisposed = true;
@@ -25,25 +24,29 @@ namespace JasperBus.Tests.Stubs
 
         public bool WasDisposed { get; set; }
 
-        public string Protocol { get; } = "stub";
-
-        public IChannel CreateChannel(ChannelNode node)
-        {
-            return CreateDestinationChannel(node.Uri);
-        }
-
-        public IChannel CreateDestinationChannel(Uri destination)
-        {
-            return Channels[destination];
-        }
-
-        public Uri ReplyUri()
+        public string Protocol => "stub";
+        public Uri ReplyUriFor(ChannelNode node)
         {
             return ReplyChannel.Address;
         }
+
+        public void Send(Uri uri, byte[] data, Dictionary<string, string> headers)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Uri ActualUriFor(ChannelNode node)
+        {
+            return (node.Uri.AbsoluteUri + "/actual").ToUri();
+        }
+
+        public void ReceiveAt(ChannelNode node, IReceiver receiver)
+        {
+            Channels[node.Uri].StartReceiving(receiver);
+        }
     }
 
-    public class StubChannel : IChannel
+    public class StubChannel
     {
         public void Dispose()
         {
