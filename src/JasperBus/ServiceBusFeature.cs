@@ -67,6 +67,9 @@ namespace JasperBus
             var services = new Registry();
             services.For<HandlerGraph>().Use(_graph);
             services.For<ChannelGraph>().Use(Channels);
+            services.For<ITransport>().Singleton();
+            services.For<IEnvelopeSender>().Use<EnvelopeSender>();
+            services.For<IServiceBus>().Use<ServiceBus>();
 
             return services;
         }
