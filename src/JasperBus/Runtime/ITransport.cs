@@ -8,12 +8,13 @@ namespace JasperBus.Runtime
     {
         string Protocol { get; }
 
-        Uri ReplyUriFor(ChannelNode node);
+        Uri ReplyUriFor(Uri node);
 
         void Send(Uri uri, byte[] data, Dictionary<string, string> headers);
 
         Uri ActualUriFor(ChannelNode node);
 
         void ReceiveAt(ChannelNode node, IReceiver receiver);
+        Uri CorrectedAddressFor(Uri address);
     }
 }

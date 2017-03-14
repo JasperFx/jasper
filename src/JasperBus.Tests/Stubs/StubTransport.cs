@@ -10,9 +10,10 @@ namespace JasperBus.Tests.Stubs
     {
         public readonly LightweightCache<Uri, StubChannel> Channels = new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri));
 
-        public StubTransport()
+        public StubTransport(string scheme = "stub")
         {
-            ReplyChannel = Channels[new Uri("stub://replies")];
+            ReplyChannel = Channels[new Uri($"{scheme}://replies")];
+            Protocol = scheme;
         }
 
         public StubChannel ReplyChannel { get; set; }
@@ -24,15 +25,15 @@ namespace JasperBus.Tests.Stubs
 
         public bool WasDisposed { get; set; }
 
-        public string Protocol => "stub";
-        public Uri ReplyUriFor(ChannelNode node)
+        public string Protocol { get; }
+        public Uri ReplyUriFor(Uri node)
         {
             return ReplyChannel.Address;
         }
 
         public void Send(Uri uri, byte[] data, Dictionary<string, string> headers)
         {
-            throw new NotImplementedException();
+            Channels[uri].Send(data, headers);
         }
 
         public Uri ActualUriFor(ChannelNode node)
@@ -43,6 +44,11 @@ namespace JasperBus.Tests.Stubs
         public void ReceiveAt(ChannelNode node, IReceiver receiver)
         {
             Channels[node.Uri].StartReceiving(receiver);
+        }
+
+        public Uri CorrectedAddressFor(Uri address)
+        {
+            return address;
         }
     }
 
@@ -76,7 +82,7 @@ namespace JasperBus.Tests.Stubs
             var callback = new StubMessageCallback();
             Callbacks.Add(callback);
 
-            Receiver.Receive(data, headers, callback).Wait();
+            Receiver?.Receive(data, headers, callback).Wait();
         }
     }
 

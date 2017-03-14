@@ -23,6 +23,11 @@ namespace JasperBus.Configuration
         public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
 
         public IList<IRoutingRule> Rules = new List<IRoutingRule>();
+
+        public bool ShouldSendMessage(Type messageType)
+        {
+            return Rules.Any(x => x.Matches(messageType));
+        }
     }
 
     internal interface IContentTypeAware

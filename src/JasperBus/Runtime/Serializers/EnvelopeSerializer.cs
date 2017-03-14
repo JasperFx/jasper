@@ -86,7 +86,8 @@ namespace JasperBus.Runtime.Serializers
             {
                 mimeType = chooseContentType(envelope);
             }
-            else if (node.AcceptedContentTypes.Any())
+            // It's perfectly possible to not have a matching, static ChannelNode here
+            else if (node != null && node.AcceptedContentTypes.Any())
             {
                 mimeType = chooseContentType(node);
             }

@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JasperBus.Runtime;
 
 namespace JasperBus
 {
     public class ServiceBus : IServiceBus
     {
+        private readonly IEnvelopeSender _sender;
+
+        public ServiceBus(IEnvelopeSender sender)
+        {
+            _sender = sender;
+        }
+
         public Task<TResponse> Request<TResponse>(object request, RequestOptions options = null)
         {
             throw new NotImplementedException();
@@ -12,12 +20,12 @@ namespace JasperBus
 
         public void Send<T>(T message)
         {
-            throw new NotImplementedException();
+            _sender.Send(new Envelope {Message = message});
         }
 
         public void Send<T>(Uri destination, T message)
         {
-            throw new NotImplementedException();
+            _sender.Send(new Envelope { Message = message, Destination = destination});
         }
 
         public void Consume<T>(T message)
