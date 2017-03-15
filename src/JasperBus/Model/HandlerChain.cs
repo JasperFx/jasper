@@ -6,11 +6,12 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
+using JasperBus.ErrorHandling;
 using StructureMap;
 
 namespace JasperBus.Model
 {
-    public class HandlerChain : IGenerates<MessageHandler>
+    public class HandlerChain : IGenerates<MessageHandler>, IHasErrorHandlers
     {
         public static HandlerChain For<T>(Expression<Action<T>> expression)
         {
@@ -106,6 +107,8 @@ namespace JasperBus.Model
         }
 
         string IGenerates<MessageHandler>.SourceCode { get; set; }
+        public int MaximumAttempts { get; set; } = 1;
+        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
 
         MessageHandler IGenerates<MessageHandler>.Create(Type[] types, IContainer container)
         {

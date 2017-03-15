@@ -32,6 +32,13 @@ namespace JasperBus.Tests.Model
             methodCall.Method.Name.ShouldBe(nameof(Target.GoStatic));
         }
 
+        [Fact]
+        public void default_number_of_max_attempts_is_1()
+        {
+            var chain = HandlerChain.For<Target>(nameof(Target.GoStatic));
+            chain.MaximumAttempts.ShouldBe(1);
+        }
+
         public class Target
         {
             public void Go(Message1 message)

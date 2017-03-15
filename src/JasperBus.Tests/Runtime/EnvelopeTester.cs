@@ -378,4 +378,9 @@ namespace JasperBus.Tests.Runtime
     {
 
     }
+
+    public class Message5
+    {
+
+    }
 }

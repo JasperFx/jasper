@@ -10,9 +10,6 @@ namespace JasperBus.ErrorHandling
     {
         public static readonly RequeueContinuation Requeue = RequeueContinuation.Instance;
 
-        private readonly IList<IExceptionMatch> _conditions = new List<IExceptionMatch>();
-
-
         public void AddContinuation(IContinuation continuation)
         {
             Sources.Add(new ContinuationSource(continuation));
@@ -36,7 +33,7 @@ namespace JasperBus.ErrorHandling
 
         public void AddCondition(IExceptionMatch condition)
         {
-            _conditions.Add(condition);
+            Conditions.Add(condition);
         }
 
         public void AddContinuation(IContinuationSource source)
@@ -46,7 +43,8 @@ namespace JasperBus.ErrorHandling
 
         public IList<IContinuationSource> Sources { get; } = new List<IContinuationSource>();
 
-        public IEnumerable<IExceptionMatch> Conditions => _conditions;
+        public IList<IExceptionMatch> Conditions { get; } = new List<IExceptionMatch>();
+
 
         public IContinuation DetermineContinuation(Envelope envelope, Exception ex)
         {
@@ -55,25 +53,25 @@ namespace JasperBus.ErrorHandling
 
         public bool Matches(Envelope envelope, Exception ex)
         {
-            if (!_conditions.Any()) return true;
+            if (!Conditions.Any()) return true;
 
-            return _conditions.All(x => x.Matches(envelope, ex));
+            return Conditions.All(x => x.Matches(envelope, ex));
         }
     }
 
     public class ContinuationSource : IContinuationSource
     {
-        private readonly IContinuation _continuation;
-
         public ContinuationSource(IContinuation continuation)
         {
-            _continuation = continuation;
+            Continuation = continuation;
         }
 
         public IContinuation DetermineContinuation(Envelope envelope, Exception ex)
         {
-            return _continuation;
+            return Continuation;
         }
+
+        public IContinuation Continuation { get; }
     }
 
     public interface IContinuationSource

@@ -38,15 +38,18 @@ namespace JasperBus.Tests
 
             model.Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
         }
+
+
     }
 
 
     public class FakeHandler1
     {
         [FakeFrame]
+        [MaximumAttempts(3)]
         public void Handle(Message1 message)
         {
-            
+
         }
     }
 
