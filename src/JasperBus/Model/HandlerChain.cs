@@ -52,11 +52,28 @@ namespace JasperBus.Model
         public List<MethodCall> Handlers = new List<MethodCall>();
 
 
+        private static bool isConfigureMethod(MethodInfo method)
+        {
+            if (method == null) return false;
+
+            var parameters = method.GetParameters();
+            return parameters.Length == 1 && parameters.Single().ParameterType == typeof(HandlerChain);
+        }
+
         public IGenerationModel ToGenerationModel(IGenerationConfig config)
         {
             if (!Handlers.Any())
             {
                 throw new InvalidOperationException("No method handlers configured for message type " + MessageType.FullName);
+            }
+
+            var configureMethods = Handlers.Select(x => x.HandlerType).Distinct()
+                .Select(x => x.GetTypeInfo().GetMethod("Configure",
+                    new Type[] {typeof(HandlerChain)}));
+
+            foreach (var method in configureMethods)
+            {
+                method?.Invoke(null, new object[]{this});
             }
 
             foreach (var methodCall in Handlers.ToArray())

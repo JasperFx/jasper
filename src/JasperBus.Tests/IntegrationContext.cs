@@ -3,7 +3,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using Baseline.Reflection;
 using Jasper;
+using Jasper.Codegen;
 using JasperBus.Model;
+using JasperBus.Runtime.Invocation;
 using Shouldly;
 
 namespace JasperBus.Tests
@@ -11,12 +13,11 @@ namespace JasperBus.Tests
     public class IntegrationContext : IDisposable
     {
         public JasperRuntime Runtime { get; private set; }
-        private HandlerGraph _graph;
 
         protected void withAllDefaults()
         {
             with(new JasperBusRegistry());
-            _graph = Runtime.Container.GetInstance<HandlerGraph>();
+            Graph = Runtime.Container.GetInstance<HandlerGraph>();
         }
 
         protected void with(JasperBusRegistry registry)
@@ -30,7 +31,7 @@ namespace JasperBus.Tests
             Runtime = JasperRuntime.For(registry);
 
 
-            _graph = Runtime.Container.GetInstance<HandlerGraph>();
+            Graph = Runtime.Container.GetInstance<HandlerGraph>();
         }
 
         protected void with(Action<JasperBusRegistry> configuration)
@@ -56,8 +57,10 @@ namespace JasperBus.Tests
 
         protected HandlerChain chainFor<T>()
         {
-            return _graph.ChainFor<T>();
+            return Graph.ChainFor<T>();
         }
+
+        public HandlerGraph Graph { get; private set; }
     }
 
     public static class HandlerChainSpecificationExtensions
@@ -87,6 +90,12 @@ namespace JasperBus.Tests
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, string methodName)
         {
             chain?.Handlers.Any(x => x.Method.Name == methodName).ShouldBeFalse();
+        }
+
+        public static void ShouldBeWrappedWith<T>(this HandlerChain chain) where T : Frame
+        {
+            chain.ShouldNotBeNull();
+            chain.Wrappers.OfType<T>().Any().ShouldBeTrue();
         }
     }
 }
