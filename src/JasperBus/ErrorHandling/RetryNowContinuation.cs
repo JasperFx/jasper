@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 
@@ -13,9 +14,9 @@ namespace JasperBus.ErrorHandling
         }
 
 
-        public void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
-            context.Retry(envelope);
+            return context.Retry(envelope);
         }
     }
 }

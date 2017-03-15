@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace JasperBus.Runtime.Invocation
 {
@@ -11,7 +12,7 @@ namespace JasperBus.Runtime.Invocation
 
         }
 
-        public void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
             try
             {
@@ -26,6 +27,8 @@ namespace JasperBus.Runtime.Invocation
 
                 envelope.Callback.MoveToErrors(new ErrorReport(envelope, ex));
             }
+
+            return Task.CompletedTask;
         }
 
     }

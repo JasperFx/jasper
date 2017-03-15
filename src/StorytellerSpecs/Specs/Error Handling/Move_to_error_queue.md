@@ -3,15 +3,15 @@
 -> id = c17eed13-96d2-49e5-a976-aa78f618081f
 -> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2017-03-15T15:22:57.3465440Z
+-> last-updated = 2017-03-15T19:11:21.5568559Z
 -> tags = 
 
 [ErrorHandling]
 |> IfTheChainHandlingIs
     [ChainErrorHandling]
     |> MaximumAttempts attempts=3
-    |> RetryLater errorType=DataMisalignedException
     |> MoveToErrorQueue errorType=DivideByZeroException
+    |> RetryOn errorType=DataMisalignedException
 
 |> MessageAttempts
     [Rows]
@@ -22,10 +22,10 @@
 |> MessageResult attempt=2, result=MovedToErrorQueue
 |> MessageAttempts
     [Rows]
-    |Attempt|errorType                |
-    |1      |DataMisalignedException  |
-    |2      |InvalidOperationException|
-    |3      |ArgumentNullException    |
+    |Attempt|errorType              |
+    |1      |DataMisalignedException|
+    |2      |DataMisalignedException|
+    |3      |ArgumentNullException  |
 
 |> MessageResult attempt=3, result=MovedToErrorQueue
 |> SendMessageWithNoErrors

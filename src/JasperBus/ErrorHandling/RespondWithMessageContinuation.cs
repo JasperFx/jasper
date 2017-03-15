@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 
@@ -13,9 +14,10 @@ namespace JasperBus.ErrorHandling
 
         public object Message { get; }
 
-        public void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
             context.SendOutgoingMessage(envelope, Message);
+            return Task.CompletedTask;
         }
     }
 }

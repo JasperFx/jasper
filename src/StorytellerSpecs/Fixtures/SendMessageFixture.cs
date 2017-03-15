@@ -264,7 +264,7 @@ namespace StorytellerSpecs.Fixtures
 
         public void Send(byte[] data, Dictionary<string, string> headers)
         {
-            var callback = new StubMessageCallback();
+            var callback = new StubMessageCallback(this);
             Callbacks.Add(callback);
 
             Receiver?.Receive(data, headers, callback).Wait();
@@ -273,8 +273,14 @@ namespace StorytellerSpecs.Fixtures
 
     public class StubMessageCallback : IMessageCallback
     {
+        private readonly StubChannel _channel;
         public readonly IList<Envelope> Sent = new List<Envelope>();
         public readonly IList<ErrorReport> Errors = new List<ErrorReport>();
+        
+        public StubMessageCallback(StubChannel channel)
+        {
+            _channel = channel;
+        }
 
         public void MarkSuccessful()
         {
@@ -308,9 +314,10 @@ namespace StorytellerSpecs.Fixtures
 
         public bool WasMovedToErrors { get; set; }
 
-        public void Requeue()
+        public void Requeue(Envelope envelope)
         {
             Requeued = true;
+            _channel.Send(envelope.Data, envelope.Headers);
         }
 
         public bool Requeued { get; set; }

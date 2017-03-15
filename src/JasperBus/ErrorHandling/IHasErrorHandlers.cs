@@ -13,6 +13,16 @@ namespace JasperBus.ErrorHandling
 
     public static class ErrorHandlingConfigurationExtensions
     {
+        public static IContinuation DetermineContinuation(this IHasErrorHandlers errorHandling, Envelope envelope, Exception ex)
+        {
+            foreach (var handler in errorHandling.ErrorHandlers)
+            {
+                var continuation = handler.DetermineContinuation(envelope, ex);
+                if (continuation != null) return continuation;
+            }
+
+            return null;
+        }
 
         public static ContinuationExpression OnException<T>(this IHasErrorHandlers handlers) where T : Exception
         {

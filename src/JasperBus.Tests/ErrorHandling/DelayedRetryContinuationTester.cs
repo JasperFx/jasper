@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using JasperBus.ErrorHandling;
@@ -11,7 +12,7 @@ namespace JasperBus.Tests.ErrorHandling
     public class DelayedRetryContinuationTester
     {
         [Fact]
-        public void do_as_a_delay_w_the_timespan_given()
+        public async Task do_as_a_delay_w_the_timespan_given()
         {
             var continuation = new DelayedRetryContinuation(5.Minutes());
             var context = Substitute.For<IEnvelopeContext>();
@@ -20,7 +21,7 @@ namespace JasperBus.Tests.ErrorHandling
 
             var now = DateTime.Today.ToUniversalTime();
 
-            continuation.Execute(envelope, context, now);
+            await continuation.Execute(envelope, context, now);
 
             envelope.Callback.Received().MoveToDelayedUntil(now.AddMinutes(5));
         }

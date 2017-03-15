@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 
@@ -12,9 +13,11 @@ namespace JasperBus.ErrorHandling
         {
         }
 
-        public void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
-            envelope.Callback.Requeue();
+            // TODO -- should the callback stuff be async too?
+            envelope.Callback.Requeue(envelope);
+            return Task.CompletedTask;
         }
     }
 }

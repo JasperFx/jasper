@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Baseline;
 using JasperBus.Configuration;
+using JasperBus.ErrorHandling;
 using JasperBus.Model;
 using JasperBus.Runtime.Serializers;
 
@@ -49,22 +50,26 @@ namespace JasperBus.Runtime.Invocation
                     }
 
 
-                    var handler = _graph.HandlerFor(envelope.Message.GetType());
-                    if (handler == null)
-                    {
-                        processNoHandlerLogic(envelope);
-                    }
-                    else
-                    {
-                        // TODO -- have the EnvelopeContext.Retry be able to skip right down
-                        // to the executeChain method here
-                        var continuation = await executeChain(handler, context).ConfigureAwait(false);
-
-                        // TODO -- should continuations be async too?
-                        continuation.Execute(envelope, context, DateTime.UtcNow);
-                    }
-
+                    await ProcessMessage(envelope, context);
                 }
+            }
+        }
+
+        public async Task ProcessMessage(Envelope envelope, EnvelopeContext context)
+        {
+            var handler = _graph.HandlerFor(envelope.Message.GetType());
+            if (handler == null)
+            {
+                processNoHandlerLogic(envelope);
+            }
+            else
+            {
+                // TODO -- have the EnvelopeContext.Retry be able to skip right down
+                // to the executeChain method here
+                var continuation = await executeChain(handler, context).ConfigureAwait(false);
+
+                // TODO -- should continuations be async too? -- YES.
+                await continuation.Execute(envelope, context, DateTime.UtcNow).ConfigureAwait(false);
             }
         }
 
@@ -80,10 +85,8 @@ namespace JasperBus.Runtime.Invocation
             }
             catch (Exception e)
             {
-                // TODO -- have the error handling kick in here.
+                return context.DetermineContinuation(e, handler.Chain, _graph);
             }
-
-            throw new NotImplementedException();
         }
 
         private void processNoHandlerLogic(Envelope envelope)

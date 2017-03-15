@@ -9,7 +9,8 @@ namespace StorytellerSpecs
         {
             using (var runner = StorytellerRunner.Basic())
             {
-                var counts = runner.Run("Error Handling / Pure Happy Path").Counts;
+                // worry about the 2nd message here
+                var counts = runner.Run("Error Handling / Fallback from Chain to Global Error Handling").Counts;
 
                 // Error Handling / Retry on Exceptions
 

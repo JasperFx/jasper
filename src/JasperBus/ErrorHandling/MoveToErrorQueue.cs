@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Baseline;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
@@ -14,12 +15,14 @@ namespace JasperBus.ErrorHandling
 
         public Exception Exception { get; }
 
-        public void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
             context.SendFailureAcknowledgement(envelope, "Moved message {0} to the Error Queue.\n{1}".ToFormat(envelope.CorrelationId, Exception));
 
             var report = new ErrorReport(envelope, Exception);
             envelope.Callback.MoveToErrors(report);
+
+            return Task.CompletedTask;
         }
     }
 }

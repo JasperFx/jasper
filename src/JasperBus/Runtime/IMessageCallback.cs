@@ -12,7 +12,7 @@ namespace JasperBus.Runtime
 
         void MoveToDelayedUntil(DateTime time);
         void MoveToErrors(ErrorReport report);
-        void Requeue();
+        void Requeue(Envelope envelope);
         void Send(Envelope envelope);
 
         bool SupportsSend { get; }

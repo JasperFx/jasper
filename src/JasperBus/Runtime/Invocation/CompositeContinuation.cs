@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Baseline;
 
 namespace JasperBus.Runtime.Invocation
@@ -14,13 +15,13 @@ namespace JasperBus.Runtime.Invocation
             _continuations.AddRange(continuations);
         }
 
-        public void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public async Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
             foreach (var continuation in _continuations)
             {
                 try
                 {
-                    continuation.Execute(envelope, context, utcNow);
+                    await continuation.Execute(envelope, context, utcNow).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 
@@ -11,9 +12,10 @@ namespace JasperBus.ErrorHandling
             Delay = delay;
         }
 
-        public void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
             envelope.Callback.MoveToDelayedUntil(utcNow.Add(Delay));
+            return Task.CompletedTask;
         }
 
         public TimeSpan Delay { get; }

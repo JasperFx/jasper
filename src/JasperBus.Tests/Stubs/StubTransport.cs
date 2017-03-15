@@ -120,7 +120,7 @@ namespace JasperBus.Tests.Stubs
             Errors.Add(report);
         }
 
-        public void Requeue()
+        public void Requeue(Envelope envelope)
         {
             Requeued = true;
         }

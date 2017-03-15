@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace JasperBus.Runtime.Invocation
 {
@@ -9,7 +10,7 @@ namespace JasperBus.Runtime.Invocation
             Exception = exception;
         }
 
-        public void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
             context.SendFailureAcknowledgement(envelope, "Message handler failed");
             envelope.Callback.MarkFailed(Exception);
@@ -22,6 +23,8 @@ namespace JasperBus.Runtime.Invocation
             {
                 context.Error(envelope.CorrelationId, envelope.Message.ToString(), Exception);
             }
+
+            return Task.CompletedTask;
         }
 
         public Exception Exception { get; }

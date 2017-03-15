@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using JasperBus.ErrorHandling;
 using Shouldly;
 using Xunit;

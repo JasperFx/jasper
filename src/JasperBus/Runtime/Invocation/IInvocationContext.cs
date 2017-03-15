@@ -1,5 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Baseline;
+using JasperBus.Configuration;
+using JasperBus.ErrorHandling;
+using JasperBus.Model;
 
 namespace JasperBus.Runtime.Invocation
 {
@@ -36,14 +42,15 @@ namespace JasperBus.Runtime.Invocation
         void Error(string correlationId, string message, Exception exception);
 
         // doesn't need to be passed the envelope here, but maybe leave this one
-        void Retry(Envelope envelope);
+        Task Retry(Envelope envelope);
     }
 
     public class EnvelopeContext : IEnvelopeContext
     {
-        private readonly IHandlerPipeline _pipeline;
+        private readonly HandlerPipeline _pipeline;
+        private readonly IList<object> _outgoing = new List<object>();
 
-        public EnvelopeContext(IHandlerPipeline pipeline, Envelope envelope)
+        public EnvelopeContext(HandlerPipeline pipeline, Envelope envelope)
         {
             Envelope = envelope;
             _pipeline = pipeline;
@@ -90,16 +97,23 @@ namespace JasperBus.Runtime.Invocation
             // TODO -- actually do something here;)
         }
 
-        public void Retry(Envelope envelope)
+        public Task Retry(Envelope envelope)
         {
-            // Call back to the HandlerPipeline with itself to avoid unnecessary work here
-            // clear out all queued cascading messages first
-            // TODO -- actually do something here;)
+            _outgoing.Clear();
+
+            return _pipeline.ProcessMessage(envelope, this);
+        }
+
+        public IContinuation DetermineContinuation(Exception exception, HandlerChain handlerChain, HandlerGraph graph)
+        {
+            if (Envelope.Attempts >= handlerChain.MaximumAttempts) return new MoveToErrorQueue(exception);
+
+            return handlerChain.DetermineContinuation(Envelope, exception)
+                   ?? graph.DetermineContinuation(Envelope, exception)
+                   ?? new MoveToErrorQueue(exception);
         }
     }
 
-    public interface IContinuation
-    {
-        void Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow);
-    }
+    // START HERE!!!!!
+    // TODO -- this is going to have to return a TASK
 }
