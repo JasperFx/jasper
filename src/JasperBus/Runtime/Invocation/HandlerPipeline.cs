@@ -72,6 +72,8 @@ namespace JasperBus.Runtime.Invocation
         {
             try
             {
+                context.Envelope.Attempts++;
+
                 await handler.Handle(context).ConfigureAwait(false);
 
                 return ChainSuccessContinuation.Instance;

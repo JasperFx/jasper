@@ -94,14 +94,17 @@ namespace StorytellerSpecs.Fixtures
         private StubTransport _transport;
         private IServiceBus _bus;
         private ErrorCausingMessage _message;
+        private AttemptTracker _tracker;
 
         public override void SetUp()
         {
             _transport = new StubTransport();
+            _tracker = new AttemptTracker();
 
             var registry = new JasperBusRegistry();
             registry.ListenForMessagesFrom("stub://1".ToUri());
             registry.Services.AddService<ITransport>(_transport);
+            registry.Services.AddService(_tracker);
             registry.SendMessage<ErrorCausingMessage>()
                 .To("stub://1".ToUri());
 
@@ -156,6 +159,7 @@ namespace StorytellerSpecs.Fixtures
         public void SendMessageWithNoErrors()
         {
             _message = new ErrorCausingMessage();
+            _bus.Send(_message);
         }
 
         [FormatAs("The message should have ended as '{result}' on attempt {attempt}")]
@@ -163,7 +167,7 @@ namespace StorytellerSpecs.Fixtures
             out int attempt,
             [SelectionValues("Succeeded", "MovedToErrorQueue", "Retry in 5 seconds")]out string result)
         {
-            attempt = _message.LastAttempt;
+            attempt = _tracker.LastAttempt;
             result = "Unknown";
 
             var callback = _transport.LastCallback();
@@ -189,6 +193,11 @@ namespace StorytellerSpecs.Fixtures
 
     }
 
+    public class AttemptTracker
+    {
+        public int LastAttempt;
+    }
+
     public class ErrorCausingMessage
     {
         public Dictionary<int, string> Errors = new Dictionary<int, string>();
@@ -202,9 +211,9 @@ namespace StorytellerSpecs.Fixtures
 
 
 
-        public void Handle(ErrorCausingMessage message, Envelope envelope)
+        public void Handle(ErrorCausingMessage message, Envelope envelope, AttemptTracker tracker)
         {
-            message.LastAttempt = envelope.Attempts;
+            tracker.LastAttempt = envelope.Attempts;
 
             if (!message.Errors.ContainsKey(envelope.Attempts))
             {
