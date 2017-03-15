@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Codegen;
+using JasperBus.ErrorHandling;
 using JasperBus.Runtime.Invocation;
 using StructureMap;
 
 namespace JasperBus.Model
 {
-    public class HandlerGraph : HandlerSet<HandlerChain, IInvocationContext, MessageHandler>
+    public class HandlerGraph : HandlerSet<HandlerChain, IInvocationContext, MessageHandler>, IHasErrorHandlers
     {
         public static readonly string Context = "context";
 
@@ -98,5 +99,7 @@ namespace JasperBus.Model
 
             _hasGrouped = true;
         }
+
+        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
     }
 }

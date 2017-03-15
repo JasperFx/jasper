@@ -12,7 +12,7 @@ namespace StorytellerSpecs
         {
             using (var runner = StorytellerRunner.Basic())
             {
-                var counts = runner.Run("Publishing / Simplest Possible Happy Path").Counts;
+                var counts = runner.Run("Error Handling / Pure Happy Path").Counts;
 
                 Console.WriteLine(counts);
             }

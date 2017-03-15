@@ -191,6 +191,16 @@ namespace StorytellerSpecs.Fixtures
             Protocol = scheme;
         }
 
+        public IEnumerable<StubMessageCallback> CallbackHistory()
+        {
+            return Channels.SelectMany(x => x.Callbacks);
+        }
+
+        public StubMessageCallback LastCallback()
+        {
+            return CallbackHistory().Last();
+        }
+
         public StubChannel ReplyChannel { get; set; }
 
         public void Dispose()
@@ -292,8 +302,11 @@ namespace StorytellerSpecs.Fixtures
 
         public void MoveToErrors(ErrorReport report)
         {
+            WasMovedToErrors = true;
             Errors.Add(report);
         }
+
+        public bool WasMovedToErrors { get; set; }
 
         public void Requeue()
         {
