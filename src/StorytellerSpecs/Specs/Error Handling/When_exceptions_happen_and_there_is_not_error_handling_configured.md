@@ -1,9 +1,9 @@
 # When exceptions happen and there is not error handling configured
 
 -> id = 7a695ad2-f511-411b-9f98-e7180b441e8a
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-15T16:24:03.3491771Z
+-> last-updated = 2017-03-15T19:28:03.7248526Z
 -> tags = 
 
 [ErrorHandling]

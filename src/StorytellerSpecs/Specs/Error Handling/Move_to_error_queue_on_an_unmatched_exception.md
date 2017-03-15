@@ -1,9 +1,9 @@
 # Move to error queue on an unmatched exception
 
 -> id = 421610ac-25a3-4b63-8869-6482c07190de
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-15T19:12:38.6947795Z
+-> last-updated = 2017-03-15T19:28:03.6818526Z
 -> tags = 
 
 [ErrorHandling]

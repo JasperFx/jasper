@@ -1,9 +1,9 @@
 # Retry Later Mechanics
 
 -> id = cfb9c3d0-c729-4ae8-b7d1-72e3cec9da44
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-15T15:35:02.7758200Z
+-> last-updated = 2017-03-15T19:28:03.7038526Z
 -> tags = 
 
 [ErrorHandling]

@@ -1,9 +1,9 @@
 # Requeue on Exceptions
 
 -> id = 8810efb4-0560-4807-bca1-f62bcbb99dbb
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-15T15:18:49.8868580Z
+-> last-updated = 2017-03-15T19:28:03.6958526Z
 -> tags = 
 
 [ErrorHandling]

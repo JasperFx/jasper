@@ -1,9 +1,9 @@
 # Fallback from Chain to Global Error Handling
 
 -> id = aab39c33-410b-401e-9a87-5514284e8c15
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-15T15:31:31.6532800Z
+-> last-updated = 2017-03-15T19:28:03.6538526Z
 -> tags = 
 
 [ErrorHandling]
@@ -17,6 +17,7 @@
     [ChainErrorHandling]
     |> MoveToErrorQueue errorType=DivideByZeroException
     |> RetryOn errorType=InvalidOperationException
+    |> MaximumAttempts attempts=3
 
 
 No chain specific rules, so use the global error handling

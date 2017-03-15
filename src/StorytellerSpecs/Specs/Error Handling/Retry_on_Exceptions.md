@@ -1,9 +1,9 @@
 # Retry on Exceptions
 
 -> id = ca9ae70b-1211-42e0-8f55-0f6594c53dd5
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-15T15:07:45.3414710Z
+-> last-updated = 2017-03-15T19:28:03.7148526Z
 -> tags = 
 
 [ErrorHandling]

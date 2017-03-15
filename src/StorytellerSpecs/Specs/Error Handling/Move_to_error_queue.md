@@ -1,9 +1,9 @@
 # Move to error queue
 
 -> id = c17eed13-96d2-49e5-a976-aa78f618081f
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-15T19:11:21.5568559Z
+-> last-updated = 2017-03-15T19:28:03.6728526Z
 -> tags = 
 
 [ErrorHandling]
