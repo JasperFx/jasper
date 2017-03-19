@@ -1,0 +1,93 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using Baseline;
+using JasperBus.Configuration;
+using JasperBus.Runtime;
+using JasperBus.Runtime.Invocation;
+
+namespace JasperBus.Transports.LightningQueues
+{
+    public class LightningQueuesTransport : ITransport
+    {
+        public static string MaxAttemptsHeader = "max-delivery-attempts";
+        public static string DeliverByHeader = "deliver-by";
+
+
+        private readonly ConcurrentDictionary<int, LightningQueue> _queues = new ConcurrentDictionary<int, LightningQueue>();
+        private readonly LightningQueueSettings _settings;
+        private readonly ConcurrentDictionary<Uri, LightningUri> _uris = new ConcurrentDictionary<Uri, LightningUri>();
+        private Uri _replyUri;
+
+        public LightningQueuesTransport(LightningQueueSettings settings)
+        {
+            _settings = settings;
+        }
+
+        public void Dispose()
+        {
+            _queues.Values.Each(x => x.Dispose());
+            _queues.Clear();
+        }
+
+        public string Protocol => "lq.tcp";
+
+        public Uri ReplyUriFor(Uri address)
+        {
+            return _replyUri;
+        }
+
+        private LightningUri lqUriFor(Uri uri)
+        {
+            return _uris.GetOrAdd(uri, u => new LightningUri(u));
+        }
+
+        public void Send(Uri uri, byte[] data, IDictionary<string, string> headers)
+        {
+            if (_queues.Count == 0) throw new InvalidOperationException("There are no available LightningQueues channels with which to send");
+
+            var lqUri = lqUriFor(uri);
+            _queues.Values.First().Send(data, headers, lqUri.Address, lqUri.QueueName);
+        }
+
+        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
+        {
+            var nodes = channels.Where(x => x.Uri.Scheme == Protocol).ToArray();
+            if (!nodes.Any()) return;
+
+            var replyNode = nodes.FirstOrDefault(x => x.Incoming) ??
+                            channels.AddChannelIfMissing(_settings.DefaultReplyUri);
+
+            replyNode.Incoming = true;
+            _replyUri = replyNode.Uri.ToLightningUri().Address;
+
+
+            var groups = nodes.GroupBy(x => x.Uri.Port);
+
+            foreach (var group in groups)
+            {
+                // TODO -- need to worry about persistence or not here
+                var queue = _queues.GetOrAdd(group.Key, key => new LightningQueue(group.Key, true, _settings));
+                queue.Start(channels, group);
+
+                foreach (var node in group)
+                {
+                    node.Sender = new QueueSender(node.Destination, queue, node.Destination.ToLightningUri().QueueName);
+                }
+            }
+
+
+            foreach (var node in nodes)
+            {
+                node.Destination = node.Uri.ToLightningUri().Address;
+                node.ReplyUri = _replyUri;
+            }
+        }
+
+        public Uri DefaultReplyUri()
+        {
+            return _replyUri;
+        }
+    }
+}

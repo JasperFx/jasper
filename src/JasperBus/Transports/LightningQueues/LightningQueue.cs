@@ -82,5 +82,23 @@ namespace JasperBus.Transports.LightningQueues
 
             _queue?.Dispose();
         }
+
+        public void Send(byte[] data, IDictionary<string, string> headers, Uri destination, string subQueue)
+        {
+            var messagePayload = new OutgoingMessage
+            {
+                Id = MessageId.GenerateRandom(),
+                Data = data,
+                Headers = headers,
+                SentAt = DateTime.UtcNow,
+                Destination = destination,
+                Queue = subQueue,
+            };
+
+            //TODO Maybe expose something to modify transport specific payloads?
+            messagePayload.TranslateHeaders();
+
+            _queue.Send(messagePayload);
+        }
     }
 }
