@@ -54,7 +54,7 @@ namespace JasperBus.Tests.Stubs
 
         public void StartReceiving(IHandlerPipeline pipeline, ChannelGraph channels)
         {
-            
+
         }
     }
 
