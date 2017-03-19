@@ -45,6 +45,11 @@ namespace JasperBus.Configuration
             }
         }
 
+        public ChannelNode AddChannelIfMissing(Uri uri)
+        {
+            return this[uri];
+        }
+
         public bool HasChannel(Uri uri)
         {
             return _nodes.ContainsKey(uri);
@@ -88,11 +93,21 @@ namespace JasperBus.Configuration
                 serializer.Serialize(sending, channel);
 
 
-                sending.Destination = transport.CorrectedAddressFor(address);
-                sending.ReplyUri = transport.ReplyUriFor(address);
                 sending.AcceptedContentTypes = AcceptedContentTypes.ToArray();
+                if (channel != null)
+                {
+                    sending.Destination = channel.Destination;
+                    sending.ReplyUri = channel.ReplyUri;
 
-                transport.Send(sending.Destination, sending.Data, sending.Headers);
+                    channel.Sender.Send(sending.Data, sending.Headers);
+                }
+                else
+                {
+                    sending.Destination = address;
+                    sending.ReplyUri = transport.DefaultReplyUri();
+
+                    transport.Send(sending.Destination, sending.Data, sending.Headers);
+                }
 
                 return sending;
             }

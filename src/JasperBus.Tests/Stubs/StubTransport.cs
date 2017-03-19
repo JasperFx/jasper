@@ -32,7 +32,7 @@ namespace JasperBus.Tests.Stubs
             return ReplyChannel.Address;
         }
 
-        public void Send(Uri uri, byte[] data, Dictionary<string, string> headers)
+        public void Send(Uri uri, byte[] data, IDictionary<string, string> headers)
         {
             Channels[uri].Send(data, headers);
         }
@@ -52,9 +52,14 @@ namespace JasperBus.Tests.Stubs
             return address;
         }
 
-        public void StartReceiving(IHandlerPipeline pipeline, ChannelGraph channels)
+        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
         {
 
+        }
+
+        public Uri DefaultReplyUri()
+        {
+            return "stub://replies".ToUri();
         }
     }
 
@@ -83,7 +88,7 @@ namespace JasperBus.Tests.Stubs
 
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
-        public void Send(byte[] data, Dictionary<string, string> headers)
+        public void Send(byte[] data, IDictionary<string, string> headers)
         {
             var callback = new StubMessageCallback();
             Callbacks.Add(callback);

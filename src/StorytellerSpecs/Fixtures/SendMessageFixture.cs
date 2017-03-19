@@ -217,7 +217,7 @@ namespace StorytellerSpecs.Fixtures
             return ReplyChannel.Address;
         }
 
-        public void Send(Uri uri, byte[] data, Dictionary<string, string> headers)
+        public void Send(Uri uri, byte[] data, IDictionary<string, string> headers)
         {
             Channels[uri].Send(data, headers);
         }
@@ -237,13 +237,18 @@ namespace StorytellerSpecs.Fixtures
             return address;
         }
 
-        public void StartReceiving(IHandlerPipeline pipeline, ChannelGraph channels)
+        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
         {
             foreach (var node in channels.IncomingChannelsFor(Protocol))
             {
                 var receiver = new Receiver(pipeline, channels, node);
                 ReceiveAt(node, receiver);
             }
+        }
+
+        public Uri DefaultReplyUri()
+        {
+            return "stub://replies".ToUri();
         }
     }
 
@@ -272,7 +277,7 @@ namespace StorytellerSpecs.Fixtures
 
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
-        public void Send(byte[] data, Dictionary<string, string> headers)
+        public void Send(byte[] data, IDictionary<string, string> headers)
         {
             var callback = new StubMessageCallback(this);
             Callbacks.Add(callback);

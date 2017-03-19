@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
@@ -54,11 +56,18 @@ namespace JasperBus
                 // 2. Start up subscriptions when ready
 
                 var pipeline = runtime.Container.GetInstance<IHandlerPipeline>();
+
+                // TODO -- might parallelize this later
                 foreach (var transport in transports)
                 {
-                    transport.StartReceiving(pipeline, Channels);
+                    transport.Start(pipeline, Channels);
 
-
+                    Channels
+                        .Where(x => x.Uri.Scheme == transport.Protocol && x.Sender == null)
+                        .Each(x =>
+                        {
+                            x.Sender = new NulloSender(transport, x.Uri);
+                        });
                 }
             });
 
@@ -68,10 +77,6 @@ namespace JasperBus
         private async Task<Registry> bootstrap(IJasperRegistry registry)
         {
             var calls = await Handlers.FindCalls(registry).ConfigureAwait(false);
-
-            // TODO -- this will have to merge in config from the service bus feature!!!
-
-
 
             _graph = new HandlerGraph();
             _graph.AddRange(calls);

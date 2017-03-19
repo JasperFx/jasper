@@ -76,9 +76,13 @@ namespace JasperBus.Tests.Configuration
 
             var address = "stub://one".ToUri();
 
-            theNode = theGraph[address];
-            theNode.ShouldNotBeNull();
 
+
+            theNode = theGraph[address];
+            theNode.Sender = new NulloSender(theTransport, theNode.Uri);
+            theNode.ShouldNotBeNull();
+            theNode.Destination = "remote://one".ToUri();
+            theNode.ReplyUri = "stub://replies".ToUri();
 
             theSentEnvelope = theGraph.Send(theEnvelope, address, theSerializer);
 
@@ -107,13 +111,13 @@ namespace JasperBus.Tests.Configuration
         [Fact]
         public void should_have_the_corrected_uri_address()
         {
-            theSentEnvelope.Destination.ShouldBe(theTransport.CorrectedAddressFor("stub://one".ToUri()));
+            theSentEnvelope.Destination.ShouldBe(theNode.Destination);
         }
 
         [Fact]
         public void should_have_the_reply_uri()
         {
-            theSentEnvelope.ReplyUri.ShouldBe(theTransport.ReplyChannel.Address);
+            theSentEnvelope.ReplyUri.ShouldBe(theNode.ReplyUri);
         }
     }
 }

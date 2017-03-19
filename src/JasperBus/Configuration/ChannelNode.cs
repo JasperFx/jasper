@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
 
@@ -28,10 +27,34 @@ namespace JasperBus.Configuration
         {
             return Rules.Any(x => x.Matches(messageType));
         }
+
+        public Uri ReplyUri { get; set; }
+        public Uri Destination { get; set; }
+
+        public ISender Sender { get; set; }
     }
 
-    internal interface IContentTypeAware
+    // Use a nullo if need be?
+    public interface ISender
     {
-        IEnumerable<string> Accepts { get; }
+        // TODO -- change this to take in Envelope, IEnvelopeSender, ChannelNode
+        void Send(byte[] data, IDictionary<string, string> headers);
+    }
+
+    public class NulloSender : ISender
+    {
+        private readonly ITransport _transport;
+        private readonly Uri _destination;
+
+        public NulloSender(ITransport transport, Uri destination)
+        {
+            _transport = transport;
+            _destination = destination;
+        }
+
+        public void Send(byte[] data, IDictionary<string, string> headers)
+        {
+            _transport.Send(_destination, data, headers);
+        }
     }
 }

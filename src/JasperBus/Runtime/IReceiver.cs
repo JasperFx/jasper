@@ -8,7 +8,7 @@ namespace JasperBus.Runtime
 {
     public interface IReceiver
     {
-        Task Receive(byte[] data, Dictionary<string, string> headers, IMessageCallback callback);
+        Task Receive(byte[] data, IDictionary<string, string> headers, IMessageCallback callback);
     }
 
     public class Receiver : IReceiver
@@ -26,7 +26,7 @@ namespace JasperBus.Runtime
             _address = node.Uri;
         }
 
-        public Task Receive(byte[] data, Dictionary<string, string> headers, IMessageCallback callback)
+        public Task Receive(byte[] data, IDictionary<string, string> headers, IMessageCallback callback)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (headers == null) throw new ArgumentNullException(nameof(headers));

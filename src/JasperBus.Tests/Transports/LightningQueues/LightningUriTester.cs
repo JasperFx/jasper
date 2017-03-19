@@ -34,5 +34,13 @@ namespace JasperBus.Tests.Transports.LightningQueues
             uri.Address.ShouldBe(address.ToUri());
             uri.Original.ShouldBe(address.ToUri());
         }
+
+        [Fact]
+        public void blows_up_if_protocol_is_not_lightning_queues()
+        {
+            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() => {
+                new LightningUri("foo://bar");
+            });
+        }
     }
 }

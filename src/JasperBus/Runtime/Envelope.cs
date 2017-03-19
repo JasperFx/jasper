@@ -40,7 +40,7 @@ namespace JasperBus.Runtime
 
         // TODO -- do routing slip tracking later
 
-        public Envelope(Dictionary<string, string> headers)
+        public Envelope(IDictionary<string, string> headers)
         {
             Headers = headers;
 
@@ -52,7 +52,7 @@ namespace JasperBus.Runtime
         }
 
 
-        public Envelope(byte[] data, Dictionary<string, string> headers, IMessageCallback callback) : this(headers)
+        public Envelope(byte[] data, IDictionary<string, string> headers, IMessageCallback callback) : this(headers)
         {
             Data = data;
             Callback = callback;
