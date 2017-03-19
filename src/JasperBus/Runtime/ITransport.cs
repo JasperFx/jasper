@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JasperBus.Configuration;
+using JasperBus.Runtime.Invocation;
 
 namespace JasperBus.Runtime
 {
@@ -14,7 +15,8 @@ namespace JasperBus.Runtime
 
         Uri ActualUriFor(ChannelNode node);
 
-        void ReceiveAt(ChannelNode node, IReceiver receiver);
         Uri CorrectedAddressFor(Uri address);
+
+        void StartReceiving(IHandlerPipeline pipeline, ChannelGraph channels);
     }
 }

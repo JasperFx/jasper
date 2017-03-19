@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Baseline;
 using JasperBus.Configuration;
 using JasperBus.Runtime;
+using JasperBus.Runtime.Invocation;
 
 namespace JasperBus.Tests.Stubs
 {
@@ -49,6 +50,11 @@ namespace JasperBus.Tests.Stubs
         public Uri CorrectedAddressFor(Uri address)
         {
             return address;
+        }
+
+        public void StartReceiving(IHandlerPipeline pipeline, ChannelGraph channels)
+        {
+            
         }
     }
 

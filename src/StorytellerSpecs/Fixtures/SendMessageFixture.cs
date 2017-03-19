@@ -9,6 +9,7 @@ using JasperBus;
 using JasperBus.Configuration;
 using JasperBus.Model;
 using JasperBus.Runtime;
+using JasperBus.Runtime.Invocation;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
@@ -234,6 +235,15 @@ namespace StorytellerSpecs.Fixtures
         public Uri CorrectedAddressFor(Uri address)
         {
             return address;
+        }
+
+        public void StartReceiving(IHandlerPipeline pipeline, ChannelGraph channels)
+        {
+            foreach (var node in channels.IncomingChannelsFor(Protocol))
+            {
+                var receiver = new Receiver(pipeline, channels, node);
+                ReceiveAt(node, receiver);
+            }
         }
     }
 

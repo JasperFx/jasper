@@ -1,12 +1,17 @@
 ﻿{
   "version": "1.0.0-*",
   "buildOptions": {
-    "debugType": "portable"
+    "debugType": "portable",
+    "embed": {
+        "include": ["lmdb.dll"]
+    }
   },
   "dependencies": {
      "NETStandard.Library": "1.6.1",
-    "Jasper": { "target": "project" },
-    "Newtonsoft.Json": "9.0.1"
+     "Jasper": { "target": "project" },
+     "LightningQueues": "0.2.12",
+     "LightningQueues.Storage.LMDB": "0.2.10",
+     "Newtonsoft.Json": "9.0.1",
   },
   "frameworks": {
     "netstandard1.5": {

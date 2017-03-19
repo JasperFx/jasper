@@ -56,11 +56,9 @@ namespace JasperBus
                 var pipeline = runtime.Container.GetInstance<IHandlerPipeline>();
                 foreach (var transport in transports)
                 {
-                    foreach (var node in Channels.IncomingChannelsFor(transport.Protocol))
-                    {
-                        var receiver = new Receiver(pipeline, Channels, node);
-                        transport.ReceiveAt(node, receiver);
-                    }
+                    transport.StartReceiving(pipeline, Channels);
+
+
                 }
             });
 
