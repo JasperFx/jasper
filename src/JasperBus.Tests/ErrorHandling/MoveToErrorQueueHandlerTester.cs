@@ -26,5 +26,7 @@ namespace JasperBus.Tests.ErrorHandling
             handler.DetermineContinuation(null, ex).ShouldBeOfType<MoveToErrorQueue>()
                 .Exception.ShouldBeTheSameAs(ex);
         }
+
+
     }
 }

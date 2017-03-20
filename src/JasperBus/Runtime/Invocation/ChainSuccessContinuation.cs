@@ -25,7 +25,9 @@ namespace JasperBus.Runtime.Invocation
             catch (Exception ex)
             {
                 context.SendFailureAcknowledgement(envelope, "Sending cascading message failed: " + ex.Message);
-                context.Error(envelope.CorrelationId, ex.Message, ex);
+
+                context.Logger.LogException(ex, envelope.CorrelationId, ex.Message);
+                context.Logger.MessageFailed(envelope, ex);
 
                 envelope.Callback.MoveToErrors(new ErrorReport(envelope, ex));
             }

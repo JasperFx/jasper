@@ -55,11 +55,6 @@ namespace JasperBus.Runtime.Invocation
             // TODO -- actually do something here;)
         }
 
-        public void Error(string correlationId, string message, Exception exception)
-        {
-            _pipeline.Logger.LogException(exception, correlationId, message);
-        }
-
         public Task Retry(Envelope envelope)
         {
             _outgoing.Clear();

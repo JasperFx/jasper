@@ -25,7 +25,7 @@ namespace JasperBus.Runtime.Invocation
                 }
                 catch (Exception e)
                 {
-                    context.Error(envelope.CorrelationId, "Failed trying to run continuation {0} as part of error handling".ToFormat(continuation), e);
+                    context.Logger.LogException(e, envelope.CorrelationId, $"Failed trying to run continuation {continuation} as part of error handling");
                 }
             }
         }

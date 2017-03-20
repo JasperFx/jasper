@@ -35,7 +35,7 @@ namespace StorytellerSpecs.Fixtures.LQ
     {
         private JasperBusRegistry _registry;
 
-
+        
 
         public override void SetUp()
         {

@@ -37,6 +37,7 @@ namespace JasperBus.Runtime
             return envelope.CorrelationId;
         }
 
+        // TODO -- have this return the channels maybe
         public IEnumerable<Uri> DetermineDestinationChannels(Envelope envelope)
         {
             var destination = envelope.Destination;

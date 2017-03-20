@@ -118,7 +118,7 @@ namespace JasperBus.Runtime.Invocation
 
         private void completeRequestWithRequestedResponse(Envelope envelope)
         {
-            throw new NotImplementedException();
+            Logger.LogException(new NotImplementedException("Jasper has not implemented Request/Response yet"), envelope.CorrelationId);
         }
 
         // TODO -- think this is gonna die
@@ -131,7 +131,7 @@ namespace JasperBus.Runtime.Invocation
             catch (Exception e)
             {
                 envelope.Callback.MarkFailed(e);
-                context.Error(envelope.CorrelationId, "Failed to move delayed message to the delayed message queue", e);
+                context.Logger.LogException(e, envelope.CorrelationId, "Failed to move delayed message to the delayed message queue");
             }
         }
     }

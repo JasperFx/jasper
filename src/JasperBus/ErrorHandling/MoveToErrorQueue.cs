@@ -17,7 +17,10 @@ namespace JasperBus.ErrorHandling
 
         public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
-            context.SendFailureAcknowledgement(envelope, "Moved message {0} to the Error Queue.\n{1}".ToFormat(envelope.CorrelationId, Exception));
+            context.SendFailureAcknowledgement(envelope, $"Moved message {envelope.CorrelationId} to the Error Queue.\n{Exception}");
+
+            context.Logger.MessageFailed(envelope, Exception);
+            context.Logger.LogException(Exception, envelope.CorrelationId);
 
             var report = new ErrorReport(envelope, Exception);
             envelope.Callback.MoveToErrors(report);
