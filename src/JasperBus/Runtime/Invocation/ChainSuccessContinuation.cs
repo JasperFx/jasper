@@ -19,6 +19,8 @@ namespace JasperBus.Runtime.Invocation
                 context.SendAllQueuedOutgoingMessages();
 
                 envelope.Callback.MarkSuccessful();
+
+                context.Logger.MessageSucceeded(envelope);
             }
             catch (Exception ex)
             {

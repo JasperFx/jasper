@@ -13,6 +13,7 @@ using JasperBus.Runtime.Invocation;
 using JasperBus.Runtime.Serializers;
 using JasperBus.Transports.LightningQueues;
 using StructureMap;
+using Policies = JasperBus.Configuration.Policies;
 
 namespace JasperBus
 {

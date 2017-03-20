@@ -44,7 +44,7 @@ namespace JasperBus.Tests.Transports.LightningQueues
 
             bus.Send(new Message1());
 
-            task.Wait(60.Seconds());
+            task.Wait(20.Seconds());
 
             if (!task.IsCompleted)
             {

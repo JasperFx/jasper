@@ -14,6 +14,8 @@ namespace JasperBus.Runtime.Invocation
         {
             context.SendFailureAcknowledgement(envelope, "Message handler failed");
             envelope.Callback.MarkFailed(Exception);
+
+            context.Logger.MessageFailed(envelope, Exception);
             
             if (envelope.Message == null)
             {

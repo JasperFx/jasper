@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JasperBus.Model;
 
-namespace JasperBus
+namespace JasperBus.Configuration
 {
     public class Policies
     {

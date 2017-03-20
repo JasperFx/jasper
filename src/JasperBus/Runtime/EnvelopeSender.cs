@@ -11,11 +11,14 @@ namespace JasperBus.Runtime
         private readonly ChannelGraph _channels;
         private readonly IEnvelopeSerializer _serializer;
 
-        public EnvelopeSender(ChannelGraph channels, IEnvelopeSerializer serializer)
+        public EnvelopeSender(ChannelGraph channels, IEnvelopeSerializer serializer, IBusLogger[] loggers)
         {
             _channels = channels;
             _serializer = serializer;
+            Logger = BusLogger.Combine(loggers);
         }
+
+        public IBusLogger Logger { get; }
 
         public string Send(Envelope envelope)
         {
@@ -27,7 +30,8 @@ namespace JasperBus.Runtime
 
             foreach (var channel in channels)
             {
-                _channels.Send(envelope, channel, _serializer);
+                var sent = _channels.Send(envelope, channel, _serializer);
+                Logger.Sent(sent);
             }
 
             return envelope.CorrelationId;

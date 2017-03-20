@@ -94,6 +94,8 @@ namespace JasperBus.Tests.Runtime
             Invoked.Add(envelope);
             return Task.CompletedTask;
         }
+
+        public IBusLogger Logger { get; } = new BusLogger();
     }
 
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Jasper;
+using JasperBus.Configuration;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
 using StructureMap.TypeRules;
