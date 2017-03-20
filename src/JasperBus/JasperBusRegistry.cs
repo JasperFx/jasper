@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Jasper;
+using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
 using StructureMap.TypeRules;
 
@@ -24,6 +25,11 @@ namespace JasperBus
         public void ListenForMessagesFrom(Uri uri)
         {
             _feature.Channels[uri].Incoming = true;
+        }
+
+        public void ListenForMessagesFrom(string uriString)
+        {
+            ListenForMessagesFrom(uriString.ToUri());
         }
 
         public SendExpression SendMessage<T>()
@@ -72,6 +78,13 @@ namespace JasperBus
                 _parent._feature.Channels[address].Rules.Add(_routing);
                 return this;
             }
+
+            public SendExpression To(string address)
+            {
+                return To(address.ToUri());
+            }
         }
+
+
     }
 }

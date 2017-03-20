@@ -110,5 +110,14 @@ namespace JasperBus
         {
             _typeFilters.Excludes += type => !type.IsConcrete();
         }
+
+        /// <summary>
+        /// Include a single type "T"
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void IncludeType<T>()
+        {
+            IncludeTypes(_ => _ == typeof(T));
+        }
     }
 }

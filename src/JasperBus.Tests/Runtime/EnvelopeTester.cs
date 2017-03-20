@@ -361,7 +361,7 @@ namespace JasperBus.Tests.Runtime
 
     public class Message1
     {
-
+        public Guid Id = Guid.NewGuid();
     }
 
     public class Message2

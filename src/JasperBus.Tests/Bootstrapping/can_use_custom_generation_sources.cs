@@ -14,15 +14,16 @@ namespace JasperBus.Tests.Bootstrapping
             with(_ =>
             {
                 _.Generation.Sources.Add(new SpecialServiceSource());
+                _.Handlers.IncludeType<SpecialServiceUsingThing>();
             });
 
             
 
-            chainFor<Message1>().ShouldHaveHandler<SpecialServiceUsingHandler>(x => x.Handle(null, null));
+            chainFor<Message1>().ShouldHaveHandler<SpecialServiceUsingThing>(x => x.Handle(null, null));
         }
     }
 
-    public class SpecialServiceUsingHandler
+    public class SpecialServiceUsingThing
     {
         public void Handle(Message1 message, SpecialService service)
         {
