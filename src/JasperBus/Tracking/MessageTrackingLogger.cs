@@ -45,4 +45,5 @@ namespace JasperBus.Tracking
             _history.Complete(envelope, Envelope, ex);
         }
     }
+
 }

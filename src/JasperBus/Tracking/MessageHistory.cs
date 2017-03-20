@@ -28,6 +28,8 @@ namespace JasperBus.Tracking
                 _waiters.Add(waiter);
             }
 
+            action();
+
             return waiter.Task;
         }
 

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Baseline.Dates;
 using Jasper;
 using JasperBus;
 using JasperBus.Configuration;
 using JasperBus.Model;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
+using JasperBus.Tracking;
 using JasperBus.Transports.LightningQueues;
 using StoryTeller;
 
@@ -57,6 +59,9 @@ namespace StorytellerSpecs.Fixtures
 
             _registry.Services.AddService<ITransport, StubTransport>();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
+
+            _registry.Services.ForConcreteType<MessageHistory>().Configure.Singleton();
+            _registry.Services.AddService<IBusLogger, MessageTrackingLogger>();
         }
 
         public override void TearDown()
@@ -92,6 +97,7 @@ namespace StorytellerSpecs.Fixtures
         public override void SetUp()
         {
             LightningQueuesTransport.DeleteAllStorage();
+
         }
 
         public IGrammar IfTheApplicationIs()
@@ -103,22 +109,40 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Send message {messageType} named {name}")]
         public void SendMessage([SelectionList("MessageTypes")] string messageType, string name)
         {
+            var history = _runtime.Container.GetInstance<MessageHistory>();
+
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            _runtime.Container.GetInstance<IServiceBus>().Send(message);
+            var waiter = history.Watch(() =>
+            {
+                _runtime.Container.GetInstance<IServiceBus>().Send(message);
+            });
+
+            waiter.Wait(5.Seconds());
+
+            StoryTellerAssert.Fail(!waiter.IsCompleted, "Messages were never completely tracked");
+            
         }
 
         [FormatAs("Send message {messageType} named {name} directly to {address}")]
         public void SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
             [SelectionList("Channels")] Uri address)
         {
+            var history = _runtime.Container.GetInstance<MessageHistory>();
+
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            _runtime.Container.GetInstance<IServiceBus>().Send(address, message);
+
+            var waiter = history.Watch(() =>
+            {
+                _runtime.Container.GetInstance<IServiceBus>().Send(address, message);
+            });
+
+            waiter.Wait(5.Seconds());
         }
 
         public IGrammar TheMessagesSentShouldBe()
