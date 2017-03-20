@@ -12,6 +12,7 @@
      "LightningQueues": "0.2.12",
      "LightningQueues.Storage.LMDB": "0.2.10",
      "Newtonsoft.Json": "9.0.1",
+     "lmdb.v141": "0.9.18"
   },
   "frameworks": {
     "netstandard1.5": {

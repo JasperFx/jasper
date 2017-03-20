@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Reactive.Concurrency;
+using System.Threading.Tasks;
 using JasperBus.Configuration;
+using JasperBus.Runtime;
 using LightningDB;
 using LightningQueues;
 using LightningQueues.Storage;
@@ -99,6 +101,20 @@ namespace JasperBus.Transports.LightningQueues
             messagePayload.TranslateHeaders();
 
             _queue.Send(messagePayload);
+        }
+
+        public void ListenForMessages(string subQueue, IReceiver receiver)
+        {
+            var disposable = _queue.Receive(subQueue).Subscribe(message =>
+            {
+                Task.Run(() =>
+                {
+                    receiver.Receive(message.Message.Data, message.Message.Headers,
+                        new TransactionCallback(message.QueueContext, message.Message));
+                });
+            });
+
+            _subscriptions.Add(disposable);
         }
     }
 }

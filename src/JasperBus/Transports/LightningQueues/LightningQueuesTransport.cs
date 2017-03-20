@@ -74,15 +74,19 @@ namespace JasperBus.Transports.LightningQueues
                 foreach (var node in group)
                 {
                     node.Sender = new QueueSender(node.Destination, queue, node.Destination.ToLightningUri().QueueName);
+                    var lightningUri = node.Uri.ToLightningUri();
+                    node.Destination = lightningUri.Address;
+                    node.ReplyUri = _replyUri;
+
+                    if (node.Incoming)
+                    {
+                        queue.ListenForMessages(lightningUri.QueueName, new Receiver(pipeline, channels, node));
+                    }
                 }
             }
 
 
-            foreach (var node in nodes)
-            {
-                node.Destination = node.Uri.ToLightningUri().Address;
-                node.ReplyUri = _replyUri;
-            }
+
         }
 
         public Uri DefaultReplyUri()
