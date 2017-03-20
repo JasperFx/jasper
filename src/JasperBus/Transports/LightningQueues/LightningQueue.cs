@@ -82,6 +82,7 @@ namespace JasperBus.Transports.LightningQueues
             }
             _subscriptions.Clear();
 
+            _queue?.Store.Dispose();
             _queue?.Dispose();
         }
 

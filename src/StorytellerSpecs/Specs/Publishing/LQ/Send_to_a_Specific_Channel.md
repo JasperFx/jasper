@@ -1,6 +1,6 @@
 # Send to a Specific Channel
 
--> id = 0259b104-8871-4616-891d-50d7f3a046a9
+-> id = 0259b104-8871-4616-891d-50d7f3a046a8
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-03-14T19:59:53.7519650Z

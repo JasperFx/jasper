@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
@@ -62,6 +63,11 @@ namespace StorytellerSpecs.Fixtures
 
             _registry.Services.ForConcreteType<MessageHistory>().Configure.Singleton();
             _registry.Services.AddService<IBusLogger, MessageTrackingLogger>();
+
+            _registry.Services.For<LightningQueueSettings>().Use(new LightningQueueSettings
+            {
+                MaxDatabases = 20
+            });
         }
 
         public override void TearDown()
@@ -159,6 +165,9 @@ namespace StorytellerSpecs.Fixtures
         public override void TearDown()
         {
             _runtime.Dispose();
+
+            // Let LQ cooldown
+            Thread.Sleep(1000);
         }
     }
 
