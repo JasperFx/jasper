@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Baseline;
-using Baseline.Reflection;
 using Jasper;
 using JasperBus;
 using JasperBus.Configuration;
 using JasperBus.Model;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
+using JasperBus.Transports.LightningQueues;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
 {
-
     public abstract class BusFixture : Fixture
     {
         public static Uri Channel1 = new Uri("stub://one");
@@ -22,28 +20,35 @@ namespace StorytellerSpecs.Fixtures
         public static Uri Channel3 = new Uri("stub://three");
         public static Uri Channel4 = new Uri("stub://four");
 
-        protected readonly Type[] messageTypes = new Type[] {typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4), typeof(Message5), typeof(Message6)};
+        public static Uri LQChannel1 = new Uri("lq.tcp://localhost:2201/one");
+        public static Uri LQChannel2 = new Uri("lq.tcp://localhost:2201/two");
+        public static Uri LQChannel3 = new Uri("lq.tcp://localhost:2201/three");
+        public static Uri LQChannel4 = new Uri("lq.tcp://localhost:2201/four");
+
+        protected readonly Type[] messageTypes =
+        {
+            typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4),
+            typeof(Message5), typeof(Message6)
+        };
 
 
         protected BusFixture()
         {
             AddSelectionValues("MessageTypes", messageTypes.Select(x => x.Name).ToArray());
-            AddSelectionValues("Channels", "stub://one", "stub://two", "stub://three", "stub://four");
+            AddSelectionValues("Channels", "stub://one", "stub://two", "stub://three", "stub://four",
+                LQChannel1.ToString(), LQChannel2.ToString(), LQChannel3.ToString(), LQChannel4.ToString());
         }
 
         protected Type messageTypeFor(string name)
         {
             return messageTypes.First(x => x.Name == name);
         }
-
-
     }
 
     [Hidden]
     public class ServiceBusApplication : BusFixture
     {
         private JasperBusRegistry _registry;
-
 
 
         public override void SetUp()
@@ -64,7 +69,8 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("Sends message {messageType} to {channel}")]
-        public void SendMessage([SelectionList("MessageTypes")] string messageType, [SelectionList("Channels")] Uri channel)
+        public void SendMessage([SelectionList("MessageTypes")] string messageType,
+            [SelectionList("Channels")] Uri channel)
         {
             var type = messageTypeFor(messageType);
             _registry.SendMessages(type.Name, t => t == type).To(channel);
@@ -76,8 +82,6 @@ namespace StorytellerSpecs.Fixtures
 
     public class SendMessageFixture : BusFixture
     {
-
-
         private JasperRuntime _runtime;
 
         public SendMessageFixture()
@@ -85,6 +89,10 @@ namespace StorytellerSpecs.Fixtures
             Title = "Send Messages through the Service Bus";
         }
 
+        public override void SetUp()
+        {
+            LightningQueuesTransport.DeleteAllStorage();
+        }
 
         public IGrammar IfTheApplicationIs()
         {
@@ -103,7 +111,8 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("Send message {messageType} named {name} directly to {address}")]
-        public void SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name, [SelectionList("Channels")] Uri address)
+        public void SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
+            [SelectionList("Channels")] Uri address)
         {
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
@@ -134,12 +143,29 @@ namespace StorytellerSpecs.Fixtures
         public string Name { get; set; }
     }
 
-    public class Message1 : Message { }
-    public class Message2 : Message { }
-    public class Message3 : Message { }
-    public class Message4 : Message { }
-    public class Message5 : Message { }
-    public class Message6 : Message { }
+    public class Message1 : Message
+    {
+    }
+
+    public class Message2 : Message
+    {
+    }
+
+    public class Message3 : Message
+    {
+    }
+
+    public class Message4 : Message
+    {
+    }
+
+    public class Message5 : Message
+    {
+    }
+
+    public class Message6 : Message
+    {
+    }
 
     public abstract class MessageHandler<T> where T : Message
     {
@@ -149,11 +175,25 @@ namespace StorytellerSpecs.Fixtures
         }
     }
 
-    public class Message1Handler : MessageHandler<Message1> { }
-    public class Message2Handler : MessageHandler<Message2> { }
-    public class Message3Handler : MessageHandler<Message3> { }
-    public class Message4Handler : MessageHandler<Message4> { }
-    public class Message5Handler : MessageHandler<Message5> { }
+    public class Message1Handler : MessageHandler<Message1>
+    {
+    }
+
+    public class Message2Handler : MessageHandler<Message2>
+    {
+    }
+
+    public class Message3Handler : MessageHandler<Message3>
+    {
+    }
+
+    public class Message4Handler : MessageHandler<Message4>
+    {
+    }
+
+    public class Message5Handler : MessageHandler<Message5>
+    {
+    }
 
     public class Message6Handler : MessageHandler<Message6>
     {
@@ -162,7 +202,6 @@ namespace StorytellerSpecs.Fixtures
     public class MessageTracker
     {
         public readonly IList<MessageRecord> Records = new List<MessageRecord>();
-
     }
 
     public class MessageRecord
@@ -184,12 +223,43 @@ namespace StorytellerSpecs.Fixtures
 
     public class StubTransport : ITransport
     {
-        public readonly LightweightCache<Uri, StubChannel> Channels = new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri));
+        public readonly LightweightCache<Uri, StubChannel> Channels =
+            new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri));
 
         public StubTransport(string scheme = "stub")
         {
             ReplyChannel = Channels[new Uri($"{scheme}://replies")];
             Protocol = scheme;
+        }
+
+        public StubChannel ReplyChannel { get; set; }
+
+        public bool WasDisposed { get; set; }
+
+        public void Dispose()
+        {
+            WasDisposed = true;
+        }
+
+        public string Protocol { get; }
+
+        public void Send(Uri uri, byte[] data, IDictionary<string, string> headers)
+        {
+            Channels[uri].Send(data, headers);
+        }
+
+        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
+        {
+            foreach (var node in channels.IncomingChannelsFor(Protocol))
+            {
+                var receiver = new Receiver(pipeline, channels, node);
+                ReceiveAt(node, receiver);
+            }
+        }
+
+        public Uri DefaultReplyUri()
+        {
+            return "stub://replies".ToUri();
         }
 
         public IEnumerable<StubMessageCallback> CallbackHistory()
@@ -202,24 +272,9 @@ namespace StorytellerSpecs.Fixtures
             return CallbackHistory().Last();
         }
 
-        public StubChannel ReplyChannel { get; set; }
-
-        public void Dispose()
-        {
-            WasDisposed = true;
-        }
-
-        public bool WasDisposed { get; set; }
-
-        public string Protocol { get; }
         public Uri ReplyUriFor(Uri node)
         {
             return ReplyChannel.Address;
-        }
-
-        public void Send(Uri uri, byte[] data, IDictionary<string, string> headers)
-        {
-            Channels[uri].Send(data, headers);
         }
 
         public Uri ActualUriFor(ChannelNode node)
@@ -236,46 +291,32 @@ namespace StorytellerSpecs.Fixtures
         {
             return address;
         }
-
-        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
-        {
-            foreach (var node in channels.IncomingChannelsFor(Protocol))
-            {
-                var receiver = new Receiver(pipeline, channels, node);
-                ReceiveAt(node, receiver);
-            }
-        }
-
-        public Uri DefaultReplyUri()
-        {
-            return "stub://replies".ToUri();
-        }
     }
 
     public class StubChannel
     {
-        public void Dispose()
-        {
-            WasDisposed = true;
-        }
-
-        public bool WasDisposed { get; set; }
+        public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
         public StubChannel(Uri address)
         {
             Address = address;
         }
 
+        public bool WasDisposed { get; set; }
+
         public Uri Address { get; }
+
+        public IReceiver Receiver { get; set; }
+
+        public void Dispose()
+        {
+            WasDisposed = true;
+        }
 
         public void StartReceiving(IReceiver receiver)
         {
             Receiver = receiver;
         }
-
-        public IReceiver Receiver { get; set; }
-
-        public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
         public void Send(byte[] data, IDictionary<string, string> headers)
         {
@@ -289,20 +330,30 @@ namespace StorytellerSpecs.Fixtures
     public class StubMessageCallback : IMessageCallback
     {
         private readonly StubChannel _channel;
-        public readonly IList<Envelope> Sent = new List<Envelope>();
         public readonly IList<ErrorReport> Errors = new List<ErrorReport>();
-        
+        public readonly IList<Envelope> Sent = new List<Envelope>();
+
         public StubMessageCallback(StubChannel channel)
         {
             _channel = channel;
         }
 
+        public bool MarkedSucessful { get; set; }
+
+        public Exception Exception { get; set; }
+
+        public bool MarkedFailed { get; set; }
+
+        public DateTime? DelayedTo { get; set; }
+
+        public bool WasMovedToErrors { get; set; }
+
+        public bool Requeued { get; set; }
+
         public void MarkSuccessful()
         {
             MarkedSucessful = true;
         }
-
-        public bool MarkedSucessful { get; set; }
 
         public void MarkFailed(Exception ex)
         {
@@ -310,16 +361,10 @@ namespace StorytellerSpecs.Fixtures
             Exception = ex;
         }
 
-        public Exception Exception { get; set; }
-
-        public bool MarkedFailed { get; set; }
-
         public void MoveToDelayedUntil(DateTime time)
         {
             DelayedTo = time;
         }
-
-        public DateTime? DelayedTo { get; set; }
 
         public void MoveToErrors(ErrorReport report)
         {
@@ -327,15 +372,11 @@ namespace StorytellerSpecs.Fixtures
             Errors.Add(report);
         }
 
-        public bool WasMovedToErrors { get; set; }
-
         public void Requeue(Envelope envelope)
         {
             Requeued = true;
             _channel.Send(envelope.Data, envelope.Headers);
         }
-
-        public bool Requeued { get; set; }
 
         public void Send(Envelope envelope)
         {
