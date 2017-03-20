@@ -11,6 +11,7 @@ using JasperBus.Model;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using JasperBus.Runtime.Serializers;
+using JasperBus.Transports.LightningQueues;
 using StructureMap;
 
 namespace JasperBus
@@ -89,7 +90,9 @@ namespace JasperBus
             var services = new Registry();
             services.For<HandlerGraph>().Use(_graph);
             services.For<ChannelGraph>().Use(Channels);
-            services.For<ITransport>().Singleton();
+            services.For<ITransport>().Singleton().Add<LightningQueuesTransport>();
+
+
             services.For<IEnvelopeSender>().Use<EnvelopeSender>();
             services.For<IServiceBus>().Use<ServiceBus>();
             services.For<IHandlerPipeline>().Use<HandlerPipeline>();

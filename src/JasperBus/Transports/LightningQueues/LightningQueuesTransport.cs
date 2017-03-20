@@ -11,6 +11,12 @@ namespace JasperBus.Transports.LightningQueues
 {
     public class LightningQueuesTransport : ITransport
     {
+        public static void DeleteAllStorage(string queuePath = null)
+        {
+            queuePath = queuePath ?? new LightningQueueSettings().QueuePath;
+            new FileSystem().DeleteDirectory(queuePath);
+        }
+
         public static string MaxAttemptsHeader = "max-delivery-attempts";
         public static string DeliverByHeader = "deliver-by";
 
