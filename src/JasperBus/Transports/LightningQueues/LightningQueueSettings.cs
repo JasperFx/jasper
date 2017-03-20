@@ -17,6 +17,6 @@ namespace JasperBus.Transports.LightningQueues
 
         public string QueuePath { get; set; } = AppContext.BaseDirectory.AppendPath("jasperqueues");
 
-        public Uri DefaultReplyUri { get; set; } = new Uri("lq.tcp://localhost:2345");
+        public Uri DefaultReplyUri { get; set; } = new Uri("lq.tcp://localhost:2345/replies");
     }
 }
