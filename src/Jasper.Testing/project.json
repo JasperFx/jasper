@@ -1,7 +1,8 @@
 {
   "version": "1.0.0-*",
   "buildOptions": {
-    "debugType": "portable"
+    "debugType": "portable",
+    "copyToOutput": [ "appsettings.json", "colors.json" ]
   },
   "dependencies": {
     "System.Runtime.Serialization.Primitives": "4.1.1",
@@ -9,7 +10,11 @@
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Jasper": { "target": "project" },
     "Module1": { "target": "project" },
-    "Shouldly": "2.8.2"
+    "Shouldly": "2.8.2",
+    "Microsoft.Extensions.Configuration": "1.1.1",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.1.1",
+    "Microsoft.Extensions.Configuration.Binder": "1.1.1",
+    "NSubstitute": "2.0.2"
   },
   "testRunner": "xunit",
   "frameworks": {
