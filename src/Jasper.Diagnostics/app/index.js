@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
+import Communicator from './communicator'
 import rootReducer from './rootReducer';
 import App from './App'
 
@@ -17,6 +18,8 @@ const store = createStore(
 )
 
 const settings = window.DiagnosticsSettings;
+
+const communicator = new Communicator(() => {}, settings.websocketAddress, ()=> {})
 
 render(
   <HashRouter>

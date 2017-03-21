@@ -21,7 +21,8 @@
     "Microsoft.CodeAnalysis.CSharp": "2.0.0-rc4",
     "Microsoft.CodeAnalysis.Scripting": "2.0.0-rc4",
     "StructureMap": "4.4.3",
-    "Microsoft.Extensions.Configuration.Abstractions": "1.1.0" 
+    "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
+    "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {
     "netstandard1.5": {
@@ -29,7 +30,7 @@
         "NETStandard.Library": "1.6.1",
         "System.Runtime.Loader": "4.0.0"
       },
-      "imports": [ "dnxcore50" ] 
+      "imports": [ "dnxcore50" ]
     }
   }
 }
