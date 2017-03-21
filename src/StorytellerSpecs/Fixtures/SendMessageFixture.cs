@@ -7,7 +7,6 @@ using Baseline.Dates;
 using Jasper;
 using JasperBus;
 using JasperBus.Configuration;
-using JasperBus.Model;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using JasperBus.Tracking;
@@ -45,49 +44,6 @@ namespace StorytellerSpecs.Fixtures
         protected Type messageTypeFor(string name)
         {
             return messageTypes.First(x => x.Name == name);
-        }
-    }
-
-    [Hidden]
-    public class ServiceBusApplication : BusFixture
-    {
-        private JasperBusRegistry _registry;
-
-
-        public override void SetUp()
-        {
-            _registry = new JasperBusRegistry();
-
-            _registry.Services.AddService<ITransport, StubTransport>();
-            _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
-
-            _registry.Services.ForConcreteType<MessageHistory>().Configure.Singleton();
-            _registry.Services.AddService<IBusLogger, MessageTrackingLogger>();
-
-            _registry.Services.For<LightningQueueSettings>().Use(new LightningQueueSettings
-            {
-                MaxDatabases = 20
-            });
-        }
-
-        public override void TearDown()
-        {
-            var runtime = JasperRuntime.For(_registry);
-
-            var graph = runtime.Container.GetInstance<HandlerGraph>();
-
-            Context.State.Store(runtime);
-        }
-
-        [FormatAs("Sends message {messageType} to {channel}")]
-        public void SendMessage([SelectionList("MessageTypes")] string messageType,
-            [SelectionList("Channels")] Uri channel)
-        {
-            var type = messageTypeFor(messageType);
-            _registry.SendMessages(type.Name, t => t == type).To(channel);
-
-            // Just makes the test harness listen for things
-            _registry.ListenForMessagesFrom(channel);
         }
     }
 
@@ -198,6 +154,26 @@ namespace StorytellerSpecs.Fixtures
 
     public class Message6 : Message
     {
+    }
+
+    public class Cascader1
+    {
+        public Message2 Handle(Message1 message)
+        {
+            return new Message2{Name = message.Name};
+        }
+    }
+
+    public class Cascader2
+    {
+        public object[] Handle(Message2 message)
+        {
+            return new object[]
+            {
+                new Message3{Name = message.Name},
+                new Message4{Name = message.Name}
+            };
+        }
     }
 
     public abstract class MessageHandler<T> where T : Message

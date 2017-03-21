@@ -52,7 +52,7 @@ namespace JasperBus.Runtime.Invocation
 
         public void SendAllQueuedOutgoingMessages()
         {
-            // TODO -- actually do something here;)
+            SendOutgoingMessages(Envelope, _outgoing);
         }
 
         public void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
@@ -118,6 +118,7 @@ namespace JasperBus.Runtime.Invocation
         public Task Retry(Envelope envelope)
         {
             _outgoing.Clear();
+            _inline.Clear();
 
             return _pipeline.ProcessMessage(envelope, this);
         }
