@@ -9,7 +9,7 @@ namespace JasperBus.Runtime.Invocation
     public class EnvelopeContext : IEnvelopeContext
     {
         private readonly HandlerPipeline _pipeline;
-        private readonly IList<object> _outgoing = new List<object>();
+        private readonly List<object> _outgoing = new List<object>();
 
         public EnvelopeContext(HandlerPipeline pipeline, Envelope envelope)
         {
@@ -21,12 +21,22 @@ namespace JasperBus.Runtime.Invocation
 
         public void EnqueueCascading(object message)
         {
-            throw new NotImplementedException();
+            if (message == null) return;
+
+            var enumerable = message as IEnumerable<object>;
+            if (enumerable == null)
+            {
+                _outgoing.Add(message);
+            }
+            else
+            {
+                _outgoing.AddRange(enumerable);
+            }
         }
 
         public IEnumerable<object> OutgoingMessages()
         {
-            throw new NotImplementedException();
+            return _outgoing;
         }
 
         public Envelope Envelope { get; }

@@ -98,7 +98,7 @@ namespace JasperBus.Tests.Compilation
         {
             var handler = HandlerFor<TMessage>();
             theEnvelope = Envelope.ForMessage(message);
-            var context = new InvocationContext(theEnvelope, handler.Chain );
+            var context = new EnvelopeContext(null,theEnvelope);
 
             await handler.Handle(context);
 

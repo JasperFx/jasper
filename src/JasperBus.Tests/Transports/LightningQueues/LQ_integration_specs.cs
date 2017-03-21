@@ -6,8 +6,10 @@ using Baseline.Dates;
 using JasperBus.Runtime;
 using JasperBus.Tests.Runtime;
 using JasperBus.Transports.LightningQueues;
+using Microsoft.DotNet.InternalAbstractions;
 using Shouldly;
 using Xunit;
+using Platform = Baseline.Platform;
 
 namespace JasperBus.Tests.Transports.LightningQueues
 {
@@ -38,6 +40,11 @@ namespace JasperBus.Tests.Transports.LightningQueues
         [Fact]
         public void send_a_message_and_get_the_response()
         {
+            if (!Platform.IsWindows)
+            {
+                return;
+            }
+
             var bus = Runtime.Container.GetInstance<IServiceBus>();
 
             var task = theTracker.WaitFor<Message1>();
