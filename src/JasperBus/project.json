@@ -1,11 +1,29 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "0.1.0-alpha-*",
   "buildOptions": {
     "debugType": "portable",
     "embed": {
         "include": ["lmdb.dll"]
     }
   },
+
+
+  "description": "Jasper Service Bus for Messaging Based Architectures",
+  "authors": [
+      "Jeremy D. Miller",
+      "Mark Wuthrich",
+      "Jordan Zaerr"
+  ],
+
+
+  "packOptions": {
+      "projectUrl": "http://jasperfx.github.io",
+      "licenseUrl": "https://github.com/JasperFX/jasper/blob/master/LICENSE.txt",
+      "iconUrl": "https://avatars2.githubusercontent.com/u/10048186?v=3&s=200"
+  },
+
+
+
   "dependencies": {
      "NETStandard.Library": "1.6.1",
      "Jasper": { "target": "project" },

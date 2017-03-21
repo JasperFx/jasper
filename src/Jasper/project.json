@@ -1,8 +1,21 @@
 {
-  "version": "0.5.0-*",
+  "version": "0.1.0-alpha-*",
   "buildOptions": {
     "debugType": "portable"
   },
+
+  "description": "Core Library for JasperFx Applications",
+  "authors": [
+      "Jeremy D. Miller"
+  ],
+
+
+  "packOptions": {
+      "projectUrl": "http://jasperfx.github.io",
+      "licenseUrl": "https://github.com/JasperFX/jasper/blob/master/LICENSE.txt",
+      "iconUrl": "https://avatars2.githubusercontent.com/u/10048186?v=3&s=200"
+  },
+
   "dependencies": {
     "Baseline": "1.2.0",
     "Microsoft.CodeAnalysis.CSharp": "2.0.0-rc4",
