@@ -70,14 +70,6 @@ namespace JasperBus.Runtime
             throw new System.NotImplementedException();
         }
 
-        public void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        public void SendFailureAcknowledgement(Envelope original, string message)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

@@ -112,22 +112,21 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("The acknowledgement was received within 3 seconds")]
         public bool AckIsReceived()
         {
-            var sw = Stopwatch.StartNew();
             try
             {
                 _task.Wait(3.Seconds());
             }
-            catch (Exception)
+            catch (Exception )
             {
+                // swallow the ex for the sake of the test
             }
-            sw.Stop();
-            return sw.Elapsed.Seconds <= 3;
+            return _task.IsCompleted || _task.IsFaulted;
         }
 
         [FormatAs("The acknowledgement was successful")]
         public bool AckWasSuccessful()
         {
-            StoryTellerAssert.Fail(_task.IsFaulted, () => _task.Exception.ToString());
+            StoryTellerAssert.Fail(_task.IsFaulted || !_task.IsCompleted, () => _task.Exception?.ToString() ?? "Task was not completed");
 
             return true;
         }
@@ -301,6 +300,15 @@ namespace StorytellerSpecs.Fixtures
                 var receiver = new Receiver(pipeline, channels, node);
                 ReceiveAt(node, receiver);
             }
+
+            var replyNode = new ChannelNode(ReplyChannel.Address);
+            var replyReceiver = new Receiver(pipeline, channels, replyNode);
+            ReceiveAt(replyNode, replyReceiver);
+
+            channels.Where(x => x.Uri.Scheme == Protocol).Each(x => {
+                x.ReplyUri = ReplyChannel.Address;
+                x.Destination = x.Uri;
+            });
         }
 
         public Uri DefaultReplyUri()

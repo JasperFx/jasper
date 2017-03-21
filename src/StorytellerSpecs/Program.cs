@@ -9,7 +9,7 @@ namespace StorytellerSpecs
         {
             using (var runner = StorytellerRunner.Basic())
             {
-                var counts = runner.Run("Publishing / Cascading / Single Cascading Message").Counts;
+                var counts = runner.Run("Publishing / Send and Wait for an Acknowledgement").Counts;
 
                 Console.WriteLine(counts);
 

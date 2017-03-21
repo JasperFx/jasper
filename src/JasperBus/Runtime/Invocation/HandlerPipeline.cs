@@ -56,21 +56,26 @@ namespace JasperBus.Runtime.Invocation
                 }
                 else if (envelope.ResponseId.IsNotEmpty())
                 {
-                    completeRequestWithRequestedResponse(envelope);
+                    completeRequestWithRequestedResponse(envelope, receiver);
                 }
                 else
                 {
                     Logger.Received(envelope);
 
-                    // TODO -- Not super duper wild about this one.
-                    if (envelope.Message == null)
-                    {
-                        envelope.Message = _serializer.Deserialize(envelope, receiver);
-                    }
+                    deserialize(envelope, receiver);
 
 
                     await ProcessMessage(envelope, context).ConfigureAwait(false);
                 }
+            }
+        }
+
+        private void deserialize(Envelope envelope, ChannelNode receiver)
+        {
+// TODO -- Not super duper wild about this one.
+            if (envelope.Message == null)
+            {
+                envelope.Message = _serializer.Deserialize(envelope, receiver);
             }
         }
 
@@ -117,10 +122,11 @@ namespace JasperBus.Runtime.Invocation
             Logger.NoHandlerFor(envelope);
         }
 
-        private void completeRequestWithRequestedResponse(Envelope envelope)
+        private void completeRequestWithRequestedResponse(Envelope envelope, ChannelNode receiver)
         {
             try
             {
+                deserialize(envelope, receiver);
                 _replies.Handle(envelope);
             }
             catch (Exception e)
