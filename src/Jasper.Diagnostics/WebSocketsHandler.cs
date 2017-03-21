@@ -2,44 +2,58 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net.WebSockets;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+using Jasper.Remotes.Messaging;
 
 namespace Jasper.Diagnostics
 {
-    public interface IWebSocketHandler
+    public interface IDiagnosticsClient
     {
-        IWebSocketConnectionManager Manager { get; }
+        void Send<T>(T message);
+    }
 
+    public class DiagnosticsClient : IDiagnosticsClient
+    {
+        private readonly ISocketConnectionManager _manager;
+
+        public DiagnosticsClient(ISocketConnectionManager manager)
+        {
+            _manager = manager;
+        }
+
+        public void Send<T>(T message)
+        {
+            var json = JsonSerialization.ToJson(message, true);
+            _manager.SendToAllAsync(json).ConfigureAwait(false);
+        }
+    }
+
+    public interface ISocketConnection
+    {
         Task OnConnected(WebSocket socket);
         Task OnDisconnected(WebSocket socket);
         Task RecieveAsync(WebSocket socket, string text);
     }
 
-    public class WebSocketHandler : IWebSocketHandler
+    public class SocketConnection : ISocketConnection
     {
         private readonly Func<WebSocket, string, Task> _recieved;
         private readonly Func<WebSocket, Task> _onConnected;
         private readonly Func<WebSocket, Task> _onDisconnected;
 
-        public WebSocketHandler(
-            IWebSocketConnectionManager manager,
+        public SocketConnection(
             Func<WebSocket, string, Task> recieved,
-            Func<WebSocket, Task> onConnected,
-            Func<WebSocket, Task> onDisconnected)
+            Func<WebSocket, Task> onConnected = null,
+            Func<WebSocket, Task> onDisconnected = null)
         {
-            Manager = manager;
             _recieved = recieved;
             _onConnected = onConnected ?? (s => Task.CompletedTask);
             _onDisconnected = onDisconnected ?? (s => Task.CompletedTask);
         }
-
-        public IWebSocketConnectionManager Manager { get; }
 
         public Task OnConnected(WebSocket socket)
         {
@@ -62,38 +76,27 @@ namespace Jasper.Diagnostics
         public static IApplicationBuilder MapWebSocket(
             this IApplicationBuilder app,
             PathString path,
-            IWebSocketHandler handler)
+            ISocketConnection handler,
+            ISocketConnectionManager manager)
         {
-            return app.Map(path, _app => _app.UseMiddleware<WebSocketManagerMiddleware>(handler));
-        }
-
-        public static IServiceCollection AddWebSocketManager(this IServiceCollection services)
-        {
-            services.AddTransient<IWebSocketConnectionManager, WebSocketConnectionManager>();
-
-            // foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
-            // {
-            //     if(type.GetTypeInfo().BaseType == typeof(IWebSocketHandler))
-            //     {
-            //         services.AddSingleton(type);
-            //     }
-            // }
-
-            return services;
+            return app.Map(path, _app => _app.UseMiddleware<WebSocketManagerMiddleware>(handler, manager));
         }
     }
 
     public class WebSocketManagerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IWebSocketHandler _handler;
+        private readonly ISocketConnection _handler;
+        private readonly ISocketConnectionManager _manager;
 
         public WebSocketManagerMiddleware(
             RequestDelegate next,
-            IWebSocketHandler handler)
+            ISocketConnection handler,
+            ISocketConnectionManager manager)
         {
             _next = next;
             _handler = handler;
+            _manager = manager;
         }
 
         public async Task Invoke(HttpContext context)
@@ -105,7 +108,7 @@ namespace Jasper.Diagnostics
             }
 
             var socket = await context.WebSockets.AcceptWebSocketAsync();
-            _handler.Manager.Add(socket);
+            _manager.Add(socket);
             await _handler.OnConnected(socket);
 
             await receive(socket, async(result, message) =>
@@ -118,7 +121,7 @@ namespace Jasper.Diagnostics
                 else if(result.MessageType == WebSocketMessageType.Close)
                 {
                     await _handler.OnDisconnected(socket);
-                    await _handler.Manager.Remove(socket);
+                    await _manager.Remove(socket);
                     return;
                 }
             });
@@ -157,17 +160,17 @@ namespace Jasper.Diagnostics
         }
     }
 
-    public interface IWebSocketConnectionManager
+    public interface ISocketConnectionManager
     {
         WebSocket GetSocketById(string id);
         string GetId(WebSocket socket);
-        void Add(WebSocket socket);
+        string Add(WebSocket socket);
         Task Remove(WebSocket socket);
         Task SendAsync(string socketId, string text);
         Task SendToAllAsync(string text);
     }
 
-    public class WebSocketConnectionManager : IWebSocketConnectionManager
+    public class SocketConnectionManager : ISocketConnectionManager
     {
         private readonly ConcurrentDictionary<string, WebSocket> _sockets = new ConcurrentDictionary<string, WebSocket>();
 
@@ -186,9 +189,14 @@ namespace Jasper.Diagnostics
             return _sockets.FirstOrDefault(p => p.Value == socket).Key;
         }
 
-        public void Add(WebSocket socket)
+        public string Add(WebSocket socket)
         {
-            _sockets.TryAdd(CreateConnectionId(), socket);
+            var id = CreateConnectionId();
+            if(_sockets.TryAdd(CreateConnectionId(), socket))
+            {
+                return id;
+            }
+            return null;
         }
 
         public async Task Remove(WebSocket socket)

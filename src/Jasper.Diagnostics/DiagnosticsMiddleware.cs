@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders.Embedded;
 using Jasper.Diagnostics.Util;
+using Jasper.Remotes.Messaging;
+using System.Collections.Generic;
+using System.Linq;
+using Baseline;
 
 namespace Jasper.Diagnostics
 {
@@ -97,12 +101,6 @@ namespace Jasper.Diagnostics
             {
                 var assembly = typeof(DiagnosticsMiddleware).GetTypeInfo().Assembly;
                 var provider = new EmbeddedFileProvider(assembly, $"{assembly.GetName().Name}.resources");
-                var contents = provider.GetDirectoryContents("");
-
-                foreach(var file in contents)
-                {
-                    Console.WriteLine(file.Name);
-                }
 
                 app.UseStaticFiles(new StaticFileOptions()
                 {
@@ -111,33 +109,63 @@ namespace Jasper.Diagnostics
                 });
             }
 
-            var manager = app.ApplicationServices.GetService<IWebSocketConnectionManager>();
+            var hub = app.ApplicationServices.GetService<IMessagingHub>();
+            var manager = app.ApplicationServices.GetService<ISocketConnectionManager>();
 
             app.MapWebSocket($"{options.BasePath}/ws",
-                new WebSocketHandler(
-                    manager,
-                    (socket, text) =>
-                    {
-                        return Task.CompletedTask;
-                    },
-                    async socket =>
-                    {
-                        var id = manager.GetId(socket);
-                        Console.WriteLine($"[Socket]: Connected {id}");
-
-                        await manager.SendToAllAsync($"yah! from {id}");
-                    },
-                    async socket =>
-                    {
-                        var id = manager.GetId(socket);
-                        Console.WriteLine($"[Socket]: Disconnected {id}");
-                        await manager.SendToAllAsync($"{id} disconnected");
-                    })
-                );
+                new SocketConnection((socket, text) => {
+                    Console.WriteLine("Socket: {0}", text);
+                    hub.SendJson(text);
+                    return Task.CompletedTask;
+                }),
+                manager);
 
             app.UseMiddleware<DiagnosticsMiddleware>(options);
 
             return app;
+        }
+
+        public static IServiceCollection AddDiagnostics(this IServiceCollection services)
+        {
+            var assembly = typeof(IDiagnosticsClient).GetTypeInfo().Assembly;
+
+            JsonSerialization.RegisterTypesFrom(assembly);
+
+            assembly
+                .GetExportedTypes()
+                    .Where(x => x.IsConcrete() && x.IsAssignableFrom(typeof(IListener)))
+                    .Each(x => services.AddTransient(typeof(IListener), x));
+
+            services.AddSingleton<ISocketConnectionManager, SocketConnectionManager>();
+            services.AddSingleton<IEventAggregator, EventAggregator>();
+            services.AddSingleton<IDiagnosticsClient, DiagnosticsClient>();
+            services.AddSingleton<IMessagingHub>(_ =>
+            {
+                var hub = new MessagingHub();
+
+                var listeners = _.GetServices<IListener>();
+                listeners.Each(l => hub.AddListener(l));
+
+                return hub;
+            });
+
+            // GetTypesFor(assembly, typeof(IListener<>))
+            //     .Each(x => x...)
+
+            return services;
+        }
+
+        private static IEnumerable<Type> GetTypesFor(Assembly assembly, Type type)
+        {
+            var allTypes =
+                from x in assembly.GetExportedTypes()
+                let y = x.GetTypeInfo().BaseType
+                let t = x.GetTypeInfo()
+                where !t.IsAbstract && !t.IsInterface &&
+                y != null && y.GetTypeInfo().IsGenericType &&
+                y.GetGenericTypeDefinition() == type
+                select x;
+            return allTypes;
         }
     }
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Jasper.Diagnostics;
+using Jasper.Remotes.Messaging;
 
 namespace DiagnosticsHarness
 {
@@ -32,7 +33,7 @@ namespace DiagnosticsHarness
         {
             services.AddOptions();
 
-            services.AddWebSocketManager();
+            services.AddDiagnostics();
 
             services.AddMvc();
 
@@ -56,6 +57,8 @@ namespace DiagnosticsHarness
                 _.Mode = DiagnosticsMode.Development;
             });
 
+            UseRequestLogging(app);
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -63,5 +66,29 @@ namespace DiagnosticsHarness
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+        public static void UseRequestLogging(IApplicationBuilder app)
+        {
+            var client = app.ApplicationServices.GetService<IDiagnosticsClient>();
+
+             app.Use( async (context, next) =>
+             {
+                 client.Send(new LogMessage($"Incoming request: {context.Request.Method}, {context.Request.Path}, {context.Request.Headers}"));
+
+                 await next();
+
+                 client.Send(new LogMessage($"Outgoing response: {context.Response.StatusCode} {context.Response.Headers}"));
+             });
+         }
+
+         public class LogMessage : ClientMessage
+         {
+             public LogMessage(string message) : base("log")
+             {
+                 Message = message;
+             }
+
+             public string Message { get; }
+         }
     }
 }
