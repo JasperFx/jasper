@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using JasperBus.ErrorHandling;
 using JasperBus.Model;
 
@@ -9,12 +11,15 @@ namespace JasperBus.Runtime.Invocation
     public class EnvelopeContext : IEnvelopeContext
     {
         private readonly HandlerPipeline _pipeline;
+        private readonly IEnvelopeSender _sender;
         private readonly List<object> _outgoing = new List<object>();
+        private readonly List<object> _inline = new List<object>();
 
-        public EnvelopeContext(HandlerPipeline pipeline, Envelope envelope)
+        public EnvelopeContext(HandlerPipeline pipeline, Envelope envelope, IEnvelopeSender sender)
         {
             Envelope = envelope;
             _pipeline = pipeline;
+            _sender = sender;
         }
 
         public IBusLogger Logger => _pipeline.Logger;
@@ -52,17 +57,62 @@ namespace JasperBus.Runtime.Invocation
 
         public void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
         {
-            // TODO -- actually do something here;)
+            if (original.AckRequested)
+            {
+                sendAcknowledgement(original);
+            }
+
+            cascadingMessages.Each(o => SendOutgoingMessage(original, o));
         }
 
-        public void SendOutgoingMessage(Envelope original, object cascadingMessage)
+        private void sendAcknowledgement(Envelope original)
         {
-            // TODO -- actually do something here;)
+            var envelope = new Envelope
+            {
+                ParentId = original.CorrelationId,
+                Destination = original.ReplyUri,
+                ResponseId = original.CorrelationId,
+                Message = new Acknowledgement {CorrelationId = original.CorrelationId}
+            };
+
+            Send(envelope);
+        }
+
+        public void SendOutgoingMessage(Envelope original, object o)
+        {
+            var cascadingEnvelope = o is ISendMyself
+                ? o.As<ISendMyself>().CreateEnvelope(original)
+                : original.ForResponse(o);
+
+            if (original.AcceptedContentTypes.Any())
+            {
+                cascadingEnvelope.AcceptedContentTypes = original.AcceptedContentTypes;
+            }
+
+            cascadingEnvelope.Callback = original.Callback;
+
+            Send(cascadingEnvelope);
         }
 
         public void SendFailureAcknowledgement(Envelope original, string message)
         {
-            // TODO -- actually do something here;)
+            if (original.AckRequested || original.ReplyRequested.IsNotEmpty())
+            {
+                var envelope = new Envelope
+                {
+                    ParentId = original.CorrelationId,
+                    Destination = original.ReplyUri,
+                    ResponseId = original.CorrelationId,
+                    Message = new FailureAcknowledgement()
+                    {
+                        CorrelationId = original.CorrelationId,
+                        Message = message
+                    },
+                    Callback = original.Callback
+                };
+
+                Send(envelope);
+            }
         }
 
         public Task Retry(Envelope envelope)
@@ -79,6 +129,26 @@ namespace JasperBus.Runtime.Invocation
             return handlerChain.DetermineContinuation(Envelope, exception)
                    ?? graph.DetermineContinuation(Envelope, exception)
                    ?? new MoveToErrorQueue(exception);
+        }
+
+        public void Send(Envelope envelope)
+        {
+            try
+            {
+                if (envelope.Callback != null && envelope.Callback.SupportsSend)
+                {
+                    _sender.Send(envelope, envelope.Callback);
+                }
+                else
+                {
+                    _sender.Send(envelope);
+                }
+            }
+            catch (Exception e)
+            {
+                // TODO -- we really, really have to do something here
+                Logger.LogException(e, envelope.CorrelationId, "Failure while trying to send a cascading message");
+            }
         }
     }
 }

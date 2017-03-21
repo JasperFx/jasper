@@ -46,7 +46,7 @@ namespace JasperBus.Runtime.Invocation
 
         private async Task invoke(Envelope envelope, ChannelNode receiver, DateTime now)
         {
-            using (var context = new EnvelopeContext(this, envelope))
+            using (var context = new EnvelopeContext(this, envelope, _sender))
             {
                 if (envelope.IsDelayed(now))
                 {
