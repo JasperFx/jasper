@@ -4,16 +4,16 @@ APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "results"
-BUILD_VERSION = '4.0.0'
+BUILD_VERSION = '0.1.0'
 
 tc_build_number = ENV["BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')
 build_number = "#{BUILD_VERSION}.#{build_revision}"
 BUILD_NUMBER = build_number 
 
-task :ci => [:default, :pack, :push]
+task :ci => [:default, :pack]
 
-task :default => [:test, :storyteller]
+task :default => [:test]
 
 
 desc "Prepares the working directory for a new build"
