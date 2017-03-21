@@ -5,6 +5,7 @@ using System.Reflection;
 using Baseline;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using Jasper.Settings;
 using StructureMap.TypeRules;
 
 namespace Jasper
@@ -12,7 +13,6 @@ namespace Jasper
     public class JasperRegistry : IJasperRegistry
     {
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
-
 
         public JasperRegistry()
         {
@@ -37,6 +37,8 @@ namespace Jasper
         private static Assembly findTheCallingAssembly()
         {
             string trace = Environment.StackTrace;
+
+
 
             var parts = trace.Split('\n');
 
@@ -95,6 +97,8 @@ namespace Jasper
         public Assembly ApplicationAssembly { get; private set; }
 
         public ServiceRegistry Services { get; } = new ServiceRegistry();
+
+        public JasperSettings Settings { get; } = new JasperSettings();
 
         public void UseFeature<T>() where T : IFeature, new()
         {
