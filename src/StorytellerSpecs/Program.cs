@@ -1,5 +1,4 @@
 ﻿using System;
-using Baseline.Dates;
 using StoryTeller;
 
 namespace StorytellerSpecs
@@ -10,14 +9,11 @@ namespace StorytellerSpecs
         {
             using (var runner = StorytellerRunner.Basic())
             {
-                // worry about the 2nd message here
-                //var counts = runner.Run("Publishing / LQ / Send to a Specific Channel").Counts;
+                var counts = runner.Run("Publishing / Cascading / Single Cascading Message").Counts;
 
-                // Error Handling / Retry on Exceptions
+                Console.WriteLine(counts);
 
-                //Console.WriteLine(counts);
-
-                runner.RunAll(2.Minutes());
+                //runner.RunAll(2.Minutes());
             }
         }
 

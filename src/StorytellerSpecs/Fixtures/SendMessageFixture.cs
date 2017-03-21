@@ -392,6 +392,6 @@ namespace StorytellerSpecs.Fixtures
             Sent.Add(envelope);
         }
 
-        public bool SupportsSend { get; } = true;
+        public bool SupportsSend { get; } = false;
     }
 }

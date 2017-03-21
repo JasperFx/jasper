@@ -62,7 +62,10 @@ namespace JasperBus.Runtime.Invocation
                 sendAcknowledgement(original);
             }
 
-            cascadingMessages.Each(o => SendOutgoingMessage(original, o));
+            foreach (var o in cascadingMessages)
+            {
+                SendOutgoingMessage(original, o);
+            }
         }
 
         private void sendAcknowledgement(Envelope original)
