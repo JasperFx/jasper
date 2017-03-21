@@ -18,12 +18,14 @@ namespace JasperBus.Runtime.Invocation
         private readonly IEnvelopeSender _sender;
         private readonly IEnvelopeSerializer _serializer;
         private readonly HandlerGraph _graph;
+        private readonly IReplyWatcher _replies;
 
-        public HandlerPipeline(IEnvelopeSender sender, IEnvelopeSerializer serializer, HandlerGraph graph, IBusLogger[] loggers)
+        public HandlerPipeline(IEnvelopeSender sender, IEnvelopeSerializer serializer, HandlerGraph graph, IReplyWatcher replies, IBusLogger[] loggers)
         {
             _sender = sender;
             _serializer = serializer;
             _graph = graph;
+            _replies = replies;
 
             Logger = BusLogger.Combine(loggers);
         }
@@ -54,7 +56,6 @@ namespace JasperBus.Runtime.Invocation
                 }
                 else if (envelope.ResponseId.IsNotEmpty())
                 {
-                    // TODO -- actually do something here;)
                     completeRequestWithRequestedResponse(envelope);
                 }
                 else
@@ -118,7 +119,14 @@ namespace JasperBus.Runtime.Invocation
 
         private void completeRequestWithRequestedResponse(Envelope envelope)
         {
-            Logger.LogException(new NotImplementedException("Jasper has not implemented Request/Response yet"), envelope.CorrelationId);
+            try
+            {
+                _replies.Handle(envelope);
+            }
+            catch (Exception e)
+            {
+                Logger.LogException(e, envelope.CorrelationId, "Failure during reply handling.");
+            }
         }
 
         // TODO -- think this is gonna die

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
@@ -15,41 +18,12 @@ using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
 {
-    public abstract class BusFixture : Fixture
-    {
-        public static Uri Channel1 = new Uri("stub://one");
-        public static Uri Channel2 = new Uri("stub://two");
-        public static Uri Channel3 = new Uri("stub://three");
-        public static Uri Channel4 = new Uri("stub://four");
 
-        public static Uri LQChannel1 = new Uri("lq.tcp://localhost:2201/one");
-        public static Uri LQChannel2 = new Uri("lq.tcp://localhost:2201/two");
-        public static Uri LQChannel3 = new Uri("lq.tcp://localhost:2201/three");
-        public static Uri LQChannel4 = new Uri("lq.tcp://localhost:2201/four");
-
-        protected readonly Type[] messageTypes =
-        {
-            typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4),
-            typeof(Message5), typeof(Message6)
-        };
-
-
-        protected BusFixture()
-        {
-            AddSelectionValues("MessageTypes", messageTypes.Select(x => x.Name).ToArray());
-            AddSelectionValues("Channels", "stub://one", "stub://two", "stub://three", "stub://four",
-                LQChannel1.ToString(), LQChannel2.ToString(), LQChannel3.ToString(), LQChannel4.ToString());
-        }
-
-        protected Type messageTypeFor(string name)
-        {
-            return messageTypes.First(x => x.Name == name);
-        }
-    }
 
     public class SendMessageFixture : BusFixture
     {
         private JasperRuntime _runtime;
+        private Task _task;
 
         public SendMessageFixture()
         {
@@ -101,10 +75,15 @@ namespace StorytellerSpecs.Fixtures
 
             var waiter = history.Watch(() =>
             {
-                _runtime.Container.GetInstance<IServiceBus>().Send(address, message);
+                bus().Send(address, message);
             });
 
             waiter.Wait(5.Seconds());
+        }
+
+        private IServiceBus bus()
+        {
+            return _runtime.Container.GetInstance<IServiceBus>();
         }
 
         public IGrammar TheMessagesSentShouldBe()
@@ -118,12 +97,70 @@ namespace StorytellerSpecs.Fixtures
             return _runtime.Container.GetInstance<MessageTracker>().Records;
         }
 
+        [FormatAs("Send a Message1 named 'Ack' that we expect to succeed and wait for the ack")]
+        public void SendMessageSuccessfully()
+        {
+            _task = bus().SendAndWait(new Message1{Name = "Ack"});
+        }
+
+        [FormatAs("Send a message that will fail with an AmbiguousMatchException exception")]
+        public void SendMessageUnsuccessfully()
+        {
+            _task = bus().SendAndWait(new ErrorMessage());
+        }
+
+        [FormatAs("The acknowledgement was received within 3 seconds")]
+        public bool AckIsReceived()
+        {
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                _task.Wait(3.Seconds());
+            }
+            catch (Exception)
+            {
+            }
+            sw.Stop();
+            return sw.Elapsed.Seconds <= 3;
+        }
+
+        [FormatAs("The acknowledgement was successful")]
+        public bool AckWasSuccessful()
+        {
+            StoryTellerAssert.Fail(_task.IsFaulted, () => _task.Exception.ToString());
+
+            return true;
+        }
+
+        [FormatAs("The acknowledgment failed and contained the message {message}")]
+        public bool TheAckFailedWithMessage(string message)
+        {
+            StoryTellerAssert.Fail(_task.Exception == null, "The task exception is null");
+
+            StoryTellerAssert.Fail(!_task.Exception.InnerExceptions.First().ToString().Contains(message), "The actual exception text was:\n" + _task.Exception.ToString());
+
+            return true;
+        }
+
         public override void TearDown()
         {
             _runtime.Dispose();
 
             // Let LQ cooldown
             Thread.Sleep(1000);
+        }
+    }
+
+    public class ErrorMessage
+    {
+
+    }
+
+    public class ErrorMessageHandler
+    {
+        public void Handle(ErrorMessage message)
+        {
+            throw new AmbiguousMatchException();
         }
     }
 

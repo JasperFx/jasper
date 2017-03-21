@@ -101,6 +101,8 @@ namespace JasperBus
             services.ForSingletonOf<IEnvelopeSerializer>().Use<EnvelopeSerializer>();
             services.For<IMessageSerializer>().Use<JsonMessageSerializer>();
 
+            services.ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
+
             return services;
         }
     }
