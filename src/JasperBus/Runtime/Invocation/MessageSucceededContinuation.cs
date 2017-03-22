@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace JasperBus.Runtime.Invocation
 {
-    public class ChainSuccessContinuation : IContinuation
+    public class MessageSucceededContinuation : IContinuation
     {
-        public static readonly ChainSuccessContinuation Instance = new ChainSuccessContinuation();
+        public static readonly MessageSucceededContinuation Instance = new MessageSucceededContinuation();
 
-        private ChainSuccessContinuation()
+        private MessageSucceededContinuation()
         {
 
         }

@@ -108,7 +108,7 @@ namespace JasperBus.Runtime.Invocation
 
                 Logger.ExecutionFinished(context.Envelope);
 
-                return ChainSuccessContinuation.Instance;
+                return MessageSucceededContinuation.Instance;
             }
             catch (Exception e)
             {

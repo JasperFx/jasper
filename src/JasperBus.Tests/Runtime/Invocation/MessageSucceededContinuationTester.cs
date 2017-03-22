@@ -6,18 +6,18 @@ using Xunit;
 
 namespace JasperBus.Tests.Runtime.Invocation
 {
-    public class ChainSuccessContinuationTester
+    public class MessageSucceededContinuationTester
     {
         private Envelope theEnvelope = ObjectMother.Envelope();
         private IEnvelopeContext theEnvelopeContext = Substitute.For<IEnvelopeContext>();
 
 
-        public ChainSuccessContinuationTester()
+        public MessageSucceededContinuationTester()
         {
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new object();
 
-            ChainSuccessContinuation.Instance
+            MessageSucceededContinuation.Instance
                 .Execute(theEnvelope, theEnvelopeContext, DateTime.UtcNow);
         }
 
@@ -35,18 +35,18 @@ namespace JasperBus.Tests.Runtime.Invocation
 
     }
 
-    public class ChainSuccessContinuation_failure_handling_Tester
+    public class MessageSucceededContinuation_failure_handling_Tester
     {
         private Envelope theEnvelope = ObjectMother.Envelope();
         private IEnvelopeContext theEnvelopeContext = Substitute.For<IEnvelopeContext>();
         private readonly Exception theException = new DivideByZeroException();
 
-        public ChainSuccessContinuation_failure_handling_Tester()
+        public MessageSucceededContinuation_failure_handling_Tester()
         {
             theEnvelopeContext.When(x => x.SendAllQueuedOutgoingMessages())
                 .Throw(theException);
 
-            ChainSuccessContinuation.Instance
+            MessageSucceededContinuation.Instance
                 .Execute(theEnvelope, theEnvelopeContext, DateTime.UtcNow);
         }
 

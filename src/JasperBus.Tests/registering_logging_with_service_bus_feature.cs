@@ -30,7 +30,7 @@ namespace JasperBus.Tests
 
             Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
-        
+
         [Fact]
         public void explicitly_add_logger_2()
         {
