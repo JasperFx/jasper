@@ -4,6 +4,7 @@ using Jasper;
 using JasperBus.Configuration;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
+using JasperBus.Runtime.Serializers;
 using StructureMap.TypeRules;
 
 namespace JasperBus
@@ -17,11 +18,14 @@ namespace JasperBus
             UseFeature<ServiceBusFeature>();
 
             _feature = Feature<ServiceBusFeature>();
+            Serialization = new SerializationExpression(this);
         }
 
         public HandlerSource Handlers => _feature.Handlers;
 
         public Policies Policies => _feature.Policies;
+
+        public SerializationExpression Serialization { get; }
 
         public void ListenForMessagesFrom(Uri uri)
         {
@@ -86,6 +90,39 @@ namespace JasperBus
             }
         }
 
+        public class SerializationExpression
+        {
+            private readonly JasperBusRegistry _parent;
 
+            public SerializationExpression(JasperBusRegistry parent)
+            {
+                _parent = parent;
+            }
+
+
+            public SerializationExpression Add<T>() where T : IMessageSerializer
+            {
+                _parent._feature.Services.For<IMessageSerializer>().Add<T>();
+                return this;
+            }
+
+
+            /// <summary>
+            /// Specify or override the preferred order of serialization usage for the application
+            /// </summary>
+            /// <param name="contentTypes"></param>
+            /// <returns></returns>
+            public SerializationExpression ContentPreferenceOrder(params string[] contentTypes)
+            {
+                _parent._feature.Channels.AcceptedContentTypes.Clear();
+                _parent._feature.Channels.AcceptedContentTypes.AddRange(contentTypes);
+                return this;
+            }
+        }
     }
+
+
+
+
 }
+

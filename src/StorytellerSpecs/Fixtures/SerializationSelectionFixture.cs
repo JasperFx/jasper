@@ -21,7 +21,7 @@ namespace StorytellerSpecs.Fixtures
         {
             using (var runner = StorytellerRunner.For<StorytellerSpecsSystem>())
             {
-                runner.Run("Serialization Selection / Serialization Selection Rules");
+                runner.Run("SerializationExpression Selection / SerializationExpression Selection Rules");
                 runner.OpenResultsInBrowser();
             }
         }
@@ -47,7 +47,7 @@ namespace StorytellerSpecs.Fixtures
 
 
 
-        [ExposeAsTable("Outgoing Serialization Choice")]
+        [ExposeAsTable("Outgoing SerializationExpression Choice")]
         [FormatAs("{content}, {channel}, {envelope}, should be {selection}")]
         public string SerializationChoice(string content, string[] channel, string[] envelope)
         {

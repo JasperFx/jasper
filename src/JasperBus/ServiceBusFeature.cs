@@ -9,7 +9,6 @@ using JasperBus.Model;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using JasperBus.Runtime.Serializers;
-using JasperBus.Transports.LightningQueues;
 using StructureMap;
 using Policies = JasperBus.Configuration.Policies;
 
@@ -25,6 +24,8 @@ namespace JasperBus
         public ChannelGraph Channels { get; } = new ChannelGraph();
 
         public Policies Policies { get; } = new Policies();
+
+        public readonly Registry Services = new ServiceBusRegistry();
 
         public void Dispose()
         {
@@ -48,8 +49,7 @@ namespace JasperBus
 
                 Channels.UseTransports(transports);
 
-                var serializers = runtime.Container.GetAllInstances<IMessageSerializer>();
-                Channels.AcceptedContentTypes.AddRange(serializers.Select(x => x.ContentType));
+                configureSerializationOrder(runtime);
 
                 // TODO
                 // Done -- 1. Start up transports
@@ -74,6 +74,24 @@ namespace JasperBus
 
         }
 
+        private void configureSerializationOrder(JasperRuntime runtime)
+        {
+            var contentTypes = runtime.Container.GetAllInstances<IMessageSerializer>().Select(x => x.ContentType).ToArray();
+
+            var unknown = Channels.AcceptedContentTypes.Where(x => !contentTypes.Contains(x)).ToArray();
+            if (unknown.Any())
+            {
+                throw new UnknownContentTypeException(unknown, contentTypes);
+            }
+
+            foreach (var contentType in contentTypes)
+            {
+                Channels.AcceptedContentTypes.Fill(contentType);
+            }
+
+
+        }
+
         private async Task<Registry> bootstrap(JasperRegistry registry)
         {
             var calls = await Handlers.FindCalls(registry).ConfigureAwait(false);
@@ -84,29 +102,15 @@ namespace JasperBus
             _graph.Group();
             Policies.Apply(_graph);
 
-
-            // TODO -- this will probably be a custom Registry later
-            var services = new Registry();
-            services.For<HandlerGraph>().Use(_graph);
-            services.For<ChannelGraph>().Use(Channels);
-            services.For<ITransport>().Singleton().Add<LightningQueuesTransport>();
-
-
-            services.For<IEnvelopeSender>().Use<EnvelopeSender>();
-            services.For<IServiceBus>().Use<ServiceBus>();
-            services.For<IHandlerPipeline>().Use<HandlerPipeline>();
-
-            services.ForSingletonOf<IEnvelopeSerializer>().Use<EnvelopeSerializer>();
-            services.For<IMessageSerializer>().Use<JsonMessageSerializer>();
-
-            services.ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
+            Services.For<HandlerGraph>().Use(_graph);
+            Services.For<ChannelGraph>().Use(Channels);
 
             if (registry.Logging.UseConsoleLogging)
             {
-                services.For<IBusLogger>().Add<ConsoleBusLogger>();
+                Services.For<IBusLogger>().Add<ConsoleBusLogger>();
             }
 
-            return services;
+            return Services;
         }
     }
 }

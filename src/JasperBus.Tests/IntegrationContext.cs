@@ -46,7 +46,7 @@ namespace JasperBus.Tests
 
         public void Dispose()
         {
-            Runtime.Dispose();
+            Runtime?.Dispose();
         }
 
         protected HandlerChain chainFor<T>()
