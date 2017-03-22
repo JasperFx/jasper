@@ -25,7 +25,7 @@ namespace Jasper.Testing.Settings
             _settings.Configure<MySettings>();
             _settings.Bootstrap(_registry);
             var settings = _settings.Get<MySettings>();
-            Assert.Equal(settings.SomeSetting, 1);
+            settings.SomeSetting.ShouldBe(1);
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Jasper.Testing.Settings
             _settings.Bootstrap(_registry);
             var settings = _settings.Get<MySettings>();
 
-            Assert.Equal(settings.SomeSetting, 5);
+            settings.SomeSetting.ShouldBe(5);
         }
 
         [Fact]
@@ -56,8 +56,8 @@ namespace Jasper.Testing.Settings
             _settings.Bootstrap(_registry);
             var settings = _settings.Get<MySettings>();
 
-            Assert.Equal(settings.SomeSetting, 1000);
-            Assert.Equal(settings.OtherSetting, "tacos");
+            settings.SomeSetting.ShouldBe(1000);
+            settings.OtherSetting.ShouldBe("tacos");
         }
 
         [Fact]
@@ -76,8 +76,8 @@ namespace Jasper.Testing.Settings
             var colors = _settings.Get<Colors>();
             var settings = _settings.Get<MySettings>();
 
-            Assert.Equal(colors.Red, "#ff0000");
-            Assert.Equal(settings.SomeSetting, 1);
+            colors.Red.ShouldBe("#ff0000");
+            settings.SomeSetting.ShouldBe(1);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace Jasper.Testing.Settings
             _settings.Bootstrap(_registry);
             var container = new Container(_registry.Services);
             var settings = container.GetInstance<MySettings>();
-            Assert.Equal(settings.SomeSetting, 1);
+            settings.SomeSetting.ShouldBe(1);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace Jasper.Testing.Settings
             var app = new MyApp();
             var runtime = JasperRuntime.For(app);
             var myApp = (MyApp) runtime.Registry;
-            Assert.Equal(myApp.MySetting, true);
+            myApp.MySetting.ShouldBe(true);
         }
     }
 }
