@@ -63,11 +63,15 @@ namespace Jasper.Remotes.Messaging
             return writer.ToString();
         }
 
-        public static string ToCleanJson(object o)
+        public static string ToCleanJson(object o, bool indentedFormatting = false)
         {
             var serializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.None,  };
             serializer.Converters.Add(new StringEnumConverter());
 
+            if (indentedFormatting)
+            {
+                serializer.Formatting = Formatting.Indented;
+            }
 
             using (var stream = new MemoryStream())
             {

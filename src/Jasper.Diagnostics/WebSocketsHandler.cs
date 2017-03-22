@@ -27,7 +27,7 @@ namespace Jasper.Diagnostics
 
         public void Send<T>(T message)
         {
-            var json = JsonSerialization.ToJson(message, true);
+            var json = JsonSerialization.ToCleanJson(message, true);
             _manager.SendToAllAsync(json).ConfigureAwait(false);
         }
     }

@@ -4,12 +4,12 @@ export default function Communicator(dispatch, address, disconnect) {
   this.socket = new WebSocket(address)
 
   this.socket.onclose = function(){
-    console.log('The socket closed');
-    disconnect();
-  };
+    console.log('The socket closed')
+    disconnect()
+  }
 
   this.socket.onerror = (evt) => {
-    console.log(JSON.stringify(evt));
+    console.log(JSON.stringify(evt))
   }
 
   this.socket.onmessage = (evt) => {
@@ -26,7 +26,7 @@ export default function Communicator(dispatch, address, disconnect) {
 
   this.send = (message) => {
     if (this.socket.readyState != 1) {
-      disconnect();
+      disconnect()
     }
     else {
       const json = JSON.stringify(message)

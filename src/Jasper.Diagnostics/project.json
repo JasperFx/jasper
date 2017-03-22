@@ -10,10 +10,11 @@
   },
   "dependencies": {
     "Jasper": { "target": "project" },
-     "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
-     "Microsoft.AspNetCore.Http.Extensions": "1.1.0",
-     "Microsoft.AspNetCore.StaticFiles": "1.0.0",
-     "Microsoft.AspNetCore.WebSockets": "1.0.0"
+    "JasperBus": { "target": "project" },
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
+    "Microsoft.AspNetCore.Http.Extensions": "1.1.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
+    "Microsoft.AspNetCore.WebSockets": "1.0.0"
   },
   "frameworks": {
     "netstandard1.5": {

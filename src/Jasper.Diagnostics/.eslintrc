@@ -30,6 +30,7 @@
     "no-unused-vars": [2, { "vars": "all", "args": "none" }],
     "no-var": 2,
     "quotes": [2, "single", "avoid-escape"],
+    "semi": ["error", "never"],
     "strict": 0
   }
 }
