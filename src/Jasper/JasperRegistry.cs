@@ -9,13 +9,6 @@ using StructureMap.TypeRules;
 
 namespace Jasper
 {
-    public interface IJasperRegistry
-    {
-        T Feature<T>() where T : IFeature, new();
-        IFeature[] Features { get; }
-        Assembly ApplicationAssembly { get; }
-    }
-
     public class JasperRegistry : IJasperRegistry
     {
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
@@ -35,6 +28,8 @@ namespace Jasper
             }
 
             Generation = new GenerationConfig($"{ApplicationAssembly.GetName().Name}.Generated");
+
+            Logging = new Logging(this);
         }
 
         public GenerationConfig Generation { get; }
@@ -117,5 +112,26 @@ namespace Jasper
         }
 
         public IFeature[] Features => _features.Values.ToArray();
+
+        public Logging Logging { get; }
+    }
+
+    public class Logging : ILogging
+    {
+        private readonly JasperRegistry _parent;
+
+        public Logging(JasperRegistry parent)
+        {
+            _parent = parent;
+        }
+
+        JasperRegistry ILogging.Parent => _parent;
+
+        public bool UseConsoleLogging { get; set; } = false;
+    }
+
+    public interface ILogging
+    {
+        JasperRegistry Parent { get; }
     }
 }

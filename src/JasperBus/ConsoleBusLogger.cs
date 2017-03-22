@@ -4,7 +4,7 @@ using JasperBus.Runtime;
 
 namespace JasperBus
 {
-    public class ConsoleLogger : IBusLogger
+    public class ConsoleBusLogger : IBusLogger
     {
         public void Sent(Envelope envelope)
         {

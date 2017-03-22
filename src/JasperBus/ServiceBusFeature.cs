@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
 using Jasper.Codegen;
-using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
 using JasperBus.Configuration;
 using JasperBus.Model;
@@ -76,7 +74,7 @@ namespace JasperBus
 
         }
 
-        private async Task<Registry> bootstrap(IJasperRegistry registry)
+        private async Task<Registry> bootstrap(JasperRegistry registry)
         {
             var calls = await Handlers.FindCalls(registry).ConfigureAwait(false);
 
@@ -102,6 +100,11 @@ namespace JasperBus
             services.For<IMessageSerializer>().Use<JsonMessageSerializer>();
 
             services.ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
+
+            if (registry.Logging.UseConsoleLogging)
+            {
+                services.For<IBusLogger>().Add<ConsoleBusLogger>();
+            }
 
             return services;
         }

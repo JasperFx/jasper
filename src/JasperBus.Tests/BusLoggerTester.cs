@@ -16,7 +16,7 @@ namespace JasperBus.Tests
         [Fact]
         public void resolves_single_logger_as_just_that_instance()
         {
-            var inner = new ConsoleLogger();
+            var inner = new ConsoleBusLogger();
 
             BusLogger.Combine(new IBusLogger[] {inner})
                 .ShouldBeSameAs(inner);

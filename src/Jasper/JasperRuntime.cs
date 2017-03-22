@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
 using StructureMap;
