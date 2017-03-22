@@ -92,6 +92,13 @@ namespace StorytellerSpecs.Fixtures
                 .MatchOn(x => x.ReceivedAt, x => x.MessageType, x => x.Name);
         }
 
+        [FormatAs("Request/Reply: send a Message1 with name {name} should respond with a matching reply")]
+        public Task RequestAndReply(string name)
+        {
+            var message = new Message1 {Name = name};
+            return bus().Request<Message2>(message);
+        }
+
         private IList<MessageRecord> sent()
         {
             return _runtime.Container.GetInstance<MessageTracker>().Records;

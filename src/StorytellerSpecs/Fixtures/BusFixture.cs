@@ -11,6 +11,8 @@ namespace StorytellerSpecs.Fixtures
         public static Uri Channel3 = new Uri("stub://three");
         public static Uri Channel4 = new Uri("stub://four");
 
+        public static Uri Reply = new Uri("stub://replies");
+
         public static Uri LQChannel1 = new Uri("lq.tcp://localhost:2201/one");
         public static Uri LQChannel2 = new Uri("lq.tcp://localhost:2201/two");
         public static Uri LQChannel3 = new Uri("lq.tcp://localhost:2201/three");
@@ -26,7 +28,7 @@ namespace StorytellerSpecs.Fixtures
         protected BusFixture()
         {
             AddSelectionValues("MessageTypes", messageTypes.Select(x => x.Name).ToArray());
-            AddSelectionValues("Channels", "stub://one", "stub://two", "stub://three", "stub://four",
+            AddSelectionValues("Channels", "stub://one", "stub://two", "stub://three", "stub://four", "stub://replies",
                 LQChannel1.ToString(), LQChannel2.ToString(), LQChannel3.ToString(), LQChannel4.ToString());
         }
 
