@@ -4,7 +4,6 @@ using Jasper.Settings;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Shouldly;
-using NSubstitute;
 using StructureMap;
 
 namespace Jasper.Testing.Settings

@@ -37,7 +37,7 @@ namespace Jasper.Settings
             _settingsConfigurations.Fill(new SettingsConfiguration<T>(config));
         }
 
-        public void Alter<T>(Action<T> alteration) where T : class
+        public void Alter<T>(Action<T> alteration) where T : class, new()
         {
             _alterations.Fill(new SettingAlteration<T>(alteration));
         }
@@ -47,7 +47,7 @@ namespace Jasper.Settings
             _alterations.Fill(new SettingReplacement<T>(settings));
         }
 
-        public T Get<T>() where T : class
+        public T Get<T>() where T : class, new()
         {
             return _settingsCollection.Get<T>();
         }

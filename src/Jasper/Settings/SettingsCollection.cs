@@ -10,12 +10,18 @@ namespace Jasper.Settings
     {
         private readonly ConcurrentCache<Type, object> _settings = new ConcurrentCache<Type, object>();
 
-        public T Get<T>() where T : class
+        public T Get<T>() where T : class, new()
         {
-            return _settings[typeof(T)].As<T>();
+            var type = typeof(T);
+            if (_settings.Has(type))
+            {
+                return _settings[type].As<T>();
+            }
+
+            return new T();
         }
 
-        public void Alter<T>(Action<T> alteration) where T : class
+        public void Alter<T>(Action<T> alteration) where T : class, new()
         {
             alteration(Get<T>());
         }
@@ -34,7 +40,7 @@ namespace Jasper.Settings
         {
             foreach (var setting in _settings)
             {
-                registry.For(setting.GetType()).Use(setting);
+                registry.For(setting.GetType()).Use(setting).Singleton();
             }
         }
     }
