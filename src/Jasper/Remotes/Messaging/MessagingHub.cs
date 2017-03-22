@@ -11,6 +11,11 @@ namespace Jasper.Remotes.Messaging
 
         public IEnumerable<object> Listeners => _listeners;
 
+        public MessagingHub(IEnumerable<IListener> listeners)
+        {
+            _listeners.AddRange(listeners);
+        }
+
         public void AddListener(object listener)
         {
             _listeners.Fill(listener);

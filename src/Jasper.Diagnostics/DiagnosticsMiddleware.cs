@@ -5,11 +5,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders.Embedded;
+using Baseline;
+using JasperBus;
+using JasperBus.Model;
 using Jasper.Diagnostics.Util;
 using Jasper.Remotes.Messaging;
+using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
-using Baseline;
 
 namespace Jasper.Diagnostics
 {
@@ -97,6 +100,8 @@ namespace Jasper.Diagnostics
             this IApplicationBuilder app,
             DiagnosticsOptions options)
         {
+            app.UseWebSockets();
+
             if(options.Mode == DiagnosticsMode.Production)
             {
                 var assembly = typeof(DiagnosticsMiddleware).GetTypeInfo().Assembly;
@@ -125,47 +130,34 @@ namespace Jasper.Diagnostics
             return app;
         }
 
-        public static IServiceCollection AddDiagnostics(this IServiceCollection services)
+        public static JasperRegistry AddDiagnostics(this JasperRegistry registry)
+        {
+            registry.Logging.LogBusEventsWith<DiagnosticsBusLogger>();
+
+            registry.Services.IncludeRegistry<JasperDiagnosticsServicesRegistry>();
+
+            return registry;
+        }
+    }
+
+    public class JasperDiagnosticsServicesRegistry : Registry
+    {
+        public JasperDiagnosticsServicesRegistry()
         {
             var assembly = typeof(IDiagnosticsClient).GetTypeInfo().Assembly;
 
             JsonSerialization.RegisterTypesFrom(assembly);
 
-            assembly
-                .GetExportedTypes()
-                    .Where(x => x.IsConcrete() && x.IsAssignableFrom(typeof(IListener)))
-                    .Each(x => services.AddTransient(typeof(IListener), x));
+            ForSingletonOf<ISocketConnectionManager>().Use<SocketConnectionManager>();
+            ForSingletonOf<IEventAggregator>().Use<EventAggregator>();
+            ForSingletonOf<IDiagnosticsClient>().Use<DiagnosticsClient>();
+            ForSingletonOf<IMessagingHub>().Use<MessagingHub>();
 
-            services.AddSingleton<ISocketConnectionManager, SocketConnectionManager>();
-            services.AddSingleton<IEventAggregator, EventAggregator>();
-            services.AddSingleton<IDiagnosticsClient, DiagnosticsClient>();
-            services.AddSingleton<IMessagingHub>(_ =>
+            Scan(_ =>
             {
-                var hub = new MessagingHub();
-
-                var listeners = _.GetServices<IListener>();
-                listeners.Each(l => hub.AddListener(l));
-
-                return hub;
+                _.AssemblyContainingType<IDiagnosticsClient>();
+                _.AddAllTypesOf<IListener>();
             });
-
-            // GetTypesFor(assembly, typeof(IListener<>))
-            //     .Each(x => x...)
-
-            return services;
-        }
-
-        private static IEnumerable<Type> GetTypesFor(Assembly assembly, Type type)
-        {
-            var allTypes =
-                from x in assembly.GetExportedTypes()
-                let y = x.GetTypeInfo().BaseType
-                let t = x.GetTypeInfo()
-                where !t.IsAbstract && !t.IsInterface &&
-                y != null && y.GetTypeInfo().IsGenericType &&
-                y.GetGenericTypeDefinition() == type
-                select x;
-            return allTypes;
         }
     }
 
@@ -175,6 +167,57 @@ namespace Jasper.Diagnostics
         {
             var writer = new ResponseHtmlTextWriter(context.Response.Body);
             await tag.WriteHtml(writer);
+        }
+    }
+
+    public class DiagnosticsListener : IListener, IListener<RequestInitialData>
+    {
+        private readonly IDiagnosticsClient _client;
+        private readonly HandlerGraph _graph;
+
+        public DiagnosticsListener(
+            IDiagnosticsClient client,
+            HandlerGraph graph)
+        {
+            _client = client;
+            _graph = graph;
+        }
+
+        public void Receive<T>(T message)
+        {
+        }
+
+        public void Receive(RequestInitialData message)
+        {
+            var chains = _graph.Chains.Select(c => ChainInfo.For(c));
+            _client.Send(new InitialData(chains));
+        }
+    }
+
+    public class RequestInitialData : ClientMessage
+    {
+        public RequestInitialData() : base("request-initial-data")
+        {
+        }
+    }
+
+    public class InitialData : ClientMessage
+    {
+        public InitialData(IEnumerable<ChainInfo> chains) : base("initial-data")
+        {
+            Chains = chains.ToArray();
+        }
+
+        public ChainInfo[] Chains { get; }
+    }
+
+    public class ChainInfo
+    {
+        public string TypeName { get; set; }
+
+        public static ChainInfo For(HandlerChain chain)
+        {
+            return new ChainInfo { TypeName = chain.TypeName };
         }
     }
 }

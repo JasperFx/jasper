@@ -7,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Jasper.Diagnostics;
 using Jasper.Remotes.Messaging;
+using Jasper;
+using StructureMap;
+using JasperBus;
 
 namespace DiagnosticsHarness
 {
@@ -29,18 +32,23 @@ namespace DiagnosticsHarness
 
         public IConfigurationRoot Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-
-            services.AddDiagnostics();
-
-            services.AddMvc();
 
             services.AddCors(options =>
             {
                 options.AddPolicy("OriginPolicy", builder => builder.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod());
             });
+
+            var runtime = JasperRuntime.For<BusRegistry>(_ =>
+            {
+                _.Services.Populate(services);
+                _.Services.ForSingletonOf<IConfigurationRoot>().Use(Configuration);
+                // x.Policies.OnMissingFamily<SettingsPolicy>();
+            });
+
+            return runtime.Container.GetInstance<IServiceProvider>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -50,34 +58,26 @@ namespace DiagnosticsHarness
 
             app.UseCors("OriginPolicy");
 
-            app.UseWebSockets();
-
             app.UseDiagnostics(_ =>
             {
                 _.Mode = DiagnosticsMode.Development;
             });
 
             UseRequestLogging(app);
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
         }
 
         public static void UseRequestLogging(IApplicationBuilder app)
         {
             var client = app.ApplicationServices.GetService<IDiagnosticsClient>();
+            var bus = app.ApplicationServices.GetService<IServiceBus>();
 
              app.Use( async (context, next) =>
              {
-                 client.Send(new LogMessage($"Incoming request: {context.Request.Method}, {context.Request.Path}, {context.Request.Headers}"));
+                 bus.Send(new MiddlewareMessage { Message = $"Incoming request: {context.Request.Method}, {context.Request.Path}, {context.Request.Headers}" });
 
                  await next();
 
-                 client.Send(new LogMessage($"Outgoing response: {context.Response.StatusCode} {context.Response.Headers}"));
+                 client.Send(new MiddlewareMessage { Message = $"Outgoing response: {context.Response.StatusCode} {context.Response.Headers}" });
              });
          }
 
@@ -90,5 +90,32 @@ namespace DiagnosticsHarness
 
              public string Message { get; }
          }
+
+         public class BusRegistry : JasperBusRegistry
+         {
+             public BusRegistry()
+             {
+                 var uri = "lq.tcp://localhost:2110/servicebus_auth";
+                 SendMessage<MiddlewareMessage>().To(uri);
+                 ListenForMessagesFrom(uri);
+
+                 Logging.UseConsoleLogging = true;
+
+                 this.AddDiagnostics();
+             }
+         }
+    }
+
+    public class MiddlewareMessage
+    {
+        public string Message { get; set; }
+    }
+
+    public class MiddlewareMessageConsumer
+    {
+        public void Consume(MiddlewareMessage message)
+        {
+            Console.WriteLine($"Got Message: {message.Message}");
+        }
     }
 }
