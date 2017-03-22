@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Baseline;
 
 namespace JasperBus.Runtime
@@ -91,12 +92,24 @@ namespace JasperBus.Runtime
 
         public override string ToString()
         {
-            var id = ResponseId.IsNotEmpty()
-                ? "{0} in response to {1}".ToFormat(CorrelationId, ResponseId) : CorrelationId;
+            var text = $"Envelope #{CorrelationId}";
+            if (Message != null)
+            {
+                text += $" ({Message.GetType().Name})";
+            }
 
-            return Message != null
-                ? $"Envelope for message {Message} ({Message.GetType().Name}) w/ Id {id}"
-                : "Envelope w/ Id {0}".ToFormat(id);
+            if (Source != null)
+            {
+                text += $" from {Source}";
+            }
+
+            if (Destination != null)
+            {
+                text += $" to {Destination}";
+            }
+
+
+            return text;
         }
 
         public Envelope Clone()
@@ -107,20 +120,6 @@ namespace JasperBus.Runtime
                 Headers = Headers.Clone()
             };
         }
-
-        /*
-        public EnvelopeToken ToToken()
-        {
-            return new EnvelopeToken
-            {
-                Data = Data,
-                Headers = Headers,
-                MessageSource = _message
-            };
-
-
-        }
-*/
 
         protected bool Equals(Envelope other)
         {
@@ -145,6 +144,8 @@ namespace JasperBus.Runtime
                 return hashCode;
             }
         }
+
+
 
         public static Envelope ForMessage(object message)
         {
