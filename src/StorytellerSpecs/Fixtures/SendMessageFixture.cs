@@ -96,7 +96,11 @@ namespace StorytellerSpecs.Fixtures
         public Task RequestAndReply(string name)
         {
             var message = new Message1 {Name = name};
-            return bus().Request<Message2>(message);
+
+            return bus().Request<Message2>(message).ContinueWith(t =>
+            {
+                _runtime.Container.GetInstance<MessageTracker>().Records.Add(new MessageRecord("stub://replies".ToUri(), t.Result));
+            });
         }
 
         private IList<MessageRecord> sent()

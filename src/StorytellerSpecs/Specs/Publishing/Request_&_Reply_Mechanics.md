@@ -1,9 +1,9 @@
 # Request & Reply Mechanics
 
 -> id = 1b98469a-7960-449f-8879-ca1aef81680d
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-22T13:15:26.6663520Z
+-> last-updated = 2017-03-22T13:29:25.0388371Z
 -> tags = 
 
 [SendMessage]
