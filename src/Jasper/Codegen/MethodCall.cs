@@ -103,6 +103,7 @@ namespace Jasper.Codegen
                 else
                 {
                     returnValue = "await ";
+                    suffix = ".ConfigureAwait(false)";
                 }
             }
 
