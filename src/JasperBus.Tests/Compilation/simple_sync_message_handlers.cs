@@ -42,5 +42,7 @@ namespace JasperBus.Tests.Compilation
         {
             LastMessage2 = message;
         }
+
+
     }
 }

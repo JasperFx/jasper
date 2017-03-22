@@ -20,11 +20,11 @@ namespace Jasper.Codegen
 
         public string CtorArg { get; }
 
-        public string CtorArgDeclaration => $"{ArgType.FullName} {CtorArg}";
+        public string CtorArgDeclaration => $"{ArgType.NameInCode()} {CtorArg}";
 
         public void WriteDeclaration(ISourceWriter writer)
         {
-            writer.Write($"private readonly {ArgType.FullName} {Usage};");
+            writer.Write($"private readonly {ArgType.NameInCode()} {Usage};");
         }
 
         public void WriteAssignment(ISourceWriter writer)

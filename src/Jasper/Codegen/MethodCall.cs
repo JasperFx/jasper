@@ -88,7 +88,7 @@ namespace Jasper.Codegen
         {
             var callingCode = $"{Method.Name}({_variables.Select(x => x.Usage).Join(", ")})";
             var target = Method.IsStatic
-                ? HandlerType.FullName
+                ? HandlerType.NameInCode()
                 : _target.Usage;
 
             var returnValue = "";

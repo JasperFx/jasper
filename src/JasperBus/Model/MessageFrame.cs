@@ -18,7 +18,7 @@ namespace JasperBus.Model
 
         public override void GenerateCode(IGenerationModel generationModel, ISourceWriter writer)
         {
-            writer.Write($"var {_message.Usage} = ({_message.VariableType.FullName}){_envelope.Usage}.{nameof(Envelope.Message)};");
+            writer.Write($"var {_message.Usage} = ({_message.VariableType.NameInCode()}){_envelope.Usage}.{nameof(Envelope.Message)};");
             Next?.GenerateCode(generationModel, writer);
         }
     }

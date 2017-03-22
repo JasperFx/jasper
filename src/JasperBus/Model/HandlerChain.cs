@@ -45,7 +45,7 @@ namespace JasperBus.Model
 
             MessageType = messageType;
 
-            TypeName = messageType.FullName.Replace(".", "_");
+            TypeName = messageType.FullName.Replace(".", "_").Replace("+", "_");
         }
 
         public string TypeName { get; }
