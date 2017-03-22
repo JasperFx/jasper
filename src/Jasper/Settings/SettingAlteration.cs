@@ -2,7 +2,7 @@
 
 namespace Jasper.Settings
 {
-    public class SettingAlteration<T> : ISettingsAlteration where T : class
+    public class SettingAlteration<T> : ISettingsAlteration where T : class, new()
     {
         private readonly Action<T> _alteration;
 
