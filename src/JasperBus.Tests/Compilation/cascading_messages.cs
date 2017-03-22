@@ -6,6 +6,30 @@ using Xunit;
 
 namespace JasperBus.Tests.Compilation
 {
+    public class source_code_attachment_to_handler_chains : IntegrationContext
+    {
+        [Fact]
+        public void should_have_code_on_each_chain()
+        {
+            withAllDefaults();
+
+            Graph.Chains.Any().ShouldBeTrue();
+
+            foreach (var chain in Graph.Chains)
+            {
+                chain.SourceCode.ShouldContain(chain.TypeName);
+
+//                Console.WriteLine("Should be " + chain.TypeName);
+//                Console.WriteLine("--------------------------------------");
+//                Console.WriteLine(chain.SourceCode);
+//                Console.WriteLine("--------------------------------------");
+
+            }
+        }
+    }
+
+
+
     public class cascading_messages : CompilationContext<CascadingHandler>
     {
         [Fact]

@@ -52,15 +52,6 @@ namespace JasperBus.Model
 
         public List<MethodCall> Handlers = new List<MethodCall>();
 
-
-        private static bool isConfigureMethod(MethodInfo method)
-        {
-            if (method == null) return false;
-
-            var parameters = method.GetParameters();
-            return parameters.Length == 1 && parameters.Single().ParameterType == typeof(HandlerChain);
-        }
-
         public IGenerationModel ToGenerationModel(IGenerationConfig config)
         {
             if (!Handlers.Any())
@@ -106,7 +97,7 @@ namespace JasperBus.Model
             Handlers.AddRange(grouping);
         }
 
-        string IGenerates<MessageHandler>.SourceCode { get; set; }
+        public string SourceCode { get; set; }
         public int MaximumAttempts { get; set; } = 1;
         public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
 

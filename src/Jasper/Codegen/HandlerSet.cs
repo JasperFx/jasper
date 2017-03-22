@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Codegen.Compilation;
 using Jasper.Codegen.New;
 using Jasper.Internal;
@@ -79,7 +81,63 @@ namespace Jasper.Codegen
 
             writer.FinishBlock();
 
-            return writer.Code();
+
+            var code = writer.Code();
+
+            attachSourceCodeToChains(code);
+
+
+            return code;
+        }
+
+        private void attachSourceCodeToChains(string code)
+        {
+            var parser = new SourceCodeParser(code);
+            foreach (var chain in chains)
+            {
+                chain.SourceCode = parser.Code[chain.TypeName];
+            }
+        }
+    }
+
+    public class SourceCodeParser
+    {
+        public readonly LightweightCache<string, string> Code = new LightweightCache<string, string>(name => "UNKNOWN");
+
+        private StringWriter _current;
+        private string _name;
+
+        public SourceCodeParser(string code)
+        {
+            foreach (var line in code.ReadLines())
+            {
+                if (_current == null)
+                {
+                    if (line.IsEmpty()) continue;
+
+                    if (line.Trim().StartsWith("// START"))
+                    {
+                        _name = line.Split(':').Last().Trim();
+                        _current = new StringWriter();
+                    }
+                }
+                else
+                {
+                    if (line.Trim().StartsWith("// END"))
+                    {
+                        var classCode = _current.ToString();
+                        Code[_name] = classCode;
+
+                        _current = null;
+                        _name = null;
+                    }
+                    else
+                    {
+                        _current.WriteLine(line);
+                    }
+                }
+
+            }
         }
     }
 }
