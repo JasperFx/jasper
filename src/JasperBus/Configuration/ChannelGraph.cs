@@ -17,6 +17,10 @@ namespace JasperBus.Configuration
         IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
         public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
 
+        // TODO -- need to make this the default reply channel
+        // if it is not explicitly set
+        public ChannelNode ControlChannel { get; set; }
+
         public ChannelGraph()
         {
         }
@@ -44,6 +48,8 @@ namespace JasperBus.Configuration
                 return _nodes.GetOrAdd(uri, key => new ChannelNode(uri));
             }
         }
+
+        public ChannelNode this[string uriString] => this[uriString.ToUri()];
 
         public ChannelNode AddChannelIfMissing(Uri uri)
         {

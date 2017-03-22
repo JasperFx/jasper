@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reactive.Concurrency;
 using System.Reflection;
+using Baseline.Reflection;
 using Jasper;
 using JasperBus.Configuration;
 using JasperBus.Runtime;
@@ -27,14 +31,17 @@ namespace JasperBus
 
         public SerializationExpression Serialization { get; }
 
-        public void ListenForMessagesFrom(Uri uri)
+        public ChannelExpression ListenForMessagesFrom(Uri uri)
         {
-            _feature.Channels[uri].Incoming = true;
+            var node = _feature.Channels[uri];
+            node.Incoming = true;
+
+            return new ChannelExpression(_feature.Channels, node);
         }
 
-        public void ListenForMessagesFrom(string uriString)
+        public ChannelExpression ListenForMessagesFrom(string uriString)
         {
-            ListenForMessagesFrom(uriString.ToUri());
+            return ListenForMessagesFrom(uriString.ToUri());
         }
 
         public SendExpression SendMessage<T>()
@@ -119,10 +126,18 @@ namespace JasperBus
                 return this;
             }
         }
+
+        public ChannelExpression Channel(Uri uri)
+        {
+            var node = _feature.Channels[uri];
+            return new ChannelExpression(_feature.Channels, node);
+        }
+
+
+        public ChannelExpression Channel(string uriString)
+        {
+            return Channel(uriString.ToUri());
+        }
     }
-
-
-
-
 }
 

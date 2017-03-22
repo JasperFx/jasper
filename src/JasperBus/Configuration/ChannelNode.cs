@@ -6,6 +6,19 @@ using JasperBus.Runtime.Routing;
 
 namespace JasperBus.Configuration
 {
+    public enum DeliveryMode
+    {
+        /// <summary>
+        /// If supported by the transport, this opts into guaranteed delivery mechanics for this channel
+        /// </summary>
+        DeliveryGuaranteed,
+
+        /// <summary>
+        /// If supported by the transport, this opts into a faster "fire and forget" mechanism for sending and receiving messages. Use this option for control channels.
+        /// </summary>
+        DeliveryFastWithoutGuarantee
+    }
+
     public class ChannelNode : IContentTypeAware
     {
         public Uri Uri { get; }
@@ -32,6 +45,8 @@ namespace JasperBus.Configuration
         public Uri Destination { get; set; }
 
         public ISender Sender { get; set; }
+        public DeliveryMode Mode { get; set; } = DeliveryMode.DeliveryGuaranteed;
+        public IList<IEnvelopeModifier> Modifiers { get; } = new List<IEnvelopeModifier>();
     }
 
     // Use a nullo if need be?
