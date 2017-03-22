@@ -60,10 +60,9 @@ namespace JasperBus.Runtime.Invocation
                 }
                 else
                 {
-                    Logger.Received(envelope);
-
                     deserialize(envelope, receiver);
 
+                    Logger.Received(envelope);
 
                     await ProcessMessage(envelope, context).ConfigureAwait(false);
                 }
@@ -72,7 +71,7 @@ namespace JasperBus.Runtime.Invocation
 
         private void deserialize(Envelope envelope, ChannelNode receiver)
         {
-// TODO -- Not super duper wild about this one.
+            // TODO -- Not super duper wild about this one.
             if (envelope.Message == null)
             {
                 envelope.Message = _serializer.Deserialize(envelope, receiver);
