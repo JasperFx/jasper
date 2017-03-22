@@ -11,12 +11,12 @@ namespace Jasper.Testing.Settings
     public class JasperSettingsTests
     {
         private readonly JasperSettings _settings;
-        private readonly ServiceRegistry _registry;
+        private readonly JasperRegistry _registry;
 
         public JasperSettingsTests()
         {
             _settings = new JasperSettings();
-            _registry = new ServiceRegistry();
+            _registry = new JasperRegistry();
         }
 
         [Fact]
@@ -85,9 +85,18 @@ namespace Jasper.Testing.Settings
         {
             _settings.Configure<MySettings>();
             _settings.Bootstrap(_registry);
-            var container = new Container(_registry);
+            var container = new Container(_registry.Services);
             var settings = container.GetInstance<MySettings>();
             Assert.Equal(settings.SomeSetting, 1);
+        }
+
+        [Fact]
+        public void can_modify_registry()
+        {
+            var app = new MyApp();
+            var runtime = JasperRuntime.For(app);
+            var myApp = (MyApp) runtime.Registry;
+            Assert.Equal(myApp.MySetting, true);
         }
     }
 }
