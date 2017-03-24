@@ -8,6 +8,7 @@ using Baseline;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Jasper.Remotes.Messaging
 {
@@ -63,10 +64,15 @@ namespace Jasper.Remotes.Messaging
             return writer.ToString();
         }
 
-        public static string ToCleanJson(object o, bool indentedFormatting = false)
+        public static string ToCleanJson(object o, bool indentedFormatting = false, IContractResolver contractResolver = null)
         {
             var serializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.None,  };
             serializer.Converters.Add(new StringEnumConverter());
+
+            if(contractResolver != null)
+            {
+                serializer.ContractResolver = contractResolver;
+            }
 
             if (indentedFormatting)
             {

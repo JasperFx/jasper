@@ -1,7 +1,11 @@
 import { combineReducers } from 'redux'
 
-import values from './valuesReducer'
+import app from './appReducer'
+import handlerChains from './HandlerChains/handlerChainsReducer'
+import live from './Live/liveMessagesReducer'
 
 export default combineReducers({
-  values
+  app,
+  handlerChains,
+  live
 })

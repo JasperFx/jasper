@@ -1,13 +1,13 @@
 const initialState = {
-  values: []
+  chains: []
 }
 
 export default (state = initialState, action = {}) => {
   switch(action.type) {
-    case 'SET_VALUES':
+    case 'initial-data':
       return {
-        values: action.values
+        chains: action.chains
       }
-    default: return state;
+    default: return state
   }
 }

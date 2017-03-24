@@ -1,0 +1,16 @@
+.title-bar {
+  background-color: #3bafda;
+  padding: 20px 0;
+  color: #ffffff;
+}
+
+.title-bar-icon {
+  margin-right: 5px;
+  font-size: 18px;
+}
+
+.title-bar-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .05em;
+}

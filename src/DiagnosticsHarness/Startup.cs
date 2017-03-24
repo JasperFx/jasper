@@ -1,22 +1,21 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Jasper.Diagnostics;
-using Jasper.Remotes.Messaging;
 using Jasper;
-using StructureMap;
+using Jasper.Diagnostics;
 using JasperBus;
+using StructureMap;
 
 namespace DiagnosticsHarness
 {
     public class Startup
     {
         private readonly IHostingEnvironment _env;
-        private readonly Func<HttpContext, bool> isApiRequest = context => context.Request.Path.Value.StartsWith("/api");
 
         public Startup(IHostingEnvironment env)
         {
@@ -64,11 +63,11 @@ namespace DiagnosticsHarness
             });
 
             UseRequestLogging(app);
+            UseErrorMap(app);
         }
 
         public static void UseRequestLogging(IApplicationBuilder app)
         {
-            var client = app.ApplicationServices.GetService<IDiagnosticsClient>();
             var bus = app.ApplicationServices.GetService<IServiceBus>();
 
              app.Use( async (context, next) =>
@@ -77,26 +76,29 @@ namespace DiagnosticsHarness
 
                  await next();
 
-                 client.Send(new MiddlewareMessage { Message = $"Outgoing response: {context.Response.StatusCode} {context.Response.Headers}" });
+                 bus.Send(new MiddlewareMessage { Message = $"Outgoing response: {context.Response.StatusCode} {context.Response.Headers}" });
              });
          }
 
-         public class LogMessage : ClientMessage
+         public static void UseErrorMap(IApplicationBuilder app)
          {
-             public LogMessage(string message) : base("log")
-             {
-                 Message = message;
-             }
+             var bus = app.ApplicationServices.GetService<IServiceBus>();
 
-             public string Message { get; }
+             app.Map("/error", _ => _.Use( async (context, next) => {
+                context.Response.ContentType = "text/html";
+                await context.Response.WriteAsync("error endpoint");
+
+                bus.Send(new AMessageThatWillError());
+             }));
          }
 
          public class BusRegistry : JasperBusRegistry
          {
              public BusRegistry()
              {
-                 var uri = "lq.tcp://localhost:2110/servicebus_auth";
+                 var uri = "lq.tcp://localhost:2110/servicebus_example";
                  SendMessage<MiddlewareMessage>().To(uri);
+                 SendMessage<AMessageThatWillError>().To(uri);
                  ListenForMessagesFrom(uri);
 
                  Logging.UseConsoleLogging = true;
@@ -104,6 +106,24 @@ namespace DiagnosticsHarness
                  this.AddDiagnostics();
              }
          }
+    }
+
+    public class SomeMiddleware
+    {
+        private readonly IServiceBus _bus;
+
+        public SomeMiddleware(RequestDelegate next, IServiceBus bus)
+        {
+            _bus = bus;
+        }
+
+        public async Task Invoke(HttpContext context)
+        {
+            context.Response.ContentType = "text/html";
+            await context.Response.WriteAsync("error endpoint");
+
+            _bus.Send(new AMessageThatWillError());
+        }
     }
 
     public class MiddlewareMessage
@@ -116,6 +136,18 @@ namespace DiagnosticsHarness
         public void Consume(MiddlewareMessage message)
         {
             Console.WriteLine($"Got Message: {message.Message}");
+        }
+    }
+
+    public class AMessageThatWillError
+    {
+    }
+
+    public class SomeConsumer
+    {
+        public void Consume(AMessageThatWillError message)
+        {
+            throw new NotSupportedException();
         }
     }
 }
