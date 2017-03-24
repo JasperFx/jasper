@@ -15,8 +15,7 @@ export default function Communicator(dispatch, address, disconnect) {
   this.socket.onmessage = (evt) => {
     const message = JSON.parse(evt.data)
     console.log('Got: ' + JSON.stringify(message) + ' with topic ' + message.type)
-
-    // subject.next(message);
+    dispatch(message)
   }
 
   this.socket.onopen = () => {

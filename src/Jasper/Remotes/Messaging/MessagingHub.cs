@@ -29,7 +29,6 @@ namespace Jasper.Remotes.Messaging
         public void Send<T>(T message)
         {
             _listeners.OfType<IListener<T>>().ToArray().Each(x => x.Receive(message));
-            _listeners.OfType<IListener>().ToArray().Each(x => x.Receive(message));
         }
 
         public void SendJson(string json)

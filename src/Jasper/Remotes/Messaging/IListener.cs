@@ -2,10 +2,9 @@
 {
     public interface IListener
     {
-        void Receive<T>(T message);
     }
 
-    public interface IListener<T>
+    public interface IListener<T> : IListener
     {
         void Receive(T message);
     }

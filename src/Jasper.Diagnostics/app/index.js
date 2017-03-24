@@ -1,13 +1,12 @@
 import React from 'react'
 import { render } from 'react-dom'
-import { HashRouter } from 'react-router'
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import { Provider } from 'react-redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
 
 import Communicator from './communicator'
-import rootReducer from './rootReducer';
+import rootReducer from './rootReducer'
 import App from './App'
 
 const store = createStore(
@@ -17,15 +16,15 @@ const store = createStore(
   )
 )
 
-const settings = window.DiagnosticsSettings;
+const settings = window.DiagnosticsSettings
 
-const communicator = new Communicator(() => {}, settings.websocketAddress, ()=> {})
+const communicator = new Communicator(store.dispatch, settings.websocketAddress, ()=> {
+  store.dispatch({ type: 'disconnected' })
+})
 
 render(
-  <HashRouter>
-    <Provider store={store}>
-      <App settings={settings}/>
-    </Provider>
-  </HashRouter>,
+  <Provider store={store}>
+    <App settings={settings} communicator={communicator}/>
+  </Provider>,
   document.getElementById('root')
 )
