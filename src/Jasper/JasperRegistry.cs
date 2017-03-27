@@ -30,6 +30,7 @@ namespace Jasper
             Generation = new GenerationConfig($"{ApplicationAssembly.GetName().Name}.Generated");
 
             Logging = new Logging(this);
+            Settings = new JasperSettings(this);
         }
 
         public GenerationConfig Generation { get; }
@@ -98,7 +99,7 @@ namespace Jasper
 
         public ServiceRegistry Services { get; } = new ServiceRegistry();
 
-        public JasperSettings Settings { get; } = new JasperSettings();
+        public JasperSettings Settings { get; }
 
         public void UseFeature<T>() where T : IFeature, new()
         {
