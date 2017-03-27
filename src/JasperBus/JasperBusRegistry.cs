@@ -6,6 +6,7 @@ using System.Reflection;
 using Baseline.Reflection;
 using Jasper;
 using JasperBus.Configuration;
+using JasperBus.ErrorHandling;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
 using JasperBus.Runtime.Serializers;
@@ -30,6 +31,8 @@ namespace JasperBus
         public Policies Policies => _feature.Policies;
 
         public SerializationExpression Serialization { get; }
+
+        public IHasErrorHandlers ErrorHandling => Policies;
 
         public ChannelExpression ListenForMessagesFrom(Uri uri)
         {

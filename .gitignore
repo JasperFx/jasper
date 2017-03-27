@@ -210,3 +210,5 @@ paket.lock
 .idea
 
 project.lock.json
+
+*.nuget.props

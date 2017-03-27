@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using Baseline;
+using JasperBus.ErrorHandling;
 using JasperBus.Model;
 
 namespace JasperBus.Configuration
 {
-    public class Policies
+    public class Policies : IHasErrorHandlers
     {
         private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
 
@@ -25,6 +27,10 @@ namespace JasperBus.Configuration
             {
                 policy.Apply(graph);
             }
+
+            graph.ErrorHandlers.AddRange(this.As<IHasErrorHandlers>().ErrorHandlers);
         }
+
+        IList<IErrorHandler> IHasErrorHandlers.ErrorHandlers { get; } = new List<IErrorHandler>();
     }
 }
