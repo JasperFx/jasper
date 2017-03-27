@@ -86,8 +86,7 @@ Questions:
 
             await applyExtensions(registry, assemblies).ConfigureAwait(false);
 
-            // TODO -- apply all the settings alterations
-            registry.Settings.Bootstrap(registry);
+            registry.Settings.Bootstrap();
 
             var features = registry.Features;
 

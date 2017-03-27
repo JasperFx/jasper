@@ -15,15 +15,15 @@ namespace Jasper.Testing.Settings
 
         public JasperSettingsTests()
         {
-            _settings = new JasperSettings();
             _registry = new JasperRegistry();
+            _settings = new JasperSettings(_registry);
         }
 
         [Fact]
         public void can_read_settings()
         {
             _settings.Configure<MySettings>();
-            _settings.Bootstrap(_registry);
+            _settings.Bootstrap();
             var settings = _settings.Get<MySettings>();
             settings.SomeSetting.ShouldBe(1);
         }
@@ -37,7 +37,7 @@ namespace Jasper.Testing.Settings
                 s.SomeSetting = 5;
             });
 
-            _settings.Bootstrap(_registry);
+            _settings.Bootstrap();
             var settings = _settings.Get<MySettings>();
 
             settings.SomeSetting.ShouldBe(5);
@@ -53,7 +53,7 @@ namespace Jasper.Testing.Settings
                 SomeSetting = 1000
             });
 
-            _settings.Bootstrap(_registry);
+            _settings.Bootstrap();
             var settings = _settings.Get<MySettings>();
 
             settings.SomeSetting.ShouldBe(1000);
@@ -70,10 +70,10 @@ namespace Jasper.Testing.Settings
             });
 
             _settings.Configure<MySettings>();
-            _settings.Configure<Colors>();
-            _settings.Bootstrap(_registry);
+            _settings.Configure<ColorSettings>();
+            _settings.Bootstrap();
 
-            var colors = _settings.Get<Colors>();
+            var colors = _settings.Get<ColorSettings>();
             var settings = _settings.Get<MySettings>();
 
             colors.Red.ShouldBe("#ff0000");
@@ -84,7 +84,7 @@ namespace Jasper.Testing.Settings
         public void can_resolve_registered_types()
         {
             _settings.Configure<MySettings>();
-            _settings.Bootstrap(_registry);
+            _settings.Bootstrap();
             var container = new Container(_registry.Services);
             var settings = container.GetInstance<MySettings>();
             settings.SomeSetting.ShouldBe(1);
@@ -97,6 +97,40 @@ namespace Jasper.Testing.Settings
             var runtime = JasperRuntime.For(app);
             var myApp = (MyApp) runtime.Registry;
             myApp.MySetting.ShouldBe(true);
+        }
+
+        [Fact]
+        public void settings_policy_registers_settings()
+        {
+            var runtime = JasperRuntime.Basic();
+            var registry = runtime.Registry;
+            var container = new Container(registry.Services);
+            var settings = container.GetInstance<MySettings>();
+            settings.SomeSetting.ShouldBe(1);
+        }
+
+        [Fact]
+        public void can_alter_and_registry_still_gets_defaults()
+        {
+            var app = new MyApp();
+            app.Settings.Build(_ =>
+            {
+                _.AddJsonFile("appsettings.config");
+                _.AddJsonFile("colors.json");
+            });
+
+            app.Settings.Alter<MySettings>(_ =>
+            {
+                _.SomeSetting = 29;
+            });
+
+            var runtime = JasperRuntime.For(app);
+            var container = new Container(runtime.Registry.Services);
+            var mySettings = container.GetInstance<MySettings>();
+            var colors = container.GetInstance<ColorSettings>();
+
+            mySettings.SomeSetting.ShouldBe(29);
+            colors.Red.ShouldBe("#ff0000");
         }
     }
 }

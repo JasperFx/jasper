@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Jasper.Testing.Settings
 {
-    public class Colors
+    public class ColorSettings
     {
         public string Blue { get; set; }
         public string Red { get; set; }

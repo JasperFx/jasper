@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 using Baseline;
 using Microsoft.Extensions.Configuration;
 using Jasper.Configuration;
+using StructureMap.Graph.Scanning;
+using StructureMap.TypeRules;
 
 namespace Jasper.Settings
 {
     public class JasperSettings
     {
+        private const string defaultConfigFileName = "appsettings.config";
+
         private readonly IConfigurationBuilder _builder;
         private readonly IList<ISettingsAlteration> _alterations = new List<ISettingsAlteration>();
         private readonly IList<ISettingsConfiguration> _configurations = new List<ISettingsConfiguration>();
         private readonly SettingsCollection _settingsCollection = new SettingsCollection();
         private Action<IConfigurationBuilder> _configBuilder;
+        private readonly JasperRegistry _registry;
 
-        public JasperSettings()
+        public JasperSettings(JasperRegistry registry)
         {
             _configBuilder = build;
+            _registry = registry;
             _builder = new ConfigurationBuilder();
         }
 
@@ -57,10 +64,12 @@ namespace Jasper.Settings
             return _settingsCollection.Get<T>();
         }
 
-        public void Bootstrap(JasperRegistry registry)
+        public void Bootstrap()
         {
             _configBuilder(_builder);
             var configuration = _builder.Build();
+            _registry.Services.ForSingletonOf<IConfigurationRoot>().Use(configuration);
+            _registry.Services.Policies.OnMissingFamily<SettingsPolicy>();
 
             _configurations.Each(config =>
             {
@@ -70,12 +79,12 @@ namespace Jasper.Settings
 
             _alterations.Each(alteration => alteration.Alter(_settingsCollection));
 
-            _settingsCollection.Register(registry.Services);
+            _settingsCollection.Register(_registry.Services);
         }
 
         private void build(IConfigurationBuilder builder)
         {
-            builder.AddJsonFile("appsettings.json");
+            builder.AddJsonFile(defaultConfigFileName);
         }
     }
 }

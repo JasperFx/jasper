@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Jasper.Configuration;
+using Jasper.Settings;
 
 namespace Jasper
 {
@@ -10,5 +11,8 @@ namespace Jasper
         T Feature<T>() where T : IFeature, new();
         IFeature[] Features { get; }
         Assembly ApplicationAssembly { get; }
+
+        JasperSettings Settings { get; }
+        ServiceRegistry Services { get; }
     }
 }
