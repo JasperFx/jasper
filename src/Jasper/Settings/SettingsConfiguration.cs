@@ -5,9 +5,9 @@ namespace Jasper.Settings
 {
     public class SettingsConfiguration<T> : ISettingsConfiguration where T : class, new()
     {
-        private readonly Action<IConfiguration> _configuration;
+        private readonly Func<IConfiguration, IConfiguration> _configuration;
 
-        public SettingsConfiguration(Action<IConfiguration> config)
+        public SettingsConfiguration(Func<IConfiguration, IConfiguration> config)
         {
             _configuration = config;
         }
@@ -15,8 +15,7 @@ namespace Jasper.Settings
         public object Configure(IConfiguration configuration)
         {
             var result = new T();
-            _configuration(configuration);
-            configuration.Bind(result);
+            _configuration(configuration).Bind(result);
             return result;
         }
     }

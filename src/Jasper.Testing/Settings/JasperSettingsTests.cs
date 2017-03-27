@@ -81,6 +81,23 @@ namespace Jasper.Testing.Settings
         }
 
         [Fact]
+        public void can_configure_settings()
+        {
+            _settings.Build(_ =>
+            {
+                _.AddJsonFile("nested.json");
+            });
+
+            _settings.Configure<ColorSettings>(_ => _.GetSection("NestedSettings"));
+
+            _settings.Bootstrap();
+
+            var colors = _settings.Get<ColorSettings>();
+
+            colors.Red.ShouldBe("#ff0000");
+        }
+
+        [Fact]
         public void can_resolve_registered_types()
         {
             _settings.Configure<MySettings>();
