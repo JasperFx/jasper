@@ -36,10 +36,10 @@ namespace Jasper.Settings
 
         public void Configure<T>() where T : class, new()
         {
-            Configure<T>(x => { });
+            Configure<T>(x => x);
         }
 
-        public void Configure<T>(Action<IConfiguration> config) where T : class, new()
+        public void Configure<T>(Func<IConfiguration, IConfiguration> config) where T : class, new()
         {
             _configurations.Fill(new SettingsConfiguration<T>(config));
         }
