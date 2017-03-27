@@ -7,6 +7,23 @@ Jasper is a next generation application development framework for distributed se
 intends to keep the things that have been successful in FubuMVC, ditch the things that weren't, and make the runtime pipeline
 be much more performant. Oh, and make the stacktraces from failures within the runtime pipeline be a whole lot simpler to read -- and yes, that's absolutely worth being one of the main goals.
 
+## Documentation
+
+The documentation is built and published with [dotnet stdocs](http://storyteller.github.io/documentation/docs/). The actual content is
+in this repository in the "/documentation" folder, but the finished HTML docs will be published to gh-pages in the
+[jasperfx.github.io](https://github.com/JasperFx/jasperfx.github.io) repository.
+
+To run the documentation website for the Jasper docs, use the `rake docs` task, or if you're not a Ruby fan, from the
+root directory of the repository, do `dotnet restore && dotnet stdocs run`.
+
+To publish the documentation, there is a separate `rake publish` task that exports the compiled HTML code and pushes that to the Github
+repository for Jasper. Note that you will have to have push rights to the jasperfx.github.io repository.
+
+
+
+
+
+## Libraries and Nuget's
 
 The current thinking is that we'd have these libraries/Nugets:
 
@@ -19,7 +36,6 @@ The current thinking is that we'd have these libraries/Nugets:
 1. _JasperQueues_ (later) - JasperBus is going to use [LightningQueues](https://github.com/LightningQueues/LightningQueues) as its   
    primary transport mechanism, but I'd like to re-architect that code to a new library inside of Jasper. This library will 
    not have any references or coupling to any other Jasper project.
-1. _JasperScheduler_ (proposed for much later) - Scheduled or polling job support on top of JasperBus
 
 ## The Core Pipeline and Roslyn
 
