@@ -113,7 +113,7 @@ end
 
 "Gets the documentation assets ready"
 task :prepare_docs => [:compile] do
-
+	# this will grow to include the storyteller specs
 end
 
 "Launches the documentation project in editable mode"
