@@ -74,7 +74,8 @@ namespace JasperBus.Runtime.Invocation
         {
             var envelope = new Envelope
             {
-                Message = message
+                Message = message,
+                Callback = new InlineMessageCallback(message)
             };
 
             using (var context = new EnvelopeContext(this, envelope, _sender))
@@ -160,6 +161,54 @@ namespace JasperBus.Runtime.Invocation
                 envelope.Callback.MarkFailed(e);
                 context.Logger.LogException(e, envelope.CorrelationId, "Failed to move delayed message to the delayed message queue");
             }
+        }
+    }
+
+    public class InlineMessageCallback : IMessageCallback
+    {
+        private readonly object _message;
+
+        public InlineMessageCallback(object message)
+        {
+            _message = message;
+        }
+
+        public void MarkSuccessful()
+        {
+        }
+
+        public void MarkFailed(Exception ex)
+        {
+            throw new InlineMessageException("Failed while invoking an inline message", ex);
+        }
+
+        public void MoveToDelayedUntil(DateTime time)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveToErrors(ErrorReport report)
+        {
+            // TODO -- need a general way to log errors against an ITransport
+        }
+
+        public void Send(Envelope envelope)
+        {
+            // nohting
+        }
+
+        public bool SupportsSend { get; } = false;
+        public void Requeue(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    public class InlineMessageException : Exception
+    {
+        public InlineMessageException(string message, Exception innerException) : base(message, innerException)
+        {
         }
     }
 }

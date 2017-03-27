@@ -24,7 +24,7 @@ namespace JasperBus.Tests
 
             await bus.Consume(message);
 
-            //tracker.LastMessage.ShouldBeSameAs(message);
+            tracker.LastMessage.ShouldBeSameAs(message);
         }
     }
 
