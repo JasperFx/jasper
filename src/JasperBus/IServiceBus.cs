@@ -37,10 +37,10 @@ namespace JasperBus
         /// Error actions will not be executed and the message consumers will not be retried
         /// if an error happens.
         /// </summary>
-        void Consume<T>(T message);
+        Task Consume<T>(T message);
 
-        void DelaySend<T>(T message, DateTime time);
-        void DelaySend<T>(T message, TimeSpan delay);
+//        void DelaySend<T>(T message, DateTime time);
+//        void DelaySend<T>(T message, TimeSpan delay);
 
         /// <summary>
         /// Send a message and await an acknowledgement that the 
@@ -60,10 +60,5 @@ namespace JasperBus
         /// <param name="message"></param>
         /// <returns></returns>
         Task SendAndWait<T>(Uri destination, T message);
-
-        /// <summary>
-        /// Unsubscribes from any messages this node was locally subscribed to.
-        /// </summary>
-        Task RemoveSubscriptionsForThisNodeAsync();
     }
 }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Baseline.Dates;
 using JasperBus.Runtime;
+using JasperBus.Runtime.Invocation;
 
 namespace JasperBus
 {
@@ -9,11 +10,13 @@ namespace JasperBus
     {
         private readonly IEnvelopeSender _sender;
         private readonly IReplyWatcher _watcher;
+        private readonly IHandlerPipeline _pipeline;
 
-        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher)
+        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline)
         {
             _sender = sender;
             _watcher = watcher;
+            _pipeline = pipeline;
         }
 
         public Task<TResponse> Request<TResponse>(object request, RequestOptions options = null)
@@ -49,9 +52,9 @@ namespace JasperBus
             _sender.Send(new Envelope { Message = message, Destination = destination});
         }
 
-        public void Consume<T>(T message)
+        public Task Consume<T>(T message)
         {
-            throw new NotImplementedException();
+            return _pipeline.InvokeNow(message);
         }
 
         public void DelaySend<T>(T message, DateTime time)
@@ -91,9 +94,5 @@ namespace JasperBus
             return task;
         }
 
-        public Task RemoveSubscriptionsForThisNodeAsync()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

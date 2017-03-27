@@ -96,6 +96,10 @@ namespace JasperBus.Tests.Runtime
         }
 
         public IBusLogger Logger { get; } = new BusLogger();
+        public Task InvokeNow(object message)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
