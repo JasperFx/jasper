@@ -118,7 +118,7 @@ end
 
 "Launches the documentation project in editable mode"
 task :docs => [:prepare_docs] do
-	sh "dotnet run --project src/dotnet-stdocs -- run -v #{BUILD_VERSION}"
+	sh "dotnet stdocs run -v #{BUILD_VERSION}"
 end
 
 "Exports the documentation to storyteller.github.io - requires Git access to that repo though!"
@@ -133,7 +133,7 @@ task :publish => [:prepare_docs] do
 	sh "git clone https://github.com/jasperfx/jasperfx.github.io.git doc-target"
 	
 	
-	sh "dotnet run --project src/dotnet-stdocs -- export doc-target Website --version #{BUILD_VERSION}"
+	sh "dotnet stdocs export doc-target Website --version #{BUILD_VERSION}"
 	
 	Dir.chdir "doc-target" do
 		sh "git add --all"

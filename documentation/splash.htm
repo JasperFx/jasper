@@ -9,12 +9,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <link rel=icon href=/content/images/favicon.ico>
     <title>JasperFx</title>
+
+    <!-- Bootstrap Core CSS -->
     <[css:content/bootstrap.min.css]>
+
+    <!-- Custom CSS -->
+    <[css:content/stylish-portfolio.css]>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
     </head>
     <body>
 
-<a href="https://github.com/JasperFx/https://github.com/JasperFx/jasper"><img style="z-index: 5000; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+<a href="https://github.com/JasperFx/jasper"><img style="z-index: 5000; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
 
 
         <nav class="navbar navbar-default navbar-fixed-top" role="banner">
@@ -34,37 +39,78 @@
               <[linkto:documentation]>
             </li>
             <li>
-<a href="https://gitter.im/JasperFx/https://github.com/JasperFx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/JasperFx/https://github.com/JasperFx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
+<a href="https://gitter.im/JasperFx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/JasperFx/https://github.com/JasperFx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
             </li>
             <li>
-              <a href="https://github.com/JasperFx/https://github.com/JasperFx/jasper/blob/master/documentation/<[FilePath]>"  class="text-muted"><i class="fa fa-github"></i> Edit on GitHub</a>
+              <a href="https://github.com/JasperFx/jasper/blob/master/documentation/<[FilePath]>"  class="text-muted"><i class="fa fa-github"></i> Edit on GitHub</a>
             </li>
           </ul>
-      <div class="navbar-form navbar-left" role="search">
-        <div class="form-group">
-          <input id="search" type="search" class="form-control" placeholder="Search">
-        </div>
-      </div>
+          <div class="navbar-form navbar-left" role="search">
+            <div class="form-group">
+              <input id="search" type="search" class="form-control" placeholder="Search">
+            </div>
+          </div>
         </nav>
 
       </div>
     </nav>
 
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <div class="container">
-        <h1>JasperFx</h1>
-        <p>Family of Tools for Server Side .Net Applications</p>
+        <!-- Header -->
+    <header id="top" class="header">
+        <div class="text-vertical-center">
+			  <img src="/content/banner.png" width="100%" align="middle"/>
+            <h1 style="margin-top:25px">JasperFx</h1>
+            <h2>Tools for Modern .Net Server Side Systems</h2>
+			
+                    <p class="lead">
+                        <a href="http://build.fubu-project.org/project.html?projectId=Jasper&tab=projectOverview"><img src="https://img.shields.io/teamcity/http/build.fubu-project.org/s/jasper_master.svg"></img></a>
 
-        <p><a class="btn btn-primary btn-lg" href="<[linkto:documentation;{href}]>" role="button">Learn more &raquo;</a></p>
+
+                        <a href="https://gitter.im/jasperfx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/jasperfx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
+                    </p>
+			
+            <br>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top:25px">
+      <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-3"><a href="documentation/servicebus"><img src="content/jasper-icon.png"></img></a></div>
+        <div class="col-md-7" style="vertical-align: middle"><h4>Distributed Applications and Messaging with the JasperBus</h4></div>
       </div>
+      <div class="row" style="margin-top:50px">
+        <div class="col-md-2"></div>
+        <div class="col-md-3" style="text-align: center;"><a href="http://jasperfx.github.io/marten"><img style="max-width:128px;max-height:128px;display:block" src="http://jasperfx.github.io/marten/content/images/emblem.png"></img></a></div>
+        <div class="col-md-7" style="vertical-align: middle"><h4>Postgresql as a Document Db and Event Store for .Net Development</h4></div>
+      </div>
+
+      <div class="row" style="margin-top:50px">
+        <div class="col-md-2"></div>
+        <div class="col-md-3"><a style="text-align: center;" href="http://jasperfx.github.io/oakton"><img style="width:200px;display:block" src="content/oakton.png"></img></a></div>
+        <div class="col-md-7" style="vertical-align: middle"><h4>Parsing and Utilities for Command Line Tools in .Net</h4></div>
+      </div>
+
+      <div class="row" style="margin-top:50px">
+        <div class="col-md-2"></div>
+        <div class="col-md-3">Alba Icon TBD</div>
+        <div class="col-md-7" style="vertical-align: middle"><h4>Easy integration testing helper for ASP.Net Core applications</h4></div>
+      </div>
+
+      <div class="row" style="margin-top:50px">
+        <div class="col-md-2"></div>
+        <div class="col-md-3">Baseline Icon TBD</div>
+        <div class="col-md-7" style="vertical-align: middle"><h4>Grab bag of generic utilities and extension methods for .Net development</h4></div>
+      </div>
+
+
     </div>
 
 
-    <div class="container">
-      <h1>Your content here.</h1>
-      Press CTRL+SHIFT+E to open this file in your html file editor
-    </div>
+
+
+
+
 
       <hr>
 
