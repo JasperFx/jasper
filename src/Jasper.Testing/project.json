@@ -13,7 +13,8 @@
     "Shouldly": "2.8.2",
     "Microsoft.Extensions.Configuration": "1.1.1",
     "Microsoft.Extensions.Configuration.Abstractions": "1.1.1",
-    "Microsoft.Extensions.Configuration.Binder": "1.1.1"
+    "Microsoft.Extensions.Configuration.Binder": "1.1.1",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.1"
   },
   "testRunner": "xunit",
   "frameworks": {
