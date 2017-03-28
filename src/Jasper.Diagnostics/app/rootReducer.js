@@ -1,11 +1,9 @@
-import { combineReducers } from 'redux'
-
 import app from './appReducer'
 import handlerChains from './HandlerChains/handlerChainsReducer'
 import live from './Live/liveMessagesReducer'
 
-export default combineReducers({
+export default {
   app,
   handlerChains,
   live
-})
+}

@@ -10,6 +10,15 @@ body {
   color: rgba(255, 255, 255, 0.5);
 }
 
+a {
+  color: #3bafda;
+}
+
+a:hover {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+}
+
 .fa {
   margin-right: 7px;
 }
@@ -41,9 +50,23 @@ body {
   letter-spacing: 0.04em;
   line-height: 16px;
   margin: 0 0 10px 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.no-transform {
+  text-transform: none;
 }
 
 .top-alert {
   margin-bottom: 0;
   border-radius: 0;
+}
+
+.back-nav {
+  margin-bottom: 20px;
+  display: block;
+}
+
+.clickable {
+  cursor: pointer;
 }

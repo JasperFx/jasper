@@ -6,6 +6,7 @@ import {
   PropTypes,
   PureComponent
 } from 'react'
+import './Code.css'
 
 export default class Code extends PureComponent {
 
