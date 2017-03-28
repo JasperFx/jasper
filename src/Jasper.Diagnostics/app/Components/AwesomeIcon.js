@@ -4,16 +4,17 @@ import {
 } from 'react'
 import cn from 'classnames'
 
-function AwesomeIcon(props) {
-  const styles = cn('fa', `fa-${props.icon}`, props.className)
+function AwesomeIcon({icon, className, onClick}) {
+  const styles = cn('fa', `fa-${icon}`, className)
   return (
-    <i className={styles} aria-hidden="true"></i>
+    <i className={styles} aria-hidden="true" onClick={onClick}></i>
   )
 }
 
 AwesomeIcon.propTypes = {
-  icon: PropTypes.string,
-  className: PropTypes.string
+  icon: PropTypes.string.isRequired,
+  className: PropTypes.string,
+  onClick: PropTypes.func
 }
 
 export default AwesomeIcon

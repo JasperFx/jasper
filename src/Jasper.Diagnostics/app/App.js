@@ -4,8 +4,8 @@ import {
   PropTypes
 } from 'react'
 import {
-  HashRouter as Router,
-  Route
+  Route,
+  withRouter
 } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Alert from './Components/Alert'
@@ -19,30 +19,30 @@ import TopNavItem from './TopNavItem'
 import HandlerChains from './HandlerChains/index'
 import HandlerChainDetails from './HandlerChains/HandlerChainDetails'
 import Live from './Live/index'
+import EnvelopeDetails from './Live/EnvelopeDetails'
 import './App.css'
 
 function routes(props, alert) {
   return (
-    <Router>
-      <div>
-        {alert}
-        <TitleBar/>
-        <TopNav>
-          <TopNavItem to="/" exact><AwesomeIcon icon="share-alt"/> Handler Chains</TopNavItem>
-          <TopNavItem to="/live"><AwesomeIcon icon="envelope"/> Live Messages</TopNavItem>
-        </TopNav>
-        <Container>
-          <Row>
-            <Col column={12}>
-              <Route exact path="/" component={HandlerChains}>
-              </Route>
-              <Route path="/live" component={Live}/>
-              <Route path="/handler-chain/:id" component={HandlerChainDetails}/>
-            </Col>
-          </Row>
-        </Container>
-      </div>
-    </Router>
+    <div>
+      {alert}
+      <TitleBar/>
+      <TopNav>
+        <TopNavItem to="/" exact><AwesomeIcon icon="share-alt"/> Handler Chains</TopNavItem>
+        <TopNavItem to="/live"><AwesomeIcon icon="envelope"/> Live Messages</TopNavItem>
+      </TopNav>
+      <Container>
+        <Row>
+          <Col column={12}>
+            <Route exact path="/" component={HandlerChains}>
+            </Route>
+            <Route path="/live" component={Live}/>
+            <Route path="/envelope/:id" component={EnvelopeDetails}/>
+            <Route path="/handler-chain/:id" component={HandlerChainDetails}/>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   )
 }
 
@@ -72,6 +72,6 @@ App.propTypes = {
   mode: PropTypes.string
 }
 
-export default connect(state => {
+export default withRouter(connect(state => {
   return state.app
-})(App)
+})(App))

@@ -3,7 +3,7 @@ import {
   PropTypes
 } from 'react'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
+import { push } from 'react-router-redux'
 import {
   default as Table,
   Head,
@@ -13,7 +13,6 @@ import Card from '../Components/Card'
 import './index.css'
 
 function HandlerChain (props) {
-      //<Code className="language-javascript">{props.sourceCode}</Code>
   return (
     <tr className="table-row" onClick={() => props.click(props.chain)}>
       <td>
@@ -38,13 +37,10 @@ HandlerChain.propTypes = {
   })
 }
 
-function HandlerChains({ chains, history }) {
+function HandlerChains({ chains, onNavigate }) {
 
-  const click = (c)=> {
-    history.push(`/handler-chain/${c.generatedTypeName}`)
-  }
+  const list = chains.map((c, i) => <HandlerChain key={i} chain={c} click={()=> onNavigate(c.generatedTypeName)}/>)
 
-  const list = chains.map((c, i) => <HandlerChain key={i} chain={c} click={click}/>)
   return (
     <Card>
       <h2 className="header-title">Handler Chains</h2>
@@ -63,15 +59,20 @@ function HandlerChains({ chains, history }) {
 
 HandlerChains.propTypes = {
   chains: PropTypes.array.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired
-  })
+  onNavigate: PropTypes.func.isRequired,
 }
 
 export default connect(
   (state) => {
     return {
       chains: state.handlerChains.chains
+    }
+  },
+  (dispatch) => {
+    return {
+      onNavigate: id => {
+        dispatch(push(`/handler-chain/${id}`))
+      }
     }
   }
 )(HandlerChains)
