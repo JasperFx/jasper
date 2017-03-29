@@ -1,5 +1,5 @@
 import path from 'path'
-import webpack from 'webpack';
+import webpack from 'webpack'
 import {
   createConfig,
   env,
@@ -7,18 +7,37 @@ import {
   setOutput,
   sourceMaps,
   addPlugins
-} from '@webpack-blocks/webpack';
-import babel from '@webpack-blocks/babel6';
-import devServer from '@webpack-blocks/dev-server';
+} from '@webpack-blocks/webpack'
+import babel from '@webpack-blocks/babel6'
+import devServer from '@webpack-blocks/dev-server'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import ManifestPlugin from 'webpack-manifest-plugin'
 import {
   ENV,
   DEV_PORT,
   PROD_OUTPUT_PATH,
   PROD_OUTPUT_FILENAME,
+  CSS_OUTPUT_FILENAME,
   WEB_APP_ENTRY_POINT,
   WEB_APP_DIR,
   WEBPACK_DEV_PORT
-} from './tools/constants';
+} from './tools/constants'
+
+const cssLoader = (include) => {
+  return (context) => ({
+    module: {
+      loaders: [
+        {
+          test: /\.css$/,
+          loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+        }
+      ]
+    },
+    plugins: [
+      new ExtractTextPlugin(CSS_OUTPUT_FILENAME)
+    ]
+  })
+}
 
 export default createConfig([
   babel({
@@ -60,7 +79,7 @@ export default createConfig([
       publicPath: '/',
       filename: PROD_OUTPUT_FILENAME
     }),
-    sourceMaps('source-map'),
+    cssLoader(),
     addPlugins([
       // Try to dedupe duplicated modules, if any:
       new webpack.optimize.DedupePlugin(),
@@ -77,7 +96,8 @@ export default createConfig([
           comments: false,
           screw_ie8: true
         }
-      })
+      }),
+      new ManifestPlugin()
     ])
   ])
-]);
+])

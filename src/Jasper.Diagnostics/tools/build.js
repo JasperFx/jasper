@@ -1,13 +1,13 @@
-import make from 'simple-make/lib/make';
-import config from 'simple-make/lib/config';
+import make from 'simple-make/lib/make'
+import config from 'simple-make/lib/config'
 
-import compile from './tasks/compile';
-import restore from './tasks/restore';
-import run from './tasks/run';
+import compile from './tasks/compile'
+import restore from './tasks/restore'
+import run from './tasks/run'
 
-import webpackBuild from './tasks/webpackBuild';
+import webpackBuild from './tasks/webpackBuild'
 
-config.name = '[diagnostics]';
+config.name = '[diagnostics]'
 
 const tasks = {
   'default': 'run',
@@ -15,6 +15,6 @@ const tasks = {
   compile: ['restore', compile],
   restore,
   run
-};
+}
 
-make({ tasks });
+make({ tasks })

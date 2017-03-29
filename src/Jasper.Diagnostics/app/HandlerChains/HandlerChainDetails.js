@@ -48,13 +48,15 @@ HandlerChainDetails.propTypes = {
 }
 
 export default connect((state, props) => {
-  return {
-    chain: state.handlerChains.chains.find(e => e.generatedTypeName === props.match.params.id)
-  }
-}, (dispatch, props)=> {
-  return {
-    goBack: ()=> {
-      props.history.goBack()
+    return {
+      chain: state.handlerChains.chains.find(e => e.generatedTypeName === props.match.params.id)
+    }
+  },
+  (dispatch, props)=> {
+    return {
+      goBack: ()=> {
+        props.history.goBack()
+      }
     }
   }
-})(HandlerChainDetails)
+)(HandlerChainDetails)

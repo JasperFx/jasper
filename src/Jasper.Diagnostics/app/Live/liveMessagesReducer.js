@@ -7,21 +7,21 @@ const initialState = {
   filter: 'all'
 }
 
-export function toggleSavedMessage(message) {
+const toggleSavedMessage = (message) => {
   return {
     type: 'toggle-saved-message',
     message
   }
 }
 
-export function setMessageFilter(value) {
+const setMessageFilter = (value) => {
   return {
     type: 'set-message-filter',
     value
   }
 }
 
-export function getVisibleMessages(state, filter) {
+const getVisibleMessages = (state, filter) => {
   switch(filter) {
     case 'successful':
       return sortBy(state.messages.filter(m => m.hasError === false), 'timestamp')
@@ -34,7 +34,13 @@ export function getVisibleMessages(state, filter) {
   }
 }
 
-function insert(array, index, ...items) {
+export {
+  getVisibleMessages,
+  setMessageFilter,
+  toggleSavedMessage
+}
+
+const insert = (array, index, ...items) => {
   return [
     ...array.slice(0, index),
     ...items,

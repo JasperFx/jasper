@@ -1,31 +1,31 @@
-import { exec } from 'shelljs';
-import Deferred from 'simple-make/lib/Deferred';
-import { log } from 'simple-make/lib/logUtils';
+import { exec } from 'shelljs'
+import Deferred from 'simple-make/lib/Deferred'
+import { log } from 'simple-make/lib/logUtils'
 
 export default function execFn(options) {
   return () => {
-    const deferred = new Deferred();
+    const deferred = new Deferred()
 
-    let cmd = options || '';
+    let cmd = options || ''
 
     if(typeof(cmd) === 'function') {
-      cmd = options();
+      cmd = options()
     }
 
     if(cmd === '' || cmd === undefined) {
-      deferred.reject('must provide a command');
-      return deferred.promise;
+      deferred.reject('must provide a command')
+      return deferred.promise
     }
 
-    log(cmd);
+    log(cmd)
 
     exec(cmd, (code, stdout, stderr)=> {
       if(code === 0) {
-        deferred.resolve();
+        deferred.resolve()
       } else {
-        deferred.reject(stderr);
+        deferred.reject(stderr)
       }
-    });
-    return deferred.promise;
+    })
+    return deferred.promise
   }
 }

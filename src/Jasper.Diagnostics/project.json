@@ -4,13 +4,16 @@
     "debugType": "portable",
     "embed": {
       "include": [
-        "resources/**/*.js"
+        "resources/**/*.js",
+        "resources/**/*.css",
+        "resources/**/*.json"
       ]
     }
   },
   "dependencies": {
     "Jasper": { "target": "project" },
     "JasperBus": { "target": "project" },
+    "Newtonsoft.Json": "9.0.1",
     "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Http.Extensions": "1.1.0",
     "Microsoft.AspNetCore.StaticFiles": "1.0.0",

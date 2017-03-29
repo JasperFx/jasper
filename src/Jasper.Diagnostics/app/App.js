@@ -57,7 +57,7 @@ class App extends Component {
         <Row>
           <Col column={12}>
             <Alert type="danger" className="top-alert">
-              <p className="text-center"><AwesomeIcon icon="warning" className="red"/> Jasper Diagnostics has been disconnected from the server.  Please refresh the browser to reconnect.</p>
+              <p className="text-center"><AwesomeIcon icon="warning"/> Jasper Diagnostics has been disconnected from the server.  Please refresh the browser to reconnect.</p>
             </Alert>
           </Col>
         </Row>
