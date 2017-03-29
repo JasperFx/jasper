@@ -53,33 +53,48 @@ export default (state = initialState, action = {}) => {
     case 'bus-message-succeeded':
       action.envelope.saved = false
       action.envelope.timestamp = moment().format()
-      return Object.assign({}, state, {
+      return {
+        ...state,
         messages: insert(state.messages, 0, action.envelope)
-      })
+      }
     case 'bus-message-failed':
       action.envelope.saved = false
       action.envelope.timestamp = moment().format()
-      return Object.assign({}, state, {
+      return {
+        ...state,
         messages: insert(state.messages, 0, action.envelope)
-      })
+      }
     case 'set-message-filter':
-      return Object.assign({}, state, {
+      return {
+        ...state,
         filter: action.value
-      })
+      }
     case 'toggle-saved-message': {
-      const wasSaved = action.message.saved
-      action.message.saved = !action.message.saved
+      const save = !action.message.saved
 
-      if (!wasSaved) {
-        return Object.assign({}, state, {
-          messages: state.messages.filter(m => m.correlationId !== action.message.correlationId).concat([action.message]),
-          savedMessages: insert(state.savedMessages, 0, action.message)
-        })
+      if (save === true) {
+        return {
+          ...state,
+          messages: state.messages.map(m => m.correlationId == action.message.correlationId ?
+            { ...m, saved: save} :
+            m
+          ),
+          savedMessages: [
+            ...state.savedMessages.filter(m => m.correlationId !== action.message.correlationId),
+            { ...action.message, saved: save }
+          ]
+        }
       } else {
-        return Object.assign({}, state, {
-          messages: state.messages.filter(m => m.correlationId !== action.message.correlationId).concat([action.message]),
-          savedMessages: state.savedMessages.filter(m => m.headers.id !== action.message.headers.id)
-        })
+        return {
+          ...state,
+          messages: state.messages.map(m => m.correlationId == action.message.correlationId ?
+            { ...m, saved: save} :
+            m
+          ),
+          savedMessages: [
+            ...state.savedMessages.filter(m => m.correlationId !== action.message.correlationId)
+          ]
+        }
       }
     }
     default: return state
