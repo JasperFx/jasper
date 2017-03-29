@@ -1,5 +1,5 @@
 import moment from 'moment'
-import sortBy from 'lodash/sortBy'
+import orderBy from 'lodash/orderBy'
 
 const initialState = {
   messages: [],
@@ -24,13 +24,13 @@ const setMessageFilter = (value) => {
 const getVisibleMessages = (state, filter) => {
   switch(filter) {
     case 'successful':
-      return sortBy(state.messages.filter(m => m.hasError === false), 'timestamp')
+      return orderBy(state.messages.filter(m => m.hasError === false), 'timestamp', 'desc')
     case 'failed':
-      return sortBy(state.messages.filter(m => m.hasError === true), 'timestamp')
+      return orderBy(state.messages.filter(m => m.hasError === true), 'timestamp', 'desc')
     case 'saved':
-      return sortBy(state.savedMessages, 'timestamp')
+      return orderBy(state.savedMessages, 'timestamp', 'desc')
     default:
-      return sortBy(state.messages, 'timestamp')
+      return orderBy(state.messages, 'timestamp', 'desc')
   }
 }
 
@@ -52,14 +52,14 @@ export default (state = initialState, action = {}) => {
   switch(action.type) {
     case 'bus-message-succeeded':
       action.envelope.saved = false
-      action.envelope.timestamp = moment().format()
+      action.envelope.timestamp = moment().format('x')
       return {
         ...state,
         messages: insert(state.messages, 0, action.envelope)
       }
     case 'bus-message-failed':
       action.envelope.saved = false
-      action.envelope.timestamp = moment().format()
+      action.envelope.timestamp = moment().format('x')
       return {
         ...state,
         messages: insert(state.messages, 0, action.envelope)
