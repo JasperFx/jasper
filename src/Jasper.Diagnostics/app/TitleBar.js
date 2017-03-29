@@ -9,8 +9,8 @@ import Row from './Components/Row'
 import Col from './Components/Col'
 import './TitleBar.css'
 
-function TitleBar(props) {
-  const style = cn('title-bar', props.className)
+const TitleBar = ({ className }) => {
+  const style = cn('title-bar', className)
   return (
     <div className={style}>
       <Container>
@@ -25,8 +25,7 @@ function TitleBar(props) {
 }
 
 TitleBar.propTypes = {
-  className: PropTypes.string,
-  children: PropTypes.any
+  className: PropTypes.string
 }
 
 export default TitleBar

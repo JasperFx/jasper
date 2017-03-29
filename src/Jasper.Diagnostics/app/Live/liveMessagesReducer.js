@@ -40,14 +40,6 @@ export {
   toggleSavedMessage
 }
 
-const insert = (array, index, ...items) => {
-  return [
-    ...array.slice(0, index),
-    ...items,
-    ...array.slice(index)
-  ]
-}
-
 export default (state = initialState, action = {}) => {
   switch(action.type) {
     case 'bus-message-succeeded':
@@ -55,14 +47,20 @@ export default (state = initialState, action = {}) => {
       action.envelope.timestamp = moment().format('x')
       return {
         ...state,
-        messages: insert(state.messages, 0, action.envelope)
+        messages: [
+          action.envelope,
+          ...state.messages
+        ]
       }
     case 'bus-message-failed':
       action.envelope.saved = false
       action.envelope.timestamp = moment().format('x')
       return {
         ...state,
-        messages: insert(state.messages, 0, action.envelope)
+        messages: [
+          action.envelope,
+          ...state.messages
+        ]
       }
     case 'set-message-filter':
       return {

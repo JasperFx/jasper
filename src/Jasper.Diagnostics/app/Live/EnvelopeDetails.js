@@ -11,7 +11,7 @@ import StatusIndicator from '../Components/StatusIndicator'
 import AwesomeIcon from '../Components/AwesomeIcon'
 import './EnvelopeDetails.css'
 
-function EnvelopeError({exception, stackTrace}) {
+const EnvelopeError = ({exception, stackTrace}) => {
   return (
     <Card>
         <Row>
@@ -33,13 +33,23 @@ function EnvelopeError({exception, stackTrace}) {
   )
 }
 
-function ItemDetail({label, value}) {
+EnvelopeError.propTypes = {
+  exception: PropTypes.string.isRequired,
+  stackTrace: PropTypes.string.isRequired
+}
+
+const ItemDetail = ({label, value}) => {
   return (
     <div><span className="item-label">{label}:</span> {value}</div>
   )
 }
 
-function EnvelopeDetails({ message, goBack }) {
+ItemDetail.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired
+}
+
+const EnvelopeDetails = ({ message, goBack }) => {
   const error = message.hasError ? <EnvelopeError exception={message.exception} stackTrace={message.stackTrace}/> : null
   const back = ev => {
     ev.preventDefault()

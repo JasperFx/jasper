@@ -22,7 +22,7 @@ import Live from './Live/index'
 import EnvelopeDetails from './Live/EnvelopeDetails'
 import './App.css'
 
-function routes(props, alert) {
+const Routes = ({ alert }) => {
   return (
     <div>
       {alert}
@@ -46,6 +46,10 @@ function routes(props, alert) {
   )
 }
 
+Routes.propTypes = {
+  alert: PropTypes.element
+}
+
 class App extends Component {
   render() {
 
@@ -64,7 +68,7 @@ class App extends Component {
       )
     }
 
-    return routes(this.props, alert)
+    return (<Routes {...this.props} alert={alert}/>)
   }
 }
 

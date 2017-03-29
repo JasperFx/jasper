@@ -7,11 +7,11 @@ import {
 } from 'react-router-dom'
 import './TopNavItem.css'
 
-function TopNavItem(props) {
-  const exact = true === props.exact ? {exact:true} : null
+const TopNavItem = ({ exact, to, children }) => {
+  const val = true === exact ? {exact:true} : null
   return (
-    <NavLink {...exact} to={props.to} activeClassName="top-nav-item-active">
-      {props.children}
+    <NavLink {...val} to={to} activeClassName="top-nav-item-active">
+      {children}
     </NavLink>
   )
 }
