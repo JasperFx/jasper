@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Jasper.Diagnostics.Util;
@@ -25,11 +26,13 @@ namespace Jasper.Diagnostics
 
         private readonly RequestDelegate _next;
         private readonly DiagnosticsSettings _settings;
+        private readonly WebpackAssetCache _assets;
 
         public DiagnosticsMiddleware(RequestDelegate next, DiagnosticsSettings settings)
         {
             _next = next;
             _settings = settings;
+            _assets = new WebpackAssetCache();
         }
 
         public async Task Invoke(HttpContext context)
@@ -53,9 +56,14 @@ namespace Jasper.Diagnostics
             document.Head.Append(new CssTag("https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism-okaidia.min.css"));
             document.Head.Append(new CssTag("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"));
 
+            if(_settings.Mode == DiagnosticsMode.Production)
+            {
+                document.Head.Append(cssTags());
+            }
+
             document.Body.Append(new HtmlTag("div").Attr("id", "root"));
 
-            var websocketUri = $"ws://localhost:{_settings.WebsocketPort}{_settings.BasePath}/ws";
+            var websocketUri = $"ws://localhost:{_settings.WebsocketPort}{pathFor(_settings.BasePath, "ws")}";
 
             var initialData = new HtmlTag("script")
                 .Attr("type", "text/javascript")
@@ -65,16 +73,36 @@ namespace Jasper.Diagnostics
 
             document.Body.Append(new ScriptTag($"https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.js"));
 
-            if(_settings.Mode == DiagnosticsMode.Development)
+            if(_settings.Mode == DiagnosticsMode.Production)
             {
-                document.Body.Append(new ScriptTag($"/{Bundle_Name}"));
+                document.Body.Append(scriptTags());
             }
             else
             {
-                document.Body.Append(new ScriptTag($"{_settings.BasePath}{Resource_Root}/js/{Bundle_Name}"));
+                document.Body.Append(new ScriptTag($"/{Bundle_Name}"));
             }
 
             await context.WriteHtml(document);
+        }
+
+        private CssTag[] cssTags()
+        {
+            return _assets.CssFiles().Select(x => new CssTag(resourcePathFor(x))).ToArray();
+        }
+
+        private ScriptTag[] scriptTags()
+        {
+            return _assets.JavaScriptFiles().Select(x => new ScriptTag(resourcePathFor(x))).ToArray();
+        }
+
+        private string pathFor(params string[] urls)
+        {
+            return "".CombineUrl(urls);
+        }
+
+        private string resourcePathFor(params string[] urls)
+        {
+            return _settings.BasePath.CombineUrl(new [] {Resource_Root}.Concat(urls).ToArray());
         }
     }
 }

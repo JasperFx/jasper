@@ -1,5 +1,5 @@
-import { exec, pushd, popd } from 'shelljs';
-import { log, logError } from 'simple-make/lib/logUtils';
+import { exec, pushd, popd } from 'shelljs'
+import { log, logError } from 'simple-make/lib/logUtils'
 
 // dotnet watch appears to only work when it is launched from the
 // directory of the application
@@ -7,15 +7,15 @@ import { log, logError } from 'simple-make/lib/logUtils';
 
 const app = process.env.TARGET_APP
 
-pushd(app);
+pushd(app)
 
-const cmd = 'dotnet watch run';
+const cmd = 'dotnet watch run'
 
-log(cmd);
+log(cmd)
 
 exec(cmd, { async: true }, (code, stdout, stderr)=> {
-  if(stdout) log(stdout);
-  if(stderr) logError(stderr);
-});
+  if(stdout) log(stdout)
+  if(stderr) logError(stderr)
+})
 
-popd();
+popd()
