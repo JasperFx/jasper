@@ -8,6 +8,7 @@ import Code from '../Components/Code'
 import Row from '../Components/Row'
 import Col from '../Components/Col'
 import StatusIndicator from '../Components/StatusIndicator'
+import AwesomeIcon from '../Components/AwesomeIcon'
 import './EnvelopeDetails.css'
 
 function EnvelopeError({exception, stackTrace}) {
@@ -38,10 +39,19 @@ function ItemDetail({label, value}) {
   )
 }
 
-function EnvelopeDetails({ message }) {
+function EnvelopeDetails({ message, goBack }) {
   const error = message.hasError ? <EnvelopeError exception={message.exception} stackTrace={message.stackTrace}/> : null
+  const back = ev => {
+    ev.preventDefault()
+    goBack()
+  }
   return (
     <div>
+      <Row>
+        <Col column={12}>
+          <a href="" onClick={back} className="back-nav"><AwesomeIcon icon="arrow-left"/>Back</a>
+        </Col>
+      </Row>
       <Row>
         <Col column={6}>
           <Card>
@@ -69,13 +79,21 @@ function EnvelopeDetails({ message }) {
 EnvelopeDetails.propTypes = {
   message: PropTypes.shape({
     description: PropTypes.string.isRequired
-  })
+  }),
+  goBack: PropTypes.func.isRequired
 }
 
 export default connect(
   (state, props)=> {
     return {
       message: state.live.messages.find(m => m.correlationId === props.match.params.id)
+    }
+  },
+  (dispatch, props)=> {
+    return {
+      goBack: ()=> {
+        props.history.goBack()
+      }
     }
   }
  )(EnvelopeDetails)
