@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import Envelope from '../Components/Envelope'
 import './RecentMessages.css'
 
-function RecentMessages({messages}) {
+const RecentMessages = ({ messages }) => {
   const list = messages.map((m, idx) => <li key={idx} className="message-list-item"><Envelope id={m.correlationId}/></li>)
   return (
     <ul className="message-list">

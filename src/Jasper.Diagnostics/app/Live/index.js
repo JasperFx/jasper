@@ -24,7 +24,7 @@ function checkIfSelected(mode, selectedMode) {
   return mode === selectedMode
 }
 
-function Live(props) {
+const Live = (props) => {
   const messages = props.messages.map((m, idx) => {
     return (
       <li key={idx} className="message-list-item"><Envelope id={m.headers.id}/></li>

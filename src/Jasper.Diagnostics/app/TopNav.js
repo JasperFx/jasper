@@ -8,9 +8,9 @@ import Row from './Components/Row'
 import Col from './Components/Col'
 import './TopNav.css'
 
-function TopNav(props) {
-  const style = cn('top-nav', props.className)
-  const items = React.Children.map(props.children, (c, idx) => {
+const TopNav = ({ className, children }) => {
+  const style = cn('top-nav', className)
+  const items = React.Children.map(children, (c, idx) => {
     return (
       <li key={idx} className="top-nav-item">{c}</li>
     )

@@ -10,7 +10,7 @@ import Row from '../Components/Row'
 import Col from '../Components/Col'
 import RecentMessages from '../Live/RecentMessages'
 
-function HandlerChainDetails({ chain, goBack }) {
+const HandlerChainDetails = ({ chain, goBack }) => {
   const back = ev => {
     ev.preventDefault()
     goBack()

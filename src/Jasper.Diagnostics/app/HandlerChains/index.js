@@ -12,14 +12,14 @@ import {
 import Card from '../Components/Card'
 import './index.css'
 
-function HandlerChain (props) {
+const HandlerChain = ({ chain, click }) => {
   return (
-    <tr className="table-row" onClick={() => props.click(props.chain)}>
+    <tr className="table-row" onClick={() => click(chain)}>
       <td>
-        {props.chain.messageType.fullName}
+        {chain.messageType.fullName}
       </td>
       <td>
-        {props.chain.description}
+        {chain.description}
       </td>
     </tr>
   )
@@ -37,7 +37,7 @@ HandlerChain.propTypes = {
   })
 }
 
-function HandlerChains({ chains, onNavigate }) {
+const HandlerChains = ({ chains, onNavigate }) => {
 
   const list = chains.map((c, i) => <HandlerChain key={i} chain={c} click={()=> onNavigate(c.generatedTypeName)}/>)
 
