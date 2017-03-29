@@ -19,10 +19,11 @@ namespace JasperBus.Tests.ErrorHandling
 
             });
 
+            // TODO -- Almost a worthless test
             Graph.ErrorHandlers.Single()
                 .ShouldBeOfType<ErrorHandler>()
                 .Sources.Single()
-                .ShouldBeOfType<RequeueContinuation>();
+                .ShouldBeOfType<ContinuationSource>();
         }
     }
 }
