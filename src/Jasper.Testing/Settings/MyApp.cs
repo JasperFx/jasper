@@ -11,10 +11,9 @@ namespace Jasper.Testing.Settings
 
         public MyApp()
         {
-            Settings.Configure<MySettings>();
             Settings.With<MySettings>(_ =>
             {
-                if (_.SomeSetting == 1)
+                if (_.SomeSetting != int.MaxValue)
                 {
                     MySetting = true;
                 }

@@ -39,7 +39,7 @@ namespace Jasper.Settings
     {
         public SettingsInstance() : base(
             $"Building {typeof(T).FullName} from application settings",
-            c => c.GetInstance<IConfigurationRoot>().Get<T>())
+            c => c.GetInstance<ISettingsProvider>().Get<T>())
         {
             LifecycleIs<SingletonLifecycle>();
         }

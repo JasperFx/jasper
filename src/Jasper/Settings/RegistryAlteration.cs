@@ -6,7 +6,7 @@ using Jasper.Configuration;
 
 namespace Jasper.Settings
 {
-    public class RegistryAlteration<T> : ISettingsAlteration where T : class, new() 
+    public class RegistryAlteration<T> : IRegistryAlteration where T : class, new() 
     {
         private readonly Action<T> _alteration;
 
@@ -15,9 +15,9 @@ namespace Jasper.Settings
             _alteration = alteration;
         }
 
-        public void Alter(SettingsCollection settings)
+        public void Alter(SettingsProvider settings)
         {
-            settings.Alter(_alteration);
+            settings.AlterRegistry(_alteration);
         }
     }
 }

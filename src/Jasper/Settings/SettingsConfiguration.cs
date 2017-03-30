@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Settings
 {
-    public class SettingsConfiguration<T> : ISettingsConfiguration where T : class, new()
+    public class SettingsConfiguration : ISettingsConfiguration
     {
         private readonly Func<IConfiguration, IConfiguration> _configuration;
 
@@ -12,11 +12,9 @@ namespace Jasper.Settings
             _configuration = config;
         }
 
-        public object Configure(IConfiguration configuration)
+        public IConfiguration Configure(IConfiguration configuration)
         {
-            var result = new T();
-            _configuration(configuration).Bind(result);
-            return result;
+            return _configuration(configuration);
         }
     }
 }
