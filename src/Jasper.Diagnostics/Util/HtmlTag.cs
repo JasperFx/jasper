@@ -100,14 +100,16 @@ namespace Jasper.Diagnostics.Util
 
         public override string ToString()
         {
-            var stream = new MemoryStream();
-            var writer = new ResponseHtmlTextWriter(stream);
+            using(var stream = new MemoryStream())
+            {
+                var writer = new ResponseHtmlTextWriter(stream);
 
-            WriteHtml(writer).GetAwaiter().GetResult();
+                WriteHtml(writer).GetAwaiter().GetResult();
 
-            stream.Position = 0;
-            var result = Encoding.UTF8.GetString(stream.ToArray());
-            return result;
+                stream.Position = 0;
+                var result = Encoding.UTF8.GetString(stream.ToArray());
+                return result;
+            }
         }
     }
 }
