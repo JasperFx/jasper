@@ -1,7 +1,11 @@
 ﻿{
   "version": "0.1.0-alpha-*",
   "buildOptions": {
-    "debugType": "portable"
+    "debugType": "portable",
+    "compile": [
+      "**/*.cs",
+      "../CommonAssemblyInfo.cs"
+    ]
   },
 
   "description": "Core Library for JasperFx Applications",

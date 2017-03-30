@@ -1,3 +1,4 @@
+/* eslint no-console: "off" */
 
 export default function Communicator(dispatch, address, disconnect) {
 

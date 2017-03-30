@@ -4,7 +4,11 @@
     "debugType": "portable",
     "embed": {
         "include": ["lmdb.dll"]
-    }
+    },
+    "compile": [
+      "**/*.cs",
+      "../CommonAssemblyInfo.cs"
+    ]
   },
 
 

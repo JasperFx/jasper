@@ -1,5 +1,6 @@
 {
-  "version": "1.0.0-*",
+  "version": "0.1.0-alpha-*",
+
   "buildOptions": {
     "debugType": "portable",
     "embed": {
@@ -8,8 +9,26 @@
         "resources/**/*.css",
         "resources/**/*.json"
       ]
-    }
+    },
+    "compile": [
+      "**/*.cs",
+      "../CommonAssemblyInfo.cs"
+    ]
   },
+
+  "description": "Diagnostics for Jasper Service Bus",
+  "authors": [
+      "Joe McBride",
+      "Jeremy D. Miller"
+  ],
+
+
+  "packOptions": {
+      "projectUrl": "http://jasperfx.github.io",
+      "licenseUrl": "https://github.com/JasperFX/jasper/blob/master/LICENSE.txt",
+      "iconUrl": "https://avatars2.githubusercontent.com/u/10048186?v=3&s=200"
+  },
+
   "dependencies": {
     "Jasper": { "target": "project" },
     "JasperBus": { "target": "project" },

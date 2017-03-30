@@ -9,7 +9,7 @@ BUILD_VERSION = '0.1.0'
 tc_build_number = ENV["BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')
 build_number = "#{BUILD_VERSION}.#{build_revision}"
-BUILD_NUMBER = build_number 
+BUILD_NUMBER = build_number
 
 task :ci => [:default, :pack]
 
@@ -28,7 +28,7 @@ end
 desc "Update the version information for the build"
 task :version do
   asm_version = build_number
-  
+
   begin
     commit = `git log -1 --pretty=format:%H`
   rescue
@@ -36,18 +36,18 @@ task :version do
   end
   puts "##teamcity[buildNumber '#{build_number}']" unless tc_build_number.nil?
   puts "Version: #{build_number}" if tc_build_number.nil?
-  
+
   options = {
 	:description => '',
-	:product_name => 'Executable Specifications for .Net',
+	:product_name => 'JasperFx Applications',
 	:copyright => 'Copyright 2017 Jeremy D. Miller, et al. All rights reserved.',
 	:trademark => commit,
 	:version => asm_version,
 	:file_version => build_number,
 	:informational_version => asm_version
-	
+
   }
-  
+
   puts "Writing src/CommonAssemblyInfo.cs..."
 	File.open('src/CommonAssemblyInfo.cs', 'w') do |file|
 		file.write "using System.Reflection;\n"
@@ -59,7 +59,7 @@ task :version do
 		file.write "[assembly: AssemblyFileVersion(\"#{options[:file_version]}\")]\n"
 		file.write "[assembly: AssemblyInformationalVersion(\"#{options[:informational_version]}\")]\n"
 	end
-	
+
 
 end
 
@@ -68,6 +68,7 @@ task :compile => [:clean, :version] do
 	sh "dotnet restore src"
 	sh "dotnet build src/Jasper.Testing"
 	sh "dotnet build src/JasperBus.Tests"
+	sh "dotnet build src/Jasper.Diagnostics"
 end
 
 desc 'Run the unit tests'
@@ -84,6 +85,7 @@ desc 'Build Nuspec packages'
 task :pack do
 	sh "dotnet pack src/Jasper -o artifacts --configuration Release --version-suffix #{build_revision}"
 	sh "dotnet pack src/JasperBus -o artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/Jasper.Diagnostics -o artifacts --configuration Release --version-suffix #{build_revision}"
 end
 
 desc "Pushes the Nuget's to MyGet"
@@ -123,7 +125,7 @@ end
 
 "Exports the documentation to storyteller.github.io - requires Git access to that repo though!"
 task :publish => [:prepare_docs] do
-	if Dir.exists? 'doc-target' 
+	if Dir.exists? 'doc-target'
 		FileUtils.rm_rf 'doc-target'
 	end
 
@@ -131,18 +133,18 @@ task :publish => [:prepare_docs] do
 
 	Dir.mkdir 'doc-target'
 	sh "git clone https://github.com/jasperfx/jasperfx.github.io.git doc-target"
-	
-	
+
+
 	sh "dotnet stdocs export doc-target Website --version #{BUILD_VERSION}"
-	
+
 	Dir.chdir "doc-target" do
 		sh "git add --all"
 		sh "git commit -a -m \"Documentation Update for #{BUILD_VERSION}\" --allow-empty"
 		sh "git push origin master"
 	end
-	
 
-	
+
+
 
 end
 
