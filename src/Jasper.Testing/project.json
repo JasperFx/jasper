@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
   "buildOptions": {
     "debugType": "portable",
-    "copyToOutput": [ "appsettings.config", "colors.json", "nested.json" ]
+    "copyToOutput": [ "appsettings.json", "colors.json", "nested.json" ]
   },
   "dependencies": {
     "System.Runtime.Serialization.Primitives": "4.1.1",

@@ -1,7 +1,12 @@
-﻿namespace Jasper.Settings
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Jasper.Settings
 {
     public interface ISettingsAlteration
     {
-        void Alter(SettingsCollection settings);
+        void Alter(ISettingsProvider value);
     }
 }

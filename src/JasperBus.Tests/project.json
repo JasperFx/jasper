@@ -1,8 +1,7 @@
 ﻿{
   "version": "1.0.0-*",
   "buildOptions": {
-    "debugType": "portable",
-    "copyToOutput": [ "appsettings.json" ]
+    "debugType": "portable"
   },
   "dependencies": {
     "System.Runtime.Serialization.Primitives": "4.1.1",

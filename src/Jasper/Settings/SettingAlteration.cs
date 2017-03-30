@@ -11,9 +11,9 @@ namespace Jasper.Settings
             _alteration = alteration;
         }
 
-        public void Alter(SettingsCollection settings)
+        public void Alter(ISettingsProvider provider)
         {
-            settings.Alter(_alteration);
+            provider.Alter(_alteration);
         }
     }
 }
