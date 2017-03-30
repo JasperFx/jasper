@@ -60,6 +60,7 @@ namespace DiagnosticsHarness
             app.UseDiagnostics(_ =>
             {
                 _.Mode = DiagnosticsMode.Development;
+                // _.AuthorizeWith = context => context.User.HasClaim("admin", "true");
             });
 
             UseRequestLogging(app);

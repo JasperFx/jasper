@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,7 @@ namespace Jasper.Diagnostics
         public string Mode { get; set; } = DiagnosticsMode.Production;
         public PathString BasePath { get; set; } = "/_diag";
         public int WebsocketPort { get; set; } = 5000;
+        public Func<HttpContext, bool> AuthorizeWith { get; set; } = context => true;
     }
 
     public class DiagnosticsMode
@@ -41,6 +43,12 @@ namespace Jasper.Diagnostics
              !context.Request.Path.StartsWithSegments(_settings.BasePath))
             {
                 await _next(context);
+                return;
+            }
+
+            if(!_settings.AuthorizeWith(context))
+            {
+                context.Response.StatusCode = 403;
                 return;
             }
 
