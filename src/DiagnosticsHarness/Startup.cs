@@ -57,11 +57,11 @@ namespace DiagnosticsHarness
 
             app.UseCors("OriginPolicy");
 
-            app.UseDiagnostics(_ =>
-            {
-                _.Mode = DiagnosticsMode.Development;
-                // _.AuthorizeWith = context => context.User.HasClaim("admin", "true");
-            });
+            // app.UseDiagnostics(_ =>
+            // {
+            //     _.Mode = DiagnosticsMode.Development;
+            //     // _.AuthorizeWith = context => context.User.HasClaim("admin", "true");
+            // });
 
             UseRequestLogging(app);
             UseErrorMap(app);
@@ -104,7 +104,9 @@ namespace DiagnosticsHarness
 
                  Logging.UseConsoleLogging = true;
 
-                 this.AddDiagnostics();
+                 Feature<DiagnosticsFeature>();
+
+                //  this.AddDiagnostics();
              }
          }
     }
