@@ -45,6 +45,8 @@ namespace Jasper.Diagnostics
             var hub = app.ApplicationServices.GetService<IMessagingHub>();
             var manager = app.ApplicationServices.GetService<ISocketConnectionManager>();
 
+            Console.WriteLine("manager? {0},{1}", manager != null, hub != null);
+
             app.MapWebSocket($"{options.BasePath}/ws",
                 new SocketConnection((socket, text) => {
                     Console.WriteLine("Socket: {0}", text);
