@@ -58,7 +58,7 @@ namespace Jasper.Testing.Settings
             var app = new MyApp();
             app.Settings.Build(_ =>
             {
-                _.AddJsonFile("appsettings.config");
+                _.AddJsonFile("appsettings.json");
                 _.AddJsonFile("colors.json");
             });
 
