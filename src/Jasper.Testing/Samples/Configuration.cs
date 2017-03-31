@@ -31,6 +31,7 @@ namespace Jasper.Testing.Samples
             // SAMPLE: build-configuration
             Settings.Build(_ =>
             {
+                _.SetBasePath("path");
                 _.AddJsonFile("myconfig.json");
                 _.AddJsonFile("myotherconfig.json.config");
                 _.AddEnvironmentVariables();
@@ -38,11 +39,26 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
 
             // SAMPLE: configure-settings
+            Settings.Configure<Colors>();
+            // ENDSAMPLE
+
+            // SAMPLE: configure-settings2
             Settings.Configure<MySettings>(_ => _.GetSection("subsection"));
             // ENDSAMPLE
         }
 
         // SAMPLE: inject-settings
+        public class MyApp : JasperRegistry
+        {
+            public MyApp()
+            {
+                Settings.Build(_ =>
+                {
+                    _.AddJsonFile("mysettings.json");
+                });
+            }
+        }
+
         public class SettingsTest
         {
             private readonly MySettings _settings;
