@@ -1,22 +1,29 @@
 <!--title: Configuration-->
 
-The simplest way to set up configuration is to use the default behavior:
+## Quick Start
 
-1. Add a json file to the project called appsettings.config
-2. Add a class ending with `Settings` that has properties that map to appsettings.config
-3. Include your `Settings` class in the constructor of a class and Jasper will automatically inject the settings object
+Probably the most common scenario is to have a single configuration file mapped to a single object:
+
+1. Add a class that ends with `Settings` to your project, e.g. `MySettings.cs`.
+2. Add a json file that has properties that match your `Settings` class.
+3. Use the `Build` method to tell Jasper about your configuration file.
+4. Include your `Settings` class in the constructor of a class and Jasper will automatically inject the settings object
 
 <[sample:inject-settings]>
 
-## ConfigurationBuilder
+## Add Configuration Sources
 
-Jasper uses the [.NET Core ConfigurationBuilder](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration) to get config data and bind it to objects. The ConfigurationBuilder is exposed using the `Build` method. Use this method to add additional configuration sources. Calling this method will override the default build configuration, which is just "appsettings.config".
+Jasper uses the [.NET Core ConfigurationBuilder](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration) to get config data and bind it to objects.
 
 <[sample:build-configuration]>
 
-If a settings class needs additional information to bind correctly, such as being in a nested sub-section, use the `Configure` method.
+If you need to bind a settings class that does not follow the convention of ending with `Settings` then use the `Configure` method to tell Jasper which class you want to bind.
 
 <[sample:configure-settings]>
+
+If a settings class needs additional information to bind correctly, such as being in a nested sub-section, use the `Configure` method.
+
+<[sample:configure-settings2]>
 
 ## Modify Settings
 
