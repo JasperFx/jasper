@@ -214,3 +214,5 @@ stats.json
 
 *.nuget.props
 *.map
+
+doc-target

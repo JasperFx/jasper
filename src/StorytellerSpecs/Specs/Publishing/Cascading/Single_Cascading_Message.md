@@ -1,9 +1,9 @@
 # Single Cascading Message
 
 -> id = cc98565d-c1b9-4c2b-8902-53a5ad78f62e
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-21T15:08:42.6777580Z
+-> last-updated = 2017-04-03T12:44:47.0543399Z
 -> tags = 
 
 [SendMessage]

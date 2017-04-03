@@ -1,9 +1,9 @@
 # Multiple Cascading Messages
 
 -> id = aadf27bf-da7b-4ae0-a316-a51e5bdc7787
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-21T15:10:29.5467990Z
+-> last-updated = 2017-04-03T12:44:47.0403399Z
 -> tags = 
 
 [SendMessage]

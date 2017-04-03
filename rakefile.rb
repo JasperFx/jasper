@@ -77,6 +77,7 @@ task :test => [:compile] do
 
 	sh "dotnet test src/Jasper.Testing"
 	sh "dotnet test src/JasperBus.Tests"
+	sh "dotnet test src/JasperHttp.Tests"
 end
 
 
