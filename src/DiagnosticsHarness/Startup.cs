@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DiagnosticsHarnessMessages;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -57,11 +58,11 @@ namespace DiagnosticsHarness
 
             app.UseCors("OriginPolicy");
 
-            // app.UseDiagnostics(_ =>
-            // {
-            //     _.Mode = DiagnosticsMode.Development;
-            //     // _.AuthorizeWith = context => context.User.HasClaim("admin", "true");
-            // });
+            app.UseDiagnostics(_ =>
+            {
+               _.Mode = DiagnosticsMode.Development;
+//                _.AuthorizeWith = context => context.User.HasClaim("admin", "true");
+            });
 
             UseRequestLogging(app);
             UseErrorMap(app);
@@ -100,13 +101,10 @@ namespace DiagnosticsHarness
                  var uri = "lq.tcp://localhost:2110/servicebus_example";
                  SendMessage<MiddlewareMessage>().To(uri);
                  SendMessage<AMessageThatWillError>().To(uri);
-                 ListenForMessagesFrom(uri);
 
                  Logging.UseConsoleLogging = true;
 
-                 Feature<DiagnosticsFeature>();
-
-                //  this.AddDiagnostics();
+                 this.AddDiagnostics();
              }
          }
     }
@@ -126,31 +124,6 @@ namespace DiagnosticsHarness
             await context.Response.WriteAsync("error endpoint");
 
             _bus.Send(new AMessageThatWillError());
-        }
-    }
-
-    public class MiddlewareMessage
-    {
-        public string Message { get; set; }
-    }
-
-    public class MiddlewareMessageConsumer
-    {
-        public void Consume(MiddlewareMessage message)
-        {
-            Console.WriteLine($"Got Message: {message.Message}");
-        }
-    }
-
-    public class AMessageThatWillError
-    {
-    }
-
-    public class SomeConsumer
-    {
-        public void Consume(AMessageThatWillError message)
-        {
-            throw new NotSupportedException();
         }
     }
 }

@@ -1,10 +1,8 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StructureMap;
@@ -48,25 +46,14 @@ namespace Jasper.Diagnostics
         }
     }
 
-    internal class DiagnosticsJasperRegistry : JasperRegistry
-    {
-        public DiagnosticsJasperRegistry()
-        {
-            Services.IncludeRegistry<DiagnosticServicesRegistry>();
-        }
-    }
-
     internal class Startup
     {
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            var runtime = JasperRuntime.For<DiagnosticsJasperRegistry>(_ =>
-            {
-                _.Services.Populate(services);
-                // x.Policies.OnMissingFamily<SettingsPolicy>();
-            });
+        }
 
-            return runtime.Container.GetInstance<IServiceProvider>();
+        public void ConfigureContainer(IContainer container)
+        {
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -91,7 +78,7 @@ namespace Jasper.Diagnostics
     {
         private IWebHost _host;
 
-        public void Start(IContainer container)
+        public void Start(int port, IContainer container)
         {
             var hrm = container.WhatDoIHave();
             Console.WriteLine(hrm);
@@ -99,25 +86,26 @@ namespace Jasper.Diagnostics
             _host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls("http://localhost:5250")
+                .UseUrls($"http://localhost:{port}")
                 .UseStructureMap(container)
-                .Configure(app =>
-                {
-                    app.UseDiagnostics(_ =>
-                    {
-                        // _.Mode = DiagnosticsMode.Development;
-                        // _.AuthorizeWith = context => context.User.HasClaim("admin", "true");
-                        _.WebsocketPort = 5250;
-                    });
+                .UseStartup<Startup>()
+//                .Configure(app =>
+//                {
+//                    app.UseDiagnostics(_ =>
+//                    {
+//                        // _.Mode = DiagnosticsMode.Development;
+//                        // _.AuthorizeWith = context => context.User.HasClaim("admin", "true");
+//                        _.WebsocketPort = port;
+//                    });
 
-                    app.Run(async http =>
-                    {
-                        http.Response.StatusCode = 200;
-                        http.Response.ContentType = "text/plain";
-                        // await http.Response.WriteAsync($"Nothing to see here at {DateTime.Now}.");
-                        await http.Response.WriteAsync(hrm);
-                    });
-                })
+//                    app.Run(async http =>
+//                    {
+//                        http.Response.StatusCode = 200;
+//                        http.Response.ContentType = "text/plain";
+//                        // await http.Response.WriteAsync($"Nothing to see here at {DateTime.Now}.");
+//                        await http.Response.WriteAsync(hrm);
+//                    });
+//                })
                 .Build();
 
             _host.Start();
