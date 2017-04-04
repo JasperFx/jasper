@@ -34,7 +34,6 @@
     "JasperBus": { "target": "project" },
     "Newtonsoft.Json": "9.0.1",
     "StructureMap": "4.4.3",
-    "StructureMap.AspNetCore": "1.0.0",
     "StructureMap.Microsoft.DependencyInjection": "1.3.0",
     "Microsoft.AspNetCore.Hosting": "1.1.0",
     "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
