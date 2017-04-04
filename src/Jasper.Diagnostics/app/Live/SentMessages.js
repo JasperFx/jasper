@@ -4,11 +4,39 @@ import {
 } from 'react'
 import { connect } from 'react-redux'
 import Envelope from '../Components/Envelope'
+import {
+  getVisibleMessages,
+  toggleSavedMessage
+} from './sentMessagesReducer'
 
-const SentMessages = () => {
+const SentMessages = ({ messages, saveMessage }) => {
+  let list = messages.map(m =>
+    <li key={m.headers.id} className="message-list-item">
+      <Envelope id={m.headers.id} queue="sent" saveMessage={saveMessage}/>
+    </li>)
   return (
-    <div>Sent Messages</div>
+    <ul className="message-list">
+      {list}
+    </ul>
   )
 }
 
-export default SentMessages
+SentMessages.propTypes = {
+  messages: PropTypes.array.isRequired,
+  saveMessage: PropTypes.func.isRequired
+}
+
+export default connect(
+  (state) => {
+    return {
+      messages: getVisibleMessages(state.sent, state.sent.filter)
+    }
+  },
+  (dispatch) => {
+    return {
+      saveMessage: (m) => {
+        return dispatch(toggleSavedMessage(m))
+      }
+    }
+  }
+)(SentMessages)
