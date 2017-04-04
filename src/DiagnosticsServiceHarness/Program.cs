@@ -3,7 +3,6 @@ using DiagnosticsHarnessMessages;
 using Jasper;
 using Jasper.Diagnostics;
 using JasperBus;
-using PeterKottas.DotNetCore.WindowsService.Interfaces;
 
 namespace DiagnosticsServiceHarness
 {
@@ -11,25 +10,21 @@ namespace DiagnosticsServiceHarness
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("hello world");
-
             using (var service = new MyMicroService())
             {
                 service.Start();
-                Console.ReadKey();
+                Console.Read();
             }
         }
     }
 
-    public class MyMicroService : IMicroService, IDisposable
+    public class MyMicroService : IDisposable
     {
         private JasperRuntime _runtime;
 
         public void Start()
         {
-            _runtime = JasperRuntime.For<BusRegistry>(_ =>
-            {
-            });
+            _runtime = JasperRuntime.For<BusRegistry>();
         }
 
         public void Stop()
@@ -52,9 +47,12 @@ namespace DiagnosticsServiceHarness
 
             Logging.UseConsoleLogging = true;
 
-            Feature<DiagnosticsFeature>();
+            Settings.Alter<DiagnosticsSettings>(_ =>
+            {
+                _.WebsocketPort = 3300;
+            });
 
-            //  this.AddDiagnostics();
+            Feature<DiagnosticsFeature>();
         }
     }
 

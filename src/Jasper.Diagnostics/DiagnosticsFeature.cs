@@ -11,8 +11,6 @@ namespace Jasper.Diagnostics
     {
         public readonly Registry Services = new DiagnosticServicesRegistry();
 
-        public int Port { get; set; } = 5250;
-
         private DiagnosticsServer _server;
 
         Task<Registry> IFeature.Bootstrap(JasperRegistry registry)
@@ -23,10 +21,12 @@ namespace Jasper.Diagnostics
 
         Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
         {
+            var settings = runtime.Registry.Settings.Get<DiagnosticsSettings>();
+
             return Task.Factory.StartNew(()=>
             {
                 _server = new DiagnosticsServer();
-                _server.Start(Port, runtime.Container);
+                _server.Start(settings, runtime.Container);
             });
         }
 
