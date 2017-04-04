@@ -11,6 +11,14 @@ import StatusIndicator from '../Components/StatusIndicator'
 import AwesomeIcon from '../Components/AwesomeIcon'
 import './EnvelopeDetails.css'
 
+const NoMessage = () => {
+  return (
+    <Card>
+      Message not found
+    </Card>
+  )
+}
+
 const EnvelopeError = ({exception, stackTrace}) => {
   return (
     <Card>
@@ -46,10 +54,15 @@ const ItemDetail = ({label, value}) => {
 
 ItemDetail.propTypes = {
   label: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired
+  value: PropTypes.string
 }
 
 const EnvelopeDetails = ({ message, goBack }) => {
+
+  if (message == null) {
+    return <NoMessage/>
+  }
+
   const error = message.hasError ? <EnvelopeError exception={message.exception} stackTrace={message.stackTrace}/> : null
   const back = ev => {
     ev.preventDefault()
@@ -81,6 +94,14 @@ const EnvelopeDetails = ({ message, goBack }) => {
           </Card>
         </Col>
       </Row>
+      <Row>
+        <Col column={12}>
+          <Card>
+            <h2 className="header-title">Message Details</h2>
+            <Code>{JSON.stringify(message.message, null, ' ')}</Code>
+          </Card>
+        </Col>
+      </Row>
       {error}
     </div>
   )
@@ -96,7 +117,7 @@ EnvelopeDetails.propTypes = {
 export default connect(
   (state, props)=> {
     return {
-      message: state.live.messages.find(m => m.correlationId === props.match.params.id)
+      message: state[props.match.params.queue].messages.find(m => m.correlationId === props.match.params.id)
     }
   },
   (dispatch, props)=> {

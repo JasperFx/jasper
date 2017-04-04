@@ -34,10 +34,9 @@ const Routes = ({ alert }) => {
       <Container>
         <Row>
           <Col column={12}>
-            <Route exact path="/" component={HandlerChains}>
-            </Route>
+            <Route exact path="/" component={HandlerChains}/>
             <Route path="/live" component={Live}/>
-            <Route path="/envelope/:id" component={EnvelopeDetails}/>
+            <Route path="/envelope/:queue/:id" component={EnvelopeDetails}/>
             <Route path="/handler-chain/:id" component={HandlerChainDetails}/>
           </Col>
         </Row>
