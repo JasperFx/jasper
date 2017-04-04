@@ -7,7 +7,7 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{717D1E6D-015E-4924-89C4-81C1E277A62F}</ProjectGuid>
+    <ProjectGuid>{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}</ProjectGuid>
     <RootNamespace>Jasper.Diagnostics</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
