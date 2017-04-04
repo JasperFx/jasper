@@ -12,6 +12,7 @@ import Card from '../Components/Card'
 import Star from '../Components/Star'
 import StatusIndicator from '../Components/StatusIndicator'
 import Envelope from '../Components/Envelope'
+import SentMessages from './SentMessages'
 import {
   setMessageFilter,
   toggleSavedMessage,
@@ -31,38 +32,48 @@ const Live = (props) => {
     )
   })
   return (
-    <Row>
-      <Col column={12}>
-        <Card>
-          <h2 className="header-title">Latest Messages</h2>
-          <ButtonGroup className="filter-group">
-            <Button
-              click={()=>props.onFilterClick('all')}
-              selected={checkIfSelected('all', props.filter)}>
-              <AwesomeIcon icon="circle-o"/> All
-            </Button>
-            <Button
-              click={()=>props.onFilterClick('successful')}
-              selected={checkIfSelected('successful', props.filter)}>
-              <StatusIndicator success={true}/> Success
-            </Button>
-            <Button
-              click={()=>props.onFilterClick('failed')}
-              selected={checkIfSelected('failed', props.filter)}>
-              <StatusIndicator success={false}/> Failed
-            </Button>
-            <Button
-              click={()=>props.onFilterClick('saved')}
-              selected={checkIfSelected('saved', props.filter)}>
-              <Star selected={true}/> Saved
-            </Button>
-          </ButtonGroup>
-          <ul className="message-list">
-            {messages}
-          </ul>
-        </Card>
-      </Col>
-    </Row>
+    <div>
+      <Row>
+        <Col column={12}>
+          <Card>
+            <h2 className="header-title">Received Messages</h2>
+            <ButtonGroup className="filter-group">
+              <Button
+                click={()=>props.onFilterClick('all')}
+                selected={checkIfSelected('all', props.filter)}>
+                <AwesomeIcon icon="circle-o"/> All
+              </Button>
+              <Button
+                click={()=>props.onFilterClick('successful')}
+                selected={checkIfSelected('successful', props.filter)}>
+                <StatusIndicator success={true}/> Success
+              </Button>
+              <Button
+                click={()=>props.onFilterClick('failed')}
+                selected={checkIfSelected('failed', props.filter)}>
+                <StatusIndicator success={false}/> Failed
+              </Button>
+              <Button
+                click={()=>props.onFilterClick('saved')}
+                selected={checkIfSelected('saved', props.filter)}>
+                <Star selected={true}/> Saved
+              </Button>
+            </ButtonGroup>
+            <ul className="message-list">
+              {messages}
+            </ul>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col column={12}>
+          <Card>
+            <h2 className="header-title">Sent Messages</h2>
+            <SentMessages/>
+          </Card>
+        </Col>
+      </Row>
+    </div>
   )
 }
 
