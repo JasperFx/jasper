@@ -6,44 +6,47 @@ import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
 import Star from './Star'
 import StatusIndicator from './StatusIndicator'
-import {
-  toggleSavedMessage
-} from '../Live/liveMessagesReducer'
 
-function Envelope({ id, message, onClick, onNavigate }) {
+function Envelope({ id, queue, message, onClick, onNavigate }) {
   const star = ev => {
     ev.stopPropagation()
     onClick(message)
   }
   return (
-    <div onClick={() => onNavigate(id)} className="clickable"><StatusIndicator success={!message.hasError}/><Star selected={message.saved === true} className="clickable" onClick={star}/>{message.description}</div>
+    <div onClick={() => onNavigate(id, queue)} className="clickable">
+      <StatusIndicator success={!message.hasError}/>
+      <Star selected={message.saved === true} className="clickable" onClick={star}/>
+      {message.description}
+    </div>
   )
 }
 
 Envelope.propTypes = {
   id: PropTypes.string.isRequired,
+  queue: PropTypes.string.isRequired,
   message: PropTypes.shape({
     description: PropTypes.string.isRequired,
     saved: PropTypes.bool.isRequired,
     hasError: PropTypes.bool.isRequired
   }),
   onClick: PropTypes.func,
-  onNavigate: PropTypes.func.isRequired
+  onNavigate: PropTypes.func.isRequired,
+  saveMessage: PropTypes.func.isRequired
 }
 
 export default connect(
   (state, props) => {
     return {
-      message: state.live.messages.find(m => m.headers.id === props.id)
+      message: state[props.queue].messages.find(m => m.headers.id === props.id)
     }
   },
-  (dispatch) => {
+  (dispatch, props) => {
     return {
       onClick: message => {
-        dispatch(toggleSavedMessage(message))
+        return dispatch(props.saveMessage(message))
       },
-      onNavigate: id => {
-        dispatch(push(`/envelope/${id}`))
+      onNavigate: (id, queue) => {
+        return dispatch(push(`/envelope/${queue}/${id}`))
       }
     }
   }
