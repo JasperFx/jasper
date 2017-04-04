@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using JasperBus;
 using StructureMap;
 
 namespace Jasper.Diagnostics
@@ -10,12 +11,13 @@ namespace Jasper.Diagnostics
     {
         public readonly Registry Services = new DiagnosticServicesRegistry();
 
-        public string Url { get; set;} = "http://localhost:5200";
+        public int Port { get; set; } = 5250;
 
         private DiagnosticsServer _server;
 
         Task<Registry> IFeature.Bootstrap(JasperRegistry registry)
         {
+            registry.Logging.LogBusEventsWith<DiagnosticsBusLogger>();
             return Task.FromResult(Services);
         }
 
@@ -24,7 +26,7 @@ namespace Jasper.Diagnostics
             return Task.Factory.StartNew(()=>
             {
                 _server = new DiagnosticsServer();
-                _server.Start(runtime.Container);
+                _server.Start(Port, runtime.Container);
             });
         }
 
