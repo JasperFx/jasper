@@ -83,7 +83,7 @@ namespace JasperBus.Configuration
             return _nodes.Values.GetEnumerator();
         }
 
-        public Envelope Send(Envelope envelope, Uri address, IEnvelopeSerializer serializer)
+        public Envelope Send(Envelope envelope, Uri address, IEnvelopeSerializer serializer, IMessageCallback callback = null)
         {
 
             ITransport transport = null;
@@ -105,14 +105,28 @@ namespace JasperBus.Configuration
                     sending.Destination = channel.Destination;
                     sending.ReplyUri = channel.ReplyUri;
 
-                    channel.Sender.Send(sending.Data, sending.Headers);
+                    if (callback == null)
+                    {
+                        channel.Sender.Send(sending.Data, sending.Headers);
+                    }
+                    else
+                    {
+                        callback.Send(sending);
+                    }
                 }
                 else
                 {
                     sending.Destination = address;
                     sending.ReplyUri = transport.DefaultReplyUri();
 
-                    transport.Send(sending.Destination, sending.Data, sending.Headers);
+                    if (callback == null)
+                    {
+                        transport.Send(sending.Destination, sending.Data, sending.Headers);
+                    }
+                    else
+                    {
+                        callback.Send(sending);
+                    }
                 }
 
                 return sending;

@@ -37,6 +37,23 @@ namespace JasperBus.Runtime
             return envelope.CorrelationId;
         }
 
+        public string Send(Envelope envelope, IMessageCallback callback)
+        {
+            var channels = DetermineDestinationChannels(envelope).ToArray();
+            if (!channels.Any())
+            {
+                throw new Exception($"No channels match this message ({envelope})");
+            }
+
+            foreach (var channel in channels)
+            {
+                var sent = _channels.Send(envelope, channel, _serializer, callback);
+                Logger.Sent(sent);
+            }
+
+            return envelope.CorrelationId;
+        }
+
         // TODO -- have this return the channels maybe
         public IEnumerable<Uri> DetermineDestinationChannels(Envelope envelope)
         {
@@ -65,10 +82,7 @@ namespace JasperBus.Runtime
             }
         }
 
-        public string Send(Envelope envelope, IMessageCallback callback)
-        {
-            throw new System.NotImplementedException();
-        }
+
 
 
     }

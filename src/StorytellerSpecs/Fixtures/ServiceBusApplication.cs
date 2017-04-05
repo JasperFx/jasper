@@ -62,5 +62,11 @@ namespace StorytellerSpecs.Fixtures
         {
             _registry.Handlers.IncludeType<Cascader2>();
         }
+
+        [FormatAs("Listen for incoming messages from {channel}")]
+        public void ListenForMessagesFrom([SelectionList("Channels")] Uri channel)
+        {
+            _registry.ListenForMessagesFrom(channel);
+        }
     }
 }
