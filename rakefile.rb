@@ -64,11 +64,15 @@ task :version do
 end
 
 desc 'Compile the code'
-task :compile => [:clean, :version] do
+task :compile => [:clean, :version, :npm_install] do
 	sh "dotnet restore src"
 	sh "dotnet build src/Jasper.Testing"
 	sh "dotnet build src/JasperBus.Tests"
-	sh "dotnet build src/Jasper.Diagnostics"
+
+  Dir.chdir("src/Jasper.Diagnostics") do
+    sh "npm run build:prod"
+  end
+  sh "dotnet build src/Jasper.Diagnostics"
 end
 
 desc 'Run the unit tests'
@@ -80,6 +84,12 @@ task :test => [:compile] do
 	sh "dotnet test src/JasperHttp.Tests"
 end
 
+desc 'npm install for Diagnostics'
+task :npm_install do
+  Dir.chdir("src/Jasper.Diagnostics") do
+    sh "npm install"
+  end
+end
 
 
 desc 'Build Nuspec packages'
