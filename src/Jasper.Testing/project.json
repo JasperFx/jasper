@@ -5,16 +5,16 @@
     "copyToOutput": [ "appsettings.json", "colors.json", "nested.json" ]
   },
   "dependencies": {
+    "System.Runtime.Serialization.Primitives": "4.3.0",
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "Jasper": { "target": "project" },
     "Module1": { "target": "project" },
     "Shouldly": "2.8.2",
-    "Microsoft.Extensions.Configuration": "1.1.1",
-    "Microsoft.Extensions.Configuration.Abstractions": "1.1.1",
-    "Microsoft.Extensions.Configuration.Binder": "1.1.1",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.1",
-    "System.Runtime.Serialization.Primitives": "4.3.0"
+    "Microsoft.Extensions.Configuration": "1.1.0",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Configuration.Binder": "1.1.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0"
   },
   "testRunner": "xunit",
   "frameworks": {
