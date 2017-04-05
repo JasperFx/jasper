@@ -2,7 +2,9 @@
 
 ## Adding Diagnostics to your application
 
-Add the Diagnostic Services to your `JasperRegistry`
+### ASP.NET Core App
+
+To run diagnostics from an existing ASP.NET Core application, add the Diagnostic Services to your `JasperRegistry`
 
 ```csharp
 public class BusRegistry : JasperBusRegistry
@@ -25,6 +27,44 @@ public void Configure(
   ILoggerFactory loggerFactory)
 {
     app.UseDiagnostics();
+}
+```
+
+### Standalone Application / Service Bus Application
+
+To run diagnostics from a standalone application, such as a Jasper Bus application, use the `DiagnosticsFeature`.
+
+```csharp
+public class BusRegistry : JasperBusRegistry
+{
+    public BusRegistry()
+    {
+        Settings.Alter<DiagnosticsSettings>(_ =>
+        {
+            _.WebsocketPort = 3300;
+        });
+
+        Feature<DiagnosticsFeature>();
+    }
+}
+```
+
+## Viewing Diagnostics
+
+By default the diagnostics endpoint can be found at `/_diag`.  You can change this in the `DiagnosticsSettings`.
+
+```csharp
+public class BusRegistry : JasperBusRegistry
+{
+    public BusRegistry()
+    {
+        Settings.Alter<DiagnosticsSettings>(_ =>
+        {
+            _.BasePath = "/_bus";
+        });
+
+        Feature<DiagnosticsFeature>();
+    }
 }
 ```
 
