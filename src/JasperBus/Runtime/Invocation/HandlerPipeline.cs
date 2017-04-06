@@ -61,9 +61,20 @@ namespace JasperBus.Runtime.Invocation
                 }
                 else
                 {
-                    deserialize(envelope, receiver);
-
-                    Logger.Received(envelope);
+                    try
+                    {
+                        deserialize(envelope, receiver);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.MessageFailed(envelope, e);
+                        envelope.Callback.MarkFailed(e);
+                        return;
+                    }
+                    finally
+                    {
+                        Logger.Received(envelope);
+                    }
 
                     await ProcessMessage(envelope, context).ConfigureAwait(false);
                 }

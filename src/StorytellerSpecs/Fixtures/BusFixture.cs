@@ -21,7 +21,7 @@ namespace StorytellerSpecs.Fixtures
         protected readonly Type[] messageTypes =
         {
             typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4),
-            typeof(Message5), typeof(Message6), typeof(ErrorMessage)
+            typeof(Message5), typeof(Message6), typeof(ErrorMessage), typeof(UnhandledMessage)
         };
 
 

@@ -96,7 +96,10 @@ namespace JasperBus.Configuration
                 // TODO -- look up channel node modifiers if any
                 // TODO -- there's a little opportunity here to try to reuse the serialization
                 // if you send to more than one channel at a time w/ the same serializer
-                serializer.Serialize(sending, channel);
+                if (sending.Data == null || sending.Data.Length == 0)
+                {
+                    serializer.Serialize(sending, channel);
+                }
 
 
                 sending.AcceptedContentTypes = AcceptedContentTypes.ToArray();

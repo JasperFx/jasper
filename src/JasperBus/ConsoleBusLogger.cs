@@ -13,27 +13,27 @@ namespace JasperBus
 
         public void Received(Envelope envelope)
         {
-            Console.WriteLine($"Received {envelope.Message.GetType().Name}#{envelope.CorrelationId} at {envelope.Destination} from {envelope.ReplyUri}");
+            Console.WriteLine($"Received {envelope.Message?.GetType().Name}#{envelope.CorrelationId} at {envelope.Destination} from {envelope.ReplyUri}");
         }
 
         public void ExecutionStarted(Envelope envelope)
         {
-            Console.WriteLine($"Started processing {envelope.Message.GetType().Name}#{envelope.CorrelationId}");
+            Console.WriteLine($"Started processing {envelope.Message?.GetType().Name}#{envelope.CorrelationId}");
         }
 
         public void ExecutionFinished(Envelope envelope)
         {
-            Console.WriteLine($"Finished processing {envelope.Message.GetType().Name}#{envelope.CorrelationId}");
+            Console.WriteLine($"Finished processing {envelope.Message?.GetType().Name}#{envelope.CorrelationId}");
         }
 
         public void MessageSucceeded(Envelope envelope)
         {
-            ConsoleWriter.Write(ConsoleColor.Green, $"Successfully processed message {envelope.Message.GetType().Name}#{envelope.CorrelationId}");
+            ConsoleWriter.Write(ConsoleColor.Green, $"Successfully processed message {envelope.Message?.GetType().Name}#{envelope.CorrelationId}");
         }
 
         public void MessageFailed(Envelope envelope, Exception ex)
         {
-            ConsoleWriter.Write(ConsoleColor.Red, $"Failed to process message {envelope.Message.GetType().Name}#{envelope.CorrelationId}");
+            ConsoleWriter.Write(ConsoleColor.Red, $"Failed to process message {envelope.Message?.GetType().Name}#{envelope.CorrelationId}");
             ConsoleWriter.Write(ConsoleColor.Yellow, ex.ToString());
             Console.WriteLine();
         }
@@ -54,7 +54,7 @@ namespace JasperBus
 
         public void NoHandlerFor(Envelope envelope)
         {
-            ConsoleWriter.Write(ConsoleColor.Yellow, $"No known handler for {envelope.Message.GetType().Name}#{envelope.CorrelationId} from {envelope.ReplyUri}");
+            ConsoleWriter.Write(ConsoleColor.Yellow, $"No known handler for {envelope.Message?.GetType().Name}#{envelope.CorrelationId} from {envelope.ReplyUri}");
         }
     }
 }

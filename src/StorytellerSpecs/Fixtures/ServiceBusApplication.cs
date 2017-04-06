@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jasper;
 using JasperBus;
 using JasperBus.Model;
@@ -6,9 +7,111 @@ using JasperBus.Runtime;
 using JasperBus.Tracking;
 using JasperBus.Transports.LightningQueues;
 using StoryTeller;
+using StoryTeller.Results;
+using StoryTeller.Util;
+using Envelope = JasperBus.Runtime.Envelope;
 
 namespace StorytellerSpecs.Fixtures
 {
+    public class StorytellerBusLogger : IBusLogger
+    {
+        private readonly ISpecContext _context;
+
+        public StorytellerBusLogger(ISpecContext context)
+        {
+            _context = context;
+        }
+
+        public void Sent(Envelope envelope)
+        {
+            trace($"Sent {envelope}");
+        }
+
+        public void Received(Envelope envelope)
+        {
+            trace($"Received {envelope}");
+        }
+
+        public void ExecutionStarted(Envelope envelope)
+        {
+            
+        }
+
+        public void ExecutionFinished(Envelope envelope)
+        {
+            
+        }
+
+        public void MessageSucceeded(Envelope envelope)
+        {
+            trace($"Message {envelope} succeeded");
+        }
+
+        public void MessageFailed(Envelope envelope, Exception ex)
+        {
+            trace($"Message {envelope} failed");
+        }
+
+        public void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
+        {
+            _context.Reporting.ReporterFor<BusErrors>().Exceptions.Add(ex);   
+        }
+
+        public void NoHandlerFor(Envelope envelope)
+        {
+            trace($"No handler for {envelope}");
+        }
+
+        private void trace(string message)
+        {
+            _context.Reporting.ReporterFor<BusActivity>().Messages.Add(message);
+        }
+    }
+
+    public class BusErrors : Report
+    {
+        public readonly IList<Exception> Exceptions = new List<Exception>();
+
+        public string ToHtml()
+        {
+            var div = new HtmlTag("div");
+
+            foreach (var exception in Exceptions)
+            {
+                div.Add("div").AddClasses("alert", "alert-warning").Text(exception.ToString());
+            }
+
+
+            return div.ToString();
+        }
+
+        public string Title { get; } = "Logged Bus Errors";
+        public string ShortTitle { get; } = "Bus Errors";
+        public int Count => Exceptions.Count;
+    }
+
+    public class BusActivity : Report
+    {
+        public readonly IList<string> Messages = new List<string>();
+
+        public string ToHtml()
+        {
+            var ul = new HtmlTag("ul");
+
+            foreach (var message in Messages)
+            {
+                ul.Add("li").Text(message);
+            }
+
+
+            return ul.ToString();
+        }
+
+        public string Title { get; } = "Bus Activity";
+        public string ShortTitle { get; } = "Bus Activity";
+        public int Count => Messages.Count;
+    }
+
     [Hidden]
     public class ServiceBusApplication : BusFixture
     {
@@ -29,6 +132,8 @@ namespace StorytellerSpecs.Fixtures
             {
                 MaxDatabases = 20
             });
+
+            _registry.Logging.LogBusEventsWith(new StorytellerBusLogger(Context));
         }
 
         public override void TearDown()

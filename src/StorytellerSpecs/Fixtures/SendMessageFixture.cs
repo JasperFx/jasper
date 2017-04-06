@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -152,6 +153,32 @@ namespace StorytellerSpecs.Fixtures
             return true;
         }
 
+        [FormatAs("Send a message with an unknown content type to {address}")]
+        public void SendMessageWithUnknownContentType([SelectionList("Channels")] Uri address)
+        {
+            var bytes = Encoding.UTF8.GetBytes("<garbage/>");
+            var envelope = new Envelope(bytes, new Dictionary<string, string>(), null);
+            envelope.ContentType = "text/xml";
+
+            envelope.Destination = address;
+
+            var sender = _runtime.Container.GetInstance<IEnvelopeSender>();
+            sender.Send(envelope);
+        }
+
+        [FormatAs("Send a garbled message to {address}")]
+        public void SendGarbledMessage([SelectionList("Channels")] Uri address)
+        {
+            var bytes = Encoding.UTF8.GetBytes("<garbage/>");
+            var envelope = new Envelope(bytes, new Dictionary<string, string>(), null);
+            envelope.ContentType = "application/json";
+
+            envelope.Destination = address;
+
+            var sender = _runtime.Container.GetInstance<IEnvelopeSender>();
+            sender.Send(envelope);
+        }
+
         public override void TearDown()
         {
             _runtime.Dispose();
@@ -177,6 +204,12 @@ namespace StorytellerSpecs.Fixtures
     public abstract class Message
     {
         public string Name { get; set; }
+    }
+
+
+    public class UnhandledMessage : Message
+    {
+        
     }
 
     public class Message1 : Message

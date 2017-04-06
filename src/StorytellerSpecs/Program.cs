@@ -9,7 +9,9 @@ namespace StorytellerSpecs
         {
             using (var runner = StorytellerRunner.Basic())
             {
-                var counts = runner.Run("Publishing / Request & Reply Mechanics").Counts;
+                var counts = runner.Run("Publishing / LQ / Resiliency / Receive a garbled message that blows up in deserialization").Counts;
+                //var counts = runner.Run("Publishing / LQ / Resiliency / Receive a message with an unknown content type").Counts;
+                //var counts = runner.Run("Publishing / LQ / Resiliency / Receive an unhandled message type").Counts;
 
                 Console.WriteLine(counts);
 
