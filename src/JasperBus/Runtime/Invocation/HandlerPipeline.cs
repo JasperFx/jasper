@@ -43,6 +43,9 @@ namespace JasperBus.Runtime.Invocation
             }
             catch (Exception e)
             {
+                // Gotta get the message out of here because it's something that
+                // could never be handled
+                envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
                 Logger.LogException(e, envelope.CorrelationId);
             }
         }
@@ -68,7 +71,7 @@ namespace JasperBus.Runtime.Invocation
                     catch (Exception e)
                     {
                         Logger.MessageFailed(envelope, e);
-                        envelope.Callback.MarkFailed(e);
+                        envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
                         return;
                     }
                     finally
