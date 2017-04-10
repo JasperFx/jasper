@@ -3,25 +3,26 @@ require 'json'
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
-RESULTS_DIR = "results"
+RESULTS_DIR = "artifacts"
 BUILD_VERSION = '0.2.0'
 
-tc_build_number = ENV["BUILD_NUMBER"]
+tc_build_number = ENV["APPVEYOR_BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')
 build_number = "#{BUILD_VERSION}.#{build_revision}"
 BUILD_NUMBER = build_number
 
-task :ci => [:default, :pack]
+CI = ENV["CI"].nil? ? false : true
+
+task :ci => [:default, :pack, :appVeyorPush]
 
 task :default => [:test, :storyteller]
 
 
 desc "Prepares the working directory for a new build"
 task :clean do
-	#TODO: do any other tasks required to clean/prepare the working directory
-	FileUtils.rm_rf RESULTS_DIR
-	FileUtils.rm_rf 'artifacts'
-
+  #TODO: do any other tasks required to clean/prepare the working directory
+  FileUtils.rm_rf RESULTS_DIR
+  FileUtils.mkdir_p RESULTS_DIR
 end
 
 
@@ -34,8 +35,8 @@ task :version do
   rescue
     commit = "git unavailable"
   end
-  puts "##teamcity[buildNumber '#{build_number}']" unless tc_build_number.nil?
-  puts "Version: #{build_number}" if tc_build_number.nil?
+  #puts "##teamcity[buildNumber '#{build_number}']" unless tc_build_number.nil?
+  #puts "Version: #{build_number}" if tc_build_number.nil?
 
   options = {
 	:description => '',
@@ -70,14 +71,14 @@ task :compile => [:clean, :version, :npm_install] do
 	sh "dotnet build src/JasperBus.Tests"
 
   Dir.chdir("src/Jasper.Diagnostics") do
-    sh "npm run build:prod"
+    sh "yarn build:prod"
   end
   sh "dotnet build src/Jasper.Diagnostics"
 end
 
 desc 'Run the unit tests'
 task :test => [:compile] do
-	Dir.mkdir RESULTS_DIR
+  FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing"
 	sh "dotnet test src/JasperBus.Tests"
@@ -87,7 +88,7 @@ end
 desc 'npm install for Diagnostics'
 task :npm_install do
   Dir.chdir("src/Jasper.Diagnostics") do
-    sh "npm install"
+    sh "yarn"
   end
 end
 
@@ -105,6 +106,21 @@ task :push do
 	#sh "nuget.exe push -ApiKey #{APIKEY} -NonInteractive -Source https://www.myget.org/F/storyteller/ artifacts/Storyteller.AspNetCore.1.0.0.nupkg"
 end
 
+desc "Pushes the Nuget's to AppVeyor"
+task :appVeyorPush do
+  if !CI
+    puts "Not on CI, skipping artifact upload"
+    next
+  end
+  Dir.glob('./artifacts/*.*') do |file|
+    full_path = File.expand_path file
+    full_path = full_path.gsub('/', '\\') if OS.windows?
+    cmd = "appveyor PushArtifact #{full_path}"
+    puts cmd
+    sh cmd
+  end
+end
+
 desc "Launches VS to the Jasper solution file"
 task :sln do
 	sh "start Jasper.sln"
@@ -112,9 +128,11 @@ end
 
 desc "Run the storyteller specifications"
 task :storyteller => [:compile] do
-	Dir.chdir("src/StorytellerSpecs") do
-	  system "dotnet storyteller run -r artifacts"
-	end
+  result_output = File.expand_path "#{RESULTS_DIR}/stresults.htm"
+  puts "appveyor AddTest Testing -Framework Storyteller -FileName SomeFile -Outcome Skipped"
+  Dir.chdir("src/StorytellerSpecs") do
+    system "dotnet storyteller run -r #{result_output}"
+  end
 end
 
 desc "Run the storyteller specifications"
@@ -164,5 +182,23 @@ def load_project_file(project)
   File.open(project) do |file|
     file_contents = File.read(file, :encoding => 'bom|utf-8')
     JSON.parse(file_contents)
+  end
+end
+
+module OS
+  def OS.windows?
+    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+  end
+
+  def OS.mac?
+   (/darwin/ =~ RUBY_PLATFORM) != nil
+  end
+
+  def OS.unix?
+    !OS.windows?
+  end
+
+  def OS.linux?
+    OS.unix? and not OS.mac?
   end
 end
