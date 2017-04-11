@@ -44,6 +44,9 @@ namespace JasperHttp.Model
             Action = action;
             Route = RouteBuilder.Build(action.HandlerType, action.Method);
             TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}_{action.Method.Name}";
+
+            InputType = RouteBuilder.DetermineInputType(action.Method);
+            ResourceType = action.ReturnVariable?.VariableType;
         }
 
         public IGenerationModel ToGenerationModel(IGenerationConfig config)
@@ -81,5 +84,7 @@ namespace JasperHttp.Model
         public MethodCall Action { get; }
 
         public Route Route { get; }
+        public Type InputType { get; }
+        public Type ResourceType { get; }
     }
 }
