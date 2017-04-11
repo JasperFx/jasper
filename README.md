@@ -31,9 +31,9 @@ repository for Jasper. Note that you will have to have push rights to the jasper
 
 The current thinking is that we'd have these libraries/Nugets:
 
-1. _Jasper_ -  [![NuGet](https://img.shields.io/nuget/v/Jasper.svg)](https://www.nuget.org/packages/Jasper/) The core assembly that will handle bootstrapping, configuration, and the Roslyn code generation tooling
-1. _JasperBus_ - [![NuGet](https://img.shields.io/nuget/v/JasperBus.svg)](https://www.nuget.org/packages/JasperBus/) The service bus features from FubuMVC and an alternative to [MediatR](https://github.com/jbogard/MediatR)
-1. _JasperDiagnostics_ - [![NuGet](https://img.shields.io/nuget/v/Jasper.Diagnostics.svg)](https://www.nuget.org/packages/Jasper.Diagnostics/) Runtime diagnostics meant for development and testing
+1. [![NuGet](https://img.shields.io/nuget/v/Jasper.svg)](https://www.nuget.org/packages/Jasper/) _Jasper_ - The core assembly that will handle bootstrapping, configuration, and the Roslyn code generation tooling
+1. [![NuGet](https://img.shields.io/nuget/v/JasperBus.svg)](https://www.nuget.org/packages/JasperBus/) _JasperBus_ - The service bus features from FubuMVC and an alternative to [MediatR](https://github.com/jbogard/MediatR)
+1. [![NuGet](https://img.shields.io/nuget/v/Jasper.Diagnostics.svg)](https://www.nuget.org/packages/Jasper.Diagnostics/) _JasperDiagnostics_ - Runtime diagnostics meant for development and testing
 1. _JasperStoryteller_ - Support for hosting Jasper applications within
    [Storyteller](http://storyteller.github.io) specification projects.
 1. _JasperHttp_ (later) - Build HTTP micro-services on top of ASP.Net Core in a FubuMVC-esque way.
