@@ -31,7 +31,7 @@ namespace JasperHttp.Routing
 
             var parts = pattern.Split('_')
                 .Select(x => x.Replace("@", "_")).ToArray();
-            
+
 
 
 
@@ -39,7 +39,6 @@ namespace JasperHttp.Routing
             if (verb.IsNotEmpty())
             {
                 parts = parts.Skip(1).ToArray();
-                
             }
             else
             {

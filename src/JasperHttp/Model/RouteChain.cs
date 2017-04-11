@@ -1,0 +1,80 @@
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using Baseline;
+using Baseline.Reflection;
+using Jasper.Codegen;
+using JasperHttp.Routing;
+using StructureMap;
+
+namespace JasperHttp.Model
+{
+    public class RouteChain : IGenerates<RouteHandler>
+    {
+        public static RouteChain For<T>(Expression<Action<T>> expression)
+        {
+            var method = ReflectionHelper.GetMethod(expression);
+            var call = new MethodCall(typeof(T), method);
+
+            return new RouteChain(call);
+        }
+
+        public static RouteChain For<T>(string methodName)
+        {
+            var handlerType = typeof(T);
+            var method = handlerType.GetMethod(methodName,
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+
+            if (method == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(methodName), $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
+            }
+
+            var call = new MethodCall(handlerType, method);
+
+            return new RouteChain(call);
+        }
+
+
+
+        public RouteChain(MethodCall action)
+        {
+            Action = action;
+            Route = RouteBuilder.Build(action.HandlerType, action.Method);
+            TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}.{action.Method.Name}";
+        }
+
+        public IGenerationModel ToGenerationModel(IGenerationConfig config)
+        {
+            // TODO -- apply conneg policies here
+            // TODO -- look for attributes
+            // TODO -- add extra frames
+            // TODO -- return the Route generation model
+            throw new NotImplementedException();
+        }
+
+        public string SourceCode { get; set; }
+
+        public RouteHandler Create(Type[] types, IContainer container)
+        {
+            var type = types.FirstOrDefault(x => x.Name == TypeName);
+            if (type == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(types), $"Could not find a type named '{TypeName}' in this assembly");
+            }
+
+            var handler = container.GetInstance(type).As<RouteHandler>();
+
+            handler.Chain = this;
+
+            return handler;
+        }
+
+        public string TypeName { get; }
+
+        public MethodCall Action { get; }
+
+        public Route Route { get; }
+    }
+}

@@ -39,19 +39,25 @@ namespace JasperHttp.Routing
 
         public Task Invoke(HttpContext context)
         {
+            string[] segments;
+            var route = SelectRoute(context, out segments);
+
+            if (route != null)
+            {
+                return route.Invoker(context);
+            }
+
+            // TODO -- do something different here
+            return Task.FromResult("Not found");
+        }
+
+        public Route SelectRoute(HttpContext context, out string[] segments)
+        {
             var method = context.Request.Method;
             var routeTree = _trees[method];
 
-            var segments = RouteTree.ToSegments(context.Request.Path);
-            var leaf = routeTree.Select(segments);
-
-            if (leaf == null) return routeTree.NotFound(context);
-
-            context.Response.StatusCode = 200;
-
-            leaf.SetValues(context, segments);
-
-            return leaf.Invoker(context);
+            segments = RouteTree.ToSegments(context.Request.Path);
+            return routeTree.Select(segments);
         }
 
         public RouteAdder Get => new RouteAdder(HttpVerbs.GET, this);

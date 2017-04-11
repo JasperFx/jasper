@@ -10,7 +10,7 @@
     "JasperHttp": { "target": "project" },
     "Shouldly": "2.8.2",
     "NSubstitute": "2.0.2",
-    "Alba": "1.0.0-alpha-39", 
+    "Alba": "1.0.0",
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"
