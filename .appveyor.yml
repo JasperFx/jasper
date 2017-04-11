@@ -31,7 +31,7 @@ deploy:
 - provider: NuGet
   server: https://www.myget.org/F/jasperfx/api/v2/package
   api_key:
-    secure: yPn2NFMwYZ9EIb7Qcw0UJz2oWy19Lb/asBdJSHYcfajW6YqNBQQvUbmZvFKgehWX
+    secure: oszaafgovFR3EwWUTYbLM0MMusfsUDWXmwQnqU0BY8CbE1IZMpUc7qMxn6Fy/1XU
   skip_symbols: true
   on:
     branch:
