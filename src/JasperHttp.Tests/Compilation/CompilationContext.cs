@@ -16,6 +16,7 @@ using Xunit;
 
 namespace JasperHttp.Tests.Compilation
 {
+    [Collection("compilation")]
     public abstract class CompilationContext<T>
     {
         private Lazy<IContainer> _container;
@@ -24,7 +25,7 @@ namespace JasperHttp.Tests.Compilation
         protected Lazy<Dictionary<string, RouteHandler>> _routes;
 
         private readonly Lazy<string> _code;
-        protected StubHttpContext theContext;
+        protected StubHttpContext theContext = StubHttpContext.Empty();
 
         protected Lazy<RouteGraph> _graph;
         private GenerationConfig config;
@@ -76,11 +77,6 @@ namespace JasperHttp.Tests.Compilation
 
         public RouteGraph Graph => _graph.Value;
 
-        [Fact]
-        public void can_compile_all()
-        {
-            AllRoutesCompileSuccessfully();
-        }
 
         public string theCode => _code.Value;
 

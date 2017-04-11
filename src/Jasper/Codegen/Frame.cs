@@ -13,6 +13,7 @@ namespace Jasper.Codegen
         internal readonly IList<Variable> uses = new List<Variable>();
 
         public bool     IsAsync { get; }
+        public bool Wraps { get; protected set; } = false;
 
         public Frame Next { get; set; }
 
@@ -20,6 +21,8 @@ namespace Jasper.Codegen
         {
             IsAsync = isAsync;
         }
+
+
 
         public IEnumerable<Variable> Uses => uses;
 

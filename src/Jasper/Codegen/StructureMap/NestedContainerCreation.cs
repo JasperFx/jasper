@@ -7,6 +7,8 @@ namespace Jasper.Codegen.StructureMap
         public NestedContainerCreation(Variable root) : base(false)
         {
             uses.Add(root);
+
+            Wraps = true;
         }
 
         public override void GenerateCode(IGenerationModel generationModel, ISourceWriter writer)

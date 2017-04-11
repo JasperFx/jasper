@@ -44,6 +44,4 @@ namespace JasperHttp.Tests.Compilation
         public static bool GoAsyncWasCalled { get; set; }
     }
 
-
-
 }

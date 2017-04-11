@@ -45,7 +45,7 @@ namespace Jasper.Codegen
             }
             else if (compiled.Count(x => x.IsAsync) == 1 && compiled.Last().IsAsync && compiled.Last().CanReturnTask())
             {
-                AsyncMode = AsyncMode.ReturnFromLastNode;
+                AsyncMode = compiled.Any(x => x.Wraps) ? AsyncMode.AsyncTask : AsyncMode.ReturnFromLastNode;
             }
 
             Top = chainFrames(compiled);
