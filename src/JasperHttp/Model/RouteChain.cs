@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -42,7 +43,7 @@ namespace JasperHttp.Model
         {
             Action = action;
             Route = RouteBuilder.Build(action.HandlerType, action.Method);
-            TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}.{action.Method.Name}";
+            TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}_{action.Method.Name}";
         }
 
         public IGenerationModel ToGenerationModel(IGenerationConfig config)
@@ -51,7 +52,11 @@ namespace JasperHttp.Model
             // TODO -- look for attributes
             // TODO -- add extra frames
             // TODO -- return the Route generation model
-            throw new NotImplementedException();
+            var frames = new List<Frame>();
+            frames.Add(Action);
+
+
+            return new RouteHandlerGenerationModel(TypeName, config, frames);
         }
 
         public string SourceCode { get; set; }

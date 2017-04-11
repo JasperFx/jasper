@@ -47,7 +47,7 @@ namespace JasperHttp.Tests.Compilation
                 var graph = new RouteGraph();
 
                 var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                    .Where(x => x.DeclaringType != typeof(object) && x != null && x.GetParameters().Any() && !x.IsSpecialName);
+                    .Where(x => x.DeclaringType != typeof(object) && x != null && !x.IsSpecialName);
 
                 foreach (var method in methods)
                 {
@@ -90,7 +90,7 @@ namespace JasperHttp.Tests.Compilation
         }
 
 
-        public Task Execute<T>(Expression<Func<T, object>> expression)
+        public Task Execute(Expression<Action<T>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
 
