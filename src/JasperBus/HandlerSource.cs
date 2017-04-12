@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper;
-using Jasper.Util;
 using JasperBus.Model;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;

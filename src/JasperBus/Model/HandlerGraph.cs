@@ -58,7 +58,7 @@ namespace JasperBus.Model
         protected override HandlerChain[] chains => _chains.Values.ToArray();
         public HandlerChain[] Chains => _chains.Values.ToArray();
 
-        public void Compile(IGenerationConfig generation, IContainer container)
+        internal void Compile(IGenerationConfig generation, IContainer container)
         {
             if (!_hasGrouped)
             {

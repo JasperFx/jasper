@@ -124,5 +124,10 @@ namespace Jasper.Codegen
         {
             return IsAsync;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(HandlerType)}: {HandlerType}, {nameof(Method)}: {Method}";
+        }
     }
 }

@@ -86,5 +86,10 @@ namespace JasperHttp.Model
         public Route Route { get; }
         public Type InputType { get; }
         public Type ResourceType { get; }
+
+        public override string ToString()
+        {
+            return $"{Route.HttpMethod}: {Route.Pattern}";
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
+using JasperHttp.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace JasperHttp.Routing
@@ -159,6 +160,7 @@ namespace JasperHttp.Routing
         public string LastSegment => _segments.Count == 0 ? string.Empty : _segments.Last().CanonicalPath();
 
         public IEnumerable<ISegment> Parameters => _segments.Where(x => !(x is Segment)).ToArray();
+        public RouteHandler Handler { get; set; }
 
         public void SetValues(HttpContext context, string[] segments)
         {

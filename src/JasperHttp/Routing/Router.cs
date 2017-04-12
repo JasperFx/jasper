@@ -21,7 +21,7 @@ namespace JasperHttp.Routing
 
             Add(route);
 
-            Urls.Register(route);
+            
         }
 
         public UrlGraph Urls { get; } = new UrlGraph();
@@ -29,6 +29,7 @@ namespace JasperHttp.Routing
         public void Add(Route route)
         {
             _trees[route.HttpMethod.ToUpperInvariant()].AddRoute(route);
+            Urls.Register(route);
         }
 
         // TODO -- dunno that this needs to be done by verb. Reconsider
