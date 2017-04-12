@@ -43,13 +43,13 @@ namespace JasperHttp.Routing
             string[] segments;
             var route = SelectRoute(context, out segments);
 
-            if (route != null)
-            {
-                return route.Invoker(context);
-            }
+            // TODO -- add some error handling to 500 here. May also change how segments are being smuggled into the HttpContext
+            if (route == null) return _trees[context.Request.Method].NotFound(context);
 
-            // TODO -- do something different here
-            return Task.FromResult("Not found");
+            context.Response.StatusCode = 200;
+            route.SetValues(context, segments);
+
+            return route.Invoker(context);
         }
 
         public Route SelectRoute(HttpContext context, out string[] segments)
