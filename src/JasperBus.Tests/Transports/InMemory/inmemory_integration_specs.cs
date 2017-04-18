@@ -38,11 +38,6 @@ namespace JasperBus.Tests.Transports.InMemory
         [Fact]
         public async Task send_a_message_and_get_the_response()
         {
-            if (!Platform.IsWindows)
-            {
-                return;
-            }
-
             var bus = Runtime.Container.GetInstance<IServiceBus>();
 
             var task = theTracker.WaitFor<Message1>();

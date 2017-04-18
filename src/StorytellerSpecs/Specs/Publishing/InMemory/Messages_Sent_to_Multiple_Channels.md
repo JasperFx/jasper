@@ -1,9 +1,9 @@
 # Messages Sent to Multiple Channels
 
--> id = c553e31b-702b-4c38-991b-4eb2c28f2425
--> lifecycle = Regression
+-> id = 052488cb-9641-44b3-9849-0e59109feec5
+-> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2017-03-20T20:35:03.6148532Z
+-> last-updated = 2017-04-18T20:49:23.6930357Z
 -> tags = 
 
 [SendMessage]
@@ -11,27 +11,27 @@
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    lq.tcp://localhost:2201/one
+    memory://localhost:2201/one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    lq.tcp://localhost:2201/two
+    memory://localhost:2201/two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    lq.tcp://localhost:2201/three
+    memory://localhost:2201/three
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    lq.tcp://localhost:2201/four
+    memory://localhost:2201/four
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    lq.tcp://localhost:2201/four
+    memory://localhost:2201/four
     ```
 
 
@@ -41,10 +41,10 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                   |MessageType|Name  |
-    |lq.tcp://localhost:2201/one  |Message1   |Tom   |
-    |lq.tcp://localhost:2201/two  |Message2   |Todd  |
-    |lq.tcp://localhost:2201/three|Message3   |Trevor|
-    |lq.tcp://localhost:2201/four |Message2   |Todd  |
-    |lq.tcp://localhost:2201/four |Message1   |Tom   |
+    |memory://localhost:2201/one  |Message1   |Tom   |
+    |memory://localhost:2201/two  |Message2   |Todd  |
+    |memory://localhost:2201/three|Message3   |Trevor|
+    |memory://localhost:2201/four |Message2   |Todd  |
+    |memory://localhost:2201/four |Message1   |Tom   |
 
 ~~~

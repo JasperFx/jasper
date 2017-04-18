@@ -33,6 +33,25 @@ namespace JasperBus.Tracking
             return waiter.Task;
         }
 
+        public async Task<TaskCompletionSource<MessageTrack[]>> WatchAsync(Func<Task> func)
+        {
+            var waiter = new TaskCompletionSource<MessageTrack[]>();
+
+            lock (_lock)
+            {
+                _waiters.Clear();
+
+                _completed.Clear();
+                _outstanding.Clear();
+
+                _waiters.Add(waiter);
+            }
+
+            await func();
+
+            return waiter;
+        }
+
         public void Complete(Envelope envelope, string activity, Exception ex = null)
         {
             var key = MessageTrack.ToKey(envelope.CorrelationId, activity);

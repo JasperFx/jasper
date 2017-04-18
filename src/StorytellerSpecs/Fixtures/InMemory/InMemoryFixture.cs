@@ -6,19 +6,19 @@ using JasperBus.Model;
 using JasperBus.Runtime;
 using StoryTeller;
 
-namespace StorytellerSpecs.Fixtures.LQ
+namespace StorytellerSpecs.Fixtures.InMemory
 {
-    public abstract class LightningQueuesFixture : Fixture
+    public abstract class InMemoryFixture : Fixture
     {
-        public static Uri Channel1 = new Uri("lq.tcp://localhost:2201/one");
-        public static Uri Channel2 = new Uri("lq.tcp://localhost:2201/two");
-        public static Uri Channel3 = new Uri("lq.tcp://localhost:2201/three");
-        public static Uri Channel4 = new Uri("lq.tcp://localhost:2201/four");
+        public static Uri Channel1 = new Uri("memory://localhost:2201/one");
+        public static Uri Channel2 = new Uri("memory://localhost:2201/two");
+        public static Uri Channel3 = new Uri("memory://localhost:2201/three");
+        public static Uri Channel4 = new Uri("memory://localhost:2201/four");
 
         protected readonly Type[] messageTypes = new Type[] { typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4), typeof(Message5), typeof(Message6) };
 
 
-        protected LightningQueuesFixture()
+        protected InMemoryFixture()
         {
             AddSelectionValues("MessageTypes", messageTypes.Select(x => x.Name).ToArray());
             AddSelectionValues("Channels", Channel1.ToString(), Channel2.ToString(), Channel3.ToString(), Channel4.ToString());
@@ -31,16 +31,14 @@ namespace StorytellerSpecs.Fixtures.LQ
     }
 
     [Hidden]
-    public class LQServiceBusApplication : LightningQueuesFixture
+    public class InMemoryServiceBusApplication : InMemoryFixture
     {
         private JasperBusRegistry _registry;
-
-        
 
         public override void SetUp()
         {
             _registry = new JasperBusRegistry();
-            _registry.UseLightningQueuesTransport();
+            _registry.UseInMemoryTransport();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
         }
 
@@ -63,6 +61,4 @@ namespace StorytellerSpecs.Fixtures.LQ
             _registry.ListenForMessagesFrom(channel);
         }
     }
-
-
 }

@@ -1,9 +1,9 @@
 # Simplest Possible Happy Path
 
--> id = 63d1dfc5-e1bc-49fc-8a88-5d846f847c6d
+-> id = 2d261ec7-b103-4a20-a900-778ea0be1e13
 -> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-20T20:33:18.1508239Z
+-> last-updated = 2017-04-18T20:33:19.1508239Z
 -> tags = 
 
 [SendMessage]
@@ -11,17 +11,17 @@
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    lq.tcp://localhost:2201/one
+    memory://localhost:2201/one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    lq.tcp://localhost:2201/two
+    memory://localhost:2201/two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    lq.tcp://localhost:2201/three
+    memory://localhost:2201/three
     ```
 
 
@@ -31,8 +31,8 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                   |MessageType|Name  |
-    |lq.tcp://localhost:2201/one  |Message1   |Tom   |
-    |lq.tcp://localhost:2201/two  |Message2   |Todd  |
-    |lq.tcp://localhost:2201/three|Message3   |Trevor|
+    |memory://localhost:2201/one  |Message1   |Tom   |
+    |memory://localhost:2201/two  |Message2   |Todd  |
+    |memory://localhost:2201/three|Message3   |Trevor|
 
 ~~~

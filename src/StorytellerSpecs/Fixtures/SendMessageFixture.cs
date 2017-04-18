@@ -44,7 +44,7 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("Send message {messageType} named {name}")]
-        public void SendMessage([SelectionList("MessageTypes")] string messageType, string name)
+        public async Task SendMessage([SelectionList("MessageTypes")] string messageType, string name)
         {
             var history = _runtime.Container.GetInstance<MessageHistory>();
 
@@ -52,19 +52,19 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(async () =>
+            var waiter = await history.WatchAsync(async () =>
             {
                 await _runtime.Container.GetInstance<IServiceBus>().Send(message);
             });
 
-            waiter.Wait(5.Seconds());
+            waiter.Task.Wait(5.Seconds());
 
-            StoryTellerAssert.Fail(!waiter.IsCompleted, "Messages were never completely tracked");
+            StoryTellerAssert.Fail(!waiter.Task.IsCompleted, "Messages were never completely tracked");
             
         }
 
         [FormatAs("Send message {messageType} named {name} directly to {address}")]
-        public void SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
+        public async Task SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
             [SelectionList("Channels")] Uri address)
         {
             var history = _runtime.Container.GetInstance<MessageHistory>();
@@ -74,12 +74,12 @@ namespace StorytellerSpecs.Fixtures
             message.Name = name;
 
 
-            var waiter = history.Watch(async () =>
+            var waiter = await history.WatchAsync(async () =>
             {
                 await bus().Send(address, message);
             });
 
-            waiter.Wait(5.Seconds());
+            waiter.Task.Wait(5.Seconds());
         }
 
         private IServiceBus bus()
@@ -154,7 +154,7 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("Send a message with an unknown content type to {address}")]
-        public void SendMessageWithUnknownContentType([SelectionList("Channels")] Uri address)
+        public async Task SendMessageWithUnknownContentType([SelectionList("Channels")] Uri address)
         {
             var bytes = Encoding.UTF8.GetBytes("<garbage/>");
             var envelope = new Envelope(bytes, new Dictionary<string, string>(), null);
@@ -163,11 +163,11 @@ namespace StorytellerSpecs.Fixtures
             envelope.Destination = address;
 
             var sender = _runtime.Container.GetInstance<IEnvelopeSender>();
-            sender.Send(envelope);
+            await sender.Send(envelope);
         }
 
         [FormatAs("Send a garbled message to {address}")]
-        public void SendGarbledMessage([SelectionList("Channels")] Uri address)
+        public async Task SendGarbledMessage([SelectionList("Channels")] Uri address)
         {
             var bytes = Encoding.UTF8.GetBytes("<garbage/>");
             var envelope = new Envelope(bytes, new Dictionary<string, string>(), null);
@@ -176,7 +176,7 @@ namespace StorytellerSpecs.Fixtures
             envelope.Destination = address;
 
             var sender = _runtime.Container.GetInstance<IEnvelopeSender>();
-            sender.Send(envelope);
+            await sender.Send(envelope);
         }
 
         public override void TearDown()

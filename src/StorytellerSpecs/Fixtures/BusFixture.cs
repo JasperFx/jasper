@@ -18,6 +18,11 @@ namespace StorytellerSpecs.Fixtures
         public static Uri LQChannel3 = new Uri("lq.tcp://localhost:2201/three");
         public static Uri LQChannel4 = new Uri("lq.tcp://localhost:2201/four");
 
+        public static Uri InMemoryChannel1 = new Uri("memory://localhost:2201/one");
+        public static Uri InMemoryChannel2 = new Uri("memory://localhost:2201/two");
+        public static Uri InMemoryChannel3 = new Uri("memory://localhost:2201/three");
+        public static Uri InMemoryChannel4 = new Uri("memory://localhost:2201/four");
+
         protected readonly Type[] messageTypes =
         {
             typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4),
@@ -29,7 +34,8 @@ namespace StorytellerSpecs.Fixtures
         {
             AddSelectionValues("MessageTypes", messageTypes.Select(x => x.Name).ToArray());
             AddSelectionValues("Channels", "stub://one", "stub://two", "stub://three", "stub://four", "stub://replies",
-                LQChannel1.ToString(), LQChannel2.ToString(), LQChannel3.ToString(), LQChannel4.ToString());
+                LQChannel1.ToString(), LQChannel2.ToString(), LQChannel3.ToString(), LQChannel4.ToString(),
+                InMemoryChannel1.ToString(), InMemoryChannel2.ToString(), InMemoryChannel3.ToString(), InMemoryChannel4.ToString());
         }
 
         protected Type messageTypeFor(string name)

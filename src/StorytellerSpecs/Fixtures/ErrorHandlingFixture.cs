@@ -10,6 +10,7 @@ using JasperBus.Model;
 using JasperBus.Runtime;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
+using System.Threading.Tasks;
 
 namespace StorytellerSpecs.Fixtures
 {
@@ -151,15 +152,15 @@ namespace StorytellerSpecs.Fixtures
             return this[nameof(MessageAttempt)]
                 .AsTable("If the message processing is")
                 .Before(c => _message = new ErrorCausingMessage())
-                .After(c => _bus.Send(_message));
+                .After(async c => await _bus.Send(_message));
         }
 
 
         [FormatAs("Send the message with no errors")]
-        public void SendMessageWithNoErrors()
+        public async Task SendMessageWithNoErrors()
         {
             _message = new ErrorCausingMessage();
-            _bus.Send(_message);
+            await _bus.Send(_message);
         }
 
         [FormatAs("The message should have ended as '{result}' on attempt {attempt}")]
