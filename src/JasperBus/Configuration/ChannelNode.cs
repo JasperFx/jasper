@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
+using System.Threading.Tasks;
 
 namespace JasperBus.Configuration
 {
@@ -53,7 +54,7 @@ namespace JasperBus.Configuration
     public interface ISender
     {
         // TODO -- change this to take in Envelope, IEnvelopeSender, ChannelNode
-        void Send(byte[] data, IDictionary<string, string> headers);
+        Task Send(byte[] data, IDictionary<string, string> headers);
     }
 
     public class NulloSender : ISender
@@ -67,9 +68,9 @@ namespace JasperBus.Configuration
             _destination = destination;
         }
 
-        public void Send(byte[] data, IDictionary<string, string> headers)
+        public Task Send(byte[] data, IDictionary<string, string> headers)
         {
-            _transport.Send(_destination, data, headers);
+            return _transport.Send(_destination, data, headers);
         }
     }
 }

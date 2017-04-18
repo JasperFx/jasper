@@ -11,6 +11,8 @@ using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
 using JasperBus.Runtime.Serializers;
 using StructureMap.TypeRules;
+using JasperBus.Transports.InMemory;
+using JasperBus.Transports.LightningQueues;
 
 namespace JasperBus
 {
@@ -40,6 +42,16 @@ namespace JasperBus
             node.Incoming = true;
 
             return new ChannelExpression(_feature.Channels, node);
+        }
+
+        public void UseInMemoryTransport()
+        {
+            Services.For<ITransport>().Singleton().Add<InMemoryTransport>();
+        }
+
+        public void UseLightningQueuesTransport()
+        {
+            Services.For<ITransport>().Singleton().Add<LightningQueuesTransport>();
         }
 
         public ChannelExpression ListenForMessagesFrom(string uriString)

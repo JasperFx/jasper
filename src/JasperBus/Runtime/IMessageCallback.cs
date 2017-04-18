@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace JasperBus.Runtime
 {
@@ -9,8 +10,8 @@ namespace JasperBus.Runtime
 
         void MoveToDelayedUntil(DateTime time);
         void MoveToErrors(ErrorReport report);
-        void Requeue(Envelope envelope);
-        void Send(Envelope envelope);
+        Task Requeue(Envelope envelope);
+        Task Send(Envelope envelope);
 
         bool SupportsSend { get; }
     }

@@ -206,13 +206,14 @@ namespace JasperBus.Runtime.Invocation
             // TODO -- need a general way to log errors against an ITransport
         }
 
-        public void Send(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
-            // nohting
+            // nothing
+            return Task.CompletedTask;
         }
 
         public bool SupportsSend { get; } = false;
-        public void Requeue(Envelope envelope)
+        public Task Requeue(Envelope envelope)
         {
             throw new NotImplementedException();
         }

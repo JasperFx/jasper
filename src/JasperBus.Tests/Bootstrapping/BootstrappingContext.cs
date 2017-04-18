@@ -21,7 +21,7 @@ namespace JasperBus.Tests.Bootstrapping
         public BootstrappingContext()
         {
             _runtime = new Lazy<JasperRuntime>(() => JasperRuntime.For(theRegistry));
-            theRegistry.Services.For<ITransport>().Add<StubTransport>().Singleton();
+            theRegistry.Services.For<ITransport>().Singleton().Add<StubTransport>();
 
             theRegistry.Services.Scan(_ =>
             {

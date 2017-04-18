@@ -8,6 +8,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace JasperBus.Tests.Runtime.Invocation
 {
@@ -290,11 +291,11 @@ namespace JasperBus.Tests.Runtime.Invocation
 
 
 
-        public string Send(Envelope envelope)
+        public Task<string> Send(Envelope envelope)
         {
             Sent.Add(envelope);
 
-            return envelope.CorrelationId;
+            return Task.FromResult(envelope.CorrelationId);
         }
 
         public void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
@@ -307,10 +308,10 @@ namespace JasperBus.Tests.Runtime.Invocation
             FailureAcknowledgementMessage = message;
         }
 
-        public string Send(Envelope envelope, IMessageCallback callback)
+        public Task<string> Send(Envelope envelope, IMessageCallback callback)
         {
             Sent.Add(envelope);
-            return envelope.CorrelationId;
+            return Task.FromResult(envelope.CorrelationId);
         }
 
         public string FailureAcknowledgementMessage { get; set; }

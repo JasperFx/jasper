@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JasperBus.Configuration;
 using JasperBus.Runtime.Invocation;
+using System.Threading.Tasks;
 
 namespace JasperBus.Runtime
 {
@@ -11,7 +12,7 @@ namespace JasperBus.Runtime
 
         // TODO -- going to change this to take in an Envelope instead
         // Make this responsible for applying the reply uri
-        void Send(Uri uri, byte[] data, IDictionary<string, string> headers);
+        Task Send(Uri uri, byte[] data, IDictionary<string, string> headers);
 
         /// <summary>
         /// Connect to all queues, set up incoming listeners, and tag nodes

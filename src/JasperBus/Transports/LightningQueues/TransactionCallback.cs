@@ -1,6 +1,7 @@
 ﻿using System;
 using JasperBus.Runtime;
 using LightningQueues;
+using System.Threading.Tasks;
 
 namespace JasperBus.Transports.LightningQueues
 {
@@ -49,18 +50,17 @@ namespace JasperBus.Transports.LightningQueues
             MarkSuccessful();
         }
 
-        public void Requeue(Envelope envelope)
+        public Task Requeue(Envelope envelope)
         {
             var copy = _message.Copy();
             copy.Id = MessageId.GenerateRandom();
             copy.Queue = _message.Queue;
             _context.Enqueue(copy);
             MarkSuccessful();
+            return Task.CompletedTask;
         }
 
-
-
-        public void Send(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             var uri = new LightningUri(envelope.Destination);
 
@@ -77,6 +77,7 @@ namespace JasperBus.Transports.LightningQueues
             message.TranslateHeaders();
 
             _context.Send(message);
+            return Task.CompletedTask;
         }
 
         public bool SupportsSend { get; } = true;

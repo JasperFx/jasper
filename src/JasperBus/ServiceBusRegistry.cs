@@ -10,9 +10,6 @@ namespace JasperBus
     {
         internal ServiceBusRegistry()
         {
-            For<ITransport>().Singleton().Add<LightningQueuesTransport>();
-
-
             For<IEnvelopeSender>().Use<EnvelopeSender>();
             For<IServiceBus>().Use<ServiceBus>();
             For<IHandlerPipeline>().Use<HandlerPipeline>();

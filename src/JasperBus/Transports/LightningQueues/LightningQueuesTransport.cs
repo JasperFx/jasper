@@ -6,6 +6,7 @@ using Baseline;
 using JasperBus.Configuration;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
+using System.Threading.Tasks;
 
 namespace JasperBus.Transports.LightningQueues
 {
@@ -49,12 +50,14 @@ namespace JasperBus.Transports.LightningQueues
             return _uris.GetOrAdd(uri, u => new LightningUri(u));
         }
 
-        public void Send(Uri uri, byte[] data, IDictionary<string, string> headers)
+        public Task Send(Uri uri, byte[] data, IDictionary<string, string> headers)
         {
             if (_queues.Count == 0) throw new InvalidOperationException("There are no available LightningQueues channels with which to send");
 
             var lqUri = lqUriFor(uri);
             _queues.Values.First().Send(data, headers, lqUri.Address, lqUri.QueueName);
+
+            return Task.CompletedTask;
         }
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)

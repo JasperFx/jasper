@@ -42,14 +42,14 @@ namespace JasperBus
             return task;
         }
 
-        public void Send<T>(T message)
+        public Task Send<T>(T message)
         {
-            _sender.Send(new Envelope {Message = message});
+            return _sender.Send(new Envelope {Message = message});
         }
 
-        public void Send<T>(Uri destination, T message)
+        public Task Send<T>(Uri destination, T message)
         {
-            _sender.Send(new Envelope { Message = message, Destination = destination});
+            return _sender.Send(new Envelope { Message = message, Destination = destination});
         }
 
         public Task Consume<T>(T message)

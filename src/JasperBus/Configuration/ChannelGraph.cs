@@ -6,6 +6,7 @@ using System.Linq;
 using Baseline;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Serializers;
+using System.Threading.Tasks;
 
 namespace JasperBus.Configuration
 {
@@ -83,7 +84,7 @@ namespace JasperBus.Configuration
             return _nodes.Values.GetEnumerator();
         }
 
-        public Envelope Send(Envelope envelope, Uri address, IEnvelopeSerializer serializer, IMessageCallback callback = null)
+        public async Task<Envelope> Send(Envelope envelope, Uri address, IEnvelopeSerializer serializer, IMessageCallback callback = null)
         {
 
             ITransport transport = null;
@@ -110,11 +111,11 @@ namespace JasperBus.Configuration
 
                     if (callback == null)
                     {
-                        channel.Sender.Send(sending.Data, sending.Headers);
+                        await channel.Sender.Send(sending.Data, sending.Headers);
                     }
                     else
                     {
-                        callback.Send(sending);
+                        await callback.Send(sending);
                     }
                 }
                 else
@@ -124,11 +125,11 @@ namespace JasperBus.Configuration
 
                     if (callback == null)
                     {
-                        transport.Send(sending.Destination, sending.Data, sending.Headers);
+                        await transport.Send(sending.Destination, sending.Data, sending.Headers);
                     }
                     else
                     {
-                        callback.Send(sending);
+                        await callback.Send(sending);
                     }
                 }
 

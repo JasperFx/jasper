@@ -52,9 +52,9 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() =>
+            var waiter = history.Watch(async () =>
             {
-                _runtime.Container.GetInstance<IServiceBus>().Send(message);
+                await _runtime.Container.GetInstance<IServiceBus>().Send(message);
             });
 
             waiter.Wait(5.Seconds());
@@ -74,9 +74,9 @@ namespace StorytellerSpecs.Fixtures
             message.Name = name;
 
 
-            var waiter = history.Watch(() =>
+            var waiter = history.Watch(async () =>
             {
-                bus().Send(address, message);
+                await bus().Send(address, message);
             });
 
             waiter.Wait(5.Seconds());
@@ -332,9 +332,9 @@ namespace StorytellerSpecs.Fixtures
 
         public string Protocol { get; }
 
-        public void Send(Uri uri, byte[] data, IDictionary<string, string> headers)
+        public Task Send(Uri uri, byte[] data, IDictionary<string, string> headers)
         {
-            Channels[uri].Send(data, headers);
+            return Channels[uri].Send(data, headers);
         }
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
@@ -416,12 +416,12 @@ namespace StorytellerSpecs.Fixtures
             Receiver = receiver;
         }
 
-        public void Send(byte[] data, IDictionary<string, string> headers)
+        public async Task Send(byte[] data, IDictionary<string, string> headers)
         {
             var callback = new StubMessageCallback(this);
             Callbacks.Add(callback);
 
-            Receiver?.Receive(data, headers, callback).Wait();
+            await Receiver?.Receive(data, headers, callback);
         }
     }
 
@@ -470,15 +470,16 @@ namespace StorytellerSpecs.Fixtures
             Errors.Add(report);
         }
 
-        public void Requeue(Envelope envelope)
+        public Task Requeue(Envelope envelope)
         {
             Requeued = true;
-            _channel.Send(envelope.Data, envelope.Headers);
+            return _channel.Send(envelope.Data, envelope.Headers);
         }
 
-        public void Send(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             Sent.Add(envelope);
+            return Task.CompletedTask;
         }
 
         public bool SupportsSend { get; } = false;

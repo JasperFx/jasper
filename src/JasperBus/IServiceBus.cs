@@ -21,7 +21,7 @@ namespace JasperBus
         /// <returns></returns>
         Task<TResponse> Request<TResponse>(object request, RequestOptions options = null);
 
-        void Send<T>(T message);
+        Task Send<T>(T message);
 
         /// <summary>
         /// Send to a specific destination rather than running the routing rules
@@ -29,7 +29,7 @@ namespace JasperBus
         /// <typeparam name="T"></typeparam>
         /// <param name="destination">The destination to send to</param>
         /// <param name="message"></param>
-        void Send<T>(Uri destination, T message);
+        Task Send<T>(Uri destination, T message);
 
         /// <summary>
         /// Invoke consumers for the relevant messages managed by the current

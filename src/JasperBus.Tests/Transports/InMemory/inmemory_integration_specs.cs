@@ -5,27 +5,24 @@ using Baseline;
 using Baseline.Dates;
 using JasperBus.Runtime;
 using JasperBus.Tests.Runtime;
-using JasperBus.Transports.LightningQueues;
 using Microsoft.DotNet.InternalAbstractions;
 using Shouldly;
 using Xunit;
 using Platform = Baseline.Platform;
 
-namespace JasperBus.Tests.Transports.LightningQueues
+namespace JasperBus.Tests.Transports.InMemory
 {
-    public class LQ_integration_specs : IntegrationContext
+    public class inmemory_integration_specs : IntegrationContext
     {
         private readonly MessageTracker theTracker = new MessageTracker();
 
-        public LQ_integration_specs()
+        public inmemory_integration_specs()
         {
-            LightningQueuesTransport.DeleteAllStorage();
-
             with(_ =>
             {
-                _.UseLightningQueuesTransport();
-                _.ListenForMessagesFrom("lq.tcp://localhost:2200/incoming");
-                _.SendMessage<Message1>().To("lq.tcp://localhost:2200/incoming");
+                _.UseInMemoryTransport();
+                _.ListenForMessagesFrom("memory://localhost:2200/incoming");
+                _.SendMessage<Message1>().To("memory://localhost:2200/incoming");
 
                 _.Services.For<MessageTracker>().Use(theTracker);
 
@@ -60,7 +57,6 @@ namespace JasperBus.Tests.Transports.LightningQueues
             }
 
             var envelope = task.Result;
-
 
             envelope.ShouldNotBeNull();
         }

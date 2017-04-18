@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using JasperBus.Configuration;
 using System.Threading.Tasks;
 
-namespace JasperBus.Transports.LightningQueues
+namespace JasperBus.Transports.InMemory
 {
-    public class QueueSender : ISender
+    public class InMemorySender : ISender
     {
         private readonly Uri _destination;
-        private readonly LightningQueue _queue;
+        private readonly InMemoryQueue _queue;
         private readonly string _subQueue;
 
-        public QueueSender(Uri destination, LightningQueue queue, string subQueue)
+        public InMemorySender(Uri destination, InMemoryQueue queue, string subQueue)
         {
             _destination = destination;
             _queue = queue;
@@ -20,8 +20,7 @@ namespace JasperBus.Transports.LightningQueues
 
         public Task Send(byte[] data, IDictionary<string, string> headers)
         {
-            _queue.Send(data, headers, _destination, _subQueue);
-            return Task.CompletedTask;
+            return _queue.Send(data, headers, _destination, _subQueue);
         }
     }
 }

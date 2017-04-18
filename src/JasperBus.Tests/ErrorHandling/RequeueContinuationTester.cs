@@ -19,7 +19,7 @@ namespace JasperBus.Tests.ErrorHandling
 
             await RequeueContinuation.Instance.Execute(envelope, context, DateTime.Now);
 
-            envelope.Callback.Received(1).Requeue(envelope);
+            await envelope.Callback.Received(1).Requeue(envelope);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace JasperBus.Tests.Configuration
             theGraph.AcceptedContentTypes.Add("text/xml");
             theGraph.AcceptedContentTypes.Add("text/json");
 
-            theSentEnvelope = theGraph.Send(theEnvelope, "stub://one".ToUri(), theSerializer);
+            theSentEnvelope = theGraph.Send(theEnvelope, "stub://one".ToUri(), theSerializer).Result;
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace JasperBus.Tests.Configuration
             theNode.Destination = "remote://one".ToUri();
             theNode.ReplyUri = "stub://replies".ToUri();
 
-            theSentEnvelope = theGraph.Send(theEnvelope, address, theSerializer);
+            theSentEnvelope = theGraph.Send(theEnvelope, address, theSerializer).Result;
 
 
         }

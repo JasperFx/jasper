@@ -4,6 +4,7 @@ using Baseline;
 using JasperBus.Configuration;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
+using System.Threading.Tasks;
 
 namespace JasperBus.Tests.Stubs
 {
@@ -32,9 +33,9 @@ namespace JasperBus.Tests.Stubs
             return ReplyChannel.Address;
         }
 
-        public void Send(Uri uri, byte[] data, IDictionary<string, string> headers)
+        public Task Send(Uri uri, byte[] data, IDictionary<string, string> headers)
         {
-            Channels[uri].Send(data, headers);
+            return Channels[uri].Send(data, headers);
         }
 
         public Uri ActualUriFor(ChannelNode node)
@@ -88,12 +89,17 @@ namespace JasperBus.Tests.Stubs
 
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
-        public void Send(byte[] data, IDictionary<string, string> headers)
+        public async Task Send(byte[] data, IDictionary<string, string> headers)
         {
             var callback = new StubMessageCallback();
             Callbacks.Add(callback);
 
-            Receiver?.Receive(data, headers, callback).Wait();
+            if (Receiver != null)
+            {
+                await Receiver?.Receive(data, headers, callback);
+            }
+
+            return;
         }
     }
 
@@ -131,16 +137,18 @@ namespace JasperBus.Tests.Stubs
             Errors.Add(report);
         }
 
-        public void Requeue(Envelope envelope)
+        public Task Requeue(Envelope envelope)
         {
             Requeued = true;
+            return Task.CompletedTask;
         }
 
         public bool Requeued { get; set; }
 
-        public void Send(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             Sent.Add(envelope);
+            return Task.CompletedTask;
         }
 
         public bool SupportsSend { get; } = true;

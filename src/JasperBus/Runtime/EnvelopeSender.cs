@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JasperBus.Configuration;
 using JasperBus.Runtime.Serializers;
+using System.Threading.Tasks;
 
 namespace JasperBus.Runtime
 {
@@ -20,7 +21,7 @@ namespace JasperBus.Runtime
 
         public IBusLogger Logger { get; }
 
-        public string Send(Envelope envelope)
+        public async Task<string> Send(Envelope envelope)
         {
             var channels = DetermineDestinationChannels(envelope).ToArray();
             if (!channels.Any())
@@ -30,14 +31,14 @@ namespace JasperBus.Runtime
 
             foreach (var channel in channels)
             {
-                var sent = _channels.Send(envelope, channel, _serializer);
+                var sent = await _channels.Send(envelope, channel, _serializer);
                 Logger.Sent(sent);
             }
 
             return envelope.CorrelationId;
         }
 
-        public string Send(Envelope envelope, IMessageCallback callback)
+        public async Task<string> Send(Envelope envelope, IMessageCallback callback)
         {
             var channels = DetermineDestinationChannels(envelope).ToArray();
             if (!channels.Any())
@@ -47,7 +48,7 @@ namespace JasperBus.Runtime
 
             foreach (var channel in channels)
             {
-                var sent = _channels.Send(envelope, channel, _serializer, callback);
+                var sent = await _channels.Send(envelope, channel, _serializer, callback);
                 Logger.Sent(sent);
             }
 
