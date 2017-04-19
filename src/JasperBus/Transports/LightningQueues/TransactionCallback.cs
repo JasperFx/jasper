@@ -28,10 +28,11 @@ namespace JasperBus.Transports.LightningQueues
             _context.CommitChanges();
         }
 
-        public void MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(DateTime time)
         {
             _context.ReceiveLater(time.ToUniversalTime() - DateTime.UtcNow);
             _context.CommitChanges();
+            return Task.CompletedTask;
         }
 
         public void MoveToErrors(ErrorReport report)

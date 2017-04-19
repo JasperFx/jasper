@@ -9,18 +9,16 @@ namespace JasperBus.Transports.InMemory
     {
         private readonly Uri _destination;
         private readonly InMemoryQueue _queue;
-        private readonly string _subQueue;
-
-        public InMemorySender(Uri destination, InMemoryQueue queue, string subQueue)
+        
+        public InMemorySender(Uri destination, InMemoryQueue queue)
         {
-            _destination = destination;
             _queue = queue;
-            _subQueue = subQueue;
+            _destination = destination;
         }
 
         public Task Send(byte[] data, IDictionary<string, string> headers)
         {
-            return _queue.Send(data, headers, _destination, _subQueue);
+            return _queue.Send(data, headers, _destination);
         }
     }
 }

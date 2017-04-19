@@ -11,23 +11,23 @@
     [ServiceBusApplication]
     |> ListenForMessagesFrom
     ``` channel
-    memory://localhost:2201/one
+    memory://one
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    memory://localhost:2201/one
+    memory://one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    memory://localhost:2201/one
+    memory://one
     ```
 
 
 |> SendMessageWithUnknownContentType
 ``` address
-memory://localhost:2201/one
+memory://one
 ```
 
 |> SendMessage messageType=Message1, name=Suzy
@@ -35,7 +35,7 @@ memory://localhost:2201/one
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                 |MessageType|Name   |
-    |memory://localhost:2201/one|Message1   |Suzy   |
-    |memory://localhost:2201/one|Message2   |Russell|
+    |memory://one|Message1   |Suzy   |
+    |memory://one|Message2   |Russell|
 
 ~~~

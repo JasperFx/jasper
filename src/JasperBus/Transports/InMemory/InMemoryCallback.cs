@@ -9,26 +9,38 @@ namespace JasperBus.Transports.InMemory
     {
         private readonly InMemoryQueue _queue;
         private readonly InMemoryMessage _message;
+        private readonly Uri _destination;
 
-        public InMemoryCallback(InMemoryQueue queue, InMemoryMessage message)
+        public bool Successful { get; private set; } = false;
+        public bool Failed { get; private set; } = false;
+
+        public InMemoryCallback(InMemoryQueue queue, InMemoryMessage message, Uri destination)
         {
             _queue = queue;
             _message = message;
+            _destination = destination;
         }
 
         public void MarkSuccessful()
         {
-            //TODO
+            Successful = true;
         }
 
         public void MarkFailed(Exception ex)
         {
-            //TODO
+            Failed = true;
         }
 
-        public void MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(DateTime time)
         {
-            //TODO
+            var now = DateTime.UtcNow;
+            time = time.ToUniversalTime();
+            if (time > now)
+            {
+                return _queue.Delay(_message, _destination, time - now);
+            }
+
+            return _queue.Send(_message, _destination);
         }
 
         public void MoveToErrors(ErrorReport report)
@@ -44,18 +56,15 @@ namespace JasperBus.Transports.InMemory
 
         public Task Send(Envelope envelope)
         {
-            var uri = envelope.Destination;
-
             var message = new InMemoryMessage
             {
                 Id = Guid.NewGuid(),
                 Data = envelope.Data,
                 Headers = envelope.Headers,
-                SentAt = DateTime.UtcNow,
-                Queue = uri.Segments.Last()
+                SentAt = DateTime.UtcNow
             };
 
-           return  _queue.Send(message, envelope.Destination);
+            return _queue.Send(message, envelope.Destination);
         }
 
         public bool SupportsSend { get; } = true;

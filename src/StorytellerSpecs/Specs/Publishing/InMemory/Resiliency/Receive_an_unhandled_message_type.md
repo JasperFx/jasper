@@ -11,17 +11,17 @@
     [ServiceBusApplication]
     |> ListenForMessagesFrom
     ``` channel
-    memory://localhost:2201/one
+    memory://one
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    memory://localhost:2201/one
+    memory://one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    memory://localhost:2201/one
+    memory://one
     ```
 
 
@@ -30,7 +30,7 @@ There is no handler for UnhandledMessage in this configuration
 
 |> SendMessageDirectly messageType=UnhandledMessage, name=Bill
 ``` address
-memory://localhost:2201/one
+memory://one
 ```
 
 |> SendMessage messageType=Message1, name=Suzy
@@ -38,7 +38,7 @@ memory://localhost:2201/one
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                 |MessageType|Name   |
-    |memory://localhost:2201/one|Message1   |Suzy   |
-    |memory://localhost:2201/one|Message2   |Russell|
+    |memory://one|Message1   |Suzy   |
+    |memory://one|Message2   |Russell|
 
 ~~~

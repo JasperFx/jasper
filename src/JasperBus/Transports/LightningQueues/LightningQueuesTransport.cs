@@ -55,7 +55,7 @@ namespace JasperBus.Transports.LightningQueues
             if (_queues.Count == 0) throw new InvalidOperationException("There are no available LightningQueues channels with which to send");
 
             var lqUri = lqUriFor(uri);
-            _queues.Values.First().Send(data, headers, lqUri.Address, lqUri.QueueName);
+            _queues[lqUri.Port].Send(data, headers, lqUri.Address, lqUri.QueueName);
 
             return Task.CompletedTask;
         }

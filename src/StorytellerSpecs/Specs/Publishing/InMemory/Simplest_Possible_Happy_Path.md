@@ -11,17 +11,17 @@
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    memory://localhost:2201/one
+    memory://one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    memory://localhost:2201/two
+    memory://two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    memory://localhost:2201/three
+    memory://three
     ```
 
 
@@ -31,8 +31,8 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                   |MessageType|Name  |
-    |memory://localhost:2201/one  |Message1   |Tom   |
-    |memory://localhost:2201/two  |Message2   |Todd  |
-    |memory://localhost:2201/three|Message3   |Trevor|
+    |memory://one  |Message1   |Tom   |
+    |memory://two  |Message2   |Todd  |
+    |memory://three|Message3   |Trevor|
 
 ~~~

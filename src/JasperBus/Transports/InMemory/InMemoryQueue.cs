@@ -12,24 +12,21 @@ namespace JasperBus.Transports.InMemory
 {
     public class InMemoryQueue : IDisposable
     {
-        private readonly IDictionary<string, BufferBlock<InMemoryMessage>> _queue = new Dictionary<string, BufferBlock<InMemoryMessage>>();
+        private readonly IDictionary<Uri, BufferBlock<InMemoryMessage>> _buffers = new Dictionary<Uri, BufferBlock<InMemoryMessage>>();
         private readonly InMemorySettings _settings;
-        private readonly int _port;
-        public static readonly string ErrorQueueName = "errors";
 
-        public InMemoryQueue(int port, InMemorySettings settings)
+        public InMemoryQueue(InMemorySettings settings)
         {
-            _port = port;
             _settings = settings;
         }
 
-        public void Start(ChannelGraph channels, IEnumerable<ChannelNode> nodes)
+        public void Start(IEnumerable<ChannelNode> nodes)
         {
             try
             {
                 foreach (var node in nodes)
                 {
-                    _queue.Add(node.Uri.Segments.Last(), new BufferBlock<InMemoryMessage>());
+                    _buffers.Add(node.Uri, new BufferBlock<InMemoryMessage>());
                 }
             }
             catch (Exception e)
@@ -39,18 +36,22 @@ namespace JasperBus.Transports.InMemory
             }
         }
 
-        public async Task Send(byte[] data, IDictionary<string, string> headers, Uri destination, string subQueue)
+        public async Task Send(byte[] data, IDictionary<string, string> headers, Uri destination)
         {
             var payload = new InMemoryMessage
             {
                 Id = Guid.NewGuid(),
                 Data = data,
                 Headers = headers,
-                SentAt = DateTime.UtcNow,
-                Queue = subQueue
+                SentAt = DateTime.UtcNow
             };
 
             await Send(payload, destination).ConfigureAwait(false);
+        }
+
+        public Task Send(InMemoryMessage message, Uri destination)
+        {
+            return _buffers[destination].SendAsync(message);
         }
 
         public async Task Delay(InMemoryMessage message, Uri destination, TimeSpan delayTime)
@@ -59,24 +60,19 @@ namespace JasperBus.Transports.InMemory
             await Send(message, destination).ConfigureAwait(false);
         }
 
-        public Task Send(InMemoryMessage message, Uri destination)
+        public void ListenForMessages(Uri destination, IReceiver receiver)
         {
-            return _queue[destination.Segments.Last()].SendAsync(message);
-        }
-
-        public void ListenForMessages(string subQueue, IReceiver receiver)
-        {
-            _queue[subQueue].LinkTo(new ActionBlock<InMemoryMessage>(message =>
+            _buffers[destination].LinkTo(new ActionBlock<InMemoryMessage>(message =>
             {
-                receiver.Receive(message.Data, message.Headers, new InMemoryCallback(this, message));
+                return receiver.Receive(message.Data, message.Headers, new InMemoryCallback(this, message, destination));
             }), new DataflowLinkOptions { PropagateCompletion = true });
         }
 
         public void Dispose()
         {
-            foreach (var q in _queue)
+            foreach (var buffer in _buffers)
             {
-                q.Value.Complete();
+                buffer.Value.Complete();
             }
         }
     }

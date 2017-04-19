@@ -21,8 +21,8 @@ namespace JasperBus.Tests.Transports.InMemory
             with(_ =>
             {
                 _.UseInMemoryTransport();
-                _.ListenForMessagesFrom("memory://localhost:2200/incoming");
-                _.SendMessage<Message1>().To("memory://localhost:2200/incoming");
+                _.ListenForMessagesFrom("memory://incoming");
+                _.SendMessage<Message1>().To("memory://incoming");
 
                 _.Services.For<MessageTracker>().Use(theTracker);
 

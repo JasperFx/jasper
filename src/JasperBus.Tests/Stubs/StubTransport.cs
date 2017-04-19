@@ -125,9 +125,10 @@ namespace JasperBus.Tests.Stubs
 
         public bool MarkedFailed { get; set; }
 
-        public void MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(DateTime time)
         {
             DelayedTo = time;
+            return Task.CompletedTask;
         }
 
         public DateTime? DelayedTo { get; set; }

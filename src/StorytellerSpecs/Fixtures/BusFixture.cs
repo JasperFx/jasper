@@ -18,10 +18,10 @@ namespace StorytellerSpecs.Fixtures
         public static Uri LQChannel3 = new Uri("lq.tcp://localhost:2201/three");
         public static Uri LQChannel4 = new Uri("lq.tcp://localhost:2201/four");
 
-        public static Uri InMemoryChannel1 = new Uri("memory://localhost:2201/one");
-        public static Uri InMemoryChannel2 = new Uri("memory://localhost:2201/two");
-        public static Uri InMemoryChannel3 = new Uri("memory://localhost:2201/three");
-        public static Uri InMemoryChannel4 = new Uri("memory://localhost:2201/four");
+        public static Uri InMemoryChannel1 = new Uri("memory://one");
+        public static Uri InMemoryChannel2 = new Uri("memory://two");
+        public static Uri InMemoryChannel3 = new Uri("memory://three");
+        public static Uri InMemoryChannel4 = new Uri("memory://four");
 
         protected readonly Type[] messageTypes =
         {

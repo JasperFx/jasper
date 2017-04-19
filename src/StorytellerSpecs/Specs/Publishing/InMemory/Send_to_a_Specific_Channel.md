@@ -12,35 +12,35 @@
     |> SendMessage messageType=Message1, channel=stub://one
     |> SendMessage messageType=Message2
     ``` channel
-    memory://localhost:2201/two
+    memory://two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    memory://localhost:2201/three
+    memory://three
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    memory://localhost:2201/four
+    memory://four
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    memory://localhost:2201/four
+    memory://four
     ```
 
 
 |> SendMessageDirectly messageType=Message1, name=Hank
 ``` address
-memory://localhost:2201/three
+memory://three
 ```
 
 |> TheMessagesSentShouldBe
     [rows]
     |> TheMessagesSentShouldBe-row MessageType=Message1, Name=Hank
     ``` ReceivedAt
-    memory://localhost:2201/three
+    memory://three
     ```
 
 

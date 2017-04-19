@@ -196,7 +196,7 @@ namespace JasperBus.Runtime.Invocation
             throw new InlineMessageException("Failed while invoking an inline message", ex);
         }
 
-        public void MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(DateTime time)
         {
             throw new NotImplementedException();
         }

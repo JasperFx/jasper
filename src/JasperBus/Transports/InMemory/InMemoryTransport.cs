@@ -14,20 +14,19 @@ namespace JasperBus.Transports.InMemory
     {
         private readonly InMemorySettings _settings;
         private Uri _replyUri;
-        private readonly ConcurrentDictionary<int, InMemoryQueue> _queues = new ConcurrentDictionary<int, InMemoryQueue>();
+        private readonly InMemoryQueue _queue;
 
         public InMemoryTransport(InMemorySettings settings)
         {
             _settings = settings;
+            _queue = new InMemoryQueue(settings);
         }
 
         public string Protocol => "memory";
 
         public Task Send(Uri uri, byte[] data, IDictionary<string, string> headers)
         {
-            if (_queues.Count == 0) throw new InvalidOperationException("There are no available channels with which to send");
-
-            return _queues.Values.First().Send(data, headers, uri, uri.Segments.Last());
+            return _queue.Send(data, headers, uri);
         }
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
@@ -40,26 +39,17 @@ namespace JasperBus.Transports.InMemory
 
             replyNode.Incoming = true;
             _replyUri = replyNode.Uri;
+            _queue.Start(nodes);
 
-
-            var groups = nodes.GroupBy(x => x.Uri.Port);
-
-            foreach (var group in groups)
+            foreach (var node in nodes)
             {
-                var queue = _queues.GetOrAdd(group.Key, key => new InMemoryQueue(group.Key, _settings));
-                queue.Start(channels, group);
+                node.Destination = node.Uri;
+                node.ReplyUri = _replyUri;
+                node.Sender = new InMemorySender(node.Uri, _queue);
 
-                foreach (var node in group)
+                if (node.Incoming)
                 {
-                    node.Destination = node.Uri;
-                    node.ReplyUri = _replyUri;
-                    var subQueue = node.Destination.Segments.Last();
-                    node.Sender = new InMemorySender(node.Destination, queue, subQueue);
-
-                    if (node.Incoming)
-                    {
-                        queue.ListenForMessages(subQueue, new Receiver(pipeline, channels, node));
-                    }
+                    _queue.ListenForMessages(node.Uri, new Receiver(pipeline, channels, node));
                 }
             }
         }
@@ -71,7 +61,7 @@ namespace JasperBus.Transports.InMemory
 
         public void Dispose()
         {
-            _queues.Values.Each(_ => _.Dispose());
+            _queue.Dispose();
         }
     }
 }

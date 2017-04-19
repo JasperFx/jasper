@@ -54,8 +54,8 @@ namespace StorytellerSpecs.Fixtures
 
             var waiter = await history.WatchAsync(async () =>
             {
-                await _runtime.Container.GetInstance<IServiceBus>().Send(message);
-            });
+                await _runtime.Container.GetInstance<IServiceBus>().Send(message).ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
             waiter.Task.Wait(5.Seconds());
 
@@ -73,11 +73,10 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-
             var waiter = await history.WatchAsync(async () =>
             {
-                await bus().Send(address, message);
-            });
+                await bus().Send(address, message).ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
             waiter.Task.Wait(5.Seconds());
         }
@@ -459,9 +458,10 @@ namespace StorytellerSpecs.Fixtures
             Exception = ex;
         }
 
-        public void MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(DateTime time)
         {
             DelayedTo = time;
+            return Task.CompletedTask;
         }
 
         public void MoveToErrors(ErrorReport report)
