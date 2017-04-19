@@ -36,7 +36,7 @@ namespace JasperBus.Transports.InMemory
             }
         }
 
-        public async Task Send(byte[] data, IDictionary<string, string> headers, Uri destination)
+        public Task Send(byte[] data, IDictionary<string, string> headers, Uri destination)
         {
             var payload = new InMemoryMessage
             {
@@ -46,7 +46,7 @@ namespace JasperBus.Transports.InMemory
                 SentAt = DateTime.UtcNow
             };
 
-            await Send(payload, destination).ConfigureAwait(false);
+            return Send(payload, destination);
         }
 
         public Task Send(InMemoryMessage message, Uri destination)

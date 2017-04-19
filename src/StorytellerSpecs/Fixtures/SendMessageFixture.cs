@@ -44,7 +44,7 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("Send message {messageType} named {name}")]
-        public async Task SendMessage([SelectionList("MessageTypes")] string messageType, string name)
+        public void SendMessage([SelectionList("MessageTypes")] string messageType, string name)
         {
             var history = _runtime.Container.GetInstance<MessageHistory>();
 
@@ -52,19 +52,18 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = await history.WatchAsync(async () =>
+            var waiter = history.Watch(() =>
             {
-                await _runtime.Container.GetInstance<IServiceBus>().Send(message).ConfigureAwait(false);
-            }).ConfigureAwait(false);
+                _runtime.Container.GetInstance<IServiceBus>().Send(message).Wait();
+            });
 
-            waiter.Task.Wait(5.Seconds());
+            waiter.Wait(5.Seconds());
 
-            StoryTellerAssert.Fail(!waiter.Task.IsCompleted, "Messages were never completely tracked");
-            
+            StoryTellerAssert.Fail(!waiter.IsCompleted, "Messages were never completely tracked");
         }
 
         [FormatAs("Send message {messageType} named {name} directly to {address}")]
-        public async Task SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
+        public void SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
             [SelectionList("Channels")] Uri address)
         {
             var history = _runtime.Container.GetInstance<MessageHistory>();
@@ -73,12 +72,12 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = await history.WatchAsync(async () =>
+            var waiter = history.Watch(async () =>
             {
                 await bus().Send(address, message).ConfigureAwait(false);
-            }).ConfigureAwait(false);
+            });
 
-            waiter.Task.Wait(5.Seconds());
+            waiter.Wait(5.Seconds());
         }
 
         private IServiceBus bus()

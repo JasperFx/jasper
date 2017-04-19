@@ -31,7 +31,7 @@ namespace JasperBus.Runtime
 
             foreach (var channel in channels)
             {
-                var sent = await _channels.Send(envelope, channel, _serializer);
+                var sent = await _channels.Send(envelope, channel, _serializer).ConfigureAwait(false);
                 Logger.Sent(sent);
             }
 
@@ -48,7 +48,7 @@ namespace JasperBus.Runtime
 
             foreach (var channel in channels)
             {
-                var sent = await _channels.Send(envelope, channel, _serializer, callback);
+                var sent = await _channels.Send(envelope, channel, _serializer, callback).ConfigureAwait(false);
                 Logger.Sent(sent);
             }
 

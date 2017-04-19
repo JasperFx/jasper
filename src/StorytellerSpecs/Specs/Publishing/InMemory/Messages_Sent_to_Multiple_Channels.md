@@ -1,7 +1,7 @@
 # Messages Sent to Multiple Channels
 
 -> id = 052488cb-9641-44b3-9849-0e59109feec5
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-04-18T20:49:23.6930357Z
 -> tags = 
