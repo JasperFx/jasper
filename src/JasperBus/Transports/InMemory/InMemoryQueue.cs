@@ -12,7 +12,7 @@ namespace JasperBus.Transports.InMemory
 {
     public class InMemoryQueue : IDisposable
     {
-        private readonly IDictionary<Uri, BufferBlock<InMemoryMessage>> _buffers = new Dictionary<Uri, BufferBlock<InMemoryMessage>>();
+        private readonly IDictionary<Uri, BroadcastBlock<InMemoryMessage>> _buffers = new Dictionary<Uri, BroadcastBlock<InMemoryMessage>>();
         private readonly InMemorySettings _settings;
 
         public InMemoryQueue(InMemorySettings settings)
@@ -24,9 +24,14 @@ namespace JasperBus.Transports.InMemory
         {
             try
             {
+                var bufferOptions = new DataflowBlockOptions
+                {
+                    BoundedCapacity = _settings.BufferCapacity
+                };
+
                 foreach (var node in nodes)
                 {
-                    _buffers.Add(node.Uri, new BufferBlock<InMemoryMessage>());
+                    _buffers.Add(node.Uri, new BroadcastBlock<InMemoryMessage>(_ => _, bufferOptions));
                 }
             }
             catch (Exception e)
@@ -62,10 +67,13 @@ namespace JasperBus.Transports.InMemory
 
         public void ListenForMessages(Uri destination, IReceiver receiver)
         {
-            _buffers[destination].LinkTo(new ActionBlock<InMemoryMessage>(message =>
+            var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
+            var actionBlock = new ActionBlock<InMemoryMessage>(message =>
             {
                 return receiver.Receive(message.Data, message.Headers, new InMemoryCallback(this, message, destination));
-            }), new DataflowLinkOptions { PropagateCompletion = true });
+            });
+
+            _buffers[destination].LinkTo(actionBlock, linkOptions);
         }
 
         public void Dispose()
