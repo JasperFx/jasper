@@ -38,7 +38,6 @@ namespace StorytellerSpecs.Fixtures.InMemory
         public override void SetUp()
         {
             _registry = new JasperBusRegistry();
-            _registry.UseInMemoryTransport();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
         }
 

@@ -121,8 +121,6 @@ namespace StorytellerSpecs.Fixtures
         public override void SetUp()
         {
             _registry = new JasperBusRegistry();
-            _registry.UseLightningQueuesTransport();
-            _registry.UseInMemoryTransport();
             _registry.Services.AddService<ITransport, StubTransport>();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
 

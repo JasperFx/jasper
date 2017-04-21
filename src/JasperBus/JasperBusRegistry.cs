@@ -44,16 +44,6 @@ namespace JasperBus
             return new ChannelExpression(_feature.Channels, node);
         }
 
-        public void UseInMemoryTransport()
-        {
-            Services.For<ITransport>().Singleton().Add<InMemoryTransport>();
-        }
-
-        public void UseLightningQueuesTransport()
-        {
-            Services.For<ITransport>().Singleton().Add<LightningQueuesTransport>();
-        }
-
         public ChannelExpression ListenForMessagesFrom(string uriString)
         {
             return ListenForMessagesFrom(uriString.ToUri());

@@ -89,17 +89,11 @@ namespace JasperBus.Tests.Stubs
 
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
-        public async Task Send(byte[] data, IDictionary<string, string> headers)
+        public Task Send(byte[] data, IDictionary<string, string> headers)
         {
             var callback = new StubMessageCallback();
             Callbacks.Add(callback);
-
-            if (Receiver != null)
-            {
-                await Receiver?.Receive(data, headers, callback);
-            }
-
-            return;
+            return Receiver?.Receive(data, headers, callback) ?? Task.CompletedTask;
         }
     }
 

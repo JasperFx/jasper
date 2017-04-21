@@ -86,7 +86,7 @@ namespace Jasper
                     assembly = System.Reflection.Assembly.Load(new AssemblyName(possibility));
                     break;
                 }
-                catch (Exception e)
+                catch
                 {
                     // Nothing
                 }

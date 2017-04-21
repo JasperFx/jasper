@@ -23,7 +23,6 @@ namespace JasperBus.Tests.Transports.LightningQueues
 
             with(_ =>
             {
-                _.UseLightningQueuesTransport();
                 _.ListenForMessagesFrom("lq.tcp://localhost:2200/incoming");
                 _.SendMessage<Message1>().To("lq.tcp://localhost:2200/incoming");
 

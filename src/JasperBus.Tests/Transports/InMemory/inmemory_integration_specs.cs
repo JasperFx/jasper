@@ -20,7 +20,6 @@ namespace JasperBus.Tests.Transports.InMemory
         {
             with(_ =>
             {
-                _.UseInMemoryTransport();
                 _.ListenForMessagesFrom("memory://incoming");
                 _.SendMessage<Message1>().To("memory://incoming");
 

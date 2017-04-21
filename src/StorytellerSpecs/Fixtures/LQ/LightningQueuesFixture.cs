@@ -40,7 +40,6 @@ namespace StorytellerSpecs.Fixtures.LQ
         public override void SetUp()
         {
             _registry = new JasperBusRegistry();
-            _registry.UseLightningQueuesTransport();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
         }
 
