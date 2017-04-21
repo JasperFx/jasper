@@ -6,7 +6,7 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>425653b8-eca1-48b5-a27b-07ef4f5694a8</ProjectGuid>
+    <ProjectGuid>d289407f-0a75-4264-9850-6b8cacce745a</ProjectGuid>
     <RootNamespace>DiagnosticsHarness</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>

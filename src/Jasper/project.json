@@ -29,7 +29,7 @@
     "Microsoft.Extensions.Configuration": "1.1.1",
     "Microsoft.Extensions.Configuration.Abstractions": "1.1.1",
     "Microsoft.Extensions.Configuration.Binder": "1.1.1",
-    "Microsoft.Extensions.Configuration.Json": "1.1.1",
+    "Microsoft.Extensions.Configuration.Json": "1.1.0",
     "StructureMap": "4.4.3"
   },
   "frameworks": {

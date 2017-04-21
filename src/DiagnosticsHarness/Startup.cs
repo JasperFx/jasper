@@ -74,11 +74,11 @@ namespace DiagnosticsHarness
 
              app.Use( async (context, next) =>
              {
-                 bus.Send(new MiddlewareMessage { Message = $"Incoming request: {context.Request.Method}, {context.Request.Path}, {context.Request.Headers}" });
+                 await bus.Send(new MiddlewareMessage { Message = $"Incoming request: {context.Request.Method}, {context.Request.Path}, {context.Request.Headers}" });
 
                  await next();
 
-                 bus.Send(new MiddlewareMessage { Message = $"Outgoing response: {context.Response.StatusCode} {context.Response.Headers}" });
+                 await bus.Send(new MiddlewareMessage { Message = $"Outgoing response: {context.Response.StatusCode} {context.Response.Headers}" });
              });
          }
 
@@ -90,7 +90,7 @@ namespace DiagnosticsHarness
                 context.Response.ContentType = "text/html";
                 await context.Response.WriteAsync("error endpoint");
 
-                bus.Send(new AMessageThatWillError());
+                await bus.Send(new AMessageThatWillError());
              }));
          }
 
@@ -123,7 +123,7 @@ namespace DiagnosticsHarness
             context.Response.ContentType = "text/html";
             await context.Response.WriteAsync("error endpoint");
 
-            _bus.Send(new AMessageThatWillError());
+            await _bus.Send(new AMessageThatWillError());
         }
     }
 }
