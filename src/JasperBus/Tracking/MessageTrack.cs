@@ -7,21 +7,21 @@ namespace JasperBus.Tracking
 
     public class MessageTrack
     {
-        public static string ToKey(string correlationId, string activity)
+        public static string ToKey(Envelope envelope, string activity)
         {
-            return $"{correlationId}/{activity}";
+            return $"{envelope.CorrelationId}/{envelope.Destination}/{activity}";
         }
 
         public string CorrelationId { get; }
         public string Activity { get; }
         public DateTime Recorded { get; } = DateTime.UtcNow;
 
-        public MessageTrack(string correlationId, string activity)
+        public MessageTrack(Envelope envelope, string activity)
         {
-            CorrelationId = correlationId;
+            CorrelationId = envelope.CorrelationId;
             Activity = activity;
 
-            Key = ToKey(correlationId, activity);
+            Key = ToKey(envelope, activity);
         }
 
         public string Key { get; }

@@ -54,7 +54,7 @@ namespace JasperBus.Tracking
 
         public void Complete(Envelope envelope, string activity, Exception ex = null)
         {
-            var key = MessageTrack.ToKey(envelope.CorrelationId, activity);
+            var key = MessageTrack.ToKey(envelope, activity);
             lock (_lock)
             {
                 if (_outstanding.ContainsKey(key))
@@ -73,7 +73,7 @@ namespace JasperBus.Tracking
 
         public void Start(Envelope envelope, string activity)
         {
-            var track = new MessageTrack(envelope.CorrelationId, activity);
+            var track = new MessageTrack(envelope, activity);
             lock (_lock)
             {
                 if (_outstanding.ContainsKey(track.Key))
