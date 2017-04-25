@@ -7,9 +7,6 @@ namespace Jasper.Codegen
     {
         GeneratedClass ToClass(IGenerationConfig config);
 
-        [Obsolete("going to get rid of this one")]
-        IGenerationModel ToGenerationModel(IGenerationConfig config);
-
         string SourceCode { get; set; }
 
         T Create(Type[] types, IContainer container);

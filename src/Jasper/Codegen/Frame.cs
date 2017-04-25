@@ -28,15 +28,15 @@ namespace Jasper.Codegen
 
         public virtual IEnumerable<Variable> Creates => creates;
 
-        public abstract void GenerateCode(IGeneratedMethod method, ISourceWriter writer);
+        public abstract void GenerateCode(GeneratedMethod method, ISourceWriter writer);
 
-        public void ResolveVariables(IGeneratedMethod method)
+        public void ResolveVariables(GeneratedMethod method)
         {
             var variables = resolveVariables(method);
             uses.AddRange(variables);
         }
 
-        protected virtual IEnumerable<Variable> resolveVariables(IGeneratedMethod chain)
+        protected virtual IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             yield break;
         }

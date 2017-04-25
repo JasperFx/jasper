@@ -16,13 +16,13 @@ namespace JasperBus.Model
             _messages = messages;
         }
 
-        public override void GenerateCode(IGeneratedMethod method, ISourceWriter writer)
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write($"{_context.Usage}.{nameof(IInvocationContext.EnqueueCascading)}({_messages.Usage});");
             Next?.GenerateCode(method, writer);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(IGeneratedMethod chain)
+        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             _context = chain.FindVariable(typeof(IInvocationContext));
 

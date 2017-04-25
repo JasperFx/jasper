@@ -53,13 +53,6 @@ namespace JasperBus.Model
 
         public List<MethodCall> Handlers = new List<MethodCall>();
 
-        public IGenerationModel ToGenerationModel(IGenerationConfig config)
-        {
-            var frames = determineFrames();
-
-            return new MessageHandlerGenerationModel(TypeName, MessageType, config, frames);
-        }
-
         private List<Frame> determineFrames()
         {
             if (!Handlers.Any())

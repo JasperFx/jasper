@@ -14,7 +14,7 @@ namespace Jasper.Codegen.StructureMap
             uses.Add(parent);
         }
 
-        public override void GenerateCode(IGeneratedMethod method, ISourceWriter writer)
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write($"var {Service.Usage} = {StructureMapServices.Nested.Usage}.GetInstance<{Service.VariableType.NameInCode()}>();");
             Next?.GenerateCode(method, writer);

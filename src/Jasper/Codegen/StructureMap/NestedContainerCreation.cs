@@ -11,7 +11,7 @@ namespace Jasper.Codegen.StructureMap
             Wraps = true;
         }
 
-        public override void GenerateCode(IGeneratedMethod method, ISourceWriter writer)
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.UsingBlock("var nested = _root.GetNestedContainer()", w => Next?.GenerateCode(method, writer));
         }

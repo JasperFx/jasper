@@ -36,7 +36,7 @@ namespace JasperBus.Tests.Bootstrapping
         {
         }
 
-        public override void GenerateCode(IGeneratedMethod method, ISourceWriter writer)
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write("// Just a comment that SimpleWrapper was there");
 

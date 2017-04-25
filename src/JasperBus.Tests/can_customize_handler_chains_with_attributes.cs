@@ -25,18 +25,18 @@ namespace JasperBus.Tests
         public void apply_attribute_on_method()
         {
             var chain = HandlerChain.For<FakeHandler1>(x => x.Handle(null));
-            var model = chain.ToGenerationModel(theConfig);
+            var model = chain.ToClass(theConfig);
 
-            model.Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
+            model.Methods.Single().Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
         }
 
         [Fact]
         public void apply_attribute_on_class()
         {
             var chain = HandlerChain.For<FakeHandler2>(x => x.Handle(null));
-            var model = chain.ToGenerationModel(theConfig);
+            var model = chain.ToClass(theConfig);
 
-            model.Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
+            model.Methods.Single().Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
         }
 
 
@@ -76,7 +76,7 @@ namespace JasperBus.Tests
         {
         }
 
-        public override void GenerateCode(IGeneratedMethod method, ISourceWriter writer)
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write("// fake frame here");
             Next?.GenerateCode(method, writer);

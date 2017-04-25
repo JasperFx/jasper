@@ -70,13 +70,13 @@ namespace JasperBus.Tests.Compilation
             _session = new Variable(typeof(IFakeSession), "session", this);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(IGeneratedMethod chain)
+        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             _store = chain.FindVariable(typeof(IFakeStore));
             yield return _store;
         }
 
-        public override void GenerateCode(IGeneratedMethod method, ISourceWriter writer)
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write($"BLOCK:using (var {_session.Usage} = {_store.Usage}.OpenSession())");
             Next?.GenerateCode(method, writer);

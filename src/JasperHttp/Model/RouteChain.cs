@@ -54,19 +54,6 @@ namespace JasperHttp.Model
             ResourceType = action.ReturnVariable?.VariableType;
         }
 
-        public IGenerationModel ToGenerationModel(IGenerationConfig config)
-        {
-            // TODO -- apply conneg policies here
-            // TODO -- look for attributes
-            // TODO -- add extra frames
-            // TODO -- return the Route generation model
-            var frames = new List<Frame>();
-            frames.Add(Action);
-
-
-            return new RouteHandlerGenerationModel(TypeName, config, frames);
-        }
-
         public string SourceCode { get; set; }
 
         public RouteHandler Create(Type[] types, IContainer container)

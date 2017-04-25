@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Codegen.Compilation;
-using Jasper.Codegen.New;
 using Jasper.Internal;
 using StructureMap;
 

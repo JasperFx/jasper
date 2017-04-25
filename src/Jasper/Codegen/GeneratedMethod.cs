@@ -7,7 +7,7 @@ using Jasper.Util;
 
 namespace Jasper.Codegen
 {
-    public class GeneratedMethod : IGeneratedMethod
+    public class GeneratedMethod
     {
         // TODO -- add an option for a static method
 
@@ -53,6 +53,7 @@ namespace Jasper.Codegen
 
             writer.Write($"BLOCK:public {returnValue} {MethodName}({arguments})");
 
+            
             Top.GenerateCode(this, writer);
 
             if (AsyncMode == AsyncMode.ReturnCompletedTask)
