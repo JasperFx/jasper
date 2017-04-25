@@ -1,44 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Baseline;
-using Jasper.Internal;
+using Jasper.Codegen.Compilation;
 using Jasper.Util;
 
 namespace Jasper.Codegen
 {
-    [Obsolete("Replacing w/ more generalized GeneratedClass/GeneratedMethod classes")]
-    public abstract class GenerationModel<T> : IGenerationModel
+    public class GeneratedMethod : IGeneratedMethod
     {
-        public IGenerationConfig Config { get; }
-        public IList<Frame> Frames { get; }
-        private readonly IVariableSource _specific;
+        // TODO -- add an option for a static method
+
+        private readonly Argument[] _arguments;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
 
-        protected GenerationModel(string className, string inputName, IVariableSource specific, IGenerationConfig config, IList<Frame> frames)
+        public string MethodName { get; }
+
+        public GeneratedMethod(string methodName, Argument[] arguments, IList<Frame> frames)
         {
             if (!frames.Any())
             {
                 throw new ArgumentOutOfRangeException(nameof(frames), "Cannot be an empty list");
             }
 
-            var handlerType = typeof(T).FindInterfaceThatCloses(typeof(IHandler<>));
-            if (handlerType == null)
+            _arguments = arguments;
+            MethodName = methodName;
+            Frames = frames;
+        }
+
+
+        public bool Overrides { get; set; }
+        public bool Virtual { get; set; }
+
+        public void WriteMethod(ISourceWriter writer)
+        {
+            // TODO -- needs to be able to do something besides Task
+            // TODO -- specify the return type
+            // TODO -- build synchronous methods?
+            var returnValue = AsyncMode == AsyncMode.AsyncTask
+                ? "async Task"
+                : "Task";
+
+            if (Overrides)
             {
-                throw new ArgumentOutOfRangeException(nameof(T), $"Type {typeof(T).FullName} does not implement IHandler<T>");
+                returnValue = "override " + returnValue;
             }
 
-            ClassName = className;
-            Config = config;
-            Frames = frames;
-            _specific = specific;
+            var arguments = Arguments.Select(x => x.Declaration).Join(", ");
 
-            var inputType = handlerType.GetGenericArguments().Single();
 
-            InputVariable = new Variable(inputType, inputName);
+            // TODO -- pay attention to the Visibility
 
-            var compiled = compileFrames(frames);
+            writer.Write($"BLOCK:public {returnValue} {MethodName}({arguments})");
+
+            Top.GenerateCode(this, writer);
+
+            if (AsyncMode == AsyncMode.ReturnCompletedTask)
+            {
+                writer.Write("return Task.CompletedTask;");
+            }
+
+            writer.FinishBlock();
+
+
+        }
+
+        public void ArrangeFrames(GeneratedClass @class)
+        {
+            _class = @class;
+
+            var compiled = compileFrames(Frames);
 
             if (compiled.All(x => !x.IsAsync))
             {
@@ -52,6 +83,11 @@ namespace Jasper.Codegen
             Top = chainFrames(compiled);
         }
 
+
+        public AsyncMode AsyncMode { get; private set; } = AsyncMode.AsyncTask;
+
+        public Frame Top { get; private set; }
+
         private Frame[] compileFrames(IList<Frame> frames)
         {
             // Step 1, resolve all the necessary variables
@@ -62,7 +98,6 @@ namespace Jasper.Codegen
 
             // Step 2, calculate dependencies
             var dependencies = new DependencyGatherer(frames);
-
             findInjectedFields(dependencies);
 
             // Step 3, gather any missing frames and
@@ -74,6 +109,8 @@ namespace Jasper.Codegen
             // Step 4, topological sort in dependency order
             return frames.TopologicalSort(x => dependencies.Dependencies[x], true).ToArray();
         }
+
+        public InjectedField[] Fields { get; protected set; } = new InjectedField[0];
 
         private void findInjectedFields(DependencyGatherer dependencies)
         {
@@ -101,13 +138,14 @@ namespace Jasper.Codegen
             return frames[0];
         }
 
-        public Variable InputVariable { get; }
-        public Frame Top { get; }
+        public IList<Frame> Frames { get; }
 
-        public string ClassName { get; }
-        public Type BaseType => typeof(T);
+        public IEnumerable<Argument> Arguments => _arguments;
 
-        public AsyncMode AsyncMode { get; } = AsyncMode.AsyncTask;
+        public Visibility Visibility { get; set; } = Visibility.Public;
+
+        public readonly IList<Variable> DerivedVariables = new List<Variable>();
+        private GeneratedClass _class;
 
         public Variable FindVariable(Type type)
         {
@@ -115,19 +153,21 @@ namespace Jasper.Codegen
             {
                 return _variables[type];
             }
+
             var variable = findVariable(type);
             _variables.Add(type, variable);
 
             return variable;
         }
 
+        public readonly IList<IVariableSource> Sources = new List<IVariableSource>();
+
         private Variable findVariable(Type type)
         {
-            if (type == InputVariable.VariableType) return InputVariable;
-
-            if (_specific.Matches(type))
+            var argument = Arguments.Concat(DerivedVariables).FirstOrDefault(x => x.VariableType == type);
+            if (argument != null)
             {
-                return _specific.Create(type);
+                return argument;
             }
 
             var created = Frames.SelectMany(x => x.Creates).FirstOrDefault(x => x.VariableType == type);
@@ -136,17 +176,17 @@ namespace Jasper.Codegen
                 return created;
             }
 
-
-            var source = Config.Sources.FirstOrDefault(x => x.Matches(type));
-            if (source == null)
+            var source = Sources.Concat(_class.Config.Sources).FirstOrDefault(x => x.Matches(type));
+            if (source != null)
             {
-                throw new ArgumentOutOfRangeException(nameof(type),
-                    $"Jasper doesn't know how to build a variable of type '{type.FullName}'");
+                return source.Create(type);
             }
 
-            return source.Create(type);
-        }
 
-        public InjectedField[] Fields { get; protected set; } = new InjectedField[0];
+            throw new ArgumentOutOfRangeException(nameof(type),
+                $"Jasper doesn't know how to build a variable of type '{type.FullName}'");
+
+
+        }
     }
 }

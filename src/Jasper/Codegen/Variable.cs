@@ -8,6 +8,13 @@ namespace Jasper.Codegen
 {
     public class Variable
     {
+        public static Variable[] VariablesForProperties<T>(string rootArgName)
+        {
+            return typeof(T).GetProperties().Where(x => x.CanRead)
+                .Select(x => new Variable(x.PropertyType, $"{rootArgName}.{x.Name}"))
+                .ToArray();
+        }
+
         public static Variable For<T>()
         {
             return new Variable(typeof(T), DefaultArgName(typeof(T)));
@@ -69,6 +76,27 @@ namespace Jasper.Codegen
         public override string ToString()
         {
             return $"{nameof(VariableType)}: {VariableType}, {nameof(Usage)}: {Usage}";
+        }
+
+        protected bool Equals(Variable other)
+        {
+            return Equals(VariableType, other.VariableType) && string.Equals(Usage, other.Usage);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Variable) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((VariableType != null ? VariableType.GetHashCode() : 0) * 397) ^ (Usage != null ? Usage.GetHashCode() : 0);
+            }
         }
     }
 }

@@ -7,12 +7,17 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
 using JasperHttp.Routing;
+using Microsoft.AspNetCore.Http;
 using StructureMap;
 
 namespace JasperHttp.Model
 {
+   
+
     public class RouteChain : IGenerates<RouteHandler>
     {
+        public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>("input");
+
         public static RouteChain For<T>(Expression<Action<T>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
@@ -90,6 +95,26 @@ namespace JasperHttp.Model
         public override string ToString()
         {
             return $"{Route.HttpMethod}: {Route.Pattern}";
+        }
+
+        public GeneratedClass ToClass(IGenerationConfig config)
+        {
+            var @class = new GeneratedClass(config, TypeName)
+            {
+                BaseType = typeof(RouteHandler)
+            };
+
+            var method = new GeneratedMethod(nameof(RouteHandler.Handle),
+                new Argument[] {Argument.For<HttpContext>("input")}, new List<Frame> {Action})
+            {
+                Overrides = true
+            };
+
+            method.DerivedVariables.AddRange(HttpContextVariables);
+
+            @class.AddMethod(method);
+
+            return @class;
         }
     }
 }

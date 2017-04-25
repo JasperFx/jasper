@@ -51,7 +51,7 @@ namespace Jasper.Codegen
             }
         }
 
-        private Variable findVariable(ParameterInfo param, IGenerationModel chain)
+        private Variable findVariable(ParameterInfo param, IGeneratedMethod chain)
         {
             var type = param.ParameterType;
 
@@ -65,7 +65,7 @@ namespace Jasper.Codegen
             return chain.FindVariable(type);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(IGenerationModel chain)
+        protected override IEnumerable<Variable> resolveVariables(IGeneratedMethod chain)
         {
             _variables = Method.GetParameters()
                 .Select(param => findVariable(param, chain))
@@ -84,7 +84,7 @@ namespace Jasper.Codegen
         }
 
 
-        public override void GenerateCode(IGenerationModel generationModel, ISourceWriter writer)
+        public override void GenerateCode(IGeneratedMethod method, ISourceWriter writer)
         {
             var callingCode = $"{Method.Name}({_variables.Select(x => x.Usage).Join(", ")})";
             var target = Method.IsStatic
@@ -96,7 +96,7 @@ namespace Jasper.Codegen
 
             if (IsAsync)
             {
-                if (generationModel.AsyncMode == AsyncMode.ReturnFromLastNode)
+                if (method.AsyncMode == AsyncMode.ReturnFromLastNode)
                 {
                     returnValue = "return ";
                 }
@@ -116,7 +116,7 @@ namespace Jasper.Codegen
 
             writer.Write($"{returnValue}{target}.{callingCode}{suffix};");
 
-            Next?.GenerateCode(generationModel, writer);
+            Next?.GenerateCode(method, writer);
         }
 
 

@@ -76,10 +76,10 @@ namespace JasperBus.Tests
         {
         }
 
-        public override void GenerateCode(IGenerationModel generationModel, ISourceWriter writer)
+        public override void GenerateCode(IGeneratedMethod method, ISourceWriter writer)
         {
             writer.Write("// fake frame here");
-            Next?.GenerateCode(generationModel, writer);
+            Next?.GenerateCode(method, writer);
         }
     }
 }

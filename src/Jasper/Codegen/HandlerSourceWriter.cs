@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Baseline;
 using Jasper.Codegen.Compilation;
 using StructureMap.TypeRules;
 
 namespace Jasper.Codegen.New
 {
+    [Obsolete("Will be replaced by the new GeneratedClass/GeneratedMethod classes")]
     public static class HandlerSourceWriter
     {
         public static void Write(IGenerationModel generationModel, ISourceWriter writer)

@@ -67,13 +67,10 @@ namespace Jasper.Codegen
 
             foreach (var chain in chains)
             {
-                var generationModel = chain.ToGenerationModel(generation);
+                var @class = chain.ToClass(generation);
 
-
-                // TODO -- figure out how to get the source code for each handler
                 writer.WriteLine($"// START: {chain.TypeName}");
-
-                HandlerSourceWriter.Write(generationModel, writer);
+                @class.Write(writer);
                 writer.WriteLine($"// END: {chain.TypeName}");
 
                 writer.WriteLine("");

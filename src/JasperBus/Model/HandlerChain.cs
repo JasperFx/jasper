@@ -7,6 +7,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
 using JasperBus.ErrorHandling;
+using JasperBus.Runtime.Invocation;
 using StructureMap;
 
 namespace JasperBus.Model
@@ -54,6 +55,13 @@ namespace JasperBus.Model
 
         public IGenerationModel ToGenerationModel(IGenerationConfig config)
         {
+            var frames = determineFrames();
+
+            return new MessageHandlerGenerationModel(TypeName, MessageType, config, frames);
+        }
+
+        private List<Frame> determineFrames()
+        {
             if (!Handlers.Any())
             {
                 throw new InvalidOperationException("No method handlers configured for message type " + MessageType.FullName);
@@ -65,7 +73,7 @@ namespace JasperBus.Model
 
             foreach (var method in configureMethods)
             {
-                method?.Invoke(null, new object[]{this});
+                method?.Invoke(null, new object[] {this});
             }
 
             foreach (var methodCall in Handlers.ToArray())
@@ -82,9 +90,7 @@ namespace JasperBus.Model
             var cascadingHandlers = Handlers.Where(x => x.ReturnVariable != null)
                 .Select(x => new CaptureCascadingMessages(x.ReturnVariable, ++i));
 
-            var frames = Wrappers.Concat(Handlers).Concat(cascadingHandlers).ToList();
-
-            return new MessageHandlerGenerationModel(TypeName, MessageType, config, frames);
+            return Wrappers.Concat(Handlers).Concat(cascadingHandlers).ToList();
         }
 
         private HandlerChain(MethodCall @call) : this(@call.Method.MessageType())
@@ -128,6 +134,29 @@ namespace JasperBus.Model
         public override string ToString()
         {
             return $"{MessageType.Name} handled by {Handlers.Select(x => $"{x.HandlerType.Name}.{x.Method.Name}()").Join(", ")}";
+        }
+
+        public GeneratedClass ToClass(IGenerationConfig config)
+        {
+            var @class = new GeneratedClass(config, TypeName)
+            {
+                BaseType = typeof(MessageHandler)
+            };
+
+            var method = new HandleMessageMethod(determineFrames());
+            method.Sources.Add(new MessageHandlerVariableSource(MessageType));
+
+            @class.AddMethod(method);
+
+            return @class;
+        }
+    }
+
+    public class HandleMessageMethod : GeneratedMethod
+    {
+        public HandleMessageMethod(IList<Frame> frames) : base(nameof(MessageHandler.Handle), new Argument[] { Argument.For<IInvocationContext>("context") }, frames)
+        {
+            Overrides = true;
         }
     }
 }
