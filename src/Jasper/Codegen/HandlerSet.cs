@@ -7,7 +7,7 @@ using StructureMap;
 
 namespace Jasper.Codegen
 {
-    public abstract class HandlerSet<TChain, TInput, THandler>
+    public abstract class HandlerSet<TChain, THandler>
         where TChain : IGenerates<THandler>
 
     {

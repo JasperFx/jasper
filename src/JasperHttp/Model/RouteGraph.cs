@@ -10,7 +10,7 @@ using StructureMap;
 
 namespace JasperHttp.Model
 {
-    public class RouteGraph : HandlerSet<RouteChain, HttpContext, RouteHandler>, IEnumerable<RouteChain>
+    public class RouteGraph : HandlerSet<RouteChain, RouteHandler>, IEnumerable<RouteChain>
     {
         public static readonly string Context = "context";
         public readonly Router Router = new Router();
@@ -19,6 +19,7 @@ namespace JasperHttp.Model
 
         protected override RouteChain[] chains => _chains.ToArray();
 
+        // TODO -- Commands & Queries methods. Shortcuts to find routes per method
 
         public void AddRoute(Type handlerType, MethodInfo method)
         {
@@ -35,7 +36,7 @@ namespace JasperHttp.Model
         public void BuildRoutingTree(IGenerationConfig generation, IContainer container)
         {
             var handlers = CompileAndBuildAll(generation, container);
-            
+
             foreach (var handler in handlers)
             {
                 var route = handler.Chain.Route;
