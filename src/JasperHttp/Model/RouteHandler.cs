@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Internal;
 using Microsoft.AspNetCore.Http;
 
 namespace JasperHttp.Model
 {
-    public abstract class RouteHandler : IHandler<HttpContext>
+    public abstract class RouteHandler
     {
         public abstract Task Handle(HttpContext input);
 

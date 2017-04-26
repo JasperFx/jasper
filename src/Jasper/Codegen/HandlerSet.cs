@@ -3,13 +3,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Codegen.Compilation;
-using Jasper.Internal;
 using StructureMap;
 
 namespace Jasper.Codegen
 {
     public abstract class HandlerSet<TChain, TInput, THandler>
-        where THandler : IHandler<TInput>
         where TChain : IGenerates<THandler>
 
     {
