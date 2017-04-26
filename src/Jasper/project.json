@@ -30,7 +30,8 @@
     "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
     "Microsoft.Extensions.Configuration.Binder": "1.1.0",
     "Microsoft.Extensions.Configuration.Json": "1.1.0",
-    "StructureMap": "4.4.3"
+    "StructureMap": "4.4.3",
+    "StructureMap.Microsoft.DependencyInjection": "1.3.0"
   },
   "frameworks": {
     "netstandard1.5": {

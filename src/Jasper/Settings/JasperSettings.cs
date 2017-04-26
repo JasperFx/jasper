@@ -83,6 +83,8 @@ namespace Jasper.Settings
             _registry.Services.ForSingletonOf<ISettingsProvider>().Use(_settingsProvider);
             _registry.Services.Policies.OnMissingFamily<SettingsPolicy>();
 
+            _registry.Services.BakeAspNetCoreServices();
+
             _settingsAlterations.Each(alteration => alteration.Alter(_settingsProvider));
             _registryAlterations.Each(alteration => alteration.Alter(_settingsProvider));
         }
