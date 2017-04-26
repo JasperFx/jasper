@@ -11,7 +11,7 @@
     "AlbaForJasper": { "target": "project" },
     "Shouldly": "2.8.2",
     "NSubstitute": "2.0.2",
-    "Alba": "1.0.0-alpha-39"
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0"
   },
 
   "testRunner": "xunit",

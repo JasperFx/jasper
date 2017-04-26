@@ -6,7 +6,7 @@
 
   "dependencies": {
     "JasperHttp": { "target": "project" },
-    "Alba": "1.0.0",
+    "Alba": "1.1.0",
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"
