@@ -5,6 +5,7 @@ using Jasper.Codegen;
 using Jasper.Configuration;
 using JasperHttp.Configuration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using StructureMap;
 
 namespace JasperHttp

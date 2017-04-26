@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
 using Jasper.Configuration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StructureMap;
-using StructureMap.Configuration.DSL.Expressions;
-using StructureMap.Graph;
-using StructureMap.Pipeline;
 
 namespace JasperHttp.Configuration
 {
@@ -23,7 +18,7 @@ namespace JasperHttp.Configuration
         {
             _services = services;
             _inner = new WebHostBuilder();
-            
+            _inner.ConfigureServices(_ => { _.AddScoped<IHttpContextAccessor, HttpContextAccessor>(); });
         }
 
         public IWebHost Build()

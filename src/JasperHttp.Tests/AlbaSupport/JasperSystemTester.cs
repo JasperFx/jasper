@@ -84,7 +84,7 @@ namespace JasperHttp.Tests.AlbaSupport
             Services.For<SomeSettings>().Use(new SomeSettings {Name = "Texas"});
             feature.Host.UseKestrel();
             feature.Host.UseUrls("http://localhost:5555");
-            feature.Host.ConfigureServices(_ => { _.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); });
+
 
             feature.Host.UseStartup<AlbaTargetAppStartup>();
         }
