@@ -87,7 +87,7 @@ namespace Jasper.Configuration
             }
         }
 
-        private static void Register(this IProfileRegistry registry, IEnumerable<ServiceDescriptor> descriptors)
+        public static void Register(this IProfileRegistry registry, IEnumerable<ServiceDescriptor> descriptors)
         {
             foreach (var descriptor in descriptors)
             {
@@ -95,7 +95,7 @@ namespace Jasper.Configuration
             }
         }
 
-        private static void Register(this IProfileRegistry registry, ServiceDescriptor descriptor)
+        public static void Register(this IProfileRegistry registry, ServiceDescriptor descriptor)
         {
             if (descriptor.ImplementationType != null)
             {

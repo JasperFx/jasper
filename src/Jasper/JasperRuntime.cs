@@ -86,6 +86,7 @@ Questions:
 
             await applyExtensions(registry, assemblies).ConfigureAwait(false);
 
+            registry.Services.BakeAspNetCoreServices();
             registry.Settings.Bootstrap();
 
             var features = registry.Features;
