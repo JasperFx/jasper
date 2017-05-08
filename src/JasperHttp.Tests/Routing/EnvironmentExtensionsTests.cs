@@ -22,7 +22,7 @@ namespace JasperHttp.Tests.Routing
         [Fact]
         public void get_route_data_miss()
         {
-            theContext.Items.Add(EnvironmentExtensions.RouteData, new Dictionary<string, object>());
+            theContext.Items.Add(HttpContextRoutingExtensions.RouteData, new Dictionary<string, object>());
 
             theContext.GetRouteData("foo").ShouldBeNull();
         }
@@ -30,7 +30,7 @@ namespace JasperHttp.Tests.Routing
         [Fact]
         public void get_route_data_hit()
         {
-            theContext.Items.Add(EnvironmentExtensions.RouteData, new Dictionary<string, object> { {"foo", "bar"} });
+            theContext.Items.Add(HttpContextRoutingExtensions.RouteData, new Dictionary<string, object> { {"foo", "bar"} });
 
             theContext.GetRouteData("foo").ShouldBe("bar");
         }
@@ -54,7 +54,7 @@ namespace JasperHttp.Tests.Routing
         public void get_route_data_from_environment()
         {
             var routeValues = new Dictionary<string, object> { { "foo", "bar" } };
-            theContext.Items.Add(EnvironmentExtensions.RouteData, routeValues);
+            theContext.Items.Add(HttpContextRoutingExtensions.RouteData, routeValues);
 
             theContext.GetRouteData().ShouldBeSameAs(routeValues);
         }
@@ -69,7 +69,7 @@ namespace JasperHttp.Tests.Routing
         public void get_spread_data_from_env()
         {
             var spread = new[] {"a", "b", "c"};
-            theContext.Items.Add(EnvironmentExtensions.SpreadData, spread);
+            theContext.Items.Add(HttpContextRoutingExtensions.SpreadData, spread);
 
             theContext.GetSpreadData().ShouldBeSameAs(spread);
         }
@@ -80,7 +80,7 @@ namespace JasperHttp.Tests.Routing
             var spread = new[] { "a", "b", "c" };
             theContext.SetSpreadData(spread);
 
-            theContext.Items[EnvironmentExtensions.SpreadData].ShouldBeSameAs(spread);
+            theContext.Items[HttpContextRoutingExtensions.SpreadData].ShouldBeSameAs(spread);
 
 
         }

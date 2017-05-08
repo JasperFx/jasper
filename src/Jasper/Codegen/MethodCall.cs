@@ -62,7 +62,8 @@ namespace Jasper.Codegen
                 return new CastVariable(inner, type);
             }
 
-            return chain.FindVariable(type);
+            Variable variable;
+            return chain.TryFindVariableByName(type, param.Name, out variable) ? variable : chain.FindVariable(type);
         }
 
         protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)

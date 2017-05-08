@@ -192,6 +192,16 @@ namespace Jasper.Codegen
 
         public Variable FindVariableByName(Type dependency, string name)
         {
+            Variable variable;
+            if (TryFindVariableByName(dependency, name, out variable)) return variable;
+
+            throw new ArgumentOutOfRangeException(nameof(dependency), $"Cannot find a matching variable {dependency.FullName} {name}");
+        }
+
+        public bool TryFindVariableByName(Type dependency, string name, out Variable variable)
+        {
+            variable = null;
+
             var sourced = Sources.Where(x => x.Matches(dependency)).Select(x => x.Create(dependency));
             var created = Frames.SelectMany(x => x.Creates);
 
@@ -204,10 +214,13 @@ namespace Jasper.Codegen
                 .FirstOrDefault(x => x.VariableType == dependency && x.Usage == name);
 
 
+            if (candidate != null)
+            {
+                variable = candidate;
+                return true;
+            }
 
-            if (candidate != null) return candidate;
-
-            throw new ArgumentOutOfRangeException(nameof(dependency), $"Cannot find a matching variable {dependency.FullName} {name}");
+            return false;
         }
     }
 }

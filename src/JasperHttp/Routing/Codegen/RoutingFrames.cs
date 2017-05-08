@@ -94,7 +94,7 @@ namespace JasperHttp.Routing.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.WriteLine($"var {Name} = {RoutingFrames.Segments}[{Position}]");
+            writer.WriteLine($"var {Name} = {RoutingFrames.Segments}[{Position}];");
             writer.BlankLine();
 
             Next?.GenerateCode(method, writer);
