@@ -6,11 +6,17 @@ namespace Jasper.Configuration
 {
     public sealed class StructureMapServiceProvider : IServiceProvider, ISupportRequiredService, IDisposable
     {
+        private JasperRuntime _runtime;
+
         public StructureMapServiceProvider(IContainer container)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
 
             Container = container;
+            if (Container.Role == ContainerRole.Root)
+            {
+                _runtime = Container.GetInstance<JasperRuntime>();
+            }
         }
 
         private IContainer Container { get; }
@@ -34,8 +40,7 @@ namespace Jasper.Configuration
 
         public void Dispose()
         {
-            var runtime = Container.GetInstance<JasperRuntime>();
-            runtime.Dispose();
+            _runtime?.Dispose();
         }
     }
 }

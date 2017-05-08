@@ -108,10 +108,14 @@ namespace Jasper
         }
 
         public bool IsDisposed { get; private set; }
+        private bool isDisposing;
 
         public void Dispose()
         {
-            if (IsDisposed) return;
+            // Because StackOverflowException's are a drag
+            if (IsDisposed || isDisposing) return;
+
+            isDisposing = true;
 
             foreach (var feature in _registry.Features)
             {
