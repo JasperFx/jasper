@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading;
+using Alba.Stubs;
 using JasperHttp.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
@@ -46,6 +47,12 @@ namespace JasperHttp.Tests.Model
         public void can_find_cancellation_token()
         {
             matchesAndCanCreate<CancellationToken>();
+        }
+
+        [Fact]
+        public void can_find_variable_for_string_array_segments()
+        {
+            matchesAndCanCreate<string[]>();
         }
     }
 }

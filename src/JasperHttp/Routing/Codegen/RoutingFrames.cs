@@ -87,7 +87,10 @@ namespace JasperHttp.Routing.Codegen
             Variable = new Variable(typeof(string), Name, this);
         }
 
-        public override IEnumerable<Variable> Creates { get; }
+        public override IEnumerable<Variable> Creates
+        {
+            get { yield return Variable; }
+        }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {

@@ -16,8 +16,6 @@ namespace JasperBus.Tests.Compilation
             var chain = Graph.ChainFor<Message1>();
             var call = chain.Handlers.First(x => x.HandlerType == typeof(ThingWithInner.InnerHandler));
             call.ShouldNotBeNull();
-            
-            Console.WriteLine(chain.SourceCode);
         }
     }
 

@@ -54,12 +54,6 @@ namespace JasperHttp.Routing
             throw new NotSupportedException();
         }
 
-        public Frame ToParsingFrame()
-        {
-            // TODO -- will actually do something here as part of GH-87
-            return null;
-        }
-
         public override string ToString()
         {
             return $"spread:{Position}";

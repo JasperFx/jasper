@@ -14,7 +14,5 @@ namespace JasperHttp.Routing
 
         string ReadRouteDataFromMethodArguments(List<object> arguments);
         string SegmentFromParameters(IDictionary<string, object> parameters);
-
-        Frame ToParsingFrame();
     }
 }

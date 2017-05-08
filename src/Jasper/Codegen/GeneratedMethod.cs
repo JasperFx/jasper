@@ -200,6 +200,7 @@ namespace Jasper.Codegen
                 .Concat(DerivedVariables)
                 .Concat(created)
                 .Concat(sourced)
+                .Where(x => x != null)
                 .FirstOrDefault(x => x.VariableType == dependency && x.Usage == name);
 
 
@@ -207,9 +208,6 @@ namespace Jasper.Codegen
             if (candidate != null) return candidate;
 
             throw new ArgumentOutOfRangeException(nameof(dependency), $"Cannot find a matching variable {dependency.FullName} {name}");
-
-
-            throw new NotImplementedException();
         }
     }
 }

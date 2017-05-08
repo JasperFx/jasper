@@ -29,11 +29,6 @@ namespace JasperHttp.Routing
             return Path;
         }
 
-        public Frame ToParsingFrame()
-        {
-            return null;
-        }
-
         public Segment(string path, int position)
         {
             Path = path;

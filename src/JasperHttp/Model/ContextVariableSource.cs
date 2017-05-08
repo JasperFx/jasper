@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Jasper.Codegen;
+using Jasper.Codegen.Compilation;
 using Microsoft.AspNetCore.Http;
 
 namespace JasperHttp.Model
@@ -19,6 +20,9 @@ namespace JasperHttp.Model
                 var variable = new Variable(property.PropertyType, $"{RouteGraph.Context}.{property.Name}");
                 _variables.Add(property.PropertyType, variable);
             }
+
+            var segments = new SegmentsFrame();
+            _variables.Add(typeof(string[]), segments.Segments);
         }
 
         public bool Matches(Type type)
@@ -30,5 +34,26 @@ namespace JasperHttp.Model
         {
             return _variables[type];
         }
+    }
+
+    public class SegmentsFrame : Frame
+    {
+        public SegmentsFrame() : base(false)
+        {
+            Segments = new Variable(typeof(string[]), "segments", this);
+            Creates = new[] {Segments};
+        }
+
+        public Variable Segments { get; }
+
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+        {
+            // TODO -- move most of the code to a helper method
+            writer.WriteLine("var segments = context.Request.PathBase.Split('/')");
+
+            Next?.GenerateCode(method, writer);
+        }
+
+        public override IEnumerable<Variable> Creates { get; } 
     }
 }

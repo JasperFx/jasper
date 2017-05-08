@@ -16,7 +16,7 @@ namespace JasperHttp.Model
 
     public class RouteChain : IGenerates<RouteHandler>
     {
-        public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>("input");
+        public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
 
         public static RouteChain For<T>(Expression<Action<T>> expression)
         {
@@ -91,12 +91,18 @@ namespace JasperHttp.Model
                 BaseType = typeof(RouteHandler)
             };
 
+            var frames = Route.Arguments.Select(x => x.ToParsingFrame()).ToList();
+            frames.Add(Action);
+
+            // TODO -- this usage is awkward. Let's make the frames be a property that's easier to add to
+            // maybe add some method chaining
             var method = new GeneratedMethod(nameof(RouteHandler.Handle),
-                new Argument[] {Argument.For<HttpContext>("input")}, new List<Frame> {Action})
+                new Argument[] {Argument.For<HttpContext>(RouteGraph.Context)}, frames)
             {
                 Overrides = true
             };
 
+            method.Sources.Add(new ContextVariableSource());
             method.DerivedVariables.AddRange(HttpContextVariables);
 
             @class.AddMethod(method);

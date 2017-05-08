@@ -4,10 +4,12 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Baseline.Reflection;
 using Jasper.Codegen;
+using Jasper.Codegen.StructureMap;
 using JasperHttp.Model;
 using JasperHttp.Routing;
 using JasperHttp.Routing.Codegen;
 using Shouldly;
+using StructureMap;
 using Xunit;
 
 namespace JasperHttp.Tests.Model
@@ -47,15 +49,18 @@ namespace JasperHttp.Tests.Model
         [Fact]
         public void adds_route_argument_frames_to_the_handle_method_body()
         {
-            var chain = chainFor(x => x.post_select_Name(null));
+            var chain = chainFor(x => x.post_select_name(null));
 
             chain.Route.Arguments.Single().ShouldBeOfType<RouteArgument>()
                 .Position.ShouldBe(1);
 
-            //var @class = chain.ToClass(new GenerationConfig("SomeApp"));
+            var generationConfig = new GenerationConfig("SomeApp");
+            generationConfig.Sources.Add(new StructureMapServices(new Container()));
 
-            //@class.Methods.Single().Frames.OfType<StringRouteArgument>().Single()
-            //    .Name.ShouldBe("Name");
+            var @class = chain.ToClass(generationConfig);
+
+            @class.Methods.Single().Frames.OfType<StringRouteArgument>().Single()
+                .Name.ShouldBe("name");
 
 
         }
@@ -63,7 +68,7 @@ namespace JasperHttp.Tests.Model
 
     public class RouteChainTarget
     {
-        public void post_select_Name(string name)
+        public void post_select_name(string name)
         {
 
         }

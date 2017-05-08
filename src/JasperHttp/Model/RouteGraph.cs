@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Jasper.Codegen;
 using JasperHttp.Routing;
-using Microsoft.AspNetCore.Http;
 using StructureMap;
 
 namespace JasperHttp.Model
