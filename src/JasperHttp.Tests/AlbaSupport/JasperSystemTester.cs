@@ -7,13 +7,10 @@ using Jasper;
 using Jasper.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shouldly;
-using StructureMap;
 using Xunit;
 
 namespace JasperHttp.Tests.AlbaSupport
@@ -25,18 +22,25 @@ namespace JasperHttp.Tests.AlbaSupport
             theSystem?.Dispose();
         }
 
-        private readonly JasperSystem<AlbaTargetApp> theSystem = JasperSystem.For<AlbaTargetApp>();
+        private ISystemUnderTest theSystem;
 
         [Fact]
         public async Task run_simple_scenario_that_uses_custom_services()
         {
-            var startup = theSystem.Services.GetService<IStartup>();
-            var factory = theSystem.Services.GetService<IServiceProviderFactory<IServiceCollection>>();
+            theSystem = JasperSystem.For<AlbaTargetApp>();
 
+            await theSystem.Scenario(_ =>
+            {
+                _.Get.Url("/");
+                _.StatusCodeShouldBeOk();
+                _.ContentShouldContain("Texas");
+            });
+        }
 
-            theSystem.Services.ShouldBeOfType<StructureMapServiceProvider>();
-
-            
+        [Fact]
+        public async Task run_simple_scenario_bootstrapped_by_Startup()
+        {
+            theSystem = JasperSystem.For<AlbaTargetApp2>();
 
             await theSystem.Scenario(_ =>
             {
@@ -47,16 +51,11 @@ namespace JasperHttp.Tests.AlbaSupport
         }
     }
 
+
+    
+
     internal class AlbaTargetAppStartup
     {
-//        public void ConfigureServices(IServiceCollection services)
-//        {
-//        }
-//
-//        public void ConfigureContainer(IContainer container)
-//        {
-//        }
-
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.Run(c =>
@@ -86,15 +85,25 @@ namespace JasperHttp.Tests.AlbaSupport
 
 
 
-            //feature.Host.UseStartup<AlbaTargetAppStartup>();
-
             Services.For<SomeSettings>().Use(new SomeSettings {Name = "Texas"});
             feature.Host.UseKestrel();
             feature.Host.UseUrls("http://localhost:5555");
-
         }
     }
 
+    public class AlbaTargetApp2 : JasperRegistry
+    {
+        public AlbaTargetApp2()
+        {
+            var feature = Feature<AspNetCoreFeature>();
+
+            feature.Host.UseStartup<AlbaTargetAppStartup>();
+
+            Services.For<SomeSettings>().Use(new SomeSettings { Name = "Texas" });
+            feature.Host.UseKestrel();
+            feature.Host.UseUrls("http://localhost:5555");
+        }
+    }
 
 
     public class SomeSettings
