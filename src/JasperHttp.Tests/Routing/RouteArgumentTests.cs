@@ -183,8 +183,7 @@ namespace JasperHttp.Tests.Routing
         [Fact]
         public void create_route_parsing_from_int_argument()
         {
-            var arg = new RouteArgument("age", 3);
-            arg.ArgType = typeof(int);
+            var arg = new RouteArgument("age", 3) {ArgType = typeof(int)};
 
             var frame = arg.ToParsingFrame().ShouldBeOfType<ParsedRouteArgument>();
             frame.ShouldNotBeNull();
