@@ -7,6 +7,8 @@ using System.Reflection;
 using Baseline;
 using Baseline.Conversion;
 using Baseline.Reflection;
+using Jasper.Codegen;
+using JasperHttp.Routing.Codegen;
 
 namespace JasperHttp.Routing
 {
@@ -22,7 +24,7 @@ namespace JasperHttp.Routing
 
         private Func<string, object> _converter = x => x;
         private Action<object, object> _writeData = (x, y) => { };
-        private Func<object, object> _readData = x => null; 
+        private Func<object, object> _readData = x => null;
 
         private Type _argType;
         private MemberInfo _mappedMember;
@@ -100,7 +102,7 @@ namespace JasperHttp.Routing
                 }
                 else
                 {
-                    throw new ArgumentOutOfRangeException(nameof(value), "We don't serve your kind here! Only FieldInfo and PropertyInfo's are supported");   
+                    throw new ArgumentOutOfRangeException(nameof(value), "We don't serve your kind here! Only FieldInfo and PropertyInfo's are supported");
                 }
 
                 _mappedMember = value;
@@ -114,7 +116,7 @@ namespace JasperHttp.Routing
             MappedMember = field;
         }
 
-        
+
         public void MapToProperty<T>(Expression<Func<T, object>> property)
         {
             MappedMember = ReflectionHelper.GetProperty(property);
@@ -156,6 +158,21 @@ namespace JasperHttp.Routing
             }
 
             return parameters[Key].ToString();
+        }
+
+        public Frame ToParsingFrame()
+        {
+            if (ArgType == null) throw new InvalidOperationException($"Missing an {nameof(ArgType)} value");
+
+
+            if (ArgType == typeof(string)) return new StringRouteArgument(Key, Position);
+
+            if (RoutingFrames.CanParse(ArgType))
+            {
+                return new ParsedRouteArgument(ArgType, Key, Position);
+            }
+
+            throw new InvalidOperationException($"Jasper does not (yet) know how to parse a route argument of type {ArgType.FullName}");
         }
 
         public void SetValues(IDictionary<string, object> routeData, string[] segments)

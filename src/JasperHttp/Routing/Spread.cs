@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jasper.Codegen;
 using Microsoft.AspNetCore.Http;
 
 namespace JasperHttp.Routing
@@ -15,6 +16,7 @@ namespace JasperHttp.Routing
 
         public string SegmentPath { get; } = "...";
         public bool IsParameter => true;
+
         public string SegmentFromModel(object model)
         {
             throw new NotSupportedException();
@@ -50,6 +52,12 @@ namespace JasperHttp.Routing
         public string SegmentFromParameters(IDictionary<string, object> parameters)
         {
             throw new NotSupportedException();
+        }
+
+        public Frame ToParsingFrame()
+        {
+            // TODO -- will actually do something here as part of GH-87
+            return null;
         }
 
         public override string ToString()

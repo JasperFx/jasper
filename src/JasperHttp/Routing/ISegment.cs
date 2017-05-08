@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Jasper.Codegen;
 
 namespace JasperHttp.Routing
 {
@@ -13,5 +14,7 @@ namespace JasperHttp.Routing
 
         string ReadRouteDataFromMethodArguments(List<object> arguments);
         string SegmentFromParameters(IDictionary<string, object> parameters);
+
+        Frame ToParsingFrame();
     }
 }
