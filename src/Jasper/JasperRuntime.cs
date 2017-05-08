@@ -27,6 +27,8 @@ namespace Jasper
                 {
                     _.AddRegistry(serviceRegistry);
                 }
+
+                _.For<JasperRuntime>().Use(this);
             })
             {
                 DisposalLock = DisposalLock.Ignore
@@ -65,22 +67,6 @@ namespace Jasper
 
         private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
         {
-            /*
-Questions:
-* Pre-load settings that we know we're looking for?
-
-
-1. Look for extensions
-2. Apply all extensions
-3. Do all the necessary Settings stuff
-4. Activate each feature in parallel
-5. Apply services
-6. Activate each in parallel
-
-
-
-*/
-
             var assemblies = AssemblyFinder.FindAssemblies(a => a.HasAttribute<JasperModuleAttribute>());
 
 
@@ -121,8 +107,12 @@ Questions:
             }
         }
 
+        public bool IsDisposed { get; private set; }
+
         public void Dispose()
         {
+            if (IsDisposed) return;
+
             foreach (var feature in _registry.Features)
             {
                 feature.Dispose();
@@ -130,6 +120,8 @@ Questions:
 
             Container.DisposalLock = DisposalLock.Unlocked;
             Container?.Dispose();
+
+            IsDisposed = true;
         }
     }
 }

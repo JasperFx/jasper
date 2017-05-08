@@ -4,10 +4,12 @@ using StructureMap;
 
 namespace Jasper.Configuration
 {
-    public sealed class StructureMapServiceProvider : IServiceProvider, ISupportRequiredService
+    public sealed class StructureMapServiceProvider : IServiceProvider, ISupportRequiredService, IDisposable
     {
         public StructureMapServiceProvider(IContainer container)
         {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+
             Container = container;
         }
 
@@ -28,6 +30,12 @@ namespace Jasper.Configuration
         public object GetRequiredService(Type serviceType)
         {
             return Container.GetInstance(serviceType);
+        }
+
+        public void Dispose()
+        {
+            var runtime = Container.GetInstance<JasperRuntime>();
+            runtime.Dispose();
         }
     }
 }
