@@ -23,7 +23,7 @@ namespace JasperHttp.Routing.Codegen
             {typeof(ushort), "ushort"},
             {typeof(uint), "uint"},
             {typeof(ulong), "ulong"},
-            {typeof(Guid), "Guid"},
+            {typeof(Guid), typeof(Guid).FullName},
         };
 
         public static bool CanBeRouteArgument(Type type)
@@ -68,7 +68,14 @@ namespace JasperHttp.Routing.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            throw new NotImplementedException();
+            var alias = RoutingFrames.TypeOutputs[Variable.VariableType];
+            writer.WriteLine($"{alias} {Variable.Usage};");
+            writer.Write($"BLOCK:if (!{alias}.TryParse(segments[{Position}], out {Variable.Usage}))");
+            writer.WriteLine("throw new System.NotImplementedException();");
+            writer.FinishBlock();
+
+            writer.BlankLine();
+            Next?.GenerateCode(method, writer);
         }
 
 

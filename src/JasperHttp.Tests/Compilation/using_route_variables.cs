@@ -22,6 +22,36 @@ namespace JasperHttp.Tests.Compilation
             theContext.Response.Body.Position = 0;
             theContext.Response.Body.ReadAllText().ShouldBe("Thomas");
         }
+
+        [Fact]
+        public async Task run_with_parsed_argument_happy_path()
+        {
+            HandlerWithParameters.Age = 0;
+
+            var segments = new string[] {"go", "43"};
+
+            theContext.SetSegments(segments);
+
+            await Execute(x => x.post_go_age(null, 0));
+
+            HandlerWithParameters.Age.ShouldBe(43);
+        }
+
+        [Fact]
+        public async Task run_with_parsed_Guid_argument_happy_path()
+        {
+            HandlerWithParameters.Guid = Guid.Empty;
+
+            var guid = Guid.NewGuid();
+
+            var segments = new string[] { "go", guid.ToString() };
+
+            theContext.SetSegments(segments);
+
+            await Execute(x => x.post_go_guid(null, Guid.Empty));
+
+            HandlerWithParameters.Guid.ShouldBe(guid);
+        }
     }
 
     public class HandlerWithParameters
@@ -30,7 +60,22 @@ namespace JasperHttp.Tests.Compilation
         {
             return response.WriteAsync(name);
         }
-    }
 
+        public Task post_go_age(HttpResponse response, int age)
+        {
+            Age = age;
+            return response.WriteAsync($"Age is {age}");
+        }
+
+        public Task post_go_guid(HttpResponse response, Guid guid)
+        {
+            Guid = guid;
+            return response.WriteAsync("Got a guid");
+        }
+
+
+        public static Guid Guid { get; set; }
+        public static int Age { get; set; }
+    }
 
 }
