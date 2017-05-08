@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
 
 namespace JasperHttp.Routing.Codegen
 {
@@ -36,84 +34,5 @@ namespace JasperHttp.Routing.Codegen
         {
             return TypeOutputs.ContainsKey(argType);
         }
-    }
-
-
-    public class ParsedRouteArgument : Frame
-    {
-        public int Position { get; }
-
-
-
-        public ParsedRouteArgument(Type type, string name, int position) : base(true)
-        {
-            Position = position;
-            Variable = new Variable(type, name);
-        }
-
-        public Variable Variable { get; }
-
-        public override IEnumerable<Variable> Creates
-        {
-            get { yield return Variable; }
-        }
-
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
-        {
-            Segments = chain.FindVariableByName(typeof(string[]), RoutingFrames.Segments);
-            yield return Segments;
-        }
-
-        public Variable Segments { get; set; }
-
-        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-        {
-            var alias = RoutingFrames.TypeOutputs[Variable.VariableType];
-            writer.WriteLine($"{alias} {Variable.Usage};");
-            writer.Write($"BLOCK:if (!{alias}.TryParse(segments[{Position}], out {Variable.Usage}))");
-            writer.WriteLine("throw new System.NotImplementedException();");
-            writer.FinishBlock();
-
-            writer.BlankLine();
-            Next?.GenerateCode(method, writer);
-        }
-
-
-    }
-
-    public class StringRouteArgument : Frame
-    {
-        public string Name { get; }
-        public int Position { get; }
-
-        public StringRouteArgument(string name, int position) : base(false)
-        {
-            Name = name;
-            Position = position;
-
-            Variable = new Variable(typeof(string), Name, this);
-        }
-
-        public override IEnumerable<Variable> Creates
-        {
-            get { yield return Variable; }
-        }
-
-        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-        {
-            writer.WriteLine($"var {Name} = {RoutingFrames.Segments}[{Position}];");
-            writer.BlankLine();
-
-            Next?.GenerateCode(method, writer);
-        }
-
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
-        {
-            Segments = chain.FindVariableByName(typeof(string[]), RoutingFrames.Segments);
-            yield return Segments;
-        }
-
-        public Variable Variable { get; }
-        public Variable Segments { get; private set; }
     }
 }

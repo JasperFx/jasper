@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Codegen.Compilation;
 using Jasper.Util;
@@ -84,6 +85,12 @@ namespace Jasper.Codegen
             Top = chainFrames(compiled);
         }
 
+        public string ToExitStatement()
+        {
+            if (AsyncMode == AsyncMode.AsyncTask) return "return;";
+
+            return $"return {typeof(Task).FullName}.{nameof(Task.CompletedTask)};";
+        }
 
         public AsyncMode AsyncMode { get; private set; } = AsyncMode.AsyncTask;
 
@@ -224,3 +231,4 @@ namespace Jasper.Codegen
         }
     }
 }
+

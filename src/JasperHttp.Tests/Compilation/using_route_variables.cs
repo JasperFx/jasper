@@ -52,6 +52,25 @@ namespace JasperHttp.Tests.Compilation
 
             HandlerWithParameters.Guid.ShouldBe(guid);
         }
+
+        [Fact]
+        public async Task parse_sad_path_for_pure_sync_chain()
+        {
+            theContext.SetSegments(new string[] {"bad", "garbage"});
+            await Execute(x => x.post_bad_guid(Guid.Empty));
+
+            theContext.Response.StatusCode.ShouldBe(400);
+        }
+
+        [Fact]
+        public async Task parse_sad_path_for_task_returning_methods()
+        {
+            theContext.SetSegments(new string[] {"badasync", "garbage"});
+
+            await Execute(x => x.post_badasync_guid(Guid.Empty));
+
+            theContext.Response.StatusCode.ShouldBe(400);
+        }
     }
 
     public class HandlerWithParameters
@@ -71,6 +90,16 @@ namespace JasperHttp.Tests.Compilation
         {
             Guid = guid;
             return response.WriteAsync("Got a guid");
+        }
+
+        public void post_bad_guid(Guid guid)
+        {
+            
+        }
+
+        public Task post_badasync_guid(Guid guid)
+        {
+            return Task.CompletedTask;
         }
 
 
