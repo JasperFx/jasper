@@ -53,7 +53,7 @@ namespace Jasper.Codegen
 
             writer.Write($"BLOCK:public {returnValue} {MethodName}({arguments})");
 
-            
+
             Top.GenerateCode(this, writer);
 
             if (AsyncMode == AsyncMode.ReturnCompletedTask)
@@ -188,6 +188,28 @@ namespace Jasper.Codegen
                 $"Jasper doesn't know how to build a variable of type '{type.FullName}'");
 
 
+        }
+
+        public Variable FindVariableByName(Type dependency, string name)
+        {
+            var sourced = Sources.Where(x => x.Matches(dependency)).Select(x => x.Create(dependency));
+            var created = Frames.SelectMany(x => x.Creates);
+
+            var candidate = _variables.Values
+                .Concat(Arguments)
+                .Concat(DerivedVariables)
+                .Concat(created)
+                .Concat(sourced)
+                .FirstOrDefault(x => x.VariableType == dependency && x.Usage == name);
+
+
+
+            if (candidate != null) return candidate;
+
+            throw new ArgumentOutOfRangeException(nameof(dependency), $"Cannot find a matching variable {dependency.FullName} {name}");
+
+
+            throw new NotImplementedException();
         }
     }
 }
