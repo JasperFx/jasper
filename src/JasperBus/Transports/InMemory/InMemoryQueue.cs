@@ -41,13 +41,13 @@ namespace JasperBus.Transports.InMemory
             }
         }
 
-        public Task Send(byte[] data, IDictionary<string, string> headers, Uri destination)
+        public Task Send(Envelope envelope, Uri destination)
         {
             var payload = new InMemoryMessage
             {
                 Id = Guid.NewGuid(),
-                Data = data,
-                Headers = headers,
+                Data = envelope.Data,
+                Headers = envelope.Headers,
                 SentAt = DateTime.UtcNow
             };
 
@@ -68,10 +68,8 @@ namespace JasperBus.Transports.InMemory
         public void ListenForMessages(Uri destination, IReceiver receiver)
         {
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
-            var actionBlock = new ActionBlock<InMemoryMessage>(message =>
-            {
-                return receiver.Receive(message.Data, message.Headers, new InMemoryCallback(this, message, destination));
-            });
+            var actionBlock = new ActionBlock<InMemoryMessage>(message => receiver
+                .Receive(message.Data, message.Headers, new InMemoryCallback(this, message, destination)));
 
             _buffers[destination].LinkTo(actionBlock, linkOptions);
         }

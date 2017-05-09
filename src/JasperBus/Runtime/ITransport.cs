@@ -10,9 +10,8 @@ namespace JasperBus.Runtime
     {
         string Protocol { get; }
 
-        // TODO -- going to change this to take in an Envelope instead
-        // Make this responsible for applying the reply uri
-        Task Send(Uri uri, byte[] data, IDictionary<string, string> headers);
+        // TODO -- Make this responsible for applying the reply uri
+        Task Send(Envelope envelope, Uri destination);
 
         /// <summary>
         /// Connect to all queues, set up incoming listeners, and tag nodes

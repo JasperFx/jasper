@@ -53,8 +53,7 @@ namespace JasperBus.Configuration
     // Use a nullo if need be?
     public interface ISender
     {
-        // TODO -- change this to take in Envelope, IEnvelopeSender, ChannelNode
-        Task Send(byte[] data, IDictionary<string, string> headers);
+        Task Send(Envelope envelope);
     }
 
     public class NulloSender : ISender
@@ -68,9 +67,9 @@ namespace JasperBus.Configuration
             _destination = destination;
         }
 
-        public Task Send(byte[] data, IDictionary<string, string> headers)
+        public Task Send(Envelope envelope)
         {
-            return _transport.Send(_destination, data, headers);
+            return _transport.Send(envelope, _destination);
         }
     }
 }

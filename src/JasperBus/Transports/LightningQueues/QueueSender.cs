@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JasperBus.Configuration;
 using System.Threading.Tasks;
+using JasperBus.Runtime;
 
 namespace JasperBus.Transports.LightningQueues
 {
@@ -18,9 +19,9 @@ namespace JasperBus.Transports.LightningQueues
             _subQueue = subQueue;
         }
 
-        public Task Send(byte[] data, IDictionary<string, string> headers)
+        public Task Send(Envelope envelope)
         {
-            _queue.Send(data, headers, _destination, _subQueue);
+            _queue.Send(envelope, _destination, _subQueue);
             return Task.CompletedTask;
         }
     }

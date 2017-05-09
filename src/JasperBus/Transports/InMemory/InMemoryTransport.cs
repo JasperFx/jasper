@@ -24,9 +24,9 @@ namespace JasperBus.Transports.InMemory
 
         public string Protocol => "memory";
 
-        public Task Send(Uri uri, byte[] data, IDictionary<string, string> headers)
+        public Task Send(Envelope envelope, Uri destination)
         {
-            return _queue.Send(data, headers, uri);
+            return _queue.Send(envelope, destination);
         }
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)

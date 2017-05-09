@@ -33,9 +33,9 @@ namespace JasperBus.Tests.Stubs
             return ReplyChannel.Address;
         }
 
-        public Task Send(Uri uri, byte[] data, IDictionary<string, string> headers)
+        public Task Send(Envelope envelope, Uri destination)
         {
-            return Channels[uri].Send(data, headers);
+            return Channels[destination].Send(envelope.Data, envelope.Headers);
         }
 
         public Uri ActualUriFor(ChannelNode node)

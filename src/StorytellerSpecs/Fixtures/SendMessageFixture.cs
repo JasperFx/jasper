@@ -330,9 +330,9 @@ namespace StorytellerSpecs.Fixtures
 
         public string Protocol { get; }
 
-        public Task Send(Uri uri, byte[] data, IDictionary<string, string> headers)
+        public Task Send(Envelope envelope, Uri destination)
         {
-            return Channels[uri].Send(data, headers);
+            return Channels[destination].Send(envelope.Data, envelope.Headers);
         }
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)

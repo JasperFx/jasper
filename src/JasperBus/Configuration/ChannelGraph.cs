@@ -111,7 +111,7 @@ namespace JasperBus.Configuration
 
                     if (callback == null)
                     {
-                        await channel.Sender.Send(sending.Data, sending.Headers).ConfigureAwait(false);
+                        await channel.Sender.Send(sending).ConfigureAwait(false);
                     }
                     else
                     {
@@ -125,7 +125,7 @@ namespace JasperBus.Configuration
 
                     if (callback == null)
                     {
-                        await transport.Send(sending.Destination, sending.Data, sending.Headers).ConfigureAwait(false);
+                        await transport.Send(sending, sending.Destination).ConfigureAwait(false);
                     }
                     else
                     {

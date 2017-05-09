@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JasperBus.Configuration;
 using System.Threading.Tasks;
+using JasperBus.Runtime;
 
 namespace JasperBus.Transports.InMemory
 {
@@ -16,9 +17,9 @@ namespace JasperBus.Transports.InMemory
             _destination = destination;
         }
 
-        public Task Send(byte[] data, IDictionary<string, string> headers)
+        public Task Send(Envelope envelope)
         {
-            return _queue.Send(data, headers, _destination);
+            return _queue.Send(envelope, _destination);
         }
     }
 }

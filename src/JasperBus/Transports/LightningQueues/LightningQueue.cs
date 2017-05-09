@@ -86,13 +86,13 @@ namespace JasperBus.Transports.LightningQueues
             _queue?.Dispose();
         }
 
-        public void Send(byte[] data, IDictionary<string, string> headers, Uri destination, string subQueue)
+        public void Send(Envelope envelope, Uri destination, string subQueue)
         {
             var messagePayload = new OutgoingMessage
             {
                 Id = MessageId.GenerateRandom(),
-                Data = data,
-                Headers = headers,
+                Data = envelope.Data,
+                Headers = envelope.Headers,
                 SentAt = DateTime.UtcNow,
                 Destination = destination,
                 Queue = subQueue,
