@@ -19,7 +19,7 @@ namespace JasperHttp
         public AspNetCoreFeature()
         {
             _services = new ServiceRegistry();
-            _builder = new HostBuilder(_services);
+            _builder = new HostBuilder();
         }
 
         public IWebHostBuilder WebHostBuilder => _builder;

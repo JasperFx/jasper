@@ -5,13 +5,13 @@ using Jasper;
 using JasperBus;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using StructureMap;
 using Xunit;
 
 namespace JasperServer.Tests
 {
-    public class can_bootstrap_a_bus_plus_aspnetcore_app : IDisposable
+    public class can_bootstrap_a_bus_plus_aspnetcore_app_through_jasper_registry : IDisposable
     {
         private readonly JasperRuntime theRuntime = JasperRuntime.For<JasperServerApp>();
 
@@ -74,9 +74,9 @@ namespace JasperServer.Tests
             app.Run(c => c.Response.WriteAsync("Hello from a hybrid Jasper application"));
         }
 
-        public void ConfigureContainer(Registry registry)
+        public void ConfigureServices(IServiceCollection services)
         {
-            registry.For<IFoo>().Use<Foo>();
+            services.AddTransient<IFoo, Foo>();
         }
     }
 

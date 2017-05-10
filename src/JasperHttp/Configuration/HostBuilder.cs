@@ -14,19 +14,14 @@ namespace JasperHttp.Configuration
         private readonly ServiceRegistry _services;
 
 
-        public HostBuilder(ServiceRegistry services)
+        public HostBuilder()
         {
-
-            _services = services;
+            _services = new ServiceRegistry();
             _inner = new WebHostBuilder();
             _inner.ConfigureServices(_ =>
             {
                 _.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
-
-                _.Add(new ServiceDescriptor(typeof(IServiceProviderFactory<Registry>), new StructureMapServiceProviderFactory(_services)));
             });
-
-
         }
 
         public IWebHost Build()
@@ -62,7 +57,12 @@ namespace JasperHttp.Configuration
         internal IWebHost Activate(IContainer container)
         {
             _inner.ConfigureServices(services => JasperStartup.Register(container, services));
-            return _inner.Build();
+            
+            var host = _inner.Build();
+
+            // Annoying, but you do need to do it in this order
+            container.Configure(_ => _.AddRegistry(_services));
+            return host;
         }
     }
 }
