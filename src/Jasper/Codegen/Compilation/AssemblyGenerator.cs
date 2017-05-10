@@ -20,11 +20,14 @@ namespace Jasper.Codegen.Compilation
         private static readonly AssemblyLoadContext _context = new CustomAssemblyLoadContext();
 #endif
         private readonly IList<MetadataReference> _references = new List<MetadataReference>();
+        private readonly IList<Assembly> _assemblies = new List<Assembly>();
 
         public static string[] HintPaths { get; set; }
 
         public AssemblyGenerator()
         {
+            
+
             ReferenceAssemblyContainingType<object>();
             ReferenceAssembly(typeof(Enumerable).GetTypeInfo().Assembly);
 
@@ -34,6 +37,10 @@ namespace Jasper.Codegen.Compilation
 
         public void ReferenceAssembly(Assembly assembly)
         {
+            if (_assemblies.Contains(assembly)) return;
+
+            _assemblies.Add(assembly);
+
             try
             {
                 var referencePath = CreateAssemblyReference(assembly);
