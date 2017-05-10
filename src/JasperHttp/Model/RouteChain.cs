@@ -95,7 +95,7 @@ namespace JasperHttp.Model
                 BaseType = typeof(RouteHandler)
             };
 
-            var frames = determineFrames();
+            var frames = DetermineFrames();
             // TODO -- this usage is awkward. Let's make the frames be a property that's easier to add to
             // maybe add some method chaining
             var method = new GeneratedMethod(nameof(RouteHandler.Handle),
@@ -112,7 +112,7 @@ namespace JasperHttp.Model
             return @class;
         }
 
-        private List<Frame> determineFrames()
+        public List<Frame> DetermineFrames()
         {
             applyAttributesAndConfigureMethods();
             var list = Middleware.ToList();

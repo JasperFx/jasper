@@ -22,6 +22,7 @@ namespace JasperHttp
         public ActionSource()
         {
             _methodFilters = new ActionMethodFilter();
+            _methodFilters.Excludes += m => m.Name == "Configure";
         }
 
         public AppliesToExpression Applies { get; } = new AppliesToExpression();

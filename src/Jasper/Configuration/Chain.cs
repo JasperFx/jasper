@@ -23,6 +23,8 @@ namespace Jasper.Configuration
         IList<Frame> Middleware { get; }
     }
 
+
+
     public abstract class Chain<TChain, TModifyAttribute> : IChain
         where TChain : Chain<TChain, TModifyAttribute>
         where TModifyAttribute : Attribute, IModifyChain<TChain>
@@ -30,12 +32,26 @@ namespace Jasper.Configuration
         public IList<Frame> Middleware { get; } = new List<Frame>();
         protected abstract MethodCall[] handlerCalls();
 
+        private bool isConfigureMethod(MethodInfo method)
+        {
+            if (method.Name != "Configure") return false;
+
+            if (method.GetParameters().Length != 1) return false;
+            if (typeof(TChain).CanBeCastTo(method.GetParameters().Single().ParameterType))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
         protected void applyAttributesAndConfigureMethods()
         {
             var handlers = handlerCalls();
             var configureMethods = handlers.Select(x => x.HandlerType).Distinct()
-                .Select(x => x.GetTypeInfo().GetMethod("Configure",
-                    new[] {typeof(TChain)}));
+                .SelectMany(x => x.GetTypeInfo().GetMethods())
+                .Where(isConfigureMethod);
 
             foreach (var method in configureMethods)
             {
