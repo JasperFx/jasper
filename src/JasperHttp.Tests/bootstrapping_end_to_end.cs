@@ -17,6 +17,7 @@ namespace JasperHttp.Tests
         {
             var registry = new JasperRegistry();
             registry.UseFeature<HttpFeature>();
+            registry.Services.AddService<IFakeStore, FakeStore>();
 
             theRuntime = JasperRuntime.For(registry);
         }

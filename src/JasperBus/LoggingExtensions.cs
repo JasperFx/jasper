@@ -14,5 +14,15 @@ namespace JasperBus
         {
             logging.As<ILogging>().Parent.Services.AddService<IBusLogger>(logger);
         }
+
+        public static void LogTransportEventsWith<T>(this Logging logging) where T : ITransportLogger
+        {
+            logging.As<ILogging>().Parent.Services.AddService<ITransportLogger, T>();
+        }
+
+        public static void LogTransportEventsWith(this Logging logging, ITransportLogger logger)
+        {
+            logging.As<ILogging>().Parent.Services.AddService<ITransportLogger>(logger);
+        }
     }
 }

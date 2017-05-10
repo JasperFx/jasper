@@ -6,7 +6,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/src/DiagnosticsHarness/bin/Debug/netcoreapp1.0/DiagnosticsHarness.dll",
+            "program": "${workspaceRoot}/src/DiagnosticsHarness/bin/Debug/netcoreapp1.1/DiagnosticsHarness.dll",
             "args": [],
             "cwd": "${workspaceRoot}/src/DiagnosticsHarness",
             "stopAtEntry": false,
@@ -31,6 +31,35 @@
             },
             "sourceFileMap": {
                 "/Views": "${workspaceRoot}/src/DiagnosticsHarness/Views"
+            }
+        },
+        {
+            "name": "Launch Diagnostics Service Harness",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/src/DiagnosticsServiceHarness/bin/Debug/netcoreapp1.1/DiagnosticsServiceHarness.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}/src/DiagnosticsServiceHarness",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+                },
+                "osx": {
+                    "command": "open"
+                },
+                "linux": {
+                    "command": "xdg-open"
+                }
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://localhost:3000"
             }
         },
         {

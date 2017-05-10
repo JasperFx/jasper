@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
+using JasperHttp.Routing.Codegen;
 using Microsoft.AspNetCore.Http;
 
 namespace JasperHttp.Routing
@@ -43,11 +44,17 @@ namespace JasperHttp.Routing
             string[] segments;
             var route = SelectRoute(context, out segments);
 
+            context.Items.Add(RoutingFrames.Segments, segments);
+
             // TODO -- add some error handling to 500 here. May also change how segments are being smuggled into the HttpContext
             if (route == null) return _trees[context.Request.Method].NotFound(context);
 
             context.Response.StatusCode = 200;
+
+            context.SetSegments(segments);
+            // TODO -- going to eliminate this.
             route.SetValues(context, segments);
+            
 
             return route.Invoker(context);
         }

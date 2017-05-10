@@ -81,7 +81,7 @@ namespace JasperHttp.Routing
 
             if (!HasSpread) return;
 
-            if (_spread != _segments.Last())
+            if (!Equals(_spread, _segments.Last()))
                 throw new ArgumentOutOfRangeException(nameof(Pattern),
                     "The spread parameter can only be the last segment in a route");
         }
@@ -162,6 +162,7 @@ namespace JasperHttp.Routing
         public IEnumerable<ISegment> Parameters => _segments.Where(x => !(x is Segment)).ToArray();
         public RouteHandler Handler { get; set; }
 
+        [Obsolete("Don't wanna use this in real life")]
         public void SetValues(HttpContext context, string[] segments)
         {
             if (HasParameters)

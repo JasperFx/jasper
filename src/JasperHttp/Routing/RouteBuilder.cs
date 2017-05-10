@@ -51,7 +51,10 @@ namespace JasperHttp.Routing
                 .ToArray();
 
 
+            // TODO -- eliminate the old Fubu input model routing?
             Type inputType = DetermineInputType(method);
+
+            // TODO -- the "can I do this" check needs to be against RoutingFrames.CanParse()
             var hasPrimitives = method.GetParameters().Any(x => x.ParameterType == typeof(Guid) || RouteArgument.Conversions.Has(x.ParameterType));
             if (hasPrimitives)
             {

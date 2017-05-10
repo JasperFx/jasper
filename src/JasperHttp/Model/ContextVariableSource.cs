@@ -19,6 +19,9 @@ namespace JasperHttp.Model
                 var variable = new Variable(property.PropertyType, $"{RouteGraph.Context}.{property.Name}");
                 _variables.Add(property.PropertyType, variable);
             }
+
+            var segments = new SegmentsFrame();
+            _variables.Add(typeof(string[]), segments.Segments);
         }
 
         public bool Matches(Type type)

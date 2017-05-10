@@ -33,6 +33,7 @@ namespace Jasper.Codegen.StructureMap
             return !type.IsSimple() && (_container.Model.HasDefaultImplementationFor(type) || type.IsConcrete());
         }
 
+
         public Variable Create(Type type)
         {
             if (type == typeof(IContainer))

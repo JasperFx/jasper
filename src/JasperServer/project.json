@@ -1,0 +1,23 @@
+﻿{
+  "version": "1.0.0-alpha-*",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "dependencies": {
+     "JasperBus": { "target": "project" },
+     "JasperHttp": {"target": "project"},
+     "StructureMap": "4.4.3",
+     "Microsoft.AspNetCore.Hosting": "1.1.0",
+     "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
+     "Microsoft.AspNetCore.Http.Extensions": "1.1.0",
+     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "dependencies": {
+         "NETStandard.Library": "1.6.1"
+      },
+      "imports": "dnxcore50"
+    }
+  }
+}

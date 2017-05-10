@@ -103,6 +103,7 @@ namespace DiagnosticsHarness
                  SendMessage<AMessageThatWillError>().To(uri);
 
                  Logging.UseConsoleLogging = true;
+                 Logging.LogTransportEventsWith<ConsoleTransportLogger>();
 
                  this.AddDiagnostics();
              }

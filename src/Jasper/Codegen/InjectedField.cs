@@ -1,6 +1,5 @@
 ﻿using System;
 using Jasper.Codegen.Compilation;
-using Jasper.Codegen.New;
 
 namespace Jasper.Codegen
 {

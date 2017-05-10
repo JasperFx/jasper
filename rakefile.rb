@@ -83,6 +83,7 @@ task :test => [:compile] do
 	sh "dotnet test src/Jasper.Testing"
 	sh "dotnet test src/JasperBus.Tests"
 	sh "dotnet test src/JasperHttp.Tests"
+	sh "dotnet test src/JasperServer.Tests"
 end
 
 desc 'npm install for Diagnostics'
@@ -97,6 +98,7 @@ desc 'Build Nuspec packages'
 task :pack do
 	sh "dotnet pack src/Jasper -o artifacts --configuration Release --version-suffix #{build_revision}"
 	sh "dotnet pack src/JasperBus -o artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/JasperServer -o artifacts --configuration Release --version-suffix #{build_revision}"
 	sh "dotnet pack src/Jasper.Diagnostics -o artifacts --configuration Release --version-suffix #{build_revision}"
 end
 

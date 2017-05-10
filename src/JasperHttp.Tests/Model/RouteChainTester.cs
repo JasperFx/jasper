@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Baseline.Reflection;
 using Jasper.Codegen;
+using Jasper.Codegen.StructureMap;
 using JasperHttp.Model;
+using JasperHttp.Routing;
+using JasperHttp.Routing.Codegen;
 using Shouldly;
+using StructureMap;
 using Xunit;
 
 namespace JasperHttp.Tests.Model
@@ -40,13 +45,37 @@ namespace JasperHttp.Tests.Model
             chainFor(x => x.get_resource()).ResourceType.ShouldBe(typeof(Resource1));
             chainFor(x => x.get_resource2()).ResourceType.ShouldBe(typeof(Resource2));
         }
+
+        [Fact]
+        public void adds_route_argument_frames_to_the_handle_method_body()
+        {
+            var chain = chainFor(x => x.post_select_name(null));
+
+            chain.Route.Arguments.Single().ShouldBeOfType<RouteArgument>()
+                .Position.ShouldBe(1);
+
+            var generationConfig = new GenerationConfig("SomeApp");
+            generationConfig.Sources.Add(new StructureMapServices(new Container()));
+
+            var @class = chain.ToClass(generationConfig);
+
+            @class.Methods.Single().Frames.OfType<StringRouteArgument>().Single()
+                .Name.ShouldBe("name");
+
+
+        }
     }
 
     public class RouteChainTarget
     {
+        public void post_select_name(string name)
+        {
+
+        }
+
         public void post_command(Input1 input)
         {
-            
+
         }
 
         public string get_command()
@@ -57,7 +86,7 @@ namespace JasperHttp.Tests.Model
 
         public void put_command()
         {
-            
+
         }
 
         public Task post_input()
@@ -78,12 +107,12 @@ namespace JasperHttp.Tests.Model
 
     public class Input1
     {
-        
+
     }
 
     public class Resource1
     {
-        
+
     }
 
     public class Resource2

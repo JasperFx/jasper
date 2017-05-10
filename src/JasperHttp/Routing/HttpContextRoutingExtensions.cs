@@ -1,12 +1,18 @@
 ﻿using System.Collections.Generic;
+using JasperHttp.Routing.Codegen;
 using Microsoft.AspNetCore.Http;
 
 namespace JasperHttp.Routing
 {
-    public static class EnvironmentExtensions
+    public static class HttpContextRoutingExtensions
     {
         public static readonly string RouteData = "route.data";
         public static readonly string SpreadData = "route.spread";
+
+        public static void SetSegments(this HttpContext context, string[] segments)
+        {
+            context.Items.Add(RoutingFrames.Segments, segments);
+        }
 
         public static void SetRouteData(this HttpContext context, IDictionary<string, object> routeValues)
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline.Reflection;
 using JasperHttp.Routing;
+using JasperHttp.Routing.Codegen;
 using Shouldly;
 using Xunit;
 
@@ -27,8 +28,7 @@ namespace JasperHttp.Tests.Routing
         {
             var routeData = new Dictionary<string, object>();
 
-            var parameter = new RouteArgument("foo", 1);
-            parameter.ArgType = typeof (int);
+            var parameter = new RouteArgument("foo", 1) {ArgType = typeof(int)};
 
             parameter.SetValues(routeData, "a/25/c/d".Split('/'));
 
@@ -70,7 +70,7 @@ namespace JasperHttp.Tests.Routing
             arg.ReadRouteDataFromInput(new InputModel {Key = "Rand"})
                 .ShouldBe("Rand");
 
-            
+
         }
 
         [Fact]
@@ -168,12 +168,38 @@ namespace JasperHttp.Tests.Routing
         }
 
 
+        [Fact]
+        public void create_route_parsing_frame_from_string_argument()
+        {
+            var arg = new RouteArgument("name", 1);
+            arg.ArgType = typeof(string);
+
+            var frame = arg.ToParsingFrame().ShouldBeOfType<StringRouteArgument>();
+            frame.ShouldNotBeNull();
+            frame.Position.ShouldBe(1);
+            frame.Name.ShouldBe("name");
+        }
+
+        [Fact]
+        public void create_route_parsing_from_int_argument()
+        {
+            var arg = new RouteArgument("age", 3) {ArgType = typeof(int)};
+
+            var frame = arg.ToParsingFrame().ShouldBeOfType<ParsedRouteArgument>();
+            frame.ShouldNotBeNull();
+            frame.Position.ShouldBe(3);
+            frame.Variable.Usage.ShouldBe("age");
+
+            frame.Variable.VariableType.ShouldBe(typeof(int));
+        }
+
+
 
         public class SomeEndpoint
         {
             public void go(string name, int number)
             {
-                
+
             }
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
+using Jasper.Configuration;
 using JasperBus.Model;
 using JasperBus.Tests.Runtime;
 using Shouldly;
@@ -34,12 +35,30 @@ namespace JasperBus.Tests.Compilation
             theTracking.OpenedSession.ShouldBeTrue();
             theTracking.CalledSaveChanges.ShouldBeTrue();
         }
+
+        [Fact]
+        public async Task wrapper_applied_by_generic_attribute_executes()
+        {
+            var message = new Message2();
+
+            await Execute(message);
+
+            theTracking.DisposedTheSession.ShouldBeTrue();
+            theTracking.OpenedSession.ShouldBeTrue();
+            theTracking.CalledSaveChanges.ShouldBeTrue();
+        }
     }
 
     public class TransactionalHandler
     {
         [FakeTransaction]
         public void Handle(Message1 message)
+        {
+            
+        }
+
+        [GenericFakeTransaction]
+        public void Handle(Message2 message)
         {
             
         }
@@ -52,11 +71,19 @@ namespace JasperBus.Tests.Compilation
         public bool CalledSaveChanges;
     }
 
+    public class GenericFakeTransactionAttribute : ModifyChainAttribute
+    {
+        public override void Modify(IChain chain)
+        {
+            chain.Middleware.Add(new FakeTransaction());
+        }
+    }
+
     public class FakeTransactionAttribute : ModifyHandlerChainAttribute
     {
         public override void Modify(HandlerChain chain)
         {
-            chain.Wrappers.Add(new FakeTransaction());
+            chain.Middleware.Add(new FakeTransaction());
         }
     }
 
@@ -70,16 +97,16 @@ namespace JasperBus.Tests.Compilation
             _session = new Variable(typeof(IFakeSession), "session", this);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(IGenerationModel chain)
+        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             _store = chain.FindVariable(typeof(IFakeStore));
             yield return _store;
         }
 
-        public override void GenerateCode(IGenerationModel generationModel, ISourceWriter writer)
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write($"BLOCK:using (var {_session.Usage} = {_store.Usage}.OpenSession())");
-            Next?.GenerateCode(generationModel, writer);
+            Next?.GenerateCode(method, writer);
             writer.Write($"{_session.Usage}.{nameof(IFakeSession.SaveChanges)}();");
             writer.FinishBlock();
         }

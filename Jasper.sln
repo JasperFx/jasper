@@ -16,19 +16,23 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "StorytellerSpecs", "src\Sto
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TestMessages", "src\TestMessages\TestMessages.xproj", "{80F9678C-6935-4048-AACF-41642A48282A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DiagnosticsHarness", "src\DiagnosticsHarness\DiagnosticsHarness.xproj", "{D289407F-0A75-4264-9850-6B8CACCE745A}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DiagnosticsHarness", "src\DiagnosticsHarness\DiagnosticsHarness.xproj", "{425653B8-ECA1-48B5-A27B-07EF4F5694A8}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DiagnosticsServiceHarness", "src\DiagnosticsServiceHarness\DiagnosticsServiceHarness.xproj", "{C69FDB0F-4572-41FE-95AA-E6FAEE67AA23}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DiagnosticsHarnessMessages", "src\DiagnosticsHarnessMessages\DiagnosticsHarnessMessages.xproj", "{B0788E02-309A-4FC8-BB46-A22536D572E6}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Jasper.Diagnostics", "src\Jasper.Diagnostics\Jasper.Diagnostics.xproj", "{717D1E6D-015E-4924-89C4-81C1E277A62F}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Jasper.Diagnostics", "src\Jasper.Diagnostics\Jasper.Diagnostics.xproj", "{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "JasperHttp", "src\JasperHttp\JasperHttp.xproj", "{D4A3B31B-67EC-41C3-A514-CD75FAD1E573}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "JasperHttp.Tests", "src\JasperHttp.Tests\JasperHttp.Tests.xproj", "{5CEF50A2-A440-43B5-B535-29DB61624C88}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AlbaForJasper", "src\AlbaForJasper\AlbaForJasper.xproj", "{AA224B46-2625-44F0-8A7F-C1022D4A444C}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "JasperServer", "src\JasperServer\JasperServer.xproj", "{2AC66000-2801-4C3A-979B-1ED5A80191A8}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "JasperServer.Tests", "src\JasperServer.Tests\JasperServer.Tests.xproj", "{6C609491-F6C8-4806-BEEC-E8273A8E9CFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,10 +68,10 @@ Global
 		{80F9678C-6935-4048-AACF-41642A48282A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80F9678C-6935-4048-AACF-41642A48282A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80F9678C-6935-4048-AACF-41642A48282A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D289407F-0A75-4264-9850-6B8CACCE745A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D289407F-0A75-4264-9850-6B8CACCE745A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D289407F-0A75-4264-9850-6B8CACCE745A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D289407F-0A75-4264-9850-6B8CACCE745A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{425653B8-ECA1-48B5-A27B-07EF4F5694A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{425653B8-ECA1-48B5-A27B-07EF4F5694A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{425653B8-ECA1-48B5-A27B-07EF4F5694A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{425653B8-ECA1-48B5-A27B-07EF4F5694A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C69FDB0F-4572-41FE-95AA-E6FAEE67AA23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C69FDB0F-4572-41FE-95AA-E6FAEE67AA23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C69FDB0F-4572-41FE-95AA-E6FAEE67AA23}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -76,10 +80,10 @@ Global
 		{B0788E02-309A-4FC8-BB46-A22536D572E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0788E02-309A-4FC8-BB46-A22536D572E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0788E02-309A-4FC8-BB46-A22536D572E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{717D1E6D-015E-4924-89C4-81C1E277A62F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{717D1E6D-015E-4924-89C4-81C1E277A62F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{717D1E6D-015E-4924-89C4-81C1E277A62F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{717D1E6D-015E-4924-89C4-81C1E277A62F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D4A3B31B-67EC-41C3-A514-CD75FAD1E573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D4A3B31B-67EC-41C3-A514-CD75FAD1E573}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4A3B31B-67EC-41C3-A514-CD75FAD1E573}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -92,6 +96,14 @@ Global
 		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AC66000-2801-4C3A-979B-1ED5A80191A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AC66000-2801-4C3A-979B-1ED5A80191A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AC66000-2801-4C3A-979B-1ED5A80191A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AC66000-2801-4C3A-979B-1ED5A80191A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C609491-F6C8-4806-BEEC-E8273A8E9CFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C609491-F6C8-4806-BEEC-E8273A8E9CFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C609491-F6C8-4806-BEEC-E8273A8E9CFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C609491-F6C8-4806-BEEC-E8273A8E9CFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,11 +25,13 @@ namespace JasperBus.Transports.LightningQueues
         private readonly ConcurrentDictionary<int, LightningQueue> _queues = new ConcurrentDictionary<int, LightningQueue>();
         private readonly LightningQueueSettings _settings;
         private readonly ConcurrentDictionary<Uri, LightningUri> _uris = new ConcurrentDictionary<Uri, LightningUri>();
+        private readonly ITransportLogger[] _loggers;
         private Uri _replyUri;
 
-        public LightningQueuesTransport(LightningQueueSettings settings)
+        public LightningQueuesTransport(LightningQueueSettings settings, ITransportLogger[] loggers)
         {
             _settings = settings;
+            _loggers = loggers;
         }
 
         public void Dispose()
@@ -77,7 +79,7 @@ namespace JasperBus.Transports.LightningQueues
             foreach (var group in groups)
             {
                 // TODO -- need to worry about persistence or not here
-                var queue = _queues.GetOrAdd(group.Key, key => new LightningQueue(group.Key, true, _settings));
+                var queue = _queues.GetOrAdd(group.Key, key => new LightningQueue(group.Key, true, _settings, _loggers));
                 queue.Start(channels, group);
 
                 foreach (var node in group)
@@ -93,9 +95,6 @@ namespace JasperBus.Transports.LightningQueues
                     }
                 }
             }
-
-
-
         }
 
         public Uri DefaultReplyUri()

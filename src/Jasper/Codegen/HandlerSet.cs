@@ -3,14 +3,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Codegen.Compilation;
-using Jasper.Codegen.New;
-using Jasper.Internal;
 using StructureMap;
 
 namespace Jasper.Codegen
 {
-    public abstract class HandlerSet<TChain, TInput, THandler>
-        where THandler : IHandler<TInput>
+    public abstract class HandlerSet<TChain, THandler>
         where TChain : IGenerates<THandler>
 
     {
@@ -67,13 +64,10 @@ namespace Jasper.Codegen
 
             foreach (var chain in chains)
             {
-                var generationModel = chain.ToGenerationModel(generation);
+                var @class = chain.ToClass(generation);
 
-
-                // TODO -- figure out how to get the source code for each handler
                 writer.WriteLine($"// START: {chain.TypeName}");
-
-                HandlerSourceWriter.Write(generationModel, writer);
+                @class.Write(writer);
                 writer.WriteLine($"// END: {chain.TypeName}");
 
                 writer.WriteLine("");

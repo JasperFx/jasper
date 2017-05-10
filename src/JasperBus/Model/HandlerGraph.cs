@@ -4,12 +4,11 @@ using System.Linq;
 using Baseline;
 using Jasper.Codegen;
 using JasperBus.ErrorHandling;
-using JasperBus.Runtime.Invocation;
 using StructureMap;
 
 namespace JasperBus.Model
 {
-    public class HandlerGraph : HandlerSet<HandlerChain, IInvocationContext, MessageHandler>, IHasErrorHandlers
+    public class HandlerGraph : HandlerSet<HandlerChain, MessageHandler>, IHasErrorHandlers
     {
         public static readonly string Context = "context";
 

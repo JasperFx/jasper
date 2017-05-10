@@ -6,13 +6,17 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
+using Jasper.Configuration;
 using JasperHttp.Routing;
+using Microsoft.AspNetCore.Http;
 using StructureMap;
 
 namespace JasperHttp.Model
 {
-    public class RouteChain : IGenerates<RouteHandler>
+    public class RouteChain : Chain<RouteChain, ModifyRouteAttribute>,IGenerates<RouteHandler>
     {
+        public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
+
         public static RouteChain For<T>(Expression<Action<T>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
@@ -49,17 +53,9 @@ namespace JasperHttp.Model
             ResourceType = action.ReturnVariable?.VariableType;
         }
 
-        public IGenerationModel ToGenerationModel(IGenerationConfig config)
+        protected override MethodCall[] handlerCalls()
         {
-            // TODO -- apply conneg policies here
-            // TODO -- look for attributes
-            // TODO -- add extra frames
-            // TODO -- return the Route generation model
-            var frames = new List<Frame>();
-            frames.Add(Action);
-
-
-            return new RouteHandlerGenerationModel(TypeName, config, frames);
+            return new[] {Action};
         }
 
         public string SourceCode { get; set; }
@@ -90,6 +86,41 @@ namespace JasperHttp.Model
         public override string ToString()
         {
             return $"{Route.HttpMethod}: {Route.Pattern}";
+        }
+
+        public GeneratedClass ToClass(IGenerationConfig config)
+        {
+            var @class = new GeneratedClass(config, TypeName)
+            {
+                BaseType = typeof(RouteHandler)
+            };
+
+            var frames = DetermineFrames();
+            // TODO -- this usage is awkward. Let's make the frames be a property that's easier to add to
+            // maybe add some method chaining
+            var method = new GeneratedMethod(nameof(RouteHandler.Handle),
+                new Argument[] {Argument.For<HttpContext>(RouteGraph.Context)}, frames)
+            {
+                Overrides = true
+            };
+
+            method.Sources.Add(new ContextVariableSource());
+            method.DerivedVariables.AddRange(HttpContextVariables);
+
+            @class.AddMethod(method);
+
+            return @class;
+        }
+
+        public List<Frame> DetermineFrames()
+        {
+            applyAttributesAndConfigureMethods();
+            var list = Middleware.ToList();
+            list.AddRange(Route.Arguments.Select(x => x.ToParsingFrame()));
+
+            list.Add(Action);
+
+            return list;
         }
     }
 }

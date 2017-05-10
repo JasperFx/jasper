@@ -5,7 +5,7 @@ namespace Jasper.Codegen
 {
     public interface IGenerates<T>
     {
-        IGenerationModel ToGenerationModel(IGenerationConfig config);
+        GeneratedClass ToClass(IGenerationConfig config);
 
         string SourceCode { get; set; }
 

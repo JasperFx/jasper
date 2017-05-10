@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
   "buildOptions": {
     "emitEntryPoint": true
@@ -10,17 +10,19 @@
     "JasperHttp": { "target": "project" },
     "AlbaForJasper": { "target": "project" },
     "Shouldly": "2.8.2",
-    "NSubstitute": "2.0.2",
-    "Microsoft.NETCore.App": {
-      "type": "platform",
-      "version": "1.0.0"
-    }
+    "NSubstitute": "2.0.2"
   },
 
   "testRunner": "xunit",
 
   "frameworks": {
     "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.1.0"
+        }
+      },
       "imports": "dnxcore50"
     }
   }

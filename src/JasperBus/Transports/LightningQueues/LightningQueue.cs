@@ -21,16 +21,18 @@ namespace JasperBus.Transports.LightningQueues
         private readonly Queue _queue;
         private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public LightningQueue(int port, bool persistent, LightningQueueSettings settings)
+        public LightningQueue(
+            int port,
+            bool persistent,
+            LightningQueueSettings settings,
+            ITransportLogger[] loggers)
         {
             Port = port;
             Persistent = persistent;
             var queueConfiguration = new QueueConfiguration()
                 .ReceiveMessagesAt(new IPEndPoint(IPAddress.Any, port))
-                .ScheduleQueueWith(TaskPoolScheduler.Default);
-
-            // TODO -- bring through whatever the Jasper logging abstraction ends up being here.
-            //.LogWith(new FubuLoggingAdapter(_logger));
+                .ScheduleQueueWith(TaskPoolScheduler.Default)
+                .LogWith(new LightningQueueLoggingAdapter(TransportLogger.Combine(loggers)));
 
             if (persistent)
             {
@@ -67,7 +69,6 @@ namespace JasperBus.Transports.LightningQueues
                 throw new LightningQueueTransportException(new IPEndPoint(IPAddress.Any, Port), e);
             }
         }
-
 
         public void ClearAll()
         {
@@ -117,7 +118,5 @@ namespace JasperBus.Transports.LightningQueues
 
             _subscriptions.Add(disposable);
         }
-
-
     }
 }

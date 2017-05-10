@@ -1,22 +1,16 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using Baseline;
 using Microsoft.Extensions.Configuration;
-using Jasper.Configuration;
-using StructureMap.Graph.Scanning;
-using StructureMap.TypeRules;
 
 namespace Jasper.Settings
 {
     public class JasperSettings
     {
+        private readonly JasperRegistry _registry;
         private readonly IList<IRegistryAlteration> _registryAlterations = new List<IRegistryAlteration>();
         private readonly IList<ISettingsAlteration> _settingsAlterations = new List<ISettingsAlteration>();
         private readonly SettingsProvider _settingsProvider;
-        private readonly JasperRegistry _registry;
 
         public JasperSettings(JasperRegistry registry)
         {
@@ -25,7 +19,7 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        /// Add additional configuration sources
+        ///     Add additional configuration sources
         /// </summary>
         public void Build(Action<IConfigurationBuilder> build)
         {
@@ -33,15 +27,16 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        /// Add a class to settings that does not follow the convention of ending with "Settings"
+        ///     Add a class to settings that does not follow the convention of ending with "Settings"
         /// </summary>
         public void Configure<T>() where T : class, new()
         {
-            _registry.Services.ForSingletonOf(typeof(T)).Use(context => context.GetInstance<ISettingsProvider>().Get<T>());
+            _registry.Services.ForSingletonOf(typeof(T))
+                .Use(context => context.GetInstance<ISettingsProvider>().Get<T>());
         }
 
         /// <summary>
-        /// Configure where a class can find its data, such as a subsection in a file
+        ///     Configure where a class can find its data, such as a subsection in a file
         /// </summary>
         public void Configure<T>(Func<IConfiguration, IConfiguration> config) where T : class, new()
         {
@@ -50,7 +45,7 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        /// Alter a settings object after it is loaded
+        ///     Alter a settings object after it is loaded
         /// </summary>
         public void Alter<T>(Action<T> alteration) where T : class, new()
         {
@@ -58,7 +53,7 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        /// Replace a settings object after it is loaded
+        ///     Replace a settings object after it is loaded
         /// </summary>
         public void Replace<T>(T settings) where T : class, new()
         {
@@ -66,7 +61,7 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        /// Modify the application using loaded settings
+        ///     Modify the application using loaded settings
         /// </summary>
         public void With<T>(Action<T> alteration) where T : class, new()
         {

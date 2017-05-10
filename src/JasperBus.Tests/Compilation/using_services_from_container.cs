@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using JasperBus.Tests.Runtime;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace JasperBus.Tests.Compilation
@@ -38,6 +39,14 @@ namespace JasperBus.Tests.Compilation
         }
     }
 
+    public class TestMessageHandler
+    {
+        // Leave this here, it's just to prove out the recursive assembly references
+        public void Handle(NewUser user)
+        {
+            
+        }
+    }
 
     public class ServiceUsingHandler
     {

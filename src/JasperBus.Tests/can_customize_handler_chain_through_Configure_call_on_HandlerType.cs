@@ -29,7 +29,7 @@ namespace JasperBus.Tests
 
         public static void Configure(HandlerChain chain)
         {
-            chain.Wrappers.Add(new FakeFrame());
+            chain.Middleware.Add(new FakeFrame());
         }
     }
 }
