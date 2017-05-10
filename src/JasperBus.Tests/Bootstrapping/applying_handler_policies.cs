@@ -14,7 +14,7 @@ namespace JasperBus.Tests.Bootstrapping
         {
             with(_ => _.Policies.Global<WrapWithSimple>());
 
-            chainFor<MovieAdded>().Wrappers.OfType<SimpleWrapper>().Any()
+            chainFor<MovieAdded>().Middleware.OfType<SimpleWrapper>().Any()
                 .ShouldBeTrue();
         }
     }
@@ -25,7 +25,7 @@ namespace JasperBus.Tests.Bootstrapping
         {
             foreach (var chain in graph.Chains)
             {
-                chain.Wrappers.Add(new SimpleWrapper());
+                chain.Middleware.Add(new SimpleWrapper());
             }
         }
     }

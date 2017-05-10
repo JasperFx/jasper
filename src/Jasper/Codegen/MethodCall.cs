@@ -51,6 +51,7 @@ namespace Jasper.Codegen
             }
         }
 
+
         private Variable findVariable(ParameterInfo param, GeneratedMethod chain)
         {
             var type = param.ParameterType;

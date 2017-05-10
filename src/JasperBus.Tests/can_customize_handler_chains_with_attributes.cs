@@ -66,7 +66,7 @@ namespace JasperBus.Tests
     {
         public override void Modify(HandlerChain chain)
         {
-            chain.Wrappers.Add(new FakeFrame());
+            chain.Middleware.Add(new FakeFrame());
         }
     }
 

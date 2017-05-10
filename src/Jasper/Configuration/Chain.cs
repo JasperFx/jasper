@@ -1,125 +1,66 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Baseline;
+using Jasper.Codegen;
 
 namespace Jasper.Configuration
 {
-
-
-    public abstract class Chain<T, TChain> : INode<T>, IEnumerable<T>
-            where T : Node<T, TChain>
-            where TChain : Chain<T, TChain>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public abstract class ModifyChainAttribute : Attribute
     {
-        /// <summary>
-        ///   Adds a new Node to the very end of this behavior chain
-        /// </summary>
-        /// <param name = "node"></param>
-        public void AddToEnd(T node)
+        public abstract void Modify(IChain chain);
+    }
+
+    public interface IModifyChain<T> where T : IChain
+    {
+        void Modify(T chain);
+    }
+
+    public interface IChain
+    {
+        IList<Frame> Middleware { get; }
+    }
+
+    public abstract class Chain<TChain, TModifyAttribute> : IChain
+        where TChain : Chain<TChain, TModifyAttribute>
+        where TModifyAttribute : Attribute, IModifyChain<TChain>
+    {
+        public IList<Frame> Middleware { get; } = new List<Frame>();
+        protected abstract MethodCall[] handlerCalls();
+
+        protected void applyAttributesAndConfigureMethods()
         {
-            if (Top == null)
+            var handlers = handlerCalls();
+            var configureMethods = handlers.Select(x => x.HandlerType).Distinct()
+                .Select(x => x.GetTypeInfo().GetMethod("Configure",
+                    new[] {typeof(TChain)}));
+
+            foreach (var method in configureMethods)
             {
-                SetTop(node);
-                return;
+                method?.Invoke(null, new object[] {this});
             }
 
-            Top.AddToEnd(node);
-        }
+            var handlerAtts = handlers.SelectMany(x => x.HandlerType.GetTypeInfo()
+                .GetCustomAttributes<TModifyAttribute>());
+                ;
+            var methodAtts = handlers.SelectMany(x => x.Method.GetCustomAttributes<TModifyAttribute>());
 
-        /// <summary>
-        ///   Adds a new Node of type T to the very end of this
-        ///   behavior chain
-        /// </summary>
-        /// <typeparam name = "T"></typeparam>
-        /// <typeparam name="TNode"></typeparam>
-        /// <returns></returns>
-        public TNode AddToEnd<TNode>() where TNode : T, new()
-        {
-            var node = new TNode();
-            AddToEnd(node);
-            return node;
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            if (Top == null) yield break;
-
-            yield return Top;
-
-            foreach (var node in Top)
+            foreach (var attribute in handlerAtts.Concat(methodAtts))
             {
-                yield return node;
+                attribute.Modify(this.As<TChain>());
             }
-        }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+            var genericHandlerAtts = handlers.SelectMany(x => x.HandlerType.GetTypeInfo()
+                .GetCustomAttributes<ModifyChainAttribute>());
 
+            var genericMethodAtts = handlers.SelectMany(x => x.Method.GetCustomAttributes<ModifyChainAttribute>());
 
-        internal void SetTop(T node)
-        {
-            if (node == null)
+            foreach (var attribute in genericHandlerAtts.Concat(genericMethodAtts))
             {
-                Top = null;
+                attribute.Modify(this);
             }
-            else
-            {
-                node.Previous = null;
-
-                if (Top != null)
-                {
-                    Top.Chain = null;
-                }
-
-                Top = node;
-                node.Chain = this.As<TChain>();
-            }
-        }
-
-        public void InsertFirst(T node)
-        {
-            var previousTop = Top;
-
-            SetTop(node);
-
-            if (previousTop != null)
-            {
-                Top.Next = previousTop;
-            }
-        }
-
-        /// <summary>
-        /// The outermost Node in the chain
-        /// </summary>
-        public T Top { get; private set; }
-
-        /// <summary>
-        /// Sets the specified Node as the outermost node
-        /// in this chain
-        /// </summary>
-        /// <param name="node"></param>
-        public void Prepend(T node)
-        {
-            var next = Top;
-            SetTop(node);
-
-            if (next != null)
-            {
-                Top.Next = next;
-            }
-        }
-
-
-        void INode<T>.AddAfter(T node)
-        {
-            AddToEnd(node);
-        }
-
-        void INode<T>.AddBefore(T node)
-        {
-            throw new NotSupportedException();
         }
     }
 }

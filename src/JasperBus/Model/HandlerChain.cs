@@ -6,13 +6,14 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
+using Jasper.Configuration;
 using JasperBus.ErrorHandling;
 using JasperBus.Runtime.Invocation;
 using StructureMap;
 
 namespace JasperBus.Model
 {
-    public class HandlerChain : IGenerates<MessageHandler>, IHasErrorHandlers
+    public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IGenerates<MessageHandler>, IHasErrorHandlers
     {
         public static HandlerChain For<T>(Expression<Action<T>> expression)
         {
@@ -60,31 +61,20 @@ namespace JasperBus.Model
                 throw new InvalidOperationException("No method handlers configured for message type " + MessageType.FullName);
             }
 
-            var configureMethods = Handlers.Select(x => x.HandlerType).Distinct()
-                .Select(x => x.GetTypeInfo().GetMethod("Configure",
-                    new Type[] {typeof(HandlerChain)}));
-
-            foreach (var method in configureMethods)
-            {
-                method?.Invoke(null, new object[] {this});
-            }
-
-            foreach (var methodCall in Handlers.ToArray())
-            {
-                methodCall.Method.ForAttribute<ModifyHandlerChainAttribute>(att => att.Modify(this));
-            }
-
-            foreach (var handlerType in Handlers.Select(x => x.HandlerType).Distinct().ToArray())
-            {
-                handlerType.ForAttribute<ModifyHandlerChainAttribute>(att => att.Modify(this));
-            }
+            applyAttributesAndConfigureMethods();
 
             var i = 0;
             var cascadingHandlers = Handlers.Where(x => x.ReturnVariable != null)
                 .Select(x => new CaptureCascadingMessages(x.ReturnVariable, ++i));
 
-            return Wrappers.Concat(Handlers).Concat(cascadingHandlers).ToList();
+            return Middleware.Concat(Handlers).Concat(cascadingHandlers).ToList();
         }
+
+        protected override MethodCall[] handlerCalls()
+        {
+            return Handlers.ToArray();
+        }
+
 
         private HandlerChain(MethodCall @call) : this(@call.Method.MessageType())
         {
@@ -121,8 +111,6 @@ namespace JasperBus.Model
 
             Handlers.Add(clone);
         }
-
-        public readonly IList<Frame> Wrappers = new List<Frame>();
 
         public override string ToString()
         {

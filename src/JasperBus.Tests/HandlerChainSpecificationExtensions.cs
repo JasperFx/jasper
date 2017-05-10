@@ -42,7 +42,7 @@ namespace JasperBus.Tests
         public static void ShouldBeWrappedWith<T>(this HandlerChain chain) where T : Frame
         {
             chain.ShouldNotBeNull();
-            chain.Wrappers.OfType<T>().Any().ShouldBeTrue();
+            chain.Middleware.OfType<T>().Any().ShouldBeTrue();
         }
 
         public static void ShouldHandleExceptionWith<TEx, TContinuation>(this HandlerChain chain)
