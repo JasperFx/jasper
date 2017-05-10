@@ -5,6 +5,7 @@ using Jasper;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using JasperBus;
+using JasperHttp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,13 +27,6 @@ namespace JasperServer
         public HostingConfiguration Host => _feature.Host;
     }
 
-    public class HostingConfiguration
-    {
-        public bool UseKestrel { get; set; } = true;
-        public bool UseIIS { get; set; } = true;
-        public int Port { get; set; } = 3000;
-        public string ContentRoot { get; set; } = Directory.GetCurrentDirectory();
-    }
 
     public class HybridServerFeature : IFeature
     {

@@ -22,9 +22,11 @@ namespace JasperHttp.Configuration
             _inner.ConfigureServices(_ =>
             {
                 _.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+
+                _.Add(new ServiceDescriptor(typeof(IServiceProviderFactory<Registry>), new StructureMapServiceProviderFactory(_services)));
             });
 
-           
+
         }
 
         public IWebHost Build()

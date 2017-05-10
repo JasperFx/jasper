@@ -73,7 +73,7 @@ namespace JasperHttp.Tests.AlbaSupport
         {
             var feature = Feature<AspNetCoreFeature>();
 
-            feature.Host.Configure(app =>
+            feature.WebHostBuilder.Configure(app =>
             {
                 app.Run(c =>
                 {
@@ -86,8 +86,8 @@ namespace JasperHttp.Tests.AlbaSupport
 
 
             Services.For<SomeSettings>().Use(new SomeSettings {Name = "Texas"});
-            feature.Host.UseKestrel();
-            feature.Host.UseUrls("http://localhost:5555");
+            feature.WebHostBuilder.UseKestrel();
+            feature.WebHostBuilder.UseUrls("http://localhost:5555");
         }
     }
 
@@ -97,11 +97,11 @@ namespace JasperHttp.Tests.AlbaSupport
         {
             var feature = Feature<AspNetCoreFeature>();
 
-            feature.Host.UseStartup<AlbaTargetAppStartup>();
+            feature.WebHostBuilder.UseStartup<AlbaTargetAppStartup>();
 
             Services.For<SomeSettings>().Use(new SomeSettings { Name = "Texas" });
-            feature.Host.UseKestrel();
-            feature.Host.UseUrls("http://localhost:5555");
+            feature.WebHostBuilder.UseKestrel();
+            feature.WebHostBuilder.UseUrls("http://localhost:5555");
         }
     }
 
