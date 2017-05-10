@@ -6,15 +6,14 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
+using Jasper.Configuration;
 using JasperHttp.Routing;
 using Microsoft.AspNetCore.Http;
 using StructureMap;
 
 namespace JasperHttp.Model
 {
-   
-
-    public class RouteChain : IGenerates<RouteHandler>
+    public class RouteChain : Chain<RouteChain, ModifyRouteAttribute>,IGenerates<RouteHandler>
     {
         public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
 
@@ -54,6 +53,11 @@ namespace JasperHttp.Model
             ResourceType = action.ReturnVariable?.VariableType;
         }
 
+        protected override MethodCall[] handlerCalls()
+        {
+            return new[] {Action};
+        }
+
         public string SourceCode { get; set; }
 
         public RouteHandler Create(Type[] types, IContainer container)
@@ -91,9 +95,7 @@ namespace JasperHttp.Model
                 BaseType = typeof(RouteHandler)
             };
 
-            var frames = Route.Arguments.Select(x => x.ToParsingFrame()).ToList();
-            frames.Add(Action);
-
+            var frames = determineFrames();
             // TODO -- this usage is awkward. Let's make the frames be a property that's easier to add to
             // maybe add some method chaining
             var method = new GeneratedMethod(nameof(RouteHandler.Handle),
@@ -108,6 +110,17 @@ namespace JasperHttp.Model
             @class.AddMethod(method);
 
             return @class;
+        }
+
+        private List<Frame> determineFrames()
+        {
+            applyAttributesAndConfigureMethods();
+            var list = Middleware.ToList();
+            list.AddRange(Route.Arguments.Select(x => x.ToParsingFrame()));
+
+            list.Add(Action);
+
+            return list;
         }
     }
 }
