@@ -17,7 +17,7 @@ namespace JasperHttp.Tests
             var builder = new WebHostBuilder();
             builder.UseKestrel();
             builder.ConfigureServices(x => x.AddSingleton<IService, Service>());
-            builder.AddJasper<BootstrappingApp>();
+            builder.UseJasper<BootstrappingApp>();
 
             theHost = builder.Build();
         }

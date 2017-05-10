@@ -7,12 +7,12 @@ namespace JasperHttp
 {
     public static class JasperWebHostBuilderExtensions
     {
-        public static IWebHostBuilder AddJasper<T>(this IWebHostBuilder builder) where T : JasperRegistry, new()
+        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder) where T : JasperRegistry, new()
         {
-            return builder.AddJasper(new T());
+            return builder.UseJasper(new T());
         }
 
-        public static IWebHostBuilder AddJasper(this IWebHostBuilder builder, JasperRegistry registry)
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
         {
             // TODO -- right now this is assuming that it's registered last, but what if it's not?
 
