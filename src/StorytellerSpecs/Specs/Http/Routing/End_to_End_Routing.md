@@ -1,26 +1,28 @@
 # Router can differentiate between methods
 
 -> id = 2d2a08cd-b0ff-42ef-a004-ae94b337f2dc
--> lifecycle = Regression
+-> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2015-12-04T00:00:00.0000000
+-> last-updated = 2017-05-10T21:13:12.7578854Z
 -> tags = 
 
 [Router]
 |> RoutesAre
     [table]
-    |> RoutesAre-row HttpMethod=GET, Pattern=EMPTY
-    |> RoutesAre-row HttpMethod=POST, Pattern=EMPTY
-    |> RoutesAre-row HttpMethod=DELETE, Pattern=EMPTY
-    |> RoutesAre-row HttpMethod=PUT, Pattern=EMPTY
-    |> RoutesAre-row HttpMethod=HEAD, Pattern=EMPTY
+    |HttpMethod|Pattern|
+    |GET       |EMPTY  |
+    |POST      |EMPTY  |
+    |DELETE    |EMPTY  |
+    |PUT       |EMPTY  |
+    |HEAD      |EMPTY  |
 
 |> TheResultShouldBe
     [table]
-    |> TheResultShouldBe-row HttpMethod=GET, Url=EMPTY, Status=200, Body=GET: /, Arguments=NONE
-    |> TheResultShouldBe-row HttpMethod=POST, Url=EMPTY, Status=200, Body=POST: /, Arguments=NONE
-    |> TheResultShouldBe-row HttpMethod=DELETE, Url=EMPTY, Status=200, Body=DELETE: /, Arguments=NONE
-    |> TheResultShouldBe-row HttpMethod=PUT, Url=EMPTY, Status=200, Body=PUT: /, Arguments=NONE
-    |> TheResultShouldBe-row HttpMethod=HEAD, Url=EMPTY, Status=200, Body=HEAD: /, Arguments=NONE
+    |HttpMethod|Url  |Status|Body     |Arguments|
+    |GET       |EMPTY|200   |GET: /   |NONE     |
+    |POST      |EMPTY|200   |POST: /  |NONE     |
+    |DELETE    |EMPTY|200   |DELETE: /|NONE     |
+    |PUT       |EMPTY|200   |PUT: /   |NONE     |
+    |HEAD      |EMPTY|200   |HEAD: /  |NONE     |
 
 ~~~
