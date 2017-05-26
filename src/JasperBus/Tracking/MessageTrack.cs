@@ -15,11 +15,13 @@ namespace JasperBus.Tracking
         public string CorrelationId { get; }
         public string Activity { get; }
         public DateTime Recorded { get; } = DateTime.UtcNow;
+        public Type MessageType { get; }
 
         public MessageTrack(Envelope envelope, string activity)
         {
             CorrelationId = envelope.CorrelationId;
             Activity = activity;
+            MessageType = envelope.Message?.GetType();
 
             Key = ToKey(envelope, activity);
         }

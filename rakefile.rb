@@ -81,6 +81,7 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing"
+    sh "dotnet test src/JasperBus.Marten.Tests"
 	sh "dotnet test src/JasperBus.Tests"
 	sh "dotnet test src/JasperHttp.Tests"
 	sh "dotnet test src/JasperServer.Tests"
@@ -100,6 +101,7 @@ task :pack do
 	sh "dotnet pack src/JasperBus -o artifacts --configuration Release --version-suffix #{build_revision}"
 	sh "dotnet pack src/JasperServer -o artifacts --configuration Release --version-suffix #{build_revision}"
 	sh "dotnet pack src/Jasper.Diagnostics -o artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/JasperBus.Marten -o artifacts --configuration Release --version-suffix #{build_revision}"
 end
 
 desc "Pushes the Nuget's to MyGet"

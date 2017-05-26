@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reactive.Concurrency;
 using System.Reflection;
-using Baseline.Reflection;
 using Jasper;
 using JasperBus.Configuration;
 using JasperBus.ErrorHandling;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Routing;
 using JasperBus.Runtime.Serializers;
+using JasperBus.Runtime.Subscriptions;
 using StructureMap.TypeRules;
 using JasperBus.Transports.InMemory;
 using JasperBus.Transports.LightningQueues;
@@ -33,6 +30,12 @@ namespace JasperBus
         public Policies Policies => _feature.Policies;
 
         public SerializationExpression Serialization { get; }
+
+        public string NodeName
+        {
+            get { return _feature.Channels.Name; }
+            set { _feature.Channels.Name = value; }
+        }
 
         public IHasErrorHandlers ErrorHandling => Policies;
 
@@ -130,6 +133,84 @@ namespace JasperBus
                 _parent._feature.Channels.AcceptedContentTypes.AddRange(contentTypes);
                 return this;
             }
+        }
+
+        public class SubscriptionExpression
+        {
+            private readonly JasperBusRegistry _parent;
+            private readonly Uri _receiving;
+
+            public SubscriptionExpression(JasperBusRegistry parent, Uri receiving)
+            {
+                _parent = parent;
+                _receiving = receiving;
+
+                parent.Services.AddType(typeof(ISubscriptionRequirements), typeof(SubscriptionRequirements));
+            }
+
+            /// <summary>
+            /// Specify the publishing source of the events you want to subscribe to
+            /// </summary>
+            /// <param name="sourceProperty"></param>
+            /// <returns></returns>
+            public TypeSubscriptionExpression ToSource(string sourceProperty)
+            {
+                return ToSource(sourceProperty.ToUri());
+            }
+
+            /// <summary>
+            /// Specify the publishing source of the events you want to subscribe to
+            /// </summary>
+            /// <param name="sourceProperty"></param>
+            /// <returns></returns>
+            public TypeSubscriptionExpression ToSource(Uri sourceProperty)
+            {
+                var requirement = _receiving == null
+                    ? (ISubscriptionRequirement)new LocalSubscriptionRequirement(sourceProperty)
+                    : new GroupSubscriptionRequirement(sourceProperty, _receiving);
+
+                _parent.Services.AddService(requirement);
+
+                return new TypeSubscriptionExpression(requirement);
+            }
+
+            public class TypeSubscriptionExpression
+            {
+                private readonly ISubscriptionRequirement _requirement;
+
+                public TypeSubscriptionExpression(ISubscriptionRequirement requirement)
+                {
+                    _requirement = requirement;
+                }
+
+                public TypeSubscriptionExpression ToMessage<TMessage>()
+                {
+                    _requirement.AddType(typeof(TMessage));
+
+                    return this;
+                }
+
+                public TypeSubscriptionExpression ToMessage(Type messageType)
+                {
+                    _requirement.AddType(messageType);
+                    return this;
+                }
+            }
+        }
+
+        public SubscriptionExpression SubscribeAt(string receiving)
+        {
+            return SubscribeAt(receiving.ToUri());
+        }
+
+        public SubscriptionExpression SubscribeAt(Uri receiving)
+        {
+            return new SubscriptionExpression(this, receiving);
+        }
+
+        public SubscriptionExpression SubscribeLocally()
+        {
+            return new SubscriptionExpression(this, null);
         }
 
         public ChannelExpression Channel(Uri uri)

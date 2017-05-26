@@ -1,46 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using System;
 using Baseline;
 
 namespace JasperBus.Runtime.Subscriptions
 {
-    public interface ISubscriptionCache
-    {
-        void ClearAll();
-
-        void LoadSubscriptions(IEnumerable<Subscription> subscriptions);
-
-        void Remove(Subscription subscription);
-
-        IEnumerable<Subscription> ActiveSubscriptions { get; }
-    }
-
-    // What if we said that the control channel has no parallelism?
-    public class InMemorySubscriptionCache : ISubscriptionCache
-    {
-        private readonly List<Subscription> _subscriptions = new List<Subscription>();
-
-        public void ClearAll()
-        {
-            _subscriptions.Clear();
-        }
-
-        public void LoadSubscriptions(IEnumerable<Subscription> subscriptions)
-        {
-            subscriptions.Where(x => !_subscriptions.Contains(x)).Each(x => _subscriptions.Add(x));
-        }
-
-        public void Remove(Subscription subscription)
-        {
-            _subscriptions.Remove(subscription);
-        }
-
-        public IEnumerable<Subscription> ActiveSubscriptions => _subscriptions.ToArray();
-    }
-
     public class Subscription
     {
         public static Subscription For<T>()
@@ -63,7 +25,6 @@ namespace JasperBus.Runtime.Subscriptions
         public string MessageType { get; set; }
         public string NodeName { get; set; }
         public SubscriptionRole Role { get; set; }
-
 
         public Subscription Clone()
         {
@@ -119,11 +80,5 @@ namespace JasperBus.Runtime.Subscriptions
         {
             return inputType.GetFullName() == MessageType;
         }
-    }
-
-    public enum SubscriptionRole
-    {
-        Publishes,
-        Subscribes
     }
 }

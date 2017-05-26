@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Baseline.Dates;
 using Jasper;
 using JasperBus;
 using JasperBus.Model;
 using JasperBus.Runtime;
+using JasperBus.Runtime.Subscriptions;
 using JasperBus.Tracking;
 using JasperBus.Transports.LightningQueues;
 using StoryTeller;
@@ -34,12 +37,12 @@ namespace StorytellerSpecs.Fixtures
 
         public void ExecutionStarted(Envelope envelope)
         {
-            
+
         }
 
         public void ExecutionFinished(Envelope envelope)
         {
-            
+
         }
 
         public void MessageSucceeded(Envelope envelope)
@@ -54,7 +57,7 @@ namespace StorytellerSpecs.Fixtures
 
         public void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
         {
-            _context.Reporting.ReporterFor<BusErrors>().Exceptions.Add(ex);   
+            _context.Reporting.ReporterFor<BusErrors>().Exceptions.Add(ex);
         }
 
         public void NoHandlerFor(Envelope envelope)
@@ -116,11 +119,13 @@ namespace StorytellerSpecs.Fixtures
     public class ServiceBusApplication : BusFixture
     {
         private JasperBusRegistry _registry;
-
+        private bool _waitForSubscriptions;
 
         public override void SetUp()
         {
             _registry = new JasperBusRegistry();
+            _waitForSubscriptions = false;
+
             _registry.Services.AddService<ITransport, StubTransport>();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
 
@@ -138,8 +143,17 @@ namespace StorytellerSpecs.Fixtures
         public override void TearDown()
         {
             var runtime = JasperRuntime.For(_registry);
-
+            var history = runtime.Container.GetInstance<MessageHistory>();
             var graph = runtime.Container.GetInstance<HandlerGraph>();
+
+            if (_waitForSubscriptions)
+            {
+                var waiter = history.Watch(() => { });
+                StoryTellerAssert.Fail(
+                    !waiter.Wait(5.Seconds())
+                    || waiter.Result.All(x => x.MessageType != typeof(SubscriptionRequested)),
+                    "SubscriptionRequested message was never received");
+            }
 
             Context.State.Store(runtime);
         }
@@ -171,6 +185,26 @@ namespace StorytellerSpecs.Fixtures
         public void ListenForMessagesFrom([SelectionList("Channels")] Uri channel)
         {
             _registry.ListenForMessagesFrom(channel);
+        }
+
+        [FormatAs("Subscribe locally to {messageType} from {channel}")]
+        public void SubscribeLocally([SelectionList("MessageTypes")] string messageType, [SelectionList("Channels")] Uri channel)
+        {
+            var type = messageTypeFor(messageType);
+            _registry.SubscribeLocally()
+                .ToSource(channel)
+                .ToMessage(type);
+            _waitForSubscriptions = true;
+        }
+
+        [FormatAs("Subscribe on {receiveChannel} to {messageType} from {channel}")]
+        public void SubscribeAt([SelectionList("MessageTypes")] string messageType, [SelectionList("Channels")] Uri channel, [SelectionList("Channels")] Uri receiveChannel)
+        {
+            var type = messageTypeFor(messageType);
+            _registry.SubscribeAt(receiveChannel)
+                .ToSource(channel)
+                .ToMessage(type);
+            _waitForSubscriptions = true;
         }
     }
 }

@@ -9,6 +9,7 @@ using JasperBus.Model;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using JasperBus.Runtime.Serializers;
+using JasperBus.Runtime.Subscriptions;
 using StructureMap;
 using Policies = JasperBus.Configuration.Policies;
 
@@ -41,23 +42,20 @@ namespace JasperBus
         {
             return Task.Factory.StartNew(() =>
             {
+                var container = runtime.Container;
+
                 // TODO -- will need to be smart enough to do the conglomerate
                 // generation config of the base, with service bus specific stuff
-                _graph.Compile(generation, runtime.Container);
+                _graph.Compile(generation, container);
 
-                var transports = runtime.Container.GetAllInstances<ITransport>().ToArray();
+                var transports = container.GetAllInstances<ITransport>().ToArray();
 
                 Channels.UseTransports(transports);
 
                 configureSerializationOrder(runtime);
 
-                // TODO
-                // Done -- 1. Start up transports
-                // 2. Start up subscriptions when ready
+                var pipeline = container.GetInstance<IHandlerPipeline>();
 
-                var pipeline = runtime.Container.GetInstance<IHandlerPipeline>();
-
-                // TODO -- might parallelize this later
                 foreach (var transport in transports)
                 {
                     transport.Start(pipeline, Channels);
@@ -69,14 +67,15 @@ namespace JasperBus
                             x.Sender = new NulloSender(transport, x.Uri);
                         });
                 }
+
+                container.GetInstance<ISubscriptionActivator>().Activate();
             });
-
-
         }
 
         private void configureSerializationOrder(JasperRuntime runtime)
         {
-            var contentTypes = runtime.Container.GetAllInstances<IMessageSerializer>().Select(x => x.ContentType).ToArray();
+            var contentTypes = runtime.Container.GetAllInstances<IMessageSerializer>()
+                .Select(x => x.ContentType).ToArray();
 
             var unknown = Channels.AcceptedContentTypes.Where(x => !contentTypes.Contains(x)).ToArray();
             if (unknown.Any())
@@ -88,8 +87,6 @@ namespace JasperBus
             {
                 Channels.AcceptedContentTypes.Fill(contentType);
             }
-
-
         }
 
         private async Task<Registry> bootstrap(JasperRegistry registry)
@@ -98,6 +95,8 @@ namespace JasperBus
 
             _graph = new HandlerGraph();
             _graph.AddRange(calls);
+            _graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionRequested())));
+            _graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged())));
 
             _graph.Group();
             Policies.Apply(_graph);
