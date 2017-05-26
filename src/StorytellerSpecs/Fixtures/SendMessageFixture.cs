@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,14 +12,13 @@ using JasperBus;
 using JasperBus.Configuration;
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
+using JasperBus.Runtime.Subscriptions;
 using JasperBus.Tracking;
 using JasperBus.Transports.LightningQueues;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
 {
-
-
     public class SendMessageFixture : BusFixture
     {
         private JasperRuntime _runtime;
@@ -34,7 +32,6 @@ namespace StorytellerSpecs.Fixtures
         public override void SetUp()
         {
             LightningQueuesTransport.DeleteAllStorage();
-
         }
 
         public IGrammar IfTheApplicationIs()
@@ -179,6 +176,7 @@ namespace StorytellerSpecs.Fixtures
 
         public override void TearDown()
         {
+            _runtime.Container.GetInstance<ISubscriptionsStorage>().ClearAll();
             _runtime.Dispose();
 
             // Let LQ cooldown
@@ -207,7 +205,7 @@ namespace StorytellerSpecs.Fixtures
 
     public class UnhandledMessage : Message
     {
-        
+
     }
 
     public class Message1 : Message
@@ -297,7 +295,7 @@ namespace StorytellerSpecs.Fixtures
         {
             MessageType = message.GetType().Name;
             Name = message.Name;
-            ReceivedAt = receivedAt;
+            ReceivedAt = receivedAt.ToLocalHostUri();
         }
 
         public Uri ReceivedAt { get; set; }
@@ -305,6 +303,14 @@ namespace StorytellerSpecs.Fixtures
         public string Name { get; set; }
 
         public string MessageType { get; set; }
+    }
+
+    public static class UriExtensions
+    {
+        public static Uri ToLocalHostUri(this Uri uri)
+        {
+            return uri.Host.EqualsIgnoreCase(Environment.MachineName) ? new UriBuilder(uri) {Host = "localhost"}.Uri : uri;
+        }
     }
 
 

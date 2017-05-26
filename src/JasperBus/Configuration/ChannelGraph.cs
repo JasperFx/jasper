@@ -18,6 +18,11 @@ namespace JasperBus.Configuration
         IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
         public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
 
+        /// <summary>
+        /// Used to identify the instance of the running Jasper node
+        /// </summary>
+        public string Name { get; set; }
+
         // TODO -- need to make this the default reply channel
         // if it is not explicitly set
         public ChannelNode ControlChannel { get; set; }

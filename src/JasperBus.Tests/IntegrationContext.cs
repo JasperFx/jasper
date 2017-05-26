@@ -44,7 +44,7 @@ namespace JasperBus.Tests
             with(registry);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Runtime?.Dispose();
         }

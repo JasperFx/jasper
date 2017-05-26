@@ -2,6 +2,7 @@
 using JasperBus.Runtime;
 using JasperBus.Runtime.Invocation;
 using JasperBus.Runtime.Serializers;
+using JasperBus.Runtime.Subscriptions;
 using JasperBus.Tests.Stubs;
 using Shouldly;
 using StructureMap.Pipeline;
@@ -27,6 +28,24 @@ namespace JasperBus.Tests.Bootstrapping
         public void transports_must_be_a_singleton()
         {
             theRuntime.Container.Model.For<ITransport>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();
+        }
+
+        [Fact]
+        public void subscriptions_cache_must_be_a_singleton()
+        {
+            theRuntime.Container.Model.For<ISubscriptionsCache>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();
+        }
+
+        [Fact]
+        public void subscriptions_repository_must_be_a_singleton()
+        {
+            theRuntime.Container.Model.For<ISubscriptionsRepository>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();
+        }
+
+        [Fact]
+        public void subscriptions_storage_must_be_a_singleton()
+        {
+            theRuntime.Container.Model.For<ISubscriptionsStorage>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();
         }
 
         [Fact]

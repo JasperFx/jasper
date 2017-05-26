@@ -27,7 +27,6 @@ namespace JasperBus
 
         }
 
-
         internal async Task<HandlerCall[]> FindCalls(IJasperRegistry registry)
         {
             if (registry.ApplicationAssembly == null) return new HandlerCall[0];

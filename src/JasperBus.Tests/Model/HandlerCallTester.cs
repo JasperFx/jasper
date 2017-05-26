@@ -57,7 +57,7 @@ namespace JasperBus.Tests.Model
                 .ShouldBeTrue();
             HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ManyIn(null, null)))
                 .ShouldBeFalse();
-            HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => (object)x.ReturnsValueType(null)))
+            HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ReturnsValueType(null)))
                 .ShouldBeFalse();
         }
 

@@ -10,6 +10,7 @@ namespace JasperBus.Tracking
     {
         private readonly object _lock = new object();
         private readonly IList<TaskCompletionSource<MessageTrack[]>> _waiters = new List<TaskCompletionSource<MessageTrack[]>>();
+        private readonly Dictionary<Type, TaskCompletionSource<MessageTrack>> _backgroundWaiters = new Dictionary<Type, TaskCompletionSource<MessageTrack>>();
 
         private readonly IList<MessageTrack> _completed = new List<MessageTrack>();
         private readonly Dictionary<string, MessageTrack> _outstanding = new Dictionary<string, MessageTrack>();
@@ -30,6 +31,16 @@ namespace JasperBus.Tracking
 
             action();
 
+            return waiter.Task;
+        }
+
+        public Task<MessageTrack> WaitFor<T>()
+        {
+            var waiter = new TaskCompletionSource<MessageTrack>();
+            lock (_lock)
+            {
+                _backgroundWaiters.Add(typeof(T), waiter);
+            }
             return waiter.Task;
         }
 
@@ -55,6 +66,7 @@ namespace JasperBus.Tracking
         public void Complete(Envelope envelope, string activity, Exception ex = null)
         {
             var key = MessageTrack.ToKey(envelope, activity);
+            var messageType = envelope.Message?.GetType();
             lock (_lock)
             {
                 if (_outstanding.ContainsKey(key))
@@ -67,6 +79,15 @@ namespace JasperBus.Tracking
                     _completed.Add(track);
 
                     processCompletion();
+                }
+                else if (messageType != null && _backgroundWaiters.ContainsKey(messageType))
+                {
+                    var waiter = _backgroundWaiters[messageType];
+                    _backgroundWaiters.Remove(messageType);
+                    var track = new MessageTrack(envelope, activity);
+                    track.Finish(envelope, ex);
+                    waiter.SetResult(track);
+
                 }
             }
         }

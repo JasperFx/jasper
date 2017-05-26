@@ -4,6 +4,7 @@ using System.Linq;
 using JasperBus.Configuration;
 using JasperBus.Runtime.Serializers;
 using System.Threading.Tasks;
+using JasperBus.Runtime.Subscriptions;
 
 namespace JasperBus.Runtime
 {
@@ -11,11 +12,13 @@ namespace JasperBus.Runtime
     {
         private readonly ChannelGraph _channels;
         private readonly IEnvelopeSerializer _serializer;
+        private readonly ISubscriptionsStorage _subscriptions;
 
-        public EnvelopeSender(ChannelGraph channels, IEnvelopeSerializer serializer, IBusLogger[] loggers)
+        public EnvelopeSender(ChannelGraph channels, IEnvelopeSerializer serializer, ISubscriptionsStorage subscriptions, IBusLogger[] loggers)
         {
             _channels = channels;
             _serializer = serializer;
+            _subscriptions = subscriptions;
             Logger = BusLogger.Combine(loggers);
         }
 
@@ -78,13 +81,12 @@ namespace JasperBus.Runtime
                         // TODO -- hang on here, should this be the "corrected" Uri
                         yield return channel.Uri;
                     }
-
+                }
+                foreach (var sub in _subscriptions.GetSubscribersFor(messageType))
+                {
+                    yield return sub;
                 }
             }
         }
-
-
-
-
     }
 }

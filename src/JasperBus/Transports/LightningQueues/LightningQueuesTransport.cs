@@ -14,8 +14,22 @@ namespace JasperBus.Transports.LightningQueues
     {
         public static void DeleteAllStorage(string queuePath = null)
         {
-            queuePath = queuePath ?? new LightningQueueSettings().QueuePath;
-            new FileSystem().DeleteDirectory(queuePath);
+            var fileSystem = new FileSystem();
+            if (queuePath == null)
+            {
+                //Find all queues matching queuePath regardless of port.
+                var jasperQueuePath = new LightningQueueSettings().QueuePath;
+                queuePath = fileSystem.GetDirectory(jasperQueuePath);
+
+                var queues = fileSystem.ChildDirectoriesFor(queuePath)
+                    .Where(x => x.StartsWith(jasperQueuePath, StringComparison.OrdinalIgnoreCase));
+
+                queues.Each(x => fileSystem.DeleteDirectory(x));
+            }
+            else
+            {
+                fileSystem.DeleteDirectory(queuePath);
+            }
         }
 
         public static string MaxAttemptsHeader = "max-delivery-attempts";
@@ -57,7 +71,7 @@ namespace JasperBus.Transports.LightningQueues
             if (_queues.Count == 0) throw new InvalidOperationException("There are no available LightningQueues channels with which to send");
 
             var lqUri = lqUriFor(destination);
-            _queues[lqUri.Port].Send(envelope, lqUri.Address, lqUri.QueueName);
+            _queues.Values.First().Send(envelope, lqUri.Address, lqUri.QueueName);
 
             return Task.CompletedTask;
         }

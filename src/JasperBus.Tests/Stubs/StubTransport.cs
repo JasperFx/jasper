@@ -55,7 +55,6 @@ namespace JasperBus.Tests.Stubs
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
         {
-
         }
 
         public Uri DefaultReplyUri()
