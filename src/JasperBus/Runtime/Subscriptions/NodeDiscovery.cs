@@ -14,7 +14,7 @@ namespace JasperBus.Runtime.Subscriptions
 
     public class InMemoryNodeDiscovery : INodeDiscovery
     {
-        private string _machineName;
+        private readonly string _machineName;
 
         public InMemoryNodeDiscovery(EnvironmentSettings envSettings)
         {

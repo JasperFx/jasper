@@ -10,52 +10,52 @@ using Xunit;
 namespace JasperBus.Tests.Runtime.Subscriptions
 {
 
-    public class When_creating_grouped_subscriptions
+    public class GroupedSubscriptionsTester
     {
-        public readonly BusSettings theSettings = new BusSettings
+        public readonly BusSettings _settings = new BusSettings
         {
             Upstream = new Uri("memory://upstream"),
             Incoming = new Uri("memory://incoming")
         };
-        private readonly ChannelGraph theGraph;
-        private readonly IEnumerable<Subscription> theSubscriptions;
+        private readonly ChannelGraph _graph;
+        private readonly IEnumerable<Subscription> _subscriptions;
 
-        public When_creating_grouped_subscriptions()
+        public GroupedSubscriptionsTester()
         {
-            theGraph = new ChannelGraph { Name = "FooNode" };
+            _graph = new ChannelGraph { Name = "FooNode" };
 
-            var requirement = new GroupSubscriptionRequirement(theSettings.Upstream, theSettings.Incoming);
+            var requirement = new GroupSubscriptionRequirement(_settings.Upstream, _settings.Incoming);
             requirement.AddType(typeof(FooMessage));
             requirement.AddType(typeof(BarMessage));
 
-            theSubscriptions = requirement.Determine(theGraph);
+            _subscriptions = requirement.Determine(_graph);
         }
 
         [Fact]
         public void should_set_the_receiver_uri_to_the_explicitly_chosen_uri()
         {
-            theSubscriptions.First().Receiver
-                .ShouldBe(theSettings.Incoming);
+            _subscriptions.First().Receiver
+                .ShouldBe(_settings.Incoming);
         }
 
         [Fact]
         public void sets_the_node_name_from_the_channel_graph()
         {
-            theSubscriptions.Select(x => x.NodeName).Distinct()
-                .Single().ShouldBe(theGraph.Name);
+            _subscriptions.Select(x => x.NodeName).Distinct()
+                .Single().ShouldBe(_graph.Name);
         }
 
         [Fact]
         public void should_set_the_source_uri_to_the_requested_source_from_settings()
         {
-            theSubscriptions.First().Source
-                .ShouldBe(theSettings.Upstream);
+            _subscriptions.First().Source
+                .ShouldBe(_settings.Upstream);
         }
 
         [Fact]
         public void should_add_a_subscription_for_each_type()
         {
-            theSubscriptions.Select(x => x.MessageType)
+            _subscriptions.Select(x => x.MessageType)
                 .ShouldHaveTheSameElementsAs(typeof(FooMessage).GetFullName(), typeof(BarMessage).GetFullName());
         }
 

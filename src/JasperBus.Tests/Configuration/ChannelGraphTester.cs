@@ -10,50 +10,50 @@ namespace JasperBus.Tests.Configuration
 {
     public class when_building_an_envelope_for_sending_that_does_not_match_an_existing_channel
     {
-        public readonly StubTransport theTransport = new StubTransport();
-        public readonly Envelope theEnvelope = new Envelope();
-        private readonly ChannelGraph theGraph;
-        public readonly IEnvelopeSerializer theSerializer = Substitute.For<IEnvelopeSerializer>();
-        private Envelope theSentEnvelope;
+        public readonly StubTransport _transport = new StubTransport();
+        public readonly Envelope _envelope = new Envelope();
+        private readonly ChannelGraph _graph;
+        public readonly IEnvelopeSerializer _serializer = Substitute.For<IEnvelopeSerializer>();
+        private readonly Envelope _sentEnvelope;
 
         public when_building_an_envelope_for_sending_that_does_not_match_an_existing_channel()
         {
-            theGraph = new ChannelGraph(theTransport, new StubTransport("fake"), new StubTransport("other"));
-            theGraph.AcceptedContentTypes.Add("text/xml");
-            theGraph.AcceptedContentTypes.Add("text/json");
+            _graph = new ChannelGraph(_transport, new StubTransport("fake"), new StubTransport("other"));
+            _graph.AcceptedContentTypes.Add("text/xml");
+            _graph.AcceptedContentTypes.Add("text/json");
 
-            theSentEnvelope = theGraph.Send(theEnvelope, "stub://one".ToUri(), theSerializer).Result;
+            _sentEnvelope = _graph.Send(_envelope, "stub://one".ToUri(), _serializer).Result;
         }
 
         [Fact]
         public void not_the_same_envelope()
         {
             // this is actually important for things to work correctly
-            theSentEnvelope.ShouldNotBeSameAs(theEnvelope);
+            _sentEnvelope.ShouldNotBeSameAs(_envelope);
         }
 
         [Fact]
         public void should_call_the_serializer()
         {
-            theSerializer.Received().Serialize(theSentEnvelope, null);
+            _serializer.Received().Serialize(_sentEnvelope, null);
         }
 
         [Fact]
         public void should_tag_the_accepted_content_types_from_the_graph()
         {
-            theSentEnvelope.AcceptedContentTypes.ShouldHaveTheSameElementsAs("text/xml", "text/json");
+            _sentEnvelope.AcceptedContentTypes.ShouldHaveTheSameElementsAs("text/xml", "text/json");
         }
 
         [Fact]
         public void should_have_the_corrected_uri_address()
         {
-            theSentEnvelope.Destination.ShouldBe(theTransport.CorrectedAddressFor("stub://one".ToUri()));
+            _sentEnvelope.Destination.ShouldBe(_transport.CorrectedAddressFor("stub://one".ToUri()));
         }
 
         [Fact]
         public void should_have_the_reply_uri()
         {
-            theSentEnvelope.ReplyUri.ShouldBe(theTransport.ReplyChannel.Address);
+            _sentEnvelope.ReplyUri.ShouldBe(_transport.ReplyChannel.Address);
         }
     }
 

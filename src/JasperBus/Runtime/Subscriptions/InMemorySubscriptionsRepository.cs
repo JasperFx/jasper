@@ -15,7 +15,6 @@ namespace JasperBus.Runtime.Subscriptions
     public class InMemorySubscriptionsRepository : ISubscriptionsRepository
     {
         private readonly List<Subscription> _subscriptions = new List<Subscription>();
-        private readonly List<Action<IEnumerable<Subscription>>> _handlers = new List<Action<IEnumerable<Subscription>>>();
 
         public void RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
