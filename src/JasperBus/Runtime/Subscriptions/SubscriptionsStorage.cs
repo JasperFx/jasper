@@ -13,7 +13,6 @@ namespace JasperBus.Runtime.Subscriptions
         void ClearAll();
         IEnumerable<Uri> GetSubscribersFor(Type messageType);
         IEnumerable<Subscription> ActiveSubscriptions { get; }
-        void NotifyNodes();
     }
 
     public class SubscriptionsStorage : ISubscriptionsStorage
@@ -64,9 +63,5 @@ namespace JasperBus.Runtime.Subscriptions
         }
 
         public IEnumerable<Subscription> ActiveSubscriptions => _cache.ActiveSubscriptions;
-        public void NotifyNodes()
-        {
-
-        }
     }
 }

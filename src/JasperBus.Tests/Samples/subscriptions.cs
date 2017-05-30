@@ -79,11 +79,6 @@ namespace Examples.ServiceBus
             throw new NotImplementedException();
         }
 
-        public void ClearAll()
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<Uri> GetSubscribersFor(Type messageType)
         {
             throw new NotImplementedException();

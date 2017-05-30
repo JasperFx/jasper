@@ -9,17 +9,17 @@ using Xunit;
 
 namespace JasperBus.Tests.Runtime.Subscriptions
 {
-    public class SubscriptionCache_tester
+    public class SubscriptionCacheTester
     {
         private readonly SubscriptionsCache _cache;
 
-        public SubscriptionCache_tester()
+        public SubscriptionCacheTester()
         {
             _cache = new SubscriptionsCache();
         }
 
         [Fact]
-        public void can_add_subscriptions()
+        public void add_subscriptions()
         {
             var subscriptions1 = new[]
             {
@@ -89,7 +89,7 @@ namespace JasperBus.Tests.Runtime.Subscriptions
 
     public static class Subs
     {
-        public static Subscription NewSubscription(string nodeName = null)
+        public static Subscription NewSubscription(string nodeName = null, SubscriptionRole role = SubscriptionRole.Subscribes)
         {
             return new Subscription
             {
@@ -97,11 +97,11 @@ namespace JasperBus.Tests.Runtime.Subscriptions
                 NodeName = nodeName ?? "TheNode",
                 Receiver = "memory://receiver".ToUri(),
                 Source = "memory://source".ToUri(),
-                Role = SubscriptionRole.Subscribes
+                Role = role
             };
         }
 
-        public static Subscription ExistingSubscription(string nodeName = null)
+        public static Subscription ExistingSubscription(string nodeName = null, SubscriptionRole role = SubscriptionRole.Subscribes)
         {
             var subscription = NewSubscription();
             subscription.Id = Guid.NewGuid();

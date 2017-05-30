@@ -4,7 +4,7 @@ using Xunit;
 
 namespace JasperBus.Tests.Runtime.Subscriptions
 {
-    public class Subscription_matches_tester
+    public class SubscriptionMatchesTester
     {
         [Fact]
         public void fuzzy_matches()

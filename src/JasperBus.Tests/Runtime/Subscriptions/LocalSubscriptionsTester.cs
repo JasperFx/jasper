@@ -11,63 +11,63 @@ using Xunit;
 namespace JasperBus.Tests.Runtime.Subscriptions
 {
 
-    public class When_creating_local_subscriptions
+    public class LocalSubscriptionsTester
     {
-        public readonly BusSettings theSettings = new BusSettings
+        public readonly BusSettings _settings = new BusSettings
         {
             Upstream = new Uri("memory://upstream"),
             Downstream = new Uri("memory://downstream"),
             Outbound = new Uri("memory://outbound")
         };
-        private readonly ChannelGraph theGraph;
-        private readonly Uri theLocalReplyUri;
-        private readonly IEnumerable<Subscription> theSubscriptions;
+        private readonly ChannelGraph _graph;
+        private readonly Uri _localReplyUri;
+        private readonly IEnumerable<Subscription> _subscriptions;
 
-        public When_creating_local_subscriptions()
+        public LocalSubscriptionsTester()
         {
-            theGraph = new ChannelGraph
+            _graph = new ChannelGraph
             {
                 Name = "FooNode",
             };
 
-            var requirement = new LocalSubscriptionRequirement(theSettings.Upstream);
+            var requirement = new LocalSubscriptionRequirement(_settings.Upstream);
             requirement.AddType(typeof(FooMessage));
             requirement.AddType(typeof(BarMessage));
 
-            theLocalReplyUri = theSettings.Downstream;
+            _localReplyUri = _settings.Downstream;
 
-            theGraph.AddChannelIfMissing("fake2://2".ToUri()).Incoming = true;
-            theGraph.AddChannelIfMissing(theLocalReplyUri).Incoming = true;
-            theGraph.AddChannelIfMissing("fake1://1".ToUri()).Incoming = true;
+            _graph.AddChannelIfMissing("fake2://2".ToUri()).Incoming = true;
+            _graph.AddChannelIfMissing(_localReplyUri).Incoming = true;
+            _graph.AddChannelIfMissing("fake1://1".ToUri()).Incoming = true;
 
-            theSubscriptions = requirement.Determine(theGraph);
+            _subscriptions = requirement.Determine(_graph);
         }
 
         [Fact]
         public void should_set_the_receiver_uri_to_the_reply_uri_of_the_matching_transport()
         {
-            theSubscriptions.First().Receiver
-                .ShouldBe(theLocalReplyUri);
+            _subscriptions.First().Receiver
+                .ShouldBe(_localReplyUri);
         }
 
         [Fact]
         public void sets_the_node_name_from_the_channel_graph()
         {
-            theSubscriptions.Select(x => x.NodeName).Distinct()
-                .Single().ShouldBe(theGraph.Name);
+            _subscriptions.Select(x => x.NodeName).Distinct()
+                .Single().ShouldBe(_graph.Name);
         }
 
         [Fact]
         public void should_set_the_source_uri_to_the_requested_source_from_settings()
         {
-            theSubscriptions.First().Source
-                .ShouldBe(theSettings.Upstream);
+            _subscriptions.First().Source
+                .ShouldBe(_settings.Upstream);
         }
 
         [Fact]
         public void should_add_a_subscription_for_each_type()
         {
-            theSubscriptions.Select(x => x.MessageType)
+            _subscriptions.Select(x => x.MessageType)
                 .ShouldHaveTheSameElementsAs(typeof(FooMessage).GetFullName(), typeof(BarMessage).GetFullName());
         }
 

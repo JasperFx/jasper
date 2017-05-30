@@ -5,7 +5,7 @@ using Xunit;
 
 namespace JasperBus.Tests.Runtime.Subscriptions
 {
-    public class Subscription_equality_tester
+    public class SubscriptionEqualityTester
     {
         [Fact]
         public void equals_if_all_are_equal()
