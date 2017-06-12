@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace LightningQueues.Serialization
+namespace JasperBus.Queues.Serialization
 {
     public static class SerializationExtensions
     {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LightningQueues.Storage.LMDB;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
 using Shouldly;
 using Xunit;
 
-namespace LightningQueues.Tests.Storage.Lmdb
+namespace JasperBus.Tests.Queues.Storage.Lmdb
 {
     [Collection("SharedTestDirectory")]
     public class OutgoingMessageScenarios : IDisposable

@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using System.Text;
-using LightningQueues.Serialization;
+using JasperBus.Queues;
+using JasperBus.Queues.Serialization;
 using Shouldly;
 using Xunit;
 
-namespace LightningQueues.Tests.Net.Protocol
+namespace JasperBus.Tests.Queues.Net.Protocol
 {
     public class SerializationExtensionsTests
     {

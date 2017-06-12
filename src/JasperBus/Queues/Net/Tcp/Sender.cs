@@ -6,9 +6,9 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using LightningQueues.Logging;
+using JasperBus.Queues.Logging;
 
-namespace LightningQueues.Net.Tcp
+namespace JasperBus.Queues.Net.Tcp
 {
     public class Sender : IDisposable
     {

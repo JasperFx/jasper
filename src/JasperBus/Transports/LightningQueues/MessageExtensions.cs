@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using JasperBus.Queues;
 using JasperBus.Runtime;
-using LightningQueues;
 
 namespace JasperBus.Transports.LightningQueues
 {

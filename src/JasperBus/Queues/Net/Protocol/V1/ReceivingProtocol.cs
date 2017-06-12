@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using LightningQueues.Logging;
-using LightningQueues.Serialization;
-using LightningQueues.Storage;
+using JasperBus.Queues.Logging;
+using JasperBus.Queues.Serialization;
+using JasperBus.Queues.Storage;
 
-namespace LightningQueues.Net.Protocol.V1
+namespace JasperBus.Queues.Net.Protocol.V1
 {
     public class ReceivingProtocol : IReceivingProtocol
     {

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Net;
 using System.Reactive.Concurrency;
-using LightningQueues.Logging;
-using LightningQueues.Net;
-using LightningQueues.Net.Protocol.V1;
-using LightningQueues.Net.Tcp;
-using LightningQueues.Storage;
+using JasperBus.Queues.Logging;
+using JasperBus.Queues.Net;
+using JasperBus.Queues.Net.Protocol.V1;
+using JasperBus.Queues.Net.Tcp;
+using JasperBus.Queues.Storage;
 
-namespace LightningQueues
+namespace JasperBus.Queues
 {
     public class QueueConfiguration
     {

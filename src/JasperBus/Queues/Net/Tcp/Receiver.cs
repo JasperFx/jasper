@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Reactive.Linq;
-using System.Security.Cryptography.X509Certificates;
-using LightningQueues.Logging;
+using JasperBus.Queues.Logging;
 
-namespace LightningQueues.Net.Tcp
+namespace JasperBus.Queues.Net.Tcp
 {
     public class Receiver : IDisposable
     {

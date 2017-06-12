@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using LightningQueues.Storage.LMDB;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
 using Microsoft.Reactive.Testing;
 using Shouldly;
 using Xunit;
 
-namespace LightningQueues.Tests
+namespace JasperBus.Tests.Queues
 {
     [Collection("SharedTestDirectory")]
     public class QueueTests : IDisposable

@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace LightningQueues
+namespace JasperBus.Queues
 {
     public class OutgoingMessage : Message
     {

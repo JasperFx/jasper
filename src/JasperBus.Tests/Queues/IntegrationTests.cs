@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using JasperBus.Queues;
 using Shouldly;
 using Xunit;
 
-namespace LightningQueues.Tests
+namespace JasperBus.Tests.Queues
 {
     [Collection("SharedTestDirectory")]
     public class IntegrationTests : IDisposable

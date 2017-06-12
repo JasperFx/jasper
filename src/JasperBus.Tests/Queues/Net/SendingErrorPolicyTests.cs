@@ -3,17 +3,18 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using LightningQueues.Logging;
-using LightningQueues.Net;
-using LightningQueues.Storage;
-using LightningQueues.Storage.LMDB;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
+using JasperBus.Queues.Logging;
+using JasperBus.Queues.Net;
+using JasperBus.Queues.Storage;
 using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
-namespace LightningQueues.Tests.Net
+namespace JasperBus.Tests.Queues.Net
 {
     [Collection("SharedTestDirectory")]
     public class SendingErrorPolicyTests : IDisposable

@@ -1,6 +1,6 @@
-using System.Text;
+﻿using System.Text;
 
-namespace LightningQueues.Net.Protocol.V1
+namespace JasperBus.Queues.Net.Protocol.V1
 {
     public static class Constants
     {

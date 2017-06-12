@@ -1,5 +1,5 @@
-using System;
-using LightningQueues.Logging;
+﻿using System;
+using JasperBus.Queues.Logging;
 
 namespace JasperBus.Transports.LightningQueues
 {

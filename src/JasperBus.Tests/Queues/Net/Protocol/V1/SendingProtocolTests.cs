@@ -3,14 +3,14 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
-using LightningQueues.Logging;
-using LightningQueues.Net.Protocol.V1;
-using LightningQueues.Storage;
-using LightningQueues.Storage.LMDB;
+using JasperBus.Queues.Lmdb;
+using JasperBus.Queues.Logging;
+using JasperBus.Queues.Net.Protocol.V1;
+using JasperBus.Queues.Storage;
 using Shouldly;
 using Xunit;
 
-namespace LightningQueues.Tests.Net.Protocol.V1
+namespace JasperBus.Tests.Queues.Net.Protocol.V1
 {
     [Collection("SharedTestDirectory")]
     public class SendingProtocolTests : IDisposable

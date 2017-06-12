@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LightningQueues.Logging;
-using LightningQueues.Storage;
+using JasperBus.Queues;
+using JasperBus.Queues.Logging;
+using JasperBus.Queues.Storage;
 using Xunit;
 
-namespace LightningQueues.Tests.Storage
+namespace JasperBus.Tests.Queues.Storage
 {
     public class NoStorageIntegrationTester : IDisposable
     {

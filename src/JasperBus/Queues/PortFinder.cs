@@ -1,7 +1,7 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
-namespace LightningQueues
+namespace JasperBus.Queues
 {
     public static class PortFinder
     {

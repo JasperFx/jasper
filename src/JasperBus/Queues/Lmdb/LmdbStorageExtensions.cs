@@ -1,7 +1,6 @@
-﻿using System;
-using LightningDB;
+﻿using LightningDB;
 
-namespace LightningQueues.Storage.LMDB
+namespace JasperBus.Queues.Lmdb
 {
     public static class LmdbStorageExtensions
     {

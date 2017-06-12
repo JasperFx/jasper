@@ -4,12 +4,12 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using LightningQueues.Logging;
-using LightningQueues.Net;
-using LightningQueues.Net.Tcp;
-using LightningQueues.Storage;
+using JasperBus.Queues.Logging;
+using JasperBus.Queues.Net;
+using JasperBus.Queues.Net.Tcp;
+using JasperBus.Queues.Storage;
 
-namespace LightningQueues
+namespace JasperBus.Queues
 {
     public class Queue : IDisposable
     {

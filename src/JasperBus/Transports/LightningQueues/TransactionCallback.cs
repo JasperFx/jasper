@@ -1,7 +1,7 @@
 ﻿using System;
 using JasperBus.Runtime;
-using LightningQueues;
 using System.Threading.Tasks;
+using JasperBus.Queues;
 
 namespace JasperBus.Transports.LightningQueues
 {

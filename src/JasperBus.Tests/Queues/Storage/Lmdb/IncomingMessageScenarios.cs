@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
-using LightningQueues.Serialization;
-using LightningQueues.Storage;
-using LightningQueues.Storage.LMDB;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
+using JasperBus.Queues.Serialization;
+using JasperBus.Queues.Storage;
 using Shouldly;
 using Xunit;
-using static LightningQueues.Tests.ObjectMother;
 
-namespace LightningQueues.Tests.Storage.Lmdb
+namespace JasperBus.Tests.Queues.Storage.Lmdb
 {
     [Collection("SharedTestDirectory")]
     public class IncomingMessageScenarios : IDisposable
@@ -24,7 +24,7 @@ namespace LightningQueues.Tests.Storage.Lmdb
         [Fact]
         public void happy_path_success()
         {
-            var message = NewMessage<Message>();
+            var message = ObjectMother.NewMessage<Message>();
             _store.CreateQueue(message.Queue);
             var transaction = _store.BeginTransaction();
             _store.StoreIncomingMessages(transaction, message);
@@ -43,7 +43,7 @@ namespace LightningQueues.Tests.Storage.Lmdb
         [Fact]
         public void storing_message_for_queue_that_doesnt_exist()
         {
-            var message = NewMessage<Message>();
+            var message = ObjectMother.NewMessage<Message>();
             Assert.Throws<QueueDoesNotExistException>(() =>
             {
                 var tx = _store.BeginTransaction();
@@ -54,7 +54,7 @@ namespace LightningQueues.Tests.Storage.Lmdb
         [Fact]
         public void crash_before_commit()
         {
-            var message = NewMessage<Message>();
+            var message = ObjectMother.NewMessage<Message>();
             _store.CreateQueue(message.Queue);
             var transaction = _store.BeginTransaction();
             _store.StoreIncomingMessages(transaction, message);
@@ -74,7 +74,7 @@ namespace LightningQueues.Tests.Storage.Lmdb
         [Fact]
         public void rollback_messages_received()
         {
-            var message = NewMessage<Message>();
+            var message = ObjectMother.NewMessage<Message>();
             _store.CreateQueue(message.Queue);
             var transaction = _store.BeginTransaction();
             _store.StoreIncomingMessages(transaction, message);

@@ -1,17 +1,18 @@
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using LightningQueues.Net;
-using LightningQueues.Net.Protocol.V1;
-using LightningQueues.Net.Tcp;
-using LightningQueues.Storage;
-using LightningQueues.Storage.LMDB;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
+using JasperBus.Queues.Net;
+using JasperBus.Queues.Net.Protocol.V1;
+using JasperBus.Queues.Net.Tcp;
+using JasperBus.Queues.Storage;
 using Shouldly;
 using Xunit;
 
-namespace LightningQueues.Tests.Net.Tcp
+namespace JasperBus.Tests.Queues.Net.Tcp
 {
     [Collection("SharedTestDirectory")]
     public class ReceiverTests : IDisposable

@@ -1,18 +1,19 @@
-using Xunit;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using LightningQueues.Storage;
-using LightningQueues.Net.Protocol.V1;
-using LightningQueues.Net.Protocol;
-using LightningQueues.Serialization;
-using LightningQueues.Storage.LMDB;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
+using JasperBus.Queues.Net.Protocol;
+using JasperBus.Queues.Net.Protocol.V1;
+using JasperBus.Queues.Serialization;
+using JasperBus.Queues.Storage;
 using Microsoft.Reactive.Testing;
 using Shouldly;
+using Xunit;
 
-namespace LightningQueues.Tests.Net.Protocol.V1
+namespace JasperBus.Tests.Queues.Net.Protocol.V1
 {
     [Collection("SharedTestDirectory")]
     public class ReceivingProtocolTests : IDisposable

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reactive.Concurrency;
-using System.Threading.Tasks;
 using System.Reactive.Linq;
-using LightningQueues.Logging;
+using System.Threading.Tasks;
+using JasperBus.Queues;
+using JasperBus.Queues.Logging;
 using Xunit;
 
-namespace LightningQueues.Tests
+namespace JasperBus.Tests.Queues
 {
     [Collection("SharedTestDirectory")]
     public class ProfilingTests : IDisposable

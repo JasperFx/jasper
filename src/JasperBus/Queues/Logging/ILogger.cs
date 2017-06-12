@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace LightningQueues.Logging
+namespace JasperBus.Queues.Logging
 {
     public interface ILogger
     {

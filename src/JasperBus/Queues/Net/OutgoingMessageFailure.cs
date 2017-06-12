@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LightningQueues.Net
+namespace JasperBus.Queues.Net
 {
     public class OutgoingMessageFailure
     {

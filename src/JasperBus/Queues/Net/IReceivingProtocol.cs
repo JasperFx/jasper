@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace LightningQueues.Net
+namespace JasperBus.Queues.Net
 {
     public interface IReceivingProtocol
     {

@@ -1,4 +1,4 @@
-﻿namespace LightningQueues
+﻿namespace JasperBus.Queues
 {
     public class MessageContext
     {

@@ -1,12 +1,13 @@
 ﻿using System;
-using LightningQueues.Storage.LMDB;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Text;
-using LightningQueues.Logging;
-using LightningQueues.Storage;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
+using JasperBus.Queues.Logging;
+using JasperBus.Queues.Storage;
 
-namespace LightningQueues.Tests
+namespace JasperBus.Tests.Queues
 {
     public static class ObjectMother
     {

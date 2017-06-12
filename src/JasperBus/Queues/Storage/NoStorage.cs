@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 
-namespace LightningQueues.Storage
+namespace JasperBus.Queues.Storage
 {
     public class NoStorage : IMessageStore
     {

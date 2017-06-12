@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LightningQueues.Net.Protocol
+namespace JasperBus.Queues.Net.Protocol
 {
     public static class StreamExtensions
     {

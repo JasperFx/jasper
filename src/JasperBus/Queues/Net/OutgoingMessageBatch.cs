@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace LightningQueues.Net
+namespace JasperBus.Queues.Net
 {
     public class OutgoingMessageBatch : IDisposable
     {

@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace LightningQueues.Storage
+namespace JasperBus.Queues.Storage
 {
     public class QueueDoesNotExistException : Exception
     {

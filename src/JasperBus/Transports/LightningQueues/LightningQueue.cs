@@ -4,11 +4,11 @@ using System.Net;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using JasperBus.Configuration;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
+using JasperBus.Queues.Storage;
 using JasperBus.Runtime;
 using LightningDB;
-using LightningQueues;
-using LightningQueues.Storage;
-using LightningQueues.Storage.LMDB;
 
 namespace JasperBus.Transports.LightningQueues
 {

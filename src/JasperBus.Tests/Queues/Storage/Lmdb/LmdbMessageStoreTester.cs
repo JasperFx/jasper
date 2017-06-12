@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
-using LightningQueues.Storage.LMDB;
+using JasperBus.Queues;
+using JasperBus.Queues.Lmdb;
 using Shouldly;
 using Xunit;
 
-namespace LightningQueues.Tests.Storage.Lmdb
+namespace JasperBus.Tests.Queues.Storage.Lmdb
 {
     [Collection("SharedTestDirectory")]
     public class LmdbMessageStoreTester : IDisposable

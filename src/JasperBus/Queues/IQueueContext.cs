@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LightningQueues
+namespace JasperBus.Queues
 {
     public interface IQueueContext
     {

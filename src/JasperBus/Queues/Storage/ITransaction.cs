@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LightningQueues.Storage
+namespace JasperBus.Queues.Storage
 {
     public interface ITransaction
     {

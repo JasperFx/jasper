@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using LightningQueues.Logging;
+using JasperBus.Queues.Logging;
 
-namespace LightningQueues.Tests
+namespace JasperBus.Tests.Queues
 {
     public class RecordingLogger : ILogger
     {

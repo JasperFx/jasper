@@ -1,7 +1,8 @@
 ﻿using System;
+using JasperBus.Queues.Storage;
 using LightningDB;
 
-namespace LightningQueues.Storage.LMDB
+namespace JasperBus.Queues.Lmdb
 {
     public class LmdbTransaction : ITransaction
     {

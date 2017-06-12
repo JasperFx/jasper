@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LightningQueues.Logging
+namespace JasperBus.Queues.Logging
 {
     public class NulloLogger : ILogger
     {

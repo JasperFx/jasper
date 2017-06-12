@@ -1,7 +1,7 @@
 ﻿using System;
+using JasperBus.Queues;
 using JasperBus.Transports.LightningQueues;
 using Xunit;
-using LightningQueues;
 using Shouldly;
 
 namespace JasperBus.Tests.Transports.LightningQueues

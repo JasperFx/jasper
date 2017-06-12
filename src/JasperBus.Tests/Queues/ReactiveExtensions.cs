@@ -3,7 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
-namespace LightningQueues.Tests
+namespace JasperBus.Tests.Queues
 {
     public static class ReactiveExtensions
     {

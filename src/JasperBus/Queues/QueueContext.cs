@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using LightningQueues.Storage;
+using JasperBus.Queues.Storage;
 
-namespace LightningQueues
+namespace JasperBus.Queues
 {
     internal class QueueContext : IQueueContext
     {

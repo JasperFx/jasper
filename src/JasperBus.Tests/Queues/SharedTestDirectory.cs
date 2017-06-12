@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using Xunit;
 
-namespace LightningQueues.Tests
+namespace JasperBus.Tests.Queues
 {
     public class SharedTestDirectory : IDisposable
     {
