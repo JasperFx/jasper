@@ -147,7 +147,8 @@ task :open_st => [:compile] do
 end
 
 "Gets the documentation assets ready"
-task :prepare_docs => [:compile] do
+task :prepare_docs do
+	sh "dotnet restore docs.csproj"
 	# this will grow to include the storyteller specs
 end
 
