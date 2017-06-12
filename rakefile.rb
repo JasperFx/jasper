@@ -66,25 +66,25 @@ end
 
 desc 'Compile the code'
 task :compile => [:clean, :version, :npm_install] do
-	sh "dotnet restore src"
-	sh "dotnet build src/Jasper.Testing"
-	sh "dotnet build src/JasperBus.Tests"
+	sh "dotnet restore Jasper.sln"
+	sh "dotnet build src/Jasper.Testing/Jasper.Testing.csproj"
+	sh "dotnet build src/JasperBus.Tests/JasperBus.Tests.csproj"
 
   Dir.chdir("src/Jasper.Diagnostics") do
     sh "yarn build:prod"
   end
-  sh "dotnet build src/Jasper.Diagnostics"
+  sh "dotnet build src/Jasper.Diagnostics/Jasper.Diagnostics.csproj"
 end
 
 desc 'Run the unit tests'
 task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
-	sh "dotnet test src/Jasper.Testing"
-    sh "dotnet test src/JasperBus.Marten.Tests"
-	sh "dotnet test src/JasperBus.Tests"
-	sh "dotnet test src/JasperHttp.Tests"
-	sh "dotnet test src/JasperServer.Tests"
+	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj"
+    sh "dotnet test src/JasperBus.Marten.Tests/JasperBus.Marten.Tests.csproj"
+	sh "dotnet test src/JasperBus.Tests/JasperBus.Tests.csproj"
+	sh "dotnet test src/JasperHttp.Tests/JasperHttp.Tests.csproj"
+	sh "dotnet test src/JasperServer.Tests/JasperServer.Tests.csproj"
 end
 
 desc 'npm install for Diagnostics'
@@ -97,11 +97,11 @@ end
 
 desc 'Build Nuspec packages'
 task :pack do
-	sh "dotnet pack src/Jasper -o artifacts --configuration Release --version-suffix #{build_revision}"
-	sh "dotnet pack src/JasperBus -o artifacts --configuration Release --version-suffix #{build_revision}"
-	sh "dotnet pack src/JasperServer -o artifacts --configuration Release --version-suffix #{build_revision}"
-	sh "dotnet pack src/Jasper.Diagnostics -o artifacts --configuration Release --version-suffix #{build_revision}"
-	sh "dotnet pack src/JasperBus.Marten -o artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/JasperBus/JasperBus.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/JasperServer/JasperServer.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/JasperBus.Marten/JasperBus.Marten.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
 end
 
 desc "Pushes the Nuget's to MyGet"

@@ -2,6 +2,7 @@
 using Jasper.Codegen;
 using Shouldly;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Jasper.Testing.Codegen
 {
