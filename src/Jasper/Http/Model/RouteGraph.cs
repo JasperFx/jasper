@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Jasper.Codegen;
-using JasperHttp.Routing;
+using Jasper.Http.Routing;
 using StructureMap;
 
-namespace JasperHttp.Model
+namespace Jasper.Http.Model
 {
     public class RouteGraph : HandlerSet<RouteChain, RouteHandler>, IEnumerable<RouteChain>
     {

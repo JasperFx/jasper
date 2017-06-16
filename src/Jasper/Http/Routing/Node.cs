@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public interface INode
     {

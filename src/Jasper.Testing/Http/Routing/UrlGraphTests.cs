@@ -1,6 +1,6 @@
-﻿using JasperHttp.Routing;
+﻿using Jasper.Http.Routing;
 
-namespace JasperHttp.Tests.Routing
+namespace Jasper.Testing.Http.Routing
 {
     
     public class UrlGraphTests

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public static class HttpVerbs
     {

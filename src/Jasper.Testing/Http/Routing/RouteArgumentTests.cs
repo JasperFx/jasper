@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline.Reflection;
-using JasperHttp.Routing;
-using JasperHttp.Routing.Codegen;
+using Jasper.Http.Routing;
+using Jasper.Http.Routing.Codegen;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public class RouteArgumentTests
     {
@@ -175,7 +175,7 @@ namespace JasperHttp.Tests.Routing
             arg.ArgType = typeof(string);
 
             var frame = arg.ToParsingFrame().ShouldBeOfType<StringRouteArgument>();
-            frame.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(frame);
             frame.Position.ShouldBe(1);
             frame.Name.ShouldBe("name");
         }
@@ -186,7 +186,7 @@ namespace JasperHttp.Tests.Routing
             var arg = new RouteArgument("age", 3) {ArgType = typeof(int)};
 
             var frame = arg.ToParsingFrame().ShouldBeOfType<ParsedRouteArgument>();
-            frame.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(frame);
             frame.Position.ShouldBe(3);
             frame.Variable.Usage.ShouldBe("age");
 

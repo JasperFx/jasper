@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public class RouteNameAttribute : Attribute

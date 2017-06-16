@@ -8,9 +8,9 @@ using Baseline;
 using Baseline.Conversion;
 using Baseline.Reflection;
 using Jasper.Codegen;
-using JasperHttp.Routing.Codegen;
+using Jasper.Http.Routing.Codegen;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public class RouteArgument : ISegment
     {

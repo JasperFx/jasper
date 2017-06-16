@@ -7,11 +7,11 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
 using Jasper.Configuration;
-using JasperHttp.Routing;
+using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Http;
 using StructureMap;
 
-namespace JasperHttp.Model
+namespace Jasper.Http.Model
 {
     public class RouteChain : Chain<RouteChain, ModifyRouteAttribute>,IGenerates<RouteHandler>
     {

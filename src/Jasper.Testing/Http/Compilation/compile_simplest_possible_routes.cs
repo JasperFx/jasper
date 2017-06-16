@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Compilation
+namespace Jasper.Testing.Http.Compilation
 {
     public class compile_simplest_possible_routes : CompilationContext<SimpleRouteHandler>
     {
@@ -14,7 +13,7 @@ namespace JasperHttp.Tests.Compilation
 
             await Execute(x => x.Go());
 
-            SimpleRouteHandler.GoWasCalled.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(SimpleRouteHandler.GoWasCalled);
         }
 
         [Fact]
@@ -24,7 +23,7 @@ namespace JasperHttp.Tests.Compilation
 
             await Execute(x => x.GoAsync());
 
-            SimpleRouteHandler.GoAsyncWasCalled.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(SimpleRouteHandler.GoAsyncWasCalled);
         }
     }
 

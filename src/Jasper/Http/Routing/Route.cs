@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
-using JasperHttp.Model;
+using Jasper.Http.Model;
 using Microsoft.AspNetCore.Http;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public class Route
     {

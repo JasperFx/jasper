@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
-using JasperHttp.Routing;
+using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Compilation
+namespace Jasper.Testing.Http.Compilation
 {
     public class using_route_variables : CompilationContext<HandlerWithParameters>
     {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Jasper.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StructureMap;
 
-namespace JasperHttp.Configuration
+namespace Jasper.Http.Configuration
 {
     internal class HostBuilder : IWebHostBuilder
     {

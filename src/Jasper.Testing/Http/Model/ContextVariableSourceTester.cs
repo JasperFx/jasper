@@ -1,13 +1,12 @@
 ﻿using System.Security.Claims;
 using System.Threading;
-using Alba.Stubs;
-using JasperHttp.Model;
+using Jasper.Http.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Model
+namespace Jasper.Testing.Http.Model
 {
     public class ContextVariableSourceTester
     {
@@ -15,7 +14,7 @@ namespace JasperHttp.Tests.Model
 
         private void matchesAndCanCreate<T>()
         {
-            theSource.Matches(typeof(T)).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(theSource.Matches(typeof(T)));
             theSource.Create(typeof(T)).VariableType.ShouldBe(typeof(T));
         }
 

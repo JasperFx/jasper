@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
-using JasperHttp.Routing.Codegen;
+using Jasper.Http.Routing.Codegen;
 using Microsoft.AspNetCore.Http;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public class Router
     {

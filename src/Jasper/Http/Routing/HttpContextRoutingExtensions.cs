@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using JasperHttp.Routing.Codegen;
+using Jasper.Http.Routing.Codegen;
 using Microsoft.AspNetCore.Http;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public static class HttpContextRoutingExtensions
     {

@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using Alba.Stubs;
-using JasperHttp.Routing;
+using Jasper.Http.Routing;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public class SpreadTests
     {

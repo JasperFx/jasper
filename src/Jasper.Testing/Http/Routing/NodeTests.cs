@@ -1,15 +1,15 @@
-﻿using JasperHttp.Routing;
+﻿using Jasper.Http.Routing;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public class NodeTests
     {
         [Fact]
         public void parent_route()
         {
-            new Node(string.Empty).ParentRoute.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(new Node(string.Empty).ParentRoute);
 
             new Node("a").ParentRoute.ShouldBe(string.Empty);
 

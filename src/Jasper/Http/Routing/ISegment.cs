@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Jasper.Codegen;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public interface ISegment
     {

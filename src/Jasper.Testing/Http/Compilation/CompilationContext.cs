@@ -9,12 +9,12 @@ using Baseline.Reflection;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
-using JasperHttp.Model;
+using Jasper.Http.Model;
 using Shouldly;
 using StructureMap;
 using Xunit;
 
-namespace JasperHttp.Tests.Compilation
+namespace Jasper.Testing.Http.Compilation
 {
     [Collection("compilation")]
     public abstract class CompilationContext<T>
@@ -82,7 +82,7 @@ namespace JasperHttp.Tests.Compilation
 
         public void AllRoutesCompileSuccessfully()
         {
-            _routes.Value.Count.ShouldBeGreaterThan(0);
+            ShouldBeTestExtensions.ShouldBeGreaterThan(_routes.Value.Count, 0);
         }
 
 

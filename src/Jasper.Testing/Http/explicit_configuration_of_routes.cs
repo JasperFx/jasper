@@ -4,11 +4,11 @@ using System.Linq;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
-using JasperHttp.Model;
+using Jasper.Http.Model;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests
+namespace Jasper.Testing.Http
 {
     public class explicit_configuration_of_routes
     {
@@ -38,7 +38,7 @@ namespace JasperHttp.Tests
 
             var frames = chain.DetermineFrames();
 
-            frames.OfType<FakeTransaction>().Any().ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(frames.OfType<FakeTransaction>().Any());
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace JasperHttp.Tests
 
             var frames = chain.DetermineFrames();
 
-            frames.OfType<FakeWrapper>().Any().ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(frames.OfType<FakeWrapper>().Any());
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace JasperHttp.Tests
 
             var frames = chain.DetermineFrames();
 
-            frames.OfType<FakeWrapper2>().Any().ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(frames.OfType<FakeWrapper2>().Any());
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace JasperHttp.Tests
 
             var frames = chain.DetermineFrames();
 
-            frames.OfType<FakeWrapper3>().Any().ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(frames.OfType<FakeWrapper3>().Any());
         }
     }
 

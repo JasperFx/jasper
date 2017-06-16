@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Baseline;
 using Jasper.Configuration;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
-namespace JasperHttp.Configuration
+namespace Jasper.Http.Configuration
 {
     public class JasperStartup : IStartup
     {

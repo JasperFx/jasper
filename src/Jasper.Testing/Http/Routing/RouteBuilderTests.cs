@@ -1,8 +1,8 @@
-﻿using JasperHttp.Routing;
+﻿using Jasper.Http.Routing;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public class RouteBuilderTests
     {
@@ -39,7 +39,7 @@ namespace JasperHttp.Tests.Routing
         public void no_input_type_if_none()
         {
             var route = RouteBuilder.Build<SomeEndpoint>(x => x.delete_something(null));
-            route.InputType.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(route.InputType);
         }
     }
 

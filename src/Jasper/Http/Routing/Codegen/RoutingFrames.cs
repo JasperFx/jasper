@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace JasperHttp.Routing.Codegen
+namespace Jasper.Http.Routing.Codegen
 {
     public static class RoutingFrames
     {

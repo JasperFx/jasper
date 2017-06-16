@@ -3,17 +3,14 @@ using System.Threading.Tasks;
 using Alba;
 using AlbaForJasper;
 using Baseline;
-using Jasper;
-using Jasper.Configuration;
+using Jasper.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.AlbaSupport
+namespace Jasper.Testing.Http.AlbaSupport
 {
     public class JasperSystemTester : IDisposable
     {

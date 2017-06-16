@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using Jasper.Configuration;
 
-namespace JasperHttp.Model
+namespace Jasper.Http.Model
 {
     public abstract class ModifyRouteAttribute : Attribute, IModifyChain<RouteChain>
     {

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
-using JasperHttp.Model;
+using Jasper.Http.Model;
 using Microsoft.AspNetCore.Http;
 
-namespace JasperHttp.Routing.Codegen
+namespace Jasper.Http.Routing.Codegen
 {
     public class ParsedRouteArgument : Frame
     {

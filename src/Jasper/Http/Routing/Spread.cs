@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Codegen;
 using Microsoft.AspNetCore.Http;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public class Spread : ISegment
     {

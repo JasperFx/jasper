@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Baseline.Reflection;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
-using JasperHttp.Model;
-using JasperHttp.Routing;
-using JasperHttp.Routing.Codegen;
+using Jasper.Http.Model;
+using Jasper.Http.Routing;
+using Jasper.Http.Routing.Codegen;
 using Shouldly;
 using StructureMap;
 using Xunit;
 
-namespace JasperHttp.Tests.Model
+namespace Jasper.Testing.Http.Model
 {
     public class RouteChainTester
     {
@@ -34,14 +34,14 @@ namespace JasperHttp.Tests.Model
         public void determine_input_type_if_there_is_one()
         {
             chainFor(x => x.post_command(null)).InputType.ShouldBe(typeof(Input1));
-            chainFor(x => x.get_command()).InputType.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.get_command()).InputType);
         }
 
         [Fact]
         public void determine_resource_type()
         {
-            chainFor(x => x.post_command(null)).ResourceType.ShouldBeNull();
-            chainFor(x => x.post_input()).ResourceType.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.post_command(null)).ResourceType);
+            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.post_input()).ResourceType);
             chainFor(x => x.get_resource()).ResourceType.ShouldBe(typeof(Resource1));
             chainFor(x => x.get_resource2()).ResourceType.ShouldBe(typeof(Resource2));
         }

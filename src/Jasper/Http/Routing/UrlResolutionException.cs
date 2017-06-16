@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 #endif
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
 #if NET46
     [Serializable]

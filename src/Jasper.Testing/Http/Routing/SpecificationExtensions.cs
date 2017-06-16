@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Shouldly;
 
-namespace JasperHttp.Tests.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public static class SpecificationExtensions
     {
@@ -15,8 +15,8 @@ namespace JasperHttp.Tests.Routing
         {
             try
             {
-                actual.ShouldNotBeNull();
-                expected.ShouldNotBeNull();
+                ShouldBeNullExtensions.ShouldNotBeNull(actual);
+                ShouldBeNullExtensions.ShouldNotBeNull(expected);
 
                 actual.Count.ShouldBe(expected.Count);
 
@@ -50,8 +50,8 @@ namespace JasperHttp.Tests.Routing
                                                                         IEnumerable expected,
                                                                         Func<ELEMENT, KEY> keySelector)
         {
-            actual.ShouldNotBeNull();
-            expected.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(actual);
+            ShouldBeNullExtensions.ShouldNotBeNull(expected);
 
             ELEMENT[] actualArray = actual.ToArray();
             object[] expectedArray = expected.Cast<object>().ToArray();

@@ -4,7 +4,7 @@ using System.Reflection;
 using Jasper.Codegen;
 using Microsoft.AspNetCore.Http;
 
-namespace JasperHttp.Model
+namespace Jasper.Http.Model
 {
     public class ContextVariableSource : IVariableSource
     {

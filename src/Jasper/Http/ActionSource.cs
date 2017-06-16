@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +9,7 @@ using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
 using TypeExtensions = Baseline.TypeExtensions;
 
-namespace JasperHttp
+namespace Jasper.Http
 {
     public class ActionSource
     {

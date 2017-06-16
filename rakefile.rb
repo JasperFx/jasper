@@ -81,10 +81,12 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj"
-    sh "dotnet test src/JasperBus.Marten.Tests/JasperBus.Marten.Tests.csproj"
+    
 	sh "dotnet test src/JasperBus.Tests/JasperBus.Tests.csproj"
-	sh "dotnet test src/JasperHttp.Tests/JasperHttp.Tests.csproj"
 	sh "dotnet test src/JasperServer.Tests/JasperServer.Tests.csproj"
+	
+	
+	sh "dotnet test src/JasperBus.Marten.Tests/JasperBus.Marten.Tests.csproj"
 end
 
 desc 'npm install for Diagnostics'

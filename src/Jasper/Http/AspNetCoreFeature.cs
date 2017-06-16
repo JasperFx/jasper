@@ -1,14 +1,13 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper;
 using Jasper.Codegen;
 using Jasper.Configuration;
-using JasperHttp.Configuration;
+using Jasper.Http.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using StructureMap;
 
-namespace JasperHttp
+namespace Jasper.Http
 {
     public class AspNetCoreFeature : IFeature
     {

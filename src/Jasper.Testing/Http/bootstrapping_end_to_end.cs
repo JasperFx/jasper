@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Jasper;
-using JasperHttp.Model;
-using JasperHttp.Routing;
+using Jasper.Http;
+using Jasper.Http.Model;
+using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests
+namespace Jasper.Testing.Http
 {
     public class bootstrapping_end_to_end
     {
@@ -25,8 +25,8 @@ namespace JasperHttp.Tests
         [Fact]
         public void route_graph_is_registered()
         {
-            theRuntime.Container.GetInstance<RouteGraph>()
-                .Any().ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(theRuntime.Container.GetInstance<RouteGraph>()
+                                              .Any());
         }
 
         [Fact]
@@ -34,15 +34,14 @@ namespace JasperHttp.Tests
         {
             var routes = theRuntime.Container.GetInstance<RouteGraph>();
 
-            routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)).ShouldBeTrue();
-            routes.Any(x => x.Action.HandlerType == typeof(OtherEndpoint)).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)));
+            ShouldBeBooleanExtensions.ShouldBeTrue(routes.Any(x => x.Action.HandlerType == typeof(OtherEndpoint)));
         }
 
         [Fact]
         public void url_registry_is_registered()
         {
-            theRuntime.Container.Model.HasDefaultImplementationFor<IUrlRegistry>()
-                .ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(theRuntime.Container.Model.HasDefaultImplementationFor<IUrlRegistry>());
         }
 
         [Fact]

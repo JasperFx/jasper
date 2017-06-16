@@ -1,9 +1,8 @@
-﻿using Jasper;
-using JasperHttp.Configuration;
+﻿using Jasper.Http.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JasperHttp
+namespace Jasper.Http
 {
     public static class JasperWebHostBuilderExtensions
     {

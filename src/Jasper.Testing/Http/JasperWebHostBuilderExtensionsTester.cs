@@ -1,12 +1,12 @@
 ﻿using System;
-using Jasper;
 using Jasper.Configuration;
+using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests
+namespace Jasper.Testing.Http
 {
     public class JasperWebHostBuilderExtensionsTester
     {
@@ -46,11 +46,11 @@ namespace JasperHttp.Tests
         public void jasper_runtime_is_disposed_when_the_host_is_disposed()
         {
             var runtime = theHost.Services.GetService<JasperRuntime>();
-            runtime.IsDisposed.ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(runtime.IsDisposed);
 
             theHost.Dispose();
 
-            runtime.IsDisposed.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(runtime.IsDisposed);
         }
 
         public interface IService { }

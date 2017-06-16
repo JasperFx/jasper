@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Alba.Stubs;
-using JasperHttp.Routing;
+using Jasper.Http.Routing;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public class RouteTests
     {
@@ -80,7 +80,7 @@ namespace JasperHttp.Tests.Routing
         [Fact]
         public void should_have_the_invoker()
         {
-            route.Invoker.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(route.Invoker);
         }
 
         [Fact]

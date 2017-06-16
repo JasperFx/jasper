@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace JasperHttp.Model
+namespace Jasper.Http.Model
 {
     public abstract class RouteHandler
     {

@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Jasper;
 using Jasper.Codegen;
 using Jasper.Configuration;
-using JasperHttp.Model;
-using JasperHttp.Routing;
+using Jasper.Http.Model;
+using Jasper.Http.Routing;
 using StructureMap;
 
-namespace JasperHttp
+namespace Jasper.Http
 {
     public class HttpServices : ServiceRegistry
     {

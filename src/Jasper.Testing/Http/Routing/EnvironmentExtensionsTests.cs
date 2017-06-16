@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Alba.Stubs;
-using JasperHttp.Routing;
+using Jasper.Http.Routing;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public class EnvironmentExtensionsTests
     {
@@ -16,7 +16,7 @@ namespace JasperHttp.Tests.Routing
         [Fact]
         public void get_route_data_from_null_state()
         {
-            theContext.GetRouteData("foo").ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(theContext.GetRouteData("foo"));
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace JasperHttp.Tests.Routing
         {
             theContext.Items.Add(HttpContextRoutingExtensions.RouteData, new Dictionary<string, object>());
 
-            theContext.GetRouteData("foo").ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(theContext.GetRouteData("foo"));
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace JasperHttp.Tests.Routing
         [Fact]
         public void get_route_data_dictionary_from_empty_state()
         {
-            theContext.GetRouteData().Keys.Any().ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(theContext.GetRouteData().Keys.Any());
         }
 
         [Fact]

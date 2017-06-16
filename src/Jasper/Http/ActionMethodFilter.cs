@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using Baseline.Reflection;
 using StructureMap.Graph;
 using TypeExtensions = Baseline.TypeExtensions;
 
-namespace JasperHttp
+namespace Jasper.Http
 {
     internal class ActionMethodFilter : CompositeFilter<MethodInfo>
     {

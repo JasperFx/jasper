@@ -2,7 +2,7 @@
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
 
-namespace JasperHttp.Routing.Codegen
+namespace Jasper.Http.Routing.Codegen
 {
     public class StringRouteArgument : Frame
     {

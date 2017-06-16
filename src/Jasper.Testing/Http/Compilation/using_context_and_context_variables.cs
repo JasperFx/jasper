@@ -1,11 +1,10 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
-namespace JasperHttp.Tests.Compilation
+namespace Jasper.Testing.Http.Compilation
 {
     public class using_context_and_context_variables : CompilationContext<ContextUsingHandler>
     {

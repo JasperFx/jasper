@@ -6,9 +6,9 @@ using System.Reflection;
 using Baseline;
 using Baseline.Conversion;
 using Baseline.Reflection;
-using HandlerMethods = Baseline.LightweightCache<string, JasperHttp.Routing.Route>;
+using HandlerMethods = Baseline.LightweightCache<string, Jasper.Http.Routing.Route>;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     public class UrlGraph : IUrlRegistry
     {

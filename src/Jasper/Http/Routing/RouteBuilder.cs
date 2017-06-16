@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 
-namespace JasperHttp.Routing
+namespace Jasper.Http.Routing
 {
     // This is mostly tested through Storyteller specs
     public static class RouteBuilder
