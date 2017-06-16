@@ -12,24 +12,6 @@ namespace Jasper.Testing.Http
 {
     public class explicit_configuration_of_routes
     {
-        /*
-         * Configure()
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         */
 
         [Fact]
         public void applies_the_Configure_RoutedChain_method()

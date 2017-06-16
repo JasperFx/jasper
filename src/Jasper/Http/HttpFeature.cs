@@ -11,8 +11,8 @@ namespace Jasper.Http
     {
         public HttpServices(RouteGraph routes)
         {
-            For<RouteGraph>().Use(routes);
-            For<IUrlRegistry>().Use(routes.Router.Urls);
+            AddService(routes);
+            AddService<IUrlRegistry>(routes.Router.Urls);
         }
     }
 

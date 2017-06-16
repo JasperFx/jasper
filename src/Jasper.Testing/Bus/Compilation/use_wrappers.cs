@@ -15,11 +15,11 @@ namespace Jasper.Testing.Bus.Compilation
 {
     public class use_wrappers : CompilationContext<TransactionalHandler>
     {
-        private readonly Tracking theTracking = new Tracking();
+        private readonly Http.Tracking theTracking = new Http.Tracking();
 
         public use_wrappers()
         {
-            services.For<Tracking>().Use(theTracking);
+            services.For<Http.Tracking>().Use(theTracking);
             services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
 
             
@@ -33,9 +33,9 @@ namespace Jasper.Testing.Bus.Compilation
 
             await Execute(message);
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.DisposedTheSession);
-            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.OpenedSession);
-            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.CalledSaveChanges);
+            theTracking.DisposedTheSession.ShouldBeTrue();
+            theTracking.OpenedSession.ShouldBeTrue();
+            theTracking.CalledSaveChanges.ShouldBeTrue();
         }
 
         [Fact]
@@ -45,9 +45,9 @@ namespace Jasper.Testing.Bus.Compilation
 
             await Execute(message);
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.DisposedTheSession);
-            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.OpenedSession);
-            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.CalledSaveChanges);
+            theTracking.DisposedTheSession.ShouldBeTrue();
+            theTracking.OpenedSession.ShouldBeTrue();
+            theTracking.CalledSaveChanges.ShouldBeTrue();
         }
     }
 
@@ -66,12 +66,7 @@ namespace Jasper.Testing.Bus.Compilation
         }
     }
 
-    public class Tracking
-    {
-        public bool DisposedTheSession;
-        public bool OpenedSession;
-        public bool CalledSaveChanges;
-    }
+
 
     public class GenericFakeTransactionAttribute : ModifyChainAttribute
     {
