@@ -13,8 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Jasper.Testing\Jasper.Testing.csproj" />
     <ProjectReference Include="..\JasperBus.Marten\JasperBus.Marten.csproj" />
-    <ProjectReference Include="..\JasperBus.Tests\JasperBus.Tests.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
 
@@ -24,6 +24,10 @@
     <PackageReference Include="Marten" Version="1.5.0" />
     <PackageReference Include="Shouldly" Version="2.8.2" />
     <PackageReference Include="xunit" Version="2.2.0-beta5-build3474" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>

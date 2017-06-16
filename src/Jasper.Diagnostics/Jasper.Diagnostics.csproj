@@ -20,13 +20,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs" Exclude="bin\**;obj\**;**\*.xproj;packages\**" />
     <EmbeddedResource Include="resources\**\*.js;resources\**\*.css;resources\**\*.json" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
-    <ProjectReference Include="..\JasperBus\JasperBus.csproj" />
   </ItemGroup>
 
   <ItemGroup>

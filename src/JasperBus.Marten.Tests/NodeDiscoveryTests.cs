@@ -10,7 +10,9 @@ using JasperBus.Tracking;
 using JasperBus.Transports.LightningQueues;
 using Marten;
 using Shouldly;
+using TestMessages;
 using Xunit;
+using PingMessage = JasperBus.Tests.Samples.PingMessage;
 
 namespace JasperBus.Marten.Tests
 {

@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Diagnostics\Jasper.Diagnostics.csproj" />
-    <ProjectReference Include="..\JasperBus\JasperBus.csproj" />
     <ProjectReference Include="..\DiagnosticsHarnessMessages\DiagnosticsHarnessMessages.csproj" />
   </ItemGroup>
 
