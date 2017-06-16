@@ -2,20 +2,10 @@
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Http.Model;
-using Jasper.Http.Routing;
 using StructureMap;
 
 namespace Jasper.Http
 {
-    public class HttpServices : ServiceRegistry
-    {
-        public HttpServices(RouteGraph routes)
-        {
-            AddService(routes);
-            AddService<IUrlRegistry>(routes.Router.Urls);
-        }
-    }
-
     public class HttpFeature : IFeature
     {
         public readonly ActionSource Actions = new ActionSource();
