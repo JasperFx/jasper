@@ -30,6 +30,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JasperServer.Tests", "src\J
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JasperBus.Marten.Tests", "src\JasperBus.Marten.Tests\JasperBus.Marten.Tests.csproj", "{540FCBBC-C152-4BAC-B5F6-B0760AFCDE71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "src\IntegrationTests\IntegrationTests.csproj", "{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{540FCBBC-C152-4BAC-B5F6-B0760AFCDE71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{540FCBBC-C152-4BAC-B5F6-B0760AFCDE71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{540FCBBC-C152-4BAC-B5F6-B0760AFCDE71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -68,7 +68,8 @@ desc 'Compile the code'
 task :compile => [:clean, :version, :npm_install] do
 	sh "dotnet restore Jasper.sln"
 	sh "dotnet build src/Jasper.Testing/Jasper.Testing.csproj"
-	sh "dotnet build src/JasperBus.Tests/JasperBus.Tests.csproj"
+	sh "dotnet build src/IntegrationTests/IntegrationTests.csproj"
+
 
   Dir.chdir("src/Jasper.Diagnostics") do
     sh "yarn build:prod"
@@ -81,12 +82,15 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj"
-    
-	sh "dotnet test src/JasperBus.Tests/JasperBus.Tests.csproj"
 	sh "dotnet test src/JasperServer.Tests/JasperServer.Tests.csproj"
-	
-	
+
+end
+
+desc "Integration Tests"
+task :integrationtests => [:compile] do
+	sh "dotnet test src/IntegrationTests/IntegrationTests.csproj"
 	sh "dotnet test src/JasperBus.Marten.Tests/JasperBus.Marten.Tests.csproj"
+	
 end
 
 desc 'npm install for Diagnostics'
