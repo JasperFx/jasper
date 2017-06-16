@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JasperBus\JasperBus.csproj" />
-    <ProjectReference Include="..\JasperHttp\JasperHttp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
