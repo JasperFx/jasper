@@ -82,7 +82,6 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj"
-	sh "dotnet test src/JasperServer.Tests/JasperServer.Tests.csproj"
 
 end
 

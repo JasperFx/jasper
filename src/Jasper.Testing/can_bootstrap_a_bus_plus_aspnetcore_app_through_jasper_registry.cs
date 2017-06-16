@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Jasper;
 using Jasper.Bus;
+using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace JasperServer.Tests
+namespace Jasper.Testing
 {
     public class can_bootstrap_a_bus_plus_aspnetcore_app_through_jasper_registry : IDisposable
     {
@@ -26,7 +27,7 @@ namespace JasperServer.Tests
             using (var client = new HttpClient())
             {
                 var text = await client.GetStringAsync("http://localhost:3002");
-                text.ShouldContain("Hello from a hybrid Jasper application");
+                "Hello from a hybrid Jasper application".ShouldContain(text);
 
             }
         }
@@ -34,8 +35,7 @@ namespace JasperServer.Tests
         [Fact]
         public void has_the_bus()
         {
-            theRuntime.Container.GetInstance<IServiceBus>()
-                .ShouldNotBeNull();
+            theRuntime.Container.GetInstance<IServiceBus>().ShouldNotBeNull();
         }
 
         [Fact]
@@ -62,6 +62,9 @@ namespace JasperServer.Tests
     {
         public JasperServerApp()
         {
+            Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+            Services.AddService<IFakeService, FakeService>();
+            Services.AddService<IWidget, Widget>(); 
             UseStartup<Startup>();
             Hosting.Port = 3002;
         }

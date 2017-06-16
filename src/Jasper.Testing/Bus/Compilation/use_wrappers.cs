@@ -7,6 +7,7 @@ using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
 using Jasper.Testing.Bus.Runtime;
+using Jasper.Testing.Http;
 using Shouldly;
 using Xunit;
 
@@ -113,49 +114,5 @@ namespace Jasper.Testing.Bus.Compilation
         }
     }
 
-    public interface IFakeStore
-    {
-        IFakeSession OpenSession();
-    }
 
-    public class FakeStore : IFakeStore
-    {
-        private readonly Tracking _tracking;
-
-        public FakeStore(Tracking tracking)
-        {
-            _tracking = tracking;
-        }
-
-        public IFakeSession OpenSession()
-        {
-            _tracking.OpenedSession = true;
-            return new FakeSession(_tracking);
-        }
-    }
-
-    public interface IFakeSession : IDisposable
-    {
-        void SaveChanges();
-    }
-
-    public class FakeSession : IFakeSession
-    {
-        private readonly Tracking _tracking;
-
-        public FakeSession(Tracking tracking)
-        {
-            _tracking = tracking;
-        }
-
-        public void Dispose()
-        {
-            _tracking.DisposedTheSession = true;
-        }
-
-        public void SaveChanges()
-        {
-            _tracking.CalledSaveChanges = true;
-        }
-    }
 }

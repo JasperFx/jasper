@@ -1,9 +1,8 @@
 ﻿using Jasper.Bus;
 using Jasper.Http;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
-namespace JasperServer
+namespace Jasper
 {
     public class JasperBusWithAspNetCoreRegistry : JasperBusRegistry
     {
