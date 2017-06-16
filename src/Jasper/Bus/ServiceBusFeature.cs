@@ -25,7 +25,7 @@ namespace Jasper.Bus
 
         public Policies Policies { get; } = new Policies();
 
-        public readonly Registry Services = new ServiceBusRegistry();
+        public readonly ServiceRegistry Services = new ServiceBusRegistry();
 
         public void Dispose()
         {

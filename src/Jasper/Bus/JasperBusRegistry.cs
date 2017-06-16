@@ -10,16 +10,15 @@ using StructureMap.TypeRules;
 
 namespace Jasper.Bus
 {
-    public class JasperBusRegistry : JasperRegistry
+    public class JasperBusRegistry : JasperRegistry, IBusConfiguration
     {
         private readonly ServiceBusFeature _feature;
 
-        public JasperBusRegistry()
+        public JasperBusRegistry(ServiceBusFeature feature = null)
         {
-            UseFeature<ServiceBusFeature>();
+            _feature = feature ?? Feature<ServiceBusFeature>();
 
-            _feature = Feature<ServiceBusFeature>();
-            Serialization = new SerializationExpression(this);
+            Serialization = new SerializationExpression(_feature);
         }
 
         public HandlerSource Handlers => _feature.Handlers;
@@ -104,9 +103,9 @@ namespace Jasper.Bus
 
         public class SerializationExpression
         {
-            private readonly JasperBusRegistry _parent;
+            private readonly ServiceBusFeature _parent;
 
-            public SerializationExpression(JasperBusRegistry parent)
+            public SerializationExpression(ServiceBusFeature parent)
             {
                 _parent = parent;
             }
@@ -114,7 +113,7 @@ namespace Jasper.Bus
 
             public SerializationExpression Add<T>() where T : IMessageSerializer
             {
-                _parent._feature.Services.For<IMessageSerializer>().Add<T>();
+                _parent.Services.For<IMessageSerializer>().Add<T>();
                 return this;
             }
 
@@ -126,18 +125,18 @@ namespace Jasper.Bus
             /// <returns></returns>
             public SerializationExpression ContentPreferenceOrder(params string[] contentTypes)
             {
-                _parent._feature.Channels.AcceptedContentTypes.Clear();
-                _parent._feature.Channels.AcceptedContentTypes.AddRange(contentTypes);
+                _parent.Channels.AcceptedContentTypes.Clear();
+                _parent.Channels.AcceptedContentTypes.AddRange(contentTypes);
                 return this;
             }
         }
 
         public class SubscriptionExpression
         {
-            private readonly JasperBusRegistry _parent;
+            private readonly ServiceBusFeature _parent;
             private readonly Uri _receiving;
 
-            public SubscriptionExpression(JasperBusRegistry parent, Uri receiving)
+            public SubscriptionExpression(ServiceBusFeature parent, Uri receiving)
             {
                 _parent = parent;
                 _receiving = receiving;
@@ -202,12 +201,12 @@ namespace Jasper.Bus
 
         public SubscriptionExpression SubscribeAt(Uri receiving)
         {
-            return new SubscriptionExpression(this, receiving);
+            return new SubscriptionExpression(_feature, receiving);
         }
 
         public SubscriptionExpression SubscribeLocally()
         {
-            return new SubscriptionExpression(this, null);
+            return new SubscriptionExpression(_feature, null);
         }
 
         public ChannelExpression Channel(Uri uri)

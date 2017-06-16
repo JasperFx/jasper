@@ -4,11 +4,12 @@ using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.InMemory;
 using Jasper.Bus.Transports.LightningQueues;
+using Jasper.Configuration;
 using StructureMap;
 
 namespace Jasper.Bus
 {
-    internal class ServiceBusRegistry : Registry
+    internal class ServiceBusRegistry : ServiceRegistry
     {
         internal ServiceBusRegistry()
         {
