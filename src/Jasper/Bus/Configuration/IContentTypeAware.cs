@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JasperBus.Configuration
+namespace Jasper.Bus.Configuration
 {
     internal interface IContentTypeAware
     {

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using JasperBus.Configuration;
-using JasperBus.Model;
-using JasperBus.Runtime;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Transports.InMemory
+namespace Jasper.Bus.Transports.InMemory
 {
     public class InMemoryQueue : IDisposable
     {

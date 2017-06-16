@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JasperBus.Runtime.Routing
+namespace Jasper.Bus.Runtime.Routing
 {
     public interface IRoutingRule
     {

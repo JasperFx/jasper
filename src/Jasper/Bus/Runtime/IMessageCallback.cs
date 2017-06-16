@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public interface IMessageCallback
     {

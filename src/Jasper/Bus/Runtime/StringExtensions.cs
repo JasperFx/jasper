@@ -2,7 +2,7 @@
 using System.Linq;
 using Baseline;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public static class StringExtensions
     {

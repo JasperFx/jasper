@@ -1,5 +1,5 @@
 using System.Linq;
-using JasperBus.Model;
+using Jasper.Bus.Model;
 using Jasper.Remotes.Messaging;
 
 namespace Jasper.Diagnostics.Messages

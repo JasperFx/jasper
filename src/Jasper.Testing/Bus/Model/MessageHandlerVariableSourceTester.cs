@@ -1,10 +1,10 @@
-﻿using JasperBus.Model;
-using JasperBus.Runtime;
-using JasperBus.Tests.Runtime;
+﻿using Jasper.Bus.Model;
+using Jasper.Bus.Runtime;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Model
+namespace Jasper.Testing.Bus.Model
 {
     public class MessageHandlerVariableSourceTester
     {
@@ -13,7 +13,7 @@ namespace JasperBus.Tests.Model
         {
             var source = new MessageHandlerVariableSource(typeof(Message1));
 
-            source.Matches(typeof(Envelope)).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(source.Matches(typeof(Envelope)));
 
             var variable = source.Create(typeof(Envelope));
 
@@ -27,7 +27,7 @@ namespace JasperBus.Tests.Model
         {
             var source = new MessageHandlerVariableSource(typeof(Message1));
 
-            source.Matches(typeof(Message1)).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(source.Matches(typeof(Message1)));
 
             var variable = source.Create(typeof(Message1));
 

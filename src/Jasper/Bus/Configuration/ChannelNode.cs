@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Routing;
 using System.Threading.Tasks;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Routing;
 
-namespace JasperBus.Configuration
+namespace Jasper.Bus.Configuration
 {
     public enum DeliveryMode
     {

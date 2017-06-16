@@ -1,16 +1,15 @@
-﻿using JasperBus.Configuration;
+﻿using Jasper.Bus.Configuration;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Bootstrapping
+namespace Jasper.Testing.Bus.Bootstrapping
 {
     public class registering_services : BootstrappingContext
     {
         [Fact]
         public void channel_graph_is_registered_in_the_container()
         {
-            theRuntime.Container.GetInstance<ChannelGraph>()
-                .ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(theRuntime.Container.GetInstance<ChannelGraph>());
         }
     }
 }

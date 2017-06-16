@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Subscriptions;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime.Subscriptions
+namespace Jasper.Testing.Bus.Runtime.Subscriptions
 {
 
     public class LocalSubscriptionsTester

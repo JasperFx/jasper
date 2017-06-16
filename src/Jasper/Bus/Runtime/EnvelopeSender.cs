@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JasperBus.Configuration;
-using JasperBus.Runtime.Serializers;
 using System.Threading.Tasks;
-using JasperBus.Runtime.Subscriptions;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Runtime.Subscriptions;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public class EnvelopeSender : IEnvelopeSender
     {

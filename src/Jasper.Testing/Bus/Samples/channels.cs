@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Jasper;
-using JasperBus.Runtime;
-using Shouldly;
-using Xunit;
+using Jasper.Bus;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Tests.Samples
+namespace Jasper.Testing.Bus.Samples
 {
     // SAMPLE: SampleSettings
     public class SampleSettings

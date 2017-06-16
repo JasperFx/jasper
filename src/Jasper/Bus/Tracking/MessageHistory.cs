@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Tracking
+namespace Jasper.Bus.Tracking
 {
     public class MessageHistory
     {

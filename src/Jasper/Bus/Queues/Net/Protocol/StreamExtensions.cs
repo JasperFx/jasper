@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace JasperBus.Queues.Net.Protocol
+namespace Jasper.Bus.Queues.Net.Protocol
 {
     public static class StreamExtensions
     {

@@ -3,17 +3,17 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
-using JasperBus.Queues.Net.Protocol;
-using JasperBus.Queues.Net.Protocol.V1;
-using JasperBus.Queues.Serialization;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Queues.Net.Protocol;
+using Jasper.Bus.Queues.Net.Protocol.V1;
+using Jasper.Bus.Queues.Serialization;
+using Jasper.Bus.Queues.Storage;
 using Microsoft.Reactive.Testing;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Net.Protocol.V1
+namespace Jasper.Testing.Bus.Queues.Net.Protocol.V1
 {
     [Collection("SharedTestDirectory")]
     public class ReceivingProtocolTests : IDisposable
@@ -41,7 +41,7 @@ namespace JasperBus.Tests.Queues.Net.Protocol.V1
                 ms.Position = 0;
                 using (_protocol.LengthChunk(ms).Subscribe(x => subscribeCalled = true))
                 {
-                    subscribeCalled.ShouldBeFalse();
+                    ShouldBeBooleanExtensions.ShouldBeFalse(subscribeCalled);
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace JasperBus.Tests.Queues.Net.Protocol.V1
                 using (_protocol.MessagesChunk(ms, bytes.Length)
                       .Subscribe(x => subscribeCalled = true))
                 {
-                    subscribeCalled.ShouldBeFalse();
+                    ShouldBeBooleanExtensions.ShouldBeFalse(subscribeCalled);
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace JasperBus.Tests.Queues.Net.Protocol.V1
                 using (_protocol.ReceiveStream(Observable.Return(ms), "me").Catch((Exception ex) => Observable.Empty<Message>())
                     .Subscribe(x => subscribeCalled = true))
                 {
-                    subscribeCalled.ShouldBeFalse();
+                    ShouldBeBooleanExtensions.ShouldBeFalse(subscribeCalled);
                 }
             }
         }
@@ -153,8 +153,8 @@ namespace JasperBus.Tests.Queues.Net.Protocol.V1
                 using (_protocol.ReceiveStream(Observable.Return(ms), "me")
                     .Subscribe(x => subscribeCalled = true))
                 {
-                    _logger.ErrorMessages.Any(x => x.StartsWith("Error deserializing messages")).ShouldBeTrue();
-                    subscribeCalled.ShouldBeFalse();
+                    ShouldBeBooleanExtensions.ShouldBeTrue(_logger.ErrorMessages.Any(x => x.StartsWith("Error deserializing messages")));
+                    ShouldBeBooleanExtensions.ShouldBeFalse(subscribeCalled);
                 }
             }
         }

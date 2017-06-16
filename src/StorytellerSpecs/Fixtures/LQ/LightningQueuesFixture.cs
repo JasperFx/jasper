@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Jasper;
-using JasperBus;
-using JasperBus.Model;
-using JasperBus.Runtime;
+using Jasper.Bus;
+using Jasper.Bus.Model;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures.LQ

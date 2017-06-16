@@ -1,12 +1,12 @@
 ﻿using System.Linq;
-using JasperBus.Runtime.Routing;
-using JasperBus.Tests.Runtime;
+using Jasper.Bus.Runtime.Routing;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using StructureMap.TypeRules;
 using TestMessages;
 using Xunit;
 
-namespace JasperBus.Tests.Bootstrapping
+namespace Jasper.Testing.Bus.Bootstrapping
 {
     public class configuring_channels : BootstrappingContext
     {
@@ -18,8 +18,8 @@ namespace JasperBus.Tests.Bootstrapping
             // Send-only channel
             theRegistry.SendMessage<Message1>().To(Uri2);
 
-            theChannels[Uri1].Incoming.ShouldBeTrue();
-            theChannels[Uri2].Incoming.ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeTrue(theChannels[Uri1].Incoming);
+            ShouldBeBooleanExtensions.ShouldBeFalse(theChannels[Uri2].Incoming);
         }
 
         [Fact]

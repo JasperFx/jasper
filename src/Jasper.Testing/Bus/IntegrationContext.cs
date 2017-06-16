@@ -1,8 +1,8 @@
 ﻿using System;
-using Jasper;
-using JasperBus.Model;
+using Jasper.Bus;
+using Jasper.Bus.Model;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class IntegrationContext : IDisposable
     {

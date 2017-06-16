@@ -2,7 +2,7 @@
 using System.Reflection;
 using StructureMap.Graph;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     // TODO -- might be smart to move this up to Jasper's core
     public class ActionMethodFilter : CompositeFilter<MethodInfo>

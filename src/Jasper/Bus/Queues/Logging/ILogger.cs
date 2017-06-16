@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JasperBus.Queues.Logging
+namespace Jasper.Bus.Queues.Logging
 {
     public interface ILogger
     {

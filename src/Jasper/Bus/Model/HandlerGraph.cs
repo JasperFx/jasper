@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Jasper.Bus.ErrorHandling;
 using Jasper.Codegen;
-using JasperBus.ErrorHandling;
 using StructureMap;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public class HandlerGraph : HandlerSet<HandlerChain, MessageHandler>, IHasErrorHandlers
     {

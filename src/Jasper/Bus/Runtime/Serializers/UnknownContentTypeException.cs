@@ -1,7 +1,7 @@
 ﻿using System;
 using Baseline;
 
-namespace JasperBus.Runtime.Serializers
+namespace Jasper.Bus.Runtime.Serializers
 {
     public class UnknownContentTypeException : Exception
     {

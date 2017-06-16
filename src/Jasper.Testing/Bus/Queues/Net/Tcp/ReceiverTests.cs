@@ -3,16 +3,16 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
-using JasperBus.Queues.Net;
-using JasperBus.Queues.Net.Protocol.V1;
-using JasperBus.Queues.Net.Tcp;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Queues.Net;
+using Jasper.Bus.Queues.Net.Protocol.V1;
+using Jasper.Bus.Queues.Net.Tcp;
+using Jasper.Bus.Queues.Storage;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Net.Tcp
+namespace Jasper.Testing.Bus.Queues.Net.Tcp
 {
     [Collection("SharedTestDirectory")]
     public class ReceiverTests : IDisposable
@@ -48,7 +48,7 @@ namespace JasperBus.Tests.Queues.Net.Tcp
                 {
                     var listenerShouldThrow = new TcpListener(_endpoint);
                     listenerShouldThrow.Start();
-                    true.ShouldBeFalse();
+                    ShouldBeBooleanExtensions.ShouldBeFalse(true);
                 }
                 catch (Exception)
                 {
@@ -82,7 +82,7 @@ namespace JasperBus.Tests.Queues.Net.Tcp
         [Fact]
         public async Task can_handle_connect_then_disconnect()
         {
-            using (_receiver.StartReceiving().Subscribe(x => true.ShouldBeFalse()))
+            using (_receiver.StartReceiving().Subscribe(x => ShouldBeBooleanExtensions.ShouldBeFalse(true)))
             using (var client = new TcpClient())
             {
                 await client.ConnectAsync(_endpoint.Address, _endpoint.Port);
@@ -92,7 +92,7 @@ namespace JasperBus.Tests.Queues.Net.Tcp
         [Fact]
         public async Task can_handle_sending_three_bytes_then_disconnect()
         {
-            using (_receiver.StartReceiving().Subscribe(x => true.ShouldBeFalse()))
+            using (_receiver.StartReceiving().Subscribe(x => ShouldBeBooleanExtensions.ShouldBeFalse(true)))
             using (var client = new TcpClient())
             {
                 await client.ConnectAsync(_endpoint.Address, _endpoint.Port);
@@ -103,7 +103,7 @@ namespace JasperBus.Tests.Queues.Net.Tcp
         [Fact]
         public async Task accepts_concurrently_connected_clients()
         {
-            using (_receiver.StartReceiving().Subscribe(x => true.ShouldBeFalse()))
+            using (_receiver.StartReceiving().Subscribe(x => ShouldBeBooleanExtensions.ShouldBeFalse(true)))
             using(var client1 = new TcpClient())
             using(var client2 = new TcpClient())
             {
@@ -141,9 +141,9 @@ namespace JasperBus.Tests.Queues.Net.Tcp
                 }
                 await Task.WhenAny(receivingCompletionSource.Task, Task.Delay(100));
             }
-            receivingCompletionSource.Task.IsCompleted.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(receivingCompletionSource.Task.IsCompleted);
             var actual = receivingCompletionSource.Task.Result;
-            actual.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(actual);
             actual.Id.ShouldBe(expected.Id);
             actual.Queue.ShouldBe(expected.Queue);
             Encoding.UTF8.GetString(actual.Data).ShouldBe("hello");

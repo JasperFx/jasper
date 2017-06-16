@@ -1,4 +1,4 @@
-using JasperBus.Model;
+using Jasper.Bus.Model;
 
 namespace Jasper.Diagnostics.Messages
 {

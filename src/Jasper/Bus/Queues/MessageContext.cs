@@ -1,4 +1,4 @@
-﻿namespace JasperBus.Queues
+﻿namespace Jasper.Bus.Queues
 {
     public class MessageContext
     {

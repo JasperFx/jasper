@@ -8,8 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Jasper;
+using Jasper.Bus;
 using Jasper.Diagnostics;
-using JasperBus;
 using StructureMap;
 
 namespace DiagnosticsHarness

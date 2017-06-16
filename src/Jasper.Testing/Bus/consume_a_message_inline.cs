@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
-using JasperBus.Tests.Runtime;
+using Jasper.Bus;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class consume_a_message_inline : IntegrationContext
     {

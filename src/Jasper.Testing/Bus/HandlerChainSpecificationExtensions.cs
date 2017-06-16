@@ -2,28 +2,28 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Baseline.Reflection;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Model;
+using Jasper.Bus.Runtime.Invocation;
 using Jasper.Codegen;
-using JasperBus.ErrorHandling;
-using JasperBus.Model;
-using JasperBus.Runtime.Invocation;
 using Shouldly;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public static class HandlerChainSpecificationExtensions
     {
         public static void ShouldHaveHandler<T>(this HandlerChain chain, Expression<Action<T>> expression)
         {
-            chain.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(chain);
 
             var method = ReflectionHelper.GetMethod(expression);
-            chain.Handlers.Any(x => x.Method.Name == method.Name).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(chain.Handlers.Any(x => x.Method.Name == method.Name));
         }
 
         public static void ShouldHaveHandler<T>(this HandlerChain chain, string methodName)
         {
-            chain.ShouldNotBeNull();
-            chain.Handlers.Any(x => x.Method.Name == methodName && x.HandlerType == typeof(T)).ShouldBeTrue();
+            ShouldBeNullExtensions.ShouldNotBeNull(chain);
+            ShouldBeBooleanExtensions.ShouldBeTrue(chain.Handlers.Any(x => x.Method.Name == methodName && x.HandlerType == typeof(T)));
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, Expression<Action<T>> expression)
@@ -31,7 +31,7 @@ namespace JasperBus.Tests
             if (chain == null) return;
 
             var method = ReflectionHelper.GetMethod(expression);
-            chain.Handlers.Any(x => x.Method.Name == method.Name && x.HandlerType == typeof(T)).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(chain.Handlers.Any(x => x.Method.Name == method.Name && x.HandlerType == typeof(T)));
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, string methodName)
@@ -41,29 +41,28 @@ namespace JasperBus.Tests
 
         public static void ShouldBeWrappedWith<T>(this HandlerChain chain) where T : Frame
         {
-            chain.ShouldNotBeNull();
-            chain.Middleware.OfType<T>().Any().ShouldBeTrue();
+            ShouldBeNullExtensions.ShouldNotBeNull(chain);
+            ShouldBeBooleanExtensions.ShouldBeTrue(chain.Middleware.OfType<T>().Any());
         }
 
         public static void ShouldHandleExceptionWith<TEx, TContinuation>(this HandlerChain chain)
             where TEx : Exception
             where TContinuation : IContinuation
         {
-            chain.ErrorHandlers.OfType<ErrorHandler>()
-                .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<TEx>)
-                .SelectMany(x => x.Sources)
-                .OfType<ContinuationSource>()
-                .Any(x => x.Continuation is TContinuation)
-                .ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(chain.ErrorHandlers.OfType<ErrorHandler>()
+                    .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<TEx>)
+                    .SelectMany(x => x.Sources)
+                    .OfType<ContinuationSource>()
+                    .Any(x => x.Continuation is TContinuation));
         }
 
         public static void ShouldMoveToErrorQueue<T>(this HandlerChain chain) where T : Exception
         {
-            chain.ErrorHandlers.OfType<ErrorHandler>()
-                .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<T>)
-                .SelectMany(x => x.Sources)
-                .OfType<MoveToErrorQueueHandler<T>>()
-                .Any().ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(chain.ErrorHandlers.OfType<ErrorHandler>()
+                    .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<T>)
+                    .SelectMany(x => x.Sources)
+                    .OfType<MoveToErrorQueueHandler<T>>()
+                    .Any());
         }
     }
 }

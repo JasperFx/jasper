@@ -13,7 +13,7 @@ namespace Jasper.Testing.Http.Compilation
 
             await Execute(x => x.Go());
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(SimpleRouteHandler.GoWasCalled);
+            SimpleRouteHandler.GoWasCalled.ShouldBeTrue();
         }
 
         [Fact]
@@ -23,7 +23,7 @@ namespace Jasper.Testing.Http.Compilation
 
             await Execute(x => x.GoAsync());
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(SimpleRouteHandler.GoAsyncWasCalled);
+            SimpleRouteHandler.GoAsyncWasCalled.ShouldBeTrue();
         }
     }
 

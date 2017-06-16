@@ -1,8 +1,8 @@
-﻿using JasperBus.Runtime.Subscriptions;
+﻿using Jasper.Bus.Runtime.Subscriptions;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime.Subscriptions
+namespace Jasper.Testing.Bus.Runtime.Subscriptions
 {
     public class SubscriptionMatchesTester
     {
@@ -11,8 +11,8 @@ namespace JasperBus.Tests.Runtime.Subscriptions
         {
             var subscription = Subscription.For<Message1>();
 
-            subscription.Matches(typeof(Message1)).ShouldBeTrue();
-            subscription.Matches(typeof(Message2)).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeTrue(subscription.Matches(typeof(Message1)));
+            ShouldBeBooleanExtensions.ShouldBeFalse(subscription.Matches(typeof(Message2)));
         }
     }
 }

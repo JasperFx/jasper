@@ -1,12 +1,12 @@
-﻿using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
-using JasperBus.Runtime.Serializers;
-using JasperBus.Transports.InMemory;
-using JasperBus.Runtime.Subscriptions;
-using JasperBus.Transports.LightningQueues;
+﻿using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Transports.LightningQueues;
 using StructureMap;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     internal class ServiceBusRegistry : Registry
     {

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Baseline;
 using Baseline.Dates;
-using JasperBus.ErrorHandling;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Runtime.Invocation;
 using NSubstitute;
 using Xunit;
 
-namespace JasperBus.Tests.ErrorHandling
+namespace Jasper.Testing.Bus.ErrorHandling
 {
     public class DelayedRetryContinuationTester
     {

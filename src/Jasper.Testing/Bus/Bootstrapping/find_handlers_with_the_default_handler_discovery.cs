@@ -1,9 +1,9 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using JasperBus.Runtime.Invocation;
+﻿using System.Threading.Tasks;
+using Jasper.Bus;
+using Jasper.Bus.Runtime.Invocation;
 using Xunit;
 
-namespace JasperBus.Tests.Bootstrapping
+namespace Jasper.Testing.Bus.Bootstrapping
 {
     public class find_handlers_with_the_default_handler_discovery : IntegrationContext
     {

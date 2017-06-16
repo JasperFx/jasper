@@ -4,12 +4,13 @@ using System.Linq;
 using System.Security;
 using Baseline;
 using Baseline.Dates;
-using JasperBus.ErrorHandling;
-using JasperBus.Model;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Model;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus.Tests.Samples
+namespace Jasper.Testing.Bus.Samples
 {
     public class error_handling
     {

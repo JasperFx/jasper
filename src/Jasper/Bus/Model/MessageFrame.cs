@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Jasper.Bus.Runtime;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
-using JasperBus.Runtime;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public class MessageFrame : Frame
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues.Storage;
 
-namespace JasperBus.Queues
+namespace Jasper.Bus.Queues
 {
     internal class QueueContext : IQueueContext
     {

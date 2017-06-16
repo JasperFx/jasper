@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Tracking
+namespace Jasper.Bus.Tracking
 {
 
     public class MessageTrack

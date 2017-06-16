@@ -1,5 +1,5 @@
-﻿using Jasper.Http;
-using JasperBus;
+﻿using Jasper.Bus;
+using Jasper.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 

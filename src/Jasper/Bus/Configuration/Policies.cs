@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Baseline;
-using JasperBus.ErrorHandling;
-using JasperBus.Model;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Model;
 
-namespace JasperBus.Configuration
+namespace Jasper.Bus.Configuration
 {
     public class Policies : IHasErrorHandlers
     {

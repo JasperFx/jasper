@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public abstract class MessageHandler
     {

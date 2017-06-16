@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 
-namespace JasperBus.Queues.Storage
+namespace Jasper.Bus.Queues.Storage
 {
     public class NoStorage : IMessageStore
     {

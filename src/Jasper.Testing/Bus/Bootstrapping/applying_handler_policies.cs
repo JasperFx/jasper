@@ -1,11 +1,12 @@
 ﻿using System.Linq;
+using Jasper.Bus;
+using Jasper.Bus.Model;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
-using JasperBus.Model;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Bootstrapping
+namespace Jasper.Testing.Bus.Bootstrapping
 {
     public class applying_handler_policies : IntegrationContext
     {
@@ -14,8 +15,7 @@ namespace JasperBus.Tests.Bootstrapping
         {
             with(_ => _.Policies.Global<WrapWithSimple>());
 
-            chainFor<MovieAdded>().Middleware.OfType<SimpleWrapper>().Any()
-                .ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(chainFor<MovieAdded>().Middleware.OfType<SimpleWrapper>().Any());
         }
     }
 

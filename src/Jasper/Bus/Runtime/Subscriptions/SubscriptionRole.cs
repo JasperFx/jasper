@@ -1,4 +1,4 @@
-namespace JasperBus.Runtime.Subscriptions
+namespace Jasper.Bus.Runtime.Subscriptions
 {
     public enum SubscriptionRole
     {

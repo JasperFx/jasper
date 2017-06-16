@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Reflection;
-using Baseline;
 
-namespace JasperBus.Runtime.Routing
+namespace Jasper.Bus.Runtime.Routing
 {
     public class AssemblyRule : IRoutingRule
     {

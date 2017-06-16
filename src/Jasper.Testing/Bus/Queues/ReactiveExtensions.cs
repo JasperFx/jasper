@@ -3,7 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
-namespace JasperBus.Tests.Queues
+namespace Jasper.Testing.Bus.Queues
 {
     public static class ReactiveExtensions
     {

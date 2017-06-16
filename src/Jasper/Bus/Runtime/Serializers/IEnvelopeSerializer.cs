@@ -1,6 +1,6 @@
-﻿using JasperBus.Configuration;
+﻿using Jasper.Bus.Configuration;
 
-namespace JasperBus.Runtime.Serializers
+namespace Jasper.Bus.Runtime.Serializers
 {
     public interface IEnvelopeSerializer
     {

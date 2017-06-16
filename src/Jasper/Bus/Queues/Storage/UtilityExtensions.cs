@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace JasperBus.Queues.Storage
+namespace Jasper.Bus.Queues.Storage
 {
     public static class UtilityExtensions
     {

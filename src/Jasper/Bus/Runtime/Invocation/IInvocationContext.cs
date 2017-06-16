@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JasperBus.Runtime.Invocation
+namespace Jasper.Bus.Runtime.Invocation
 {
     /// <summary>
     /// Models a queue of outgoing messages as a result of the current message so you don't even try to

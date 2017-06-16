@@ -4,7 +4,7 @@ using Shouldly;
 using StructureMap;
 using StructureMap.Pipeline;
 
-namespace JasperBus.Tests.Bootstrapping
+namespace Jasper.Testing.Bus.Bootstrapping
 {
     public static class ContainerExtensions
     {
@@ -47,7 +47,7 @@ namespace JasperBus.Tests.Bootstrapping
         public static IContainer ShouldHaveRegistration<T, TConcrete>(this IContainer container)
         {
             var plugin = container.Model.For<T>();
-            plugin.Instances.Any(x => x.ReturnedType == typeof(TConcrete)).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(plugin.Instances.Any(x => x.ReturnedType == typeof(TConcrete)));
 
             return container;
         }
@@ -55,7 +55,7 @@ namespace JasperBus.Tests.Bootstrapping
         public static IContainer ShouldNotHaveRegistration<T, TConcrete>(this IContainer container)
         {
             var plugin = container.Model.For<T>();
-            plugin.Instances.Any(x => x.ReturnedType == typeof(TConcrete)).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(plugin.Instances.Any(x => x.ReturnedType == typeof(TConcrete)));
 
             return container;
         }

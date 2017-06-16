@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using JasperBus.Configuration;
-using JasperBus.Runtime.Invocation;
 using System.Threading.Tasks;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public interface ITransport : IDisposable
     {

@@ -1,4 +1,4 @@
-namespace JasperBus.Tests.Runtime
+namespace Jasper.Testing.Bus.Runtime
 {
     public class Address
     {

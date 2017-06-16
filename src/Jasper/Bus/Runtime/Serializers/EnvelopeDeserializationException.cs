@@ -1,6 +1,6 @@
 using System;
 
-namespace JasperBus.Runtime.Serializers
+namespace Jasper.Bus.Runtime.Serializers
 {
     public class EnvelopeDeserializationException : Exception
     {

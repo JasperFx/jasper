@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline.Dates;
 using Jasper;
-using JasperBus;
-using JasperBus.Model;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Subscriptions;
-using JasperBus.Tracking;
-using JasperBus.Transports.LightningQueues;
+using Jasper.Bus;
+using Jasper.Bus.Model;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Tracking;
+using Jasper.Bus.Transports.LightningQueues;
 using StoryTeller;
 using StoryTeller.Results;
 using StoryTeller.Util;
-using Envelope = JasperBus.Runtime.Envelope;
+using Envelope = Jasper.Bus.Runtime.Envelope;
 
 namespace StorytellerSpecs.Fixtures
 {

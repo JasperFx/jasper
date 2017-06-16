@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Storage.Lmdb
+namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
 {
     [Collection("SharedTestDirectory")]
     public class OutgoingMessageScenarios : IDisposable
@@ -64,7 +64,7 @@ namespace JasperBus.Tests.Queues.Storage.Lmdb
             using(var db = ltx.OpenDatabase("outgoing"))
             {
                 var result = ltx.Get(db, message.Id.MessageIdentifier.ToByteArray());
-                result.ShouldBeNull();
+                ShouldBeNullExtensions.ShouldBeNull(result);
             }
         }
 
@@ -85,7 +85,7 @@ namespace JasperBus.Tests.Queues.Storage.Lmdb
             using(var db = ltx.OpenDatabase("outgoing"))
             {
                 var result = ltx.Get(db, message.Id.MessageIdentifier.ToByteArray());
-                result.ShouldBeNull();
+                ShouldBeNullExtensions.ShouldBeNull(result);
             }
         }
 

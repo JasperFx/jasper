@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     // Tested strictly through integration tests
     public interface IEnvelopeSender

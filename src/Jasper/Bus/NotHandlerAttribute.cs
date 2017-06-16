@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     /// <summary>
     /// Just directs JasperBus to ignore this method as a potential

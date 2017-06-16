@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace JasperBus.Runtime.Invocation
+namespace Jasper.Bus.Runtime.Invocation
 {
     public interface IEnvelopeContext : IInvocationContext, IDisposable
     {

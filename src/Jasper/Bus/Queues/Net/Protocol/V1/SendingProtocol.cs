@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using JasperBus.Queues.Logging;
-using JasperBus.Queues.Serialization;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Queues.Serialization;
+using Jasper.Bus.Queues.Storage;
 
-namespace JasperBus.Queues.Net.Protocol.V1
+namespace Jasper.Bus.Queues.Net.Protocol.V1
 {
     public class SendingProtocol : ISendingProtocol
     {

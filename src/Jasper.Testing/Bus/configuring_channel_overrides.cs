@@ -1,11 +1,11 @@
 ﻿using System.Linq;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Tests.Runtime;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class configuring_channel_overrides : IntegrationContext
     {
@@ -70,8 +70,8 @@ namespace JasperBus.Tests
 
             var channelGraph = channels();
 
-            channelGraph["stub://one".ToUri()].Modifiers.Any().ShouldBeFalse();
-            channelGraph["stub://three".ToUri()].Modifiers.Any().ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(channelGraph["stub://one".ToUri()].Modifiers.Any());
+            ShouldBeBooleanExtensions.ShouldBeFalse(channelGraph["stub://three".ToUri()].Modifiers.Any());
 
             channelGraph["stub://two".ToUri()].Modifiers.Select(x => x.GetType())
                 .ShouldHaveTheSameElementsAs(typeof(FakeModifier), typeof(FakeModifier2));
@@ -94,7 +94,7 @@ namespace JasperBus.Tests
             channels()["stub://two"].AcceptedContentTypes.Single()
                 .ShouldBe("application/json");
 
-            channels()["stub://one"].AcceptedContentTypes.Any().ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(channels()["stub://one"].AcceptedContentTypes.Any());
         }
 
         [Fact]

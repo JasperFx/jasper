@@ -2,12 +2,12 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Baseline.Reflection;
-using JasperBus.Model;
-using JasperBus.Tests.Runtime;
+using Jasper.Bus.Model;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Model
+namespace Jasper.Testing.Bus.Model
 {
     public class MethodInfoExtensionsTester
     {
@@ -40,13 +40,13 @@ namespace JasperBus.Tests.Model
         [Fact]
         public void throw_exception_if_you_do_not_follow_that_convention()
         {
-            methodFor(x => x.Go4(null, null)).MessageType().ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(methodFor(x => x.Go4(null, null)).MessageType());
         }
 
         [Fact]
         public void throw_exception_if_you_have_no_parameters()
         {
-            methodFor(x => x.Go5()).MessageType().ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(methodFor(x => x.Go5()).MessageType());
         }
 
         public class Target

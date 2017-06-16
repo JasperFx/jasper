@@ -3,7 +3,7 @@ using NSubstitute;
 using StructureMap;
 using StructureMap.AutoMocking;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class InteractionContext<T> where T : class
     {

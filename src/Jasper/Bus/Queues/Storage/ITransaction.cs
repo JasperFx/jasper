@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JasperBus.Queues.Storage
+namespace Jasper.Bus.Queues.Storage
 {
     public interface ITransaction
     {

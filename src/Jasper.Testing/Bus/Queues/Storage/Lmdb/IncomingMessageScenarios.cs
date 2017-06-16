@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
-using JasperBus.Queues.Serialization;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Queues.Serialization;
+using Jasper.Bus.Queues.Storage;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Storage.Lmdb
+namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
 {
     [Collection("SharedTestDirectory")]
     public class IncomingMessageScenarios : IDisposable
@@ -66,7 +66,7 @@ namespace JasperBus.Tests.Queues.Storage.Lmdb
                 using (var db = tx.OpenDatabase(message.Queue))
                 {
                     var result = tx.Get(db, message.Id.MessageIdentifier.ToByteArray());
-                    result.ShouldBeNull();
+                    ShouldBeNullExtensions.ShouldBeNull(result);
                 }
             }
         }
@@ -84,7 +84,7 @@ namespace JasperBus.Tests.Queues.Storage.Lmdb
                 using (var db = tx.OpenDatabase(message.Queue))
                 {
                     var result = tx.Get(db, message.Id.MessageIdentifier.ToByteArray());
-                    result.ShouldBeNull();
+                    ShouldBeNullExtensions.ShouldBeNull(result);
                 }
             }
         }

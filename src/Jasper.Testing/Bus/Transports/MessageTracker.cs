@@ -1,11 +1,10 @@
-﻿using Baseline;
-using JasperBus.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Tests.Transports
+namespace Jasper.Testing.Bus.Transports
 {
     public class MessageTracker
     {

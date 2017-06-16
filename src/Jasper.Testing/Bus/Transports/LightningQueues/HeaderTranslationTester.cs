@@ -1,10 +1,10 @@
 ﻿using System;
-using JasperBus.Queues;
-using JasperBus.Transports.LightningQueues;
-using Xunit;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Transports.LightningQueues;
 using Shouldly;
+using Xunit;
 
-namespace JasperBus.Tests.Transports.LightningQueues
+namespace Jasper.Testing.Bus.Transports.LightningQueues
 {
     public class HeaderTranslationTester
     {
@@ -32,8 +32,8 @@ namespace JasperBus.Tests.Transports.LightningQueues
         {
             var message = new OutgoingMessage();
             message.TranslateHeaders();
-            message.MaxAttempts.ShouldBeNull();
-            message.DeliverBy.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(message.MaxAttempts);
+            ShouldBeNullExtensions.ShouldBeNull(message.DeliverBy);
         }
     }
 }

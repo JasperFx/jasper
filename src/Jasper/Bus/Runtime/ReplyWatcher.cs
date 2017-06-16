@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Baseline;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public class ReplyWatcher : IReplyWatcher
     {

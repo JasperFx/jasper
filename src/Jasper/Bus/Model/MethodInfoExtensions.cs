@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Baseline;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public static class MethodInfoExtensions
     {

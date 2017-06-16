@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class CompositeLogger : IBusLogger
     {

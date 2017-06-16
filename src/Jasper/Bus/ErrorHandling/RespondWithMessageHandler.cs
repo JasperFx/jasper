@@ -1,8 +1,8 @@
 ﻿using System;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus.ErrorHandling
+namespace Jasper.Bus.ErrorHandling
 {
     public class RespondWithMessageHandler<T> : IContinuationSource where T : Exception
     {

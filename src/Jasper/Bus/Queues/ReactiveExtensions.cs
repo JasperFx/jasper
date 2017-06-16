@@ -3,7 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
-namespace JasperBus.Queues
+namespace Jasper.Bus.Queues
 {
     public static class ReactiveExtensions
     {

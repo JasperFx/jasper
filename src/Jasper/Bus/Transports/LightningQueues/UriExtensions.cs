@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace JasperBus.Transports.LightningQueues
+namespace Jasper.Bus.Transports.LightningQueues
 {
     public static class UriExtensions
     {

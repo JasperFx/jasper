@@ -2,7 +2,7 @@
 using System.Linq;
 using Baseline;
 
-namespace JasperBus.Runtime.Cascading
+namespace Jasper.Bus.Runtime.Cascading
 {
     public class ImmediateContinuation : IImmediateContinuation
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
 
-namespace JasperBus.Runtime.Invocation
+namespace Jasper.Bus.Runtime.Invocation
 {
     public class CompositeContinuation : IContinuation, IEnumerable<IContinuation>
     {

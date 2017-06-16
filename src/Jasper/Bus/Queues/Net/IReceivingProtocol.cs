@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace JasperBus.Queues.Net
+namespace Jasper.Bus.Queues.Net
 {
     public interface IReceivingProtocol
     {

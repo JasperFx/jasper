@@ -1,8 +1,7 @@
-﻿using System;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
+﻿using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class ChannelExpression
     {

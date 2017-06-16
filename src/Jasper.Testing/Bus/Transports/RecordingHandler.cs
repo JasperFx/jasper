@@ -1,11 +1,7 @@
-﻿using JasperBus.Runtime;
-using JasperBus.Tests.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Jasper.Bus.Runtime;
+using Jasper.Testing.Bus.Runtime;
 
-namespace JasperBus.Tests.Transports
+namespace Jasper.Testing.Bus.Transports
 {
     public class RecordingHandler
     {

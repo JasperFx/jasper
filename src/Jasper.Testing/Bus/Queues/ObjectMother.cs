@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Text;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
-using JasperBus.Queues.Logging;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Queues.Storage;
 
-namespace JasperBus.Tests.Queues
+namespace Jasper.Testing.Bus.Queues
 {
     public static class ObjectMother
     {

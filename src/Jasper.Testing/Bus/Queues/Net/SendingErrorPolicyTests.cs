@@ -3,18 +3,18 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
-using JasperBus.Queues.Logging;
-using JasperBus.Queues.Net;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Queues.Net;
+using Jasper.Bus.Queues.Storage;
 using Microsoft.Reactive.Testing;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Net
+namespace Jasper.Testing.Bus.Queues.Net
 {
     [Collection("SharedTestDirectory")]
     public class SendingErrorPolicyTests : IDisposable
@@ -40,7 +40,7 @@ namespace JasperBus.Tests.Queues.Net
             var message = ObjectMother.NewMessage<OutgoingMessage>();
             message.MaxAttempts = 3;
             message.SentAttempts = 3;
-            _errorPolicy.ShouldRetry(message).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(_errorPolicy.ShouldRetry(message));
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace JasperBus.Tests.Queues.Net
             var message = ObjectMother.NewMessage<OutgoingMessage>();
             message.MaxAttempts = 20;
             message.SentAttempts = 5;
-            _errorPolicy.ShouldRetry(message).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(_errorPolicy.ShouldRetry(message));
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace JasperBus.Tests.Queues.Net
             var message = ObjectMother.NewMessage<OutgoingMessage>();
             message.DeliverBy = DateTime.Now.Subtract(TimeSpan.FromSeconds(1));
             message.SentAttempts = 5;
-            _errorPolicy.ShouldRetry(message).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(_errorPolicy.ShouldRetry(message));
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace JasperBus.Tests.Queues.Net
             var message = ObjectMother.NewMessage<OutgoingMessage>();
             message.DeliverBy = DateTime.Now.Add(TimeSpan.FromSeconds(1));
             message.SentAttempts = 5;
-            _errorPolicy.ShouldRetry(message).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(_errorPolicy.ShouldRetry(message));
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace JasperBus.Tests.Queues.Net
         {
             var message = ObjectMother.NewMessage<OutgoingMessage>();
             message.SentAttempts = 5;
-            _errorPolicy.ShouldRetry(message).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(_errorPolicy.ShouldRetry(message));
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace JasperBus.Tests.Queues.Net
             {
                 _subject.OnNext(failure);
                 _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-                observed.ShouldNotBeNull();
+                ShouldBeNullExtensions.ShouldNotBeNull(observed);
             }
         }
 
@@ -114,9 +114,9 @@ namespace JasperBus.Tests.Queues.Net
             {
                 _subject.OnNext(failure);
                 _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-                observed.ShouldBeNull();
+                ShouldBeNullExtensions.ShouldBeNull(observed);
             }
-            _store.PersistedOutgoingMessages().ToEnumerable().Any().ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(_store.PersistedOutgoingMessages().ToEnumerable().Any());
         }
 
         [Fact]
@@ -160,7 +160,7 @@ namespace JasperBus.Tests.Queues.Net
             {
                 _subject.OnNext(failure);
                 _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-                ended.ShouldBeFalse();
+                ShouldBeBooleanExtensions.ShouldBeFalse(ended);
             }
         }
 

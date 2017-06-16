@@ -1,8 +1,7 @@
-﻿using JasperBus.Model;
-using JasperBus.Tests.Runtime;
+﻿using Jasper.Bus.Model;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class can_customize_handler_chain_through_Configure_call_on_HandlerType : IntegrationContext
     {

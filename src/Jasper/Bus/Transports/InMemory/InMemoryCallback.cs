@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
-using JasperBus.Runtime;
 using System.Threading.Tasks;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Transports.InMemory
+namespace Jasper.Bus.Transports.InMemory
 {
     public class InMemoryCallback : IMessageCallback
     {

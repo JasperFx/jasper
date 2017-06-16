@@ -1,10 +1,11 @@
 ﻿using System;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Subscriptions;
+using Jasper.Bus;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime.Subscriptions
+namespace Jasper.Testing.Bus.Runtime.Subscriptions
 {
     public class TransportNodeTester
     {

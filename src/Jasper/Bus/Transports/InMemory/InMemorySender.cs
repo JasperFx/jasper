@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using JasperBus.Configuration;
 using System.Threading.Tasks;
-using JasperBus.Runtime;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Transports.InMemory
+namespace Jasper.Bus.Transports.InMemory
 {
     public class InMemorySender : ISender
     {

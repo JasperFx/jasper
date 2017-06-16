@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using Baseline.Reflection;
-using JasperBus.Model;
-using JasperBus.Runtime.Cascading;
+using Jasper.Bus.Model;
+using Jasper.Bus.Runtime.Cascading;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Model
+namespace Jasper.Testing.Bus.Model
 {
     public class HandlerCallTester
     {
@@ -23,18 +23,18 @@ namespace JasperBus.Tests.Model
             var handler1 = HandlerCall.For<SomeHandler>(x => x.Interface(null));
             var handler2 = HandlerCall.For<SomeHandler>(x => x.BaseClass(null));
 
-            handler1.CouldHandleOtherMessageType(typeof (Input1)).ShouldBeTrue();
-            handler2.CouldHandleOtherMessageType(typeof (Input1)).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(handler1.CouldHandleOtherMessageType(typeof (Input1)));
+            ShouldBeBooleanExtensions.ShouldBeTrue(handler2.CouldHandleOtherMessageType(typeof (Input1)));
 
-            handler1.CouldHandleOtherMessageType(typeof (Input2)).ShouldBeFalse();
-            handler1.CouldHandleOtherMessageType(typeof (Input2)).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(handler1.CouldHandleOtherMessageType(typeof (Input2)));
+            ShouldBeBooleanExtensions.ShouldBeFalse(handler1.CouldHandleOtherMessageType(typeof (Input2)));
         }
 
         [Fact]
         public void could_handle_is_false_for_its_own_input_type()
         {
             var handler = HandlerCall.For<ITargetHandler>(x => x.OneInOneOut(null));
-            handler.CouldHandleOtherMessageType(typeof (Input)).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(handler.CouldHandleOtherMessageType(typeof (Input)));
         }
 
 
@@ -44,28 +44,24 @@ namespace JasperBus.Tests.Model
             var handlerType = typeof (ITargetHandler);
             var property = handlerType.GetTypeInfo().GetProperty("Message");
             var method = property.GetSetMethod();
-            HandlerCall.IsCandidate(method).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(HandlerCall.IsCandidate(method));
         }
 
 
         [Fact]
         public void is_candidate()
         {
-            HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ZeroInZeroOut())).ShouldBeFalse();
-            HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.OneInOneOut(null))).ShouldBeTrue();
-            HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.OneInZeroOut(null)))
-                .ShouldBeTrue();
-            HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ManyIn(null, null)))
-                .ShouldBeFalse();
-            HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ReturnsValueType(null)))
-                .ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ZeroInZeroOut())));
+            ShouldBeBooleanExtensions.ShouldBeTrue(HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.OneInOneOut(null))));
+            ShouldBeBooleanExtensions.ShouldBeTrue(HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.OneInZeroOut(null))));
+            ShouldBeBooleanExtensions.ShouldBeFalse(HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ManyIn(null, null))));
+            ShouldBeBooleanExtensions.ShouldBeFalse(HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ReturnsValueType(null))));
         }
 
         [Fact]
         public void is_candidate_allows_interface_return_types()
         {
-            HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ReturnsInterface(null)))
-                .ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ReturnsInterface(null))));
         }
 
 

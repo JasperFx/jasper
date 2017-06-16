@@ -1,10 +1,9 @@
 using System;
-using System.Threading.Tasks;
-using JasperBus.ErrorHandling;
+using Jasper.Bus.ErrorHandling;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.ErrorHandling
+namespace Jasper.Testing.Bus.ErrorHandling
 {
     public class MoveToErrorQueueHandlerTester
     {
@@ -12,9 +11,9 @@ namespace JasperBus.Tests.ErrorHandling
         public void do_nothing_if_it_is_not_the_right_exception()
         {
             var handler = new MoveToErrorQueueHandler<NotImplementedException>();
-            handler.DetermineContinuation(null, new Exception()).ShouldBeNull();
-            handler.DetermineContinuation(null, new DivideByZeroException()).ShouldBeNull();
-            handler.DetermineContinuation(null, new NotSupportedException()).ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(null, new Exception()));
+            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(null, new DivideByZeroException()));
+            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(null, new NotSupportedException()));
         }
 
         [Fact]

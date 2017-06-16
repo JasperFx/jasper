@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Text;
-using JasperBus.Queues;
-using JasperBus.Queues.Serialization;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Serialization;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Net.Protocol
+namespace Jasper.Testing.Bus.Queues.Net.Protocol
 {
     public class SerializationExtensionsTests
     {

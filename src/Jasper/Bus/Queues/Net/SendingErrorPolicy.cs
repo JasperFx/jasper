@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using JasperBus.Queues.Logging;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Queues.Storage;
 
-namespace JasperBus.Queues.Net
+namespace Jasper.Bus.Queues.Net
 {
     public class SendingErrorPolicy
     {

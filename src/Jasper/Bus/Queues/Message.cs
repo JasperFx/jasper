@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace JasperBus.Queues
+namespace Jasper.Bus.Queues
 {
     public class Message
     {

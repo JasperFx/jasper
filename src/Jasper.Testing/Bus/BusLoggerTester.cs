@@ -1,8 +1,9 @@
-﻿using NSubstitute;
+﻿using Jasper.Bus;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class BusLoggerTester
     {

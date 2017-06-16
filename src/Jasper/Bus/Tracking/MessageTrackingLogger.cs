@@ -1,7 +1,7 @@
 ﻿using System;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Tracking
+namespace Jasper.Bus.Tracking
 {
     /// <summary>
     /// Useful for automated testing scenarios against the service bus to "know"

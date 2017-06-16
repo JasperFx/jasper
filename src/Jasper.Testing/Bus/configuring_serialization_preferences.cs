@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using JasperBus.Configuration;
-using JasperBus.Runtime.Serializers;
-using JasperBus.Tests.Bootstrapping;
-using Shouldly;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Serializers;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class configuring_serialization_preferences : IntegrationContext
     {
@@ -17,7 +15,7 @@ namespace JasperBus.Tests
 
             Runtime.Container.GetInstance<ChannelGraph>().AcceptedContentTypes.ShouldHaveTheSameElementsAs("application/json");
 
-            Runtime.Container.ShouldHaveRegistration<IMessageSerializer, JsonMessageSerializer>();
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IMessageSerializer, JsonMessageSerializer>(Runtime.Container);
         }
 
         [Fact]
@@ -32,8 +30,8 @@ namespace JasperBus.Tests
             Runtime.Container.GetInstance<ChannelGraph>().AcceptedContentTypes
                 .ShouldHaveTheSameElementsAs("application/json", "fake/one", "fake/two");
 
-            Runtime.Container.ShouldHaveRegistration<IMessageSerializer, Serializer1>();
-            Runtime.Container.ShouldHaveRegistration<IMessageSerializer, Serializer2>();
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IMessageSerializer, Serializer1>(Runtime.Container);
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IMessageSerializer, Serializer2>(Runtime.Container);
         }
 
         [Fact]

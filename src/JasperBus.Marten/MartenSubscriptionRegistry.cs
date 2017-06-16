@@ -1,4 +1,4 @@
-﻿using JasperBus.Runtime.Subscriptions;
+﻿using Jasper.Bus.Runtime.Subscriptions;
 using Marten;
 using StructureMap;
 

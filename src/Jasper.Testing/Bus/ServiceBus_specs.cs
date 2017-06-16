@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Baseline.Dates;
-using JasperBus.Runtime;
-using JasperBus.Tests.Runtime;
-using JasperBus.Tests.Runtime.Invocation;
+using Jasper.Bus;
+using Jasper.Bus.Runtime;
+using Jasper.Testing.Bus.Runtime;
+using Jasper.Testing.Bus.Runtime.Invocation;
 using NSubstitute.Extensions;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
 
 
@@ -48,7 +48,7 @@ namespace JasperBus.Tests
         [Fact]
         public void sends_the_envelope_to_the_sender()
         {
-            theEnvelope.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(theEnvelope);
         }
 
     }
@@ -95,7 +95,7 @@ namespace JasperBus.Tests
         [Fact]
         public void sends_the_envelope_to_the_sender()
         {
-            theEnvelope.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(theEnvelope);
         }
 
     }

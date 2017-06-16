@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime
+namespace Jasper.Testing.Bus.Runtime
 {
     public class ReceiverContentTypeHandling
     {
@@ -35,7 +36,7 @@ namespace JasperBus.Tests.Runtime
         public void if_no_content_type_is_specified_on_envelope_or_channel_use_graph_default()
         {
             theGraph.AcceptedContentTypes.Add("text/json");
-            theNode.AcceptedContentTypes.Any().ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(theNode.AcceptedContentTypes.Any());
 
             var headers = new Dictionary<string, string>();
             theReceiver.Receive(new byte[0], headers, Substitute.For<IMessageCallback>());

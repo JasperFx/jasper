@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace JasperBus.Runtime.Invocation
+namespace Jasper.Bus.Runtime.Invocation
 {
     public class MessageSucceededContinuation : IContinuation
     {

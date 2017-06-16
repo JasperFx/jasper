@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using JasperBus;
-using JasperBus.Runtime.Subscriptions;
+using Jasper.Bus;
+using Jasper.Bus.Runtime.Subscriptions;
 
-namespace Examples.ServiceBus
+namespace Jasper.Testing.Bus.Samples
 {
     public class OtherAppMessage1 { }
     public class OtherAppMessage2 { }

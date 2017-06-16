@@ -1,7 +1,7 @@
 ﻿using System;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.ErrorHandling
+namespace Jasper.Bus.ErrorHandling
 {
     public class ExceptionMatch : IExceptionMatch
     {

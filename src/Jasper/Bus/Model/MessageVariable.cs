@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Codegen;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public class MessageVariable : Variable
     {

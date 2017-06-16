@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper.Bus;
+using Jasper.Bus.Model;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
-using JasperBus.Model;
-using JasperBus.Tests.Runtime;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Compilation
+namespace Jasper.Testing.Bus.Compilation
 {
     public class use_wrappers : CompilationContext<TransactionalHandler>
     {
@@ -31,9 +32,9 @@ namespace JasperBus.Tests.Compilation
 
             await Execute(message);
 
-            theTracking.DisposedTheSession.ShouldBeTrue();
-            theTracking.OpenedSession.ShouldBeTrue();
-            theTracking.CalledSaveChanges.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.DisposedTheSession);
+            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.OpenedSession);
+            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.CalledSaveChanges);
         }
 
         [Fact]
@@ -43,9 +44,9 @@ namespace JasperBus.Tests.Compilation
 
             await Execute(message);
 
-            theTracking.DisposedTheSession.ShouldBeTrue();
-            theTracking.OpenedSession.ShouldBeTrue();
-            theTracking.CalledSaveChanges.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.DisposedTheSession);
+            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.OpenedSession);
+            ShouldBeBooleanExtensions.ShouldBeTrue(theTracking.CalledSaveChanges);
         }
     }
 

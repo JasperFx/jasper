@@ -1,11 +1,11 @@
 using System;
-using JasperBus.ErrorHandling;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Runtime.Invocation;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.ErrorHandling
+namespace Jasper.Testing.Bus.ErrorHandling
 {
     public class ErrorHandlerTester
     {
@@ -19,8 +19,7 @@ namespace JasperBus.Tests.ErrorHandling
         [Fact]
         public void matches_with_no_rules_is_true()
         {
-            new ErrorHandler().Matches(ObjectMother.Envelope(), new Exception())
-                .ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(new ErrorHandler().Matches(ObjectMother.Envelope(), new Exception()));
         }
 
         [Fact]
@@ -42,16 +41,16 @@ namespace JasperBus.Tests.ErrorHandling
             var handler = new ErrorHandler();
 
             handler.AddCondition(matchingCondition1);
-            handler.Matches(envelope, exception).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(handler.Matches(envelope, exception));
 
             handler.AddCondition(matchingCondition2);
-            handler.Matches(envelope, exception).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(handler.Matches(envelope, exception));
 
             handler.AddCondition(matchingCondition3);
-            handler.Matches(envelope, exception).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(handler.Matches(envelope, exception));
 
             handler.AddCondition(conditionThatDoesNotMatch);
-            handler.Matches(envelope, exception).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(handler.Matches(envelope, exception));
         }
 
         [Fact]
@@ -66,8 +65,7 @@ namespace JasperBus.Tests.ErrorHandling
             var handler = new ErrorHandler();
             handler.AddCondition(conditionThatDoesNotMatch);
 
-            handler.DetermineContinuation(envelope, exception)
-                .ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(envelope, exception));
         }
 
         [Fact]
@@ -84,7 +82,7 @@ namespace JasperBus.Tests.ErrorHandling
             handler.AddCondition(matchingCondition1);
             handler.AddContinuation(Substitute.For<IContinuation>());
 
-            handler.Matches(envelope, exception).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(handler.Matches(envelope, exception));
 
             handler.DetermineContinuation(envelope, exception)
                 .ShouldBeTheSameAs(handler.Continuation(null, null));

@@ -1,6 +1,6 @@
 using System;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public class ReplyFailureException : Exception
     {

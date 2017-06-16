@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using JasperBus.Queues;
-using JasperBus.Queues.Logging;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Queues.Storage;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Storage
+namespace Jasper.Testing.Bus.Queues.Storage
 {
     public class NoStorageIntegrationTester : IDisposable
     {

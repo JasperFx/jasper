@@ -1,10 +1,10 @@
 ﻿using System;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using NSubstitute;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime
+namespace Jasper.Testing.Bus.Runtime
 {
     public class CompositeContinuationTester : InteractionContext<CompositeContinuation>
     {

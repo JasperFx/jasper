@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using JasperBus.Tests.Bootstrapping;
+using Jasper.Bus;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class registering_logging_with_service_bus_feature : IntegrationContext
     {
@@ -12,7 +12,7 @@ namespace JasperBus.Tests
         {
             withAllDefaults();
 
-            Runtime.Container.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Bootstrapping.ContainerExtensions.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>(Runtime.Container);
         }
 
         [Fact]
@@ -20,7 +20,7 @@ namespace JasperBus.Tests
         {
             with(_ => _.Logging.UseConsoleLogging = true);
 
-            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>(Runtime.Container);
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace JasperBus.Tests
         {
             with(_ => _.Logging.LogBusEventsWith<ConsoleBusLogger>());
 
-            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>(Runtime.Container);
         }
 
         [Fact]
@@ -36,8 +36,8 @@ namespace JasperBus.Tests
         {
             with(_ => _.Logging.LogBusEventsWith(new ConsoleBusLogger()));
 
-            Runtime.Container.GetAllInstances<IBusLogger>().OfType<ConsoleBusLogger>()
-                .Any().ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(Runtime.Container.GetAllInstances<IBusLogger>().OfType<ConsoleBusLogger>()
+                    .Any());
         }
     }
 }

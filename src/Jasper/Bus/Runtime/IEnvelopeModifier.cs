@@ -1,4 +1,4 @@
-﻿namespace JasperBus.Runtime
+﻿namespace Jasper.Bus.Runtime
 {
     public interface IEnvelopeModifier
     {

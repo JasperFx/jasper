@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reactive.Concurrency;
 using System.Threading.Tasks;
-using JasperBus.Configuration;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
-using JasperBus.Queues.Storage;
-using JasperBus.Runtime;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 using LightningDB;
 
-namespace JasperBus.Transports.LightningQueues
+namespace Jasper.Bus.Transports.LightningQueues
 {
     public class LightningQueue : IDisposable
     {

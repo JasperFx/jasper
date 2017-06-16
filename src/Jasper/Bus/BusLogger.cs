@@ -1,7 +1,7 @@
 ﻿using System;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class BusLogger : IBusLogger
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using Baseline;
-using JasperBus.Runtime;
-using JasperBus.Transports.LightningQueues;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.LightningQueues;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Transports.LightningQueues
+namespace Jasper.Testing.Bus.Transports.LightningQueues
 {
     public class LightningUriTester
     {
@@ -17,14 +17,14 @@ namespace JasperBus.Tests.Transports.LightningQueues
             uri.Port.ShouldBe(2200);
             uri.QueueName.ShouldBe("foo");
 
-            uri.Address.Host.EqualsIgnoreCase(Environment.MachineName).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(uri.Address.Host.EqualsIgnoreCase(Environment.MachineName));
         }
 
         [Fact]
         public void translates_home_ip_to_machine_name()
         {
             var uri = new LightningUri("lq.tcp://127.0.0.1:2200/foo");
-            uri.Address.Host.EqualsIgnoreCase(Environment.MachineName).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(uri.Address.Host.EqualsIgnoreCase(Environment.MachineName));
         }
 
         [Fact]

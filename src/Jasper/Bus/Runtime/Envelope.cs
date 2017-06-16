@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Baseline;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public class Envelope : HeaderWrapper
     {

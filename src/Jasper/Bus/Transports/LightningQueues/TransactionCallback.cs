@@ -1,9 +1,9 @@
 ﻿using System;
-using JasperBus.Runtime;
 using System.Threading.Tasks;
-using JasperBus.Queues;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Transports.LightningQueues
+namespace Jasper.Bus.Transports.LightningQueues
 {
     public class TransactionCallback : IMessageCallback
     {

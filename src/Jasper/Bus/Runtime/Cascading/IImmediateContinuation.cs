@@ -1,4 +1,4 @@
-﻿namespace JasperBus.Runtime.Cascading
+﻿namespace Jasper.Bus.Runtime.Cascading
 {
     public interface IImmediateContinuation
     {

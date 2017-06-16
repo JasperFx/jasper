@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JasperBus.Queues
+namespace Jasper.Bus.Queues
 {
     public interface IQueueContext
     {

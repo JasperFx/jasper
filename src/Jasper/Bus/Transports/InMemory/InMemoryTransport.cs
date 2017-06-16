@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
-using Baseline;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus.Transports.InMemory
+namespace Jasper.Bus.Transports.InMemory
 {
     public class InMemoryTransport : ITransport
     {

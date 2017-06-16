@@ -1,9 +1,9 @@
 ﻿using System;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using Jasper.Codegen;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public class MessageHandlerVariableSource : IVariableSource
     {

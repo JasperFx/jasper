@@ -1,12 +1,12 @@
-﻿using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Serializers;
-using JasperBus.Tests.Stubs;
+﻿using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Serializers;
+using Jasper.Testing.Bus.Stubs;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Configuration
+namespace Jasper.Testing.Bus.Configuration
 {
     public class when_building_an_envelope_for_sending_that_does_not_match_an_existing_channel
     {
@@ -80,7 +80,7 @@ namespace JasperBus.Tests.Configuration
 
             theNode = theGraph[address];
             theNode.Sender = new NulloSender(theTransport, theNode.Uri);
-            theNode.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(theNode);
             theNode.Destination = "remote://one".ToUri();
             theNode.ReplyUri = "stub://replies".ToUri();
 

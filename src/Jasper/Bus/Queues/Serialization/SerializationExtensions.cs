@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace JasperBus.Queues.Serialization
+namespace Jasper.Bus.Queues.Serialization
 {
     public static class SerializationExtensions
     {

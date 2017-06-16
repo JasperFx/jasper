@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using Jasper.Bus.Runtime.Invocation;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
-using JasperBus.Runtime.Invocation;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public class CaptureCascadingMessages : Frame
     {

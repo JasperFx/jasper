@@ -1,7 +1,7 @@
 ﻿using System;
 using Baseline;
 
-namespace JasperBus.Runtime.Routing
+namespace Jasper.Bus.Runtime.Routing
 {
     public class NamespaceRule : IRoutingRule
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using JasperBus.Configuration;
-using JasperBus.Runtime.Subscriptions;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Subscriptions;
 using Marten;
 
 namespace JasperBus.Marten

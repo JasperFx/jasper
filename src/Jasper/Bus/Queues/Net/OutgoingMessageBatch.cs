@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace JasperBus.Queues.Net
+namespace Jasper.Bus.Queues.Net
 {
     public class OutgoingMessageBatch : IDisposable
     {

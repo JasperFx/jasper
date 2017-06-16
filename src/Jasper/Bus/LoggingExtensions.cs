@@ -1,7 +1,6 @@
 ﻿using Baseline;
-using Jasper;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public static class LoggingExtensions
     {

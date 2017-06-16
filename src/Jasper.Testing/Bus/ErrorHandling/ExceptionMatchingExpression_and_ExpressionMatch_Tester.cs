@@ -1,10 +1,10 @@
 using System;
 using Baseline;
-using JasperBus.ErrorHandling;
+using Jasper.Bus.ErrorHandling;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.ErrorHandling
+namespace Jasper.Testing.Bus.ErrorHandling
 {
     public class ExceptionMatchingExpression_and_ExpressionMatch_Tester
     {
@@ -26,8 +26,8 @@ namespace JasperBus.Tests.ErrorHandling
 
             theMatch.Description.ShouldBe("Exception message contains 'like you'");
 
-            theMatch.Matches(null, exception1).ShouldBeTrue();
-            theMatch.Matches(null, exception2).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeTrue(theMatch.Matches(null, exception1));
+            ShouldBeBooleanExtensions.ShouldBeFalse(theMatch.Matches(null, exception2));
         }
 
         [Fact]
@@ -40,8 +40,8 @@ namespace JasperBus.Tests.ErrorHandling
 
             theMatch.Description.ShouldBe("Exception type is " + typeof(NotImplementedException).FullName);
 
-            theMatch.Matches(null, exception1).ShouldBeTrue();
-            theMatch.Matches(null, exception2).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeTrue(theMatch.Matches(null, exception1));
+            ShouldBeBooleanExtensions.ShouldBeFalse(theMatch.Matches(null, exception2));
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using StructureMap.TypeRules;
 
-namespace JasperBus.ErrorHandling
+namespace Jasper.Bus.ErrorHandling
 {
     public interface IHasErrorHandlers
     {

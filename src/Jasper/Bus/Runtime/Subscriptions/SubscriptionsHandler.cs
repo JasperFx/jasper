@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using JasperBus.Configuration;
-using JasperBus.Runtime.Invocation;
-using JasperBus.Transports.LightningQueues;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.LightningQueues;
 
-namespace JasperBus.Runtime.Subscriptions
+namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class SubscriptionsHandler
     {

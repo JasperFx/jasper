@@ -5,13 +5,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Runtime.Invocation;
 using Jasper.Codegen;
 using Jasper.Configuration;
-using JasperBus.ErrorHandling;
-using JasperBus.Runtime.Invocation;
 using StructureMap;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IGenerates<MessageHandler>, IHasErrorHandlers
     {

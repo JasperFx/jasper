@@ -1,7 +1,7 @@
 using System;
+using Jasper.Bus;
+using Jasper.Bus.Runtime;
 using Jasper.Diagnostics.Messages;
-using JasperBus;
-using JasperBus.Runtime;
 
 namespace Jasper.Diagnostics
 {

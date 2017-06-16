@@ -1,6 +1,6 @@
-﻿using JasperBus.Model;
+﻿using Jasper.Bus.Model;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public interface IHandlerPolicy
     {

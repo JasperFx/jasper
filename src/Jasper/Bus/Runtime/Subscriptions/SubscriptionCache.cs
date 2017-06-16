@@ -2,7 +2,7 @@
 using System.Linq;
 using Baseline;
 
-namespace JasperBus.Runtime.Subscriptions
+namespace Jasper.Bus.Runtime.Subscriptions
 {
     public interface ISubscriptionsCache
     {

@@ -1,9 +1,9 @@
-﻿using Xunit;
-using JasperBus.Runtime.Routing;
-using Shouldly;
+﻿using Jasper.Bus.Runtime.Routing;
+using Xunit;
 
-namespace JasperBus.Tests.Runtime.Routing
+namespace Jasper.Testing.Bus.Runtime.Routing
 {
+
     public class NamespaceRuleTester
     {
         [Fact]
@@ -24,6 +24,7 @@ namespace JasperBus.Tests.Runtime.Routing
             rule.Matches(typeof(Green.Message3)).ShouldBeFalse();
         }
     }
+
 }
 
 namespace Red
@@ -41,3 +42,4 @@ namespace Green
     public class Message2 { }
     public class Message3 { }
 }
+

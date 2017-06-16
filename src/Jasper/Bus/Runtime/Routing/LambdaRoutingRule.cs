@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Linq.Expressions;
 
-namespace JasperBus.Runtime.Routing
+namespace Jasper.Bus.Runtime.Routing
 {
     public class LambdaRoutingRule : IRoutingRule
     {

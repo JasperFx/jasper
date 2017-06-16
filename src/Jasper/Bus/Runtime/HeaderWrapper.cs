@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using Baseline;
-using JasperBus.Configuration;
+using Jasper.Bus.Configuration;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public static class DictionaryExtensions
     {

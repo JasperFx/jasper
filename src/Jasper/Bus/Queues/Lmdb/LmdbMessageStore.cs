@@ -5,11 +5,11 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
-using JasperBus.Queues.Serialization;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues.Serialization;
+using Jasper.Bus.Queues.Storage;
 using LightningDB;
 
-namespace JasperBus.Queues.Lmdb
+namespace Jasper.Bus.Queues.Lmdb
 {
     public class LmdbMessageStore : IMessageStore
     {

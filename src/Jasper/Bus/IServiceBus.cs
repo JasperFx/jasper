@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Baseline.Dates;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class RequestOptions
     {

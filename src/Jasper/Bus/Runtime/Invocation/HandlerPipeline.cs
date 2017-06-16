@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
-using JasperBus.Configuration;
-using JasperBus.Model;
-using JasperBus.Runtime.Serializers;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Model;
+using Jasper.Bus.Runtime.Serializers;
 
-namespace JasperBus.Runtime.Invocation
+namespace Jasper.Bus.Runtime.Invocation
 {
     public interface IHandlerPipeline
     {

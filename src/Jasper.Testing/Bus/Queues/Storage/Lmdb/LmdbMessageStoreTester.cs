@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Storage.Lmdb
+namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
 {
     [Collection("SharedTestDirectory")]
     public class LmdbMessageStoreTester : IDisposable
@@ -26,7 +26,7 @@ namespace JasperBus.Tests.Queues.Storage.Lmdb
             _store.CreateQueue("test");
             _store.CreateQueue("test2");
             _store.CreateQueue("test3");
-            _store.GetAllQueues().SequenceEqual(new[] {"test", "test2", "test3"}).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(_store.GetAllQueues().SequenceEqual(new[] {"test", "test2", "test3"}));
         }
 
         [Fact]
@@ -89,8 +89,8 @@ namespace JasperBus.Tests.Queues.Storage.Lmdb
             tx.Commit();
             var message2 = _store.GetMessage(message.Queue, message.Id);
             var outgoing2 = _store.GetMessage("outgoing", outgoingMessage.Id);
-            message2.ShouldNotBeNull();
-            outgoing2.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(message2);
+            ShouldBeNullExtensions.ShouldNotBeNull(outgoing2);
         }
 
         public void Dispose()

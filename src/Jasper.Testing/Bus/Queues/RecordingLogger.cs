@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using JasperBus.Queues.Logging;
+using Jasper.Bus.Queues.Logging;
 
-namespace JasperBus.Tests.Queues
+namespace Jasper.Testing.Bus.Queues
 {
     public class RecordingLogger : ILogger
     {

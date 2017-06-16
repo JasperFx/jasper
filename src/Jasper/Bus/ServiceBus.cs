@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class ServiceBus : IServiceBus
     {

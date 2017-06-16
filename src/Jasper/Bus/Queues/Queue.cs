@@ -4,12 +4,12 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using JasperBus.Queues.Logging;
-using JasperBus.Queues.Net;
-using JasperBus.Queues.Net.Tcp;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Queues.Net;
+using Jasper.Bus.Queues.Net.Tcp;
+using Jasper.Bus.Queues.Storage;
 
-namespace JasperBus.Queues
+namespace Jasper.Bus.Queues
 {
     public class Queue : IDisposable
     {

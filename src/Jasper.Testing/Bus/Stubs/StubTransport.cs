@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Baseline;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
 using System.Threading.Tasks;
+using Baseline;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus.Tests.Stubs
+namespace Jasper.Testing.Bus.Stubs
 {
     public class StubTransport : ITransport
     {

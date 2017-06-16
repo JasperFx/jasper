@@ -6,7 +6,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
 
-namespace JasperBus.Model
+namespace Jasper.Bus.Model
 {
     public class HandlerCall : MethodCall
     {

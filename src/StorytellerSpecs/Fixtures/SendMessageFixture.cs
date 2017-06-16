@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
-using JasperBus;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
-using JasperBus.Runtime.Subscriptions;
-using JasperBus.Tracking;
-using JasperBus.Transports.LightningQueues;
+using Jasper.Bus;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Tracking;
+using Jasper.Bus.Transports.LightningQueues;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures

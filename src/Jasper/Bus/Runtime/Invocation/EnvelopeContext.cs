@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using JasperBus.ErrorHandling;
-using JasperBus.Model;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Model;
 
-namespace JasperBus.Runtime.Invocation
+namespace Jasper.Bus.Runtime.Invocation
 {
     public class EnvelopeContext : IEnvelopeContext
     {

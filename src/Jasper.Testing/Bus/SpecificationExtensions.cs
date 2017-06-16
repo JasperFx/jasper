@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Baseline;
+using Shouldly;
 
-namespace Shouldly
+namespace Jasper.Testing.Bus
 {
     public static class Exception<T> where T : Exception
     {
@@ -67,8 +68,8 @@ namespace Shouldly
         {
             try
             {
-                actual.ShouldNotBeNull();
-                expected.ShouldNotBeNull();
+                ShouldBeNullExtensions.ShouldNotBeNull(actual);
+                ShouldBeNullExtensions.ShouldNotBeNull(expected);
 
                 actual.Count.ShouldBe(expected.Count);
 

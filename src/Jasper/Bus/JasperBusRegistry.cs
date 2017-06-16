@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Reflection;
-using Jasper;
-using JasperBus.Configuration;
-using JasperBus.ErrorHandling;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Routing;
-using JasperBus.Runtime.Serializers;
-using JasperBus.Runtime.Subscriptions;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Routing;
+using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Runtime.Subscriptions;
 using StructureMap.TypeRules;
-using JasperBus.Transports.InMemory;
-using JasperBus.Transports.LightningQueues;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class JasperBusRegistry : JasperRegistry
     {

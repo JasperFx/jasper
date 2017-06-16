@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
-using System.Threading.Tasks;
 
-namespace JasperBus.Tests.Runtime.Invocation
+namespace Jasper.Testing.Bus.Runtime.Invocation
 {
 
     public class EnvelopeContextTester
@@ -35,7 +36,7 @@ namespace JasperBus.Tests.Runtime.Invocation
             var messages = new EnvelopeContext(null, new Envelope { Message = new Message1() }, null);
             messages.EnqueueCascading(null);
 
-            messages.OutgoingMessages().Any().ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(messages.OutgoingMessages().Any());
         }
 
         [Fact]
@@ -120,7 +121,7 @@ namespace JasperBus.Tests.Runtime.Invocation
 
             var envelope = MockFor<IEnvelopeSender>().ReceivedCalls().First().GetArguments()[0].As<Envelope>();
 
-            envelope.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(envelope);
 
             envelope.ResponseId.ShouldBe(original.CorrelationId);
             envelope.Destination.ShouldBe(original.ReplyUri);
@@ -159,8 +160,7 @@ namespace JasperBus.Tests.Runtime.Invocation
             new EnvelopeContext(null, original, recordingSender)
                 .SendFailureAcknowledgement(original, "you stink");
 
-            recordingSender.Outgoing.Any()
-                .ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(recordingSender.Outgoing.Any());
         }
     }
 
@@ -191,7 +191,7 @@ namespace JasperBus.Tests.Runtime.Invocation
         [Fact]
         public void should_have_sent_a_failure_ack()
         {
-            theAck.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(theAck);
         }
 
         [Fact]
@@ -256,7 +256,7 @@ namespace JasperBus.Tests.Runtime.Invocation
         [Fact]
         public void should_have_sent_a_failure_ack()
         {
-            theAck.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(theAck);
         }
 
         [Fact]

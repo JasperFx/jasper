@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Bus;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Tracking;
+using Jasper.Bus.Transports.LightningQueues;
+using Jasper.Testing.Bus;
 using JasperBus.Marten.Tests.Setup;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Subscriptions;
-using JasperBus.Tests;
-using JasperBus.Tests.Samples;
-using JasperBus.Tracking;
-using JasperBus.Transports.LightningQueues;
 using Marten;
 using Shouldly;
 using TestMessages;
 using Xunit;
-using PingMessage = JasperBus.Tests.Samples.PingMessage;
+using PingMessage = Jasper.Testing.Bus.Samples.PingMessage;
 
 namespace JasperBus.Marten.Tests
 {

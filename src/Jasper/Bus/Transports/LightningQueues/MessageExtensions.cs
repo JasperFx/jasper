@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using Baseline;
-using JasperBus.Queues;
-using JasperBus.Runtime;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Transports.LightningQueues
+namespace Jasper.Bus.Transports.LightningQueues
 {
     public static class MessageExtensions
     {

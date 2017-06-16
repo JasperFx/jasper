@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using JasperBus.Tests.Runtime;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using TestMessages;
 using Xunit;
 
-namespace JasperBus.Tests.Compilation
+namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
     public class using_services_from_container : CompilationContext<ServiceUsingHandler>
@@ -24,7 +24,7 @@ namespace JasperBus.Tests.Compilation
             await Execute(message);
 
             ServiceUsingHandler.LastMessage1.ShouldBeSameAs(message);
-            ServiceUsingHandler.LastWidget.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(ServiceUsingHandler.LastWidget);
         }
 
         [Fact]
@@ -34,8 +34,8 @@ namespace JasperBus.Tests.Compilation
             await Execute(message);
 
             ServiceUsingHandler.LastMessage2.ShouldBeSameAs(message);
-            ServiceUsingHandler.LastWidget.ShouldNotBeNull();
-            ServiceUsingHandler.LastService.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(ServiceUsingHandler.LastWidget);
+            ShouldBeNullExtensions.ShouldNotBeNull(ServiceUsingHandler.LastService);
         }
     }
 

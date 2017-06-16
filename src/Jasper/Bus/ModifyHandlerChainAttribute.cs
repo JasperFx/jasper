@@ -1,8 +1,8 @@
 ﻿using System;
+using Jasper.Bus.Model;
 using Jasper.Configuration;
-using JasperBus.Model;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public abstract class ModifyHandlerChainAttribute : Attribute, IModifyChain<HandlerChain>

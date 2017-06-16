@@ -1,7 +1,7 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace JasperBus.Runtime.Serializers
+namespace Jasper.Bus.Runtime.Serializers
 {
     public class JsonMessageSerializer : IMessageSerializer
     {

@@ -1,9 +1,9 @@
-﻿using JasperBus.Configuration;
-using JasperBus.Runtime;
+﻿using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Configuration
+namespace Jasper.Testing.Bus.Configuration
 {
     public class ChannelModeTester
     {

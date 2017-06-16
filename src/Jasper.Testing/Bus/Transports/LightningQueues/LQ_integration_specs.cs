@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Baseline;
 using Baseline.Dates;
-using JasperBus.Runtime;
-using JasperBus.Tests.Runtime;
-using JasperBus.Transports.LightningQueues;
-using Microsoft.DotNet.InternalAbstractions;
+using Jasper.Bus;
+using Jasper.Bus.Transports.LightningQueues;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 using Platform = Baseline.Platform;
 
-namespace JasperBus.Tests.Transports.LightningQueues
+namespace Jasper.Testing.Bus.Transports.LightningQueues
 {
     public class LQ_integration_specs : IntegrationContext
     {
@@ -61,7 +58,7 @@ namespace JasperBus.Tests.Transports.LightningQueues
             var envelope = task.Result;
 
 
-            envelope.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(envelope);
         }
         
     }

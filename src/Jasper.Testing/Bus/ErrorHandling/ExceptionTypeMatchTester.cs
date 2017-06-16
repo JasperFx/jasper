@@ -1,9 +1,9 @@
 using System;
-using JasperBus.ErrorHandling;
+using Jasper.Bus.ErrorHandling;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.ErrorHandling
+namespace Jasper.Testing.Bus.ErrorHandling
 {
     public class ExceptionTypeMatchTester
     {
@@ -13,10 +13,10 @@ namespace JasperBus.Tests.ErrorHandling
             var match = new ExceptionTypeMatch<NotImplementedException>();
 
             // Hey, it's important that this code actually works
-            match.Matches(null, new NotImplementedException()).ShouldBeTrue();
-            match.Matches(null, new Exception()).ShouldBeFalse();
-            match.Matches(null, new NotSupportedException()).ShouldBeFalse();
-            match.Matches(null, new DivideByZeroException()).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeTrue(match.Matches(null, new NotImplementedException()));
+            ShouldBeBooleanExtensions.ShouldBeFalse(match.Matches(null, new Exception()));
+            ShouldBeBooleanExtensions.ShouldBeFalse(match.Matches(null, new NotSupportedException()));
+            ShouldBeBooleanExtensions.ShouldBeFalse(match.Matches(null, new DivideByZeroException()));
         }
     }
 }

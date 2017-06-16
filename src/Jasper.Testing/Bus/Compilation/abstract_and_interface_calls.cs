@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Compilation
+namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
     public class abstract_and_interface_calls : CompilationContext<HandlerWithMultipleCalls>

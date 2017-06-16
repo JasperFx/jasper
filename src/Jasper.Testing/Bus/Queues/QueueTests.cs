@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using JasperBus.Queues;
-using JasperBus.Queues.Lmdb;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Lmdb;
 using Microsoft.Reactive.Testing;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues
+namespace Jasper.Testing.Bus.Queues
 {
     [Collection("SharedTestDirectory")]
     public class QueueTests : IDisposable
@@ -32,9 +32,9 @@ namespace JasperBus.Tests.Queues
             using (_queue.Receive("test").Subscribe(x => received = true))
             {
                 _scheduler.AdvanceBy(TimeSpan.FromSeconds(2).Ticks);
-                received.ShouldBeFalse();
+                ShouldBeBooleanExtensions.ShouldBeFalse(received);
                 _scheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-                received.ShouldBeTrue();
+                ShouldBeBooleanExtensions.ShouldBeTrue(received);
             }
         }
 
@@ -47,9 +47,9 @@ namespace JasperBus.Tests.Queues
             using (_queue.Receive("test").Subscribe(x => received = true))
             {
                 _scheduler.AdvanceBy(time.AddSeconds(-3).Ticks);
-                received.ShouldBeFalse();
+                ShouldBeBooleanExtensions.ShouldBeFalse(received);
                 _scheduler.AdvanceBy(time.AddSeconds(-2).Ticks);
-                received.ShouldBeTrue();
+                ShouldBeBooleanExtensions.ShouldBeTrue(received);
             }
         }
 
@@ -90,7 +90,7 @@ namespace JasperBus.Tests.Queues
                 message.Destination = new Uri($"lq.tcp://localhost:{queue.Endpoint.Port}");
                 queue.Send(message);
                 var received = await queue.Receive("test").FirstAsyncWithTimeout();
-                received.ShouldNotBeNull();
+                ShouldBeNullExtensions.ShouldNotBeNull(received);
                 received.Message.Queue.ShouldBe(message.Queue);
                 received.Message.Data.ShouldBe(message.Data);
             }
@@ -107,7 +107,7 @@ namespace JasperBus.Tests.Queues
                 queue.Send(message);
                 await Task.Delay(TimeSpan.FromSeconds(10));
                 var store = (LmdbMessageStore) queue.Store;
-                store.PersistedOutgoingMessages().ToEnumerable().Any().ShouldBeFalse();
+                ShouldBeBooleanExtensions.ShouldBeFalse(store.PersistedOutgoingMessages().ToEnumerable().Any());
             }
         }
 

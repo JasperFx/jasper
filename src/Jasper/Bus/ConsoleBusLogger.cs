@@ -1,8 +1,8 @@
 ﻿using System;
 using Baseline;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class ConsoleBusLogger : IBusLogger
     {

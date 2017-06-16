@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using JasperBus.Queues;
-using JasperBus.Queues.Logging;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Logging;
 using Xunit;
 
-namespace JasperBus.Tests.Queues
+namespace Jasper.Testing.Bus.Queues
 {
     [Collection("SharedTestDirectory")]
     public class ProfilingTests : IDisposable

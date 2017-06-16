@@ -1,7 +1,7 @@
 using System;
 using Baseline;
 
-namespace JasperBus.Runtime.Subscriptions
+namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class Subscription
     {

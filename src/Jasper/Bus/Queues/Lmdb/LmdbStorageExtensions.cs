@@ -1,6 +1,6 @@
 ﻿using LightningDB;
 
-namespace JasperBus.Queues.Lmdb
+namespace Jasper.Bus.Queues.Lmdb
 {
     public static class LmdbStorageExtensions
     {

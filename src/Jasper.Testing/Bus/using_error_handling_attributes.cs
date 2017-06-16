@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Baseline.Dates;
-using JasperBus.ErrorHandling;
-using JasperBus.Tests.Runtime;
+using Jasper.Bus;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
     public class using_error_handling_attributes : IntegrationContext
     {

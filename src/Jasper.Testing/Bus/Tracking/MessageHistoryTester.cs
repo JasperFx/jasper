@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using JasperBus.Runtime;
-using JasperBus.Tracking;
-using NSubstitute.Core;
+using Jasper.Bus.Tracking;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Tracking
+namespace Jasper.Testing.Bus.Tracking
 {
     public class MessageHistoryTester
     {
@@ -26,7 +24,7 @@ namespace JasperBus.Tests.Tracking
         [Fact]
         public void knows_when_stuff_is_finished_starting_from_scratch()
         {
-            watch.IsCompleted.ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(watch.IsCompleted);
         }
 
         [Fact]
@@ -37,27 +35,27 @@ namespace JasperBus.Tests.Tracking
 
             history.Start(envelope1, "Envelope");
 
-            watch.IsCompleted.ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(watch.IsCompleted);
 
             history.Start(envelope2, "Envelope");
 
-            watch.IsCompleted.ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(watch.IsCompleted);
 
             history.Complete(envelope1, "Envelope");
 
-            watch.IsCompleted.ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(watch.IsCompleted);
 
             history.Complete(envelope2, "Envelope");
 
-            watch.IsCompleted.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(watch.IsCompleted);
 
             var tracks = watch.Result;
 
             foreach (var messageTrack in tracks)
             {
-                messageTrack.Completed.ShouldBeTrue();
-                messageTrack.Headers.ShouldNotBeNull();
-                messageTrack.ExceptionText.ShouldBeNull();
+                ShouldBeBooleanExtensions.ShouldBeTrue(messageTrack.Completed);
+                ShouldBeNullExtensions.ShouldNotBeNull(messageTrack.Headers);
+                ShouldBeNullExtensions.ShouldBeNull(messageTrack.ExceptionText);
             }
         }
 
@@ -70,7 +68,7 @@ namespace JasperBus.Tests.Tracking
             history.Start(envelope1, "Envelope");
             history.Complete(envelope1, "Envelope", ex);
 
-            watch.IsCompleted.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(watch.IsCompleted);
 
             watch.Result.Single().ExceptionText.ShouldBe(ex.ToString());
 

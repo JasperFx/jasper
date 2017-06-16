@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using JasperBus.Tests.Runtime;
+﻿using System.Threading.Tasks;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Compilation
+namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
     public class simple_sync_message_handlers : CompilationContext<SyncHandler>

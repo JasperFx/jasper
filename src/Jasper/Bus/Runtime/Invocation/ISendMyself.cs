@@ -1,4 +1,4 @@
-﻿namespace JasperBus.Runtime.Invocation
+﻿namespace Jasper.Bus.Runtime.Invocation
 {
     public interface ISendMyself
     {

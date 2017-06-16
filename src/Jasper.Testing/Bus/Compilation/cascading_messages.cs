@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Compilation
+namespace Jasper.Testing.Bus.Compilation
 {
     public class source_code_attachment_to_handler_chains : IntegrationContext
     {
@@ -13,11 +13,11 @@ namespace JasperBus.Tests.Compilation
         {
             withAllDefaults();
 
-            Graph.Chains.Any().ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(Graph.Chains.Any());
 
             foreach (var chain in Graph.Chains)
             {
-                chain.SourceCode.ShouldContain(chain.TypeName);
+                ShouldBeStringTestExtensions.ShouldContain(chain.SourceCode, chain.TypeName);
 
 //                Console.WriteLine("Should be " + chain.TypeName);
 //                Console.WriteLine("--------------------------------------");

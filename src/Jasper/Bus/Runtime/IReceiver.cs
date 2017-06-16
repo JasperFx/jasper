@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using JasperBus.Configuration;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public interface IReceiver
     {

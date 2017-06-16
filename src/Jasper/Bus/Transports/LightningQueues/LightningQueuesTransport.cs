@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using Baseline;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
 using System.Threading.Tasks;
+using Baseline;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
-namespace JasperBus.Transports.LightningQueues
+namespace Jasper.Bus.Transports.LightningQueues
 {
     public class LightningQueuesTransport : ITransport
     {

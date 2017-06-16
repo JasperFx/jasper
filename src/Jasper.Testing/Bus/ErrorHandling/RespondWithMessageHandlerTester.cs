@@ -1,9 +1,9 @@
 using System;
-using JasperBus.ErrorHandling;
+using Jasper.Bus.ErrorHandling;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.ErrorHandling
+namespace Jasper.Testing.Bus.ErrorHandling
 {
     public class RespondWithMessageHandlerTester
     {
@@ -12,9 +12,9 @@ namespace JasperBus.Tests.ErrorHandling
         public void returns_no_continuation_when_exception_does_not_match()
         {
             var handler = new RespondWithMessageHandler<NotImplementedException>(null);
-            handler.DetermineContinuation(null, new Exception()).ShouldBeNull();
-            handler.DetermineContinuation(null, new DivideByZeroException()).ShouldBeNull();
-            handler.DetermineContinuation(null, new NullReferenceException()).ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(null, new Exception()));
+            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(null, new DivideByZeroException()));
+            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(null, new NullReferenceException()));
         }
 
         [Fact]

@@ -5,12 +5,11 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
-using Jasper;
-using JasperBus.Model;
+using Jasper.Bus.Model;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class HandlerSource
     {

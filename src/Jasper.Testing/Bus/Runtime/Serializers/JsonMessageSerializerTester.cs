@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using JasperBus.Runtime.Serializers;
+using Jasper.Bus.Runtime.Serializers;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime.Serializers
+namespace Jasper.Testing.Bus.Runtime.Serializers
 {
     public class JsonMessageSerializerTester
     {

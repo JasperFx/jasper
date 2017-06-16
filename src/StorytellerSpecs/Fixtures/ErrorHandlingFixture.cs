@@ -4,13 +4,13 @@ using System.Linq;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
-using JasperBus;
-using JasperBus.ErrorHandling;
-using JasperBus.Model;
-using JasperBus.Runtime;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using System.Threading.Tasks;
+using Jasper.Bus;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Model;
+using Jasper.Bus.Runtime;
 
 namespace StorytellerSpecs.Fixtures
 {

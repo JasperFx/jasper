@@ -1,9 +1,8 @@
-﻿using System;
-using Jasper.Codegen;
-using JasperBus.Tests.Runtime;
+﻿using Jasper.Codegen;
+using Jasper.Testing.Bus.Runtime;
 using Xunit;
 
-namespace JasperBus.Tests.Bootstrapping
+namespace Jasper.Testing.Bus.Bootstrapping
 
 {
     public class can_use_custom_generation_sources : IntegrationContext

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JasperBus.Queues.Net
+namespace Jasper.Bus.Queues.Net
 {
     public class OutgoingMessageFailure
     {

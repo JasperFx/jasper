@@ -1,7 +1,7 @@
 ﻿using System;
-using JasperBus.Queues.Logging;
+using Jasper.Bus.Queues.Logging;
 
-namespace JasperBus.Transports.LightningQueues
+namespace Jasper.Bus.Transports.LightningQueues
 {
     public class LightningQueueLoggingAdapter : ILogger
     {

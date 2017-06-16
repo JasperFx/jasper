@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Jasper.Bus.Model;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
-using JasperBus.Model;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
 using Shouldly;
 using StructureMap;
 using Xunit;
 
-namespace JasperBus.Tests.Compilation
+namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
     public abstract class CompilationContext<T>
@@ -86,7 +86,7 @@ namespace JasperBus.Tests.Compilation
 
         public void AllHandlersCompileSuccessfully()
         {
-            _handlers.Value.Count.ShouldBeGreaterThan(0);
+            ShouldBeTestExtensions.ShouldBeGreaterThan(_handlers.Value.Count, 0);
         }
 
         public MessageHandler HandlerFor<TMessage>()

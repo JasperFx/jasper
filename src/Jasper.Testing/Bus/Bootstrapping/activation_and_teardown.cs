@@ -1,14 +1,15 @@
 ﻿using System.Linq;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
-using JasperBus.Runtime.Serializers;
-using JasperBus.Runtime.Subscriptions;
-using JasperBus.Tests.Stubs;
+using Jasper.Bus;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Testing.Bus.Stubs;
 using Shouldly;
 using StructureMap.Pipeline;
 using Xunit;
 
-namespace JasperBus.Tests.Bootstrapping
+namespace Jasper.Testing.Bus.Bootstrapping
 {
     public class activation_and_teardown : BootstrappingContext
     {
@@ -16,12 +17,12 @@ namespace JasperBus.Tests.Bootstrapping
         public void transport_is_disposed()
         {
             var transport = theRuntime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
-            transport.WasDisposed.ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(transport.WasDisposed);
 
 
             theRuntime.Dispose();
 
-            transport.WasDisposed.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(transport.WasDisposed);
         }
 
         [Fact]

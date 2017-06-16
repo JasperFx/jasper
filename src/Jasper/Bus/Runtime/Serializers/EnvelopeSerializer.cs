@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Baseline;
-using JasperBus.Configuration;
+using Jasper.Bus.Configuration;
 
-namespace JasperBus.Runtime.Serializers
+namespace Jasper.Bus.Runtime.Serializers
 {
     public class EnvelopeSerializer : IEnvelopeSerializer
     {

@@ -4,7 +4,7 @@ using System.IO;
 using Baseline;
 using Newtonsoft.Json;
 
-namespace JasperBus.Runtime
+namespace Jasper.Bus.Runtime
 {
     public class ErrorReport
     {

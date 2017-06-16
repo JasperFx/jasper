@@ -2,9 +2,9 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Reactive.Linq;
-using JasperBus.Queues.Logging;
+using Jasper.Bus.Queues.Logging;
 
-namespace JasperBus.Queues.Net.Tcp
+namespace Jasper.Bus.Queues.Net.Tcp
 {
     public class Receiver : IDisposable
     {

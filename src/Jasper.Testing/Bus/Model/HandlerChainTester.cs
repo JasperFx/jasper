@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using JasperBus.Model;
-using JasperBus.Tests.Runtime;
+using Jasper.Bus.Model;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Model
+namespace Jasper.Testing.Bus.Model
 {
     public class HandlerChainTester
     {

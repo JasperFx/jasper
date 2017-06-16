@@ -1,19 +1,18 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Model;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Codegen;
 using Jasper.Configuration;
-using JasperBus.Configuration;
-using JasperBus.Model;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
-using JasperBus.Runtime.Serializers;
-using JasperBus.Runtime.Subscriptions;
 using StructureMap;
-using Policies = JasperBus.Configuration.Policies;
+using Policies = Jasper.Bus.Configuration.Policies;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class ServiceBusFeature : IFeature
     {

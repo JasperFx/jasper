@@ -1,8 +1,8 @@
-﻿using JasperBus.Runtime.Routing;
+﻿using Jasper.Bus.Runtime.Routing;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime.Routing
+namespace Jasper.Testing.Bus.Runtime.Routing
 {
     public class LambdaRoutingRuleTester
     {
@@ -10,14 +10,14 @@ namespace JasperBus.Tests.Runtime.Routing
         public void positive_match()
         {
             var rule = new LambdaRoutingRule("is type",type => type == typeof (BusSettings));
-            rule.Matches(typeof(BusSettings)).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(rule.Matches(typeof(BusSettings)));
         }
 
         [Fact]
         public void negative_match()
         {
             var rule = new LambdaRoutingRule("test",type => type == typeof(BusSettings));
-            rule.Matches(GetType()).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(GetType()));
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Baseline;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     internal static class ConsoleWriter
     {

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
-using Green;
+﻿using System.Linq;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Compilation
+namespace Jasper.Testing.Bus.Compilation
 {
     public class can_compile_a_handler_chain_for_an_inner_type : IntegrationContext
     {
@@ -15,7 +14,7 @@ namespace JasperBus.Tests.Compilation
 
             var chain = Graph.ChainFor<Message1>();
             var call = chain.Handlers.First(x => x.HandlerType == typeof(ThingWithInner.InnerHandler));
-            call.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(call);
         }
     }
 

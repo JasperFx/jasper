@@ -1,9 +1,9 @@
 ﻿using System;
 using Baseline.Dates;
-using JasperBus.ErrorHandling;
-using JasperBus.Model;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Model;
 
-namespace JasperBus
+namespace Jasper.Bus
 {
     public class MaximumAttemptsAttribute : ModifyHandlerChainAttribute
     {

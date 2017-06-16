@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JasperBus.ErrorHandling
+namespace Jasper.Bus.ErrorHandling
 {
     public class ExceptionMatchExpression
     {

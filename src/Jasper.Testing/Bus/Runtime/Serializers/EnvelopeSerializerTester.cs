@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Serializers;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Serializers;
 using Newtonsoft.Json;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime.Serializers
+namespace Jasper.Testing.Bus.Runtime.Serializers
 {
     public class EnvelopeSerializerTester
     {
@@ -118,9 +118,9 @@ namespace JasperBus.Tests.Runtime.Serializers
             theEnvelope.ContentType = "random/nonexistent";
             theEnvelope.Message = new object();
 
-            Exception<InvalidOperationException>.ShouldBeThrownBy(() => {
+            ShouldBeStringTestExtensions.ShouldContain(Exception<InvalidOperationException>.ShouldBeThrownBy(() => {
                 ClassUnderTest.Serialize(theEnvelope, theNode);
-            }).Message.ShouldContain("random/nonexistent");
+            }).Message, "random/nonexistent");
         }
 
         [Fact]

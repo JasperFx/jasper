@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using JasperBus.Configuration;
 using System.Threading.Tasks;
-using JasperBus.Runtime;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
 
-namespace JasperBus.Transports.LightningQueues
+namespace Jasper.Bus.Transports.LightningQueues
 {
     public class QueueSender : ISender
     {

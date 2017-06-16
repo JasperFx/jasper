@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
-using Jasper;
-using JasperBus.Configuration;
-using JasperBus.Runtime;
-using JasperBus.Tests.Stubs;
+using Jasper.Bus;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime;
+using Jasper.Testing.Bus.Stubs;
 
-namespace JasperBus.Tests.Bootstrapping
+namespace Jasper.Testing.Bus.Bootstrapping
 {
     public class BootstrappingContext : IDisposable
     {

@@ -1,4 +1,4 @@
-﻿namespace JasperBus.Tests
+﻿namespace Jasper.Testing.Bus
 {
     public interface ITargetHandler
     {

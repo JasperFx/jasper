@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using JasperBus.ErrorHandling;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Invocation;
+using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using NSubstitute;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime.Invocation
+namespace Jasper.Testing.Bus.Runtime.Invocation
 {
     public class MoveToErrorQueueTester
     {

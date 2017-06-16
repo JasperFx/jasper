@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using JasperBus.Model;
 
-namespace JasperBus.Transports.InMemory
+namespace Jasper.Bus.Transports.InMemory
 {
     public class InMemoryMessage
     {

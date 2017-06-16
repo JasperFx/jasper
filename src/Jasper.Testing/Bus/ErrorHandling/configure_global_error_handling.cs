@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using JasperBus.ErrorHandling;
+using Jasper.Bus.ErrorHandling;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.ErrorHandling
+namespace Jasper.Testing.Bus.ErrorHandling
 {
     public class configure_global_error_handling : IntegrationContext
     {

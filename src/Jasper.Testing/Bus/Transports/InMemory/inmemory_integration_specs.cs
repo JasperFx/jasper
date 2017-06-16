@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Baseline;
 using Baseline.Dates;
-using JasperBus.Runtime;
-using JasperBus.Tests.Runtime;
-using Microsoft.DotNet.InternalAbstractions;
+using Jasper.Bus;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
-using Platform = Baseline.Platform;
 
-namespace JasperBus.Tests.Transports.InMemory
+namespace Jasper.Testing.Bus.Transports.InMemory
 {
     public class inmemory_integration_specs : IntegrationContext
     {
@@ -52,7 +48,7 @@ namespace JasperBus.Tests.Transports.InMemory
 
             var envelope = task.Result;
 
-            envelope.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(envelope);
         }
         
     }

@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Jasper.Bus;
 using Jasper.Codegen;
 using Jasper.Configuration;
-using JasperBus;
 using StructureMap;
 
 namespace Jasper.Diagnostics

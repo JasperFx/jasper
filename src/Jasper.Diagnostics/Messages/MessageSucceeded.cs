@@ -1,5 +1,5 @@
-﻿using Jasper.Remotes.Messaging;
-using JasperBus.Runtime;
+﻿using Jasper.Bus.Runtime;
+using Jasper.Remotes.Messaging;
 
 namespace Jasper.Diagnostics.Messages
 {

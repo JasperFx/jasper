@@ -1,9 +1,9 @@
-﻿using JasperBus.Runtime.Routing;
+﻿using Jasper.Bus.Runtime.Routing;
 using Shouldly;
 using TestMessages;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime.Routing
+namespace Jasper.Testing.Bus.Runtime.Routing
 {
     public class AssemblyRuleTester
     {
@@ -11,18 +11,18 @@ namespace JasperBus.Tests.Runtime.Routing
         public void positive_test()
         {
             var rule = AssemblyRule.For<NewUser>();
-            rule.Matches(typeof(NewUser)).ShouldBeTrue();
-            rule.Matches(typeof(EditUser)).ShouldBeTrue();
-            rule.Matches(typeof(DeleteUser)).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(rule.Matches(typeof(NewUser)));
+            ShouldBeBooleanExtensions.ShouldBeTrue(rule.Matches(typeof(EditUser)));
+            ShouldBeBooleanExtensions.ShouldBeTrue(rule.Matches(typeof(DeleteUser)));
         }
 
         [Fact]
         public void negative_test()
         {
             var rule = AssemblyRule.For<NewUser>();
-            rule.Matches(typeof(Message1)).ShouldBeFalse();
-            rule.Matches(typeof(Message2)).ShouldBeFalse();
-            rule.Matches(GetType()).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(typeof(Message1)));
+            ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(typeof(Message2)));
+            ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(GetType()));
         }
     }
 

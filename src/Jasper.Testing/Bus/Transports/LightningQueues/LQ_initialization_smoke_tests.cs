@@ -1,9 +1,9 @@
-﻿using JasperBus.Runtime;
-using JasperBus.Tests.Runtime;
-using JasperBus.Transports.LightningQueues;
+﻿using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.LightningQueues;
+using Jasper.Testing.Bus.Runtime;
 using Xunit;
 
-namespace JasperBus.Tests.Transports.LightningQueues
+namespace Jasper.Testing.Bus.Transports.LightningQueues
 {
     public class LQ_initialization_smoke_tests : IntegrationContext
     {

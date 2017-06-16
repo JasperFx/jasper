@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace JasperBus.Transports.LightningQueues
+namespace Jasper.Bus.Transports.LightningQueues
 {
     public class LightningUri
     {

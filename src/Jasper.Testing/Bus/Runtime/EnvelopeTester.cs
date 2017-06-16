@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
-using JasperBus.Runtime;
+using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Runtime
+namespace Jasper.Testing.Bus.Runtime
 {
     public class EnvelopeTester
     {
         [Fact]
         public void has_a_correlation_id_by_default()
         {
-            new Envelope().CorrelationId.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(new Envelope().CorrelationId);
 
             new Envelope().CorrelationId.ShouldNotBe(new Envelope().CorrelationId);
             new Envelope().CorrelationId.ShouldNotBe(new Envelope().CorrelationId);
@@ -33,8 +33,8 @@ namespace JasperBus.Tests.Runtime
         [Fact]
         public void will_assign_a_new_correlation_id_if_none_in_headers()
         {
-            new Envelope().CorrelationId
-                .IsEmpty().ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(new Envelope().CorrelationId
+                    .IsEmpty());
         }
 
         [Fact]
@@ -45,8 +45,8 @@ namespace JasperBus.Tests.Runtime
                 CorrelationId = Guid.NewGuid().ToString()
             };
 
-            parent.OriginalId.ShouldBeNull();
-            parent.ParentId.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(parent.OriginalId);
+            ShouldBeNullExtensions.ShouldBeNull(parent.ParentId);
         }
 
         [Fact]
@@ -121,8 +121,8 @@ namespace JasperBus.Tests.Runtime
 
             var child = parent.ForResponse(childMessage);
 
-            child.Headers.ContainsKey(Envelope.ResponseIdKey).ShouldBeFalse();
-            child.Destination.ShouldBeNull();
+            ShouldBeBooleanExtensions.ShouldBeFalse(child.Headers.ContainsKey(Envelope.ResponseIdKey));
+            ShouldBeNullExtensions.ShouldBeNull(child.Destination);
         }
 
         [Fact]
@@ -135,14 +135,14 @@ namespace JasperBus.Tests.Runtime
                 Source = "foo://bar".ToUri()
             };
 
-            parent.Headers.ContainsKey(Envelope.ReplyRequestedKey).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(parent.Headers.ContainsKey(Envelope.ReplyRequestedKey));
 
             var childMessage = new Message1();
 
             var child = parent.ForResponse(childMessage);
 
-            child.Headers.ContainsKey(Envelope.ResponseIdKey).ShouldBeFalse();
-            child.Destination.ShouldBeNull();
+            ShouldBeBooleanExtensions.ShouldBeFalse(child.Headers.ContainsKey(Envelope.ResponseIdKey));
+            ShouldBeNullExtensions.ShouldBeNull(child.Destination);
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace JasperBus.Tests.Runtime
         {
             var envelope = new Envelope();
 
-            envelope.Source.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.Source);
 
             var uri = "fake://thing".ToUri();
             envelope.Source = uri;
@@ -164,7 +164,7 @@ namespace JasperBus.Tests.Runtime
         {
             var envelope = new Envelope();
 
-            envelope.ReplyUri.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.ReplyUri);
 
             var uri = "fake://thing".ToUri();
             envelope.ReplyUri = uri;
@@ -202,7 +202,7 @@ namespace JasperBus.Tests.Runtime
         public void original_id()
         {
             var envelope = new Envelope();
-            envelope.OriginalId.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.OriginalId);
 
             var originalId = Guid.NewGuid().ToString();
             envelope.OriginalId = originalId;
@@ -215,7 +215,7 @@ namespace JasperBus.Tests.Runtime
         public void ParentId()
         {
             var envelope = new Envelope();
-            envelope.ParentId.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.ParentId);
 
             var parentId = Guid.NewGuid().ToString();
             envelope.ParentId = parentId;
@@ -228,7 +228,7 @@ namespace JasperBus.Tests.Runtime
         public void ResponseId()
         {
             var envelope = new Envelope();
-            envelope.ResponseId.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.ResponseId);
 
             var responseId = Guid.NewGuid().ToString();
             envelope.ResponseId = responseId;
@@ -242,7 +242,7 @@ namespace JasperBus.Tests.Runtime
         {
             var envelope = new Envelope();
 
-            envelope.Destination.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.Destination);
 
             var uri = "fake://thing".ToUri();
             envelope.Destination = uri;
@@ -256,7 +256,7 @@ namespace JasperBus.Tests.Runtime
         {
             var envelope = new Envelope();
 
-            envelope.ReceivedAt.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.ReceivedAt);
 
             var uri = "fake://thing".ToUri();
             envelope.ReceivedAt = uri;
@@ -269,7 +269,7 @@ namespace JasperBus.Tests.Runtime
         public void reply_requested()
         {
             var envelope = new Envelope();
-            envelope.ReplyRequested.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.ReplyRequested);
 
 
             envelope.ReplyRequested = "Foo";
@@ -277,28 +277,28 @@ namespace JasperBus.Tests.Runtime
             envelope.ReplyRequested.ShouldBe("Foo");
 
             envelope.ReplyRequested = null;
-            envelope.ReplyRequested.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.ReplyRequested);
         }
 
         [Fact]
         public void ack_requested()
         {
             var envelope = new Envelope();
-            envelope.AckRequested.ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(envelope.AckRequested);
 
 
             envelope.AckRequested = true;
             envelope.Headers[Envelope.AckRequestedKey].ShouldBe("true");
-            envelope.AckRequested.ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(envelope.AckRequested);
 
             envelope.AckRequested = false;
-            envelope.Headers.ContainsKey(Envelope.AckRequestedKey).ShouldBeFalse();
+            ShouldBeBooleanExtensions.ShouldBeFalse(envelope.Headers.ContainsKey(Envelope.AckRequestedKey));
         }
 
         [Fact]
         public void execution_time_is_null_by_default()
         {
-            new Envelope().ExecutionTime.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(new Envelope().ExecutionTime);
         }
 
         [Fact]
@@ -321,7 +321,7 @@ namespace JasperBus.Tests.Runtime
 
             envelope.ExecutionTime = null;
 
-            envelope.ExecutionTime.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(envelope.ExecutionTime);
         }
 
         [Fact]

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using JasperBus.Queues;
+using Jasper.Bus.Queues;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues
+namespace Jasper.Testing.Bus.Queues
 {
     [Collection("SharedTestDirectory")]
     public class IntegrationTests : IDisposable
@@ -30,10 +30,10 @@ namespace JasperBus.Tests.Queues
             message.Queue = "receiver";
             _sender.Send(message);
             var received = await _receiver.Receive("receiver").FirstAsyncWithTimeout();
-            received.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(received);
             received.Message.Queue.ShouldBe(message.Queue);
             received.Message.Data.ShouldBe(message.Data);
-            _senderLogger.DebugMessages.Any(x => x.Contains("Got an error sending")).ShouldBeTrue();
+            ShouldBeBooleanExtensions.ShouldBeTrue(_senderLogger.DebugMessages.Any(x => x.Contains("Got an error sending")));
         }
 
         public void Dispose()

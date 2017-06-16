@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Baseline;
-using JasperBus.Runtime;
-using JasperBus.Runtime.Serializers;
 using System.Threading.Tasks;
+using Baseline;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Serializers;
 
-namespace JasperBus.Configuration
+namespace Jasper.Bus.Configuration
 {
     public class ChannelGraph : IContentTypeAware, IDisposable, IEnumerable<ChannelNode>
     {

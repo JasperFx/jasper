@@ -3,14 +3,14 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
-using JasperBus.Queues.Lmdb;
-using JasperBus.Queues.Logging;
-using JasperBus.Queues.Net.Protocol.V1;
-using JasperBus.Queues.Storage;
+using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Queues.Net.Protocol.V1;
+using Jasper.Bus.Queues.Storage;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Tests.Queues.Net.Protocol.V1
+namespace Jasper.Testing.Bus.Queues.Net.Protocol.V1
 {
     [Collection("SharedTestDirectory")]
     public class SendingProtocolTests : IDisposable
@@ -44,7 +44,7 @@ namespace JasperBus.Tests.Queues.Net.Protocol.V1
             {
                 await _sender.WriteMessages(ms, expected).FirstAsyncWithTimeout();
                 var actual = ms.ToArray();
-                actual.SequenceEqual(expected).ShouldBeTrue();
+                ShouldBeBooleanExtensions.ShouldBeTrue(actual.SequenceEqual(expected));
             }
         }
 
@@ -75,7 +75,7 @@ namespace JasperBus.Tests.Queues.Net.Protocol.V1
             using (var ms = new MemoryStream())
             {
                 await _sender.WriteAcknowledgement(ms).FirstAsyncWithTimeout();
-                ms.ToArray().SequenceEqual(Constants.AcknowledgedBuffer).ShouldBeTrue();
+                ShouldBeBooleanExtensions.ShouldBeTrue(ms.ToArray().SequenceEqual(Constants.AcknowledgedBuffer));
             }
         }
 

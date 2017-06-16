@@ -1,14 +1,15 @@
 ﻿using System.Linq;
+using Jasper.Bus;
+using Jasper.Bus.Model;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
 using Jasper.Codegen.StructureMap;
-using JasperBus.Model;
-using JasperBus.Tests.Runtime;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using StructureMap;
 using Xunit;
 
-namespace JasperBus.Tests
+namespace Jasper.Testing.Bus
 {
 
     public class can_customize_handler_chains_with_attributes

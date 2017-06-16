@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace JasperBus.Queues
+namespace Jasper.Bus.Queues
 {
     public static class PortFinder
     {
