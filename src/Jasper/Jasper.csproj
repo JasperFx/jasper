@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Description>Core Library for JasperFx Applications</Description>
     <VersionPrefix>0.2.0-alpha</VersionPrefix>
@@ -19,7 +18,6 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Baseline" Version="1.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.1.0" />
@@ -45,9 +43,7 @@
     <PackageReference Include="System.Reactive" Version="3.1.1" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.7.0" />
   </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
     <PackageReference Include="System.Runtime.Loader" Version="4.0.0" />
   </ItemGroup>
-
 </Project>

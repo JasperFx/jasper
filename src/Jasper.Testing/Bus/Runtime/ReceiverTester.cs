@@ -101,6 +101,11 @@ namespace Jasper.Testing.Bus.Runtime
         {
             throw new NotImplementedException();
         }
+
+        public Task InvokeNow(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

@@ -12,6 +12,7 @@ namespace Jasper.Bus.Runtime.Invocation
         Task Invoke(Envelope envelope, ChannelNode receiver);
         IBusLogger Logger { get; }
         Task InvokeNow(object message);
+        Task InvokeNow(Envelope envelope);
     }
 
     public class HandlerPipeline : IHandlerPipeline
@@ -92,11 +93,17 @@ namespace Jasper.Bus.Runtime.Invocation
                 Callback = new InlineMessageCallback(message)
             };
 
+            return InvokeNow(envelope);
+        }
+
+        public Task InvokeNow(Envelope envelope)
+        {
             using (var context = new EnvelopeContext(this, envelope, _sender))
             {
                 return ProcessMessage(envelope, context);
             }
         }
+
 
         private void deserialize(Envelope envelope, ChannelNode receiver)
         {
