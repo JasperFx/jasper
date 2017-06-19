@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -9,6 +10,7 @@ using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using Policies = Jasper.Bus.Configuration.Policies;
 
@@ -24,6 +26,7 @@ namespace Jasper.Bus
         public ChannelGraph Channels { get; } = new ChannelGraph();
 
         public Policies Policies { get; } = new Policies();
+        public bool DelayedJobsRunInMemory { get; set; } = true;
 
         public readonly ServiceRegistry Services = new ServiceBusRegistry();
 
@@ -67,6 +70,8 @@ namespace Jasper.Bus
                         });
                 }
 
+                container.GetInstance<IDelayedJobProcessor>().Start(pipeline, Channels);
+
                 container.GetInstance<ISubscriptionActivator>().Activate();
             });
         }
@@ -106,6 +111,13 @@ namespace Jasper.Bus
             if (registry.Logging.UseConsoleLogging)
             {
                 Services.For<IBusLogger>().Add<ConsoleBusLogger>();
+            }
+
+            if (DelayedJobsRunInMemory)
+            {
+                Channels.AddChannelIfMissing(InMemoryDelayedJobProcessor.Queue).Incoming = true;
+
+                Services.ForSingletonOf<IDelayedJobProcessor>().Use<InMemoryDelayedJobProcessor>();
             }
 
             return Services;

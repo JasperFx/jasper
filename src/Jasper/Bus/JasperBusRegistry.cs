@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Reflection;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Microsoft.Extensions.DependencyInjection;
 using StructureMap.TypeRules;
 
 namespace Jasper.Bus
@@ -219,6 +221,29 @@ namespace Jasper.Bus
         public ChannelExpression Channel(string uriString)
         {
             return Channel(uriString.ToUri());
+        }
+
+        public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_feature);
+
+        public class DelayedJobExpression
+        {
+            private readonly ServiceBusFeature _feature;
+
+            public DelayedJobExpression(ServiceBusFeature feature)
+            {
+                _feature = feature;
+            }
+
+            public void RunInMemory()
+            {
+                _feature.DelayedJobsRunInMemory = true;
+            }
+
+            public void Use<T>() where T : class, IDelayedJobProcessor
+            {
+                _feature.DelayedJobsRunInMemory = false;
+                _feature.Services.AddSingleton<IDelayedJobProcessor, T>();
+            }
         }
     }
 }

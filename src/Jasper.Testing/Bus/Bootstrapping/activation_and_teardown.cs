@@ -17,12 +17,12 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public void transport_is_disposed()
         {
             var transport = theRuntime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
-            ShouldBeBooleanExtensions.ShouldBeFalse(transport.WasDisposed);
+            transport.WasDisposed.ShouldBeFalse();
 
 
             theRuntime.Dispose();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(transport.WasDisposed);
+            transport.WasDisposed.ShouldBeTrue();
         }
 
         [Fact]
