@@ -59,12 +59,16 @@ namespace Jasper.Bus
 
         public void DelaySend<T>(T message, DateTime time)
         {
-            throw new NotImplementedException();
+            _sender.Send(new Envelope
+            {
+                Message = message,
+                ExecutionTime = time.ToUniversalTime()
+            });
         }
 
         public void DelaySend<T>(T message, TimeSpan delay)
         {
-            throw new NotImplementedException();
+            DelaySend(message, DateTime.UtcNow.Add(delay));
         }
 
         public Task SendAndWait<T>(T message)

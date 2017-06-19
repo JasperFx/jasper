@@ -9,7 +9,7 @@ namespace Jasper.Bus.Runtime
         void MarkSuccessful();
         void MarkFailed(Exception ex);
 
-        Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time);
+        Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time);
         void MoveToErrors(ErrorReport report);
         Task Requeue(Envelope envelope);
         Task Send(Envelope envelope);

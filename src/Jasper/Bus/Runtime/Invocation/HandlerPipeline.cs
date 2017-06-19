@@ -177,7 +177,7 @@ namespace Jasper.Bus.Runtime.Invocation
         {
             try
             {
-                envelope.Callback.MoveToDelayedUntil(_delayedJobs, envelope.ExecutionTime.Value.ToUniversalTime());
+                envelope.Callback.MoveToDelayedUntil(envelope, _delayedJobs, envelope.ExecutionTime.Value.ToUniversalTime());
             }
             catch (Exception e)
             {
@@ -205,7 +205,7 @@ namespace Jasper.Bus.Runtime.Invocation
             throw new InlineMessageException("Failed while invoking an inline message", ex);
         }
 
-        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
+        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
         {
             throw new NotImplementedException();
         }

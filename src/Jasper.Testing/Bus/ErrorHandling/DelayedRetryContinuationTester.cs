@@ -26,7 +26,7 @@ namespace Jasper.Testing.Bus.ErrorHandling
 
             await continuation.Execute(envelope, context, now);
 
-            await envelope.Callback.Received().MoveToDelayedUntil(delayedJobs, now.AddMinutes(5));
+            await envelope.Callback.Received().MoveToDelayedUntil(envelope, delayedJobs, now.AddMinutes(5));
         }
     }
 }

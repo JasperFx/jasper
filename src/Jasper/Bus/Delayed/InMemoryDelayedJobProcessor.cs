@@ -9,7 +9,7 @@ using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus.Delayed
 {
-    public class InMemoryDelayedJobProcessor : IDelayedJobProcessor
+    public class InMemoryDelayedJobProcessor : IDelayedJobProcessor, IDisposable
     {
         public static readonly Uri Queue = "memory://delated".ToUri();
 
@@ -122,6 +122,17 @@ namespace Jasper.Bus.Delayed
                     ExecutionTime = ExecutionTime, From = Envelope.ReceivedAt.ToString(), ReceivedAt = ReceivedAt
                 };
             }
+        }
+
+        public void Dispose()
+        {
+            var outstanding = _outstandingJobs.ToArray();
+            foreach (var job in outstanding)
+            {
+                job.Cancel();
+            }
+
+            _outstandingJobs.ClearAll();
         }
     }
 }

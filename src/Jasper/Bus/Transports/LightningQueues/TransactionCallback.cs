@@ -29,7 +29,7 @@ namespace Jasper.Bus.Transports.LightningQueues
             _context.CommitChanges();
         }
 
-        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
+        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
         {
             _context.ReceiveLater(time.ToUniversalTime() - DateTime.UtcNow);
             _context.CommitChanges();

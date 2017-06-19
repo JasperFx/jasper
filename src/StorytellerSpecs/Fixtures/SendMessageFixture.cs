@@ -464,7 +464,7 @@ namespace StorytellerSpecs.Fixtures
             Exception = ex;
         }
 
-        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
+        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
         {
             DelayedTo = time;
             return Task.CompletedTask;

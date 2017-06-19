@@ -31,13 +31,14 @@ namespace Jasper.Bus.Transports.InMemory
             Failed = true;
         }
 
-        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
+        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
         {
             var now = DateTime.UtcNow;
             time = time.ToUniversalTime();
             if (time > now)
             {
-                return _queue.Delay(_message, _destination, time - now);
+                delayedJobs.Enqueue(time, envelope);
+                return Task.CompletedTask;
             }
 
             return _queue.Send(_message, _destination);

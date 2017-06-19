@@ -63,6 +63,28 @@ namespace IntegrationTests.DelayedJobs
         }
 
         [Fact]
+        public async Task run_multiple_messages_through()
+        {
+            var env1 = ObjectMother.Envelope();
+            var env2 = ObjectMother.Envelope();
+            var env3 = ObjectMother.Envelope();
+
+            var waiter1 = waitForReceipt(env1);
+            var waiter2 = waitForReceipt(env2);
+            var waiter3 = waitForReceipt(env3);
+
+            theDelayedJobs.Enqueue(DateTime.UtcNow.AddHours(1), env1);
+            theDelayedJobs.Enqueue(DateTime.UtcNow.AddSeconds(5), env2);
+            theDelayedJobs.Enqueue(DateTime.UtcNow.AddHours(1), env3);
+
+            await waiter2;
+
+            waiter1.IsCompleted.ShouldBeFalse();
+            waiter2.IsCompleted.ShouldBeTrue();
+            waiter3.IsCompleted.ShouldBeFalse();
+        }
+
+        [Fact]
         public async Task play_all()
         {
             var env1 = ObjectMother.Envelope();
@@ -83,6 +105,8 @@ namespace IntegrationTests.DelayedJobs
             sent.ShouldContain(env2);
             sent.ShouldContain(env3);
         }
+
+
 
         [Fact]
         public void empty_all()

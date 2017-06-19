@@ -119,7 +119,7 @@ namespace Jasper.Testing.Bus.Stubs
 
         public bool MarkedFailed { get; set; }
 
-        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
+        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
         {
             DelayedTo = time;
             return Task.CompletedTask;

@@ -48,8 +48,8 @@ namespace Jasper.Testing.Bus.Transports.InMemory
 
             var envelope = task.Result;
 
-            ShouldBeNullExtensions.ShouldNotBeNull(envelope);
+            envelope.ShouldNotBeNull();
         }
-        
+
     }
 }

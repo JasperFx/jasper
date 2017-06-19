@@ -39,11 +39,24 @@ namespace Jasper.Bus
         /// </summary>
         Task Consume<T>(T message);
 
-//        void DelaySend<T>(T message, DateTime time);
-//        void DelaySend<T>(T message, TimeSpan delay);
+        /// <summary>
+        /// Send a message that should be executed at the given time
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="time"></param>
+        /// <typeparam name="T"></typeparam>
+        void DelaySend<T>(T message, DateTime time);
 
         /// <summary>
-        /// Send a message and await an acknowledgement that the 
+        /// Send a message that should be executed after the given delay
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="delay"></param>
+        /// <typeparam name="T"></typeparam>
+        void DelaySend<T>(T message, TimeSpan delay);
+
+        /// <summary>
+        /// Send a message and await an acknowledgement that the
         /// message has been processed
         /// </summary>
         /// <typeparam name="T"></typeparam>

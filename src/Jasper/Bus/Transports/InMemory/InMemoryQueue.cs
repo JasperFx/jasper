@@ -56,6 +56,7 @@ namespace Jasper.Bus.Transports.InMemory
             return _buffers[destination].SendAsync(message);
         }
 
+        [Obsolete("Going to use the new delayed processor")]
         public async Task Delay(InMemoryMessage message, Uri destination, TimeSpan delayTime)
         {
             await Task.Delay(delayTime).ConfigureAwait(false);
