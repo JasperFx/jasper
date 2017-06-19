@@ -26,7 +26,7 @@ namespace Jasper.Bus.Runtime
 
         public async Task<string> Send(Envelope envelope)
         {
-            var channels = DetermineDestinationChannels(envelope).ToArray();
+            var channels = DetermineDestinationChannels(envelope).Distinct().ToArray();
             if (!channels.Any())
             {
                 throw new Exception($"No channels match this message ({envelope})");
@@ -82,6 +82,7 @@ namespace Jasper.Bus.Runtime
                         yield return channel.Uri;
                     }
                 }
+
                 foreach (var sub in _subscriptions.GetSubscribersFor(messageType))
                 {
                     yield return sub;

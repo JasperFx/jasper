@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Description>Diagnostics for Jasper Service Bus</Description>
     <VersionPrefix>0.2.0-alpha</VersionPrefix>
@@ -18,15 +17,12 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="resources\**\*.js;resources\**\*.css;resources\**\*.json" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="StructureMap" Version="4.4.3" />
@@ -38,5 +34,39 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="1.0.1" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Folder Include="node_modules\abbrev" />
+    <Folder Include="node_modules\accepts" />
+    <Folder Include="node_modules\ajv" />
+    <Folder Include="node_modules\array-flatten" />
+    <Folder Include="node_modules\arrify" />
+    <Folder Include="node_modules\babel-helper-optimise-call-expression" />
+    <Folder Include="node_modules\babel-helper-regex" />
+    <Folder Include="node_modules\babel-template" />
+    <Folder Include="node_modules\babel-types" />
+    <Folder Include="node_modules\better-npm-run" />
+    <Folder Include="node_modules\boom" />
+    <Folder Include="node_modules\browserify-aes" />
+    <Folder Include="node_modules\buffer" />
+    <Folder Include="node_modules\cliui\node_modules\wordwrap" />
+    <Folder Include="node_modules\coa" />
+    <Folder Include="node_modules\combined-stream" />
+    <Folder Include="node_modules\content-disposition" />
+    <Folder Include="node_modules\convert-source-map" />
+    <Folder Include="node_modules\core-js" />
+    <Folder Include="node_modules\css-color-names" />
+    <Folder Include="node_modules\dashdash" />
+    <Folder Include="node_modules\define-properties" />
+    <Folder Include="node_modules\domain-browser" />
+    <Folder Include="node_modules\es5-ext" />
+    <Folder Include="node_modules\es6-symbol" />
+    <Folder Include="node_modules\escape-html" />
+    <Folder Include="node_modules\escope" />
+    <Folder Include="node_modules\espree\node_modules\acorn" />
+    <Folder Include="node_modules\esrecurse\node_modules\estraverse" />
+    <Folder Include="node_modules\fill-range" />
+    <Folder Include="node_modules\finalhandler\node_modules\debug" />
+    <Folder Include="node_modules\follow-redirects" />
+    <Folder Include="node_modules\glob-parent" />
+  </ItemGroup>
 </Project>
