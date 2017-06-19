@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 
@@ -15,9 +16,10 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly List<object> _outgoing = new List<object>();
         private readonly List<object> _inline = new List<object>();
 
-        public EnvelopeContext(HandlerPipeline pipeline, Envelope envelope, IEnvelopeSender sender)
+        public EnvelopeContext(HandlerPipeline pipeline, Envelope envelope, IEnvelopeSender sender, IDelayedJobProcessor delayedJobs)
         {
             Envelope = envelope;
+            DelayedJobs = delayedJobs;
             _pipeline = pipeline;
             _sender = sender;
         }
@@ -45,6 +47,7 @@ namespace Jasper.Bus.Runtime.Invocation
         }
 
         public Envelope Envelope { get; }
+        public IDelayedJobProcessor DelayedJobs { get; }
 
         public void Dispose()
         {

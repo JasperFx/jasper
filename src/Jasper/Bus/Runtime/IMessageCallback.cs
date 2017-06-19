@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Bus.Delayed;
 
 namespace Jasper.Bus.Runtime
 {
@@ -8,7 +9,7 @@ namespace Jasper.Bus.Runtime
         void MarkSuccessful();
         void MarkFailed(Exception ex);
 
-        Task MoveToDelayedUntil(DateTime time);
+        Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time);
         void MoveToErrors(ErrorReport report);
         Task Requeue(Envelope envelope);
         Task Send(Envelope envelope);

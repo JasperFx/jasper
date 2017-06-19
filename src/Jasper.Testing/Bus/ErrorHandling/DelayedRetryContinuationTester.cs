@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime.Invocation;
 using NSubstitute;
@@ -16,13 +17,16 @@ namespace Jasper.Testing.Bus.ErrorHandling
             var continuation = new DelayedRetryContinuation(5.Minutes());
             var context = Substitute.For<IEnvelopeContext>();
 
+            var delayedJobs = Substitute.For<IDelayedJobProcessor>();
+            context.DelayedJobs.Returns(delayedJobs);
+
             var envelope = ObjectMother.Envelope();
 
             var now = DateTime.Today.ToUniversalTime();
 
             await continuation.Execute(envelope, context, now);
 
-            await envelope.Callback.Received().MoveToDelayedUntil(now.AddMinutes(5));
+            await envelope.Callback.Received().MoveToDelayedUntil(delayedJobs, now.AddMinutes(5));
         }
     }
 }

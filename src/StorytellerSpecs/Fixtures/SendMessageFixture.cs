@@ -10,6 +10,7 @@ using Baseline.Dates;
 using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -463,7 +464,7 @@ namespace StorytellerSpecs.Fixtures
             Exception = ex;
         }
 
-        public Task MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
         {
             DelayedTo = time;
             return Task.CompletedTask;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 
@@ -118,7 +119,7 @@ namespace Jasper.Testing.Bus.Stubs
 
         public bool MarkedFailed { get; set; }
 
-        public Task MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
         {
             DelayedTo = time;
             return Task.CompletedTask;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper.Bus.Delayed;
 
 namespace Jasper.Bus.Runtime.Invocation
 {
@@ -18,5 +19,6 @@ namespace Jasper.Bus.Runtime.Invocation
         Task Retry(Envelope envelope);
 
         IBusLogger Logger { get; }
+        IDelayedJobProcessor DelayedJobs { get; }
     }
 }

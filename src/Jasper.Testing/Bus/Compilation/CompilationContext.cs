@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -98,7 +99,7 @@ namespace Jasper.Testing.Bus.Compilation
         {
             var handler = HandlerFor<TMessage>();
             theEnvelope = Envelope.ForMessage(message);
-            var context = new EnvelopeContext(null,theEnvelope, null);
+            var context = new EnvelopeContext(null,theEnvelope, null, new InMemoryDelayedJobProcessor());
 
             await handler.Handle(context);
 

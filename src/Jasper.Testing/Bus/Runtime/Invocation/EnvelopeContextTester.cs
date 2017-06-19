@@ -20,7 +20,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         [Fact]
         public void enqueue()
         {
-            var messages = new EnvelopeContext(null, new Envelope{Message = new Message1()}, null);
+            var messages = new EnvelopeContext(null, new Envelope{Message = new Message1()}, null, null);
             var m1 = new Message1();
             var m2 = new Message2();
 
@@ -33,16 +33,16 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         [Fact]
         public void ignores_nulls_just_fine()
         {
-            var messages = new EnvelopeContext(null, new Envelope { Message = new Message1() }, null);
+            var messages = new EnvelopeContext(null, new Envelope { Message = new Message1() }, null, null);
             messages.EnqueueCascading(null);
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(messages.OutgoingMessages().Any());
+            messages.OutgoingMessages().Any().ShouldBeFalse();
         }
 
         [Fact]
         public void enqueue_an_oject_array()
         {
-            var messages = new EnvelopeContext(null, new Envelope{Message = new Message1()}, null);
+            var messages = new EnvelopeContext(null, new Envelope{Message = new Message1()}, null, null);
             var m1 = new Message1();
             var m2 = new Message2();
 
@@ -157,7 +157,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             };
 
             var recordingSender = new RecordingEnvelopeSender();
-            new EnvelopeContext(null, original, recordingSender)
+            new EnvelopeContext(null, original, recordingSender, null)
                 .SendFailureAcknowledgement(original, "you stink");
 
             ShouldBeBooleanExtensions.ShouldBeFalse(recordingSender.Outgoing.Any());
@@ -181,7 +181,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             };
 
             var recordingSender = new RecordingEnvelopeSender();
-            new EnvelopeContext(null, original, recordingSender)
+            new EnvelopeContext(null, original, recordingSender, null)
                 .SendFailureAcknowledgement(original, "you stink");
 
             theSentEnvelope = recordingSender.Sent.Single();
@@ -246,7 +246,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             var recordingSender = new RecordingEnvelopeSender();
 
 
-            new EnvelopeContext(null, original, recordingSender)
+            new EnvelopeContext(null, original, recordingSender, null)
                 .SendFailureAcknowledgement(original, "you stink");
 
             theSentEnvelope = recordingSender.Sent.Single();

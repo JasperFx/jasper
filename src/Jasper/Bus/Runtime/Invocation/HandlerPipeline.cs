@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
 
@@ -21,13 +22,15 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly IEnvelopeSerializer _serializer;
         private readonly HandlerGraph _graph;
         private readonly IReplyWatcher _replies;
+        private readonly IDelayedJobProcessor _delayedJobs;
 
-        public HandlerPipeline(IEnvelopeSender sender, IEnvelopeSerializer serializer, HandlerGraph graph, IReplyWatcher replies, IBusLogger[] loggers)
+        public HandlerPipeline(IEnvelopeSender sender, IEnvelopeSerializer serializer, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, IBusLogger[] loggers)
         {
             _sender = sender;
             _serializer = serializer;
             _graph = graph;
             _replies = replies;
+            _delayedJobs = delayedJobs;
 
             Logger = BusLogger.Combine(loggers);
         }
@@ -53,7 +56,7 @@ namespace Jasper.Bus.Runtime.Invocation
 
         private async Task invoke(Envelope envelope, ChannelNode receiver, DateTime now)
         {
-            using (var context = new EnvelopeContext(this, envelope, _sender))
+            using (var context = new EnvelopeContext(this, envelope, _sender, _delayedJobs))
             {
                 if (envelope.IsDelayed(now))
                 {
@@ -98,7 +101,7 @@ namespace Jasper.Bus.Runtime.Invocation
 
         public Task InvokeNow(Envelope envelope)
         {
-            using (var context = new EnvelopeContext(this, envelope, _sender))
+            using (var context = new EnvelopeContext(this, envelope, _sender, _delayedJobs))
             {
                 return ProcessMessage(envelope, context);
             }
@@ -170,12 +173,11 @@ namespace Jasper.Bus.Runtime.Invocation
             }
         }
 
-        // TODO -- think this is gonna die
-        private static void moveToDelayedMessageQueue(Envelope envelope, EnvelopeContext context)
+        private void moveToDelayedMessageQueue(Envelope envelope, EnvelopeContext context)
         {
             try
             {
-                envelope.Callback.MoveToDelayedUntil(envelope.ExecutionTime.Value);
+                envelope.Callback.MoveToDelayedUntil(_delayedJobs, envelope.ExecutionTime.Value.ToUniversalTime());
             }
             catch (Exception e)
             {
@@ -203,7 +205,7 @@ namespace Jasper.Bus.Runtime.Invocation
             throw new InlineMessageException("Failed while invoking an inline message", ex);
         }
 
-        public Task MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
         {
             throw new NotImplementedException();
         }

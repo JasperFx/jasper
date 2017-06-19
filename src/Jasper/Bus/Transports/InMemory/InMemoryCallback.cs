@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Transports.InMemory
@@ -30,7 +31,7 @@ namespace Jasper.Bus.Transports.InMemory
             Failed = true;
         }
 
-        public Task MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
         {
             var now = DateTime.UtcNow;
             time = time.ToUniversalTime();

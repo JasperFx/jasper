@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Runtime;
 
@@ -28,7 +29,7 @@ namespace Jasper.Bus.Transports.LightningQueues
             _context.CommitChanges();
         }
 
-        public Task MoveToDelayedUntil(DateTime time)
+        public Task MoveToDelayedUntil(IDelayedJobProcessor delayedJobs, DateTime time)
         {
             _context.ReceiveLater(time.ToUniversalTime() - DateTime.UtcNow);
             _context.CommitChanges();
