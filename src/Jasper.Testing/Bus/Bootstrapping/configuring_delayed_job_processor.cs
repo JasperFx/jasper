@@ -1,4 +1,5 @@
 ﻿using Jasper.Bus.Delayed;
+using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Bus.Bootstrapping

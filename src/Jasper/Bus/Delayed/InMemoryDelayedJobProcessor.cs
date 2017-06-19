@@ -13,8 +13,12 @@ namespace Jasper.Bus.Delayed
     {
         public static readonly Uri Queue = "memory://delated".ToUri();
 
+        public static InMemoryDelayedJobProcessor ForSender(ISender sender)
+        {
+            return new InMemoryDelayedJobProcessor{_sender = sender};
+        }
+
         private ISender _sender;
-        private readonly IHandlerPipeline _pipeline;
 
         private readonly ConcurrentCache<string, InMemoryDelayedJob> _outstandingJobs
             = new ConcurrentCache<string, InMemoryDelayedJob>();
@@ -97,7 +101,9 @@ namespace Jasper.Bus.Delayed
 
             private Task publish(Task obj)
             {
-                return _parent._sender.Send(Envelope).ContinueWith(t => Cancel());
+                return _cancellation.IsCancellationRequested
+                    ? Task.CompletedTask
+                    : _parent._sender.Send(Envelope).ContinueWith(t => Cancel());
             }
 
             public void Cancel()
