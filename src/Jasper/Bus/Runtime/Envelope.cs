@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Jasper.Util;
 
 namespace Jasper.Bus.Runtime
 {
@@ -24,9 +25,21 @@ namespace Jasper.Bus.Runtime
         public static readonly string AcceptedContentTypesKey = "accepted-content-types";
 
         public byte[] Data;
+        private object _message;
 
 
-        public object Message { get; set; }
+        public object Message
+        {
+            get { return _message; }
+            set
+            {
+                MessageType = value?.GetType().ToTypeAlias();
+                _message = value;
+            }
+        }
+
+
+
 
         public int Attempts
         {

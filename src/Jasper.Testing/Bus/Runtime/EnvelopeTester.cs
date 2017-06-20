@@ -135,14 +135,14 @@ namespace Jasper.Testing.Bus.Runtime
                 Source = "foo://bar".ToUri()
             };
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(parent.Headers.ContainsKey(Envelope.ReplyRequestedKey));
+            parent.Headers.ContainsKey(Envelope.ReplyRequestedKey).ShouldBeFalse();
 
             var childMessage = new Message1();
 
             var child = parent.ForResponse(childMessage);
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(child.Headers.ContainsKey(Envelope.ResponseIdKey));
-            ShouldBeNullExtensions.ShouldBeNull(child.Destination);
+            child.Headers.ContainsKey(Envelope.ResponseIdKey).ShouldBeFalse();
+            child.Destination.ShouldBeNull();
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var envelope = new Envelope();
 
-            ShouldBeNullExtensions.ShouldBeNull(envelope.Source);
+            envelope.Source.ShouldBeNull();
 
             var uri = "fake://thing".ToUri();
             envelope.Source = uri;
@@ -164,13 +164,23 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var envelope = new Envelope();
 
-            ShouldBeNullExtensions.ShouldBeNull(envelope.ReplyUri);
+            envelope.ReplyUri.ShouldBeNull();
 
             var uri = "fake://thing".ToUri();
             envelope.ReplyUri = uri;
 
             envelope.Headers[Envelope.ReplyUriKey].ShouldBe(uri.ToString());
             envelope.ReplyUri.ShouldBe(uri);
+        }
+
+        [Fact]
+        public void envelope_message_type_property()
+        {
+            var envelope = new Envelope();
+
+            envelope.MessageType = "foo";
+
+            envelope.MessageType.ShouldBe("foo");
         }
 
 
@@ -357,6 +367,22 @@ namespace Jasper.Testing.Bus.Runtime
             clone.Headers["a"].ShouldBe("1");
             clone.Headers["b"].ShouldBe("2");
         }
+
+        [Fact]
+        public void automatically_set_the_message_type_header_off_of_the_message()
+        {
+            var envelope = new Envelope
+            {
+                Message = new Message1(),
+                Headers =
+                {
+                    ["a"] = "1",
+                    ["b"] = "2"
+                }
+            };
+
+            envelope.MessageType.ShouldBe("message1");
+        }
     }
 
     public class Message1
@@ -366,7 +392,7 @@ namespace Jasper.Testing.Bus.Runtime
 
     public class Message2
     {
-        
+
     }
 
     public class Message3

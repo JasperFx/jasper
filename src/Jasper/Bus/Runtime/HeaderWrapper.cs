@@ -57,6 +57,15 @@ namespace Jasper.Bus.Runtime
             set { Headers.Set(Envelope.SourceKey, value); }
         }
 
+        public string MessageType
+        {
+            get { return Headers.Get(Envelope.MessageTypeKey); }
+            set
+            {
+                Headers.Set(Envelope.MessageTypeKey, value);
+            }
+        }
+
         public Uri ReplyUri
         {
             get { return Headers.GetUri(Envelope.ReplyUriKey); }
