@@ -48,6 +48,8 @@ namespace Jasper.Bus.Configuration
         public ISender Sender { get; set; }
         public DeliveryMode Mode { get; set; } = DeliveryMode.DeliveryGuaranteed;
         public IList<IEnvelopeModifier> Modifiers { get; } = new List<IEnvelopeModifier>();
+
+        public int MaximumParallelization { get; set; } = 5;
     }
 
     // Use a nullo if need be?

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus.Transports.InMemory
 {
@@ -23,7 +24,8 @@ namespace Jasper.Bus.Transports.InMemory
             {
                 var bufferOptions = new DataflowBlockOptions
                 {
-                    BoundedCapacity = _settings.BufferCapacity
+                    BoundedCapacity = _settings.BufferCapacity,
+
                 };
 
                 foreach (var node in nodes)
@@ -65,11 +67,7 @@ namespace Jasper.Bus.Transports.InMemory
 
         public void ListenForMessages(Uri destination, IReceiver receiver)
         {
-            var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
-            var actionBlock = new ActionBlock<InMemoryMessage>(message => receiver
-                .Receive(message.Data, message.Headers, new InMemoryCallback(this, message, destination)));
 
-            _buffers[destination].LinkTo(actionBlock, linkOptions);
         }
 
         public void Dispose()
@@ -78,6 +76,21 @@ namespace Jasper.Bus.Transports.InMemory
             {
                 buffer.Value.Complete();
             }
+        }
+
+        public void ListenForMessages(ChannelNode node, IHandlerPipeline pipeline, ChannelGraph channels)
+        {
+            var receiver = new Receiver(pipeline, channels, node);
+
+            var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
+            var actionBlock = new ActionBlock<InMemoryMessage>(message => receiver
+                .Receive(message.Data, message.Headers, new InMemoryCallback(this, message, node.Uri)),
+                new ExecutionDataflowBlockOptions
+                {
+                    MaxDegreeOfParallelism = node.MaximumParallelization
+                });
+
+            _buffers[node.Uri].LinkTo(actionBlock, linkOptions);
         }
     }
 }

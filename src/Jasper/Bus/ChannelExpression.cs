@@ -92,7 +92,13 @@ namespace Jasper.Bus
         {
             _node.AcceptedContentTypes.Clear();
             _node.AcceptedContentTypes.AddRange(contentTypes);
-                
+
+            return this;
+        }
+
+        public ChannelExpression MaximumParallelization(int maximumParallelHandlers    )
+        {
+            _node.MaximumParallelization = maximumParallelHandlers;
             return this;
         }
     }

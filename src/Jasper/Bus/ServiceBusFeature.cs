@@ -61,22 +61,30 @@ namespace Jasper.Bus
 
                 verifyTransports(transports);
 
-                foreach (var transport in transports)
+                if (Channels.ControlChannel != null)
                 {
-                    transport.Start(pipeline, Channels);
-
-                    Channels
-                        .Where(x => x.Uri.Scheme == transport.Protocol && x.Sender == null)
-                        .Each(x =>
-                        {
-                            x.Sender = new NulloSender(transport, x.Uri);
-                        });
+                    Channels.ControlChannel.MaximumParallelization = 1;
                 }
+
+
+                startTransports(transports, pipeline);
 
                 container.GetInstance<IDelayedJobProcessor>().Start(pipeline, Channels);
 
                 container.GetInstance<ISubscriptionActivator>().Activate();
             });
+        }
+
+        private void startTransports(ITransport[] transports, IHandlerPipeline pipeline)
+        {
+            foreach (var transport in transports)
+            {
+                transport.Start(pipeline, Channels);
+
+                Channels
+                    .Where(x => x.Uri.Scheme == transport.Protocol && x.Sender == null)
+                    .Each(x => { x.Sender = new NulloSender(transport, x.Uri); });
+            }
         }
 
         private void verifyTransports(ITransport[] transports)
