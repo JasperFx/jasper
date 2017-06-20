@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
@@ -58,6 +59,8 @@ namespace Jasper.Bus
 
                 var pipeline = container.GetInstance<IHandlerPipeline>();
 
+                verifyTransports(transports);
+
                 foreach (var transport in transports)
                 {
                     transport.Start(pipeline, Channels);
@@ -74,6 +77,15 @@ namespace Jasper.Bus
 
                 container.GetInstance<ISubscriptionActivator>().Activate();
             });
+        }
+
+        private void verifyTransports(ITransport[] transports)
+        {
+            var unknowns = Channels.Where(x => transports.All(t => t.Protocol != x.Uri.Scheme)).ToArray();
+            if (unknowns.Length > 0)
+            {
+                throw new UnknownTransportException(unknowns);
+            }
         }
 
         private void configureSerializationOrder(JasperRuntime runtime)
@@ -121,6 +133,13 @@ namespace Jasper.Bus
             }
 
             return Services;
+        }
+    }
+
+    public class UnknownTransportException : Exception
+    {
+        public UnknownTransportException(ChannelNode[] nodes) : base("Unknown transport types for " + nodes.Select(x => x.Uri.ToString()).Join(", "))
+        {
         }
     }
 }

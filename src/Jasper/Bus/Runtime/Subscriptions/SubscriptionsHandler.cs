@@ -38,8 +38,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
             _subscriptions.PersistSubscriptions(modifiedSubscriptions);
 
-            var result = UpdateNodes();
-            return result;
+            return UpdateNodes();
         }
 
         public void Handle(SubscriptionsChanged message)
