@@ -51,7 +51,7 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 // Gotta get the message out of here because it's something that
                 // could never be handled
-                envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
+                await envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
                 Logger.LogException(e, envelope.CorrelationId);
             }
         }
@@ -62,7 +62,7 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 if (envelope.IsDelayed(now))
                 {
-                    moveToDelayedMessageQueue(envelope, context);
+                    await moveToDelayedMessageQueue(envelope, context);
                 }
                 else if (envelope.ResponseId.IsNotEmpty())
                 {
@@ -77,7 +77,7 @@ namespace Jasper.Bus.Runtime.Invocation
                     catch (Exception e)
                     {
                         Logger.MessageFailed(envelope, e);
-                        envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
+                        await envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
                         return;
                     }
                     finally
@@ -187,20 +187,21 @@ namespace Jasper.Bus.Runtime.Invocation
             }
         }
 
-        private void moveToDelayedMessageQueue(Envelope envelope, EnvelopeContext context)
+        private async Task moveToDelayedMessageQueue(Envelope envelope, EnvelopeContext context)
         {
             try
             {
-                envelope.Callback.MoveToDelayedUntil(envelope, _delayedJobs, envelope.ExecutionTime.Value.ToUniversalTime());
+                await envelope.Callback.MoveToDelayedUntil(envelope, _delayedJobs, envelope.ExecutionTime.Value.ToUniversalTime());
             }
             catch (Exception e)
             {
-                envelope.Callback.MarkFailed(e);
+                await envelope.Callback.MarkFailed(e);
                 context.Logger.LogException(e, envelope.CorrelationId, "Failed to move delayed message to the delayed message queue");
             }
         }
     }
 
+    [Obsolete("Replace this usage with an in-memory callback within the Consume()")]
     public class InlineMessageCallback : IMessageCallback
     {
         private readonly object _message;
@@ -210,11 +211,12 @@ namespace Jasper.Bus.Runtime.Invocation
             _message = message;
         }
 
-        public void MarkSuccessful()
+        public Task MarkSuccessful()
         {
+            return Task.CompletedTask;
         }
 
-        public void MarkFailed(Exception ex)
+        public Task MarkFailed(Exception ex)
         {
             throw new InlineMessageException("Failed while invoking an inline message", ex);
         }
@@ -224,9 +226,10 @@ namespace Jasper.Bus.Runtime.Invocation
             throw new NotImplementedException();
         }
 
-        public void MoveToErrors(ErrorReport report)
+        public Task MoveToErrors(ErrorReport report)
         {
             // TODO -- need a general way to log errors against an ITransport
+            return Task.CompletedTask;
         }
 
         public Task Send(Envelope envelope)

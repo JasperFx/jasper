@@ -21,14 +21,16 @@ namespace Jasper.Bus.Transports.InMemory
             _destination = destination;
         }
 
-        public void MarkSuccessful()
+        public Task MarkSuccessful()
         {
             Successful = true;
+            return Task.CompletedTask;
         }
 
-        public void MarkFailed(Exception ex)
+        public Task MarkFailed(Exception ex)
         {
             Failed = true;
+            return Task.CompletedTask;
         }
 
         public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
@@ -44,9 +46,10 @@ namespace Jasper.Bus.Transports.InMemory
             return _queue.Send(_message, _destination);
         }
 
-        public void MoveToErrors(ErrorReport report)
+        public Task MoveToErrors(ErrorReport report)
         {
             //TODO: what to do with errors?
+            return Task.CompletedTask;
         }
 
         public Task Requeue(Envelope envelope)

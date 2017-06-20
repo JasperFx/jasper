@@ -12,13 +12,13 @@ namespace Jasper.Bus.Runtime.Invocation
 
         }
 
-        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public async Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
             try
             {
                 context.SendAllQueuedOutgoingMessages();
 
-                envelope.Callback.MarkSuccessful();
+                await envelope.Callback.MarkSuccessful();
 
                 context.Logger.MessageSucceeded(envelope);
             }
@@ -29,10 +29,8 @@ namespace Jasper.Bus.Runtime.Invocation
                 context.Logger.LogException(ex, envelope.CorrelationId, ex.Message);
                 context.Logger.MessageFailed(envelope, ex);
 
-                envelope.Callback.MoveToErrors(new ErrorReport(envelope, ex));
+                await envelope.Callback.MoveToErrors(new ErrorReport(envelope, ex));
             }
-
-            return Task.CompletedTask;
         }
 
     }

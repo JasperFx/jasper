@@ -453,15 +453,17 @@ namespace StorytellerSpecs.Fixtures
 
         public bool Requeued { get; set; }
 
-        public void MarkSuccessful()
+        public Task MarkSuccessful()
         {
             MarkedSucessful = true;
+            return Task.CompletedTask;
         }
 
-        public void MarkFailed(Exception ex)
+        public Task MarkFailed(Exception ex)
         {
             MarkedFailed = true;
             Exception = ex;
+            return Task.CompletedTask;
         }
 
         public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
@@ -470,10 +472,11 @@ namespace StorytellerSpecs.Fixtures
             return Task.CompletedTask;
         }
 
-        public void MoveToErrors(ErrorReport report)
+        public Task MoveToErrors(ErrorReport report)
         {
             WasMovedToErrors = true;
             Errors.Add(report);
+            return Task.CompletedTask;
         }
 
         public Task Requeue(Envelope envelope)

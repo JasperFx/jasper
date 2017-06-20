@@ -15,9 +15,7 @@ namespace Jasper.Bus.ErrorHandling
 
         public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
-            // TODO -- should the callback stuff be async too?
-            envelope.Callback.Requeue(envelope);
-            return Task.CompletedTask;
+            return envelope.Callback.Requeue(envelope);
         }
     }
 }

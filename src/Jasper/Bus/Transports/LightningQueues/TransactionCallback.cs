@@ -17,16 +17,20 @@ namespace Jasper.Bus.Transports.LightningQueues
             _message = message;
         }
 
-        public void MarkSuccessful()
+        public Task MarkSuccessful()
         {
             _context.SuccessfullyReceived();
             _context.CommitChanges();
+
+            return Task.CompletedTask;
         }
 
-        public void MarkFailed(Exception ex)
+        public Task MarkFailed(Exception ex)
         {
             _context.ReceiveLater(DateTimeOffset.Now);
             _context.CommitChanges();
+
+            return Task.CompletedTask;
         }
 
         public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
@@ -39,7 +43,7 @@ namespace Jasper.Bus.Transports.LightningQueues
             return Task.CompletedTask;
         }
 
-        public void MoveToErrors(ErrorReport report)
+        public Task MoveToErrors(ErrorReport report)
         {
             var message = new Message
             {
@@ -52,7 +56,7 @@ namespace Jasper.Bus.Transports.LightningQueues
             message.Queue = LightningQueue.ErrorQueueName;
 
             _context.Enqueue(message);
-            MarkSuccessful();
+            return MarkSuccessful();
         }
 
         public Task Requeue(Envelope envelope)
@@ -61,8 +65,7 @@ namespace Jasper.Bus.Transports.LightningQueues
             copy.Id = MessageId.GenerateRandom();
             copy.Queue = _message.Queue;
             _context.Enqueue(copy);
-            MarkSuccessful();
-            return Task.CompletedTask;
+            return MarkSuccessful();
         }
 
         public Task Send(Envelope envelope)

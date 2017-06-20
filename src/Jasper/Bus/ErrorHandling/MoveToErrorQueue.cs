@@ -22,9 +22,7 @@ namespace Jasper.Bus.ErrorHandling
             context.Logger.LogException(Exception, envelope.CorrelationId);
 
             var report = new ErrorReport(envelope, Exception);
-            envelope.Callback.MoveToErrors(report);
-
-            return Task.CompletedTask;
+            return envelope.Callback.MoveToErrors(report);
         }
     }
 }
