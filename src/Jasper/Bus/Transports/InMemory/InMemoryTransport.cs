@@ -7,6 +7,11 @@ using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus.Transports.InMemory
 {
+    public interface IInlineMessageService
+    {
+        Envelope EnvelopeForInlineMessage(object message);
+    }
+
     public class InMemoryTransport : ITransport
     {
         private readonly InMemorySettings _settings;

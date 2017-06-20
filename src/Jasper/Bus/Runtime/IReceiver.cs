@@ -9,6 +9,7 @@ namespace Jasper.Bus.Runtime
     public interface IReceiver
     {
         Task Receive(byte[] data, IDictionary<string, string> headers, IMessageCallback callback);
+        Task Receive(object message, IDictionary<string, string> headers, IMessageCallback callback);
     }
 
     public class Receiver : IReceiver
@@ -35,6 +36,24 @@ namespace Jasper.Bus.Runtime
             var envelope = new Envelope(data, headers, callback)
             {
                 ReceivedAt = _address
+            };
+
+            // Do keep this here then.
+            envelope.ContentType = envelope.ContentType ?? _node.DefaultContentType ?? _graph.DefaultContentType;
+
+            return _pipeline.Invoke(envelope, _node);
+        }
+
+        public Task Receive(object message, IDictionary<string, string> headers, IMessageCallback callback)
+        {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (headers == null) throw new ArgumentNullException(nameof(headers));
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+            var envelope = new Envelope(headers)
+            {
+                Message = message,
+                Callback = callback
             };
 
             // Do keep this here then.

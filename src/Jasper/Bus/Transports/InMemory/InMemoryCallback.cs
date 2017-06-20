@@ -54,19 +54,13 @@ namespace Jasper.Bus.Transports.InMemory
 
         public Task Requeue(Envelope envelope)
         {
-            _message.Id = Guid.NewGuid();
+            _message.ReplaceId();
             return _queue.Send(_message, envelope.Destination);
         }
 
         public Task Send(Envelope envelope)
         {
-            var message = new InMemoryMessage
-            {
-                Id = Guid.NewGuid(),
-                Data = envelope.Data,
-                Headers = envelope.Headers,
-                SentAt = DateTime.UtcNow
-            };
+            var message = new InMemoryMessage(envelope, DateTime.UtcNow);
 
             return _queue.Send(message, envelope.Destination);
         }

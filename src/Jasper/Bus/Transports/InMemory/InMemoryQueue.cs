@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Queues;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Microsoft.Extensions.Options;
 
 namespace Jasper.Bus.Transports.InMemory
 {
@@ -16,6 +18,20 @@ namespace Jasper.Bus.Transports.InMemory
         public InMemoryQueue(InMemorySettings settings)
         {
             _settings = settings;
+        }
+
+        public void SendToReceiver(Uri destination, IReceiver receiver, InMemoryMessage message)
+        {
+            var callback = new InMemoryCallback(this, message, destination);
+
+            if (message.Message == null)
+            {
+                receiver.Receive(message.Data, message.Headers, callback);
+            }
+            else
+            {
+                receiver.Receive(message.Message, message.Headers, callback);
+            }
         }
 
         public void Start(IEnumerable<ChannelNode> nodes)
@@ -42,13 +58,7 @@ namespace Jasper.Bus.Transports.InMemory
 
         public Task Send(Envelope envelope, Uri destination)
         {
-            var payload = new InMemoryMessage
-            {
-                Id = Guid.NewGuid(),
-                Data = envelope.Data,
-                Headers = envelope.Headers,
-                SentAt = DateTime.UtcNow
-            };
+            var payload = InMemoryMessage.ForEnvelope(envelope);
 
             return Send(payload, destination);
         }
@@ -65,10 +75,6 @@ namespace Jasper.Bus.Transports.InMemory
             await Send(message, destination).ConfigureAwait(false);
         }
 
-        public void ListenForMessages(Uri destination, IReceiver receiver)
-        {
-
-        }
 
         public void Dispose()
         {
@@ -83,12 +89,17 @@ namespace Jasper.Bus.Transports.InMemory
             var receiver = new Receiver(pipeline, channels, node);
 
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
-            var actionBlock = new ActionBlock<InMemoryMessage>(message => receiver
-                .Receive(message.Data, message.Headers, new InMemoryCallback(this, message, node.Uri)),
-                new ExecutionDataflowBlockOptions
-                {
-                    MaxDegreeOfParallelism = node.MaximumParallelization
-                });
+
+
+            var options = new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = node.MaximumParallelization
+            };
+
+            var actionBlock = new ActionBlock<InMemoryMessage>(message =>
+            {
+                SendToReceiver(node.Uri, receiver, message);
+            }, options);
 
             _buffers[node.Uri].LinkTo(actionBlock, linkOptions);
         }
