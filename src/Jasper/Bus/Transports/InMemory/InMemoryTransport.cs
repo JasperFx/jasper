@@ -58,5 +58,8 @@ namespace Jasper.Bus.Transports.InMemory
         {
             _queue.Dispose();
         }
+
+        public static readonly Uri Delayed = "memory://delayed".ToUri();
+        public static readonly Uri Retries = "memory://retries".ToUri();
     }
 }

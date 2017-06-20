@@ -1,4 +1,5 @@
 ﻿using Jasper.Bus.Delayed;
+using Jasper.Bus.Transports.InMemory;
 using Shouldly;
 using Xunit;
 
@@ -11,9 +12,9 @@ namespace Jasper.Testing.Bus.Bootstrapping
         {
             theRegistry.DelayedJobs.RunInMemory();
 
-            theChannels.HasChannel(InMemoryDelayedJobProcessor.Queue).ShouldBeTrue();
+            theChannels.HasChannel(InMemoryTransport.Delayed).ShouldBeTrue();
 
-            var channel = theChannels[InMemoryDelayedJobProcessor.Queue];
+            var channel = theChannels[InMemoryTransport.Delayed];
             channel.Incoming.ShouldBeTrue();
             channel.Sender.ShouldNotBeNull();
         }

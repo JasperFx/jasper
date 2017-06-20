@@ -6,13 +6,12 @@ using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.InMemory;
 
 namespace Jasper.Bus.Delayed
 {
     public class InMemoryDelayedJobProcessor : IDelayedJobProcessor, IDisposable
     {
-        public static readonly Uri Queue = "memory://delayed".ToUri();
-
         public static InMemoryDelayedJobProcessor ForSender(ISender sender)
         {
             return new InMemoryDelayedJobProcessor{_sender = sender};
@@ -31,7 +30,7 @@ namespace Jasper.Bus.Delayed
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
         {
-            _sender = channels[Queue].Sender;
+            _sender = channels[InMemoryTransport.Delayed].Sender;
         }
 
         public async Task PlayAll()

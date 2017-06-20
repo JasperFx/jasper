@@ -9,6 +9,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports.InMemory;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -135,7 +136,7 @@ namespace Jasper.Bus
 
             if (DelayedJobsRunInMemory)
             {
-                Channels.AddChannelIfMissing(InMemoryDelayedJobProcessor.Queue).Incoming = true;
+                Channels.AddChannelIfMissing(InMemoryTransport.Delayed).Incoming = true;
 
                 Services.ForSingletonOf<IDelayedJobProcessor>().Use<InMemoryDelayedJobProcessor>();
             }
