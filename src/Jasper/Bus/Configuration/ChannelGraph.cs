@@ -98,8 +98,9 @@ namespace Jasper.Bus.Configuration
                 var sending = envelope.Clone();
 
                 var channel = TryGetChannel(address);
+                channel?.ApplyModifiers(sending);
 
-                // TODO -- look up channel node modifiers if any
+
                 // TODO -- there's a little opportunity here to try to reuse the serialization
                 // if you send to more than one channel at a time w/ the same serializer
                 if (sending.Data == null || sending.Data.Length == 0)
@@ -111,31 +112,11 @@ namespace Jasper.Bus.Configuration
                 sending.AcceptedContentTypes = AcceptedContentTypes.ToArray();
                 if (channel != null)
                 {
-                    sending.Destination = channel.Destination;
-                    sending.ReplyUri = channel.ReplyUri;
-
-                    if (callback == null)
-                    {
-                        await channel.Sender.Send(sending).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await callback.Send(sending).ConfigureAwait(false);
-                    }
+                    await sendToStaticChannel(callback, sending, channel);
                 }
                 else
                 {
-                    sending.Destination = address;
-                    sending.ReplyUri = transport.DefaultReplyUri();
-
-                    if (callback == null)
-                    {
-                        await transport.Send(sending, sending.Destination).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await callback.Send(sending).ConfigureAwait(false);
-                    }
+                    await sendToDynamicChannel(address, callback, sending, transport);
                 }
 
                 return sending;
@@ -145,6 +126,36 @@ namespace Jasper.Bus.Configuration
                 throw new InvalidOperationException($"Unrecognized transport scheme '{address.Scheme}'");
             }
 
+        }
+
+        private static async Task sendToDynamicChannel(Uri address, IMessageCallback callback, Envelope sending, ITransport transport)
+        {
+            sending.Destination = address;
+            sending.ReplyUri = transport.DefaultReplyUri();
+
+            if (callback == null)
+            {
+                await transport.Send(sending, sending.Destination).ConfigureAwait(false);
+            }
+            else
+            {
+                await callback.Send(sending).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task sendToStaticChannel(IMessageCallback callback, Envelope sending, ChannelNode channel)
+        {
+            sending.Destination = channel.Destination;
+            sending.ReplyUri = channel.ReplyUri;
+
+            if (callback == null)
+            {
+                await channel.Sender.Send(sending).ConfigureAwait(false);
+            }
+            else
+            {
+                await callback.Send(sending).ConfigureAwait(false);
+            }
         }
 
         public ChannelNode TryGetChannel(Uri address)

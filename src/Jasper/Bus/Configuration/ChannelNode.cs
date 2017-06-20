@@ -50,6 +50,14 @@ namespace Jasper.Bus.Configuration
         public IList<IEnvelopeModifier> Modifiers { get; } = new List<IEnvelopeModifier>();
 
         public int MaximumParallelization { get; set; } = 5;
+
+        public void ApplyModifiers(Envelope envelope)
+        {
+            foreach (var modifier in Modifiers)
+            {
+                modifier.Modify(envelope);
+            }
+        }
     }
 
     // Use a nullo if need be?
