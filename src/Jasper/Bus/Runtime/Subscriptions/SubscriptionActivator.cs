@@ -72,6 +72,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
                         },
                         Destination = group.Key
                     };
+
                     _sender.Send(envelope);
                 });
         }

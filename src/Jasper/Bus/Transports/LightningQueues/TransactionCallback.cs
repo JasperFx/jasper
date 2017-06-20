@@ -31,8 +31,11 @@ namespace Jasper.Bus.Transports.LightningQueues
 
         public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
         {
-            _context.ReceiveLater(time.ToUniversalTime() - DateTime.UtcNow);
-            _context.CommitChanges();
+            delayedJobs.Enqueue(time, envelope);
+
+            // TODO -- will be smarter later if you're using the LMDB backed delayed jobs
+//            _context.ReceiveLater(time.ToUniversalTime() - DateTime.UtcNow);
+//            _context.CommitChanges();
             return Task.CompletedTask;
         }
 

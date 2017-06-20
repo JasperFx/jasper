@@ -70,8 +70,8 @@ namespace Jasper.Testing.Bus
 
             var channelGraph = channels();
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(channelGraph["stub://one".ToUri()].Modifiers.Any());
-            ShouldBeBooleanExtensions.ShouldBeFalse(channelGraph["stub://three".ToUri()].Modifiers.Any());
+            channelGraph["stub://one".ToUri()].Modifiers.Any().ShouldBeFalse();
+            channelGraph["stub://three".ToUri()].Modifiers.Any().ShouldBeFalse();
 
             channelGraph["stub://two".ToUri()].Modifiers.Select(x => x.GetType())
                 .ShouldHaveTheSameElementsAs(typeof(FakeModifier), typeof(FakeModifier2));
@@ -94,7 +94,7 @@ namespace Jasper.Testing.Bus
             channels()["stub://two"].AcceptedContentTypes.Single()
                 .ShouldBe("application/json");
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(channels()["stub://one"].AcceptedContentTypes.Any());
+            channels()["stub://one"].AcceptedContentTypes.Any().ShouldBeFalse();
         }
 
         [Fact]
