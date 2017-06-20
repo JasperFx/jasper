@@ -44,10 +44,7 @@ namespace Jasper.Bus.Transports.InMemory
                 node.ReplyUri = _replyUri;
                 node.Sender = new InMemorySender(node.Uri, _queue);
 
-                if (node.Incoming)
-                {
-                    _queue.ListenForMessages(node.Uri, new Receiver(pipeline, channels, node));
-                }
+                _queue.ListenForMessages(node.Uri, new Receiver(pipeline, channels, node));
             }
         }
 
