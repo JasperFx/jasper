@@ -11,7 +11,7 @@ namespace Jasper.Bus.Delayed
 {
     public class InMemoryDelayedJobProcessor : IDelayedJobProcessor, IDisposable
     {
-        public static readonly Uri Queue = "memory://delated".ToUri();
+        public static readonly Uri Queue = "memory://delayed".ToUri();
 
         public static InMemoryDelayedJobProcessor ForSender(ISender sender)
         {
