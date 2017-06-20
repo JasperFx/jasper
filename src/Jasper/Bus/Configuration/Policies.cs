@@ -29,7 +29,14 @@ namespace Jasper.Bus.Configuration
             }
 
             graph.ErrorHandlers.AddRange(this.As<IHasErrorHandlers>().ErrorHandlers);
+
+            foreach (var chain in graph.Chains)
+            {
+                chain.MaximumAttempts = DefaultMaximumAttempts;
+            }
         }
+
+        public int DefaultMaximumAttempts { get; set; } = 1;
 
         IList<IErrorHandler> IHasErrorHandlers.ErrorHandlers { get; } = new List<IErrorHandler>();
     }

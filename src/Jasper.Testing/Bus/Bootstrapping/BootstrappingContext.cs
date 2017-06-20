@@ -2,6 +2,7 @@
 using System.Linq;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Testing.Bus.Stubs;
 
@@ -46,6 +47,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
             .OfType<StubTransport>()
             .Single();
 
-
+        public HandlerGraph theHandlers => _runtime.Value.Container.GetInstance<HandlerGraph>();
     }
 }

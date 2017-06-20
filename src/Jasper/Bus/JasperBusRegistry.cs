@@ -31,8 +31,8 @@ namespace Jasper.Bus
 
         public string NodeName
         {
-            get { return _feature.Channels.Name; }
-            set { _feature.Channels.Name = value; }
+            get => _feature.Channels.Name;
+            set => _feature.Channels.Name = value;
         }
 
         public IHasErrorHandlers ErrorHandling => Policies;

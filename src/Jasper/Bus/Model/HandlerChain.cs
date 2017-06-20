@@ -43,9 +43,7 @@ namespace Jasper.Bus.Model
 
         public HandlerChain(Type messageType)
         {
-            if (messageType == null) throw new ArgumentNullException(nameof(messageType));
-
-            MessageType = messageType;
+            MessageType = messageType ?? throw new ArgumentNullException(nameof(messageType));
 
             TypeName = messageType.FullName.Replace(".", "_").Replace("+", "_");
         }
