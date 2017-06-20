@@ -8,6 +8,8 @@ namespace Jasper.Testing.Bus
     {
         public JasperRuntime Runtime { get; private set; }
 
+        public IServiceBus Bus => Runtime.Container.GetInstance<IServiceBus>();
+
         protected void withAllDefaults()
         {
             with(new JasperBusRegistry());

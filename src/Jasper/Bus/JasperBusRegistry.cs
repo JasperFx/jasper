@@ -196,6 +196,16 @@ namespace Jasper.Bus
             }
         }
 
+        public void OnMissingHandler<T>() where T : IMissingHandler
+        {
+            Services.AddService<IMissingHandler, T>();
+        }
+
+        public void OnMissingHandler(IMissingHandler handler)
+        {
+            Services.For<IMissingHandler>().Add(handler);
+        }
+
         public SubscriptionExpression SubscribeAt(string receiving)
         {
             return SubscribeAt(receiving.ToUri());
