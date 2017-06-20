@@ -28,6 +28,8 @@ namespace Jasper.Bus.Transports.InMemory
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
         {
+            channels.AddChannelIfMissing(Retries);
+
             var nodes = channels.Where(x => x.Uri.Scheme == Protocol).ToArray();
             if (!nodes.Any()) return;
 

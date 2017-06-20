@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus;
+using Jasper.Bus.Transports.InMemory;
 using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
@@ -26,6 +27,13 @@ namespace Jasper.Testing.Bus.Transports.InMemory
                     x.WithDefaultConventions();
                 });
             });
+        }
+
+        [Fact]
+        public void automatically_sticks_in_replies_queue()
+        {
+            Channels.HasChannel(InMemoryTransport.Retries)
+                .ShouldBeTrue();
         }
 
 

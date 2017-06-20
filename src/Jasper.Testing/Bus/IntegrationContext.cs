@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 
 namespace Jasper.Testing.Bus
@@ -9,6 +10,8 @@ namespace Jasper.Testing.Bus
         public JasperRuntime Runtime { get; private set; }
 
         public IServiceBus Bus => Runtime.Container.GetInstance<IServiceBus>();
+
+        public ChannelGraph Channels => Runtime.Container.GetInstance<ChannelGraph>();
 
         protected void withAllDefaults()
         {
