@@ -30,7 +30,7 @@ namespace Jasper.Bus.Runtime
 
         public object Message
         {
-            get { return _message; }
+            get => _message;
             set
             {
                 MessageType = value?.GetType().ToTypeAlias();
@@ -43,8 +43,8 @@ namespace Jasper.Bus.Runtime
 
         public int Attempts
         {
-            get { return Headers.GetInt(AttemptsKey); }
-            set { Headers.Set(AttemptsKey, value); }
+            get => Headers.GetInt(AttemptsKey);
+            set => Headers.Set(AttemptsKey, value);
         }
 
         public Envelope() : this(new Dictionary<string, string>())
