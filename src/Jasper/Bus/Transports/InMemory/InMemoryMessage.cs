@@ -34,15 +34,6 @@ namespace Jasper.Bus.Transports.InMemory
             throw new ArgumentOutOfRangeException($"Either the data or the message have to be supplied on the envelope");
         }
 
-        public InMemoryMessage(Envelope envelope, DateTime sentAt)
-        {
-
-
-            Message = envelope.Message;
-            Data = envelope.Data;
-            Headers = envelope.Headers;
-            SentAt = sentAt;
-        }
 
         public object Message { get; }
         public byte[] Data { get; }
