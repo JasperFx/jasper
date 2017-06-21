@@ -13,6 +13,7 @@ namespace Jasper.Bus
     {
         internal ServiceBusRegistry()
         {
+            ForSingletonOf<IInMemoryQueue>().Use<InMemoryQueue>();
             For<ITransport>().Singleton().Add<LightningQueuesTransport>();
             For<ITransport>().Singleton().Add<InMemoryTransport>();
             For<IEnvelopeSender>().Use<EnvelopeSender>();

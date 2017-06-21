@@ -8,9 +8,9 @@ namespace Jasper.Bus.Transports.InMemory
     public class InMemorySender : ISender
     {
         private readonly Uri _destination;
-        private readonly InMemoryQueue _queue;
-        
-        public InMemorySender(Uri destination, InMemoryQueue queue)
+        private readonly IInMemoryQueue _queue;
+
+        public InMemorySender(Uri destination, IInMemoryQueue queue)
         {
             _queue = queue;
             _destination = destination;

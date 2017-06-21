@@ -5,6 +5,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Transports.InMemory;
 
 namespace Jasper.Bus.Runtime.Invocation
 {
@@ -23,15 +24,17 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly HandlerGraph _graph;
         private readonly IReplyWatcher _replies;
         private readonly IDelayedJobProcessor _delayedJobs;
+        private readonly IInMemoryQueue _inMemoryQueue;
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(IEnvelopeSender sender, IEnvelopeSerializer serializer, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, IBusLogger[] loggers, IMissingHandler[] missingHandlers)
+        public HandlerPipeline(IEnvelopeSender sender, IEnvelopeSerializer serializer, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, IInMemoryQueue inMemoryQueue, IBusLogger[] loggers, IMissingHandler[] missingHandlers)
         {
             _sender = sender;
             _serializer = serializer;
             _graph = graph;
             _replies = replies;
             _delayedJobs = delayedJobs;
+            _inMemoryQueue = inMemoryQueue;
             _missingHandlers = missingHandlers;
 
             Logger = BusLogger.Combine(loggers);
@@ -92,11 +95,7 @@ namespace Jasper.Bus.Runtime.Invocation
 
         public Task InvokeNow(object message)
         {
-            var envelope = new Envelope
-            {
-                Message = message,
-                Callback = new InlineMessageCallback(message)
-            };
+            var envelope = _inMemoryQueue.EnvelopeForInlineMessage(message);
 
             return InvokeNow(envelope);
         }

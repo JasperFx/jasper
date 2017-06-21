@@ -10,7 +10,18 @@ using Microsoft.Extensions.Options;
 
 namespace Jasper.Bus.Transports.InMemory
 {
-    public class InMemoryQueue : IDisposable
+    public interface IInMemoryQueue
+    {
+        void SendToReceiver(Uri destination, IReceiver receiver, InMemoryMessage message);
+        void Start(IEnumerable<ChannelNode> nodes);
+        Task Send(Envelope envelope, Uri destination);
+        Task Send(InMemoryMessage message, Uri destination);
+        Task Delay(InMemoryMessage message, Uri destination, TimeSpan delayTime);
+        void ListenForMessages(ChannelNode node, IHandlerPipeline pipeline, ChannelGraph channels);
+        Envelope EnvelopeForInlineMessage(object message);
+    }
+
+    public class InMemoryQueue : IDisposable, IInMemoryQueue
     {
         private readonly IDictionary<Uri, BroadcastBlock<InMemoryMessage>> _buffers = new Dictionary<Uri, BroadcastBlock<InMemoryMessage>>();
         private readonly InMemorySettings _settings;
@@ -18,6 +29,15 @@ namespace Jasper.Bus.Transports.InMemory
         public InMemoryQueue(InMemorySettings settings)
         {
             _settings = settings;
+        }
+
+        public Envelope EnvelopeForInlineMessage(object message)
+        {
+            var envelope = Envelope.ForMessage(message);
+            envelope.Destination = InMemoryTransport.Retries;
+            envelope.Callback = new InMemoryCallback(this, InMemoryMessage.ForEnvelope(envelope), InMemoryTransport.Retries);
+
+            return envelope;
         }
 
         public void SendToReceiver(Uri destination, IReceiver receiver, InMemoryMessage message)

@@ -60,6 +60,7 @@ namespace Jasper.Bus.Transports.InMemory
 
         public Task Send(Envelope envelope)
         {
+
             var message = new InMemoryMessage(envelope, DateTime.UtcNow);
 
             return _queue.Send(message, envelope.Destination);

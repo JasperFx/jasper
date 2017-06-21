@@ -20,6 +20,14 @@ namespace Jasper.Bus.Transports.InMemory
             SentAt = sentAt;
         }
 
+        public InMemoryMessage(Envelope envelope, DateTime sentAt)
+        {
+            Data = envelope.Data;
+            Headers = envelope.Headers;
+            SentAt = sentAt;
+            Message = envelope.Message;
+        }
+
         public static InMemoryMessage ForEnvelope(Envelope envelope)
         {
             if (envelope.Message != null)

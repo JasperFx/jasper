@@ -7,21 +7,16 @@ using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus.Transports.InMemory
 {
-    public interface IInlineMessageService
-    {
-        Envelope EnvelopeForInlineMessage(object message);
-    }
-
     public class InMemoryTransport : ITransport
     {
         private readonly InMemorySettings _settings;
         private Uri _replyUri;
-        private readonly InMemoryQueue _queue;
+        private readonly IInMemoryQueue _queue;
 
-        public InMemoryTransport(InMemorySettings settings)
+        public InMemoryTransport(InMemorySettings settings, IInMemoryQueue queue)
         {
             _settings = settings;
-            _queue = new InMemoryQueue(settings);
+            _queue = queue;
         }
 
         public string Protocol => "memory";
@@ -63,7 +58,7 @@ namespace Jasper.Bus.Transports.InMemory
 
         public void Dispose()
         {
-            _queue.Dispose();
+
         }
 
         public static readonly Uri Delayed = "memory://delayed".ToUri();
