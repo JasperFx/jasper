@@ -408,5 +408,7 @@ namespace Jasper.Testing.Bus.Runtime
     public class Message5
     {
         public Guid Id = Guid.NewGuid();
+
+        public int FailThisManyTimes = 0;
     }
 }

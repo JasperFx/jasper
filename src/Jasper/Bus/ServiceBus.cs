@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.InMemory;
 
 namespace Jasper.Bus
 {
