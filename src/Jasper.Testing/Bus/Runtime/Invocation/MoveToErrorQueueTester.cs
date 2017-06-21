@@ -19,7 +19,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         {
             theContinuation = new MoveToErrorQueue(theException);
 
-            
+
         }
 
         [Fact]
@@ -27,7 +27,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         {
             await theContinuation.Execute(theEnvelope, theContext, DateTime.UtcNow);
 
-            theEnvelope.Callback.Received().MoveToErrors(new ErrorReport(theEnvelope, theException));
+            await theEnvelope.Callback.Received().MoveToErrors(new ErrorReport(theEnvelope, theException));
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         {
             await theContinuation.Execute(theEnvelope, theContext, DateTime.UtcNow);
 
-            theContext.Received().SendFailureAcknowledgement(theEnvelope, $"Moved message {theEnvelope.CorrelationId} to the Error Queue.\n{theException}");
+            await theContext.Received().SendFailureAcknowledgement(theEnvelope, $"Moved message {theEnvelope.CorrelationId} to the Error Queue.\n{theException}");
         }
     }
 }

@@ -114,7 +114,7 @@ namespace Jasper.Testing.Bus.Samples
         public async Task SendPingsAndPongs(IServiceBus bus)
         {
             // Publish a message
-            bus.Send(new PingMessage());
+            await bus.Send(new PingMessage());
 
             // Request/Reply
             var pong = await bus.Request<PongMessage>(new PingMessage());

@@ -53,25 +53,25 @@ namespace Jasper.Bus.Runtime.Invocation
         {
         }
 
-        public void SendAllQueuedOutgoingMessages()
+        public Task SendAllQueuedOutgoingMessages()
         {
-            SendOutgoingMessages(Envelope, _outgoing);
+            return SendOutgoingMessages(Envelope, _outgoing);
         }
 
-        public void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
+        public async Task SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
         {
             if (original.AckRequested)
             {
-                sendAcknowledgement(original);
+                await sendAcknowledgement(original);
             }
 
             foreach (var o in cascadingMessages)
             {
-                SendOutgoingMessage(original, o);
+                await SendOutgoingMessage(original, o);
             }
         }
 
-        private void sendAcknowledgement(Envelope original)
+        private Task sendAcknowledgement(Envelope original)
         {
             var envelope = new Envelope
             {
@@ -81,10 +81,10 @@ namespace Jasper.Bus.Runtime.Invocation
                 Message = new Acknowledgement {CorrelationId = original.CorrelationId}
             };
 
-            Send(envelope);
+            return Send(envelope);
         }
 
-        public void SendOutgoingMessage(Envelope original, object o)
+        public Task SendOutgoingMessage(Envelope original, object o)
         {
             var cascadingEnvelope = o is ISendMyself
                 ? o.As<ISendMyself>().CreateEnvelope(original)
@@ -97,10 +97,10 @@ namespace Jasper.Bus.Runtime.Invocation
 
             cascadingEnvelope.Callback = original.Callback;
 
-            Send(cascadingEnvelope);
+            return Send(cascadingEnvelope);
         }
 
-        public void SendFailureAcknowledgement(Envelope original, string message)
+        public Task SendFailureAcknowledgement(Envelope original, string message)
         {
             if (original.AckRequested || original.ReplyRequested.IsNotEmpty())
             {
@@ -117,8 +117,10 @@ namespace Jasper.Bus.Runtime.Invocation
                     Callback = original.Callback
                 };
 
-                Send(envelope);
+                return Send(envelope);
             }
+
+            return Task.CompletedTask;
         }
 
         public Task Retry(Envelope envelope)
@@ -138,17 +140,17 @@ namespace Jasper.Bus.Runtime.Invocation
                    ?? new MoveToErrorQueue(exception);
         }
 
-        public void Send(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             try
             {
                 if (envelope.Callback != null && envelope.Callback.SupportsSend)
                 {
-                    _sender.Send(envelope, envelope.Callback);
+                    return _sender.Send(envelope, envelope.Callback);
                 }
                 else
                 {
-                    _sender.Send(envelope);
+                    return _sender.Send(envelope);
                 }
             }
             catch (Exception e)
@@ -156,6 +158,8 @@ namespace Jasper.Bus.Runtime.Invocation
                 // TODO -- we really, really have to do something here
                 Logger.LogException(e, envelope.CorrelationId, "Failure while trying to send a cascading message");
             }
+
+            return Task.CompletedTask;
         }
     }
 }

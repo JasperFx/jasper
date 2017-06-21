@@ -392,7 +392,7 @@ namespace Jasper.Testing.Bus.Runtime
 
     public class Message2
     {
-
+        public Guid Id = Guid.NewGuid();
     }
 
     public class Message3
@@ -407,6 +407,6 @@ namespace Jasper.Testing.Bus.Runtime
 
     public class Message5
     {
-
+        public Guid Id = Guid.NewGuid();
     }
 }

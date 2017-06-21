@@ -56,7 +56,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
     public class when_sending_cascading_messages : InteractionContext<EnvelopeContext>
     {
         [Fact]
-        public void swallows_and_logs_exceptions_on_send()
+        public async Task swallows_and_logs_exceptions_on_send()
         {
             var original = ObjectMother.Envelope();
             Services.Inject(original);
@@ -69,7 +69,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             MockFor<IHandlerPipeline>().Logger.Returns(MockFor<IBusLogger>());
 
 
-            ClassUnderTest.Send(envelope);
+            await ClassUnderTest.Send(envelope);
 
 
             MockFor<IBusLogger>()

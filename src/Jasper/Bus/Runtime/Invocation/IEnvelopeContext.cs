@@ -7,13 +7,13 @@ namespace Jasper.Bus.Runtime.Invocation
 {
     public interface IEnvelopeContext : IInvocationContext, IDisposable
     {
-        void SendAllQueuedOutgoingMessages();
+        Task SendAllQueuedOutgoingMessages();
 
-        void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages);
+        Task SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages);
 
-        void SendOutgoingMessage(Envelope original, object cascadingMessage);
+        Task SendOutgoingMessage(Envelope original, object cascadingMessage);
 
-        void SendFailureAcknowledgement(Envelope original, string message);
+        Task SendFailureAcknowledgement(Envelope original, string message);
 
         // doesn't need to be passed the envelope here, but maybe leave this one
         Task Retry(Envelope envelope);

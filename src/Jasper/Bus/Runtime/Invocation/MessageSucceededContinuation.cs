@@ -16,7 +16,7 @@ namespace Jasper.Bus.Runtime.Invocation
         {
             try
             {
-                context.SendAllQueuedOutgoingMessages();
+                await context.SendAllQueuedOutgoingMessages();
 
                 await envelope.Callback.MarkSuccessful();
 
@@ -24,7 +24,7 @@ namespace Jasper.Bus.Runtime.Invocation
             }
             catch (Exception ex)
             {
-                context.SendFailureAcknowledgement(envelope, "Sending cascading message failed: " + ex.Message);
+                await context.SendFailureAcknowledgement(envelope, "Sending cascading message failed: " + ex.Message);
 
                 context.Logger.LogException(ex, envelope.CorrelationId, ex.Message);
                 context.Logger.MessageFailed(envelope, ex);

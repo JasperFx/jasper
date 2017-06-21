@@ -18,7 +18,7 @@ namespace Jasper.Testing.Bus.ErrorHandling
         public async Task should_send_the_message()
         {
             await new RespondWithMessageContinuation(theMessage).Execute(theEnvelope, theContext, DateTime.Now);
-            theContext.Received().SendOutgoingMessage(theEnvelope, theMessage);
+            await theContext.Received().SendOutgoingMessage(theEnvelope, theMessage);
         }
     }
 }
