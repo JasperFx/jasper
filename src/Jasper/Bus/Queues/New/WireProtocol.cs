@@ -108,36 +108,4 @@ namespace Jasper.Bus.Queues.New
             }
         }
     }
-
-    public static class StreamExtensions
-    {
-        public static Task SendBuffer(this Stream stream, byte[] buffer)
-        {
-            return stream.WriteAsync(buffer, 0, buffer.Length);
-        }
-    }
-
-    public interface ISenderCallback
-    {
-        void Successful(OutgoingMessageBatch outgoing);
-        void TimedOut(OutgoingMessageBatch outgoing);
-        void SerializationFailure(OutgoingMessageBatch outgoing);
-        void QueueDoesNotExist(OutgoingMessageBatch outgoing);
-        void ProcessingFailure(OutgoingMessageBatch outgoing);
-    }
-
-    public interface IReceiverCallback
-    {
-        ReceivedStatus Received(Message[] messages);
-        void Acknowledged(Message[] messages);
-        void NotAcknowledged(Message[] messages);
-        void Failed(Exception exception, Message[] messages);
-    }
-
-    public enum ReceivedStatus
-    {
-        Successful,
-        QueueDoesNotExist,
-        ProcessFailure
-    }
 }
