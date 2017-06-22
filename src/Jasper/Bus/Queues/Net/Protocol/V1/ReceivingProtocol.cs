@@ -26,7 +26,7 @@ namespace Jasper.Bus.Queues.Net.Protocol.V1
             _logger = logger;
             _scheduler = scheduler;
         }
-        
+
 
         public IObservable<Message> ReceiveStream(IObservable<Stream> streams, string remoteEndpoint)
         {
@@ -35,13 +35,18 @@ namespace Jasper.Bus.Queues.Net.Protocol.V1
 
         private IObservable<Message> receiveStream(IObservable<Stream> streams, string remoteEndpoint)
         {
-            return from stream in streams.Do(x => _logger.DebugFormat("Starting to read stream from {0}", remoteEndpoint))
-                   from length in LengthChunk(stream).Do(x => _logger.DebugFormat("Reading in {0} messages from {1}", x, remoteEndpoint))
-                   from messages in MessagesChunk(stream, length).DoAsync(x => StoreMessages(stream, x)).Do(x => _logger.DebugFormat("Stored messages from {0}", remoteEndpoint))
-                   from _r in SendReceived(stream).Do(x => _logger.DebugFormat("Sending received bytes to {0}", remoteEndpoint))
+            return from stream in streams
+                    .Do(x => _logger.DebugFormat("Starting to read stream from {0}", remoteEndpoint))
+                   from length in LengthChunk(stream)
+                       .Do(x => _logger.DebugFormat("Reading in {0} messages from {1}", x, remoteEndpoint))
+                   from messages in MessagesChunk(stream, length)
+                       .DoAsync(x => StoreMessages(stream, x))
+                       .Do(x => _logger.DebugFormat("Stored messages from {0}", remoteEndpoint))
+                   from _r in SendReceived(stream)
+                       .Do(x => _logger.DebugFormat("Sending received bytes to {0}", remoteEndpoint))
                    from _a in ReceiveAcknowledgement(stream, messages).Do(x => _logger.DebugFormat("Received acknowledgement from {0}", remoteEndpoint))
                    from message in messages
-                   select message; 
+                   select message;
         }
 
         public IObservable<int> LengthChunk(Stream stream)

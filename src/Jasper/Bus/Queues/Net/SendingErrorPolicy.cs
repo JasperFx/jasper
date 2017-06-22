@@ -12,7 +12,8 @@ namespace Jasper.Bus.Queues.Net
         private readonly IMessageStore _store;
         private readonly IScheduler _scheduler;
 
-        public SendingErrorPolicy(ILogger logger, IMessageStore store, IObservable<OutgoingMessageFailure> failedToConnect, IScheduler scheduler)
+        public SendingErrorPolicy(ILogger logger, IMessageStore store,
+            IObservable<OutgoingMessageFailure> failedToConnect, IScheduler scheduler)
         {
             _logger = logger;
             _store = store;
@@ -21,7 +22,8 @@ namespace Jasper.Bus.Queues.Net
                 .Do(IncrementAttempt)
                 .Where(ShouldRetry)
                 .SelectMany(x => Observable.Return(x)
-                    .Delay(TimeSpan.FromSeconds(x.SentAttempts * x.SentAttempts), _scheduler)).Finally(() => _logger.Debug("SendingErrorPolicy stream ended"));
+                    .Delay(TimeSpan.FromSeconds(x.SentAttempts * x.SentAttempts), _scheduler))
+                .Finally(() => _logger.Debug("SendingErrorPolicy stream ended"));
         }
 
         public SendingErrorPolicy(ILogger logger, IMessageStore store, IObservable<OutgoingMessageFailure> failedToConnect)
