@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Queues.New;
-using Jasper.Bus.Queues.Storage;
 using Jasper.Bus.Runtime;
 using Jasper.Testing;
 using Shouldly;
 
-namespace IntegrationTests.NewQueue
+namespace IntegrationTests.NewQueue.Protocol
 {
     public abstract class ProtocolContext : IDisposable
     {

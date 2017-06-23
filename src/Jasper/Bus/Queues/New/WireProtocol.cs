@@ -33,6 +33,10 @@ namespace Jasper.Bus.Queues.New
 
                 await stream.WriteAsync(Constants.AcknowledgedBuffer, 0, Constants.AcknowledgedBuffer.Length);
             }
+            else if (bytes.SequenceEqual(Constants.ProcessingFailureBuffer))
+            {
+                callback.ProcessingFailure(batch);
+            }
             else if (bytes.SequenceEqual(Constants.SerializationFailureBuffer))
             {
                 callback.SerializationFailure(batch);
