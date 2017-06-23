@@ -50,13 +50,15 @@ namespace IntegrationTests.NewQueue
         [Fact]
         public async Task send_and_receive_a_single_message()
         {
+            theReceiver.ExpectCount = 1;
+
             var outgoing = outgoingMessage();
 
             theSender.Enqueue(outgoing);
 
-            var received = await theReceiver.Messages;
+            await theReceiver.Completed;
 
-            received.Single().Id.ShouldBe(outgoing.Id);
+            theReceiver.ReceivedMessages.Single().Id.ShouldBe(outgoing.Id);
         }
 
 
@@ -78,18 +80,12 @@ namespace IntegrationTests.NewQueue
 
     public class RecordingReceiverCallback : IReceiverCallback
     {
-        private readonly TaskCompletionSource<Message[]> _completion
-            = new TaskCompletionSource<Message[]>();
-
         public readonly List<Message> ReceivedMessages = new List<Message>();
 
-        public Task<Message[]> Messages => _completion.Task;
         public int ExpectCount { get; set; }
 
         public ReceivedStatus Received(Message[] messages)
         {
-            _completion.SetResult(messages);
-
             ReceivedMessages.AddRange(messages);
 
             if (ReceivedMessages.Count >= ExpectCount)
@@ -146,6 +142,11 @@ namespace IntegrationTests.NewQueue
         public void ProcessingFailure(OutgoingMessageBatch outgoing)
         {
 
+        }
+
+        public void ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
+        {
+            throw exception;
         }
     }
 }

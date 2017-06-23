@@ -48,6 +48,8 @@ namespace Jasper.Bus.Queues.New
 
         private async Task sendBatch(OutgoingMessageBatch batch)
         {
+            Console.WriteLine(batch);
+
             using (var client = new TcpClient())
             {
                 try
@@ -69,7 +71,7 @@ namespace Jasper.Bus.Queues.New
 
         private void batchSendFailed(OutgoingMessageBatch batch, Exception exception)
         {
-            throw new NotImplementedException();
+            _callback.ProcessingFailure(batch, exception);
         }
 
         private Task connect(TcpClient client, Uri destination)

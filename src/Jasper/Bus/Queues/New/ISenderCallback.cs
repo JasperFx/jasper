@@ -1,4 +1,5 @@
-﻿using Jasper.Bus.Queues.Net;
+﻿using System;
+using Jasper.Bus.Queues.Net;
 
 namespace Jasper.Bus.Queues.New
 {
@@ -9,5 +10,6 @@ namespace Jasper.Bus.Queues.New
         void SerializationFailure(OutgoingMessageBatch outgoing);
         void QueueDoesNotExist(OutgoingMessageBatch outgoing);
         void ProcessingFailure(OutgoingMessageBatch outgoing);
+        void ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception);
     }
 }

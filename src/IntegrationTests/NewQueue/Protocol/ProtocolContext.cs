@@ -166,6 +166,11 @@ namespace IntegrationTests.NewQueue.Protocol
             ProcessingFailed = true;
         }
 
+        public void ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool ProcessingFailed { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace Jasper.Bus.Queues.New
 {
@@ -13,6 +14,7 @@ namespace Jasper.Bus.Queues.New
         private readonly TcpListener _listener;
         private bool _isDisposed;
         private Task _receivingLoop;
+        private ActionBlock<Socket> _socketHandling;
 
         public ListeningAgent(IReceiverCallback callback, int port)
         {
@@ -20,6 +22,12 @@ namespace Jasper.Bus.Queues.New
             _callback = callback;
             _listener = new TcpListener(new IPEndPoint(IPAddress.Loopback, port));
             _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
+            _socketHandling = new ActionBlock<Socket>(s =>
+            {
+                var stream = new NetworkStream(s, true);
+                return WireProtocol.Receive(stream, _callback);
+            });
 
         }
 
@@ -34,14 +42,14 @@ namespace Jasper.Bus.Queues.New
                     // TODO -- might parallelize the receiving so that it passes off
                     // sockets as fast as possible?
                     var socket = await _listener.AcceptSocketAsync();
-                    var stream = new NetworkStream(socket, true);
-                    await WireProtocol.Receive(stream, _callback);
+                    _socketHandling.Post(socket);
                 }
             });
         }
 
         public void Dispose()
         {
+            _socketHandling.Complete();
             _listener.Stop();
             _isDisposed = true;
         }
