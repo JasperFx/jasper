@@ -17,17 +17,15 @@ namespace IntegrationTests.NewQueue.Protocol
         protected StubReceiverCallback theReceiver = new StubReceiverCallback();
         protected StubSenderCallback theSender = new StubSenderCallback();
         private readonly IPAddress theAddress = IPAddress.Loopback;
-        private readonly int thePort = 2111;
-        private TcpListener _listener;
-        private Uri destination = "lq.tcp://localhost:2111/incoming".ToUri();
+        private readonly int thePort = 2112;
+        private Uri destination = $"lq.tcp://localhost:2112/incoming".ToUri();
         private OutgoingMessageBatch theMessageBatch;
         private bool _isDisposed;
-        private Task _receivingLoop;
+        private ListeningAgent _listener;
 
         public ProtocolContext()
         {
-            _listener = new TcpListener(new IPEndPoint(theAddress, thePort));
-            _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _listener = new ListeningAgent(theReceiver, thePort);
 
 
 
@@ -43,18 +41,6 @@ namespace IntegrationTests.NewQueue.Protocol
 
             theMessageBatch = new OutgoingMessageBatch(destination, messages, new TcpClient());
 
-
-            _receivingLoop = Task.Run(async () =>
-            {
-                _listener.Start();
-
-                while (!_isDisposed)
-                {
-                    var socket = await _listener.AcceptSocketAsync();
-                    var stream = new NetworkStream(socket, true);
-                    await WireProtocol.Receive(stream, theReceiver);
-                }
-            });
         }
 
 
@@ -73,11 +59,13 @@ namespace IntegrationTests.NewQueue.Protocol
         public void Dispose()
         {
             _isDisposed = true;
-            _listener.Stop();
+            _listener.Dispose();
         }
 
         protected async Task afterSending()
         {
+            _listener.Start();
+
             using (var client = new TcpClient())
             {
                 if (Dns.GetHostName() == destination.Host)
