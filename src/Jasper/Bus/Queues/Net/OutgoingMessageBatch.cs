@@ -15,6 +15,7 @@ namespace Jasper.Bus.Queues.Net
 {
     public class OutgoingMessageBatch : IDisposable
     {
+        // TODO -- get rid of the ctor arg for the TcpClient
         public OutgoingMessageBatch(Uri destination, IEnumerable<OutgoingMessage> messages, TcpClient client)
         {
             Destination = destination;
@@ -25,7 +26,9 @@ namespace Jasper.Bus.Queues.Net
         }
 
         public Uri Destination { get; set; }
+
         public Stream Stream => Client.GetStream();
+
         public TcpClient Client { get; set; }
         public IList<OutgoingMessage> Messages { get; }
 
@@ -46,6 +49,11 @@ namespace Jasper.Bus.Queues.Net
             {
             }
             Client = null;
+        }
+
+        public override string ToString()
+        {
+            return $"Outgoing batch to {Destination} with {Messages.Count} messages";
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Jasper.Bus.Queues.Net.Tcp
         private readonly ILogger _logger;
         private readonly ISendingProtocol _protocol;
         private readonly ISubject<OutgoingMessageFailure> _failedToSend;
-        private IObservable<OutgoingMessage> _outgoingStream; 
+        private IObservable<OutgoingMessage> _outgoingStream;
         private IObservable<OutgoingMessage> _successfullySent;
         private IDisposable _sendingSubscription;
 
@@ -81,7 +81,7 @@ namespace Jasper.Bus.Queues.Net.Tcp
         {
             _logger.Error($"Got an error sending message to {batch.Destination}", ex);
             _failedToSend.OnNext(new OutgoingMessageFailure {Batch = batch, Exception = ex});
-            return Observable.Empty<T>();
+                return Observable.Empty<T>();
         }
 
         public void Dispose()
