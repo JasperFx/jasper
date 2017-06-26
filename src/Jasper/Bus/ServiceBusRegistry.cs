@@ -1,10 +1,10 @@
-﻿using Jasper.Bus.Queues.New.Lightweight;
-using Jasper.Bus.Runtime;
+﻿using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.InMemory;
 using Jasper.Bus.Transports.LightningQueues;
+using Jasper.Bus.Transports.Lightweight;
 using Jasper.Configuration;
 
 namespace Jasper.Bus

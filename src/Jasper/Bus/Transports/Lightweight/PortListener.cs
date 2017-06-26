@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Queues;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.InMemory;
 
-namespace Jasper.Bus.Queues.New.Lightweight
+namespace Jasper.Bus.Transports.Lightweight
 {
     public class PortListener : IReceiverCallback, IDisposable
     {

@@ -4,7 +4,7 @@ using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.InMemory;
 
-namespace Jasper.Bus.Queues.New.Lightweight
+namespace Jasper.Bus.Transports.Lightweight
 {
     public class LightweightCallback : IMessageCallback
     {

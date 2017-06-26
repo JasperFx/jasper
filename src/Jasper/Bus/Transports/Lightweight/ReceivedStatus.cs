@@ -1,4 +1,4 @@
-﻿namespace Jasper.Bus.Queues.New
+﻿namespace Jasper.Bus.Transports.Lightweight
 {
     public enum ReceivedStatus
     {

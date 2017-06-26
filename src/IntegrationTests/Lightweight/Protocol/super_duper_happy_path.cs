@@ -2,7 +2,7 @@
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.NewQueue.Protocol
+namespace IntegrationTests.Lightweight.Protocol
 {
     public class super_duper_happy_path : ProtocolContext
     {

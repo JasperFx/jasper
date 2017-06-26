@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace Jasper.Bus.Queues.New
+namespace Jasper.Bus.Transports.Lightweight
 {
 
     public class ListeningAgent : IDisposable

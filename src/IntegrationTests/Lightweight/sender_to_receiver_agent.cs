@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Baseline.Dates;
-using IntegrationTests.NewQueue.Protocol;
+using IntegrationTests.Lightweight.Protocol;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Net;
-using Jasper.Bus.Queues.New;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.Lightweight;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.NewQueue
+namespace IntegrationTests.Lightweight
 {
     public class sender_to_receiver_agent : IDisposable
     {

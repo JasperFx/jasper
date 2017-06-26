@@ -5,12 +5,12 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Net;
-using Jasper.Bus.Queues.New;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.Lightweight;
 using Jasper.Testing;
 using Shouldly;
 
-namespace IntegrationTests.NewQueue.Protocol
+namespace IntegrationTests.Lightweight.Protocol
 {
     public abstract class ProtocolContext : IDisposable
     {

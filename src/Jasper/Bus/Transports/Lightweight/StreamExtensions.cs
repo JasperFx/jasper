@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace Jasper.Bus.Queues.New
+namespace Jasper.Bus.Transports.Lightweight
 {
     public static class StreamExtensions
     {

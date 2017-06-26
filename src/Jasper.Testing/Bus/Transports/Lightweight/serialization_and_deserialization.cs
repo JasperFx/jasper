@@ -6,7 +6,7 @@ using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Bus.Queues
+namespace Jasper.Testing.Bus.Transports.Lightweight
 {
     public class serialization_and_deserialization_of_single_message
     {

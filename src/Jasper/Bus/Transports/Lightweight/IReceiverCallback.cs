@@ -1,6 +1,7 @@
 ﻿using System;
+using Jasper.Bus.Queues;
 
-namespace Jasper.Bus.Queues.New
+namespace Jasper.Bus.Transports.Lightweight
 {
     public interface IReceiverCallback
     {

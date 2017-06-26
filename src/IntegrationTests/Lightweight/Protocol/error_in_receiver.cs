@@ -3,7 +3,7 @@ using Baseline.Dates;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.NewQueue.Protocol
+namespace IntegrationTests.Lightweight.Protocol
 {
     public class error_in_receiver : ProtocolContext
     {

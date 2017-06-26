@@ -9,7 +9,7 @@ using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.NewQueue
+namespace IntegrationTests.Lightweight
 {
     public class end_to_end : IDisposable
     {

@@ -1,9 +1,9 @@
 ﻿using Baseline.Dates;
-using Jasper.Bus.Queues.New;
+using Jasper.Bus.Transports.Lightweight;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.NewQueue.Protocol
+namespace IntegrationTests.Lightweight.Protocol
 {
     public class queue_does_not_exist_on_receiver : ProtocolContext
     {

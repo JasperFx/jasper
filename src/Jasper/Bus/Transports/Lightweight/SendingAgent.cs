@@ -4,9 +4,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Net;
 
-namespace Jasper.Bus.Queues.New
+namespace Jasper.Bus.Transports.Lightweight
 {
     public class SendingAgent : IDisposable
     {

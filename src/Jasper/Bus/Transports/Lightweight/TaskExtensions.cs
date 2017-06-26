@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Jasper.Bus.Queues.New
+namespace Jasper.Bus.Transports.Lightweight
 {
     public static class TaskExtensions
     {

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
 
-namespace Jasper.Bus.Queues.New
+namespace Jasper.Bus.Transports.Lightweight
 {
     public class BatchingBlock<T> : IDisposable
     {
