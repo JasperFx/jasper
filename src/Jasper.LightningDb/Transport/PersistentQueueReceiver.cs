@@ -1,20 +1,18 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports.InMemory;
 
-namespace Jasper.Bus.Transports.Lightweight
+namespace Jasper.LightningDb.Transport
 {
-    public class QueueReceiver : IDisposable
+    public class PersistentQueueReceiver : IDisposable
     {
         private readonly ActionBlock<Message> _block;
-        public string QueueName { get; }
 
-        public QueueReceiver(string queueName, IHandlerPipeline pipeline, ChannelGraph channels, ChannelNode node, IInMemoryQueue inmemory)
+        public PersistentQueueReceiver(string queueName, IHandlerPipeline pipeline, ChannelGraph channels, ChannelNode node)
         {
             QueueName = queueName;
             var receiver = new Receiver(pipeline, channels, node);
@@ -25,18 +23,21 @@ namespace Jasper.Bus.Transports.Lightweight
             };
 
 
-            _block = new ActionBlock<Message>(m => receive(inmemory, receiver, m), options);
+            _block = new ActionBlock<Message>(m => receive(receiver, m), options);
         }
 
-        private Task receive(IInMemoryQueue inmemory, Receiver receiver, Message m)
-        {
-            var callback = new LightweightCallback(inmemory);
-            return receiver.Receive(m.Data, m.Headers, callback);
-        }
+        public string QueueName { get; }
 
         public void Enqueue(Message message)
         {
+            // This is assuming that the database work happens somewhere else
             _block.Post(message);
+        }
+
+        private Task receive(Receiver receiver, Message m)
+        {
+            var callback = new PersistentCallback(m, _block);
+            return receiver.Receive(m.Data, m.Headers, (IMessageCallback) callback);
         }
 
         public void Dispose()
@@ -44,7 +45,4 @@ namespace Jasper.Bus.Transports.Lightweight
             _block.Complete();
         }
     }
-
-
-
 }

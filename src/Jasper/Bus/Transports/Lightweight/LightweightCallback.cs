@@ -8,12 +8,10 @@ namespace Jasper.Bus.Transports.Lightweight
 {
     public class LightweightCallback : IMessageCallback
     {
-        private readonly QueueReceiver _queue;
         private readonly IInMemoryQueue _retries;
 
-        public LightweightCallback(QueueReceiver queue, IInMemoryQueue retries)
+        public LightweightCallback(IInMemoryQueue retries)
         {
-            _queue = queue;
             _retries = retries;
         }
 
