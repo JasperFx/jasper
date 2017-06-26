@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using StructureMap;
@@ -15,6 +17,9 @@ namespace Jasper.Testing
         {
             var registry = new JasperRegistry();
             registry.Services.AddTransient<IService, FooService>();
+            registry.Services.AddService<IFakeStore, FakeStore>();
+            registry.Services.For<IWidget>().Use<Widget>();
+            registry.Services.For<IFakeService>().Use<FakeService>();
 
             using (var runtime = JasperRuntime.For(registry))
             {
@@ -30,6 +35,9 @@ namespace Jasper.Testing
         {
             var registry = new JasperRegistry();
             registry.Services.AddTransient<IService, FooService>();
+            registry.Services.AddService<IFakeStore, FakeStore>();
+            registry.Services.For<IWidget>().Use<Widget>();
+            registry.Services.For<IFakeService>().Use<FakeService>();
 
             using (var runtime = JasperRuntime.For(registry))
             {

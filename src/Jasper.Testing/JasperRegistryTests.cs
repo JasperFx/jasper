@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.Http;
 using Shouldly;
 using StructureMap.TypeRules;
 using Xunit;
@@ -18,6 +20,9 @@ namespace Jasper.Testing
         {
             var registry = new JasperRegistry();
             registry.Services.For<IFoo>().Use<Foo>();
+            registry.Services.AddService<IFakeStore, FakeStore>();
+            registry.Services.For<IWidget>().Use<Widget>();
+            registry.Services.For<IFakeService>().Use<FakeService>();
 
             var runtime = JasperRuntime.For(registry);
 
@@ -29,7 +34,7 @@ namespace Jasper.Testing
 
         public class MyRegistry : JasperRegistry
         {
-            
+
         }
     }
 }

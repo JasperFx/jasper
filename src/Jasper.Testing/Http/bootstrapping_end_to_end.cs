@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
+using Jasper.Testing.Bus.Compilation;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
@@ -18,6 +19,8 @@ namespace Jasper.Testing.Http
             var registry = new JasperRegistry();
             registry.UseFeature<HttpFeature>();
             registry.Services.AddService<IFakeStore, FakeStore>();
+            registry.Services.For<IWidget>().Use<Widget>();
+            registry.Services.For<IFakeService>().Use<FakeService>();
 
             theRuntime = JasperRuntime.For(registry);
         }
@@ -25,8 +28,8 @@ namespace Jasper.Testing.Http
         [Fact]
         public void route_graph_is_registered()
         {
-            ShouldBeBooleanExtensions.ShouldBeTrue(theRuntime.Container.GetInstance<RouteGraph>()
-                                              .Any());
+            theRuntime.Container.GetInstance<RouteGraph>()
+                .Any().ShouldBeTrue();
         }
 
         [Fact]
@@ -34,14 +37,14 @@ namespace Jasper.Testing.Http
         {
             var routes = theRuntime.Container.GetInstance<RouteGraph>();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)));
-            ShouldBeBooleanExtensions.ShouldBeTrue(routes.Any(x => x.Action.HandlerType == typeof(OtherEndpoint)));
+            routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)).ShouldBeTrue();
+            routes.Any(x => x.Action.HandlerType == typeof(OtherEndpoint)).ShouldBeTrue();
         }
 
         [Fact]
         public void url_registry_is_registered()
         {
-            ShouldBeBooleanExtensions.ShouldBeTrue(theRuntime.Container.Model.HasDefaultImplementationFor<IUrlRegistry>());
+            theRuntime.Container.Model.HasDefaultImplementationFor<IUrlRegistry>().ShouldBeTrue();
         }
 
         [Fact]
@@ -82,7 +85,7 @@ namespace Jasper.Testing.Http
 
         public void put_other(OtherModel input)
         {
-            
+
         }
     }
 

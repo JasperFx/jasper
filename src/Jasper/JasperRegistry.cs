@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
+using Jasper.Bus;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Settings;
@@ -31,6 +32,8 @@ namespace Jasper
 
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
+
+            UseFeature<ServiceBusFeature>();
         }
 
         public GenerationConfig Generation { get; }

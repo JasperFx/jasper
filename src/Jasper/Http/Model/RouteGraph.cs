@@ -11,7 +11,7 @@ namespace Jasper.Http.Model
 {
     public class RouteGraph : HandlerSet<RouteChain, RouteHandler>, IEnumerable<RouteChain>
     {
-        public static readonly string Context = "context";
+        public static readonly string Context = "httpContext";
         public readonly Router Router = new Router();
 
         private readonly IList<RouteChain> _chains = new List<RouteChain>();

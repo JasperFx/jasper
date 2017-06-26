@@ -1,11 +1,11 @@
-﻿using Jasper.Bus.Runtime;
+﻿using Jasper.Bus.Queues.New.Lightweight;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.InMemory;
 using Jasper.Bus.Transports.LightningQueues;
 using Jasper.Configuration;
-using StructureMap;
 
 namespace Jasper.Bus
 {
@@ -14,8 +14,14 @@ namespace Jasper.Bus
         internal ServiceBusRegistry()
         {
             ForSingletonOf<IInMemoryQueue>().Use<InMemoryQueue>();
-            For<ITransport>().Singleton().Add<LightningQueuesTransport>();
-            For<ITransport>().Singleton().Add<InMemoryTransport>();
+
+            For<ITransport>().Singleton().AddInstances(_ =>
+            {
+                _.Type<LightningQueuesTransport>();
+                _.Type<InMemoryTransport>();
+                _.Type<LightweightTransport>();
+            });
+
             For<IEnvelopeSender>().Use<EnvelopeSender>();
             For<IServiceBus>().Use<ServiceBus>();
             For<IHandlerPipeline>().Use<HandlerPipeline>();

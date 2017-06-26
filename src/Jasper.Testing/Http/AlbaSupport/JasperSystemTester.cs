@@ -4,6 +4,7 @@ using Alba;
 using AlbaForJasper;
 using Baseline;
 using Jasper.Http;
+using Jasper.Testing.Bus.Compilation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -49,7 +50,7 @@ namespace Jasper.Testing.Http.AlbaSupport
     }
 
 
-    
+
 
     internal class AlbaTargetAppStartup
     {
@@ -68,6 +69,10 @@ namespace Jasper.Testing.Http.AlbaSupport
     {
         public AlbaTargetApp()
         {
+            Services.AddService<IFakeStore, FakeStore>();
+            Services.For<IWidget>().Use<Widget>();
+            Services.For<IFakeService>().Use<FakeService>();
+
             var feature = Feature<AspNetCoreFeature>();
 
             feature.WebHostBuilder.Configure(app =>
@@ -92,6 +97,10 @@ namespace Jasper.Testing.Http.AlbaSupport
     {
         public AlbaTargetApp2()
         {
+            Services.AddService<IFakeStore, FakeStore>();
+            Services.For<IWidget>().Use<Widget>();
+            Services.For<IFakeService>().Use<FakeService>();
+
             var feature = Feature<AspNetCoreFeature>();
 
             feature.WebHostBuilder.UseStartup<AlbaTargetAppStartup>();

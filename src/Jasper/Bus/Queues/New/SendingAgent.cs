@@ -42,8 +42,6 @@ namespace Jasper.Bus.Queues.New
 
         private async Task sendBatch(OutgoingMessageBatch batch)
         {
-            Console.WriteLine(batch);
-
             using (var client = new TcpClient())
             {
                 try

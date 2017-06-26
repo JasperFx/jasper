@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.InMemory;
@@ -30,8 +31,25 @@ namespace Jasper.Bus.Queues.New.Lightweight
 
         public ReceivedStatus Received(Message[] messages)
         {
-            // TODO -- needs to delegate to the queue receivers
-            throw new NotImplementedException();
+            if (messages.Any(x => !_receivers.ContainsKey(x.Queue)))
+            {
+                return ReceivedStatus.QueueDoesNotExist;
+            }
+
+            try
+            {
+                foreach (var message in messages)
+                {
+                    _receivers[message.Queue].Enqueue(message);
+                }
+
+                return ReceivedStatus.Successful;
+            }
+            catch (Exception e)
+            {
+                // TODO -- need to log here
+                return ReceivedStatus.ProcessFailure;
+            }
         }
 
         public void Acknowledged(Message[] messages)

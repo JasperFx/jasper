@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.Http;
 using Module1;
 using Shouldly;
 using StructureMap;
@@ -28,7 +30,12 @@ namespace Jasper.Testing
         [Fact]
         public void can_determine_the_application_assembly()
         {
-            using (var runtime = JasperRuntime.Basic())
+            using (var runtime = JasperRuntime.For(_ =>
+            {
+                _.Services.AddService<IFakeStore, FakeStore>();
+                _.Services.For<IWidget>().Use<Widget>();
+                _.Services.For<IFakeService>().Use<FakeService>();
+            }))
             {
                 runtime.ApplicationAssembly.ShouldBe(GetType().GetAssembly());
             }
@@ -56,6 +63,9 @@ namespace Jasper.Testing
             feature3 = theRegistry.Feature<FakeFeature3>();
             feature3.Services.For<IFeatureService3>().Use<FeatureService3>();
 
+            theRegistry.Services.AddService<IFakeStore, FakeStore>();
+            theRegistry.Services.For<IWidget>().Use<Widget>();
+            theRegistry.Services.For<IFakeService>().Use<FakeService>();
 
             theRuntime = JasperRuntime.For(theRegistry);
         }
@@ -118,6 +128,10 @@ namespace Jasper.Testing
         {
             theRegistry.Services.ForSingletonOf<IMainService>()
                 .Use(mainService);
+
+            theRegistry.Services.AddService<IFakeStore, FakeStore>();
+            theRegistry.Services.For<IWidget>().Use<Widget>();
+            theRegistry.Services.For<IFakeService>().Use<FakeService>();
 
             feature1 = theRegistry.Feature<FakeFeature1>();
 

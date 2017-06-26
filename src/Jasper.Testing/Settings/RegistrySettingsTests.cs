@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Jasper.Configuration;
 using Jasper.Settings;
+using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.Http;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Shouldly;
@@ -45,8 +47,19 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void settings_policy_registers_settings()
         {
-            var runtime = JasperRuntime.Basic();
+            var runtime = JasperRuntime.For(_ =>
+            {
+                _.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+                _.Services.For<IWidget>().Use<Widget>();
+                _.Services.For<IFakeService>().Use<FakeService>();
+            });
+
             var registry = runtime.Registry;
+            registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+            registry.Services.For<IWidget>().Use<Widget>();
+            registry.Services.For<IFakeService>().Use<FakeService>();
+
+
             var container = new Container(registry.Services);
             var settings = container.GetInstance<MySettings>();
             settings.SomeSetting.ShouldBe(0);

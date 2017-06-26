@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Configuration;
 using Jasper.Http;
+using Jasper.Testing.Bus.Compilation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -57,7 +58,7 @@ namespace Jasper.Testing.Http
         public class Service : IService { }
     }
 
-    
+
 
     public class BootstrappingApp : JasperRegistry
     {
@@ -66,6 +67,10 @@ namespace Jasper.Testing.Http
         public BootstrappingApp()
         {
             Services.For<BootstrappingToken>().Use(new BootstrappingToken(Id));
+
+            Services.AddService<IFakeStore, FakeStore>();
+            Services.For<IWidget>().Use<Widget>();
+            Services.For<IFakeService>().Use<FakeService>();
         }
     }
 

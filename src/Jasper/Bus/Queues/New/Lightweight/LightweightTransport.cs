@@ -60,7 +60,7 @@ namespace Jasper.Bus.Queues.New.Lightweight
                 Destination = destination,
 
                 // TODO -- this is awful. Let's get this one optimized ASAP
-                Queue = envelope.Destination.ToLightningUri().QueueName,
+                Queue = envelope.Destination.Segments.Last(),
             };
 
             //TODO Maybe expose something to modify transport specific payloads?

@@ -60,6 +60,14 @@ namespace Jasper
             return bootstrap(registry).GetAwaiter().GetResult();
         }
 
+        public static JasperRuntime For(Action<JasperRegistry> configure)
+        {
+            var registry = new JasperRegistry();
+            configure?.Invoke(registry);
+
+            return bootstrap(registry).GetAwaiter().GetResult();
+        }
+
 
         public IJasperRegistry Registry => _registry;
 
