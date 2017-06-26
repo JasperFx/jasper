@@ -1,9 +1,9 @@
 # Receive a message with an unknown content type
 
 -> id = b9cffe0d-2b61-48eb-b5fd-7b1f5eec522a
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-06-26T14:20:53.7432790Z
+-> last-updated = 2017-06-26T19:52:19.8307215Z
 -> tags = 
 
 [SendMessage]

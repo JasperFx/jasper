@@ -1,9 +1,9 @@
 # Receive an unhandled message type
 
 -> id = 9387a12d-5d59-44dc-9add-02c51c49b29d
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-06-26T14:20:53.7319000Z
+-> last-updated = 2017-06-26T19:52:19.8157215Z
 -> tags = 
 
 [SendMessage]

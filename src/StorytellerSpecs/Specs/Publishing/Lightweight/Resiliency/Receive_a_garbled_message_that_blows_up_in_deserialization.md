@@ -1,9 +1,9 @@
 # Receive a garbled message that blows up in deserialization
 
 -> id = 2421708e-e999-4149-a3d7-91e642e85d1e
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-06-26T14:20:53.7446630Z
+-> last-updated = 2017-06-26T19:52:19.8347215Z
 -> tags = 
 
 [SendMessage]

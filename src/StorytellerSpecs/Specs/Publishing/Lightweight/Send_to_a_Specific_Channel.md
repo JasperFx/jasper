@@ -1,9 +1,9 @@
 # Send to a Specific Channel
 
 -> id = 0259b104-8871-4616-891d-20d7f3a046a8
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-20T20:34:17.0228532Z
+-> last-updated = 2017-06-26T19:51:36.1617215Z
 -> tags = 
 
 [SendMessage]
@@ -28,6 +28,11 @@
     |> SendMessage messageType=Message2
     ``` channel
     jasper://localhost:2201/four
+    ```
+
+    |> ListenForMessagesFrom
+    ``` channel
+    jasper://localhost:2201/three
     ```
 
 

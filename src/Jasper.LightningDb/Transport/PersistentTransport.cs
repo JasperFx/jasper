@@ -74,6 +74,7 @@ namespace Jasper.LightningDb.Transport
             // TODO -- persist the message first!!!!!!!
 
             envelope.Destination = destination;
+            envelope.ReplyUri = _replyUri;
 
 
             var messagePayload = new OutgoingMessage
@@ -83,6 +84,7 @@ namespace Jasper.LightningDb.Transport
                 Headers = envelope.Headers,
                 SentAt = DateTime.UtcNow,
                 Destination = destination,
+                
 
                 // TODO -- this is awful. Let's get this one optimized ASAP
                 Queue = envelope.Destination.Segments.Last(),

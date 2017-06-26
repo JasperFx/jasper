@@ -52,6 +52,7 @@ namespace Jasper.Bus.Transports.Lightweight
         public Task Send(Envelope envelope, Uri destination)
         {
             envelope.Destination = destination;
+            envelope.ReplyUri = _replyUri;
 
 
             var messagePayload = new OutgoingMessage

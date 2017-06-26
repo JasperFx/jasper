@@ -1,9 +1,9 @@
 # Simplest Possible Happy Path
 
 -> id = 63d1dfc5-e1bc-49fc-8a88-5d846f855c6d
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-03-20T20:33:18.1508239Z
+-> last-updated = 2017-06-26T19:52:19.8417215Z
 -> tags = 
 
 [SendMessage]
