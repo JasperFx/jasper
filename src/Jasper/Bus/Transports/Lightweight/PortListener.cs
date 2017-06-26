@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Runtime.Invocation;
@@ -11,12 +12,14 @@ namespace Jasper.Bus.Transports.Lightweight
     public class PortListener : IReceiverCallback, IDisposable
     {
         private readonly IInMemoryQueue _inmemory;
+        private readonly IBusLogger _logger;
         private readonly Dictionary<string, QueueReceiver> _receivers = new Dictionary<string, QueueReceiver>();
         private readonly ListeningAgent _listener;
 
-        public PortListener(int port, IInMemoryQueue inmemory)
+        public PortListener(int port, IInMemoryQueue inmemory, IBusLogger logger)
         {
             _inmemory = inmemory;
+            _logger = logger;
             _listener = new ListeningAgent(this, port);
         }
 
@@ -48,7 +51,7 @@ namespace Jasper.Bus.Transports.Lightweight
             }
             catch (Exception e)
             {
-                // TODO -- need to log here
+                _logger.LogException(e);
                 return ReceivedStatus.ProcessFailure;
             }
         }
@@ -65,7 +68,7 @@ namespace Jasper.Bus.Transports.Lightweight
 
         public void Failed(Exception exception, Message[] messages)
         {
-            // TODO -- log the exception at least
+            _logger.LogException(new MessageFailureException(messages, exception));
         }
 
         public void Dispose()
@@ -76,6 +79,13 @@ namespace Jasper.Bus.Transports.Lightweight
             }
 
             _listener?.Dispose();
+        }
+    }
+
+    public class MessageFailureException : Exception
+    {
+        public MessageFailureException(Message[] messages, Exception innerException) : base($"SEE THE INNER EXCEPTION -- Failed on messages {messages.Select(x => x.ToString()).Join(", ")}", innerException)
+        {
         }
     }
 }

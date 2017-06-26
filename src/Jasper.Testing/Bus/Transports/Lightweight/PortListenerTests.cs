@@ -1,4 +1,5 @@
-﻿using Jasper.Bus.Configuration;
+﻿using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -20,7 +21,7 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
 
         public PortListenerTests()
         {
-            theListener = new PortListener(2222, Substitute.For<IInMemoryQueue>());
+            theListener = new PortListener(2222, Substitute.For<IInMemoryQueue>(), Substitute.For<IBusLogger>());
             theListener.AddQueue("one", thePipeline, theChannels, new ChannelNode("jasper://localhost:2222/one".ToUri()));
             theListener.AddQueue("two", thePipeline, theChannels, new ChannelNode("jasper://localhost:2222/two".ToUri()));
         }

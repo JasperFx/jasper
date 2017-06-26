@@ -1,4 +1,5 @@
-﻿using Jasper.Bus.Runtime;
+﻿using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -21,6 +22,9 @@ namespace Jasper.Bus
                 _.Type<InMemoryTransport>();
                 _.Type<LightweightTransport>();
             });
+
+
+            For<IBusLogger>().Use<NulloBusLogger>();
 
             For<IEnvelopeSender>().Use<EnvelopeSender>();
             For<IServiceBus>().Use<ServiceBus>();

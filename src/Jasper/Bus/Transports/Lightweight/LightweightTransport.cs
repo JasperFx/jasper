@@ -18,15 +18,17 @@ namespace Jasper.Bus.Transports.Lightweight
     {
         private readonly BusSettings _settings;
         private readonly IInMemoryQueue _inmemory;
+        private readonly IBusLogger _logger;
         private readonly SendingAgent _sender;
         private readonly Uri _replyUri;
         private readonly Dictionary<int, PortListener> _listeners = new Dictionary<int, PortListener>();
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
-        public LightweightTransport(BusSettings settings, IInMemoryQueue inmemory)
+        public LightweightTransport(BusSettings settings, IInMemoryQueue inmemory, IBusLogger logger)
         {
             _settings = settings;
             _inmemory = inmemory;
+            _logger = logger;
             _sender = new SendingAgent();
             _replyUri = $"jasper://localhost:{_settings.ResponsePort}/replies".ToUri();
 
@@ -89,7 +91,7 @@ namespace Jasper.Bus.Transports.Lightweight
             var groups = nodes.Where(x => x.Incoming).GroupBy(x => x.Uri.Port);
             foreach (var @group in groups)
             {
-                var listener = new PortListener(@group.Key, _inmemory);
+                var listener = new PortListener(@group.Key, _inmemory, _logger);
                 _listeners.Add(@group.Key, listener);
 
                 foreach (var node in @group)
