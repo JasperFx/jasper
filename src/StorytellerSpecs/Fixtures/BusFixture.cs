@@ -35,7 +35,8 @@ namespace StorytellerSpecs.Fixtures
             AddSelectionValues("MessageTypes", messageTypes.Select(x => x.Name).ToArray());
             AddSelectionValues("Channels", "stub://one", "stub://two", "stub://three", "stub://four", "stub://replies",
                 LQChannel1.ToString(), LQChannel2.ToString(), LQChannel3.ToString(), LQChannel4.ToString(),
-                InMemoryChannel1.ToString(), InMemoryChannel2.ToString(), InMemoryChannel3.ToString(), InMemoryChannel4.ToString());
+                InMemoryChannel1.ToString(), InMemoryChannel2.ToString(), InMemoryChannel3.ToString(), InMemoryChannel4.ToString(),
+                "jasper://localhost:2201/one", "jasper://localhost:2201/two", "jasper://localhost:2201/three", "jasper://localhost:2201/four");
         }
 
         protected Type messageTypeFor(string name)

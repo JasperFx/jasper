@@ -1,0 +1,44 @@
+# Receive a garbled message that blows up in deserialization
+
+-> id = 2421708e-e999-4149-a3d7-91e642e85d1e
+-> lifecycle = Acceptance
+-> max-retries = 0
+-> last-updated = 2017-06-26T14:20:53.7446630Z
+-> tags = 
+
+[SendMessage]
+|> IfTheApplicationIs
+    [ServiceBusApplication]
+    |> ListenForMessagesFrom
+    ``` channel
+    jasper://localhost:2201/one
+    ```
+
+    |> SendMessage messageType=Message1
+    ``` channel
+    jasper://localhost:2201/one
+    ```
+
+    |> SendMessage messageType=Message2
+    ``` channel
+    jasper://localhost:2201/one
+    ```
+
+
+
+There is no handler for UnhandledMessage in this configuration
+
+|> SendGarbledMessage
+``` address
+jasper://localhost:2201/one
+```
+
+|> SendMessage messageType=Message1, name=Suzy
+|> SendMessage messageType=Message2, name=Russell
+|> TheMessagesSentShouldBe
+    [rows]
+    |ReceivedAt                 |MessageType|Name   |
+    |jasper://localhost:2201/one|Message1   |Suzy   |
+    |jasper://localhost:2201/one|Message2   |Russell|
+
+~~~

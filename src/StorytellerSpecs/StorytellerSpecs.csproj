@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp1.0</TargetFramework>
     <DebugType>portable</DebugType>
@@ -15,18 +14,18 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Storyteller" Version="4.1.1" />
     <PackageReference Include="Alba" Version="1.0.0-alpha-39" />
   </ItemGroup>
-
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-storyteller" Version="1.1.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Folder Include="Specs\Publishing\Lightweight\Resiliency" />
+    <Folder Include="Specs\Publishing\Lightweight\Resiliency" />
+  </ItemGroup>
 </Project>

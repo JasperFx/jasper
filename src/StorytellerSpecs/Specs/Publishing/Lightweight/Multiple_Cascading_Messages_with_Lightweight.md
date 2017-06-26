@@ -1,9 +1,9 @@
-# Messages Sent to Multiple Channels
+# Multiple Cascading Messages with Lightweight
 
--> id = c553e31b-702b-4c38-991b-4eb2c28f2424
--> lifecycle = Regression
+-> id = 75de41e9-02d0-41d0-be5f-df8d67f1a764
+-> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2017-06-26T14:34:28.1667640Z
+-> last-updated = 2017-06-26T14:22:39.3652280Z
 -> tags = 
 
 [SendMessage]
@@ -24,16 +24,12 @@
     jasper://localhost:2201/three
     ```
 
-    |> SendMessage messageType=Message1
+    |> SendMessage messageType=Message4
     ``` channel
     jasper://localhost:2201/four
     ```
 
-    |> SendMessage messageType=Message2
-    ``` channel
-    jasper://localhost:2201/four
-    ```
-
+    |> ReceivingMessage2CascadesMultiples
     |> ListenForMessagesFrom
     ``` channel
     jasper://localhost:2201/one
@@ -55,16 +51,12 @@
     ```
 
 
-|> SendMessage messageType=Message1, name=Tom
-|> SendMessage messageType=Message2, name=Todd
-|> SendMessage messageType=Message3, name=Trevor
+|> SendMessage messageType=Message2, name=Tamba Hali
 |> TheMessagesSentShouldBe
     [rows]
-    |ReceivedAt                   |MessageType|Name  |
-    |jasper://localhost:2201/one  |Message1   |Tom   |
-    |jasper://localhost:2201/two  |Message2   |Todd  |
-    |jasper://localhost:2201/three|Message3   |Trevor|
-    |jasper://localhost:2201/four |Message2   |Todd  |
-    |jasper://localhost:2201/four |Message1   |Tom   |
+    |ReceivedAt                   |MessageType|Name      |
+    |jasper://localhost:2201/two  |Message2   |Tamba Hali|
+    |jasper://localhost:2201/three|Message3   |Tamba Hali|
+    |jasper://localhost:2201/four |Message4   |Tamba Hali|
 
 ~~~

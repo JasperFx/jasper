@@ -89,5 +89,9 @@
     <Folder Include="node_modules\http-proxy-middleware\node_modules\is-extglob" />
     <Folder Include="node_modules\http-proxy-middleware\node_modules\is-glob" />
     <Folder Include="node_modules\icss-replace-symbols" />
+    <Folder Include="resources\css" />
+    <Folder Include="resources\css" />
+    <Folder Include="resources\js" />
+    <Folder Include="resources\js" />
   </ItemGroup>
 </Project>
