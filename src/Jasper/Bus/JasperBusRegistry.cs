@@ -252,7 +252,13 @@ namespace Jasper.Bus
             public void Use<T>() where T : class, IDelayedJobProcessor
             {
                 _feature.DelayedJobsRunInMemory = false;
-                _feature.Services.AddSingleton<IDelayedJobProcessor, T>();
+                _feature.Services.ForSingletonOf<IDelayedJobProcessor>().Use<T>();
+            }
+
+            public void Use(IDelayedJobProcessor delayedJobs)
+            {
+                _feature.DelayedJobsRunInMemory = false;
+                _feature.Services.ForSingletonOf<IDelayedJobProcessor>().Use(delayedJobs);
             }
         }
     }
