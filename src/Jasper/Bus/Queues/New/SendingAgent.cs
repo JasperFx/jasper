@@ -8,12 +8,6 @@ using Jasper.Bus.Queues.Net;
 
 namespace Jasper.Bus.Queues.New
 {
-    public interface ISendingAgent
-    {
-        void RetryIn(OutgoingMessage message, TimeSpan delay);
-    }
-
-
     public class SendingAgent : IDisposable
     {
         private ISenderCallback _callback;
