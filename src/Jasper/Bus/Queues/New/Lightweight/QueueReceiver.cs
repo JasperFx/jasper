@@ -3,6 +3,7 @@ using System.Threading.Tasks.Dataflow;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.InMemory;
 
 namespace Jasper.Bus.Queues.New.Lightweight
 {
@@ -11,7 +12,7 @@ namespace Jasper.Bus.Queues.New.Lightweight
         private readonly ActionBlock<Message> _block;
         public string QueueName { get; }
 
-        public QueueReceiver(string queueName, IHandlerPipeline pipeline, ChannelGraph channels, ChannelNode node)
+        public QueueReceiver(string queueName, IHandlerPipeline pipeline, ChannelGraph channels, ChannelNode node, IInMemoryQueue inmemory)
         {
             QueueName = queueName;
             var receiver = new Receiver(pipeline, channels, node);
@@ -24,7 +25,7 @@ namespace Jasper.Bus.Queues.New.Lightweight
 
             _block = new ActionBlock<Message>(m =>
             {
-                var callback = new LightweightCallback(this);
+                var callback = new LightweightCallback(this, inmemory);
                 return receiver.Receive(m.Data, m.Headers, callback);
             }, options);
         }

@@ -8,6 +8,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.InMemory;
 using Jasper.Bus.Transports.LightningQueues;
 
 namespace Jasper.Bus.Queues.New.Lightweight
@@ -15,16 +16,19 @@ namespace Jasper.Bus.Queues.New.Lightweight
     public class LightweightTransport : ITransport, ISenderCallback
     {
         private readonly BusSettings _settings;
+        private readonly IInMemoryQueue _inmemory;
         private readonly SendingAgent _sender;
         private readonly Uri _replyUri;
         private readonly Dictionary<int, PortListener> _listeners = new Dictionary<int, PortListener>();
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
-        public LightweightTransport(BusSettings settings)
+        public LightweightTransport(BusSettings settings, IInMemoryQueue inmemory)
         {
             _settings = settings;
+            _inmemory = inmemory;
             _sender = new SendingAgent();
             _replyUri = $"jasper://localhost:{_settings.ResponsePort}/replies".ToUri();
+
         }
 
         public void Dispose()
@@ -84,7 +88,7 @@ namespace Jasper.Bus.Queues.New.Lightweight
             var groups = nodes.Where(x => x.Incoming).GroupBy(x => x.Uri.Port);
             foreach (var @group in groups)
             {
-                var listener = new PortListener(@group.Key);
+                var listener = new PortListener(@group.Key, _inmemory);
                 _listeners.Add(@group.Key, listener);
 
                 foreach (var node in @group)

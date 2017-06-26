@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.InMemory;
 
 namespace Jasper.Bus.Queues.New.Lightweight
 {
     public class PortListener : IReceiverCallback, IDisposable
     {
+        private readonly IInMemoryQueue _inmemory;
         private readonly Dictionary<string, QueueReceiver> _receivers = new Dictionary<string, QueueReceiver>();
         private readonly ListeningAgent _listener;
 
-        public PortListener(int port)
+        public PortListener(int port, IInMemoryQueue inmemory)
         {
+            _inmemory = inmemory;
             _listener = new ListeningAgent(this, port);
         }
 
@@ -22,7 +25,7 @@ namespace Jasper.Bus.Queues.New.Lightweight
 
         public void AddQueue(string queueName, IHandlerPipeline pipeline, ChannelGraph channels, ChannelNode node)
         {
-            _receivers.Add(queueName, new QueueReceiver(queueName, pipeline, channels, node));
+            _receivers.Add(queueName, new QueueReceiver(queueName, pipeline, channels, node, _inmemory));
         }
 
         public ReceivedStatus Received(Message[] messages)

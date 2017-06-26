@@ -2,27 +2,29 @@
 using System.Threading.Tasks;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.InMemory;
 
 namespace Jasper.Bus.Queues.New.Lightweight
 {
     public class LightweightCallback : IMessageCallback
     {
         private readonly QueueReceiver _queue;
+        private readonly IInMemoryQueue _retries;
 
-        // TODO -- Use the in memory reply queue?
-        public LightweightCallback(QueueReceiver queue)
+        public LightweightCallback(QueueReceiver queue, IInMemoryQueue retries)
         {
             _queue = queue;
+            _retries = retries;
         }
 
         public Task MarkSuccessful()
         {
-            // Nothing
+            return Task.CompletedTask;
         }
 
         public Task MarkFailed(Exception ex)
         {
-            // Nothing
+            return Task.CompletedTask;
         }
 
         public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
@@ -39,8 +41,7 @@ namespace Jasper.Bus.Queues.New.Lightweight
 
         public Task Requeue(Envelope envelope)
         {
-            // TODO -- move right back in
-            throw new NotImplementedException();
+            return _retries.Send(envelope, InMemoryTransport.Retries);
         }
 
         public Task Send(Envelope envelope)

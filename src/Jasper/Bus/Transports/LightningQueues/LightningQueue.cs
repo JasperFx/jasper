@@ -61,7 +61,7 @@ namespace Jasper.Bus.Transports.LightningQueues
 
                     _queue.CreateQueue(lqUri.QueueName);
                 }
-l
+
                 _queue.Start();
             }
             catch (Exception e)
