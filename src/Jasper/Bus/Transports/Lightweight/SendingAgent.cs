@@ -50,8 +50,10 @@ namespace Jasper.Bus.Transports.Lightweight
                     await connect(client, batch.Destination)
                         .TimeoutAfter(5000);
 
-                    await WireProtocol.Send(client.GetStream(), batch, _callback)
-                        .TimeoutAfter(5000);
+                    using (var stream = client.GetStream())
+                    {
+                        await WireProtocol.Send(stream, batch, _callback).TimeoutAfter(5000);
+                    }
                 }
                 catch (Exception e)
                 {

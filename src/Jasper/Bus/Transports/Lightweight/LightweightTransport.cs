@@ -79,7 +79,7 @@ namespace Jasper.Bus.Transports.Lightweight
         {
             _sender.Start(this);
 
-            channels.AddChannelIfMissing(_replyUri);
+            channels.AddChannelIfMissing(_replyUri).Incoming = true;
 
             startListening(pipeline, channels);
         }
