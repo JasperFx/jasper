@@ -1,38 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Baseline;
 using Microsoft.Extensions.Configuration;
+using StructureMap;
 
 namespace Jasper.Settings
 {
-    public class JasperSettings
+    public class JasperSettings : ISettingsProvider
     {
+        private readonly Dictionary<Type, ISettingsBuilder> _settings
+            = new Dictionary<Type, ISettingsBuilder>();
+
         private readonly JasperRegistry _registry;
-        private readonly IList<IRegistryAlteration> _registryAlterations = new List<IRegistryAlteration>();
-        private readonly IList<ISettingsAlteration> _settingsAlterations = new List<ISettingsAlteration>();
-        private readonly SettingsProvider _settingsProvider;
 
         public JasperSettings(JasperRegistry registry)
         {
             _registry = registry;
-            _settingsProvider = new SettingsProvider();
         }
 
-        /// <summary>
-        ///     Add additional configuration sources
-        /// </summary>
-        public void Build(Action<IConfigurationBuilder> build)
+        private SettingsBuilder<T> forType<T>(Func<IConfigurationRoot, T> source = null) where T : class
         {
-            _settingsProvider.Builder = build;
+            if (_settings.ContainsKey(typeof(T)))
+            {
+                var builder =  _settings[typeof(T)].As<SettingsBuilder<T>>();
+
+                if (source != null)
+                {
+                    builder.Replace(source);
+                }
+
+                return builder;
+            }
+            else
+            {
+                var builder = new SettingsBuilder<T>(source);
+                _settings.Add(typeof(T), builder);
+
+                return builder;
+            }
         }
+
+
 
         /// <summary>
         ///     Add a class to settings that does not follow the convention of ending with "Settings"
         /// </summary>
+        [Obsolete("Might eliminate or just rename")]
         public void Configure<T>() where T : class, new()
         {
-            _registry.Services.ForSingletonOf(typeof(T))
-                .Use(context => context.GetInstance<ISettingsProvider>().Get<T>());
+            // Just to register it
+            forType<T>();
         }
 
         /// <summary>
@@ -40,8 +58,7 @@ namespace Jasper.Settings
         /// </summary>
         public void Configure<T>(Func<IConfiguration, IConfiguration> config) where T : class, new()
         {
-            _settingsProvider.Configure<T>(config);
-            Configure<T>();
+            forType<T>(root => config(root).Get<T>());
         }
 
         /// <summary>
@@ -49,7 +66,7 @@ namespace Jasper.Settings
         /// </summary>
         public void Alter<T>(Action<T> alteration) where T : class, new()
         {
-            _settingsAlterations.Fill(new SettingAlteration<T>(alteration));
+            forType<T>().Alter((_, x) => alteration(x));
         }
 
         /// <summary>
@@ -57,7 +74,7 @@ namespace Jasper.Settings
         /// </summary>
         public void Replace<T>(T settings) where T : class, new()
         {
-            _settingsAlterations.Fill(new SettingReplacement<T>(settings));
+            forType<T>().Replace(settings);
         }
 
         /// <summary>
@@ -65,21 +82,28 @@ namespace Jasper.Settings
         /// </summary>
         public void With<T>(Action<T> alteration) where T : class, new()
         {
-            _registryAlterations.Fill(new RegistryAlteration<T>(alteration));
+            forType<T>().With(alteration);
         }
 
         public T Get<T>() where T : class, new()
         {
-            return _settingsProvider.Get<T>();
+            throw new NotImplementedException("Used for testing, just do it end to end now");
         }
 
         public void Bootstrap()
         {
-            _registry.Services.ForSingletonOf<ISettingsProvider>().Use(_settingsProvider);
+            // Have ISettingsProvider delegate to JasperSettings
+
+            var config = _registry.Configuration.Build();
+
+            _registry.Services.ForSingletonOf<IConfigurationRoot>().Use(config);
+            _registry.Services.ForSingletonOf<ISettingsProvider>().Use<SettingsProvider>();
             _registry.Services.Policies.OnMissingFamily<SettingsPolicy>();
 
-            _settingsAlterations.Each(alteration => alteration.Alter(_settingsProvider));
-            _registryAlterations.Each(alteration => alteration.Alter(_settingsProvider));
+            foreach (var settings in _settings.Values)
+            {
+                settings.Apply(config, _registry);
+            }
         }
     }
 }

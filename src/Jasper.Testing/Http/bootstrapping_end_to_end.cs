@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Bus;
 using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
@@ -16,11 +17,9 @@ namespace Jasper.Testing.Http
 
         public bootstrapping_end_to_end()
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperBusRegistry();
             registry.UseFeature<HttpFeature>();
-            registry.Services.AddService<IFakeStore, FakeStore>();
-            registry.Services.For<IWidget>().Use<Widget>();
-            registry.Services.For<IFakeService>().Use<FakeService>();
+            registry.Handlers.ExcludeTypes(x => true);
 
             theRuntime = JasperRuntime.For(registry);
         }

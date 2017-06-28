@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Jasper.Configuration;
-using Jasper.Settings;
+﻿using System;
+using Jasper.Bus;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.Configuration;
@@ -10,28 +9,34 @@ using StructureMap;
 
 namespace Jasper.Testing.Settings
 {
-    public class RegistrySettingsTests
+    public class RegistrySettingsTests : IDisposable
     {
-        private readonly JasperSettings _settings;
-        private readonly JasperRegistry _registry;
+        private JasperBusRegistry theRegistry;
+        private JasperRuntime _runtime;
 
         public RegistrySettingsTests()
         {
-            _registry = new JasperRegistry();
-            _settings = new JasperSettings(_registry);
+            theRegistry = new JasperBusRegistry();
+            theRegistry.Handlers.ExcludeTypes(x => true);
+        }
+
+        private T get<T>()
+        {
+            if (_runtime == null)
+            {
+                _runtime = JasperRuntime.For(theRegistry);
+            }
+
+            return _runtime.Container.GetInstance<T>();
         }
 
         [Fact]
         public void can_resolve_registered_types()
         {
-            _settings.Build(_ =>
-            {
-                _.AddJsonFile("appsettings.json");
-            });
+            theRegistry.Configuration.AddJsonFile("appsettings.json");
 
-            _settings.Bootstrap();
-            var container = new Container(_registry.Services);
-            var settings = container.GetInstance<MySettings>();
+
+            var settings = get<MySettings>();
             settings.SomeSetting.ShouldBe(1);
         }
 
@@ -69,11 +74,8 @@ namespace Jasper.Testing.Settings
         public void can_alter_and_registry_still_gets_defaults()
         {
             var app = new MyApp();
-            app.Settings.Build(_ =>
-            {
-                _.AddJsonFile("appsettings.json");
-                _.AddJsonFile("colors.json");
-            });
+            app.Configuration.AddJsonFile("appsettings.json")
+                .AddJsonFile("colors.json");
 
             app.Settings.Configure<Colors>();
             app.Settings.Alter<MySettings>(_ =>
@@ -88,6 +90,11 @@ namespace Jasper.Testing.Settings
 
             mySettings.SomeSetting.ShouldBe(29);
             colors.Red.ShouldBe("#ff0000");
+        }
+
+        public void Dispose()
+        {
+            _runtime?.Dispose();
         }
     }
 }

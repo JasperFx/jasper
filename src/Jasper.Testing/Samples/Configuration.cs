@@ -29,13 +29,11 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
 
             // SAMPLE: build-configuration
-            Settings.Build(_ =>
-            {
-                _.SetBasePath("path");
-                _.AddJsonFile("myconfig.json");
-                _.AddJsonFile("myotherconfig.json.config");
-                _.AddEnvironmentVariables();
-            });
+            Configuration.SetBasePath("path")
+                .AddJsonFile("myconfig.json")
+                .AddJsonFile("myotherconfig.json.config")
+                .AddEnvironmentVariables();
+
             // ENDSAMPLE
 
             // SAMPLE: configure-settings
@@ -52,10 +50,7 @@ namespace Jasper.Testing.Samples
         {
             public MyApp()
             {
-                Settings.Build(_ =>
-                {
-                    _.AddJsonFile("mysettings.json");
-                });
+                Configuration.AddJsonFile("mysettings.json");
             }
         }
 

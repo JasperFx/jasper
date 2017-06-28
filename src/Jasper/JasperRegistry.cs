@@ -7,6 +7,7 @@ using Jasper.Bus;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Settings;
+using Microsoft.Extensions.Configuration;
 using StructureMap.TypeRules;
 
 namespace Jasper
@@ -35,6 +36,8 @@ namespace Jasper
 
             UseFeature<ServiceBusFeature>();
         }
+
+        public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
         public GenerationConfig Generation { get; }
 

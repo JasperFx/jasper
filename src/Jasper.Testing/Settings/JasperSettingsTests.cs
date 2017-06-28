@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using Jasper.Bus;
 using Jasper.Configuration;
 using Jasper.Settings;
 using Microsoft.Extensions.Configuration;
@@ -8,37 +11,46 @@ using StructureMap;
 
 namespace Jasper.Testing.Settings
 {
-    public class JasperSettingsTests
+    public class JasperSettingsTests : IDisposable
     {
-        private readonly JasperSettings _settings;
+        private JasperBusRegistry theRegistry;
+        private JasperRuntime _runtime;
 
         public JasperSettingsTests()
         {
-            _settings = new JasperSettings(new JasperRegistry());
+            theRegistry = new JasperBusRegistry();
+            theRegistry.Handlers.ExcludeTypes(x => true);
+        }
+
+        private T get<T>()
+        {
+            if (_runtime == null)
+            {
+                _runtime = JasperRuntime.For(theRegistry);
+            }
+
+            return _runtime.Container.GetInstance<T>();
         }
 
         [Fact]
         public void can_read_settings()
         {
-            _settings.Build(_ =>
-            {
-                _.AddJsonFile("appsettings.json");
-            });
+            theRegistry.Configuration.AddJsonFile("appsettings.json");
 
-            var settings = _settings.Get<MySettings>();
+
+            var settings = get<MySettings>();
             settings.SomeSetting.ShouldBe(1);
         }
 
         [Fact]
         public void can_alter_settings()
         {
-            _settings.Alter<MySettings>(s =>
+            theRegistry.Settings.Alter<MySettings>(s =>
             {
                 s.SomeSetting = 5;
             });
 
-            _settings.Bootstrap();
-            var settings = _settings.Get<MySettings>();
+            var settings = get<MySettings>();
 
             settings.SomeSetting.ShouldBe(5);
         }
@@ -46,14 +58,14 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_replace_settings()
         {
-            _settings.Replace(new MySettings
+
+            theRegistry.Settings.Replace(new MySettings
             {
                 OtherSetting = "tacos",
                 SomeSetting = 1000
             });
 
-            _settings.Bootstrap();
-            var settings = _settings.Get<MySettings>();
+            var settings = get<MySettings>();
 
             settings.SomeSetting.ShouldBe(1000);
             settings.OtherSetting.ShouldBe("tacos");
@@ -62,15 +74,13 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_configure_builder()
         {
-            _settings.Build(_ =>
-            {
-                _.AddJsonFile("appsettings.json");
-                _.AddJsonFile("colors.json");
-            });
+            theRegistry.Configuration
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("colors.json");
 
-            _settings.Configure<Colors>();
-            var colors = _settings.Get<Colors>();
-            var settings = _settings.Get<MySettings>();
+            theRegistry.Settings.Configure<Colors>();
+            var colors = get<Colors>();
+            var settings = get<MySettings>();
 
             colors.Red.ShouldBe("#ff0000");
             settings.SomeSetting.ShouldBe(1);
@@ -79,16 +89,18 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_configure_settings()
         {
-            _settings.Build(_ =>
-            {
-                _.AddJsonFile("nested.json");
-            });
+            theRegistry.Configuration.AddJsonFile("nested.json");
 
-            _settings.Configure<Colors>(_ => _.GetSection("NestedSettings"));
+            theRegistry.Settings.Configure<Colors>(_ => _.GetSection("NestedSettings"));
 
-            var colors = _settings.Get<Colors>();
+            var colors = get<Colors>();
 
             colors.Red.ShouldBe("#ff0000");
+        }
+
+        public void Dispose()
+        {
+            _runtime?.Dispose();
         }
     }
 }
