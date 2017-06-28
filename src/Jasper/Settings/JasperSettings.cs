@@ -111,5 +111,10 @@ namespace Jasper.Settings
                 settings.Apply(config, _registry);
             }
         }
+
+        public void BindToConfigSection<T>(string sectionName) where T : class, new()
+        {
+            Configure<T>(c => c.GetSection(sectionName));
+        }
     }
 }

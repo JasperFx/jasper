@@ -115,6 +115,17 @@ namespace Jasper.Testing.Settings
             colors.Red.ShouldBe("#ff0000");
         }
 
+        [Fact]
+        public void can_configure_settings_with_the_syntactical_sugure()
+        {
+            theRegistry.Configuration.AddJsonFile("nested.json");
+            theRegistry.Settings.BindToConfigSection<Colors>("NestedSettings");
+
+            var colors = get<Colors>();
+
+            colors.Red.ShouldBe("#ff0000");
+        }
+
         public void Dispose()
         {
             _runtime?.Dispose();
