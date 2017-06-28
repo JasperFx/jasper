@@ -7,6 +7,8 @@ using Jasper.Http.Routing;
 using Jasper.Testing.Bus.Compilation;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
+using StructureMap.Graph.Scanning;
+using StructureMap.TypeRules;
 using Xunit;
 
 namespace Jasper.Testing.Http
@@ -17,8 +19,12 @@ namespace Jasper.Testing.Http
 
         public bootstrapping_end_to_end()
         {
+            TypeRepository.ClearAll();
+
             var registry = new JasperBusRegistry();
             registry.UseFeature<HttpFeature>();
+            registry.Feature<HttpFeature>().Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
+
             registry.Handlers.ExcludeTypes(x => true);
 
             theRuntime = JasperRuntime.For(registry);

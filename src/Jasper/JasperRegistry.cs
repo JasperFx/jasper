@@ -33,8 +33,6 @@ namespace Jasper
 
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
-
-            UseFeature<ServiceBusFeature>();
         }
 
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
