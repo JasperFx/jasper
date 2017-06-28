@@ -43,6 +43,23 @@ namespace Jasper.Testing.Settings
         }
 
         [Fact]
+        public void can_apply_alterations_using_the_config()
+        {
+            theRegistry.Configuration.AddJsonFile("appsettings.json");
+            theRegistry.Settings.Alter<FakeSettings>((c, x) =>
+            {
+                x.SomeSetting = int.Parse(c["SomeSetting"]);
+            });
+
+            get<FakeSettings>().SomeSetting.ShouldBe(1);
+        }
+
+        public class FakeSettings
+        {
+            public int SomeSetting { get; set; }
+        }
+
+        [Fact]
         public void can_alter_settings()
         {
             theRegistry.Settings.Alter<MySettings>(s =>

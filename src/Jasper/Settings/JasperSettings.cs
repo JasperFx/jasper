@@ -69,6 +69,12 @@ namespace Jasper.Settings
             forType<T>().Alter((_, x) => alteration(x));
         }
 
+
+        public void Alter<T>(Action<IConfigurationRoot, T> alteration) where T : class, new()
+        {
+            forType<T>().Alter(alteration);
+        }
+
         /// <summary>
         ///     Replace a settings object after it is loaded
         /// </summary>
