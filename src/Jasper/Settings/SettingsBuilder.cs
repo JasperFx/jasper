@@ -17,6 +17,9 @@ namespace Jasper.Settings
         private readonly IList<Action<IConfigurationRoot, T>> _alterations
             = new List<Action<IConfigurationRoot, T>>();
 
+        private readonly IList<Action<IConfigurationRoot, T>> _packageAlterations
+            = new List<Action<IConfigurationRoot, T>>();
+
         private readonly IList<Action<T>> _withs = new List<Action<T>>();
 
 
@@ -47,6 +50,11 @@ namespace Jasper.Settings
             Replace(_ => settings);
         }
 
+        public void PackageAlter(Action<IConfigurationRoot, T> alteration)
+        {
+            _packageAlterations.Add(alteration);
+        }
+
         public void Alter(Action<IConfigurationRoot, T> alteration)
         {
             _alterations.Add(alteration);
@@ -60,6 +68,11 @@ namespace Jasper.Settings
         public void Apply(IConfigurationRoot config, JasperRegistry registry)
         {
             var settings = _source(config) ?? Activator.CreateInstance(typeof(T)).As<T>();
+
+            foreach (var alteration in _packageAlterations)
+            {
+                alteration(config, settings);
+            }
 
             foreach (var alteration in _alterations)
             {

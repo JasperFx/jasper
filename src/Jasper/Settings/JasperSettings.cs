@@ -19,6 +19,8 @@ namespace Jasper.Settings
             _registry = registry;
         }
 
+        internal bool ApplyingExtensions { get; set; }
+
         private SettingsBuilder<T> forType<T>(Func<IConfigurationRoot, T> source = null) where T : class
         {
             if (_settings.ContainsKey(typeof(T)))
@@ -66,13 +68,29 @@ namespace Jasper.Settings
         /// </summary>
         public void Alter<T>(Action<T> alteration) where T : class, new()
         {
-            forType<T>().Alter((_, x) => alteration(x));
+            var builder = forType<T>();
+            if (ApplyingExtensions)
+            {
+                builder.PackageAlter((_, x) => alteration(x));
+            }
+            else
+            {
+                builder.Alter((_, x) => alteration(x));
+            }
         }
 
 
         public void Alter<T>(Action<IConfigurationRoot, T> alteration) where T : class, new()
         {
-            forType<T>().Alter(alteration);
+            var builder = forType<T>();
+            if (ApplyingExtensions)
+            {
+                builder.PackageAlter(alteration);
+            }
+            else
+            {
+                builder.Alter(alteration);
+            }
         }
 
         /// <summary>

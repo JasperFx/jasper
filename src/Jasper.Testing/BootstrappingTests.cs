@@ -14,18 +14,7 @@ namespace Jasper.Testing
 {
     public class BootstrappingTests
     {
-        //[Fact] -- NOT RELIABLE ENOUGH. NOT SURE WHY YET
-        public void can_discover_modules_from_assembly_scanning_and_apply_extensions()
-        {
-            Module1.Module1Extension.Registry = null;
 
-            var registry = new JasperRegistry();
-            var runtime = JasperRuntime.For(registry);
-
-            runtime.ShouldNotBeNull();
-
-            Module1Extension.Registry.ShouldBe(registry);
-        }
 
         [Fact]
         public void can_determine_the_application_assembly()

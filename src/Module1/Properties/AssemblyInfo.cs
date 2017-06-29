@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Jasper;
+using Module1;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -26,4 +27,4 @@ using Jasper;
 
 [assembly: Guid("4F18A2E4-5056-48C8-89BA-4837F6F983E4")]
 
-[assembly:JasperModule]
+[assembly:JasperModule(typeof(Module1Extension))]

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
 using StructureMap;
 using StructureMap.Graph;
-using StructureMap.Graph.Scanning;
 
 namespace Jasper
 {
@@ -22,6 +20,7 @@ namespace Jasper
         {
             Container = new Container(_ =>
             {
+                _.AddRegistry(registry.ExtensionServices);
                 _.AddRegistry(registry.Services);
                 foreach (var serviceRegistry in serviceRegistries)
                 {
@@ -75,10 +74,7 @@ namespace Jasper
 
         private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
         {
-            var assemblies = AssemblyFinder.FindAssemblies(a => a.HasAttribute<JasperModuleAttribute>());
-
-
-            await applyExtensions(registry, assemblies).ConfigureAwait(false);
+            applyExtensions(registry);
 
             registry.Services.BakeAspNetCoreServices();
             registry.Settings.Bootstrap();
@@ -99,20 +95,20 @@ namespace Jasper
 
         public IContainer Container { get;}
 
-        private static async Task applyExtensions(JasperRegistry registry, IEnumerable<Assembly> assemblies)
+        private static void applyExtensions(JasperRegistry registry)
         {
+            var assemblies = AssemblyFinder
+                .FindAssemblies(a => a.HasAttribute<JasperModuleAttribute>())
+                .ToArray();
+
             if (!assemblies.Any()) return;
 
-            Func<Type, bool> filter = type => type.CanBeCastTo<IJasperExtension>() && type.IsConcreteWithDefaultCtor();
+            var extensions = assemblies
+                .Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
+                .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
+                .ToArray();
 
-            var extensionTypes = await TypeRepository.FindTypes(assemblies,
-                TypeClassification.Concretes | TypeClassification.Closed, filter).ConfigureAwait(false);
-
-            foreach (var extensionType in extensionTypes)
-            {
-                var extension = Activator.CreateInstance(extensionType).As<IJasperExtension>();
-                extension.Configure(registry);
-            }
+            registry.ApplyExtensions(extensions);
         }
 
         public bool IsDisposed { get; private set; }

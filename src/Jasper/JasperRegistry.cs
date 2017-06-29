@@ -9,6 +9,7 @@ using Jasper.Configuration;
 using Jasper.Settings;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using StructureMap;
 using StructureMap.TypeRules;
 
 namespace Jasper
@@ -16,9 +17,15 @@ namespace Jasper
     public class JasperRegistry : IJasperRegistry
     {
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
+        private readonly ServiceRegistry _applicationServices;
 
         public JasperRegistry()
         {
+            _applicationServices = new ServiceRegistry();
+            ExtensionServices = new ExtensionServiceRegistry();
+
+            Services = _applicationServices;
+
             var assembly = this.GetType().GetAssembly();
             var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
             if (!Equals(assembly, typeof(JasperRegistry).GetAssembly()) && !isFeature)
@@ -106,7 +113,7 @@ namespace Jasper
 
         public Assembly ApplicationAssembly { get; private set; }
 
-        public ServiceRegistry Services { get; } = new ServiceRegistry();
+        public ServiceRegistry Services { get; private set; }
 
         public JasperSettings Settings { get; }
 
@@ -128,6 +135,23 @@ namespace Jasper
         public IFeature[] Features => _features.Values.ToArray();
 
         public Logging Logging { get; }
+
+        internal ServiceRegistry ExtensionServices { get; }
+
+        internal void ApplyExtensions(IJasperExtension[] extensions)
+        {
+            Settings.ApplyingExtensions = true;
+            Services = ExtensionServices;
+
+
+            foreach (var extension in extensions)
+            {
+                extension.Configure(this);
+            }
+
+            Services = _applicationServices;
+            Settings.ApplyingExtensions = false;
+        }
     }
 
     public class Logging : ILogging
@@ -148,4 +172,6 @@ namespace Jasper
     {
         JasperRegistry Parent { get; }
     }
+
+    public class ExtensionServiceRegistry : ServiceRegistry{}
 }
