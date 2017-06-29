@@ -52,9 +52,13 @@ namespace Jasper.Bus
                 // generation config of the base, with service bus specific stuff
                 _graph.Compile(generation, container);
 
-                var transports = container.GetAllInstances<ITransport>().ToArray();
+                var lookups = container.GetAllInstances<IUriLookup>();
+                Channels.ApplyLookups(lookups);
 
+                var transports = container.GetAllInstances<ITransport>().ToArray();
                 Channels.UseTransports(transports);
+
+
 
                 configureSerializationOrder(runtime);
 
@@ -90,7 +94,7 @@ namespace Jasper.Bus
 
         private void verifyTransports(ITransport[] transports)
         {
-            var unknowns = Channels.Where(x => transports.All(t => t.Protocol != x.Uri.Scheme)).ToArray();
+            var unknowns = Channels.Distinct().Where(x => transports.All(t => t.Protocol != x.Uri.Scheme)).ToArray();
             if (unknowns.Length > 0)
             {
                 throw new UnknownTransportException(unknowns);

@@ -92,8 +92,14 @@ namespace Jasper.Bus.Configuration
         public async Task<Envelope> Send(Envelope envelope, Uri address, IEnvelopeSerializer serializer, IMessageCallback callback = null)
         {
 
+            var transportScheme = address.Scheme;
+            if (_nodes.ContainsKey(address))
+            {
+                transportScheme = _nodes[address].Uri.Scheme;
+            }
+
             ITransport transport = null;
-            if (_transports.TryGetValue(address.Scheme, out transport))
+            if (_transports.TryGetValue(transportScheme, out transport))
             {
                 var sending = envelope.Clone();
 
@@ -169,6 +175,20 @@ namespace Jasper.Bus.Configuration
         public IEnumerable<ChannelNode> IncomingChannelsFor(string scheme)
         {
             return _nodes.Values.Where(x => x.Incoming && x.Uri.Scheme == scheme);
+        }
+
+        internal void ApplyLookups(IEnumerable<IUriLookup> lookups)
+        {
+            foreach (var lookup in lookups)
+            {
+                var matching = _nodes.Values.Where(x => x.Uri.Scheme == lookup.Protocol).ToArray();
+
+                foreach (var node in matching)
+                {
+                    node.Uri = lookup.Lookup(node.Uri);
+                    _nodes[node.Uri] = node;
+                }
+            }
         }
     }
 }

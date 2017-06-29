@@ -9,7 +9,7 @@ namespace Jasper.Bus.Runtime.Serializers
 
         public JsonMessageSerializer(JsonSerializerSettings settings)
         {
-            settings.TypeNameHandling = TypeNameHandling.All;
+            //settings.TypeNameHandling = TypeNameHandling.Objects;
             _serializer = JsonSerializer.Create(settings);
         }
 

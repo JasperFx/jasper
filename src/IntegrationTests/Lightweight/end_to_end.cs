@@ -26,7 +26,7 @@ namespace IntegrationTests.Lightweight
 
         public end_to_end()
         {
-            theSender = JasperRuntime.Basic();
+            theSender = JasperRuntime.For(new JasperBusRegistry());
 
             var receiver = new JasperBusRegistry();
             receiver.ListenForMessagesFrom(theAddress);

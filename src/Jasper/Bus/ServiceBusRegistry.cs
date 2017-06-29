@@ -1,4 +1,5 @@
-﻿using Jasper.Bus.Queues.Logging;
+﻿using Jasper.Bus.Configuration;
+using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
@@ -40,6 +41,8 @@ namespace Jasper.Bus
             For<IMessageSerializer>().Add<JsonMessageSerializer>();
 
             ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
+
+            For<IUriLookup>().Add<ConfigUriLookup>();
         }
     }
 }

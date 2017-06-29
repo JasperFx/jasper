@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Bus.Configuration;
@@ -64,7 +65,7 @@ namespace Jasper.Bus.Transports.InMemory
 
                 };
 
-                foreach (var node in nodes)
+                foreach (var node in nodes.Distinct())
                 {
                     _buffers.Add(node.Uri, new BroadcastBlock<InMemoryMessage>(_ => _, bufferOptions));
                 }

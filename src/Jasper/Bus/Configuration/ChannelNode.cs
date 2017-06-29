@@ -22,7 +22,7 @@ namespace Jasper.Bus.Configuration
 
     public class ChannelNode : IContentTypeAware
     {
-        public Uri Uri { get; }
+        public Uri Uri { get; internal set; }
 
         public ChannelNode(Uri uri)
         {
