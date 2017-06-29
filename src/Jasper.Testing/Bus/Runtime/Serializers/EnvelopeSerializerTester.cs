@@ -22,7 +22,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
         public EnvelopeSerializerTester()
         {
             messageSerializers = new IMessageSerializer[]
-                {new JsonMessageSerializer(new JsonSerializerSettings())};
+                {new JsonMessageSerializer(new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All})};
             theGraph = new ChannelGraph();
             theSerializer = new EnvelopeSerializer(theGraph, messageSerializers);
 
