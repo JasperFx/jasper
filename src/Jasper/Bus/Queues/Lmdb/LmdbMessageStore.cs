@@ -114,7 +114,7 @@ namespace Jasper.Bus.Queues.Lmdb
             using (var tx = _environment.BeginTransaction(TransactionBeginFlags.ReadOnly))
             {
                 var db = OpenDatabase(tx, queueName);
-                return tx.Get(db, messageId.MessageIdentifier.ToByteArray()).ToMessage();
+                return tx.Get(db, messageId.MessageIdentifier.ToByteArray()).ToEnvelope();
             }
         }
 
@@ -168,7 +168,7 @@ namespace Jasper.Bus.Queues.Lmdb
                             while (cursor.MoveNext())
                             {
                                 var current = cursor.Current;
-                                var message = current.Value.ToMessage();
+                                var message = current.Value.ToEnvelope();
                                 x.OnNext(message);
                             }
                     }

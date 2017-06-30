@@ -22,7 +22,7 @@ namespace Jasper.Bus.Queues.Serialization
             }
         }
 
-        public static Envelope ToMessage(this byte[] buffer)
+        public static Envelope ToEnvelope(this byte[] buffer)
         {
             using (var ms = new MemoryStream(buffer))
             using (var br = new BinaryReader(ms))

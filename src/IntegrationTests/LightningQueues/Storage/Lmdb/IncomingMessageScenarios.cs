@@ -34,7 +34,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
             {
                 using (var db = tx.OpenDatabase(message.Queue))
                 {
-                    var msg = tx.Get(db, message.Id.MessageIdentifier.ToByteArray()).ToMessage();
+                    var msg = tx.Get(db, message.Id.MessageIdentifier.ToByteArray()).ToEnvelope();
                     System.Text.Encoding.UTF8.GetString(msg.Data).ShouldBe("hello");
                     msg.Headers.First().Value.ShouldBe("myvalue");
                 }

@@ -2,6 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Serialization;
+using Jasper.Bus.Runtime;
 using LightningDB;
 
 namespace Jasper.LightningDb
@@ -83,49 +86,109 @@ namespace Jasper.LightningDb
             }
         }
 
-        public void Store(string databaseName, IEnumerable<IPersistable> persistables)
+        public void Store(string databaseName, IEnumerable<Envelope> envelopes)
         {
             using (var tx = _environment.BeginTransaction())
             {
                 var db = _databaseCache[databaseName];
 
-                foreach (var persistable in persistables)
+                foreach (var persistable in envelopes)
                 {
-                    tx.Put(db, persistable.Identity(), persistable.Body());
+                    tx.Put(db, persistable.Identity(), persistable.Serialize());
                 }
+
+                tx.Commit();
             }
         }
 
-        public void Remove(string databaseName, IEnumerable<IPersistable> persistables)
+        public void Store(string databaseName, Envelope envelope)
         {
             using (var tx = _environment.BeginTransaction())
             {
                 var db = _databaseCache[databaseName];
 
-                foreach (var persistable in persistables)
+                tx.Put(db, envelope.Identity(), envelope.Serialize());
+
+                tx.Commit();
+            }
+        }
+
+        public void Remove(string databaseName, IEnumerable<Envelope> envelopes)
+        {
+            using (var tx = _environment.BeginTransaction())
+            {
+                var db = _databaseCache[databaseName];
+
+                foreach (var persistable in envelopes)
                 {
                     tx.Delete(db, persistable.Identity());
                 }
+
+                tx.Commit();
             }
         }
 
-        public void Move(string from, string to, IPersistable persistable)
+        public void Remove(string databaseName, Envelope envelope)
+        {
+            using (var tx = _environment.BeginTransaction())
+            {
+                var db = _databaseCache[databaseName];
+
+                tx.Delete(db, envelope.Identity());
+
+                tx.Commit();
+            }
+        }
+
+        public void Move(string from, string to, Envelope envelope)
         {
             using (var tx = _environment.BeginTransaction())
             {
                 var fromDb = _databaseCache[from];
                 var toDb = _databaseCache[to];
 
-                tx.Delete(fromDb, persistable.Identity());
-                tx.Put(toDb, persistable.Identity(), persistable.Body());
+                tx.Delete(fromDb, envelope.Identity());
+                tx.Put(toDb, envelope.Identity(), envelope.Serialize());
+
+                tx.Commit();
             }
+        }
+
+        public Envelope Load(string name, MessageId id)
+        {
+            using (var tx = _environment.BeginTransaction())
+            {
+                var db = _databaseCache[name];
+
+                // TODO -- get this inside of MessageId itself
+
+                return tx.Get(db, id.MessageIdentifier.ToByteArray()).ToEnvelope();
+            }
+        }
+
+        public void ReadAll(string name, Action<Envelope> callback)
+        {
+            using (var tx = _environment.BeginTransaction(TransactionBeginFlags.ReadOnly))
+            {
+                var db = _databaseCache[name];
+                using (var cursor = tx.CreateCursor(db))
+                    while (cursor.MoveNext())
+                    {
+                        var current = cursor.Current;
+                        var envelope = current.Value.ToEnvelope();
+                        callback(envelope);
+                    }
+            }
+        }
+
+        public IList<Envelope> LoadAll(string name)
+        {
+            var list = new List<Envelope>();
+
+            ReadAll(name, e => list.Add(e));
+
+            return list;
         }
     }
 
-    // TODO -- this'll eventually go on Envelope itself
-    public interface IPersistable
-    {
-        byte[] Identity();
-        byte[] Body();
-    }
 }

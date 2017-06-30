@@ -40,7 +40,7 @@ namespace Jasper.Bus.Runtime
             }
         }
 
-
+        public byte[] Identity() => Id.MessageIdentifier.ToByteArray();
 
 
         public int Attempts
