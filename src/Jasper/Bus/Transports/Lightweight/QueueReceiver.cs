@@ -44,7 +44,4 @@ namespace Jasper.Bus.Transports.Lightweight
             _block.Complete();
         }
     }
-
-
-
 }

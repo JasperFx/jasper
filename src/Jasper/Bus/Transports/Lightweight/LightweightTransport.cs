@@ -21,8 +21,9 @@ namespace Jasper.Bus.Transports.Lightweight
         private readonly IBusLogger _logger;
         private readonly SendingAgent _sender;
         private readonly Uri _replyUri;
-        private readonly Dictionary<int, PortListener> _listeners = new Dictionary<int, PortListener>();
+        private readonly IList<ListeningAgent> _listeners = new List<ListeningAgent>();
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+        private LightweightQueues _queues;
 
         public LightweightTransport(BusSettings settings, IInMemoryQueue inmemory, IBusLogger logger)
         {
@@ -37,13 +38,15 @@ namespace Jasper.Bus.Transports.Lightweight
         public void Dispose()
         {
             _cancellation.Cancel();
-
+            _queues.Dispose();
             _sender.Dispose();
 
-            foreach (var listener in _listeners.Values)
+            foreach (var listener in _listeners)
             {
                 listener.Dispose();
             }
+
+            _listeners.Clear();
         }
 
         public string Protocol { get; } = "jasper";
@@ -54,23 +57,7 @@ namespace Jasper.Bus.Transports.Lightweight
             envelope.Destination = destination;
             envelope.ReplyUri = _replyUri;
 
-
-            var messagePayload = new Envelope
-            {
-                Id = MessageId.GenerateRandom(),
-                Data = envelope.Data,
-                Headers = envelope.Headers,
-                SentAt = DateTime.UtcNow,
-                Destination = destination,
-
-                // TODO -- this is awful. Let's get this one optimized ASAP
-                Queue = envelope.Destination.Segments.Last(),
-            };
-
-            //TODO Maybe expose something to modify transport specific payloads?
-            messagePayload.TranslateHeaders();
-
-            _sender.Enqueue(messagePayload);
+            _sender.Enqueue(envelope);
 
             return Task.CompletedTask;
         }
@@ -89,20 +76,17 @@ namespace Jasper.Bus.Transports.Lightweight
             var nodes = channels.Where(x => x.Uri.Scheme == Protocol).Distinct().ToArray();
             if (!nodes.Any()) return;
 
-            var groups = nodes.Where(x => x.Incoming).GroupBy(x => x.Uri.Port);
-            foreach (var @group in groups)
-            {
-                var listener = new PortListener(@group.Key, _inmemory, _logger);
-                _listeners.Add(@group.Key, listener);
+            var ports = nodes.Select(x => x.Uri.Port).Distinct().ToArray();
 
-                foreach (var node in @group)
-                {
-                    var queueName = node.Uri.Segments.Last();
-                    listener.AddQueue(queueName, pipeline, channels, node);
-                }
+
+
+            _queues = new LightweightQueues(_logger, _inmemory, pipeline, channels);
+            foreach (var node in nodes)
+            {
+                _queues.AddQueue(node);
             }
 
-            foreach (var listener in _listeners.Values)
+            foreach (var listener in _listeners)
             {
                 listener.Start();
             }

@@ -11,6 +11,8 @@ namespace Jasper.LightningDb
 {
     public class LocalPersistence : IDisposable
     {
+        // TODO -- need to validate db names actually exist
+
         public const string Outgoing = "outgoing";
         public const string Delayed = "delayed";
 
