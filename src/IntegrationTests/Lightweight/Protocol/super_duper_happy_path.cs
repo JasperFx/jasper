@@ -14,13 +14,6 @@ namespace IntegrationTests.Lightweight.Protocol
             allTheMessagesWereReceived();
         }
 
-        [Fact]
-        public async Task acknowledgements_were_received()
-        {
-            await afterSending();
-
-            theReceiver.WasAcknowledged.ShouldBe(true);
-        }
 
         [Fact]
         public async Task should_call_through_succeeded()

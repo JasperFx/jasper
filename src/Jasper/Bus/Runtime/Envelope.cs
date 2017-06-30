@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Jasper.Bus.Queues;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime
@@ -136,6 +137,21 @@ namespace Jasper.Bus.Runtime
                 Headers = Headers.Clone()
             };
         }
+
+
+        private MessageId _id;
+
+        public MessageId Id
+        {
+            get => _id ?? (_id = MessageId.GenerateRandom());
+            set => _id = value;
+        }
+
+        public string Queue { get; set; }
+        public DateTime SentAt { get; set; } = DateTime.UtcNow;
+
+        [Obsolete("This is purely for backwards compatibility in wire format")]
+        public string SubQueue { get; set; }
 
         protected bool Equals(Envelope other)
         {
