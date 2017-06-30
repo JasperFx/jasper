@@ -78,7 +78,7 @@ namespace Jasper.Testing.Bus.Queues.Net.Protocol.V1
 
         private void runLengthTest(int differenceFromActualLength)
         {
-            var message = new OutgoingMessage
+            var message = new Envelope
             {
                 Id = MessageId.GenerateRandom(),
                 Data = System.Text.Encoding.UTF8.GetBytes("hello"),
@@ -121,7 +121,7 @@ namespace Jasper.Testing.Bus.Queues.Net.Protocol.V1
         [Fact]
         public void sending_to_a_queue_that_doesnt_exist()
         {
-            var message = new OutgoingMessage
+            var message = new Envelope
             {
                 Id = MessageId.GenerateRandom(),
                 Data = System.Text.Encoding.UTF8.GetBytes("hello"),

@@ -10,16 +10,17 @@ using Jasper.Bus.Queues.Net.Protocol;
 using Jasper.Bus.Queues.Net.Protocol.V1;
 using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues.Net
 {
     public class OutgoingMessageBatch : IDisposable
     {
         // TODO -- get rid of the ctor arg for the TcpClient
-        public OutgoingMessageBatch(Uri destination, IEnumerable<OutgoingMessage> messages, TcpClient client)
+        public OutgoingMessageBatch(Uri destination, IEnumerable<Envelope> messages, TcpClient client)
         {
             Destination = destination;
-            var messagesList = new List<OutgoingMessage>();
+            var messagesList = new List<Envelope>();
             messagesList.AddRange(messages);
             Messages = messagesList;
             Client = client;
@@ -30,7 +31,7 @@ namespace Jasper.Bus.Queues.Net
         public Stream Stream => Client.GetStream();
 
         public TcpClient Client { get; set; }
-        public IList<OutgoingMessage> Messages { get; }
+        public IList<Envelope> Messages { get; }
 
         public Task ConnectAsync()
         {

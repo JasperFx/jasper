@@ -20,7 +20,7 @@ namespace Jasper.LightningDb.Transport
         private readonly IBusLogger _logger;
         private readonly SendingAgent _sender;
         private Uri _replyUri;
-        private readonly Dictionary<int, PersistentPortListener> _listeners 
+        private readonly Dictionary<int, PersistentPortListener> _listeners
             = new Dictionary<int, PersistentPortListener>();
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
@@ -77,14 +77,14 @@ namespace Jasper.LightningDb.Transport
             envelope.ReplyUri = _replyUri;
 
 
-            var messagePayload = new OutgoingMessage
+            var messagePayload = new Envelope
             {
                 Id = MessageId.GenerateRandom(),
                 Data = envelope.Data,
                 Headers = envelope.Headers,
                 SentAt = DateTime.UtcNow,
                 Destination = destination,
-                
+
 
                 // TODO -- this is awful. Let's get this one optimized ASAP
                 Queue = envelope.Destination.Segments.Last(),

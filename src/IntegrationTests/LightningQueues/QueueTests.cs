@@ -87,7 +87,7 @@ namespace Jasper.Testing.Bus.Queues
         {
             using (var queue = ObjectMother.NewQueue(_testDirectory.CreateNewDirectoryForTest()))
             {
-                var message = ObjectMother.NewMessage<OutgoingMessage>("test");
+                var message = ObjectMother.NewMessage<Envelope>("test");
                 message.Destination = new Uri($"lq.tcp://localhost:{queue.Endpoint.Port}");
                 queue.Send(message);
                 var received = await queue.Receive("test").FirstAsyncWithTimeout();
@@ -102,7 +102,7 @@ namespace Jasper.Testing.Bus.Queues
         {
             using (var queue = ObjectMother.NewQueue(_testDirectory.CreateNewDirectoryForTest()))
             {
-                var message = ObjectMother.NewMessage<OutgoingMessage>("test");
+                var message = ObjectMother.NewMessage<Envelope>("test");
                 message.MaxAttempts = 1;
                 message.Destination = new Uri($"lq.tcp://boom:{queue.Endpoint.Port + 1}");
                 queue.Send(message);

@@ -118,7 +118,7 @@ namespace Jasper.Testing.Bus.Queues.Net.Tcp
         [Fact]
         public async Task receiving_a_valid_message()
         {
-            var expected = ObjectMother.NewMessage<OutgoingMessage>("test");
+            var expected = ObjectMother.NewMessage<Envelope>("test");
             expected.Data = Encoding.UTF8.GetBytes("hello");
             expected.Destination = new Uri($"lq.tcp://localhost:{_endpoint.Port}");
             var tx = _store.BeginTransaction();

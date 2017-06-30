@@ -72,7 +72,7 @@ namespace Jasper.Bus.Transports.LightningQueues
         {
             var uri = new LightningUri(envelope.Destination);
 
-            var message = new OutgoingMessage
+            var message = new Envelope
             {
                 Id = MessageId.GenerateRandom(),
                 Data = envelope.Data,

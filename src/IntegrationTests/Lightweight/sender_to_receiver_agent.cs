@@ -28,9 +28,9 @@ namespace IntegrationTests.Lightweight
             theSender.Start(new StubSenderCallback());
         }
 
-        private OutgoingMessage outgoingMessage()
+        private Envelope outgoingMessage()
         {
-            return new OutgoingMessage
+            return new Envelope
             {
                 Id = MessageId.GenerateRandom(),
                 Destination = destination,

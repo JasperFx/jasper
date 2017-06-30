@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues.Net.Tcp
 {
@@ -15,8 +16,8 @@ namespace Jasper.Bus.Queues.Net.Tcp
         private readonly ILogger _logger;
         private readonly ISendingProtocol _protocol;
         private readonly ISubject<OutgoingMessageFailure> _failedToSend;
-        private IObservable<OutgoingMessage> _outgoingStream;
-        private IObservable<OutgoingMessage> _successfullySent;
+        private IObservable<Envelope> _outgoingStream;
+        private IObservable<Envelope> _successfullySent;
         private IDisposable _sendingSubscription;
 
         public Sender(ILogger logger, ISendingProtocol protocol)
@@ -28,7 +29,7 @@ namespace Jasper.Bus.Queues.Net.Tcp
 
         public IObservable<OutgoingMessageFailure> FailedToSend() => _failedToSend;
 
-        public IObservable<OutgoingMessage> StartSending(IObservable<OutgoingMessage> outgoingStream)
+        public IObservable<Envelope> StartSending(IObservable<Envelope> outgoingStream)
         {
             _outgoingStream = outgoingStream;
             _successfullySent = SuccessfullySentMessages().Publish().RefCount();
@@ -36,11 +37,11 @@ namespace Jasper.Bus.Queues.Net.Tcp
             return _successfullySent;
         }
 
-        public IObservable<OutgoingMessage> SuccessfullySentMessages()
+        public IObservable<Envelope> SuccessfullySentMessages()
         {
             return ConnectedOutgoingMessageBatch()
                 .Using(x => _protocol.Send(x).Timeout(TimeSpan.FromSeconds(5))
-                .Catch<OutgoingMessage, Exception>(ex => HandleException<OutgoingMessage>(ex, x)));
+                .Catch<Envelope, Exception>(ex => HandleException<Envelope>(ex, x)));
         }
 
         public IObservable<OutgoingMessageBatch> ConnectedOutgoingMessageBatch()
@@ -66,13 +67,13 @@ namespace Jasper.Bus.Queues.Net.Tcp
                 });
         }
 
-        public IObservable<IList<OutgoingMessage>> BufferedAllOutgoingMessages()
+        public IObservable<IList<Envelope>> BufferedAllOutgoingMessages()
         {
             return AllOutgoingMessages().Buffer(TimeSpan.FromMilliseconds(200))
                 .Where(x => x.Count > 0);
         }
 
-        public IObservable<OutgoingMessage> AllOutgoingMessages()
+        public IObservable<Envelope> AllOutgoingMessages()
         {
             return _outgoingStream;
         }

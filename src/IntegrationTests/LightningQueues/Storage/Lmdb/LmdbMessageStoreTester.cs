@@ -42,7 +42,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         {
             _store.CreateQueue("test");
             var message = ObjectMother.NewMessage<Envelope>("test");
-            var outgoingMessage = ObjectMother.NewMessage<OutgoingMessage>();
+            var outgoingMessage = ObjectMother.NewMessage<Envelope>();
             outgoingMessage.Destination = new Uri("lq.tcp://localhost:3030");
             outgoingMessage.SentAt = DateTime.Now;
             var tx = _store.BeginTransaction();
@@ -61,7 +61,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         {
             _store.CreateQueue("test");
             var message = ObjectMother.NewMessage<Envelope>("test");
-            var outgoingMessage = ObjectMother.NewMessage<OutgoingMessage>();
+            var outgoingMessage = ObjectMother.NewMessage<Envelope>();
             outgoingMessage.Destination = new Uri("lq.tcp://localhost:3030");
             outgoingMessage.SentAt = DateTime.Now;
             var tx = _store.BeginTransaction();
@@ -81,7 +81,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         {
             _store.CreateQueue("test");
             var message = ObjectMother.NewMessage<Envelope>("test");
-            var outgoingMessage = ObjectMother.NewMessage<OutgoingMessage>();
+            var outgoingMessage = ObjectMother.NewMessage<Envelope>();
             outgoingMessage.Destination = new Uri("lq.tcp://localhost:3030");
             outgoingMessage.SentAt = DateTime.Now;
             var tx = _store.BeginTransaction();

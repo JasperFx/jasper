@@ -55,7 +55,7 @@ namespace Jasper.Bus.Transports.Lightweight
             envelope.ReplyUri = _replyUri;
 
 
-            var messagePayload = new OutgoingMessage
+            var messagePayload = new Envelope
             {
                 Id = MessageId.GenerateRandom(),
                 Data = envelope.Data,

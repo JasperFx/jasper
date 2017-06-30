@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Queues;
+using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace Jasper.Testing.Bus.Queues
         [Fact(Skip = "Fails only on linux... Will have to investigate later")]
         public async Task can_send_and_receive_after_queue_not_found()
         {
-            var message = ObjectMother.NewMessage<OutgoingMessage>("receiver2");
+            var message = ObjectMother.NewMessage<Envelope>("receiver2");
             message.Destination = new Uri($"lq.tcp://localhost:{_receiver.Endpoint.Port}");
             _sender.Send(message);
             message.Queue = "receiver";

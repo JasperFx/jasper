@@ -89,7 +89,7 @@ namespace Jasper.Bus.Transports.LightningQueues
 
         public void Send(Envelope envelope, Uri destination, string subQueue)
         {
-            var messagePayload = new OutgoingMessage
+            var messagePayload = new Envelope
             {
                 Id = MessageId.GenerateRandom(),
                 Data = envelope.Data,

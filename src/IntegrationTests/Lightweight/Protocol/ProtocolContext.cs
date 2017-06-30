@@ -29,7 +29,7 @@ namespace IntegrationTests.Lightweight.Protocol
 
 
 
-            var messages = new OutgoingMessage[]
+            var messages = new Envelope[]
             {
                 outgoingMessage(),
                 outgoingMessage(),
@@ -44,9 +44,9 @@ namespace IntegrationTests.Lightweight.Protocol
         }
 
 
-        private OutgoingMessage outgoingMessage()
+        private Envelope outgoingMessage()
         {
-            return new OutgoingMessage
+            return new Envelope
             {
                 Id = MessageId.GenerateRandom(),
                 Destination = destination,

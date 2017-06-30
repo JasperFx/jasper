@@ -6,7 +6,7 @@ namespace Jasper.Bus.Queues
     public interface IQueueContext
     {
         void CommitChanges();
-        void Send(OutgoingMessage message);
+        void Send(Envelope message);
         void ReceiveLater(TimeSpan timeSpan);
         void ReceiveLater(DateTimeOffset time);
         void SuccessfullyReceived();

@@ -41,7 +41,7 @@ namespace Jasper.Bus.Queues
             }
         }
 
-        public void Send(OutgoingMessage message)
+        public void Send(Envelope message)
         {
             _queueActions.Add(new SendAction(this, message));
         }
@@ -80,9 +80,9 @@ namespace Jasper.Bus.Queues
         private class SendAction : IQueueAction
         {
             private readonly QueueContext _context;
-            private readonly OutgoingMessage _message;
+            private readonly Envelope _message;
 
-            public SendAction(QueueContext context, OutgoingMessage message)
+            public SendAction(QueueContext context, Envelope message)
             {
                 _context = context;
                 _message = message;

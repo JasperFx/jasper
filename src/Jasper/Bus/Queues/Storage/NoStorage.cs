@@ -53,9 +53,9 @@ namespace Jasper.Bus.Queues.Storage
             return Observable.Empty<Envelope>();
         }
 
-        public IObservable<OutgoingMessage> PersistedOutgoingMessages()
+        public IObservable<Envelope> PersistedOutgoingMessages()
         {
-            return Observable.Empty<OutgoingMessage>();
+            return Observable.Empty<Envelope>();
         }
 
         public void MoveToQueue(ITransaction transaction, string queueName, Envelope message)
@@ -67,20 +67,20 @@ namespace Jasper.Bus.Queues.Storage
         {
         }
 
-        public void StoreOutgoing(ITransaction tx, OutgoingMessage message)
+        public void StoreOutgoing(ITransaction tx, Envelope message)
         {
         }
 
-        public void StoreOutgoing(ITransaction tx, OutgoingMessage[] message)
+        public void StoreOutgoing(ITransaction tx, Envelope[] message)
         {
         }
 
-        public int FailedToSend(OutgoingMessage message)
+        public int FailedToSend(Envelope message)
         {
             return message.SentAttempts;
         }
 
-        public void SuccessfullySent(params OutgoingMessage[] messages)
+        public void SuccessfullySent(params Envelope[] messages)
         {
         }
 

@@ -10,12 +10,12 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
 {
     public class serialization_and_deserialization_of_single_message
     {
-        private OutgoingMessage outgoing;
+        private Envelope outgoing;
         private Envelope incoming;
 
         public serialization_and_deserialization_of_single_message()
         {
-            outgoing = new OutgoingMessage
+            outgoing = new Envelope
             {
                 SentAt = DateTime.Today.ToUniversalTime(),
                 Id = MessageId.GenerateRandom(),

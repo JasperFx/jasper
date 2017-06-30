@@ -90,7 +90,7 @@ namespace Jasper.Bus.Queues.Lmdb
             return new LmdbTransaction(_environment);
         }
 
-        public int FailedToSend(OutgoingMessage message)
+        public int FailedToSend(Envelope message)
         {
             using (var tx = _environment.BeginTransaction())
             {
@@ -100,7 +100,7 @@ namespace Jasper.Bus.Queues.Lmdb
             }
         }
 
-        public void SuccessfullySent(params OutgoingMessage[] messages)
+        public void SuccessfullySent(params Envelope[] messages)
         {
             using (var tx = _environment.BeginTransaction())
             {
@@ -150,7 +150,7 @@ namespace Jasper.Bus.Queues.Lmdb
             }
         }
 
-        private void SuccessfullySent(LightningTransaction tx, params OutgoingMessage[] messages)
+        private void SuccessfullySent(LightningTransaction tx, params Envelope[] messages)
         {
             RemoveMessageFromStorage(tx, OutgoingQueue, messages);
         }
@@ -182,9 +182,9 @@ namespace Jasper.Bus.Queues.Lmdb
             });
         }
 
-        public IObservable<OutgoingMessage> PersistedOutgoingMessages()
+        public IObservable<Envelope> PersistedOutgoingMessages()
         {
-            return Observable.Create<OutgoingMessage>(x =>
+            return Observable.Create<Envelope>(x =>
             {
                 try
                 {
@@ -235,13 +235,13 @@ namespace Jasper.Bus.Queues.Lmdb
             }
         }
 
-        public void StoreOutgoing(ITransaction transaction, OutgoingMessage message)
+        public void StoreOutgoing(ITransaction transaction, Envelope message)
         {
             var tx = ((LmdbTransaction) transaction).Transaction;
             StoreOutgoing(tx, message);
         }
 
-        public void StoreOutgoing(ITransaction transaction, OutgoingMessage[] messages)
+        public void StoreOutgoing(ITransaction transaction, Envelope[] messages)
         {
             var tx = ((LmdbTransaction) transaction).Transaction;
             foreach (var message in messages)
@@ -250,13 +250,13 @@ namespace Jasper.Bus.Queues.Lmdb
             }
         }
 
-        private void StoreOutgoing(LightningTransaction tx, OutgoingMessage message)
+        private void StoreOutgoing(LightningTransaction tx, Envelope message)
         {
             var db = OpenDatabase(tx, OutgoingQueue);
             tx.Put(db, message.Id.MessageIdentifier.ToByteArray(), message.SerializeOutgoing());
         }
 
-        private int FailedToSend(LightningTransaction tx, OutgoingMessage message)
+        private int FailedToSend(LightningTransaction tx, Envelope message)
         {
             var db = OpenDatabase(tx, OutgoingQueue);
             var value = tx.Get(db, message.Id.MessageIdentifier.ToByteArray());

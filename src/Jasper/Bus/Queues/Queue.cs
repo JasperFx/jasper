@@ -20,7 +20,7 @@ namespace Jasper.Bus.Queues
         private readonly Receiver _receiver;
         private readonly IMessageStore _messageStore;
         private readonly Subject<Envelope> _receiveSubject;
-        private readonly Subject<OutgoingMessage> _sendSubject;
+        private readonly Subject<Envelope> _sendSubject;
         private readonly IScheduler _scheduler;
         private readonly ILogger _logger;
 
@@ -34,7 +34,7 @@ namespace Jasper.Bus.Queues
             _sender = sender;
             _messageStore = messageStore;
             _receiveSubject = new Subject<Envelope>();
-            _sendSubject = new Subject<OutgoingMessage>();
+            _sendSubject = new Subject<Envelope>();
             _scheduler = scheduler;
             _logger = logger;
         }
@@ -46,7 +46,7 @@ namespace Jasper.Bus.Queues
         public IMessageStore Store => _messageStore;
 
         internal ISubject<Envelope> ReceiveLoop => _receiveSubject;
-        internal ISubject<OutgoingMessage> SendLoop => _sendSubject;
+        internal ISubject<Envelope> SendLoop => _sendSubject;
 
         public void CreateQueue(string queueName)
         {
@@ -100,7 +100,7 @@ namespace Jasper.Bus.Queues
             });
         }
 
-        public void Send(params OutgoingMessage[] messages)
+        public void Send(params Envelope[] messages)
         {
             _logger.DebugFormat("Sending {0} messages", messages.Length);
             var tx = _messageStore.BeginTransaction();
@@ -115,7 +115,7 @@ namespace Jasper.Bus.Queues
             }
         }
 
-        internal void SendImmediate(OutgoingMessage message)
+        internal void SendImmediate(Envelope message)
         {
             _sendSubject.OnNext(message);
         }

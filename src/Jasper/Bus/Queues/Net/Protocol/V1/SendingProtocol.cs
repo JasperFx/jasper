@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.Bus.Queues.Net.Protocol.V1
@@ -21,7 +22,7 @@ namespace Jasper.Bus.Queues.Net.Protocol.V1
             _logger = logger;
         }
 
-        public IObservable<OutgoingMessage> Send(OutgoingMessageBatch batch)
+        public IObservable<Envelope> Send(OutgoingMessageBatch batch)
         {
             return from outgoing in Observable.Return(batch)
                    let messageBytes = outgoing.Messages.Serialize()

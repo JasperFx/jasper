@@ -2,6 +2,7 @@
 using System.Text;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Serialization;
+using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -12,7 +13,7 @@ namespace Jasper.Testing.Bus.Queues.Net.Protocol
         [Fact]
         public void can_serialize_and_deserialize()
         {
-            var expected = new OutgoingMessage
+            var expected = new Envelope
             {
                 Data = Encoding.UTF8.GetBytes("hello"),
                 Id = MessageId.GenerateRandom(),

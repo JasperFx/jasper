@@ -34,7 +34,7 @@ namespace Jasper.Bus.Transports.LightningQueues
         }
 
         [Obsolete("ridiculous, get rid of this")]
-        public static void TranslateHeaders(this OutgoingMessage messagePayload)
+        public static void TranslateHeaders(this Envelope messagePayload)
         {
             string headerValue;
             messagePayload.Headers.TryGetValue(Envelope.MaxAttemptsHeader, out headerValue);

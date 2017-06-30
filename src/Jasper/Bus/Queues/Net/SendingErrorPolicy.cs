@@ -3,6 +3,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues.Net
 {
@@ -32,9 +33,9 @@ namespace Jasper.Bus.Queues.Net
 
         }
 
-        public IObservable<OutgoingMessage> RetryStream { get; }
+        public IObservable<Envelope> RetryStream { get; }
 
-        public bool ShouldRetry(OutgoingMessage message)
+        public bool ShouldRetry(Envelope message)
         {
             var totalAttempts = message.MaxAttempts ?? 100;
             _logger.DebugFormat("Failed to send should retry with AttemptCount: {0}, TotalAttempts {1}", message.SentAttempts, totalAttempts);
@@ -45,7 +46,7 @@ namespace Jasper.Bus.Queues.Net
                 (!message.DeliverBy.HasValue || DateTime.Now < message.DeliverBy);
         }
 
-        private void IncrementAttempt(OutgoingMessage message)
+        private void IncrementAttempt(Envelope message)
         {
             try
             {

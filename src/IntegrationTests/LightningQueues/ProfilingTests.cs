@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Runtime;
 using Xunit;
 
 namespace Jasper.Testing.Bus.Queues
@@ -48,11 +49,11 @@ namespace Jasper.Testing.Bus.Queues
 
             //Console.WriteLine("Get a baseline snapshot for comparison and press enter when done.");
             //Console.ReadLine();
-            var messages = new List<OutgoingMessage>();
+            var messages = new List<Envelope>();
             var destination = new Uri($"lq.tcp://localhost:{_receiver.Endpoint.Port}");
             for (var i = 0; i < numberOfMessages; ++i)
             {
-                var message = ObjectMother.NewMessage<OutgoingMessage>("test");
+                var message = ObjectMother.NewMessage<Envelope>("test");
                 message.Destination = destination;
                 messages.Add(message);
             }

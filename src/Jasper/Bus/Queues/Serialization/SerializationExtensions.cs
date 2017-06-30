@@ -31,12 +31,12 @@ namespace Jasper.Bus.Queues.Serialization
             }
         }
 
-        public static OutgoingMessage ToOutgoingMessage(this byte[] buffer)
+        public static Envelope ToOutgoingMessage(this byte[] buffer)
         {
             using (var ms = new MemoryStream(buffer))
             using (var br = new BinaryReader(ms))
             {
-                var msg = ReadSingleMessage<OutgoingMessage>(br);
+                var msg = ReadSingleMessage<Envelope>(br);
                 msg.Destination = new Uri(br.ReadString());
                 var hasDeliverBy = br.ReadBoolean();
                 if (hasDeliverBy)
@@ -79,7 +79,7 @@ namespace Jasper.Bus.Queues.Serialization
             return msg;
         }
 
-        public static byte[] Serialize(this IList<OutgoingMessage> messages)
+        public static byte[] Serialize(this IList<Envelope> messages)
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
@@ -105,7 +105,7 @@ namespace Jasper.Bus.Queues.Serialization
             }
         }
 
-        public static byte[] SerializeOutgoing(this OutgoingMessage message)
+        public static byte[] SerializeOutgoing(this Envelope message)
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))

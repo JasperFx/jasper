@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Net;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Transports.Lightweight
 {
     public class SendingAgent : IDisposable
     {
         private ISenderCallback _callback;
-        private BatchingBlock<OutgoingMessage> _outgoing;
+        private BatchingBlock<Envelope> _outgoing;
         private ActionBlock<OutgoingMessageBatch> _sender;
-        private ActionBlock<OutgoingMessage[]> _grouper;
+        private ActionBlock<Envelope[]> _grouper;
 
         public void Start(ISenderCallback callback)
         {
             _callback = callback;
-            _grouper = new ActionBlock<OutgoingMessage[]>(_ => groupMessages(_));
-            _outgoing = new BatchingBlock<OutgoingMessage>(200, _grouper);
+            _grouper = new ActionBlock<Envelope[]>(_ => groupMessages(_));
+            _outgoing = new BatchingBlock<Envelope>(200, _grouper);
 
             _sender = new ActionBlock<OutgoingMessageBatch>(sendBatch, new ExecutionDataflowBlockOptions
             {
@@ -30,7 +31,7 @@ namespace Jasper.Bus.Transports.Lightweight
         }
 
 
-        private void groupMessages(OutgoingMessage[] messages)
+        private void groupMessages(Envelope[] messages)
         {
             var groups = messages.GroupBy(x => x.Destination);
             foreach (var @group in groups)
@@ -76,7 +77,7 @@ namespace Jasper.Bus.Transports.Lightweight
                 : client.ConnectAsync(destination.Host, destination.Port);
         }
 
-        public bool Enqueue(OutgoingMessage message)
+        public bool Enqueue(Envelope message)
         {
             if (_outgoing == null) throw new InvalidOperationException("This agent has not been started");
 

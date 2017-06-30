@@ -39,7 +39,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void max_attempts_is_reached()
         {
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             message.MaxAttempts = 3;
             message.SentAttempts = 3;
             ShouldBeBooleanExtensions.ShouldBeFalse(_errorPolicy.ShouldRetry(message));
@@ -48,7 +48,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void max_attempts_is_not_reached()
         {
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             message.MaxAttempts = 20;
             message.SentAttempts = 5;
             ShouldBeBooleanExtensions.ShouldBeTrue(_errorPolicy.ShouldRetry(message));
@@ -57,7 +57,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void deliver_by_has_expired()
         {
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             message.DeliverBy = DateTime.Now.Subtract(TimeSpan.FromSeconds(1));
             message.SentAttempts = 5;
             ShouldBeBooleanExtensions.ShouldBeFalse(_errorPolicy.ShouldRetry(message));
@@ -66,7 +66,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void deliver_by_has_not_expired()
         {
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             message.DeliverBy = DateTime.Now.Add(TimeSpan.FromSeconds(1));
             message.SentAttempts = 5;
             ShouldBeBooleanExtensions.ShouldBeTrue(_errorPolicy.ShouldRetry(message));
@@ -75,7 +75,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void has_neither_deliverby_nor_max_attempts()
         {
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             message.SentAttempts = 5;
             ShouldBeBooleanExtensions.ShouldBeTrue(_errorPolicy.ShouldRetry(message));
         }
@@ -84,7 +84,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         public void message_is_observed_after_time()
         {
             Envelope observed = null;
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             message.Destination = new Uri("lq.tcp://localhost:5150/blah");
             message.MaxAttempts = 2;
             var tx = _store.BeginTransaction();
@@ -104,7 +104,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         public void message_removed_from_storage_after_max()
         {
             Envelope observed = null;
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             message.Destination = new Uri("lq.tcp://localhost:5150/blah");
             message.MaxAttempts = 1;
             var tx = _store.BeginTransaction();
@@ -125,7 +125,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         public void time_increases_with_each_failure()
         {
             Envelope observed = null;
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             message.Destination = new Uri("lq.tcp://localhost:5150/blah");
             message.MaxAttempts = 5;
             var tx = _store.BeginTransaction();
@@ -151,7 +151,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void errors_in_storage_dont_end_stream()
         {
-            var message = ObjectMother.NewMessage<OutgoingMessage>();
+            var message = ObjectMother.NewMessage<Envelope>();
             var store = Substitute.For<IMessageStore>();
             store.FailedToSend(Arg.Is(message)).Throws(new Exception("bam!"));
             var errorPolicy = new SendingErrorPolicy(new RecordingLogger(), store, _subject, _scheduler);

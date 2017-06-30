@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -23,9 +24,9 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         public async Task happy_path_messages_sent()
         {
             var destination = new Uri("lq.tcp://localhost:5050");
-            var message = ObjectMother.NewMessage<OutgoingMessage>("test");
+            var message = ObjectMother.NewMessage<Envelope>("test");
             message.Destination = destination;
-            var message2 = ObjectMother.NewMessage<OutgoingMessage>("test");
+            var message2 = ObjectMother.NewMessage<Envelope>("test");
             message2.Destination = destination;
             message2.DeliverBy = DateTime.Now.AddSeconds(5);
             message2.MaxAttempts = 3;
@@ -50,7 +51,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         public void failed_to_send_with_max_attempts()
         {
             var destination = new Uri("lq.tcp://localhost:5050");
-            var message = ObjectMother.NewMessage<OutgoingMessage>("test");
+            var message = ObjectMother.NewMessage<Envelope>("test");
             message.MaxAttempts = 1;
             message.SentAttempts = 1;
             message.Destination = destination;
@@ -72,7 +73,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         public void failed_to_send_with_deliver_by()
         {
             var destination = new Uri("lq.tcp://localhost:5050");
-            var message = ObjectMother.NewMessage<OutgoingMessage>("test");
+            var message = ObjectMother.NewMessage<Envelope>("test");
             message.DeliverBy = DateTime.Now;
             message.Destination = destination;
             var tx = _store.BeginTransaction();

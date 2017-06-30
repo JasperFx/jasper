@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 using Xunit;
 
 namespace Jasper.Testing.Bus.Queues.Storage
@@ -28,7 +29,7 @@ namespace Jasper.Testing.Bus.Queues.Storage
             });
 
             var destination = new Uri($"lq.tcp://localhost:{_receiver.Endpoint.Port}");
-            var message = ObjectMother.NewMessage<OutgoingMessage>("test");
+            var message = ObjectMother.NewMessage<Envelope>("test");
             message.Destination = destination;
             _sender.Send(message);
             await taskCompletionSource.Task;
