@@ -63,7 +63,7 @@ namespace Jasper.Bus.Queues.Net.Tcp
                 .SelectMany(x =>
                 {
                     return x.GroupBy(grouped => grouped.Destination)
-                        .Select(grouped => new OutgoingMessageBatch(grouped.Key, grouped, new TcpClient()));
+                        .Select(grouped => new OutgoingMessageBatch(grouped.Key, grouped));
                 });
         }
 

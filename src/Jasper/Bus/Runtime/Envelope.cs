@@ -141,6 +141,7 @@ namespace Jasper.Bus.Runtime
 
 
         private MessageId _id;
+        private string _queue;
 
         public MessageId Id
         {
@@ -148,7 +149,12 @@ namespace Jasper.Bus.Runtime
             set => _id = value;
         }
 
-        public string Queue { get; set; }
+        public string Queue
+        {
+            get => _queue ?? Destination.QueueName();
+            set => _queue = value;
+        }
+
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
         [Obsolete("This is purely for backwards compatibility in wire format")]

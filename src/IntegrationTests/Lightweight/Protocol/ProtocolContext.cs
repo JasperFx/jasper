@@ -39,7 +39,7 @@ namespace IntegrationTests.Lightweight.Protocol
                 outgoingMessage()
             };
 
-            theMessageBatch = new OutgoingMessageBatch(destination, messages, new TcpClient());
+            theMessageBatch = new OutgoingMessageBatch(destination, messages);
 
         }
 

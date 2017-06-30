@@ -17,13 +17,13 @@ namespace Jasper.Bus.Queues.Net
     public class OutgoingMessageBatch : IDisposable
     {
         // TODO -- get rid of the ctor arg for the TcpClient
-        public OutgoingMessageBatch(Uri destination, IEnumerable<Envelope> messages, TcpClient client)
+        public OutgoingMessageBatch(Uri destination, IEnumerable<Envelope> messages)
         {
             Destination = destination;
             var messagesList = new List<Envelope>();
             messagesList.AddRange(messages);
             Messages = messagesList;
-            Client = client;
+            Client = new TcpClient();
         }
 
         public Uri Destination { get; set; }

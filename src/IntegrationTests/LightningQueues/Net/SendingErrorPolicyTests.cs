@@ -91,7 +91,7 @@ namespace Jasper.Testing.Bus.Queues.Net
             _store.StoreOutgoing(tx, message);
             tx.Commit();
             var failure = new OutgoingMessageFailure();
-            failure.Batch = new OutgoingMessageBatch(message.Destination, new []{message}, new TcpClient());
+            failure.Batch = new OutgoingMessageBatch(message.Destination, new []{message});
             using (_errorPolicy.RetryStream.Subscribe(x => { observed = x; }))
             {
                 _subject.OnNext(failure);
@@ -111,7 +111,7 @@ namespace Jasper.Testing.Bus.Queues.Net
             _store.StoreOutgoing(tx, message);
             tx.Commit();
             var failure = new OutgoingMessageFailure();
-            failure.Batch = new OutgoingMessageBatch(message.Destination, new[] {message}, new TcpClient());
+            failure.Batch = new OutgoingMessageBatch(message.Destination, new[] {message});
             using (_errorPolicy.RetryStream.Subscribe(x => { observed = x; }))
             {
                 _subject.OnNext(failure);
@@ -132,7 +132,7 @@ namespace Jasper.Testing.Bus.Queues.Net
             _store.StoreOutgoing(tx, message);
             tx.Commit();
             var failure = new OutgoingMessageFailure();
-            failure.Batch = new OutgoingMessageBatch(message.Destination, new[] {message}, new TcpClient());
+            failure.Batch = new OutgoingMessageBatch(message.Destination, new[] {message});
             using (_errorPolicy.RetryStream.Subscribe(x => { observed = x; }))
             {
                 _subject.OnNext(failure);
@@ -157,7 +157,7 @@ namespace Jasper.Testing.Bus.Queues.Net
             var errorPolicy = new SendingErrorPolicy(new RecordingLogger(), store, _subject, _scheduler);
             bool ended = false;
             var failure = new OutgoingMessageFailure();
-            failure.Batch = new OutgoingMessageBatch(message.Destination, new[] {message}, new TcpClient());
+            failure.Batch = new OutgoingMessageBatch(message.Destination, new[] {message});
             using (errorPolicy.RetryStream.Finally(() => ended = true).Subscribe(x => { }))
             {
                 _subject.OnNext(failure);

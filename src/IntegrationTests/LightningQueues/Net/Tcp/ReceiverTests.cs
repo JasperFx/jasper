@@ -130,7 +130,7 @@ namespace Jasper.Testing.Bus.Queues.Net.Tcp
             using (var client = new TcpClient())
             {
                 await client.ConnectAsync(_endpoint.Address, _endpoint.Port);
-                var outgoing = new OutgoingMessageBatch(expected.Destination, messages, client);
+                var outgoing = new OutgoingMessageBatch(expected.Destination, messages);
                 var completionSource = new TaskCompletionSource<bool>();
 
                 using (_sender.Send(outgoing).Subscribe(x =>

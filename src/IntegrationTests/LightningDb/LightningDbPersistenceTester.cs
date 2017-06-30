@@ -2,6 +2,7 @@
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Runtime;
 using Jasper.LightningDb;
 using Jasper.Testing.Bus;
@@ -10,14 +11,14 @@ using Xunit;
 
 namespace IntegrationTests.LightningDb
 {
-    public class LocalPersistenceTester : IDisposable
+    public class LightningDbPersistenceTester : IDisposable
     {
         private static Random random = new Random();
-        private LocalPersistence thePersistence;
+        private LightningDbPersistence thePersistence;
 
-        public LocalPersistenceTester()
+        public LightningDbPersistenceTester()
         {
-            thePersistence = new LocalPersistence(new LightningDbSettings
+            thePersistence = new LightningDbPersistence(new LightningDbSettings
             {
                 QueuePath = AppContext.BaseDirectory.AppendPath("lmdbtest")
             });
@@ -153,6 +154,128 @@ namespace IntegrationTests.LightningDb
 
         }
 
+        [Fact]
+        public void persist_outgoing_batch_sent_attempts()
+        {
+            var envelopes = new Envelope[]
+            {
+                envelope(),  
+                envelope(),  
+                envelope(),  
+                envelope(),  
+                envelope(),  
+                envelope(),  
+                envelope(),  
+            };
 
+            thePersistence.Store(LightningDbPersistence.Outgoing, envelopes);
+
+            envelopes[1].SentAttempts = 3;
+            envelopes[1].Attempts = 1;
+
+            envelopes[4].SentAttempts = 3;
+            envelopes[4].Attempts = 1;
+
+
+            var batch = new OutgoingMessageBatch("memory://one".ToUri(), envelopes );
+
+            thePersistence.PersistBasedOnSentAttempts(batch, 3);
+
+            var loaded = thePersistence.LoadAll(LightningDbPersistence.Outgoing);
+
+            loaded.Count.ShouldBe(5);
+
+            loaded.Any(x => x.CorrelationId == envelopes[0].CorrelationId).ShouldBeTrue();
+            loaded.Any(x => x.CorrelationId == envelopes[1].CorrelationId).ShouldBeFalse();
+            loaded.Any(x => x.CorrelationId == envelopes[2].CorrelationId).ShouldBeTrue();
+            loaded.Any(x => x.CorrelationId == envelopes[3].CorrelationId).ShouldBeTrue();
+            loaded.Any(x => x.CorrelationId == envelopes[4].CorrelationId).ShouldBeFalse();
+            loaded.Any(x => x.CorrelationId == envelopes[5].CorrelationId).ShouldBeTrue();
+            loaded.Any(x => x.CorrelationId == envelopes[5].CorrelationId).ShouldBeTrue();
+        }
+
+        [Fact]
+        public void can_replace_an_envelope()
+        {
+            var original = envelope();
+            var id = original.Id;
+
+            thePersistence.Store("one", original);
+
+            original.SentAttempts = 2;
+
+            thePersistence.Replace("one", original);
+
+            original.Id.ShouldNotBe(id);
+
+            thePersistence.Load("one", original.Id)
+                .SentAttempts.ShouldBe(2);
+        }
+
+        [Fact]
+        public void store_initial()
+        {
+            var envelopes = new Envelope[]
+            {
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+            };
+
+            foreach (var envelope in envelopes)
+            {
+                envelope.Queue = "two";
+            }
+
+            envelopes[1].Queue = "one";
+            envelopes[4].Queue = "one";
+
+
+            thePersistence.StoreInitial(envelopes);
+
+            thePersistence.LoadAll("one").Count.ShouldBe(2);
+            thePersistence.LoadAll("two").Count.ShouldBe(5);
+        }
+
+        [Fact]
+        public void delete_a_mixed_batch_of_envelopes_by_database()
+        {
+            var envelopes = new Envelope[]
+            {
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+            };
+
+            foreach (var envelope in envelopes)
+            {
+                envelope.Queue = "two";
+            }
+
+            envelopes[1].Queue = "one";
+            envelopes[4].Queue = "one";
+
+
+            thePersistence.StoreInitial(envelopes);
+
+            thePersistence.Remove(new Envelope[]
+            {
+                envelopes[0],
+                envelopes[1],
+                envelopes[2],
+            });
+
+            thePersistence.LoadAll("one").Count.ShouldBe(1);
+            thePersistence.LoadAll("two").Count.ShouldBe(3);
+
+        }
     }
 }

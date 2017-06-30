@@ -5,12 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.InMemory;
-using Jasper.Bus.Transports.LightningQueues;
 
 namespace Jasper.Bus.Transports.Lightweight
 {

@@ -3,43 +3,42 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Bus.Queues;
+using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Runtime;
 using LightningDB;
 
 namespace Jasper.LightningDb
 {
-    public class LocalPersistence : IDisposable
+    public class LightningDbPersistence : IDisposable
     {
         // TODO -- need to validate db names actually exist
 
         public const string Outgoing = "outgoing";
         public const string Delayed = "delayed";
 
-        private readonly LightningDbSettings _settings;
         private readonly LightningEnvironment _environment;
 
         private readonly ConcurrentDictionary<string, LightningDatabase> _databaseCache = new ConcurrentDictionary<string, LightningDatabase>();
 
-        public LocalPersistence(LightningDbSettings settings)
+        public LightningDbPersistence(LightningDbSettings settings)
         {
-            _settings = settings;
             _environment = settings.ToEnvironment();
             _environment.Open(EnvironmentOpenFlags.WriteMap | EnvironmentOpenFlags.NoSync);
 
-            openDatabase(Outgoing);
-            openDatabase(Delayed);
+            OpenDatabase(Outgoing);
+            OpenDatabase(Delayed);
         }
 
         public void OpenDatabases(string[] names)
         {
             foreach (var name in names)
             {
-                openDatabase(name);
+                OpenDatabase(name);
             }
         }
 
-        private void openDatabase(string name)
+        public void OpenDatabase(string name)
         {
             using (var tx = _environment.BeginTransaction())
             {
@@ -54,7 +53,7 @@ namespace Jasper.LightningDb
             Dispose(true);
         }
 
-        ~LocalPersistence()
+        ~LightningDbPersistence()
         {
             Dispose(false);
         }
@@ -142,6 +141,21 @@ namespace Jasper.LightningDb
             }
         }
 
+        public void Replace(string databaseName, Envelope envelope)
+        {
+            using (var tx = _environment.BeginTransaction())
+            {
+                var db = _databaseCache[databaseName];
+
+                tx.Delete(db, envelope.Identity());
+                envelope.Id = MessageId.GenerateRandom();
+
+                tx.Put(db, envelope.Identity(), envelope.Serialize());
+
+                tx.Commit();
+            }
+        }
+
         public void Move(string from, string to, Envelope envelope)
         {
             using (var tx = _environment.BeginTransaction())
@@ -191,6 +205,58 @@ namespace Jasper.LightningDb
 
             return list;
         }
+
+
+        public void PersistBasedOnSentAttempts(OutgoingMessageBatch batch, int maxAttempts)
+        {
+            using (var tx = _environment.BeginTransaction())
+            {
+                var db = _databaseCache[Outgoing];
+                foreach (var envelope in batch.Messages.Where(x => x.SentAttempts >= maxAttempts))
+                {
+                    tx.Delete(db, envelope.Identity());
+                }
+
+                foreach (var envelope in batch.Messages.Where(x => x.SentAttempts < maxAttempts))
+                {
+                    tx.Delete(db, envelope.Identity());
+                    envelope.Id = MessageId.GenerateRandom();
+
+                    tx.Put(db, envelope.Identity(), envelope.Serialize());
+                }
+
+                tx.Commit();
+            }
+        }
+
+        public void StoreInitial(Envelope[] messages)
+        {
+            using (var tx = _environment.BeginTransaction())
+            {
+                foreach (var envelope in messages)
+                {
+                    var db = _databaseCache[envelope.Queue];
+                    tx.Put(db, envelope.Identity(), envelope.Serialize());
+                }
+
+                tx.Commit();
+            }
+        }
+
+        public void Remove(Envelope[] messages)
+        {
+            using (var tx = _environment.BeginTransaction())
+            {
+                foreach (var envelope in messages)
+                {
+                    var db = _databaseCache[envelope.Queue];
+                    tx.Delete(db, envelope.Identity());
+                }
+
+                tx.Commit();
+            }
+        }
+
     }
 
 }

@@ -36,7 +36,7 @@ namespace Jasper.Bus.Transports.Lightweight
             var groups = messages.GroupBy(x => x.Destination);
             foreach (var @group in groups)
             {
-                var batch = new OutgoingMessageBatch(@group.Key, group, new TcpClient());
+                var batch = new OutgoingMessageBatch(@group.Key, @group);
                 _sender.Post(batch);
             }
         }
