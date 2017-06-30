@@ -3,11 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Jasper.Bus.Queues.Net.Protocol
+namespace Jasper.Bus.Transports
 {
-    public static class StreamExtensions
+    internal static class StreamExtensions
     {
-        public static async Task<byte[]> ReadBytesAsync(this Stream stream, int length)
+        internal static async Task<byte[]> ReadBytesAsync(this Stream stream, int length)
         {
             byte[] buffer = new byte[length];
             int totalRead = 0;
@@ -21,7 +21,7 @@ namespace Jasper.Bus.Queues.Net.Protocol
             return buffer;
         }
 
-        public static async Task<bool> ReadExpectedBuffer(this Stream stream, byte[] expected)
+        internal static async Task<bool> ReadExpectedBuffer(this Stream stream, byte[] expected)
         {
             try
             {

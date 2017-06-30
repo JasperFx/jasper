@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Jasper.Bus.Queues;
-using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using Shouldly;
 using Xunit;
 
@@ -22,7 +21,7 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
                 Queue = "incoming",
                 SubQueue = "subqueue",
                 Data = new byte[]{1, 5, 6, 11, 2, 3},
-                Destination = "lq.tcp://localhost:2222/outgoing".ToUri(),
+                Destination = "lq.tcp://localhost:2222/incoming".ToUri(),
                 MaxAttempts = 3,
                 SentAttempts = 2,
                 DeliverBy = DateTime.Today.ToUniversalTime()

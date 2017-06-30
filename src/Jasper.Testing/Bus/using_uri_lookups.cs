@@ -92,19 +92,14 @@ namespace Jasper.Testing.Bus
             with(_ =>
             {
                 _.Configuration.AddInMemoryCollection(
-                    new Dictionary<string, string>
-                    {
-                        {"outgoing", "lq.tcp://server1:2200/outgoing"},
-                        {"incoming", "lq.tcp://server2:2300/incoming"}
-                    });
+                    new Dictionary<string, string> {{"outgoing", "jasper://server1:2200/outgoing"}});
 
                 _.SendMessage<Message1>().To("config://outgoing");
                 _.SendMessage<Message1>().To("config://incoming");
             });
 
-            Channels["config://outgoing"].Uri.ShouldBe("lq.tcp://server1:2200/outgoing".ToUri());
-            Channels["config://incoming"].Uri.ShouldBe("lq.tcp://server2:2300/incoming".ToUri());
-            Channels.HasChannel("lq.tcp://server1:2200/outgoing".ToUri()).ShouldBeTrue();
+            Channels["config://outgoing"].Uri.ShouldBe("jasper://server1:2200/outgoing".ToUri());
+            Channels.HasChannel("jasper://server1:2200/outgoing".ToUri()).ShouldBeTrue();
         }
     }
 

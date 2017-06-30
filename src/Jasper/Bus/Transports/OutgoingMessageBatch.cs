@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using Jasper.Bus.Queues.Logging;
-using Jasper.Bus.Queues.Net.Protocol;
-using Jasper.Bus.Queues.Net.Protocol.V1;
-using Jasper.Bus.Queues.Serialization;
-using Jasper.Bus.Queues.Storage;
 using Jasper.Bus.Runtime;
 
-namespace Jasper.Bus.Queues.Net
+namespace Jasper.Bus.Transports
 {
     public class OutgoingMessageBatch : IDisposable
     {
-        // TODO -- get rid of the ctor arg for the TcpClient
         public OutgoingMessageBatch(Uri destination, IEnumerable<Envelope> messages)
         {
             Destination = destination;
@@ -46,9 +39,7 @@ namespace Jasper.Bus.Queues.Net
 
         public void Dispose()
         {
-            using (Client)
-            {
-            }
+            Client?.Dispose();
             Client = null;
         }
 

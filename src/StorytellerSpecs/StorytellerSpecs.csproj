@@ -22,6 +22,7 @@
     <DotNetCliToolReference Include="dotnet-storyteller" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jasper.LightningDb\Jasper.LightningDb.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
   <ItemGroup>

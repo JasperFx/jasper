@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
-using Jasper.Bus.Queues;
+using Jasper.Bus.Transports;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime

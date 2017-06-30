@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using Jasper.Bus.Queues;
-using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using Jasper.LightningDb;
 using Jasper.Testing.Bus;
 using Shouldly;

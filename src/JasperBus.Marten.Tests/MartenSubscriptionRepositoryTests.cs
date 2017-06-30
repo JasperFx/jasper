@@ -6,8 +6,8 @@ using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
-using Jasper.Bus.Transports.LightningQueues;
 using Jasper.Testing.Bus;
+using Jasper.Util;
 using JasperBus.Marten.Tests.Setup;
 using Marten;
 using Xunit;
@@ -20,8 +20,8 @@ namespace JasperBus.Marten.Tests
     public class stores_subscriptions_in_marten : IntegrationContext
     {
         private readonly SubContext _subContext;
-        private readonly Uri _primaryQueueUri = "lq.tcp://localhost:7001/primary".ToUri();
-        private readonly Uri _secondaryQueueUri = "lq.tcp://localhost:7002/secondary".ToUri();
+        private readonly Uri _primaryQueueUri = "jasper://localhost:7001/primary".ToUri();
+        private readonly Uri _secondaryQueueUri = "jasper://localhost:7002/secondary".ToUri();
         private readonly MessageHistory _secondaryHistory;
         private readonly MessageHistory _primaryHistory;
         private readonly Task _subscriptionsSetupTask;
@@ -116,7 +116,6 @@ namespace JasperBus.Marten.Tests
 
             base.Dispose();
             _subContext.Dispose();
-            LightningQueuesTransport.DeleteAllStorage();
         }
     }
 

@@ -1,9 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <Description>LMDB backed persistent store and forward queue</Description>
+    <VersionPrefix>0.3.0-alpha</VersionPrefix>
+    <Authors>Jeremy D. Miller</Authors>
+    <TargetFramework>netstandard1.5</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Jasper.LightningDb</AssemblyName>
+    <PackageId>Jasper.LightningDb</PackageId>
+    <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
+    <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Baseline" Version="1.4.0" />
+    <PackageReference Include="LightningDB" Version="0.9.9" />
+    <PackageReference Include="lmdb.v141" Version="0.9.18" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
+    <PackageReference Include="System.Runtime.Loader" Version="4.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />

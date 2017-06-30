@@ -1,12 +1,10 @@
 ﻿using Jasper.Bus.Configuration;
-using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.InMemory;
-using Jasper.Bus.Transports.LightningQueues;
 using Jasper.Bus.Transports.Lightweight;
 using Jasper.Configuration;
 using Jasper.Conneg;
@@ -21,7 +19,6 @@ namespace Jasper.Bus
 
             For<ITransport>().Singleton().AddInstances(_ =>
             {
-                _.Type<LightningQueuesTransport>();
                 _.Type<InMemoryTransport>();
                 _.Type<LightweightTransport>();
             });

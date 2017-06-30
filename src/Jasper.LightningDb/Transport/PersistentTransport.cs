@@ -7,10 +7,9 @@ using Baseline;
 using Baseline.Dates;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports.LightningQueues;
+using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Lightweight;
 
 namespace Jasper.LightningDb.Transport
@@ -120,7 +119,7 @@ namespace Jasper.LightningDb.Transport
             if (queuePath == null)
             {
                 //Find all queues matching queuePath regardless of port.
-                var jasperQueuePath = new LightningQueueSettings().QueuePath;
+                var jasperQueuePath = new LightningDbSettings().QueuePath;
                 queuePath = fileSystem.GetDirectory(jasperQueuePath);
 
                 var queues = fileSystem

@@ -4,7 +4,7 @@ using System.IO;
 using Jasper.Bus.Runtime;
 using Jasper.Util;
 
-namespace Jasper.Bus.Queues.Serialization
+namespace Jasper.Bus.Transports
 {
     public static class SerializationExtensions
     {
@@ -17,7 +17,7 @@ namespace Jasper.Bus.Queues.Serialization
                 var msgs = new Envelope[numberOfMessages];
                 for (int i = 0; i < numberOfMessages; i++)
                 {
-                    msgs[i] = ReadSingleMessage<Envelope>(br);
+                    msgs[i] = readSingle<Envelope>(br);
                 }
                 return msgs;
             }
@@ -28,29 +28,11 @@ namespace Jasper.Bus.Queues.Serialization
             using (var ms = new MemoryStream(buffer))
             using (var br = new BinaryReader(ms))
             {
-                return ReadSingleMessage<Envelope>(br);
+                return readSingle<Envelope>(br);
             }
         }
 
-        public static Envelope ToOutgoingMessage(this byte[] buffer)
-        {
-            using (var ms = new MemoryStream(buffer))
-            using (var br = new BinaryReader(ms))
-            {
-                var msg = ReadSingleMessage<Envelope>(br);
-                msg.Destination = new Uri(br.ReadString());
-                var hasDeliverBy = br.ReadBoolean();
-                if (hasDeliverBy)
-                    msg.DeliverBy = DateTime.FromBinary(br.ReadInt64());
-                var hasMaxAttempts = br.ReadBoolean();
-                if (hasMaxAttempts)
-                    msg.MaxAttempts = br.ReadInt32();
-
-                return msg;
-            }
-        }
-
-        private static TMessage ReadSingleMessage<TMessage>(BinaryReader br) where TMessage : Envelope, new()
+        private static TMessage readSingle<TMessage>(BinaryReader br) where TMessage : Envelope, new()
         {
             var msg = new TMessage
             {
@@ -88,7 +70,7 @@ namespace Jasper.Bus.Queues.Serialization
                 writer.Write(messages.Count);
                 foreach (var message in messages)
                 {
-                    WriteSingleMessage(message, writer);
+                    writeSingle(message, writer);
                 }
                 writer.Flush();
                 return stream.ToArray();
@@ -100,31 +82,13 @@ namespace Jasper.Bus.Queues.Serialization
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {
-                WriteSingleMessage(message, writer);
+                writeSingle(message, writer);
                 writer.Flush();
                 return stream.ToArray();
             }
         }
 
-        public static byte[] SerializeOutgoing(this Envelope message)
-        {
-            using (var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
-            {
-                WriteSingleMessage(message, writer);
-                writer.Write(message.Destination.ToString());
-                writer.Write(message.DeliverBy.HasValue);
-                if(message.DeliverBy.HasValue)
-                    writer.Write(message.DeliverBy.Value.ToBinary());
-                writer.Write(message.MaxAttempts.HasValue);
-                if(message.MaxAttempts.HasValue)
-                    writer.Write(message.MaxAttempts.Value);
-                writer.Flush();
-                return stream.ToArray();
-            }
-        }
-
-        private static void WriteSingleMessage(Envelope message, BinaryWriter writer)
+        private static void writeSingle(Envelope message, BinaryWriter writer)
         {
             writer.Write(message.Id.SourceInstanceId.ToByteArray());
             writer.Write(message.Id.MessageIdentifier.ToByteArray());

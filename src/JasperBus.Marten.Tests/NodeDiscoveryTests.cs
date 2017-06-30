@@ -5,12 +5,10 @@ using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
-using Jasper.Bus.Transports.LightningQueues;
 using Jasper.Testing.Bus;
 using JasperBus.Marten.Tests.Setup;
 using Marten;
 using Shouldly;
-using TestMessages;
 using Xunit;
 using PingMessage = Jasper.Testing.Bus.Samples.PingMessage;
 
@@ -20,9 +18,9 @@ namespace JasperBus.Marten.Tests
     {
         private readonly SubContext _serviceEndpoint1;
         private readonly SubContext _serviceEndpoint2;
-        private readonly Uri _clientUri = "lq.tcp://localhost:6000/client".ToUri();
-        private readonly Uri _primaryServiceUri = "lq.tcp://localhost:6001/service".ToUri();
-        private readonly Uri _secondaryServiceUri = "lq.tcp://localhost:6002/service".ToUri();
+        private readonly Uri _clientUri = "jasper://localhost:6000/client".ToUri();
+        private readonly Uri _primaryServiceUri = "jasper://localhost:6001/service".ToUri();
+        private readonly Uri _secondaryServiceUri = "jasper://localhost:6002/service".ToUri();
 
         public NodeDiscoveryTests()
         {
@@ -73,7 +71,7 @@ namespace JasperBus.Marten.Tests
                         NodeName = "Client",
                         Role = SubscriptionRole.Subscribes,
                         Receiver = _clientUri,
-                        Source = "lq.tcp://loadbalancer:5000/service".ToUri()
+                        Source = "jasper://loadbalancer:5000/service".ToUri()
                     }
                 }
             });
@@ -96,7 +94,6 @@ namespace JasperBus.Marten.Tests
             base.Dispose();
             _serviceEndpoint1.Dispose();
             _serviceEndpoint2.Dispose();
-            LightningQueuesTransport.DeleteAllStorage();
         }
     }
 }

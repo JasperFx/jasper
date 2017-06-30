@@ -2,14 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Queues;
-using Jasper.Bus.Queues.Net;
-using Jasper.Bus.Queues.Net.Protocol;
-using Jasper.Bus.Queues.Net.Protocol.V1;
-using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.Lightweight;
 
-namespace Jasper.Bus.Transports.Lightweight
+namespace Jasper.Bus.Transports
 {
     public static class WireProtocol
     {

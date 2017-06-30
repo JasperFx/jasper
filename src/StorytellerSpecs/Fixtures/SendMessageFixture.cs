@@ -15,7 +15,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
-using Jasper.Bus.Transports.LightningQueues;
+using Jasper.LightningDb.Transport;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
@@ -32,7 +32,7 @@ namespace StorytellerSpecs.Fixtures
 
         public override void SetUp()
         {
-            LightningQueuesTransport.DeleteAllStorage();
+            PersistentTransport.DeleteAllStorage();
         }
 
         public IGrammar IfTheApplicationIs()

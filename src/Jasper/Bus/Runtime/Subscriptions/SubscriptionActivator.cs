@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Transports.LightningQueues;
+using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {

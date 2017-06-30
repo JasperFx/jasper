@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jasper.Bus.Queues
+namespace Jasper.Bus.Transports
 {
     public class MessageId
     {

@@ -2,10 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Bus.Queues;
-using Jasper.Bus.Queues.Net;
-using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using LightningDB;
 
 namespace Jasper.LightningDb

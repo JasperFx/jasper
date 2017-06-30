@@ -1,5 +1,4 @@
 ﻿using System;
-using Jasper.Bus.Queues.Net;
 
 namespace Jasper.Bus.Transports.Lightweight
 {

@@ -8,7 +8,7 @@ using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
-using Jasper.Bus.Transports.LightningQueues;
+using Jasper.LightningDb;
 using StoryTeller;
 using StoryTeller.Results;
 using StoryTeller.Util;
@@ -132,7 +132,7 @@ namespace StorytellerSpecs.Fixtures
             _registry.Services.ForConcreteType<MessageHistory>().Configure.Singleton();
             _registry.Services.AddService<IBusLogger, MessageTrackingLogger>();
 
-            _registry.Services.For<LightningQueueSettings>().Use(new LightningQueueSettings
+            _registry.Services.For<LightningDbSettings>().Use(new LightningDbSettings
             {
                 MaxDatabases = 20
             });

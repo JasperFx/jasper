@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Queues;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Microsoft.Extensions.Options;

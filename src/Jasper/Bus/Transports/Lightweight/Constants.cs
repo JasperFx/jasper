@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Jasper.Bus.Queues.Net.Protocol.V1
+namespace Jasper.Bus.Transports.Lightweight
 {
     public static class Constants
     {
