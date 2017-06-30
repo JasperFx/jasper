@@ -105,7 +105,7 @@ namespace Jasper.Bus.Queues.Serialization
             }
         }
 
-        public static byte[] Serialize(this OutgoingMessage message)
+        public static byte[] SerializeOutgoing(this OutgoingMessage message)
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))

@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Bus.Queues;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.LightningQueues;
 using Shouldly;
 using Xunit;
@@ -12,7 +13,7 @@ namespace Jasper.Testing.Bus.Transports.LightningQueues
         public void translates_max_attempts()
         {
             var message = new OutgoingMessage();
-            message.Headers.Add(LightningQueuesTransport.MaxAttemptsHeader, 1.ToString());
+            message.Headers.Add(Envelope.MaxAttemptsHeader, 1.ToString());
             message.TranslateHeaders();
             message.MaxAttempts.ShouldBe(1);
         }
@@ -22,7 +23,7 @@ namespace Jasper.Testing.Bus.Transports.LightningQueues
         {
             var now = DateTime.Now;
             var message = new OutgoingMessage();
-            message.Headers.Add(LightningQueuesTransport.DeliverByHeader, now.ToString("o"));
+            message.Headers.Add(Envelope.DeliverByHeader, now.ToString("o"));
             message.TranslateHeaders();
             message.DeliverBy.ShouldBe(now);
         }

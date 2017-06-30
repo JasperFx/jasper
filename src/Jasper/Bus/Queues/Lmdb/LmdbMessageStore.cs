@@ -253,7 +253,7 @@ namespace Jasper.Bus.Queues.Lmdb
         private void StoreOutgoing(LightningTransaction tx, OutgoingMessage message)
         {
             var db = OpenDatabase(tx, OutgoingQueue);
-            tx.Put(db, message.Id.MessageIdentifier.ToByteArray(), message.Serialize());
+            tx.Put(db, message.Id.MessageIdentifier.ToByteArray(), message.SerializeOutgoing());
         }
 
         private int FailedToSend(LightningTransaction tx, OutgoingMessage message)
@@ -278,7 +278,7 @@ namespace Jasper.Bus.Queues.Lmdb
             }
             else
             {
-                tx.Put(db, message.Id.MessageIdentifier.ToByteArray(), message.Serialize());
+                tx.Put(db, message.Id.MessageIdentifier.ToByteArray(), message.SerializeOutgoing());
             }
             return attempts;
         }

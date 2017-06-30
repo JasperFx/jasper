@@ -33,16 +33,17 @@ namespace Jasper.Bus.Transports.LightningQueues
             return message.ToEnvelope().ExecutionTime.Value;
         }
 
+        [Obsolete("ridiculous, get rid of this")]
         public static void TranslateHeaders(this OutgoingMessage messagePayload)
         {
             string headerValue;
-            messagePayload.Headers.TryGetValue(LightningQueuesTransport.MaxAttemptsHeader, out headerValue);
+            messagePayload.Headers.TryGetValue(Envelope.MaxAttemptsHeader, out headerValue);
             if (headerValue.IsNotEmpty())
             {
                 messagePayload.MaxAttempts = int.Parse(headerValue);
             }
 
-            messagePayload.Headers.TryGetValue(LightningQueuesTransport.DeliverByHeader, out headerValue);
+            messagePayload.Headers.TryGetValue(Envelope.DeliverByHeader, out headerValue);
             if (headerValue.IsNotEmpty())
             {
                 messagePayload.DeliverBy = DateTime.Parse(headerValue);

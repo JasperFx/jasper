@@ -23,7 +23,9 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
                 SubQueue = "subqueue",
                 Data = new byte[]{1, 5, 6, 11, 2, 3},
                 Destination = "lq.tcp://localhost:2222/outgoing".ToUri(),
-
+                MaxAttempts = 3,
+                SentAttempts = 2,
+                DeliverBy = DateTime.Today.ToUniversalTime()
             };
 
             outgoing.Headers.Add("name", "Jeremy");
@@ -72,6 +74,30 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
             incoming.Headers["reply-uri"].ShouldBe("lq.tcp://localhost:2221/replies");
         }
 
+        [Fact]
+        public void destination()
+        {
+            incoming.Destination.ShouldBe(outgoing.Destination);
+        }
+
+        [Fact]
+        public void max_attempts()
+        {
+            incoming.MaxAttempts.ShouldBe(outgoing.MaxAttempts);
+        }
+
+        [Fact]
+        public void sent_attempts()
+        {
+            incoming.SentAttempts.ShouldBe(outgoing.SentAttempts);
+        }
+
+
+        [Fact]
+        public void deliver_by()
+        {
+            incoming.DeliverBy.Value.ShouldBe(outgoing.DeliverBy.Value);
+        }
 
     }
 }

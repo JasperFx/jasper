@@ -8,6 +8,7 @@ namespace Jasper.Bus.Runtime
 {
     public class Envelope : HeaderWrapper
     {
+        private const string SentAttemptsHeaderKey = "sent-attempts";
         public static readonly string OriginalIdKey = "original-id";
         public static readonly string IdKey = "id";
         public static readonly string ParentIdKey = "parent-id";
@@ -153,6 +154,52 @@ namespace Jasper.Bus.Runtime
         [Obsolete("This is purely for backwards compatibility in wire format")]
         public string SubQueue { get; set; }
 
+        public DateTime? DeliverBy
+        {
+            get
+            {
+                string headerValue;
+                Headers.TryGetValue(DeliverByHeader, out headerValue);
+                if (headerValue.IsNotEmpty())
+                {
+                    return DateTime.Parse(headerValue);
+                }
+
+                return null;
+            }
+            set
+            {
+                Headers.Set(DeliverByHeader, value.Value.ToString("o"));
+            }
+        }
+
+        public int? MaxAttempts
+        {
+            get
+            {
+                return Headers.ContainsKey(MaxAttemptsHeader)
+                    ? int.Parse(Headers[MaxAttemptsHeader])
+                    : default(int?);
+            }
+            set
+            {
+                Headers.Set(MaxAttemptsHeader, value.ToString());
+            }
+        }
+
+        public int SentAttempts
+        {
+            get
+            {
+                if (Headers.ContainsKey(SentAttemptsHeaderKey))
+                {
+                    return int.Parse(Headers[SentAttemptsHeaderKey]);
+                }
+                return 0;
+            }
+            set { Headers[SentAttemptsHeaderKey] = value.ToString(); }
+        }
+
         protected bool Equals(Envelope other)
         {
             return Equals(Data, other.Data) && Equals(Message, other.Message) && Equals(Callback, other.Callback) && Equals(Headers, other.Headers);
@@ -187,6 +234,9 @@ namespace Jasper.Bus.Runtime
                 Message = message
             };
         }
+
+        public static string MaxAttemptsHeader = "max-delivery-attempts";
+        public static string DeliverByHeader = "deliver-by";
     }
 
 }

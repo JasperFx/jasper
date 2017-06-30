@@ -31,9 +31,6 @@ namespace Jasper.Bus.Transports.LightningQueues
             }
         }
 
-        public static string MaxAttemptsHeader = "max-delivery-attempts";
-        public static string DeliverByHeader = "deliver-by";
-
 
         private readonly ConcurrentDictionary<int, LightningQueue> _queues = new ConcurrentDictionary<int, LightningQueue>();
         private readonly LightningQueueSettings _settings;
