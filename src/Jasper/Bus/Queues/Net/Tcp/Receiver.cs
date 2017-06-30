@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using Jasper.Bus.Queues.Logging;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues.Net.Tcp
 {
@@ -12,9 +13,9 @@ namespace Jasper.Bus.Queues.Net.Tcp
         readonly IReceivingProtocol _protocol;
         private readonly ILogger _logger;
         bool _disposed;
-        IObservable<Message> _stream;
+        IObservable<Envelope> _stream;
         private readonly object _lockObject;
-        
+
         public Receiver(IPEndPoint endpoint, IReceivingProtocol protocol, ILogger logger)
         {
             Endpoint = endpoint;
@@ -30,7 +31,7 @@ namespace Jasper.Bus.Queues.Net.Tcp
 
         public IPEndPoint Endpoint { get; }
 
-        public IObservable<Message> StartReceiving()
+        public IObservable<Envelope> StartReceiving()
         {
             lock (_lockObject)
             {
@@ -52,10 +53,10 @@ namespace Jasper.Bus.Queues.Net.Tcp
             return _stream;
         }
 
-        private IObservable<Message> catchAll(Exception ex)
+        private IObservable<Envelope> catchAll(Exception ex)
         {
             _logger.Error("Error in message receiving", ex);
-            return Observable.Empty<Message>();
+            return Observable.Empty<Envelope>();
         }
 
         private bool IsNotDisposed()

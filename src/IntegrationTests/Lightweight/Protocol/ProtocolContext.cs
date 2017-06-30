@@ -96,7 +96,7 @@ namespace IntegrationTests.Lightweight.Protocol
         public ReceivedStatus StatusToReturn;
         public bool ThrowErrorOnReceived;
 
-        ReceivedStatus IReceiverCallback.Received(Message[] messages)
+        ReceivedStatus IReceiverCallback.Received(Envelope[] messages)
         {
             if (ThrowErrorOnReceived)
             {
@@ -109,21 +109,21 @@ namespace IntegrationTests.Lightweight.Protocol
 
         }
 
-        public Message[] MessagesReceived { get; set; }
+        public Envelope[] MessagesReceived { get; set; }
 
-        void IReceiverCallback.Acknowledged(Message[] messages)
+        void IReceiverCallback.Acknowledged(Envelope[] messages)
         {
             WasAcknowledged = true;
         }
 
         public bool? WasAcknowledged { get; set; }
 
-        void IReceiverCallback.NotAcknowledged(Message[] messages)
+        void IReceiverCallback.NotAcknowledged(Envelope[] messages)
         {
             WasAcknowledged = false;
         }
 
-        void IReceiverCallback.Failed(Exception exception, Message[] messages)
+        void IReceiverCallback.Failed(Exception exception, Envelope[] messages)
         {
             FailureException = exception;
         }

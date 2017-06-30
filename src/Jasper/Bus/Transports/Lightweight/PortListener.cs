@@ -4,6 +4,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Queues;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.InMemory;
 
@@ -33,7 +34,7 @@ namespace Jasper.Bus.Transports.Lightweight
             _receivers.Add(queueName, new QueueReceiver(queueName, pipeline, channels, node, _inmemory));
         }
 
-        public ReceivedStatus Received(Message[] messages)
+        public ReceivedStatus Received(Envelope[] messages)
         {
             if (messages.Any(x => !_receivers.ContainsKey(x.Queue)))
             {
@@ -56,17 +57,17 @@ namespace Jasper.Bus.Transports.Lightweight
             }
         }
 
-        public void Acknowledged(Message[] messages)
+        public void Acknowledged(Envelope[] messages)
         {
             // Nothing
         }
 
-        public void NotAcknowledged(Message[] messages)
+        public void NotAcknowledged(Envelope[] messages)
         {
             // Nothing
         }
 
-        public void Failed(Exception exception, Message[] messages)
+        public void Failed(Exception exception, Envelope[] messages)
         {
             _logger.LogException(new MessageFailureException(messages, exception));
         }
@@ -84,7 +85,7 @@ namespace Jasper.Bus.Transports.Lightweight
 
     public class MessageFailureException : Exception
     {
-        public MessageFailureException(Message[] messages, Exception innerException) : base($"SEE THE INNER EXCEPTION -- Failed on messages {messages.Select(x => x.ToString()).Join(", ")}", innerException)
+        public MessageFailureException(Envelope[] messages, Exception innerException) : base($"SEE THE INNER EXCEPTION -- Failed on messages {messages.Select(x => x.ToString()).Join(", ")}", innerException)
         {
         }
     }

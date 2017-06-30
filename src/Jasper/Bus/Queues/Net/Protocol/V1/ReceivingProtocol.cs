@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues.Net.Protocol.V1
 {
@@ -28,12 +29,12 @@ namespace Jasper.Bus.Queues.Net.Protocol.V1
         }
 
 
-        public IObservable<Message> ReceiveStream(IObservable<Stream> streams, string remoteEndpoint)
+        public IObservable<Envelope> ReceiveStream(IObservable<Stream> streams, string remoteEndpoint)
         {
             return receiveStream(streams, remoteEndpoint).Timeout(TimeSpan.FromSeconds(5), _scheduler);
         }
 
-        private IObservable<Message> receiveStream(IObservable<Stream> streams, string remoteEndpoint)
+        private IObservable<Envelope> receiveStream(IObservable<Stream> streams, string remoteEndpoint)
         {
             return from stream in streams
                     .Do(x => _logger.DebugFormat("Starting to read stream from {0}", remoteEndpoint))
@@ -58,11 +59,11 @@ namespace Jasper.Bus.Queues.Net.Protocol.V1
                 .Where(x => x > 0);
         }
 
-        public IObservable<Message[]> MessagesChunk(Stream stream, int length)
+        public IObservable<Envelope[]> MessagesChunk(Stream stream, int length)
         {
             return Observable.FromAsync(() => stream.ReadBytesAsync(length))
                 .Select(x => x.ToMessages()).Do(x => _logger.Debug("Successfully read messages"))
-                .Catch((Exception ex) => sendSerializationError<Message[]>(stream, ex));
+                .Catch((Exception ex) => sendSerializationError<Envelope[]>(stream, ex));
         }
 
         private IObservable<T> sendSerializationError<T>(Stream stream, Exception ex)
@@ -78,7 +79,7 @@ namespace Jasper.Bus.Queues.Net.Protocol.V1
             await stream.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
         }
 
-        public async Task StoreMessages(Stream stream, params Message[] messages)
+        public async Task StoreMessages(Stream stream, params Envelope[] messages)
         {
             try
             {
@@ -104,7 +105,7 @@ namespace Jasper.Bus.Queues.Net.Protocol.V1
             return Observable.FromAsync(() => SendBuffer(stream, Constants.ReceivedBuffer));
         }
 
-        public IObservable<Unit> ReceiveAcknowledgement(Stream stream, Message[] messages)
+        public IObservable<Unit> ReceiveAcknowledgement(Stream stream, Envelope[] messages)
         {
             return Observable.FromAsync(() => stream.ReadExpectedBuffer(Constants.AcknowledgedBuffer))
                 .Do(acknowledged =>

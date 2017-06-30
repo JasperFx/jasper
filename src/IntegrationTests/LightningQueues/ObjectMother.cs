@@ -6,12 +6,13 @@ using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Lmdb;
 using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Testing.Bus.Queues
 {
     public static class ObjectMother
     {
-        public  static T NewMessage<T>(string queueName = "cleverqueuename", string payload = "hello", string headerValue = "myvalue") where T : Message, new()
+        public  static T NewMessage<T>(string queueName = "cleverqueuename", string payload = "hello", string headerValue = "myvalue") where T : Envelope, new()
         {
             var message = new T
             {

@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Runtime;
 using Microsoft.Reactive.Testing;
 using Shouldly;
 using Xunit;
@@ -28,7 +29,7 @@ namespace Jasper.Testing.Bus.Queues
         public void receive_at_a_later_time()
         {
             var received = false;
-            _queue.ReceiveLater(new Message {Queue = "test", Id = MessageId.GenerateRandom()}, TimeSpan.FromSeconds(3));
+            _queue.ReceiveLater(new Envelope {Queue = "test", Id = MessageId.GenerateRandom()}, TimeSpan.FromSeconds(3));
             using (_queue.Receive("test").Subscribe(x => received = true))
             {
                 _scheduler.AdvanceBy(TimeSpan.FromSeconds(2).Ticks);
@@ -43,7 +44,7 @@ namespace Jasper.Testing.Bus.Queues
         {
             var received = false;
             var time = DateTimeOffset.Now.AddSeconds(5);
-            _queue.ReceiveLater(new Message {Queue = "test", Id = MessageId.GenerateRandom()}, time);
+            _queue.ReceiveLater(new Envelope {Queue = "test", Id = MessageId.GenerateRandom()}, time);
             using (_queue.Receive("test").Subscribe(x => received = true))
             {
                 _scheduler.AdvanceBy(time.AddSeconds(-3).Ticks);
@@ -56,8 +57,8 @@ namespace Jasper.Testing.Bus.Queues
         [Fact]
         public void enqueue_a_message()
         {
-            Message result = null;
-            var expected = ObjectMother.NewMessage<Message>("test");
+            Envelope result = null;
+            var expected = ObjectMother.NewMessage<Envelope>("test");
             using (_queue.Receive("test").Subscribe(x => result = x.Message))
             {
                 _queue.Enqueue(expected);
@@ -69,9 +70,9 @@ namespace Jasper.Testing.Bus.Queues
         public void moving_queues()
         {
             _queue.CreateQueue("another");
-            Message first = null;
-            Message afterMove = null;
-            var expected = ObjectMother.NewMessage<Message>("test");
+            Envelope first = null;
+            Envelope afterMove = null;
+            var expected = ObjectMother.NewMessage<Envelope>("test");
             using (_queue.Receive("another").Subscribe(x => afterMove = x.Message))
             using (_queue.Receive("test").Subscribe(x => first = x.Message))
             {
@@ -133,7 +134,7 @@ namespace Jasper.Testing.Bus.Queues
                 using(queue.Receive("test").Subscribe(x => { }))
                 using (queue2.Receive("test").Subscribe(x => { }))
                 {
-                    
+
                 }
             }
         }

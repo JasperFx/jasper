@@ -7,10 +7,11 @@ using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Lmdb;
 using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Queues.Net.Protocol.V1;
-using Jasper.Bus.Queues.Net.Tcp;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
+using Receiver = Jasper.Bus.Queues.Net.Tcp.Receiver;
 
 namespace Jasper.Testing.Bus.Queues.Net.Tcp
 {
@@ -124,7 +125,7 @@ namespace Jasper.Testing.Bus.Queues.Net.Tcp
             _sendingStore.StoreOutgoing(tx, expected);
             tx.Commit();
             var messages = new[] {expected};
-            var receivingCompletionSource = new TaskCompletionSource<Message>();
+            var receivingCompletionSource = new TaskCompletionSource<Envelope>();
             using (_receiver.StartReceiving().Subscribe(x => { receivingCompletionSource.SetResult(x); }))
             using (var client = new TcpClient())
             {

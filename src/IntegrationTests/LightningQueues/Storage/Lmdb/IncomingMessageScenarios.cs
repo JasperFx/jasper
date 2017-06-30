@@ -4,6 +4,7 @@ using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Lmdb;
 using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         [Fact]
         public void happy_path_success()
         {
-            var message = ObjectMother.NewMessage<Message>();
+            var message = ObjectMother.NewMessage<Envelope>();
             _store.CreateQueue(message.Queue);
             var transaction = _store.BeginTransaction();
             _store.StoreIncomingMessages(transaction, message);
@@ -43,7 +44,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         [Fact]
         public void storing_message_for_queue_that_doesnt_exist()
         {
-            var message = ObjectMother.NewMessage<Message>();
+            var message = ObjectMother.NewMessage<Envelope>();
             Assert.Throws<QueueDoesNotExistException>(() =>
             {
                 var tx = _store.BeginTransaction();
@@ -54,7 +55,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         [Fact]
         public void crash_before_commit()
         {
-            var message = ObjectMother.NewMessage<Message>();
+            var message = ObjectMother.NewMessage<Envelope>();
             _store.CreateQueue(message.Queue);
             var transaction = _store.BeginTransaction();
             _store.StoreIncomingMessages(transaction, message);
@@ -74,7 +75,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         [Fact]
         public void rollback_messages_received()
         {
-            var message = ObjectMother.NewMessage<Message>();
+            var message = ObjectMother.NewMessage<Envelope>();
             _store.CreateQueue(message.Queue);
             var transaction = _store.BeginTransaction();
             _store.StoreIncomingMessages(transaction, message);

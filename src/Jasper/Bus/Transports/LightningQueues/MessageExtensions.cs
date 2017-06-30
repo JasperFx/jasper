@@ -7,7 +7,7 @@ namespace Jasper.Bus.Transports.LightningQueues
 {
     public static class MessageExtensions
     {
-        public static Envelope ToEnvelope(this Message message)
+        public static Envelope ToEnvelope(this Envelope message)
         {
             var envelope = new Envelope(message.Headers)
             {
@@ -17,9 +17,9 @@ namespace Jasper.Bus.Transports.LightningQueues
             return envelope;
         }
 
-        public static Message Copy(this Message message)
+        public static Envelope Copy(this Envelope message)
         {
-            var copy = new Message
+            var copy = new Envelope
             {
                 Data = message.Data,
                 Headers = message.Headers,
@@ -28,7 +28,7 @@ namespace Jasper.Bus.Transports.LightningQueues
             return copy;
         }
 
-        public static DateTime ExecutionTime(this Message message)
+        public static DateTime ExecutionTime(this Envelope message)
         {
             return message.ToEnvelope().ExecutionTime.Value;
         }

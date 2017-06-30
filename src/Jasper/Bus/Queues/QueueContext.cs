@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues
 {
     internal class QueueContext : IQueueContext
     {
         private readonly Queue _queue;
-        private readonly Message _message;
+        private readonly Envelope _message;
         private readonly List<IQueueAction> _queueActions;
         private ITransaction _transaction;
 
-        internal QueueContext(Queue queue, Message message)
+        internal QueueContext(Queue queue, Envelope message)
         {
             _queue = queue;
             _message = message;
@@ -65,7 +66,7 @@ namespace Jasper.Bus.Queues
             _queueActions.Add(new MoveAction(this, queueName));
         }
 
-        public void Enqueue(Message message)
+        public void Enqueue(Envelope message)
         {
             _queueActions.Add(new EnqueueAction(this, message));
         }
@@ -101,9 +102,9 @@ namespace Jasper.Bus.Queues
         private class EnqueueAction : IQueueAction
         {
             private readonly QueueContext _context;
-            private readonly Message _message;
+            private readonly Envelope _message;
 
-            public EnqueueAction(QueueContext context, Message message)
+            public EnqueueAction(QueueContext context, Envelope message)
             {
                 _context = context;
                 _message = message;

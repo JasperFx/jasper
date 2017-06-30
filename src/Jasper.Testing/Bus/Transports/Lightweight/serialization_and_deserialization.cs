@@ -11,7 +11,7 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
     public class serialization_and_deserialization_of_single_message
     {
         private OutgoingMessage outgoing;
-        private Message incoming;
+        private Envelope incoming;
 
         public serialization_and_deserialization_of_single_message()
         {
@@ -67,7 +67,6 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
         [Fact]
         public void all_the_headers()
         {
-            incoming.Headers.Count.ShouldBe(3);
             incoming.Headers["name"].ShouldBe("Jeremy");
             incoming.Headers["state"].ShouldBe("Texas");
             incoming.Headers["reply-uri"].ShouldBe("lq.tcp://localhost:2221/replies");

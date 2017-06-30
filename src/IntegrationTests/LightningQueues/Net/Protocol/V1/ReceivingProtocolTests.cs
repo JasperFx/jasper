@@ -9,6 +9,7 @@ using Jasper.Bus.Queues.Net.Protocol;
 using Jasper.Bus.Queues.Net.Protocol.V1;
 using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 using Microsoft.Reactive.Testing;
 using Shouldly;
 using Xunit;
@@ -106,7 +107,7 @@ namespace Jasper.Testing.Bus.Queues.Net.Protocol.V1
             {
                 try
                 {
-                    await _protocol.StoreMessages(ms, ObjectMother.NewMessage<Message>("test"));
+                    await _protocol.StoreMessages(ms, ObjectMother.NewMessage<Envelope>("test"));
                 }
                 catch (QueueDoesNotExistException)
                 {
@@ -133,7 +134,7 @@ namespace Jasper.Testing.Bus.Queues.Net.Protocol.V1
                 ms.Write(BitConverter.GetBytes(bytes.Length), 0, 4);
                 ms.Write(bytes, 0, bytes.Length);
                 ms.Position = 0;
-                using (_protocol.ReceiveStream(Observable.Return(ms), "me").Catch((Exception ex) => Observable.Empty<Message>())
+                using (_protocol.ReceiveStream(Observable.Return(ms), "me").Catch((Exception ex) => Observable.Empty<Envelope>())
                     .Subscribe(x => subscribeCalled = true))
                 {
                     ShouldBeBooleanExtensions.ShouldBeFalse(subscribeCalled);

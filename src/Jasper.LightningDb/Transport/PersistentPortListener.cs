@@ -4,6 +4,7 @@ using System.Linq;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Queues;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.Lightweight;
 
@@ -31,7 +32,7 @@ namespace Jasper.LightningDb.Transport
             _receivers.Add(queueName, new PersistentQueueReceiver(queueName, pipeline, channels, node));
         }
 
-        public ReceivedStatus Received(Message[] messages)
+        public ReceivedStatus Received(Envelope[] messages)
         {
             if (messages.Any(x => !_receivers.ContainsKey(x.Queue)))
             {
@@ -55,19 +56,19 @@ namespace Jasper.LightningDb.Transport
             }
         }
 
-        public void Acknowledged(Message[] messages)
+        public void Acknowledged(Envelope[] messages)
         {
             // TODO -- NOTHING according to LQ
             throw new NotImplementedException();
         }
 
-        public void NotAcknowledged(Message[] messages)
+        public void NotAcknowledged(Envelope[] messages)
         {
             // TODO -- delete the messages 'cause you never really got them
             throw new NotImplementedException();
         }
 
-        public void Failed(Exception exception, Message[] messages)
+        public void Failed(Exception exception, Envelope[] messages)
         {
             // TODO -- delete the messages 'cause you never really got them
             throw new NotImplementedException();

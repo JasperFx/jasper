@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues.Storage
 {
@@ -35,21 +36,21 @@ namespace Jasper.Bus.Queues.Storage
             _queues.Add(queueName);
         }
 
-        public void StoreIncomingMessages(params Message[] messages)
+        public void StoreIncomingMessages(params Envelope[] messages)
         {
         }
 
-        public void StoreIncomingMessages(ITransaction transaction, params Message[] messages)
+        public void StoreIncomingMessages(ITransaction transaction, params Envelope[] messages)
         {
         }
 
-        public void DeleteIncomingMessages(params Message[] messages)
+        public void DeleteIncomingMessages(params Envelope[] messages)
         {
         }
 
-        public IObservable<Message> PersistedMessages(string queueName)
+        public IObservable<Envelope> PersistedMessages(string queueName)
         {
-            return Observable.Empty<Message>();
+            return Observable.Empty<Envelope>();
         }
 
         public IObservable<OutgoingMessage> PersistedOutgoingMessages()
@@ -57,12 +58,12 @@ namespace Jasper.Bus.Queues.Storage
             return Observable.Empty<OutgoingMessage>();
         }
 
-        public void MoveToQueue(ITransaction transaction, string queueName, Message message)
+        public void MoveToQueue(ITransaction transaction, string queueName, Envelope message)
         {
             message.Queue = queueName;
         }
 
-        public void SuccessfullyReceived(ITransaction transaction, Message message)
+        public void SuccessfullyReceived(ITransaction transaction, Envelope message)
         {
         }
 
@@ -83,7 +84,7 @@ namespace Jasper.Bus.Queues.Storage
         {
         }
 
-        public Message GetMessage(string queueName, MessageId messageId)
+        public Envelope GetMessage(string queueName, MessageId messageId)
         {
             return null;
         }

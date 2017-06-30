@@ -29,16 +29,16 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
         [Fact]
         public void succeed_when_all_of_the_queues_are_known()
         {
-            var messages = new Message[]
+            var envelopes = new Envelope[]
             {
-                new Message {Queue = "one"},
-                new Message {Queue = "one"},
-                new Message {Queue = "one"},
-                new Message {Queue = "two"},
-                new Message {Queue = "two"},
+                new Envelope {Queue = "one"},
+                new Envelope {Queue = "one"},
+                new Envelope {Queue = "one"},
+                new Envelope {Queue = "two"},
+                new Envelope {Queue = "two"},
             };
 
-            theListener.Received(messages)
+            theListener.Received(envelopes)
                 .ShouldBe(ReceivedStatus.Successful);
 
 
@@ -48,16 +48,16 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
         [Fact]
         public void do_nothing_when_queue_does_not_exist    ()
         {
-            var messages = new Message[]
+            var envelopes = new Envelope[]
             {
-                new Message {Queue = "one"},
-                new Message {Queue = "one"},
-                new Message {Queue = "one"},
-                new Message {Queue = "two"},
-                new Message {Queue = "three"},
+                new Envelope {Queue = "one"},
+                new Envelope {Queue = "one"},
+                new Envelope {Queue = "one"},
+                new Envelope {Queue = "two"},
+                new Envelope {Queue = "three"},
             };
 
-            theListener.Received(messages)
+            theListener.Received(envelopes)
                 .ShouldBe(ReceivedStatus.QueueDoesNotExist);
 
 

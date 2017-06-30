@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Text;
 using Jasper.Bus.Queues.Serialization;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 using LightningDB;
 
 namespace Jasper.Bus.Queues.Lmdb
@@ -36,7 +37,7 @@ namespace Jasper.Bus.Queues.Lmdb
 
         public LightningEnvironment Environment => _environment;
 
-        public void StoreIncomingMessages(params Message[] messages)
+        public void StoreIncomingMessages(params Envelope[] messages)
         {
             using (var tx = _environment.BeginTransaction())
             {
@@ -45,13 +46,13 @@ namespace Jasper.Bus.Queues.Lmdb
             }
         }
 
-        public void StoreIncomingMessages(ITransaction transaction, params Message[] messages)
+        public void StoreIncomingMessages(ITransaction transaction, params Envelope[] messages)
         {
             var tx = ((LmdbTransaction) transaction).Transaction;
             StoreIncomingMessages(tx, messages);
         }
 
-        private void StoreIncomingMessages(LightningTransaction tx, params Message[] messages)
+        private void StoreIncomingMessages(LightningTransaction tx, params Envelope[] messages)
         {
             try
             {
@@ -72,7 +73,7 @@ namespace Jasper.Bus.Queues.Lmdb
             }
         }
 
-        public void DeleteIncomingMessages(params Message[] messages)
+        public void DeleteIncomingMessages(params Envelope[] messages)
         {
             using (var tx = _environment.BeginTransaction())
             {
@@ -108,7 +109,7 @@ namespace Jasper.Bus.Queues.Lmdb
             }
         }
 
-        public Message GetMessage(string queueName, MessageId messageId)
+        public Envelope GetMessage(string queueName, MessageId messageId)
         {
             using (var tx = _environment.BeginTransaction(TransactionBeginFlags.ReadOnly))
             {
@@ -154,9 +155,9 @@ namespace Jasper.Bus.Queues.Lmdb
             RemoveMessageFromStorage(tx, OutgoingQueue, messages);
         }
 
-        public IObservable<Message> PersistedMessages(string queueName)
+        public IObservable<Envelope> PersistedMessages(string queueName)
         {
-            return Observable.Create<Message>(x =>
+            return Observable.Create<Envelope>(x =>
             {
                 try
                 {
@@ -208,24 +209,24 @@ namespace Jasper.Bus.Queues.Lmdb
             });
         }
 
-        public void MoveToQueue(ITransaction transaction, string queueName, Message message)
+        public void MoveToQueue(ITransaction transaction, string queueName, Envelope message)
         {
             var tx = ((LmdbTransaction) transaction).Transaction;
             MoveToQueue(tx, queueName, message);
         }
 
-        public void SuccessfullyReceived(ITransaction transaction, Message message)
+        public void SuccessfullyReceived(ITransaction transaction, Envelope message)
         {
             var tx = ((LmdbTransaction) transaction).Transaction;
             SuccessfullyReceived(tx, message);
         }
 
-        private void SuccessfullyReceived(LightningTransaction tx, Message message)
+        private void SuccessfullyReceived(LightningTransaction tx, Envelope message)
         {
             RemoveMessageFromStorage(tx, message.Queue, message);
         }
 
-        private void RemoveMessageFromStorage(LightningTransaction tx, string queueName, params Message[] messages)
+        private void RemoveMessageFromStorage(LightningTransaction tx, string queueName, params Envelope[] messages)
         {
             var db = OpenDatabase(tx, queueName);
             foreach (var message in messages)
@@ -282,7 +283,7 @@ namespace Jasper.Bus.Queues.Lmdb
             return attempts;
         }
 
-        private void MoveToQueue(LightningTransaction tx, string queueName, Message message)
+        private void MoveToQueue(LightningTransaction tx, string queueName, Envelope message)
         {
             try
             {

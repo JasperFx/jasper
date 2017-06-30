@@ -79,11 +79,11 @@ namespace IntegrationTests.Lightweight
 
     public class RecordingReceiverCallback : IReceiverCallback
     {
-        public readonly List<Message> ReceivedMessages = new List<Message>();
+        public readonly List<Envelope> ReceivedMessages = new List<Envelope>();
 
         public int ExpectCount { get; set; }
 
-        public ReceivedStatus Received(Message[] messages)
+        public ReceivedStatus Received(Envelope[] messages)
         {
             ReceivedMessages.AddRange(messages);
 
@@ -100,17 +100,17 @@ namespace IntegrationTests.Lightweight
 
         public Task Completed => _expected.Task;
 
-        public void Acknowledged(Message[] messages)
+        public void Acknowledged(Envelope[] messages)
         {
 
         }
 
-        public void NotAcknowledged(Message[] messages)
+        public void NotAcknowledged(Envelope[] messages)
         {
 
         }
 
-        public void Failed(Exception exception, Message[] messages)
+        public void Failed(Exception exception, Envelope[] messages)
         {
 
         }

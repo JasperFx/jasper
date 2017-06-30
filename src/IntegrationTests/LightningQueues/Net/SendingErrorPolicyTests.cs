@@ -8,7 +8,9 @@ using Jasper.Bus.Queues.Lmdb;
 using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
 using Microsoft.Reactive.Testing;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
@@ -81,7 +83,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void message_is_observed_after_time()
         {
-            Message observed = null;
+            Envelope observed = null;
             var message = ObjectMother.NewMessage<OutgoingMessage>();
             message.Destination = new Uri("lq.tcp://localhost:5150/blah");
             message.MaxAttempts = 2;
@@ -101,7 +103,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void message_removed_from_storage_after_max()
         {
-            Message observed = null;
+            Envelope observed = null;
             var message = ObjectMother.NewMessage<OutgoingMessage>();
             message.Destination = new Uri("lq.tcp://localhost:5150/blah");
             message.MaxAttempts = 1;
@@ -122,7 +124,7 @@ namespace Jasper.Testing.Bus.Queues.Net
         [Fact]
         public void time_increases_with_each_failure()
         {
-            Message observed = null;
+            Envelope observed = null;
             var message = ObjectMother.NewMessage<OutgoingMessage>();
             message.Destination = new Uri("lq.tcp://localhost:5150/blah");
             message.MaxAttempts = 5;

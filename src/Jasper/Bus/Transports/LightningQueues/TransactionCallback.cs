@@ -8,10 +8,10 @@ namespace Jasper.Bus.Transports.LightningQueues
 {
     public class TransactionCallback : IMessageCallback
     {
-        private readonly Message _message;
+        private readonly Envelope _message;
         private readonly IQueueContext _context;
 
-        public TransactionCallback(IQueueContext context, Message message)
+        public TransactionCallback(IQueueContext context, Envelope message)
         {
             _context = context;
             _message = message;
@@ -45,7 +45,7 @@ namespace Jasper.Bus.Transports.LightningQueues
 
         public Task MoveToErrors(ErrorReport report)
         {
-            var message = new Message
+            var message = new Envelope
             {
                 Id = _message.Id,
                 Data = report.Serialize(),

@@ -1,8 +1,9 @@
 ﻿using System;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues
 {
-    public class OutgoingMessage : Message
+    public class OutgoingMessage : Envelope
     {
         private const string SentAttemptsHeaderKey = "sent-attempts";
 

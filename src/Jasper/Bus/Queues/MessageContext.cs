@@ -1,14 +1,16 @@
-﻿namespace Jasper.Bus.Queues
+﻿using Jasper.Bus.Runtime;
+
+namespace Jasper.Bus.Queues
 {
     public class MessageContext
     {
-        internal MessageContext(Message message, Queue queue)
+        internal MessageContext(Envelope message, Queue queue)
         {
             Message = message;
             QueueContext = new QueueContext(queue, message);
         }
 
-        public Message Message { get; set; }
+        public Envelope Message { get; set; }
         public IQueueContext QueueContext { get; }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using Jasper.Bus.Queues;
 using Jasper.Bus.Queues.Lmdb;
+using Jasper.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -40,7 +41,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         public void clear_all_history_with_persistent_data()
         {
             _store.CreateQueue("test");
-            var message = ObjectMother.NewMessage<Message>("test");
+            var message = ObjectMother.NewMessage<Envelope>("test");
             var outgoingMessage = ObjectMother.NewMessage<OutgoingMessage>();
             outgoingMessage.Destination = new Uri("lq.tcp://localhost:3030");
             outgoingMessage.SentAt = DateTime.Now;
@@ -59,7 +60,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         public void store_can_read_previously_stored_items()
         {
             _store.CreateQueue("test");
-            var message = ObjectMother.NewMessage<Message>("test");
+            var message = ObjectMother.NewMessage<Envelope>("test");
             var outgoingMessage = ObjectMother.NewMessage<OutgoingMessage>();
             outgoingMessage.Destination = new Uri("lq.tcp://localhost:3030");
             outgoingMessage.SentAt = DateTime.Now;
@@ -79,7 +80,7 @@ namespace Jasper.Testing.Bus.Queues.Storage.Lmdb
         public void retrieve_message_by_id()
         {
             _store.CreateQueue("test");
-            var message = ObjectMother.NewMessage<Message>("test");
+            var message = ObjectMother.NewMessage<Envelope>("test");
             var outgoingMessage = ObjectMother.NewMessage<OutgoingMessage>();
             outgoingMessage.Destination = new Uri("lq.tcp://localhost:3030");
             outgoingMessage.SentAt = DateTime.Now;

@@ -9,10 +9,10 @@ namespace Jasper.LightningDb.Transport
 {
     internal class PersistentCallback : IMessageCallback
     {
-        private readonly Message _message;
-        private readonly ActionBlock<Message> _block;
+        private readonly Envelope _message;
+        private readonly ActionBlock<Envelope> _block;
 
-        public PersistentCallback(Message message, ActionBlock<Message> block)
+        public PersistentCallback(Envelope message, ActionBlock<Envelope> block)
         {
             _message = message;
             _block = block;

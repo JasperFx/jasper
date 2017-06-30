@@ -8,6 +8,9 @@ using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Queues.Net.Tcp;
 using Jasper.Bus.Queues.Storage;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
+using Receiver = Jasper.Bus.Queues.Net.Tcp.Receiver;
 
 namespace Jasper.Bus.Queues
 {
@@ -16,7 +19,7 @@ namespace Jasper.Bus.Queues
         private readonly Sender _sender;
         private readonly Receiver _receiver;
         private readonly IMessageStore _messageStore;
-        private readonly Subject<Message> _receiveSubject;
+        private readonly Subject<Envelope> _receiveSubject;
         private readonly Subject<OutgoingMessage> _sendSubject;
         private readonly IScheduler _scheduler;
         private readonly ILogger _logger;
@@ -30,7 +33,7 @@ namespace Jasper.Bus.Queues
             _receiver = receiver;
             _sender = sender;
             _messageStore = messageStore;
-            _receiveSubject = new Subject<Message>();
+            _receiveSubject = new Subject<Envelope>();
             _sendSubject = new Subject<OutgoingMessage>();
             _scheduler = scheduler;
             _logger = logger;
@@ -42,7 +45,7 @@ namespace Jasper.Bus.Queues
 
         public IMessageStore Store => _messageStore;
 
-        internal ISubject<Message> ReceiveLoop => _receiveSubject;
+        internal ISubject<Envelope> ReceiveLoop => _receiveSubject;
         internal ISubject<OutgoingMessage> SendLoop => _sendSubject;
 
         public void CreateQueue(string queueName)
@@ -70,7 +73,7 @@ namespace Jasper.Bus.Queues
                 .Select(x => new MessageContext(x, this));
         }
 
-        public void MoveToQueue(string queueName, Message message)
+        public void MoveToQueue(string queueName, Envelope message)
         {
             _logger.DebugFormat("Moving message {0} to {1}", message.Id.MessageIdentifier, queueName);
             var tx = _messageStore.BeginTransaction();
@@ -80,14 +83,14 @@ namespace Jasper.Bus.Queues
             _receiveSubject.OnNext(message);
         }
 
-        public void Enqueue(Message message)
+        public void Enqueue(Envelope message)
         {
             _logger.DebugFormat("Enqueueing message {0} to queue {1}", message.Id.MessageIdentifier, message.Queue);
             _messageStore.StoreIncomingMessages(message);
             _receiveSubject.OnNext(message);
         }
 
-        public void ReceiveLater(Message message, TimeSpan timeSpan)
+        public void ReceiveLater(Envelope message, TimeSpan timeSpan)
         {
             _logger.DebugFormat("Delaying message {0} until {1}", message.Id.MessageIdentifier, timeSpan);
             _scheduler.Schedule(message, timeSpan, (sch, msg) =>
@@ -117,7 +120,7 @@ namespace Jasper.Bus.Queues
             _sendSubject.OnNext(message);
         }
 
-        public void ReceiveLater(Message message, DateTimeOffset time)
+        public void ReceiveLater(Envelope message, DateTimeOffset time)
         {
             _logger.DebugFormat("Delaying message {0} until {1}", message.Id.MessageIdentifier, time);
             _scheduler.Schedule(message, time, (sch, msg) =>
@@ -142,7 +145,7 @@ namespace Jasper.Bus.Queues
             {
                 _logger.Error("Failed when shutting down queue", e);
             }
-            
+
         }
     }
 }

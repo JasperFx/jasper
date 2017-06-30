@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues
 {
@@ -10,6 +11,6 @@ namespace Jasper.Bus.Queues
         void ReceiveLater(DateTimeOffset time);
         void SuccessfullyReceived();
         void MoveTo(string queueName);
-        void Enqueue(Message message);
+        void Enqueue(Envelope message);
     }
 }

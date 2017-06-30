@@ -7,6 +7,7 @@ using Jasper.Bus.Queues.Net;
 using Jasper.Bus.Queues.Net.Protocol;
 using Jasper.Bus.Queues.Net.Protocol.V1;
 using Jasper.Bus.Queues.Serialization;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Transports.Lightweight
 {
@@ -50,7 +51,7 @@ namespace Jasper.Bus.Transports.Lightweight
 
         public static async Task Receive(Stream stream, IReceiverCallback callback)
         {
-            Message[] messages = null;
+            Envelope[] messages = null;
 
             try
             {
@@ -81,7 +82,7 @@ namespace Jasper.Bus.Transports.Lightweight
             }
         }
 
-        private static async Task receive(Stream stream, IReceiverCallback callback, Message[] messages)
+        private static async Task receive(Stream stream, IReceiverCallback callback, Envelope[] messages)
         {
             var status = callback.Received(messages);
             switch (status)

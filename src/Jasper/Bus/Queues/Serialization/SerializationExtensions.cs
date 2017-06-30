@@ -1,32 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Queues.Serialization
 {
     public static class SerializationExtensions
     {
-        public static Message[] ToMessages(this byte[] buffer)
+        public static Envelope[] ToMessages(this byte[] buffer)
         {
             using (var ms = new MemoryStream(buffer))
             using (var br = new BinaryReader(ms))
             {
                 var numberOfMessages = br.ReadInt32();
-                var msgs = new Message[numberOfMessages];
+                var msgs = new Envelope[numberOfMessages];
                 for (int i = 0; i < numberOfMessages; i++)
                 {
-                    msgs[i] = ReadSingleMessage<Message>(br);
+                    msgs[i] = ReadSingleMessage<Envelope>(br);
                 }
                 return msgs;
             }
         }
 
-        public static Message ToMessage(this byte[] buffer)
+        public static Envelope ToMessage(this byte[] buffer)
         {
             using (var ms = new MemoryStream(buffer))
             using (var br = new BinaryReader(ms))
             {
-                return ReadSingleMessage<Message>(br);
+                return ReadSingleMessage<Envelope>(br);
             }
         }
 
@@ -48,7 +49,7 @@ namespace Jasper.Bus.Queues.Serialization
             }
         }
 
-        private static TMessage ReadSingleMessage<TMessage>(BinaryReader br) where TMessage : Message, new()
+        private static TMessage ReadSingleMessage<TMessage>(BinaryReader br) where TMessage : Envelope, new()
         {
             var msg = new TMessage
             {
@@ -93,7 +94,7 @@ namespace Jasper.Bus.Queues.Serialization
             }
         }
 
-        public static byte[] Serialize(this Message message)
+        public static byte[] Serialize(this Envelope message)
         {
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
@@ -122,7 +123,7 @@ namespace Jasper.Bus.Queues.Serialization
             }
         }
 
-        private static void WriteSingleMessage(Message message, BinaryWriter writer)
+        private static void WriteSingleMessage(Envelope message, BinaryWriter writer)
         {
             writer.Write(message.Id.SourceInstanceId.ToByteArray());
             writer.Write(message.Id.MessageIdentifier.ToByteArray());
