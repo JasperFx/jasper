@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Jasper.Bus.Runtime;
+using Jasper.Util;
 
 namespace Jasper.Bus.Queues.Serialization
 {
@@ -127,7 +128,7 @@ namespace Jasper.Bus.Queues.Serialization
         {
             writer.Write(message.Id.SourceInstanceId.ToByteArray());
             writer.Write(message.Id.MessageIdentifier.ToByteArray());
-            writer.Write(message.Queue);
+            writer.Write(message.Destination.QueueName());
             writer.Write(message.SubQueue ?? "");
             writer.Write(message.SentAt.ToBinary());
 

@@ -76,9 +76,6 @@ namespace Jasper.Bus.Transports.Lightweight
             var nodes = channels.Where(x => x.Uri.Scheme == Protocol).Distinct().ToArray();
             if (!nodes.Any()) return;
 
-            var ports = nodes.Select(x => x.Uri.Port).Distinct().ToArray();
-
-
 
             _queues = new LightweightQueues(_logger, _inmemory, pipeline, channels);
             foreach (var node in nodes)
@@ -86,9 +83,13 @@ namespace Jasper.Bus.Transports.Lightweight
                 _queues.AddQueue(node);
             }
 
-            foreach (var listener in _listeners)
+
+            foreach (var port in nodes.Select(x => x.Uri.Port).Distinct())
             {
-                listener.Start();
+                var agent = new ListeningAgent(_queues, port);
+                _listeners.Add(agent);
+
+                agent.Start();
             }
         }
 
