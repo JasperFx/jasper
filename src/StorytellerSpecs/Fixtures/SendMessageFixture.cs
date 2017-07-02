@@ -35,6 +35,8 @@ namespace StorytellerSpecs.Fixtures
             PersistentTransport.DeleteAllStorage();
         }
 
+
+
         public IGrammar IfTheApplicationIs()
         {
             return Embed<ServiceBusApplication>("If a service bus application is configured to")
@@ -179,9 +181,6 @@ namespace StorytellerSpecs.Fixtures
         {
             _runtime.Container.GetInstance<ISubscriptionsStorage>().ClearAll();
             _runtime.Dispose();
-
-            // Let LQ cooldown
-            Thread.Sleep(1000);
         }
     }
 

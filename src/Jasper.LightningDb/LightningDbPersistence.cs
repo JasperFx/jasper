@@ -60,9 +60,9 @@ namespace Jasper.LightningDb
         {
             if (disposing)
             {
-                foreach (var database in _databaseCache)
+                foreach (var database in _databaseCache.Values)
                 {
-                    database.Value.Dispose();
+                    database.Dispose();
                 }
 
                 GC.SuppressFinalize(this);
