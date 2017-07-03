@@ -21,6 +21,8 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public string NodeName { get; set; }
         public string Id { get; set; }
+
+        [Obsolete("Think this will be obsolete w/ the address")]
         public string MachineName { get; set; }
         public Uri Address { get; set; }
 

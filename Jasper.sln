@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "src\Int
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.LightningDb", "src\Jasper.LightningDb\Jasper.LightningDb.csproj", "{8852E247-D855-4018-8D6E-CED628CDBFF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.Consul", "Jasper.Consul\Jasper.Consul.csproj", "{F9A3F8E5-9DE0-465D-AB0A-7E8C21376C5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.Consul", "src\Jasper.Consul\Jasper.Consul.csproj", "{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,10 +95,10 @@ Global
 		{8852E247-D855-4018-8D6E-CED628CDBFF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8852E247-D855-4018-8D6E-CED628CDBFF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8852E247-D855-4018-8D6E-CED628CDBFF7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F9A3F8E5-9DE0-465D-AB0A-7E8C21376C5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F9A3F8E5-9DE0-465D-AB0A-7E8C21376C5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F9A3F8E5-9DE0-465D-AB0A-7E8C21376C5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F9A3F8E5-9DE0-465D-AB0A-7E8C21376C5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
