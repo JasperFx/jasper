@@ -8,7 +8,18 @@ using Newtonsoft.Json;
 namespace Jasper.Consul
 {
     // TODO -- clean this code up and eliminate the duplication. It's at spike quality code at the moment
-    public class ConsulGateway
+    public interface IConsulGateway
+    {
+        Task RegisterService(ServiceRegistration registration);
+        Task<ServiceRegistration[]> GetRegisteredServices();
+        Task<ServiceRegistration[]> GetRegisteredServices(string serviceName);
+        Task<string> GetProperty(string key);
+        Task SetProperty(string key, string value);
+        Task Register(RunningService service);
+        Task UnRegister(string id);
+    }
+
+    public class ConsulGateway : IConsulGateway
     {
         private readonly HttpClient _client;
         private readonly ConsulSettings _settings;

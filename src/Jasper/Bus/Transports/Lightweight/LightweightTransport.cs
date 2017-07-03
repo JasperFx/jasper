@@ -86,7 +86,7 @@ namespace Jasper.Bus.Transports.Lightweight
 
         private void startListening(IHandlerPipeline pipeline, ChannelGraph channels)
         {
-            var nodes = channels.Where(x => x.Uri.Scheme == Protocol).ToArray();
+            var nodes = channels.Where(x => x.Uri.Scheme == Protocol).Distinct().ToArray();
             if (!nodes.Any()) return;
 
             var groups = nodes.Where(x => x.Incoming).GroupBy(x => x.Uri.Port);

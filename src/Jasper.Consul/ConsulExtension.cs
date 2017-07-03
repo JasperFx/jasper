@@ -12,6 +12,7 @@ namespace Jasper.Consul
         public void Configure(JasperRegistry registry)
         {
             registry.Services.For<IUriLookup>().Add<ConsulUriLookup>();
+            registry.Services.For<IConsulGateway>().Add<ConsulGateway>();
         }
     }
 }

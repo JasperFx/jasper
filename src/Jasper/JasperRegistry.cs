@@ -37,7 +37,8 @@ namespace Jasper
                 ApplicationAssembly = findTheCallingAssembly();
             }
 
-            Generation = new GenerationConfig($"{ApplicationAssembly.GetName().Name}.Generated");
+            var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
+            Generation = new GenerationConfig($"{name}.Generated");
 
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
