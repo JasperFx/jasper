@@ -42,42 +42,39 @@ namespace Jasper.Bus
             return bootstrap(registry);
         }
 
-        Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
+        async Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
         {
-            return Task.Factory.StartNew(() =>
+            var container = runtime.Container;
+
+            // TODO -- will need to be smart enough to do the conglomerate
+            // generation config of the base, with service bus specific stuff
+            _graph.Compile(generation, container);
+
+            var lookups = container.GetAllInstances<IUriLookup>();
+            await Channels.ApplyLookups(lookups);
+
+            var transports = container.GetAllInstances<ITransport>().ToArray();
+            Channels.UseTransports(transports);
+
+
+
+            configureSerializationOrder(runtime);
+
+            var pipeline = container.GetInstance<IHandlerPipeline>();
+
+            verifyTransports(transports);
+
+            if (Channels.ControlChannel != null)
             {
-                var container = runtime.Container;
-
-                // TODO -- will need to be smart enough to do the conglomerate
-                // generation config of the base, with service bus specific stuff
-                _graph.Compile(generation, container);
-
-                var lookups = container.GetAllInstances<IUriLookup>();
-                Channels.ApplyLookups(lookups);
-
-                var transports = container.GetAllInstances<ITransport>().ToArray();
-                Channels.UseTransports(transports);
+                Channels.ControlChannel.MaximumParallelization = 1;
+            }
 
 
+            startTransports(transports, pipeline);
 
-                configureSerializationOrder(runtime);
+            container.GetInstance<IDelayedJobProcessor>().Start(pipeline, Channels);
 
-                var pipeline = container.GetInstance<IHandlerPipeline>();
-
-                verifyTransports(transports);
-
-                if (Channels.ControlChannel != null)
-                {
-                    Channels.ControlChannel.MaximumParallelization = 1;
-                }
-
-
-                startTransports(transports, pipeline);
-
-                container.GetInstance<IDelayedJobProcessor>().Start(pipeline, Channels);
-
-                container.GetInstance<ISubscriptionActivator>().Activate();
-            });
+            container.GetInstance<ISubscriptionActivator>().Activate();
         }
 
         private void startTransports(ITransport[] transports, IHandlerPipeline pipeline)

@@ -92,12 +92,18 @@ namespace Jasper.Testing.Bus
             with(_ =>
             {
                 _.Configuration.AddInMemoryCollection(
-                    new Dictionary<string, string> {{"outgoing", "lq.tcp://server1:2200/outgoing"}});
+                    new Dictionary<string, string>
+                    {
+                        {"outgoing", "lq.tcp://server1:2200/outgoing"},
+                        {"incoming", "lq.tcp://server2:2300/incoming"}
+                    });
 
                 _.SendMessage<Message1>().To("config://outgoing");
+                _.SendMessage<Message1>().To("config://incoming");
             });
 
             Channels["config://outgoing"].Uri.ShouldBe("lq.tcp://server1:2200/outgoing".ToUri());
+            Channels["config://incoming"].Uri.ShouldBe("lq.tcp://server2:2300/incoming".ToUri());
             Channels.HasChannel("lq.tcp://server1:2200/outgoing".ToUri()).ShouldBeTrue();
         }
     }
@@ -105,9 +111,11 @@ namespace Jasper.Testing.Bus
     public class FakeUriLookup : IUriLookup
     {
         public string Protocol { get; } = "fake";
-        public Uri Lookup(Uri original)
+        public Task<Uri[]> Lookup(Uri[] originals)
         {
-            return $"memory://{original.Host}".ToUri();
+            var actuals = originals.Select(x => $"memory://{x.Host}".ToUri());
+
+            return Task.FromResult(actuals.ToArray());
         }
     }
 }

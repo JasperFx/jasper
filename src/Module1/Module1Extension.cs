@@ -35,42 +35,34 @@ namespace Module1
     {
         public void Sent(Envelope envelope)
         {
-            throw new NotImplementedException();
         }
 
         public void Received(Envelope envelope)
         {
-            throw new NotImplementedException();
         }
 
         public void ExecutionStarted(Envelope envelope)
         {
-            throw new NotImplementedException();
         }
 
         public void ExecutionFinished(Envelope envelope)
         {
-            throw new NotImplementedException();
         }
 
         public void MessageSucceeded(Envelope envelope)
         {
-            throw new NotImplementedException();
         }
 
         public void MessageFailed(Envelope envelope, Exception ex)
         {
-            throw new NotImplementedException();
         }
 
         public void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
         {
-            throw new NotImplementedException();
         }
 
         public void NoHandlerFor(Envelope envelope)
         {
-            throw new NotImplementedException();
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Runtime;
 using Microsoft.Extensions.Configuration;
@@ -17,25 +18,34 @@ namespace Jasper.Bus.Configuration
 
         public string Protocol { get; } = "config";
 
-        public Uri Lookup(Uri original)
+        public Task<Uri[]> Lookup(Uri[] originals)
         {
-            var key = original.Host;
-
-            var uriString = _configuration.GetValue<string>(key);
-
-            if (uriString.IsEmpty())
+            var actuals = new Uri[originals.Length];
+            for (int i = 0; i < originals.Length; i++)
             {
-                throw new ArgumentOutOfRangeException(nameof(original), $"Could not find a configuration value for '{key}'");
+                var original = originals[i];
+
+                var key = original.Host;
+
+                var uriString = _configuration.GetValue<string>(key);
+
+                if (uriString.IsEmpty())
+                {
+                    throw new ArgumentOutOfRangeException(nameof(originals), $"Could not find a configuration value for '{key}'");
+                }
+
+                try
+                {
+                    actuals[i] = uriString.ToUri();
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidOperationException($"Could not parse '{uriString}' from configuration item {key} into a Uri");
+                }
             }
 
-            try
-            {
-                return uriString.ToUri();
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException($"Could not parse '{uriString}' from configuration item {key} into a Uri");
-            }
+            return Task.FromResult(actuals);
+
         }
     }
 }

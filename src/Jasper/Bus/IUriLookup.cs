@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Runtime;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +11,7 @@ namespace Jasper.Bus
     {
         string Protocol { get; }
 
-        Uri Lookup(Uri original);
+        Task<Uri[]> Lookup(Uri[] originals);
     }
 
 }
