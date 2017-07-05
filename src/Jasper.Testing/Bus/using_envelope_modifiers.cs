@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Testing.Bus.Runtime;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -31,8 +32,8 @@ namespace Jasper.Testing.Bus
             await Bus.SendAndWait(new Message1());
             await Bus.SendAndWait(new Message2());
 
-            var envelopeForChannelOne = EnvelopeCatchingHandler.Received.First(x => x.MessageType == "message1");
-            var envelopeForChannelTwo = EnvelopeCatchingHandler.Received.First(x => x.MessageType == "message2");
+            var envelopeForChannelOne = EnvelopeCatchingHandler.Received.First(x => x.MessageType == typeof(Message1).ToTypeAlias());
+            var envelopeForChannelTwo = EnvelopeCatchingHandler.Received.First(x => x.MessageType == typeof(Message2).ToTypeAlias());
 
             envelopeForChannelOne.Headers["foo"].ShouldBe("yes");
             envelopeForChannelOne.Headers["bar"].ShouldBe("yes");

@@ -4,9 +4,26 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Baseline;
 
 namespace Jasper.Util
 {
+    /// <summary>
+    /// Used to override Jasper's default behavior for identifying a message type.
+    /// Useful for integrating with other services without having to share a DTO
+    /// type
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class TypeAliasAttribute : Attribute
+    {
+        public string Alias { get; }
+
+        public TypeAliasAttribute(string alias)
+        {
+            Alias = alias;
+        }
+    }
+
     public static class TypeExtensions
     {
         private static readonly Regex _aliasSanitizer = new Regex("<|>", RegexOptions.Compiled);
@@ -27,15 +44,21 @@ namespace Jasper.Util
 
         public static string ToTypeAlias(this Type type)
         {
-            var nameToAlias = type.Name;
+            if (type.HasAttribute<TypeAliasAttribute>())
+            {
+                return type.GetAttribute<TypeAliasAttribute>().Alias;
+            }
+
+            var nameToAlias = type.FullName;
             if (type.GetTypeInfo().IsGenericType)
             {
                 nameToAlias = _aliasSanitizer.Replace(type.GetPrettyName(), string.Empty);
             }
-            var parts = new List<string> {nameToAlias.ToLower()};
+
+            var parts = new List<string> {nameToAlias};
             if (type.IsNested)
             {
-                parts.Insert(0, type.DeclaringType.Name.ToLower());
+                parts.Insert(0, type.DeclaringType.Name);
             }
 
             return string.Join("_", parts);
