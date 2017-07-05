@@ -4,15 +4,16 @@ using System.IO;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Serializers
 {
     public class EnvelopeSerializer : IEnvelopeSerializer
     {
         private readonly ChannelGraph _graph;
-        private readonly Dictionary<string, IMessageSerializer> _serializers = new Dictionary<string, IMessageSerializer>();
+        private readonly Dictionary<string, ISerializer> _serializers = new Dictionary<string, ISerializer>();
 
-        public EnvelopeSerializer(ChannelGraph graph, IEnumerable<IMessageSerializer> serializers)
+        public EnvelopeSerializer(ChannelGraph graph, IEnumerable<ISerializer> serializers)
         {
             _graph = graph;
             foreach (var serializer in serializers)
@@ -74,7 +75,7 @@ namespace Jasper.Bus.Runtime.Serializers
             }
         }
 
-        public IMessageSerializer SelectSerializer(Envelope envelope, ChannelNode node)
+        public ISerializer SelectSerializer(Envelope envelope, ChannelNode node)
         {
             if (envelope.ContentType.IsNotEmpty())
             {

@@ -7,6 +7,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Conneg;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap.TypeRules;
 
@@ -113,9 +114,9 @@ namespace Jasper.Bus
             }
 
 
-            public SerializationExpression Add<T>() where T : IMessageSerializer
+            public SerializationExpression Add<T>() where T : ISerializer
             {
-                _parent.Services.For<IMessageSerializer>().Add<T>();
+                _parent.Services.For<ISerializer>().Add<T>();
                 return this;
             }
 

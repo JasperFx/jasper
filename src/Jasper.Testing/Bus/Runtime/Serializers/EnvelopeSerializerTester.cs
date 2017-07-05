@@ -5,26 +5,28 @@ using System.Text;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Conneg;
 using Newtonsoft.Json;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using JsonSerializer = Jasper.Bus.Runtime.Serializers.JsonSerializer;
 
 namespace Jasper.Testing.Bus.Runtime.Serializers
 {
     public class EnvelopeSerializerTester
     {
-        private IMessageSerializer[] messageSerializers;
+        private ISerializer[] _serializers;
         private EnvelopeSerializer theSerializer;
         private Address theAddress;
         private ChannelGraph theGraph;
 
         public EnvelopeSerializerTester()
         {
-            messageSerializers = new IMessageSerializer[]
-                {new JsonMessageSerializer(new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All})};
+            _serializers = new ISerializer[]
+                {new JsonSerializer(new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All})};
             theGraph = new ChannelGraph();
-            theSerializer = new EnvelopeSerializer(theGraph, messageSerializers);
+            theSerializer = new EnvelopeSerializer(theGraph, _serializers);
 
             theAddress = new Address { City = "Jasper", State = "Missouri" };
         }
@@ -32,7 +34,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
 
         private void assertRoundTrips(int index)
         {
-            var contentType = messageSerializers[index].ContentType;
+            var contentType = _serializers[index].ContentType;
             var envelope = new Envelope()
             {
                 Message = theAddress,
@@ -81,13 +83,13 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
 
     public class EnvelopeSerializer_sad_path_Tester : InteractionContext<EnvelopeSerializer>
     {
-        private IMessageSerializer[] serializers;
+        private ISerializer[] serializers;
         private Envelope theEnvelope;
         private ChannelNode theNode = new ChannelNode(new Uri("stub://1"));
 
         public EnvelopeSerializer_sad_path_Tester()
         {
-            serializers = Services.CreateMockArrayFor<IMessageSerializer>(5);
+            serializers = Services.CreateMockArrayFor<ISerializer>(5);
             for (int i = 0; i < serializers.Length; i++)
             {
                 serializers[i].ContentType.Returns("text/" + i);
@@ -145,7 +147,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
         {
             Exception<EnvelopeDeserializationException>.ShouldBeThrownBy(() =>
             {
-                var messageSerializer = new JsonMessageSerializer(new JsonSerializerSettings());
+                var messageSerializer = new JsonSerializer(new JsonSerializerSettings());
                 var serializer = new EnvelopeSerializer(null, new[] { messageSerializer });
                 var envelope = new Envelope(Encoding.UTF8.GetBytes("garbage"), new Dictionary<string, string>(), null);
                 envelope.ContentType = messageSerializer.ContentType;

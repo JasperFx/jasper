@@ -1,13 +1,12 @@
 ﻿using System.IO;
 
-namespace Jasper.Bus.Runtime.Serializers
+namespace Jasper.Conneg
 {
-    public interface IMessageSerializer
+    public interface ISerializer
     {
         void Serialize(object message, Stream stream);
         object Deserialize(Stream message);
 
-        // TODO -- might need to change this to multiple mimetypes just like Conneg
         string ContentType { get; }
     }
 }

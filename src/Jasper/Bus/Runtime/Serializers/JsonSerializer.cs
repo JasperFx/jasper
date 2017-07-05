@@ -1,16 +1,17 @@
 using System.IO;
+using Jasper.Conneg;
 using Newtonsoft.Json;
 
 namespace Jasper.Bus.Runtime.Serializers
 {
-    public class JsonMessageSerializer : IMessageSerializer
+    public class JsonSerializer : ISerializer
     {
-        private readonly JsonSerializer _serializer;
+        private readonly Newtonsoft.Json.JsonSerializer _serializer;
 
-        public JsonMessageSerializer(JsonSerializerSettings settings)
+        public JsonSerializer(JsonSerializerSettings settings)
         {
             //settings.TypeNameHandling = TypeNameHandling.Objects;
-            _serializer = JsonSerializer.Create(settings);
+            _serializer = Newtonsoft.Json.JsonSerializer.Create(settings);
         }
 
         public void Serialize(object message, Stream stream)

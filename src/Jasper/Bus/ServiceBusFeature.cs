@@ -12,6 +12,7 @@ using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.InMemory;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using Jasper.Conneg;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using Policies = Jasper.Bus.Configuration.Policies;
@@ -100,7 +101,7 @@ namespace Jasper.Bus
 
         private void configureSerializationOrder(JasperRuntime runtime)
         {
-            var contentTypes = runtime.Container.GetAllInstances<IMessageSerializer>()
+            var contentTypes = runtime.Container.GetAllInstances<ISerializer>()
                 .Select(x => x.ContentType).ToArray();
 
             var unknown = Channels.AcceptedContentTypes.Where(x => !contentTypes.Contains(x)).ToArray();

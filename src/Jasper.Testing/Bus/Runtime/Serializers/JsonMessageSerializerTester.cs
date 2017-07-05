@@ -5,6 +5,7 @@ using Jasper.Bus.Runtime.Serializers;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
+using JsonSerializer = Jasper.Bus.Runtime.Serializers.JsonSerializer;
 
 namespace Jasper.Testing.Bus.Runtime.Serializers
 {
@@ -18,10 +19,10 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects
             };
 
-            _serializer = new JsonMessageSerializer(settings);
+            _serializer = new JsonSerializer(settings);
         }
 
-        private readonly JsonMessageSerializer _serializer;
+        private readonly JsonSerializer _serializer;
 
         [Fact]
         public void can_round_trip()

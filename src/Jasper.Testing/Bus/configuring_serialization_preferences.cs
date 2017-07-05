@@ -2,6 +2,7 @@
 using System.IO;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Conneg;
 using Xunit;
 
 namespace Jasper.Testing.Bus
@@ -15,7 +16,7 @@ namespace Jasper.Testing.Bus
 
             Runtime.Container.GetInstance<ChannelGraph>().AcceptedContentTypes.ShouldHaveTheSameElementsAs("application/json");
 
-            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IMessageSerializer, JsonMessageSerializer>(Runtime.Container);
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<ISerializer, JsonSerializer>(Runtime.Container);
         }
 
         [Fact]
@@ -30,8 +31,8 @@ namespace Jasper.Testing.Bus
             Runtime.Container.GetInstance<ChannelGraph>().AcceptedContentTypes
                 .ShouldHaveTheSameElementsAs("application/json", "fake/one", "fake/two");
 
-            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IMessageSerializer, Serializer1>(Runtime.Container);
-            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IMessageSerializer, Serializer2>(Runtime.Container);
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<ISerializer, Serializer1>(Runtime.Container);
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<ISerializer, Serializer2>(Runtime.Container);
         }
 
         [Fact]
@@ -64,9 +65,9 @@ namespace Jasper.Testing.Bus
         }
     }
 
-    public abstract class FakeMessageSerializer : IMessageSerializer
+    public abstract class FakeSerializer : ISerializer
     {
-        public FakeMessageSerializer(string contentType)
+        public FakeSerializer(string contentType)
         {
             ContentType = contentType;
         }
@@ -84,14 +85,14 @@ namespace Jasper.Testing.Bus
         public string ContentType { get; }
     }
 
-    public class Serializer1 : FakeMessageSerializer
+    public class Serializer1 : FakeSerializer
     {
         public Serializer1() : base("fake/one")
         {
         }
     }
 
-    public class Serializer2 : FakeMessageSerializer
+    public class Serializer2 : FakeSerializer
     {
         public Serializer2() : base("fake/two")
         {

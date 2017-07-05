@@ -7,6 +7,7 @@ using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Conneg;
 using StoryTeller;
 using StoryTeller.Engine;
 using StoryTeller.Grammars.Tables;
@@ -70,7 +71,7 @@ namespace StorytellerSpecs.Fixtures
         }
     }
 
-    public class FakeSerializer : IMessageSerializer
+    public class FakeSerializer : ISerializer
     {
         public FakeSerializer(string contentType)
         {

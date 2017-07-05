@@ -8,6 +8,7 @@ using Jasper.Bus.Transports.InMemory;
 using Jasper.Bus.Transports.LightningQueues;
 using Jasper.Bus.Transports.Lightweight;
 using Jasper.Configuration;
+using Jasper.Conneg;
 
 namespace Jasper.Bus
 {
@@ -38,7 +39,7 @@ namespace Jasper.Bus
             ForSingletonOf<ISubscriptionsStorage>().UseIfNone<SubscriptionsStorage>();
 
             ForSingletonOf<IEnvelopeSerializer>().Use<EnvelopeSerializer>();
-            For<IMessageSerializer>().Add<JsonMessageSerializer>();
+            For<ISerializer>().Add<JsonSerializer>();
 
             ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
 
