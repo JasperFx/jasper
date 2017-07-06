@@ -21,7 +21,7 @@ namespace IntegrationTests.Conneg
             greenApp = JasperRuntime.For<GreenApp>();
             blueApp = JasperRuntime.For<BlueApp>();
 
-            theTracker = greenApp.Container.GetInstance<MessageTracker>();
+            theTracker = blueApp.Container.GetInstance<MessageTracker>();
         }
 
         public void Dispose()
@@ -35,7 +35,7 @@ namespace IntegrationTests.Conneg
         {
             var waiter = theTracker.WaitFor<BlueMessage>();
 
-            greenApp.Container.GetInstance<IServiceBus>().Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
+            await greenApp.Container.GetInstance<IServiceBus>().Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
 
             var envelope = await waiter;
 
@@ -52,6 +52,7 @@ namespace IntegrationTests.Conneg
     {
         public BlueApp()
         {
+            Services.For<MessageTracker>().Use(new MessageTracker());
             ListenForMessagesFrom("jasper://localhost:2555/blue");
         }
     }
@@ -60,8 +61,6 @@ namespace IntegrationTests.Conneg
     {
         public GreenApp()
         {
-            Services.For<MessageTracker>().Use(new MessageTracker());
-
             SendMessage<GreenMessage>().To("jasper://localhost:2555/blue");
         }
     }
