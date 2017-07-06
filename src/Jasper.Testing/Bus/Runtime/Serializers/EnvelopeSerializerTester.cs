@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
@@ -26,7 +27,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
             _serializers = new ISerializer[]
                 {new NewtonsoftSerializer(new BusSettings())};
             theGraph = new ChannelGraph();
-            theSerializer = new EnvelopeSerializer(theGraph, _serializers);
+            theSerializer = new EnvelopeSerializer(theGraph, new HandlerGraph(), _serializers, new List<IMediaReader>(), new List<IMediaWriter>());
 
             theAddress = new Address { City = "Jasper", State = "Missouri" };
         }
@@ -148,7 +149,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
             Exception<EnvelopeDeserializationException>.ShouldBeThrownBy(() =>
             {
                 var messageSerializer = new NewtonsoftSerializer(new BusSettings());
-                var serializer = new EnvelopeSerializer(null, new[] { messageSerializer });
+                var serializer = new EnvelopeSerializer(null, new HandlerGraph(), new[] { messageSerializer }, new List<IMediaReader>(), new List<IMediaWriter>());
                 var envelope = new Envelope(Encoding.UTF8.GetBytes("garbage"), new Dictionary<string, string>(), null);
                 envelope.ContentType = messageSerializer.ContentType;
                 serializer.Deserialize(envelope, theNode);

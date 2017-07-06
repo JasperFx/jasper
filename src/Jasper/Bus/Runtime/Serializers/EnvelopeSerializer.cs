@@ -4,22 +4,31 @@ using System.IO;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Model;
 using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Serializers
 {
     public class EnvelopeSerializer : IEnvelopeSerializer
     {
-        private readonly ChannelGraph _graph;
+        private readonly ChannelGraph _channels;
+        private readonly HandlerGraph _handlers;
         private readonly Dictionary<string, ISerializer> _serializers = new Dictionary<string, ISerializer>();
 
-        public EnvelopeSerializer(ChannelGraph graph, IEnumerable<ISerializer> serializers)
+        private readonly IList<IMediaReader> _readers = new List<IMediaReader>();
+        private readonly IList<IMediaWriter> _writers = new List<IMediaWriter>();
+
+        public EnvelopeSerializer(ChannelGraph channels, HandlerGraph handlers, IEnumerable<ISerializer> serializers, IEnumerable<IMediaReader> readers, IEnumerable<IMediaWriter> writers)
         {
-            _graph = graph;
+            _channels = channels;
+            _handlers = handlers;
             foreach (var serializer in serializers)
             {
                 _serializers.SmartAdd(serializer.ContentType, serializer);
             }
+
+            _readers.AddRange(readers);
+            _writers.AddRange(writers);
         }
 
         public object Deserialize(Envelope envelope, ChannelNode node)
@@ -94,7 +103,7 @@ namespace Jasper.Bus.Runtime.Serializers
             }
             else
             {
-                mimeType = chooseContentType(_graph);
+                mimeType = chooseContentType(_channels);
             }
 
             return mimeType.IsEmpty()

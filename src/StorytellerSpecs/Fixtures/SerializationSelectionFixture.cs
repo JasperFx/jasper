@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
@@ -44,7 +45,7 @@ namespace StorytellerSpecs.Fixtures
             _graph = new ChannelGraph();
             _graph.AcceptedContentTypes.AddRange(mimetypes.ToDelimitedArray(';'));
 
-            _envelopeSerializer = new EnvelopeSerializer(_graph, _serializers);
+            _envelopeSerializer = new EnvelopeSerializer(_graph, new HandlerGraph(), _serializers, new IMediaReader[0], new IMediaWriter[0]);
         }
 
 
