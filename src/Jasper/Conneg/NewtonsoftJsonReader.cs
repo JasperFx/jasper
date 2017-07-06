@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Jasper.Util;
 using Newtonsoft.Json;
 
 namespace Jasper.Conneg
 {
-    public class NewtonsoftJsonReader<T> : IMediaReader<T>
+    public class NewtonsoftJsonReader<T> : IMediaReader
     {
         private readonly JsonSerializer _serializer;
 
@@ -14,9 +15,11 @@ namespace Jasper.Conneg
             _serializer = JsonSerializer.Create(settings);
         }
 
+        public string MessageType { get; } = typeof(T).ToTypeAlias();
+        public Type DotNetType { get; } = typeof(T);
         public string ContentType { get; } = "application/json";
 
-        public T Read(byte[] data)
+        public object Read(byte[] data)
         {
             using (var stream = new MemoryStream(data))
             {
@@ -27,7 +30,7 @@ namespace Jasper.Conneg
 
         }
 
-        public Task<T> Read(Stream stream)
+        public Task<T1> Read<T1>(Stream stream)
         {
             throw new NotImplementedException();
         }

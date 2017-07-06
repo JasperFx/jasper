@@ -13,9 +13,9 @@ namespace Jasper.Testing.Bus.Compilation
         {
             withAllDefaults();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(Graph.Chains.Any());
+            ShouldBeBooleanExtensions.ShouldBeTrue(Handlers.Chains.Any());
 
-            foreach (var chain in Graph.Chains)
+            foreach (var chain in Handlers.Chains)
             {
                 ShouldBeStringTestExtensions.ShouldContain(chain.SourceCode, chain.TypeName);
 

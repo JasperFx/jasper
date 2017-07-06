@@ -16,7 +16,7 @@ namespace Jasper.Testing.Bus
         protected void withAllDefaults()
         {
             with(new JasperBusRegistry());
-            Graph = Runtime.Container.GetInstance<HandlerGraph>();
+            Handlers = Runtime.Container.GetInstance<HandlerGraph>();
         }
 
         protected void with(JasperBusRegistry registry)
@@ -30,7 +30,7 @@ namespace Jasper.Testing.Bus
             Runtime = JasperRuntime.For(registry);
 
 
-            Graph = Runtime.Container.GetInstance<HandlerGraph>();
+            Handlers = Runtime.Container.GetInstance<HandlerGraph>();
         }
 
         protected void with(Action<JasperBusRegistry> configuration)
@@ -56,9 +56,9 @@ namespace Jasper.Testing.Bus
 
         protected HandlerChain chainFor<T>()
         {
-            return Graph.ChainFor<T>();
+            return Handlers.ChainFor<T>();
         }
 
-        public HandlerGraph Graph { get; private set; }
+        public HandlerGraph Handlers { get; private set; }
     }
 }

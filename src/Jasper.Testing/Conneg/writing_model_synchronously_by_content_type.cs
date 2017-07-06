@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Conneg;
 using Shouldly;
 using Xunit;
@@ -14,7 +16,7 @@ namespace Jasper.Testing.Conneg
 
         public writing_model_synchronously_by_content_type()
         {
-            theWriter = new ModelWriter<ConnegMessage>(new IMediaWriter<ConnegMessage>[]
+            theWriter = new ModelWriter<ConnegMessage>(new IMediaWriter[]
             {
                 new FakeWriter("blue"),
                 new FakeWriter("red"),
@@ -88,8 +90,9 @@ namespace Jasper.Testing.Conneg
     }
 
 
-    public class FakeWriter : IMediaWriter<ConnegMessage>
+    public class FakeWriter : IMediaWriter
     {
+        public Type DotNetType { get; }
         public string ContentType { get; }
 
         public FakeWriter(string contentType)
@@ -97,9 +100,14 @@ namespace Jasper.Testing.Conneg
             ContentType = contentType;
         }
 
-        public byte[] Write(ConnegMessage model)
+        public byte[] Write(object model)
         {
-            return Encoding.UTF8.GetBytes($"{model.Name}:{ContentType}");
+            return Encoding.UTF8.GetBytes($"{model.As<ConnegMessage>().Name}:{ContentType}");
+        }
+
+        public Task Write(object model, Stream stream)
+        {
+            throw new NotImplementedException();
         }
 
         public Task Write(ConnegMessage model, Stream stream)

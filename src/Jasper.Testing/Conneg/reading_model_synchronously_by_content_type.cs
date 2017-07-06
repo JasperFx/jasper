@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Conneg;
 using Shouldly;
 using Xunit;
@@ -9,11 +11,11 @@ namespace Jasper.Testing.Conneg
 {
     public class reading_model_synchronously_by_content_type
     {
-        private ModelReader<ConnegMessage> theReader;
+        private ModelReader theReader;
 
         public reading_model_synchronously_by_content_type()
         {
-            theReader = new ModelReader<ConnegMessage>(new IMediaReader<ConnegMessage>[]
+            theReader = new ModelReader(new IMediaReader[]
             {
                 new FakeReader("blue"),
                 new FakeReader("red"),
@@ -27,11 +29,11 @@ namespace Jasper.Testing.Conneg
             var bytes = Encoding.UTF8.GetBytes("Chiefs");
 
 
-            theReader.TryRead("blue", bytes, out ConnegMessage model)
+            theReader.TryRead("blue", bytes, out object model)
                 .ShouldBeTrue();
 
-            model.ContentType.ShouldBe("blue");
-            model.Name.ShouldBe("Chiefs");
+            model.As<ConnegMessage>().ContentType.ShouldBe("blue");
+            model.As<ConnegMessage>().Name.ShouldBe("Chiefs");
         }
 
 
@@ -41,7 +43,7 @@ namespace Jasper.Testing.Conneg
             var bytes = Encoding.UTF8.GetBytes("Broncos");
 
 
-            theReader.TryRead("purple", bytes, out ConnegMessage model)
+            theReader.TryRead("purple", bytes, out object model)
                 .ShouldBeFalse();
 
             model.ShouldBeNull();
@@ -50,16 +52,18 @@ namespace Jasper.Testing.Conneg
 
     }
 
-    public class FakeReader : IMediaReader<ConnegMessage>
+    public class FakeReader : IMediaReader
     {
         public FakeReader(string contentType)
         {
             ContentType = contentType;
         }
 
+        public string MessageType { get; }
+        public Type DotNetType { get; }
         public string ContentType { get; }
 
-        public ConnegMessage Read(byte[] data)
+        public object Read(byte[] data)
         {
             return new ConnegMessage
             {
@@ -68,10 +72,11 @@ namespace Jasper.Testing.Conneg
             };
         }
 
-        public Task<ConnegMessage> Read(Stream stream)
+        public Task<T> Read<T>(Stream stream)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
+
     }
 
     public class ConnegMessage

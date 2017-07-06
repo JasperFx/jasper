@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Jasper.Conneg
 {
-    public class ModelReader<T> where T : class
+    public class ModelReader
     {
-        private readonly Dictionary<string, IMediaReader<T>> _readers = new Dictionary<string, IMediaReader<T>>();
+        private readonly Dictionary<string, IMediaReader> _readers = new Dictionary<string, IMediaReader>();
 
-        public ModelReader(IMediaReader<T>[] readers)
+        public ModelReader(IMediaReader[] readers)
         {
             foreach (var reader in readers)
             {
@@ -17,7 +17,7 @@ namespace Jasper.Conneg
             }
         }
 
-        public bool TryRead(string contentType, byte[] data, out T model)
+        public bool TryRead(string contentType, byte[] data, out object model)
         {
             if (!_readers.ContainsKey(contentType))
             {
@@ -30,11 +30,11 @@ namespace Jasper.Conneg
             return true;
         }
 
-        public Task<T> TryRead(string contentType, Stream stream)
+        public Task<T> TryRead<T>(string contentType, Stream stream) where T : class
         {
             return !_readers.ContainsKey(contentType)
                 ? Task.FromResult(default(T))
-                : _readers[contentType].Read(stream);
+                : _readers[contentType].Read<T>(stream);
         }
     }
 }

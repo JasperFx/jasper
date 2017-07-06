@@ -20,7 +20,7 @@ namespace Jasper.Testing.Bus.ErrorHandling
             });
 
             // TODO -- Almost a worthless test
-            Graph.ErrorHandlers.Single()
+            Handlers.ErrorHandlers.Single()
                 .ShouldBeOfType<ErrorHandler>()
                 .Sources.Single()
                 .ShouldBeOfType<ContinuationSource>();

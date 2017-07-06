@@ -1,13 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Jasper.Conneg
 {
-    public class NewtonsoftJsonWriter<T> : IMediaWriter<T>
+    public class NewtonsoftJsonWriter<T> : IMediaWriter
     {
         // TODO -- apply character pooling here
-        
+
         private readonly JsonSerializer _serializer;
 
         public NewtonsoftJsonWriter(JsonSerializerSettings settings)
@@ -16,8 +17,8 @@ namespace Jasper.Conneg
         }
 
         public string ContentType { get; } = "application/json";
-        
-        public byte[] Write(T model)
+
+        public byte[] Write(object model)
         {
             using (var stream = new MemoryStream())
             {
@@ -26,10 +27,13 @@ namespace Jasper.Conneg
             }
         }
 
-        public Task Write(T model, Stream stream)
+        public Task Write(object model, Stream stream)
         {
             _serializer.Serialize(new JsonTextWriter(new StreamWriter(stream)), model);
             return Task.CompletedTask;
         }
+
+        public Type DotNetType { get; } = typeof(T);
+
     }
 }

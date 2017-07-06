@@ -1,12 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Jasper.Conneg
 {
-    public interface IMediaReader<T>
+    public interface IMediaReader
     {
+        string MessageType { get; }
+        Type DotNetType { get; }
+
         string ContentType { get; }
-        T Read(byte[] data);
-        Task<T> Read(Stream stream);
+        object Read(byte[] data);
+        Task<T> Read<T>(Stream stream);
     }
 }

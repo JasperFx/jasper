@@ -12,7 +12,7 @@ namespace Jasper.Testing.Bus.Compilation
         {
             withAllDefaults();
 
-            var chain = Graph.ChainFor<Message1>();
+            var chain = Handlers.ChainFor<Message1>();
             var call = chain.Handlers.First(x => x.HandlerType == typeof(ThingWithInner.InnerHandler));
             ShouldBeNullExtensions.ShouldNotBeNull(call);
         }
