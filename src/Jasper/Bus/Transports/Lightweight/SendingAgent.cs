@@ -71,7 +71,7 @@ namespace Jasper.Bus.Transports.Lightweight
 
         private Task connect(TcpClient client, Uri destination)
         {
-            return Dns.GetHostName() == destination.Host
+            return Dns.GetHostName() == destination.Host || destination.Host == "localhost" || destination.Host == "127.0.0.1"
                 ? client.ConnectAsync(IPAddress.Loopback, destination.Port)
                 : client.ConnectAsync(destination.Host, destination.Port);
         }
