@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
@@ -10,7 +11,6 @@ using Newtonsoft.Json;
 using NSubstitute;
 using Shouldly;
 using Xunit;
-using JsonSerializer = Jasper.Bus.Runtime.Serializers.JsonSerializer;
 
 namespace Jasper.Testing.Bus.Runtime.Serializers
 {
@@ -24,7 +24,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
         public EnvelopeSerializerTester()
         {
             _serializers = new ISerializer[]
-                {new JsonSerializer(new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.All})};
+                {new NewtonsoftSerializer(new BusSettings())};
             theGraph = new ChannelGraph();
             theSerializer = new EnvelopeSerializer(theGraph, _serializers);
 
@@ -147,7 +147,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
         {
             Exception<EnvelopeDeserializationException>.ShouldBeThrownBy(() =>
             {
-                var messageSerializer = new JsonSerializer(new JsonSerializerSettings());
+                var messageSerializer = new NewtonsoftSerializer(new BusSettings());
                 var serializer = new EnvelopeSerializer(null, new[] { messageSerializer });
                 var envelope = new Envelope(Encoding.UTF8.GetBytes("garbage"), new Dictionary<string, string>(), null);
                 envelope.ContentType = messageSerializer.ContentType;

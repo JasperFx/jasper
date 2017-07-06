@@ -39,7 +39,7 @@ namespace Jasper.Bus
             ForSingletonOf<ISubscriptionsStorage>().UseIfNone<SubscriptionsStorage>();
 
             ForSingletonOf<IEnvelopeSerializer>().Use<EnvelopeSerializer>();
-            For<ISerializer>().Add<JsonSerializer>();
+            For<ISerializer>().Add<NewtonsoftSerializer>();
 
             ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
 

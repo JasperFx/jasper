@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
@@ -71,7 +72,7 @@ namespace StorytellerSpecs.Fixtures
         }
     }
 
-    public class FakeSerializer : ISerializer
+    public class FakeSerializer : ISerializer, IMediaReader, IMediaWriter
     {
         public FakeSerializer(string contentType)
         {
@@ -88,6 +89,47 @@ namespace StorytellerSpecs.Fixtures
             throw new System.NotImplementedException();
         }
 
+        public string MessageType { get; }
+
+        Type IMediaReader.DotNetType
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        Type IMediaWriter.DotNetType
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public string ContentType { get; }
+        public byte[] Write(object model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Write(object model, Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Read(byte[] data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> Read<T>(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IMediaReader[] ReadersFor(Type messageType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IMediaWriter[] WritersFor(Type messageType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

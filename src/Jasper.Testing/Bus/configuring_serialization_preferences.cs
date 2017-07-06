@@ -16,7 +16,7 @@ namespace Jasper.Testing.Bus
 
             Runtime.Container.GetInstance<ChannelGraph>().AcceptedContentTypes.ShouldHaveTheSameElementsAs("application/json");
 
-            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<ISerializer, JsonSerializer>(Runtime.Container);
+            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<ISerializer, NewtonsoftSerializer>(Runtime.Container);
         }
 
         [Fact]
@@ -83,6 +83,15 @@ namespace Jasper.Testing.Bus
         }
 
         public string ContentType { get; }
+        public IMediaReader[] ReadersFor(Type messageType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IMediaWriter[] WritersFor(Type messageType)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Serializer1 : FakeSerializer

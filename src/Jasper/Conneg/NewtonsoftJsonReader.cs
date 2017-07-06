@@ -6,24 +6,37 @@ using Newtonsoft.Json;
 
 namespace Jasper.Conneg
 {
-    public class NewtonsoftJsonReader<T> : IMediaReader
+    public class NewtonsoftJsonReader<T> : IMediaReader where T : class
     {
         private readonly JsonSerializer _serializer;
 
-        public NewtonsoftJsonReader(JsonSerializerSettings settings)
+        public NewtonsoftJsonReader(JsonSerializer serializer)
+            : this("application/json", serializer)
         {
-            _serializer = JsonSerializer.Create(settings);
+
         }
 
-        public string MessageType { get; } = typeof(T).ToTypeAlias();
-        public Type DotNetType { get; } = typeof(T);
-        public string ContentType { get; } = "application/json";
+
+        public NewtonsoftJsonReader(string contentType, JsonSerializer serializer)
+        {
+            _serializer = serializer;
+            DotNetType = typeof(T);
+            MessageType = typeof(T).ToTypeAlias();
+            ContentType = contentType;
+        }
+
+
+
+        public string MessageType { get; }
+        public Type DotNetType { get; }
+        public string ContentType { get; }
 
         public object Read(byte[] data)
         {
             using (var stream = new MemoryStream(data))
             {
                 stream.Position = 0;
+
                 return _serializer.Deserialize<T>(new JsonTextReader(new StreamReader(stream)));
             }
 

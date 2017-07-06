@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Baseline;
 
 namespace Jasper.Conneg
@@ -9,5 +10,8 @@ namespace Jasper.Conneg
         object Deserialize(Stream message);
 
         string ContentType { get; }
+
+        IMediaReader[] ReadersFor(Type messageType);
+        IMediaWriter[] WritersFor(Type messageType);
     }
 }

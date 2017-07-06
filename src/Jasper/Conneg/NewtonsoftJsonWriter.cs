@@ -11,12 +11,19 @@ namespace Jasper.Conneg
 
         private readonly JsonSerializer _serializer;
 
-        public NewtonsoftJsonWriter(JsonSerializerSettings settings)
+        public NewtonsoftJsonWriter(JsonSerializer serializer)
+            : this(serializer, "application/json")
         {
-            _serializer = JsonSerializer.Create(settings);
+            _serializer = _serializer;
         }
 
-        public string ContentType { get; } = "application/json";
+        public NewtonsoftJsonWriter(JsonSerializer serializer, string contentType)
+        {
+            _serializer = serializer;
+            ContentType = contentType;
+        }
+
+        public string ContentType { get; }
 
         public byte[] Write(object model)
         {

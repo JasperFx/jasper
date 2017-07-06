@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Jasper.Bus;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Conneg;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
-using JsonSerializer = Jasper.Bus.Runtime.Serializers.JsonSerializer;
 
 namespace Jasper.Testing.Bus.Runtime.Serializers
 {
@@ -13,16 +14,11 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
     {
         public JsonMessageSerializerTester()
         {
-            var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All,
-                PreserveReferencesHandling = PreserveReferencesHandling.Objects
-            };
 
-            _serializer = new JsonSerializer(settings);
+            _serializer = new NewtonsoftSerializer(new BusSettings());
         }
 
-        private readonly JsonSerializer _serializer;
+        private readonly NewtonsoftSerializer _serializer;
 
         [Fact]
         public void can_round_trip()

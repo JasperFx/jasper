@@ -7,6 +7,10 @@ namespace Jasper.Bus
         public int ResponsePort { get; set; } = 2333;
         public int MaximumFireAndForgetSendingAttempts { get; set; } = 3;
 
-        public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings();
+        public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+        };
     }
 }
