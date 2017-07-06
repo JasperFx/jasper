@@ -44,6 +44,7 @@ namespace Jasper.Bus.Transports.InMemory
         public void SendToReceiver(Uri destination, IReceiver receiver, InMemoryMessage message)
         {
             var callback = new InMemoryCallback(this, message, destination);
+            message.Headers[Envelope.ReceivedAtKey] = destination.ToString();
 
             if (message.Message == null)
             {

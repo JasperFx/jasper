@@ -132,7 +132,7 @@ namespace Jasper.Bus.Runtime.Serializers
             // TODO -- change the node AcceptedContentTypes to an accepts string instead
 
 
-            var accepts = envelope.Accepts ?? node.AcceptedContentTypes.Join(",");
+            var accepts = envelope.Accepts ?? node?.AcceptedContentTypes.Join(",");
             if (accepts.IsEmpty())
             {
                 accepts = _channels.DefaultContentType;
