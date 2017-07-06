@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -130,7 +130,16 @@ namespace Jasper.Bus.Runtime.Serializers
             var writer = writerFor(envelope.Message.GetType());
 
             // TODO -- change the node AcceptedContentTypes to an accepts string instead
-            if (writer.TryWrite(envelope.Accepts ?? node.AcceptedContentTypes.Join(","), envelope.Message, out string contentType, out byte[] data))
+
+
+            var accepts = envelope.Accepts ?? node.AcceptedContentTypes.Join(",");
+            if (accepts.IsEmpty())
+            {
+                accepts = _channels.DefaultContentType;
+            }
+
+
+            if (writer.TryWrite(accepts, envelope.Message, out string contentType, out byte[] data))
             {
                 envelope.Data = data;
                 envelope.ContentType = contentType;

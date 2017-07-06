@@ -12,7 +12,7 @@ namespace Jasper.Conneg
         private readonly ConcurrentDictionary<string, IMediaWriter> _selections
             = new ConcurrentDictionary<string, IMediaWriter>();
 
-        private string _defaultMimeType;
+        private readonly string _defaultMimeType;
 
         public ModelWriter(IMediaWriter[] writers)
         {
@@ -26,7 +26,14 @@ namespace Jasper.Conneg
 
         public bool TryWrite(string accepted, object model, out string contentType, out byte[] data)
         {
-            var writer = _selections.GetOrAdd(accepted, select);
+            if (_writers.Count == 0)
+            {
+                contentType = null;
+                data = null;
+                return false;
+            }
+
+            var writer = _selections.GetOrAdd(accepted ?? _defaultMimeType, select);
             if (writer == null)
             {
                 contentType = null;
@@ -60,7 +67,12 @@ namespace Jasper.Conneg
                 }
             }
 
-            return mimeTypes.AcceptsAny() ? _selections[_defaultMimeType] : null;
+            if (mimeTypes.AcceptsAny() && _writers.Any() && _writers.ContainsKey(_defaultMimeType))
+            {
+                return _writers[_defaultMimeType];
+            }
+
+            return null;
         }
     }
 }
