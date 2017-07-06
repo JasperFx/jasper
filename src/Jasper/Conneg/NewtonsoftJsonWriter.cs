@@ -29,7 +29,8 @@ namespace Jasper.Conneg
         {
             using (var stream = new MemoryStream())
             {
-                _serializer.Serialize(new JsonTextWriter(new StreamWriter(stream)), model);
+                _serializer.Serialize(new JsonTextWriter(new StreamWriter(stream){AutoFlush = true}), model);
+
                 return stream.ToArray();
             }
         }

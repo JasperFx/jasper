@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Conneg;
+using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Serializers
 {
@@ -18,6 +20,9 @@ namespace Jasper.Bus.Runtime.Serializers
         private readonly IList<IMediaReader> _readers = new List<IMediaReader>();
         private readonly IList<IMediaWriter> _writers = new List<IMediaWriter>();
 
+        private readonly ConcurrentDictionary<string, ModelReader> _modelReaders = new ConcurrentDictionary<string, ModelReader>();
+        private readonly ConcurrentDictionary<Type, ModelWriter> _modelWriters = new ConcurrentDictionary<Type, ModelWriter>();
+
         public EnvelopeSerializer(ChannelGraph channels, HandlerGraph handlers, IEnumerable<ISerializer> serializers, IEnumerable<IMediaReader> readers, IEnumerable<IMediaWriter> writers)
         {
             _channels = channels;
@@ -29,6 +34,38 @@ namespace Jasper.Bus.Runtime.Serializers
 
             _readers.AddRange(readers);
             _writers.AddRange(writers);
+        }
+
+        private ModelWriter writerFor(Type messageType)
+        {
+            return _modelWriters.GetOrAdd(messageType, compileWriter);
+        }
+
+        private ModelWriter compileWriter(Type messageType)
+        {
+            var fromSerializers = _serializers.Values.SelectMany(x => x.WritersFor(messageType));
+            var writers = _writers.Where(x => x.DotNetType == messageType);
+
+            return new ModelWriter(fromSerializers.Concat(writers).ToArray());
+        }
+
+        private ModelReader readerFor(string messageType)
+        {
+            return _modelReaders.GetOrAdd(messageType, compileReader);
+        }
+
+        private ModelReader compileReader(string messageType)
+        {
+            var readers = _readers.Where(x => x.MessageType == messageType).ToArray();
+            var chainCandidates = _handlers.Chains.Where(x => x.MessageType.ToTypeAlias() == messageType)
+                .Select(x => x.MessageType);
+
+            var candidateTypes = _readers.Select(x => x.DotNetType).Concat(chainCandidates).Distinct();
+
+            var fromSerializers =
+                _serializers.Values.SelectMany(x => candidateTypes.SelectMany(x.ReadersFor));
+
+            return new ModelReader(fromSerializers.Concat(readers).ToArray());
         }
 
         public object Deserialize(Envelope envelope, ChannelNode node)
@@ -45,7 +82,24 @@ namespace Jasper.Bus.Runtime.Serializers
                 throw new EnvelopeDeserializationException($"No data on the Envelope");
             }
 
-            // TODO -- fancier later with message mapping
+            if (envelope.MessageType.IsNotEmpty())
+            {
+                var reader = readerFor(envelope.MessageType);
+                if (reader.HasAnyReaders)
+                {
+                    try
+                    {
+                        if (reader.TryRead(envelope.ContentType, envelope.Data, out object model))
+                        {
+                            return model;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw EnvelopeDeserializationException.ForReadFailure(envelope, ex);
+                    }
+                }
+            }
 
             if (_serializers.ContainsKey(contentType))
             {
@@ -58,30 +112,33 @@ namespace Jasper.Bus.Runtime.Serializers
                     }
                     catch (Exception ex)
                     {
-                        throw new EnvelopeDeserializationException("Message serializer has failed", ex);
+                        throw EnvelopeDeserializationException.ForReadFailure(envelope, ex);
                     }
                 }
             }
 
-            throw new EnvelopeDeserializationException($"Unknown content-type '{contentType}'");
+            throw new EnvelopeDeserializationException($"Unknown content-type '{contentType}' and message-type '{envelope.MessageType}'");
         }
 
         public void Serialize(Envelope envelope, ChannelNode node)
         {
-            var serializer = SelectSerializer(envelope, node);
-            if (serializer == null)
+            if (envelope.Message == null)
             {
-                throw new InvalidOperationException($"Unable to choose a serializer for {envelope} with content-type {envelope.ContentType} for channel {node.Uri}");
+                throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message cannot be null");
             }
 
-            using (var stream = new MemoryStream())
-            {
-                serializer.Serialize(envelope.Message, stream);
-                stream.Position = 0;
+            var writer = writerFor(envelope.Message.GetType());
 
-                envelope.Data = stream.ReadAllBytes();
-                envelope.ContentType = serializer.ContentType;
+            // TODO -- change the node AcceptedContentTypes to an accepts string instead
+            if (writer.TryWrite(envelope.Accepts ?? node.AcceptedContentTypes.Join(","), envelope.Message, out string contentType, out byte[] data))
+            {
+                envelope.Data = data;
+                envelope.ContentType = contentType;
+
+                return;
             }
+
+            throw new InvalidOperationException($"Unable to choose a serializer for {envelope} with content-type {envelope.ContentType} and message type {envelope.Message.GetType().FullName} for channel {node.Uri}");
         }
 
         public ISerializer SelectSerializer(Envelope envelope, ChannelNode node)

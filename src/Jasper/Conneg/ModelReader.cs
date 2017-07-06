@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Jasper.Conneg
@@ -15,6 +16,8 @@ namespace Jasper.Conneg
             {
                 _readers[reader.ContentType] = reader;
             }
+
+            HasAnyReaders = _readers.Any();
         }
 
         public bool TryRead(string contentType, byte[] data, out object model)
@@ -36,5 +39,7 @@ namespace Jasper.Conneg
                 ? Task.FromResult(default(T))
                 : _readers[contentType].Read<T>(stream);
         }
+
+        public bool HasAnyReaders { get; }
     }
 }

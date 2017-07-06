@@ -11,12 +11,12 @@ namespace Jasper.Testing.Conneg
 {
     public class writing_model_synchronously_by_content_type
     {
-        private ModelWriter<ConnegMessage> theWriter;
+        private ModelWriter theWriter;
         private ConnegMessage theMessage = new ConnegMessage{Name = "Raiders"};
 
         public writing_model_synchronously_by_content_type()
         {
-            theWriter = new ModelWriter<ConnegMessage>(new IMediaWriter[]
+            theWriter = new ModelWriter(new IMediaWriter[]
             {
                 new FakeWriter("blue"),
                 new FakeWriter("red"),

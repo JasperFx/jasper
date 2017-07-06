@@ -121,6 +121,8 @@ namespace Jasper.Bus.Runtime
             set { Headers.Set(Envelope.AcceptedContentTypesKey, value?.Join(",")); }
         }
 
+        public string Accepts => Headers.Get(Envelope.AcceptedContentTypesKey);
+
         public IDictionary<string, string> Headers { get; set; }
 
         public string CorrelationId

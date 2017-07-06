@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Jasper.Conneg
 {
-    public class ModelWriter<T>
+    public class ModelWriter
     {
         private readonly Dictionary<string, IMediaWriter> _writers
             = new Dictionary<string, IMediaWriter>();
@@ -12,11 +12,11 @@ namespace Jasper.Conneg
         private readonly ConcurrentDictionary<string, IMediaWriter> _selections
             = new ConcurrentDictionary<string, IMediaWriter>();
 
-        private readonly IMediaWriter _default;
+        private string _defaultMimeType;
 
         public ModelWriter(IMediaWriter[] writers)
         {
-            _default = writers[0];
+            _defaultMimeType = writers.FirstOrDefault()?.ContentType;
 
             foreach (var writer in writers)
             {
@@ -24,7 +24,7 @@ namespace Jasper.Conneg
             }
         }
 
-        public bool TryWrite(string accepted, T model, out string contentType, out byte[] data)
+        public bool TryWrite(string accepted, object model, out string contentType, out byte[] data)
         {
             var writer = _selections.GetOrAdd(accepted, select);
             if (writer == null)
@@ -60,7 +60,7 @@ namespace Jasper.Conneg
                 }
             }
 
-            return mimeTypes.AcceptsAny() ? _default : null;
+            return mimeTypes.AcceptsAny() ? _selections[_defaultMimeType] : null;
         }
     }
 }

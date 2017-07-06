@@ -43,7 +43,10 @@ namespace Jasper.Conneg
         public IMediaWriter[] WritersFor(Type messageType)
         {
             // TODO -- this will be more later when we get the versions sorted out
-            throw new NotImplementedException();
+            return new IMediaWriter[]
+            {
+                typeof(NewtonsoftJsonWriter<>).CloseAndBuildAs<IMediaWriter>(_serializer, messageType)
+            };
         }
     }
 }

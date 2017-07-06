@@ -107,8 +107,6 @@ namespace Jasper.Bus.Configuration
                 channel?.ApplyModifiers(sending);
 
 
-                // TODO -- there's a little opportunity here to try to reuse the serialization
-                // if you send to more than one channel at a time w/ the same serializer
                 if (sending.Data == null || sending.Data.Length == 0)
                 {
                     serializer.Serialize(sending, channel);

@@ -129,7 +129,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
         [Fact]
         public void throws_on_serialize_with_no_message()
         {
-            Exception<InvalidOperationException>.ShouldBeThrownBy(() => {
+            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() => {
                 ClassUnderTest.Serialize(new Envelope(), theNode);
             });
         }
@@ -153,14 +153,14 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
                 var envelope = new Envelope(Encoding.UTF8.GetBytes("garbage"), new Dictionary<string, string>(), null);
                 envelope.ContentType = messageSerializer.ContentType;
                 serializer.Deserialize(envelope, theNode);
-            }).Message.ShouldBe("Message serializer has failed");
+            });
         }
 
         [Fact]
         public void ask_for_a_content_type_that_does_not_exist()
         {
             theEnvelope.ContentType = "weird";
-            Exception<InvalidOperationException>.ShouldBeThrownBy(() => {
+            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() => {
                 ClassUnderTest.Serialize(theEnvelope, theNode);
             });
         }
