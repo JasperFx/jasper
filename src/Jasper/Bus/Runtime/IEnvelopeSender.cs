@@ -21,7 +21,7 @@ namespace Jasper.Bus.Runtime
         private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
 
-        public NewEnvelopeSender(IMessageRouter router, ChannelGraph channels, IEnumerable<ITransport> transports)
+        public NewEnvelopeSender(IBusLogger[] loggers, IMessageRouter router, ChannelGraph channels, IEnumerable<ITransport> transports)
         {
             _router = router;
             _channels = channels;
@@ -30,7 +30,11 @@ namespace Jasper.Bus.Runtime
             {
                 _transports.SmartAdd(transport.Protocol, transport);
             }
+
+            Logger = BusLogger.Combine(loggers);
         }
+
+        public IBusLogger Logger { get;}
 
         public Task<string> Send(Envelope envelope)
         {
@@ -88,6 +92,8 @@ namespace Jasper.Bus.Runtime
                 {
                     await sendToDynamicChannel(route.Destination, callback, sending, transport);
                 }
+
+                Logger.Sent(sending);
 
                 return sending;
             }
