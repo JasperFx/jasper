@@ -18,7 +18,11 @@ namespace Jasper.Conneg
             }
 
             HasAnyReaders = _readers.Any();
+
+            ContentTypes = _readers.Keys.ToArray();
         }
+
+        public string[] ContentTypes { get; }
 
         public bool TryRead(string contentType, byte[] data, out object model)
         {
