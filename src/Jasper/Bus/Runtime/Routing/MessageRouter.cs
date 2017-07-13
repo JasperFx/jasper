@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -48,9 +51,45 @@ namespace Jasper.Bus.Runtime.Routing
 
         public MessageRoute[] Route(Type messageType)
         {
-            // Use subscriptions too
-            // Match by writers & what we know about routing rules
-            throw new NotImplementedException();
+            return _routes.GetOrAdd(messageType, type => compileRoutes(type).ToArray());
+        }
+
+        private IEnumerable<MessageRoute> compileRoutes(Type messageType)
+        {
+            // TODO -- trace subscriptions that cannot be filled?
+            var supported = _serializers.WriterFor(messageType).ContentTypes;
+
+            foreach (var channel in _channels.Distinct().Where(x => x.ShouldSendMessage(messageType)))
+            {
+
+                var contentType = channel.AcceptedContentTypes.Intersect<string>(supported.Split(',')).FirstOrDefault();
+
+                if (contentType.IsNotEmpty())
+                {
+                    yield return new MessageRoute(messageType, channel.Destination, contentType);
+                }
+            }
+
+            foreach (var subscription in _subscriptions.GetSubscribersFor(messageType))
+            {
+                if (subscription.Accepts.IsEmpty())
+                {
+                    yield return new MessageRoute(messageType, subscription.Receiver, "application/json");
+                }
+                else
+                {
+                    var accepted = subscription.Accepts.Split(',');
+
+                    var contentType = accepted.Intersect(supported.Split(',')).FirstOrDefault();
+
+                    if (contentType.IsNotEmpty())
+                    {
+                        yield return new MessageRoute(messageType, subscription.Receiver, contentType);
+                    }
+                }
+            }
+
+
         }
     }
 }
