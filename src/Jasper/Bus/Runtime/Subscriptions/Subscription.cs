@@ -1,5 +1,6 @@
 using System;
 using Baseline;
+using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
@@ -12,7 +13,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public Subscription(Type messageType)
         {
-            MessageType = messageType.GetFullName();
+            MessageType = messageType.ToTypeAlias();
         }
 
         public Subscription()
@@ -25,6 +26,8 @@ namespace Jasper.Bus.Runtime.Subscriptions
         public string MessageType { get; set; }
         public string NodeName { get; set; }
         public SubscriptionRole Role { get; set; }
+
+        public string Accepts { get; set; } = "application/json";
 
         public Subscription Clone()
         {
