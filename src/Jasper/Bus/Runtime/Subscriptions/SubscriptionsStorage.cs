@@ -11,6 +11,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
         IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole);
         void RemoveSubscriptions(IEnumerable<Subscription> subscriptions);
         void ClearAll();
+
         IEnumerable<Uri> GetSubscribersFor(Type messageType);
         IEnumerable<Subscription> ActiveSubscriptions { get; }
     }

@@ -1,10 +1,9 @@
 ﻿using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Bus.Subscriptions
+namespace Jasper.Testing.Bus.Runtime.Subscriptions
 {
     public class SubscriptionTester
     {
