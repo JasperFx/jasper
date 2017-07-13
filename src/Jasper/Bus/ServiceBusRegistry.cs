@@ -29,7 +29,7 @@ namespace Jasper.Bus
 
             For<IBusLogger>().Use<NulloBusLogger>();
 
-            For<IEnvelopeSender>().Use<EnvelopeSender>();
+            For<IEnvelopeSender>().Use<NewEnvelopeSender>();
             For<IServiceBus>().Use<ServiceBus>();
             For<IHandlerPipeline>().Use<HandlerPipeline>();
             For<ISubscriptionActivator>().Use<SubscriptionActivator>();

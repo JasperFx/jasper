@@ -143,7 +143,9 @@ task :storyteller => [:compile] do
 end
 
 desc "Run the storyteller specifications"
-task :open_st => [:compile] do
+task :open_st do
+  sh "dotnet restore Jasper.sln"
+
 	Dir.chdir("src/StorytellerSpecs") do
 	  system "dotnet storyteller open"
 	end

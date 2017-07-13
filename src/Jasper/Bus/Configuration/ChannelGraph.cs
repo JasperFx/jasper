@@ -37,6 +37,7 @@ namespace Jasper.Bus.Configuration
             UseTransports(transports);
         }
 
+        [Obsolete("Going to make this unnecessary w/ the new EnvelopeSender")]
         internal void UseTransports(IEnumerable<ITransport> transports)
         {
             foreach (var transport in transports)
@@ -45,6 +46,7 @@ namespace Jasper.Bus.Configuration
             }
         }
 
+        [Obsolete]
         private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
         public ChannelNode this[Uri uri]
@@ -107,10 +109,7 @@ namespace Jasper.Bus.Configuration
                 channel?.ApplyModifiers(sending);
 
 
-                if (sending.Data == null || sending.Data.Length == 0)
-                {
-                    serializer.Serialize(sending, channel);
-                }
+                serializer.Serialize(sending, channel);
 
 
                 sending.AcceptedContentTypes = AcceptedContentTypes.ToArray();
@@ -132,6 +131,7 @@ namespace Jasper.Bus.Configuration
 
         }
 
+        [Obsolete("Getting replaced w/ the new sender")]
         private static async Task sendToDynamicChannel(Uri address, IMessageCallback callback, Envelope sending, ITransport transport)
         {
             sending.Destination = address;
@@ -147,6 +147,7 @@ namespace Jasper.Bus.Configuration
             }
         }
 
+        [Obsolete("Getting replaced w/ the new sender")]
         private static async Task sendToStaticChannel(IMessageCallback callback, Envelope sending, ChannelNode channel)
         {
             sending.Destination = channel.Destination;

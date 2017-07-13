@@ -34,10 +34,25 @@ namespace Jasper.Bus.Runtime.Routing
             return _routes.GetOrAdd(messageType, type => compileRoutes(type).ToArray());
         }
 
+        public MessageRoute RouteForDestination(Envelope envelope)
+        {
+            // TODO -- memoize this some day
+            var messageType = envelope.Message.GetType();
+            var routes = Route(messageType);
+
+            return routes.FirstOrDefault(x => x.Destination == envelope.Destination)
+                   ?? new MessageRoute(
+                       messageType,
+                       _serializers.WriterFor(messageType),
+                       envelope.Destination,
+                       "application/json");
+        }
+
         private IEnumerable<MessageRoute> compileRoutes(Type messageType)
         {
             // TODO -- trace subscriptions that cannot be filled?
-            var supported = _serializers.WriterFor(messageType).ContentTypes;
+            var modelWriter = _serializers.WriterFor(messageType);
+            var supported = modelWriter.ContentTypes;
 
             foreach (var channel in _channels.Distinct().Where(x => x.ShouldSendMessage(messageType)))
             {
@@ -46,7 +61,7 @@ namespace Jasper.Bus.Runtime.Routing
 
                 if (contentType.IsNotEmpty())
                 {
-                    yield return new MessageRoute(messageType, channel.Destination, contentType);
+                    yield return new MessageRoute(messageType, modelWriter, channel.Destination, contentType);
                 }
             }
 
@@ -54,7 +69,7 @@ namespace Jasper.Bus.Runtime.Routing
             {
                 if (subscription.Accepts.IsEmpty())
                 {
-                    yield return new MessageRoute(messageType, subscription.Receiver, "application/json");
+                    yield return new MessageRoute(messageType, modelWriter, subscription.Receiver, "application/json");
                 }
                 else
                 {
@@ -64,7 +79,7 @@ namespace Jasper.Bus.Runtime.Routing
 
                     if (contentType.IsNotEmpty())
                     {
-                        yield return new MessageRoute(messageType, subscription.Receiver, contentType);
+                        yield return new MessageRoute(messageType, modelWriter, subscription.Receiver, contentType);
                     }
                 }
             }

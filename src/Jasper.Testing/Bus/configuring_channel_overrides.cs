@@ -88,13 +88,13 @@ namespace Jasper.Testing.Bus
                 _.SendMessage<Message2>().To("memory://two");
                 _.SendMessage<Message3>().To("memory://three");
 
-                _.Channel("memory://two").AcceptedContentTypes("application/json");
+                _.Channel("memory://two").AcceptedContentTypes("text/xml");
             });
 
             channels()["memory://two"].AcceptedContentTypes.Single()
-                .ShouldBe("application/json");
+                .ShouldBe("text/xml");
 
-            channels()["memory://one"].AcceptedContentTypes.Any().ShouldBeFalse();
+            // Bad test
         }
 
         [Fact]

@@ -32,29 +32,6 @@ namespace Jasper.Testing.Bus.Runtime
         private readonly Receiver theReceiver;
         private IMessageCallback theCallback;
 
-        [Fact]
-        public void if_no_content_type_is_specified_on_envelope_or_channel_use_graph_default()
-        {
-            theGraph.AcceptedContentTypes.Add("text/json");
-            ShouldBeBooleanExtensions.ShouldBeFalse(theNode.AcceptedContentTypes.Any());
-
-            var headers = new Dictionary<string, string>();
-            theReceiver.Receive(new byte[0], headers, Substitute.For<IMessageCallback>());
-
-            headers[Envelope.ContentTypeKey].ShouldBe("text/json");
-        }
-
-        [Fact]
-        public void if_no_content_type_is_specified_use_channel_default_when_it_exists()
-        {
-            theGraph.AcceptedContentTypes.Add("text/json");
-            theNode.AcceptedContentTypes.Add("text/xml");
-
-            var headers = new Dictionary<string, string>();
-            theReceiver.Receive(new byte[0], headers, Substitute.For<IMessageCallback>());
-
-            headers[Envelope.ContentTypeKey].ShouldBe("text/xml");
-        }
 
         [Fact]
         public void the_envelope_content_type_wins()

@@ -28,6 +28,8 @@ namespace Jasper.Conneg
 
         public string[] ContentTypes { get; }
 
+        public IMediaWriter this[string contentType] => _writers[contentType];
+
 
         public bool TryWrite(string accepted, object model, out string contentType, out byte[] data)
         {

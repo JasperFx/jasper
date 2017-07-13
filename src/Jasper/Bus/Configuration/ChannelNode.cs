@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
+using Jasper.Bus.Transports.LightningQueues;
 
 namespace Jasper.Bus.Configuration
 {
@@ -26,7 +27,10 @@ namespace Jasper.Bus.Configuration
 
         public ChannelNode(Uri uri)
         {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+
             Uri = uri;
+            Destination = uri;
         }
 
         public readonly List<string> AcceptedContentTypes = new List<string>{"application/json"};

@@ -129,8 +129,7 @@ namespace Jasper.Bus.Runtime
             return new Envelope
             {
                 Message = Message,
-                Headers = Headers.Clone(),
-                Data = Data
+                Headers = Headers.Clone()
             };
         }
 

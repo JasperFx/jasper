@@ -6,5 +6,6 @@ namespace Jasper.Bus.Runtime.Routing
     {
         void ClearAll();
         MessageRoute[] Route(Type messageType);
+        MessageRoute RouteForDestination(Envelope envelopeDestination);
     }
 }
