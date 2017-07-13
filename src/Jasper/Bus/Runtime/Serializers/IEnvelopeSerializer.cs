@@ -1,4 +1,8 @@
-﻿using Jasper.Bus.Configuration;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using Jasper.Bus.Configuration;
+using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Serializers
 {

@@ -39,18 +39,6 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
 
 
         [Fact]
-        public void chooses_by_mimetype()
-        {
-            theEnvelope.ContentType = serializers[3].ContentType;
-            var o = new object();
-            theEnvelope.Data = new byte[100];
-
-            serializers[3].Deserialize(Arg.Any<Stream>()).Returns(o);
-
-            ClassUnderTest.Deserialize(theEnvelope, theNode).ShouldBeTheSameAs(o);
-        }
-
-        [Fact]
         public void throws_on_unknown_content_type()
         {
             theEnvelope.ContentType = "random/nonexistent";
@@ -84,7 +72,7 @@ namespace Jasper.Testing.Bus.Runtime.Serializers
             Exception<EnvelopeDeserializationException>.ShouldBeThrownBy(() =>
             {
                 var messageSerializer = new NewtonsoftSerializer(new BusSettings());
-                var serializer = new EnvelopeSerializer(null, new HandlerGraph(), new[] { messageSerializer }, new List<IMediaReader>(), new List<IMediaWriter>());
+                var serializer = new EnvelopeSerializer(new ChannelGraph(), new SerializationGraph(new HandlerGraph(), new List<ISerializer>{messageSerializer}, new List<IMediaReader>(),new List<IMediaWriter>() ));
                 var envelope = new Envelope(Encoding.UTF8.GetBytes("garbage"), new Dictionary<string, string>(), null);
                 envelope.ContentType = messageSerializer.ContentType;
                 serializer.Deserialize(envelope, theNode);

@@ -44,6 +44,8 @@ namespace Jasper.Bus
             ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
 
             For<IUriLookup>().Add<ConfigUriLookup>();
+
+            ForSingletonOf<SerializationGraph>().Use<SerializationGraph>();
         }
     }
 }

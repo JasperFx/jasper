@@ -45,7 +45,8 @@ namespace StorytellerSpecs.Fixtures
             _graph = new ChannelGraph();
             _graph.AcceptedContentTypes.AddRange(mimetypes.ToDelimitedArray(';'));
 
-            _envelopeSerializer = new EnvelopeSerializer(_graph, new HandlerGraph(), _serializers, new IMediaReader[0], new IMediaWriter[0]);
+            // TODO -- need to rewrite these specs
+            //_envelopeSerializer = new EnvelopeSerializer(_graph);
         }
 
 
