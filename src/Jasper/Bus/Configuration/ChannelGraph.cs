@@ -27,28 +27,6 @@ namespace Jasper.Bus.Configuration
         // if it is not explicitly set
         public ChannelNode ControlChannel { get; set; }
 
-        public ChannelGraph()
-        {
-        }
-
-        // For testing
-        public ChannelGraph(params ITransport[] transports)
-        {
-            UseTransports(transports);
-        }
-
-        [Obsolete("Going to make this unnecessary w/ the new EnvelopeSender")]
-        internal void UseTransports(IEnumerable<ITransport> transports)
-        {
-            foreach (var transport in transports)
-            {
-                _transports.SmartAdd(transport.Protocol, transport);
-            }
-        }
-
-        [Obsolete]
-        private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
-
         public ChannelNode this[Uri uri]
         {
             get
@@ -71,13 +49,6 @@ namespace Jasper.Bus.Configuration
 
         public void Dispose()
         {
-            foreach (var transport in _transports.Values)
-            {
-                transport.Dispose();
-            }
-
-            _transports.Clear();
-
             _nodes.Clear();
         }
 

@@ -51,17 +51,17 @@ namespace Jasper.Bus
             // generation config of the base, with service bus specific stuff
             _graph.Compile(generation, container);
 
+            // TODO -- create a new "BusStartup" class that does all of this kind of stuff
             var lookups = container.GetAllInstances<IUriLookup>();
             await Channels.ApplyLookups(lookups);
-
-            var transports = container.GetAllInstances<ITransport>().ToArray();
-            Channels.UseTransports(transports);
 
 
 
             configureSerializationOrder(runtime);
 
             var pipeline = container.GetInstance<IHandlerPipeline>();
+
+            var transports = container.GetAllInstances<ITransport>().ToArray();
 
             verifyTransports(transports);
 
