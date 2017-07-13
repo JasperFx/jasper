@@ -1,9 +1,9 @@
 # Mix of Subscriptions and Static Rules
 
 -> id = 3221f1cc-59d0-4cfb-93cb-b42c8d47eb8c
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-07-13T14:42:10.8899130Z
+-> last-updated = 2017-07-13T16:29:42.4676280Z
 -> tags = 
 
 [BusRouting]

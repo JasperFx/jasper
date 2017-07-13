@@ -29,7 +29,7 @@ namespace Jasper.Bus.Configuration
             Uri = uri;
         }
 
-        public readonly List<string> AcceptedContentTypes = new List<string>();
+        public readonly List<string> AcceptedContentTypes = new List<string>{"application/json"};
 
         IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
         public bool Incoming { get; set; }

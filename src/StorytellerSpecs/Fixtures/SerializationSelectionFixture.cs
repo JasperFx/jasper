@@ -131,7 +131,7 @@ namespace StorytellerSpecs.Fixtures
 
         public IMediaWriter[] WritersFor(Type messageType)
         {
-            throw new NotImplementedException();
+            return new IMediaWriter[]{new FakeWriter(messageType, ContentType), };
         }
     }
 }

@@ -20,6 +20,7 @@ namespace StorytellerSpecs.Fixtures
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
         private JasperBusRegistry _registry;
         private MessageRoute[] _tracks;
+        private JasperRuntime _runtime;
 
         [ExposeAsTable("The subscriptions are")]
         public void SubscriptionsAre([SelectionList("MessageTypes")]string MessageType, [SelectionList("Channels")] Uri Destination, string Accepts)
@@ -69,12 +70,14 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
 
-            using (var runtime = JasperRuntime.For(_registry))
+            if (_runtime == null)
             {
-                var router = runtime.Container.GetInstance<IMessageRouter>();
-
-                _tracks = router.Route(messageType);
+                _runtime = JasperRuntime.For(_registry);
             }
+
+            var router = _runtime.Container.GetInstance<IMessageRouter>();
+
+            _tracks = router.Route(messageType);
         }
 
 
@@ -89,6 +92,13 @@ namespace StorytellerSpecs.Fixtures
         {
             _registry = new JasperBusRegistry();
             _registry.Services.For<ISubscriptionsStorage>().Use(this);
+        }
+
+        public override void TearDown()
+        {
+            _subscriptions.Clear();
+            _runtime?.Dispose();
+            _runtime = null;
         }
 
 

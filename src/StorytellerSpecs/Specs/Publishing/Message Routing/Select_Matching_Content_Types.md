@@ -1,9 +1,9 @@
 # Select Matching Content Types
 
 -> id = 9f245451-fab4-4004-bf35-43dcc047312c
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-07-13T14:47:42.3387670Z
+-> last-updated = 2017-07-13T16:29:35.4045020Z
 -> tags = 
 
 [BusRouting]

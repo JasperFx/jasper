@@ -23,10 +23,10 @@ namespace Jasper.Conneg
                 _writers[writer.ContentType] = writer;
             }
 
-            ContentTypes = _writers.Keys.ToString();
+            ContentTypes = _writers.Keys.ToArray();
         }
 
-        public string ContentTypes { get; }
+        public string[] ContentTypes { get; }
 
 
         public bool TryWrite(string accepted, object model, out string contentType, out byte[] data)

@@ -62,7 +62,7 @@ namespace Jasper.Bus.Runtime.Routing
             foreach (var channel in _channels.Distinct().Where(x => x.ShouldSendMessage(messageType)))
             {
 
-                var contentType = channel.AcceptedContentTypes.Intersect<string>(supported.Split(',')).FirstOrDefault();
+                var contentType = channel.AcceptedContentTypes.Intersect(supported).FirstOrDefault();
 
                 if (contentType.IsNotEmpty())
                 {
@@ -80,7 +80,7 @@ namespace Jasper.Bus.Runtime.Routing
                 {
                     var accepted = subscription.Accepts.Split(',');
 
-                    var contentType = accepted.Intersect(supported.Split(',')).FirstOrDefault();
+                    var contentType = accepted.Intersect(supported).FirstOrDefault();
 
                     if (contentType.IsNotEmpty())
                     {
