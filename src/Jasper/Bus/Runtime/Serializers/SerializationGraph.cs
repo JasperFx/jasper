@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Conneg;
 using Jasper.Util;
@@ -30,6 +31,43 @@ namespace Jasper.Bus.Runtime.Serializers
 
             _readers.AddRange(readers);
             _writers.AddRange(writers);
+        }
+
+        public object Deserialize(Envelope envelope, ChannelNode node)
+        {
+            var contentType = envelope.ContentType ?? node.AcceptedContentTypes.FirstOrDefault();
+
+            if (contentType.IsEmpty())
+            {
+                throw new EnvelopeDeserializationException($"No content type can be determined for {envelope}");
+            }
+
+            if (envelope.Data == null || envelope.Data.Length == 0)
+            {
+                throw new EnvelopeDeserializationException($"No data on the Envelope");
+            }
+
+            if (envelope.MessageType.IsNotEmpty())
+            {
+                var reader = ReaderFor(envelope.MessageType);
+                if (reader.HasAnyReaders)
+                {
+                    try
+                    {
+                        if (reader.TryRead(envelope.ContentType, envelope.Data, out object model))
+                        {
+                            return model;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw EnvelopeDeserializationException.ForReadFailure(envelope, ex);
+                    }
+                }
+            }
+
+
+            throw new EnvelopeDeserializationException($"Unknown content-type '{contentType}' and message-type '{envelope.MessageType}'");
         }
 
         public ModelWriter WriterFor(Type messageType)

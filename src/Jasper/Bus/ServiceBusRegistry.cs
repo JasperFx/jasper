@@ -29,7 +29,7 @@ namespace Jasper.Bus
 
             For<IBusLogger>().Use<NulloBusLogger>();
 
-            For<IEnvelopeSender>().Use<NewEnvelopeSender>();
+            For<IEnvelopeSender>().Use<EnvelopeSender>();
             For<IServiceBus>().Use<ServiceBus>();
             For<IHandlerPipeline>().Use<HandlerPipeline>();
             For<ISubscriptionActivator>().Use<SubscriptionActivator>();
@@ -39,7 +39,6 @@ namespace Jasper.Bus
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
             ForSingletonOf<ISubscriptionsStorage>().UseIfNone<SubscriptionsStorage>();
 
-            ForSingletonOf<IEnvelopeSerializer>().Use<EnvelopeSerializer>();
             For<ISerializer>().Add<NewtonsoftSerializer>();
 
             ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();

@@ -1,93 +1,135 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Runtime.Serializers;
-using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Routing;
 
 namespace Jasper.Bus.Runtime
 {
     public class EnvelopeSender : IEnvelopeSender
     {
+        private readonly IMessageRouter _router;
         private readonly ChannelGraph _channels;
-        private readonly IEnvelopeSerializer _serializer;
-        private readonly ISubscriptionsStorage _subscriptions;
+        private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
-        public EnvelopeSender(ChannelGraph channels, IEnvelopeSerializer serializer, ISubscriptionsStorage subscriptions, IBusLogger[] loggers)
+
+        public EnvelopeSender(IBusLogger[] loggers, IMessageRouter router, ChannelGraph channels, IEnumerable<ITransport> transports)
         {
+            _router = router;
             _channels = channels;
-            _serializer = serializer;
-            _subscriptions = subscriptions;
+
+            foreach (var transport in transports)
+            {
+                Baseline.DictionaryExtensions.SmartAdd(_transports, transport.Protocol, transport);
+            }
+
             Logger = BusLogger.Combine(loggers);
         }
 
-        public IBusLogger Logger { get; }
+        public IBusLogger Logger { get;}
 
-        public async Task<string> Send(Envelope envelope)
+        public Task<string> Send(Envelope envelope)
         {
-            var channels = DetermineDestinationChannels(envelope).Distinct().ToArray();
-            if (!channels.Any())
-            {
-                throw new Exception($"No channels match this message ({envelope})");
-            }
-
-            foreach (var channel in channels)
-            {
-                var sent = await _channels.Send(envelope, channel, _serializer).ConfigureAwait(false);
-                Logger.Sent(sent);
-            }
-
-            return envelope.CorrelationId;
+            return Send(envelope, null);
         }
 
         public async Task<string> Send(Envelope envelope, IMessageCallback callback)
         {
-            var channels = DetermineDestinationChannels(envelope).ToArray();
-            if (!channels.Any())
-            {
-                throw new Exception($"No channels match this message ({envelope})");
-            }
+            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            foreach (var channel in channels)
+
+            
+            if (envelope.Destination == null)
             {
-                var sent = await _channels.Send(envelope, channel, _serializer, callback).ConfigureAwait(false);
-                Logger.Sent(sent);
+                var routes = _router.Route(envelope.Message.GetType());
+                if (!routes.Any())
+                {
+                    throw new NoRoutesException(envelope);
+                }
+
+                foreach (var route in routes)
+                {
+                    await sendEnvelope(envelope, route, callback);
+                }
+            }
+            else
+            {
+                var route = _router.RouteForDestination(envelope);
+                await sendEnvelope(envelope, route, callback);
             }
 
             return envelope.CorrelationId;
         }
 
-        // TODO -- have this return the channels maybe
-        public IEnumerable<Uri> DetermineDestinationChannels(Envelope envelope)
+        private async Task<Envelope> sendEnvelope(Envelope envelope, MessageRoute route, IMessageCallback callback)
         {
-            var destination = envelope.Destination;
+            if (route == null) throw new ArgumentNullException(nameof(route));
 
-            if (destination != null)
+            var transportScheme = route.Destination.Scheme;
+            if (_channels.HasChannel(route.Destination))
             {
-                yield return destination;
-
-                yield break;
+                transportScheme = _channels[route.Destination].Uri.Scheme;
             }
 
-            if (envelope.Message != null)
+            ITransport transport = null;
+            if (_transports.TryGetValue(transportScheme, out transport))
             {
-                var messageType = envelope.Message.GetType();
-                foreach (var channel in _channels)
+                var sending = route.CloneForSending(envelope);
+
+                var channel = _channels.TryGetChannel(route.Destination);
+                channel?.ApplyModifiers(sending);
+
+
+                sending.AcceptedContentTypes = _channels.AcceptedContentTypes.ToArray();
+                if (channel != null)
                 {
-                    // TODO -- maybe memoize this one later
-                    if (channel.ShouldSendMessage(messageType))
-                    {
-                        // TODO -- hang on here, should this be the "corrected" Uri
-                        yield return channel.Uri;
-                    }
+                    await sendToStaticChannel(callback, sending, channel);
+                }
+                else
+                {
+                    await sendToDynamicChannel(route.Destination, callback, sending, transport);
                 }
 
-                foreach (var sub in _subscriptions.GetSubscribersFor(messageType))
-                {
-                    yield return sub.Receiver;
-                }
+                Logger.Sent(sending);
+
+                return sending;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Unrecognized transport scheme '{transportScheme}'");
             }
         }
+
+        private static async Task sendToDynamicChannel(Uri address, IMessageCallback callback, Envelope sending, ITransport transport)
+        {
+            sending.Destination = address;
+            sending.ReplyUri = transport.DefaultReplyUri();
+
+            if (callback == null)
+            {
+                await transport.Send(sending, sending.Destination).ConfigureAwait(false);
+            }
+            else
+            {
+                await callback.Send(sending).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task sendToStaticChannel(IMessageCallback callback, Envelope sending, ChannelNode channel)
+        {
+            sending.Destination = channel.Destination;
+            sending.ReplyUri = channel.ReplyUri;
+
+            if (callback == null || !callback.SupportsSend)
+            {
+                await channel.Sender.Send(sending).ConfigureAwait(false);
+            }
+            else
+            {
+                await callback.Send(sending).ConfigureAwait(false);
+            }
+        }
+
     }
 }
