@@ -7,12 +7,14 @@ namespace Jasper.Bus.Runtime.Subscriptions
 {
     public interface ISubscriptionsStorage
     {
+
+
         void PersistSubscriptions(IEnumerable<Subscription> subscriptions);
         IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole);
         void RemoveSubscriptions(IEnumerable<Subscription> subscriptions);
         void ClearAll();
 
-        IEnumerable<Uri> GetSubscribersFor(Type messageType);
+        IEnumerable<Subscription> GetSubscribersFor(Type messageType);
         IEnumerable<Subscription> ActiveSubscriptions { get; }
     }
 
@@ -56,11 +58,10 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _cache.ClearAll();
         }
 
-        public IEnumerable<Uri> GetSubscribersFor(Type messageType)
+        public IEnumerable<Subscription> GetSubscribersFor(Type messageType)
         {
             return ActiveSubscriptions
-                .Where(x => x.Matches(messageType))
-                .Select(x => x.Receiver);
+                .Where(x => x.Matches(messageType));
         }
 
         public IEnumerable<Subscription> ActiveSubscriptions => _cache.ActiveSubscriptions;

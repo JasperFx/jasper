@@ -1,0 +1,36 @@
+# Select Matching Content Types
+
+-> id = 9f245451-fab4-4004-bf35-43dcc047312c
+-> lifecycle = Acceptance
+-> max-retries = 0
+-> last-updated = 2017-07-13T14:47:42.3387670Z
+-> tags = 
+
+[BusRouting]
+|> SubscriptionsAre
+    [table]
+    |MessageType|Destination                |Accepts                |
+    |Message1   |memory://one/              |blue,green,red         |
+    |Message1   |memory://two/              |purple,application/json|
+    |Message1   |memory://three/            |NULL                   |
+    |Message1   |memory://four/             |missing,green          |
+    |Message1   |jasper://localhost:2201/one|red, purple            |
+
+|> SerializersAre contentTypes=green
+|> CustomWritersAre
+    [table]
+    |> CustomWritersAre-row MessageType=Message1, ContentType=blue
+
+
+There are no matching content types for the subscription to jasper://localhost:2201/one, so it doesn't appear here
+
+|> ForMessage MessageType=Message1
+|> TheRoutesShouldBe
+    [rows]
+    |Destination   |ContentType     |
+    |memory://one  |blue            |
+    |memory://two  |application/json|
+    |memory://three|application/json|
+    |memory://four |green           |
+
+~~~

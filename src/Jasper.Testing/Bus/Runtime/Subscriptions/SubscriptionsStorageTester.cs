@@ -93,10 +93,10 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             _storage.PersistSubscriptions(new[] {sub1, sub2, sub3});
 
             var pingSubscribers = _storage.GetSubscribersFor(typeof(PingMessage));
-            pingSubscribers.ShouldHaveTheSameElementsAs(sub1.Receiver, sub3.Receiver);
+            pingSubscribers.ShouldHaveTheSameElementsAs(sub1, sub3);
 
             var pongSubscribers = _storage.GetSubscribersFor(typeof(PongMessage));
-            pongSubscribers.ShouldHaveTheSameElementsAs(sub2.Receiver);
+            pongSubscribers.ShouldHaveTheSameElementsAs(sub2);
         }
 
         [Fact]

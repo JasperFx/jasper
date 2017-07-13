@@ -2,6 +2,7 @@
 using Jasper.Bus.Queues.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.InMemory;
@@ -46,6 +47,9 @@ namespace Jasper.Bus
             For<IUriLookup>().Add<ConfigUriLookup>();
 
             ForSingletonOf<SerializationGraph>().Use<SerializationGraph>();
+
+            ForSingletonOf<IMessageRouter>().Use<MessageRouter>();
+
         }
     }
 }

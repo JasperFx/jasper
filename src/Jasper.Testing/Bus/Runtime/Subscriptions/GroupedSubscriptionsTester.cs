@@ -4,6 +4,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -56,7 +57,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         public void should_add_a_subscription_for_each_type()
         {
             _subscriptions.Select(x => x.MessageType)
-                .ShouldHaveTheSameElementsAs(typeof(FooMessage).GetFullName(), typeof(BarMessage).GetFullName());
+                .ShouldHaveTheSameElementsAs(typeof(FooMessage).ToTypeAlias(), typeof(BarMessage).ToTypeAlias());
         }
 
         public class BusSettings

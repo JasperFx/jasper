@@ -85,7 +85,7 @@ namespace Jasper.Bus.Runtime
 
                 foreach (var sub in _subscriptions.GetSubscribersFor(messageType))
                 {
-                    yield return sub;
+                    yield return sub.Receiver;
                 }
             }
         }
