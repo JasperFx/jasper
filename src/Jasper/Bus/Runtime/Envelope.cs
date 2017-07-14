@@ -75,7 +75,7 @@ namespace Jasper.Bus.Runtime
 
         public bool MatchesResponse(object message)
         {
-            return message.GetType().Name == ReplyRequested;
+            return message.GetType().ToTypeAlias() == ReplyRequested;
         }
 
 

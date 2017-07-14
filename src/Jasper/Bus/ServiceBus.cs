@@ -4,6 +4,7 @@ using Baseline.Dates;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.InMemory;
+using Jasper.Util;
 
 namespace Jasper.Bus
 {
@@ -27,7 +28,7 @@ namespace Jasper.Bus
             var envelope = new Envelope
             {
                 Message = request,
-                ReplyRequested = typeof(TResponse).Name
+                ReplyRequested = typeof(TResponse).ToTypeAlias()
             };
 
             if (options.Destination != null)
