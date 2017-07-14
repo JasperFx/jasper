@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Serializers;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
@@ -11,7 +12,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
     public interface ISubscriptionRequirement
     {
-        IEnumerable<Subscription> Determine(ChannelGraph graph);
+        IEnumerable<Subscription> Determine(ChannelGraph channels, SerializationGraph serialization);
         void AddType(Type type);
     }
 }

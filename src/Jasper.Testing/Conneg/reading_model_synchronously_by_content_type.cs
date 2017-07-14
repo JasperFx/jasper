@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -57,6 +58,13 @@ namespace Jasper.Testing.Conneg
         public FakeReader(string contentType)
         {
             ContentType = contentType;
+        }
+
+        public FakeReader(Type dotNetType, string contentType)
+        {
+            DotNetType = dotNetType;
+            ContentType = contentType;
+            MessageType = dotNetType.ToTypeAlias();
         }
 
         public string MessageType { get; }

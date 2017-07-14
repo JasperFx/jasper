@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Serializers;
+using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
@@ -16,19 +19,24 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _receiver = receiverProperty;
         }
 
-        public IEnumerable<Subscription> Determine(ChannelGraph graph)
+        public IEnumerable<Subscription> Determine(ChannelGraph channels, SerializationGraph serialization)
         {
             if (_source == null) throw new InvalidOperationException("No Uri established for sender");
 
             if (_receiver == null) throw new InvalidOperationException("No Uri established for receiver.");
 
+
+
             foreach (var messageType in _messageTypes)
             {
+                var contentTypes = serialization.ReaderFor(messageType.ToTypeAlias()).ContentTypes;
+
                 yield return new Subscription(messageType)
                 {
-                    NodeName = graph.Name,
+                    NodeName = channels.Name,
                     Receiver = _receiver,
-                    Source = _source
+                    Source = _source,
+                    Accepts = contentTypes.Join(",")
                 };
             }
         }

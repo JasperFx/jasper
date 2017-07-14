@@ -19,7 +19,16 @@ namespace Jasper.Conneg
 
             HasAnyReaders = _readers.Any();
 
-            ContentTypes = _readers.Keys.ToArray();
+            // Need to prefer any kind of custom reader
+            var allContentTypes = _readers.Keys.ToList();
+            var index = allContentTypes.IndexOf("application/json");
+            if (index >= 0)
+            {
+                allContentTypes.Remove("application/json");
+                allContentTypes.Add("application/json");
+            }
+
+            ContentTypes = allContentTypes.ToArray();
         }
 
         public string[] ContentTypes { get; }
