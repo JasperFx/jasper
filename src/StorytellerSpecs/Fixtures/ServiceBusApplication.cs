@@ -150,7 +150,7 @@ namespace StorytellerSpecs.Fixtures
             {
                 var waiter = history.Watch(() => { });
                 StoryTellerAssert.Fail(
-                    !waiter.Wait(5.Seconds())
+                    !waiter.Wait(60.Seconds())
                     || waiter.Result.All(x => x.MessageType != typeof(SubscriptionRequested)),
                     "SubscriptionRequested message was never received");
             }

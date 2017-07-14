@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
-using Jasper.Bus.Transports.LightningQueues;
 
 namespace Jasper.Bus.Configuration
 {

@@ -92,7 +92,7 @@ namespace Jasper.Testing.Bus
             with(_ =>
             {
                 _.Configuration.AddInMemoryCollection(
-                    new Dictionary<string, string> {{"outgoing", "jasper://server1:2200/outgoing"}});
+                    new Dictionary<string, string> {{"outgoing", "jasper://server1:2200/outgoing"}, { "incoming", "jasper://server1:2200/incoming" } });
 
                 _.SendMessage<Message1>().To("config://outgoing");
                 _.SendMessage<Message1>().To("config://incoming");

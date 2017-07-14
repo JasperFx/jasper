@@ -4,6 +4,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Routing;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions

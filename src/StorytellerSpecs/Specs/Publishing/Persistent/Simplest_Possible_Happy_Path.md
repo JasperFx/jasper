@@ -1,6 +1,6 @@
-# Simplest Possible Happy Path
+﻿# Simplest Possible Happy Path
 
--> id = 63d1dfc5-e1bc-49fc-8a88-5d846f847c6d
+-> id = 63d1dfc5-e1bc-49fc-8a88-5d556f847c6d
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-06-26T14:32:22.2023050Z
@@ -11,17 +11,17 @@
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    jasper://localhost:2201/one
+    lq.tcp://localhost:2201/one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    jasper://localhost:2201/two
+    lq.tcp://localhost:2201/two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    jasper://localhost:2201/three
+    lq.tcp://localhost:2201/three
     ```
 
 
@@ -31,8 +31,8 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                   |MessageType|Name  |
-    |jasper://localhost:2201/one  |Message1   |Tom   |
-    |jasper://localhost:2201/two  |Message2   |Todd  |
-    |jasper://localhost:2201/three|Message3   |Trevor|
+    |lq.tcp://localhost:2201/one  |Message1   |Tom   |
+    |lq.tcp://localhost:2201/two  |Message2   |Todd  |
+    |lq.tcp://localhost:2201/three|Message3   |Trevor|
 
 ~~~

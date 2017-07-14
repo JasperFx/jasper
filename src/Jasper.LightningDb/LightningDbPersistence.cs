@@ -53,7 +53,7 @@ namespace Jasper.LightningDb
 
         ~LightningDbPersistence()
         {
-            Dispose(false);
+            Dispose(true);
         }
 
         private void Dispose(bool disposing)

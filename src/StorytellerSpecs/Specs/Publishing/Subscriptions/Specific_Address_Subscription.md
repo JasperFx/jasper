@@ -1,9 +1,9 @@
 # Specific address subscription
 
 -> id = 03a13d21-ffa2-476f-bf10-9c9905e4dc31
--> lifecycle = Regression
+-> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2017-05-08T18:02:10.5298539Z
+-> last-updated = 2017-07-14T20:13:03.5710174Z
 -> tags = 
 
 [SendMessage]

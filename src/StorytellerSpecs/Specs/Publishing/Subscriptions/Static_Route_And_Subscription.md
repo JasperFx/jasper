@@ -1,9 +1,9 @@
 # Static route and subscription
 
 -> id = d1caf0df-85f5-4a19-9494-4c2c9b255030
--> lifecycle = Regression
+-> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2017-05-08T18:01:29.9968539Z
+-> last-updated = 2017-07-14T20:13:03.5710174Z
 -> tags = 
 
 [SendMessage]

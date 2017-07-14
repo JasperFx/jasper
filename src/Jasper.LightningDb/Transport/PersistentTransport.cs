@@ -23,7 +23,7 @@ namespace Jasper.LightningDb.Transport
         private readonly IList<ListeningAgent> _listeners = new List<ListeningAgent>();
         private readonly IBusLogger _logger;
         private readonly LightningDbSettings _lqSettings;
-        private readonly LightningDbPersistence _persistence;
+        private LightningDbPersistence _persistence;
         private readonly SendingAgent _sender = new SendingAgent();
         private readonly BusSettings _settings;
         private PersistentQueues _queues;
@@ -35,7 +35,7 @@ namespace Jasper.LightningDb.Transport
             _settings = settings;
             _lqSettings = lqSettings;
             _logger = logger;
-            _persistence = new LightningDbPersistence(lqSettings);
+            
         }
 
         void ISenderCallback.Successful(OutgoingMessageBatch outgoing)
@@ -72,16 +72,16 @@ namespace Jasper.LightningDb.Transport
         {
             _cancellation.Cancel();
 
-            _sender.Dispose();
+            _sender?.Dispose();
 
             foreach (var listener in _listeners)
             {
                 listener.Dispose();
             }
 
-            _queues.Dispose();
+            _queues?.Dispose();
 
-            _persistence.Dispose();
+            _persistence?.Dispose();
         }
 
         public string Protocol => "lq.tcp";
@@ -100,9 +100,17 @@ namespace Jasper.LightningDb.Transport
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
         {
-            _sender.Start(this);
-
             var nodes = channels.Where(x => x.Uri.Scheme == Protocol).ToArray();
+            if (!nodes.Any())
+            {
+                return;
+            }
+
+
+            _sender.Start(this);
+            
+            _persistence = new LightningDbPersistence(_lqSettings);
+
             chooseReplyNode(channels, nodes);
 
             startListening(pipeline, channels);
