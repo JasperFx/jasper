@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Baseline;
 using Jasper.Bus.Runtime;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -94,7 +95,7 @@ namespace Jasper.Testing.Bus.Runtime
                 CorrelationId = Guid.NewGuid().ToString(),
                 OriginalId = Guid.NewGuid().ToString(),
                 ReplyUri = "foo://bar".ToUri(),
-                ReplyRequested = typeof(Message1).Name
+                ReplyRequested = typeof(Message1).ToTypeAlias()
             };
 
             var childMessage = new Message1();

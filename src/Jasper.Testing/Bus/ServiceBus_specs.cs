@@ -5,6 +5,7 @@ using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Bus.Runtime.Invocation;
+using Jasper.Util;
 using NSubstitute.Extensions;
 using Shouldly;
 using Xunit;
@@ -36,7 +37,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void the_envelope_is_sent_with_reply_requested_header()
         {
-            theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).Name);
+            theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).ToTypeAlias());
         }
 
         [Fact]
@@ -83,7 +84,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void the_envelope_is_sent_with_reply_requested_header()
         {
-            theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).Name);
+            theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).ToTypeAlias());
         }
 
         [Fact]

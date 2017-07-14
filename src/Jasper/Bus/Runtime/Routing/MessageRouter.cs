@@ -36,16 +36,24 @@ namespace Jasper.Bus.Runtime.Routing
 
         public MessageRoute RouteForDestination(Envelope envelope)
         {
-            // TODO -- memoize this some day
+
             var messageType = envelope.Message.GetType();
             var routes = Route(messageType);
 
-            return routes.FirstOrDefault(x => x.Destination == envelope.Destination)
-                   ?? new MessageRoute(
+            var candidate = routes.FirstOrDefault(x => x.MatchesEnvelope(envelope));
+            if (candidate != null) return candidate;
+
+
+            var modelWriter = _serializers.WriterFor(messageType);
+            var contentType = envelope.AcceptedContentTypes.Intersect(modelWriter.ContentTypes).FirstOrDefault()
+                              ?? "application/json";
+
+            // TODO -- memoize this some day vs type & destination
+            return new MessageRoute(
                        messageType,
-                       _serializers.WriterFor(messageType),
+                       modelWriter,
                        envelope.Destination,
-                       "application/json");
+                       contentType);
         }
 
         private IEnumerable<MessageRoute> compileRoutes(Type messageType)

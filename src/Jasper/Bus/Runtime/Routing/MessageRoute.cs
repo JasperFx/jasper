@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Routing
@@ -39,6 +40,13 @@ namespace Jasper.Bus.Runtime.Routing
             sending.Destination = Destination;
 
             return sending;
+        }
+
+        public bool MatchesEnvelope(Envelope envelope)
+        {
+            if (Destination != envelope.Destination) return false;
+
+            return !envelope.AcceptedContentTypes.Any() || envelope.AcceptedContentTypes.Contains(ContentType);
         }
     }
 }

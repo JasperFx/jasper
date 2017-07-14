@@ -5,6 +5,7 @@ using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus
 {
+    [Obsolete("Eliminate this in favor of just editing the Envelope directly")]
     public class RequestOptions
     {
         public TimeSpan Timeout = 10.Minutes();

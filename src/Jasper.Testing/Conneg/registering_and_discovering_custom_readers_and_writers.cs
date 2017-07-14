@@ -52,8 +52,8 @@ namespace Jasper.Testing.Conneg
         public void can_override_json_serialization_reader_for_a_message_type()
         {
             // Not overridden, so it should be the default
-            theSerialization.ReaderFor(typeof(Message1).ToTypeAlias())["application/json"]
-                .ShouldBeOfType<NewtonsoftJsonReader<Message1>>();
+            theSerialization.ReaderFor(typeof(Message4).ToTypeAlias())["application/json"]
+                .ShouldBeOfType<NewtonsoftJsonReader<Message4>>();
 
             // Overridden
             theSerialization.ReaderFor(typeof(OverriddenJsonMessage).ToTypeAlias())["application/json"]

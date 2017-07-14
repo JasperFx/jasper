@@ -39,7 +39,7 @@ namespace Jasper.Bus.Runtime
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
 
-            
+
             if (envelope.Destination == null)
             {
                 var routes = _router.Route(envelope.Message.GetType());
@@ -80,8 +80,12 @@ namespace Jasper.Bus.Runtime
                 var channel = _channels.TryGetChannel(route.Destination);
                 channel?.ApplyModifiers(sending);
 
+                // Don't override the explicitly set Accepts
+                if (!sending.AcceptedContentTypes.Any())
+                {
+                    sending.AcceptedContentTypes = _channels.AcceptedContentTypes.ToArray();
+                }
 
-                sending.AcceptedContentTypes = _channels.AcceptedContentTypes.ToArray();
                 if (channel != null)
                 {
                     await sendToStaticChannel(callback, sending, channel);

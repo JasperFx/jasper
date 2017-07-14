@@ -83,10 +83,14 @@ namespace Jasper.Bus.Runtime
         {
             var child = ForSend(message);
 
+
+
             if (MatchesResponse(message))
             {
                 child.Headers[ResponseIdKey] = CorrelationId;
                 child.Destination = ReplyUri;
+                child.AcceptedContentTypes = AcceptedContentTypes;
+                child.ResponseId = CorrelationId;
             }
 
             return child;

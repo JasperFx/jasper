@@ -109,7 +109,6 @@ namespace Jasper.Bus.Runtime
 
         }
 
-        [Obsolete("Not hugely advantageous in a general sense")]
         public string[] AcceptedContentTypes
         {
             get

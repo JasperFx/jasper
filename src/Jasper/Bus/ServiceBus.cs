@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Runtime.Serializers;
 using Jasper.Util;
 
 namespace Jasper.Bus
@@ -13,23 +13,21 @@ namespace Jasper.Bus
         private readonly IEnvelopeSender _sender;
         private readonly IReplyWatcher _watcher;
         private readonly IHandlerPipeline _pipeline;
+        private readonly SerializationGraph _serialization;
 
-        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline)
+        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline, SerializationGraph serialization)
         {
             _sender = sender;
             _watcher = watcher;
             _pipeline = pipeline;
+            _serialization = serialization;
         }
 
         public Task<TResponse> Request<TResponse>(object request, RequestOptions options = null)
         {
             options = options ?? new RequestOptions();
 
-            var envelope = new Envelope
-            {
-                Message = request,
-                ReplyRequested = typeof(TResponse).ToTypeAlias()
-            };
+            var envelope = EnvelopeForRequestResponse<TResponse>(request);
 
             if (options.Destination != null)
             {
@@ -42,6 +40,21 @@ namespace Jasper.Bus
             _sender.Send(envelope);
 
             return task;
+        }
+
+        public Envelope EnvelopeForRequestResponse<TResponse>(object request)
+        {
+            var messageType = typeof(TResponse).ToTypeAlias();
+            var reader = _serialization.ReaderFor(messageType);
+
+            var envelope = new Envelope
+            {
+                Message = request,
+                ReplyRequested = messageType,
+                AcceptedContentTypes = reader.ContentTypes
+
+            };
+            return envelope;
         }
 
         public Task Send<T>(T message)
