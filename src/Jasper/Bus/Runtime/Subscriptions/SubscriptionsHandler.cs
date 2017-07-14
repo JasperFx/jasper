@@ -4,6 +4,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Transports.LightningQueues;
 
 namespace Jasper.Bus.Runtime.Subscriptions
@@ -13,15 +14,14 @@ namespace Jasper.Bus.Runtime.Subscriptions
         private readonly ChannelGraph _graph;
         private readonly ISubscriptionsStorage _subscriptions;
         private readonly INodeDiscovery _nodeDiscovery;
+        private readonly IMessageRouter _router;
 
-        public SubscriptionsHandler(
-            ChannelGraph graph,
-            ISubscriptionsStorage subscriptions,
-            INodeDiscovery nodeDiscovery)
+        public SubscriptionsHandler(ChannelGraph graph, ISubscriptionsStorage subscriptions, INodeDiscovery nodeDiscovery, IMessageRouter router)
         {
             _graph = graph;
             _subscriptions = subscriptions;
             _nodeDiscovery = nodeDiscovery;
+            _router = router;
         }
 
         public IEnumerable<object> Handle(SubscriptionRequested message)
@@ -38,12 +38,15 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
             _subscriptions.PersistSubscriptions(modifiedSubscriptions);
 
+            _router.ClearAll();
+
             return UpdateNodes();
         }
 
         public void Handle(SubscriptionsChanged message)
         {
             _subscriptions.LoadSubscriptions(SubscriptionRole.Publishes);
+            _router.ClearAll();
         }
 
         private IEnumerable<object> UpdateNodes()
