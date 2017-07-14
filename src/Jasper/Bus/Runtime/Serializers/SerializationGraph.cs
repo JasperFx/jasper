@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
@@ -12,6 +13,11 @@ namespace Jasper.Bus.Runtime.Serializers
 {
     public class SerializationGraph
     {
+        public static SerializationGraph Basic()
+        {
+            return new SerializationGraph(new HandlerGraph(), new List<ISerializer>{new NewtonsoftSerializer(new BusSettings())}, new List<IMediaReader>(), new List<IMediaWriter>());
+        }
+
         private readonly HandlerGraph _handlers;
         private readonly Dictionary<string, ISerializer> _serializers = new Dictionary<string, ISerializer>();
 
@@ -66,6 +72,15 @@ namespace Jasper.Bus.Runtime.Serializers
                 }
             }
 
+            var messageType = envelope.MessageType ?? node.AcceptedContentTypes.FirstOrDefault() ?? "application/json";
+            if (_serializers.ContainsKey(messageType))
+            {
+                using (var stream = new MemoryStream(envelope.Data))
+                {
+                    stream.Position = 0;
+                    return _serializers[messageType].Deserialize(stream);
+                }
+            }
 
             throw new EnvelopeDeserializationException($"Unknown content-type '{contentType}' and message-type '{envelope.MessageType}'");
         }
