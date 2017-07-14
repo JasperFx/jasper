@@ -35,7 +35,7 @@ namespace Jasper.Bus.Runtime.Serializers
 
         public object Deserialize(Envelope envelope, ChannelNode node)
         {
-            var contentType = envelope.ContentType ?? node.AcceptedContentTypes.FirstOrDefault();
+            var contentType = envelope.ContentType ?? node.AcceptedContentTypes.FirstOrDefault() ?? "application/json";
 
             if (contentType.IsEmpty())
             {
