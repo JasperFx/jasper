@@ -24,6 +24,8 @@ namespace Jasper.Conneg
 
         public string[] ContentTypes { get; }
 
+        public IMediaReader this[string contentType] => _readers[contentType];
+
         public bool TryRead(string contentType, byte[] data, out object model)
         {
             if (!_readers.ContainsKey(contentType))

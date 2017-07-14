@@ -47,6 +47,18 @@ namespace Jasper.Testing.Conneg
             theSerialization.WriterFor(typeof(OverriddenJsonMessage))["application/json"]
                 .ShouldBeOfType<OverrideJsonWriter>();
         }
+
+        [Fact]
+        public void can_override_json_serialization_reader_for_a_message_type()
+        {
+            // Not overridden, so it should be the default
+            theSerialization.ReaderFor(typeof(Message1).ToTypeAlias())["application/json"]
+                .ShouldBeOfType<NewtonsoftJsonReader<Message1>>();
+
+            // Overridden
+            theSerialization.ReaderFor(typeof(OverriddenJsonMessage).ToTypeAlias())["application/json"]
+                .ShouldBeOfType<OverrideJsonReader>();
+        }
     }
 
     public class OverriddenJsonMessage{}
@@ -61,6 +73,22 @@ namespace Jasper.Testing.Conneg
         }
 
         public Task Write(object model, Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class OverrideJsonReader : IMediaReader
+    {
+        public string MessageType { get; } = typeof(OverriddenJsonMessage).ToTypeAlias();
+        public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
+        public string ContentType { get; } = "application/json";
+        public object Read(byte[] data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> Read<T>(Stream stream)
         {
             throw new NotImplementedException();
         }
