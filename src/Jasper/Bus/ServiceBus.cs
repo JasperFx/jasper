@@ -48,6 +48,14 @@ namespace Jasper.Bus
             return _sender.Send(new Envelope {Message = message});
         }
 
+        public Task Send<T>(T message, Action<Envelope> customize)
+        {
+            var envelope = new Envelope {Message = message};
+            customize(envelope);
+
+            return _sender.Send(envelope);
+        }
+
         public Task Send<T>(Uri destination, T message)
         {
             return _sender.Send(new Envelope { Message = message, Destination = destination});

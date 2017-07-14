@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus
 {
@@ -22,6 +23,8 @@ namespace Jasper.Bus
         Task<TResponse> Request<TResponse>(object request, RequestOptions options = null);
 
         Task Send<T>(T message);
+
+        Task Send<T>(T message, Action<Envelope> customize);
 
         /// <summary>
         /// Send to a specific destination rather than running the routing rules
