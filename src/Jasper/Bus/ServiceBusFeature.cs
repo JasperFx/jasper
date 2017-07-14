@@ -131,6 +131,16 @@ namespace Jasper.Bus
             Services.For<HandlerGraph>().Use(_graph);
             Services.For<ChannelGraph>().Use(Channels);
 
+            if (registry.ApplicationAssembly != null)
+            {
+                Services.Scan(_ =>
+                {
+                    _.Assembly(registry.ApplicationAssembly);
+                    _.AddAllTypesOf<IMediaReader>();
+                    _.AddAllTypesOf<IMediaWriter>();
+                });
+            }
+
             if (registry.Logging.UseConsoleLogging)
             {
                 Services.For<IBusLogger>().Add<ConsoleBusLogger>();
