@@ -10,7 +10,7 @@ namespace Jasper.Testing.Bus.Runtime
 {
     public class EnvelopeTester
     {
-        [Fact]
+        [Fact, Obsolete]
         public void has_a_correlation_id_by_default()
         {
             ShouldBeNullExtensions.ShouldNotBeNull(new Envelope().CorrelationId);
@@ -22,7 +22,7 @@ namespace Jasper.Testing.Bus.Runtime
             new Envelope().CorrelationId.ShouldNotBe(new Envelope().CorrelationId);
         }
 
-        [Fact]
+        [Fact, Obsolete]
         public void does_not_override_an_existing_correlation_id()
         {
             var headers = new Dictionary<string, string> {[Envelope.IdKey] = "FOO"};
@@ -31,11 +31,11 @@ namespace Jasper.Testing.Bus.Runtime
             envelope.CorrelationId.ShouldBe("FOO");
         }
 
-        [Fact]
+        [Fact, Obsolete]
         public void will_assign_a_new_correlation_id_if_none_in_headers()
         {
-            ShouldBeBooleanExtensions.ShouldBeFalse(new Envelope().CorrelationId
-                    .IsEmpty());
+            new Envelope().CorrelationId
+                .IsEmpty().ShouldBeFalse();
         }
 
         [Fact]
@@ -46,8 +46,8 @@ namespace Jasper.Testing.Bus.Runtime
                 CorrelationId = Guid.NewGuid().ToString()
             };
 
-            ShouldBeNullExtensions.ShouldBeNull(parent.OriginalId);
-            ShouldBeNullExtensions.ShouldBeNull(parent.ParentId);
+            parent.OriginalId.ShouldBeNull();
+            parent.ParentId.ShouldBeNull();
         }
 
         [Fact]
