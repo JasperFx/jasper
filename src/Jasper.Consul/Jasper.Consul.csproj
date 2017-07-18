@@ -5,4 +5,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Consul" Version="0.7.2.3" />
+  </ItemGroup>
 </Project>
