@@ -178,6 +178,11 @@ namespace IntegrationTests.Lightweight
         private readonly LightweightCache<Type, List<TaskCompletionSource<Envelope>>>
             _waiters = new LightweightCache<Type, List<TaskCompletionSource<Envelope>>>(t => new List<TaskCompletionSource<Envelope>>());
 
+        public MessageTracker()
+        {
+            Console.WriteLine("Making me");
+        }
+
         public void Record(object message, Envelope envelope)
         {
             var messageType = message.GetType();

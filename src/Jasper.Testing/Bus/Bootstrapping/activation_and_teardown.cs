@@ -32,12 +32,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
 
         [Fact]
-        public void subscriptions_cache_must_be_a_singleton()
-        {
-            theRuntime.Container.Model.For<ISubscriptionsCache>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();
-        }
-
-        [Fact]
         public void subscriptions_repository_must_be_a_singleton()
         {
             theRuntime.Container.Model.For<ISubscriptionsRepository>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();

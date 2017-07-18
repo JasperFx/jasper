@@ -8,53 +8,44 @@ namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class SubscriptionsStorage : ISubscriptionsStorage
     {
-        private readonly ISubscriptionsCache _cache;
         private readonly ISubscriptionsRepository _repository;
 
         public SubscriptionsStorage(
-            ISubscriptionsCache cache,
             ISubscriptionsRepository repository)
         {
-            _cache = cache;
             _repository = repository;
         }
 
         public async Task PersistSubscriptions(Subscription[] subscriptions)
         {
             await _repository.PersistSubscriptions(subscriptions);
-            _cache.Store(subscriptions.Where(x => x.Role == SubscriptionRole.Publishes));
         }
 
-        public async Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
+        public Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
         {
-            var subscriptions = await _repository.LoadSubscriptions(subscriptionRole);
-            if (subscriptionRole == SubscriptionRole.Publishes)
-            {
-                _cache.Store(subscriptions);
-            }
-
-            return subscriptions;
+            return _repository.LoadSubscriptions(subscriptionRole);
         }
 
-        public async Task RemoveSubscriptions(Subscription[] subscriptions)
+        public Task RemoveSubscriptions(Subscription[] subscriptions)
         {
-            await _repository.RemoveSubscriptions(subscriptions);
-            subscriptions.Each(x => _cache.Remove(x));
+            return _repository.RemoveSubscriptions(subscriptions);
         }
 
         public Task ClearAll()
         {
-            _cache.ClearAll();
-
             return Task.CompletedTask;
         }
 
         public async Task<Subscription[]> GetSubscribersFor(Type messageType)
         {
-            var subscriptions = await GetActiveSubscriptions();
-            return subscriptions.Where(x => x.Matches(messageType)).ToArray();
+            var all = await _repository.LoadSubscriptions(SubscriptionRole.Publishes);
+
+            return all.Where(x => x.Matches(messageType)).ToArray();
         }
 
-        public Task<Subscription[]> GetActiveSubscriptions() => Task.FromResult(_cache.ActiveSubscriptions);
+        public Task<Subscription[]> GetActiveSubscriptions()
+        {
+            return _repository.LoadSubscriptions(SubscriptionRole.Publishes);
+        }
     }
 }

@@ -32,7 +32,6 @@ namespace Jasper.Bus
             For<ISubscriptionActivator>().Use<SubscriptionActivator>();
 
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
-            ForSingletonOf<ISubscriptionsCache>().UseIfNone<SubscriptionsCache>();
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
             ForSingletonOf<ISubscriptionsStorage>().UseIfNone<SubscriptionsStorage>();
 

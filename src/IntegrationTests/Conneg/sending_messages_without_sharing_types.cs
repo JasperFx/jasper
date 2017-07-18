@@ -8,6 +8,7 @@ using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Conneg;
+using Jasper.Testing;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
@@ -22,10 +23,14 @@ namespace IntegrationTests.Conneg
 
         public sending_messages_without_sharing_types()
         {
-            greenApp = JasperRuntime.For<GreenApp>();
-            blueApp = JasperRuntime.For<BlueApp>();
+            theTracker = new MessageTracker();
 
-            theTracker = blueApp.Container.GetInstance<MessageTracker>();
+            greenApp = JasperRuntime.For<GreenApp>();
+            blueApp = JasperRuntime.For(new BlueApp(theTracker));
+
+
+
+            theTracker.ShouldBeTheSameAs(blueApp.Container.GetInstance<MessageTracker>());
         }
 
         public void Dispose()
@@ -103,9 +108,9 @@ namespace IntegrationTests.Conneg
 
     public class BlueApp : JasperBusRegistry
     {
-        public BlueApp()
+        public BlueApp(MessageTracker tracker)
         {
-            Services.For<MessageTracker>().Use(new MessageTracker());
+            Services.ForSingletonOf<MessageTracker>().Use(tracker).Singleton();
             ListenForMessagesFrom("jasper://localhost:2555/blue");
         }
     }
@@ -117,6 +122,12 @@ namespace IntegrationTests.Conneg
             SendMessage<GreenMessage>().To("jasper://localhost:2555/blue");
 
             Channel("jasper://localhost:2555/blue").AcceptedContentTypes("text/plain");
+
+            Services.For<MessageTracker>().Use("blow up", c =>
+            {
+                throw new Exception("No.");
+                return default(MessageTracker);
+            });
         }
     }
 
@@ -134,16 +145,9 @@ namespace IntegrationTests.Conneg
 
     public class BlueHandler
     {
-        private readonly MessageTracker _tracker;
-
-        public BlueHandler(MessageTracker tracker)
+        public static void Consume(Envelope envelope, BlueMessage message, MessageTracker tracker)
         {
-            _tracker = tracker;
-        }
-
-        public void Consume(Envelope envelope, BlueMessage message)
-        {
-            _tracker.Record(message, envelope);
+            tracker.Record(message, envelope);
         }
     }
 }

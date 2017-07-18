@@ -10,7 +10,6 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
     public class SubscriptionsStorageTester
     {
         private readonly ISubscriptionsStorage _storage;
-        private readonly ISubscriptionsCache _cache;
         private readonly ISubscriptionsRepository _repository;
 
         private readonly Subscription[] _subscriptions = {
@@ -25,9 +24,8 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
 
         public SubscriptionsStorageTester()
         {
-            _cache = new SubscriptionsCache();
             _repository = new InMemorySubscriptionsRepository();
-            _storage = new SubscriptionsStorage(_cache, _repository);
+            _storage = new SubscriptionsStorage(_repository);
         }
 
         [Fact]
@@ -41,8 +39,6 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             (await _repository.LoadSubscriptions(SubscriptionRole.Subscribes))
                 .ShouldHaveTheSameElementsAs(_subscriptions.Where(x => x.Role == SubscriptionRole.Subscribes));
 
-            _cache.ActiveSubscriptions
-                .ShouldHaveTheSameElementsAs(_subscriptions.Where(x => x.Role == SubscriptionRole.Publishes));
         }
 
         [Fact]
@@ -55,7 +51,6 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             (await _repository.LoadSubscriptions(SubscriptionRole.Publishes))
                 .ShouldHaveCount(0);
 
-            _cache.ActiveSubscriptions.ShouldHaveCount(0);
         }
 
         [Fact]
@@ -73,7 +68,6 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             (await _storage.LoadSubscriptions(SubscriptionRole.Publishes))
                 .ShouldHaveCount(expectedPublish);
 
-            _cache.ActiveSubscriptions.ShouldHaveCount(expectedPublish);
         }
 
         [Fact]
