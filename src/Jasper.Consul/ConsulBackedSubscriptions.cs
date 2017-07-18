@@ -1,4 +1,6 @@
-﻿using Jasper.Configuration;
+﻿using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Configuration;
+using Jasper.Consul.Internal;
 
 namespace Jasper.Consul
 {
@@ -6,7 +8,8 @@ namespace Jasper.Consul
     {
         public void Configure(JasperRegistry registry)
         {
-            throw new System.NotImplementedException();
+            registry.Services.ForSingletonOf<ISubscriptionsRepository>().Use<ConsulSubscriptionRepository>();
+            registry.Services.ForSingletonOf<INodeDiscovery>().Use<ConsulNodeDiscovery>();
         }
     }
 }
