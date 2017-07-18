@@ -81,7 +81,7 @@ namespace Jasper.Bus.Transports.Lightweight
             }
 
 
-            foreach (var port in nodes.Select(x => x.Uri.Port).Distinct())
+            foreach (var port in nodes.Where(x => x.Incoming).Select(x => x.Uri.Port).Distinct())
             {
                 var agent = new ListeningAgent(_queues, port);
                 _listeners.Add(agent);
