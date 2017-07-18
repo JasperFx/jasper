@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -35,12 +34,5 @@ namespace Jasper.Bus.Runtime.Subscriptions
             var matching = _subscriptions.Where(x => x.Role == subscriptionRole).ToArray();
             return Task.FromResult(matching);
         }
-    }
-
-    public interface ISubscriptionsRepository : IDisposable
-    {
-        Task PersistSubscriptions(IEnumerable<Subscription> subscriptions);
-        Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole);
-        Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions);
     }
 }

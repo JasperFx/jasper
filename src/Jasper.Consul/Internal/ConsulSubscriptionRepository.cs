@@ -25,15 +25,11 @@ namespace Jasper.Consul.Internal
 
         public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            return client.KV.Txn(
-                subscriptions
-                    .Select(s =>
-                    {
-                        if (s.Id == Guid.Empty) s.Id = Guid.NewGuid();
-                        return new KVTxnOp(SUBSCRIPTION_PREFIX + s.Id.ToString(), KVTxnVerb.Set) {Value = serialize(s)};
-                    })
-                    .ToList()
-            );
+            var ops = subscriptions
+                .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Set) {Value = serialize(s)})
+                .ToList();
+
+            return client.KV.Txn(ops);
         }
 
         public async Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
@@ -44,8 +40,10 @@ namespace Jasper.Consul.Internal
 
         public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            return client.KV.Txn(subscriptions
-                .Select(s => new KVTxnOp(SUBSCRIPTION_PREFIX + s.Id, KVTxnVerb.Delete))
+            var ops = subscriptions
+                .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Delete));
+
+            return client.KV.Txn(ops
                 .ToList()
             );
         }
@@ -61,6 +59,16 @@ namespace Jasper.Consul.Internal
 
 
 
+    }
+
+    public static class SubscriptionExtensions
+    {
+        public static string ConsulId(this Subscription subscription)
+        {
+            if (subscription.Id == Guid.Empty) subscription.Id = Guid.NewGuid();
+
+            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.Id}";
+        }
     }
 
 }
