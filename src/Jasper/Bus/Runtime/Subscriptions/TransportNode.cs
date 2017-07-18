@@ -14,7 +14,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
         public TransportNode(ChannelGraph graph, string machineName)
         {
             NodeName = graph.Name;
-            Address = graph.ControlChannel?.Uri ?? graph.FirstOrDefault(x => x.Incoming)?.Uri;
+            ControlChannel = graph.ControlChannel?.Uri ?? graph.FirstOrDefault(x => x.Incoming)?.Uri;
             MachineName = machineName;
             Id = $"{NodeName}@{machineName}";
         }
@@ -24,7 +24,8 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         [Obsolete("Think this will be obsolete w/ the address")]
         public string MachineName { get; set; }
-        public Uri Address { get; set; }
+
+        public Uri ControlChannel { get; set; }
 
         public override string ToString()
         {

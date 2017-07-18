@@ -24,7 +24,7 @@ namespace JasperBus.Marten
             {
                 var existing = session.Query<Subscription>().Where(x => x.NodeName == _graph.Name).ToList();
                 var newReqs = subscriptions.Where(x => !existing.Contains(x)).ToList();
-                newReqs.Each(x => session.Store(x));
+                session.Store(newReqs);
                 session.SaveChanges();
             }
         }

@@ -54,7 +54,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             return _nodeDiscovery.FindPeers().Select(node => new CascadeEnvelope
             {
                 Message = new SubscriptionsChanged(),
-                Destination = node.Address
+                Destination = node.ControlChannel
             });
         }
     }

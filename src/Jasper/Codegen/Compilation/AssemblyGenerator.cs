@@ -26,8 +26,6 @@ namespace Jasper.Codegen.Compilation
 
         public AssemblyGenerator()
         {
-            
-
             ReferenceAssemblyContainingType<object>();
             ReferenceAssembly(typeof(Enumerable).GetTypeInfo().Assembly);
 
@@ -37,6 +35,8 @@ namespace Jasper.Codegen.Compilation
 
         public void ReferenceAssembly(Assembly assembly)
         {
+            if (assembly == null) return;
+
             if (_assemblies.Contains(assembly)) return;
 
             _assemblies.Add(assembly);
@@ -73,8 +73,8 @@ namespace Jasper.Codegen.Compilation
 
         private static string CreateAssemblyReference(Assembly assembly)
         {
-            return string.IsNullOrEmpty(assembly.Location) 
-                ? GetPath(assembly) 
+            return string.IsNullOrEmpty(assembly.Location)
+                ? GetPath(assembly)
                 : assembly.Location;
         }
 
@@ -114,7 +114,7 @@ namespace Jasper.Codegen.Compilation
             var references = _references.ToArray();
             var compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree }, references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-            
+
 
             using (var stream = new MemoryStream())
             {

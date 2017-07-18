@@ -31,7 +31,7 @@ namespace Jasper.Testing.Bus.Samples
             // Explicitly set the logical descriptive
             // name of this application. The default is
             // derived from the name of the class
-            NodeName = "MyApplication";
+            ServiceName = "MyApplication";
 
             // Incoming messages
             ListenForMessagesFrom(settings.Receiving);

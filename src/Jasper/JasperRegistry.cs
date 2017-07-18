@@ -153,6 +153,20 @@ namespace Jasper
             Services = _applicationServices;
             Settings.ApplyingExtensions = false;
         }
+
+        public void Include(IJasperExtension extension)
+        {
+            ApplyExtensions(new IJasperExtension[]{extension});
+        }
+
+        public void Include<T>(Action<T> configure = null) where T : IJasperExtension, new()
+        {
+            var extension = new T();
+            configure?.Invoke(extension);
+
+            Include(extension);
+        }
+
     }
 
     public class Logging : ILogging

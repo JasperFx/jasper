@@ -1,11 +1,11 @@
 ﻿using Jasper;
 using Jasper.Bus;
 using Jasper.Configuration;
-using Jasper.Consul;
+using Jasper.Consul.Internal;
 
 [assembly:JasperModule(typeof(ConsulExtension))]
 
-namespace Jasper.Consul
+namespace Jasper.Consul.Internal
 {
     public class ConsulExtension : IJasperExtension
     {

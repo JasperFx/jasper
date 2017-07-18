@@ -30,7 +30,8 @@ namespace Jasper.Bus
 
         public SerializationExpression Serialization { get; }
 
-        public string NodeName
+
+        public string ServiceName
         {
             get => _feature.Channels.Name;
             set => _feature.Channels.Name = value;

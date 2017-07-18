@@ -26,7 +26,7 @@ namespace JasperBus.Marten.Tests
         {
             with(_ =>
             {
-                _.NodeName = "Client";
+                _.ServiceName = "Client";
                 _.Services.IncludeRegistry<MartenSubscriptionRegistry>();
                 _.Services.ForSingletonOf<MessageHistory>().Use(new MessageHistory());
                 _.Services.AddService<IBusLogger, MessageTrackingLogger>();
@@ -36,7 +36,7 @@ namespace JasperBus.Marten.Tests
 
             _serviceEndpoint1 = new SubContext(_ =>
             {
-                _.NodeName = "Service";
+                _.ServiceName = "Service";
                 _.Services.IncludeRegistry<MartenSubscriptionRegistry>();
                 _.Services.ForSingletonOf<MessageHistory>().Use(new MessageHistory());
                 _.Services.AddService<IBusLogger, MessageTrackingLogger>();
@@ -46,7 +46,7 @@ namespace JasperBus.Marten.Tests
 
             _serviceEndpoint2 = new SubContext(_ =>
             {
-                _.NodeName = "Service";
+                _.ServiceName = "Service";
                 _.Services.IncludeRegistry<MartenSubscriptionRegistry>();
                 _.Services.ForSingletonOf<MessageHistory>().Use(new MessageHistory());
                 _.Services.AddService<IBusLogger, MessageTrackingLogger>();

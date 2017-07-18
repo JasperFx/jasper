@@ -14,7 +14,7 @@ namespace Jasper.Bus.Runtime
                     return _machineName = Environment.MachineName;
                 return _machineName;
             }
-            set { _machineName = value; }
+            set => _machineName = value;
         }
     }
 }

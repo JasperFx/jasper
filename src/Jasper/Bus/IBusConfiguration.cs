@@ -10,7 +10,7 @@ namespace Jasper.Bus
         HandlerSource Handlers { get; }
         Policies Policies { get; }
         JasperBusRegistry.SerializationExpression Serialization { get; }
-        string NodeName { get; set; }
+        string ServiceName { get; set; }
         IHasErrorHandlers ErrorHandling { get; }
         ChannelExpression ListenForMessagesFrom(Uri uri);
         ChannelExpression ListenForMessagesFrom(string uriString);

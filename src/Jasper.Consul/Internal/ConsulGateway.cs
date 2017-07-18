@@ -1,12 +1,9 @@
-﻿using System.Linq;
-using System.Net.Http;
+﻿using System;
 using System.Text;
 using System.Threading.Tasks;
 using Consul;
-using Jasper.Bus.Runtime;
-using Newtonsoft.Json;
 
-namespace Jasper.Consul
+namespace Jasper.Consul.Internal
 {
     // TODO -- clean this code up and eliminate the duplication. It's at spike quality code at the moment
     public interface IConsulGateway
@@ -15,17 +12,13 @@ namespace Jasper.Consul
         Task SetProperty(string key, string value);
     }
 
-    public class ConsulGateway : IConsulGateway
+    public class ConsulGateway : IConsulGateway, IDisposable
     {
-        private readonly HttpClient _client;
-        private readonly ConsulSettings _settings;
         private readonly ConsulClient _consul;
 
-        public ConsulGateway(HttpClient client, ConsulSettings settings)
+        public ConsulGateway(ConsulSettings settings)
         {
-            _client = client;
-            _settings = settings;
-            _consul = new ConsulClient(settings.Configure);
+            _consul = settings.Client;
         }
 
 
@@ -44,5 +37,9 @@ namespace Jasper.Consul
             });
         }
 
+        public void Dispose()
+        {
+            _consul?.Dispose();
+        }
     }
 }

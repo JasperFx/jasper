@@ -33,7 +33,7 @@ namespace JasperBus.Marten.Tests
             _subscriptionsSetupTask = waitForSubscriptionMessages();
             with(_ =>
             {
-                _.NodeName = "Primary";
+                _.ServiceName = "Primary";
                 _.Services.For<IBusLogger>().Add(new MessageTrackingLogger(_primaryHistory));
                 _.Services.IncludeRegistry<MartenSubscriptionRegistry>();
 
@@ -48,7 +48,7 @@ namespace JasperBus.Marten.Tests
 
             _subContext = new SubContext(_ =>
             {
-                _.NodeName = "Secondary";
+                _.ServiceName = "Secondary";
                 _.Services.For<IBusLogger>().Add(new MessageTrackingLogger(_secondaryHistory));
                 _.Services.IncludeRegistry<MartenSubscriptionRegistry>();
 

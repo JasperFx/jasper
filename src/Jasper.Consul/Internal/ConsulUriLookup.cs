@@ -4,7 +4,7 @@ using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 
-namespace Jasper.Consul
+namespace Jasper.Consul.Internal
 {
     public class ConsulUriLookup : IUriLookup
     {

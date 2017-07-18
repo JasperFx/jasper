@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using Jasper.Bus;
+using Jasper.Configuration;
 using Module1;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing
 {
+
     public class discovering_and_using_extensions : IDisposable
     {
         private JasperRuntime theRuntime;
@@ -71,6 +73,8 @@ namespace Jasper.Testing
         }
     }
 
+
+
     public class AppWithOverrides : JasperRegistry
     {
         public AppWithOverrides()
@@ -82,4 +86,7 @@ namespace Jasper.Testing
     }
 
     public class AppsModuleService : IModuleService{}
+
+
+
 }
