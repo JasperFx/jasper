@@ -80,6 +80,11 @@ namespace Jasper.Testing.Bus.Samples
             throw new NotImplementedException();
         }
 
+        Task<Subscription[]> ISubscriptionsRepository.GetSubscribersFor(Type messageType)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<Uri> GetSubscribersFor(Type messageType)
         {
             throw new NotImplementedException();

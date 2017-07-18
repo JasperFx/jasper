@@ -79,10 +79,10 @@ namespace JasperBus.Marten.Tests
             var history = _serviceEndpoint2.Runtime.Container.GetInstance<MessageHistory>();
             await history.WaitFor<SubscriptionsChanged>();
 
-            var se1Subscriptions = _serviceEndpoint1.Runtime.Container.GetInstance<ISubscriptionsStorage>();
+            var se1Subscriptions = _serviceEndpoint1.Runtime.Container.GetInstance<ISubscriptionsRepository>();
             (await se1Subscriptions.GetActiveSubscriptions()).Count().ShouldBe(1, "Primary endpoint missing subscription");
 
-            var se2Subscriptions = _serviceEndpoint2.Runtime.Container.GetInstance<ISubscriptionsStorage>();
+            var se2Subscriptions = _serviceEndpoint2.Runtime.Container.GetInstance<ISubscriptionsRepository>();
             (await se2Subscriptions.GetActiveSubscriptions()).Count().ShouldBe(1, "Secondary endpoint missing subscription");
         }
 

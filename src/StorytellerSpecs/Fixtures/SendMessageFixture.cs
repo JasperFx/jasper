@@ -179,7 +179,6 @@ namespace StorytellerSpecs.Fixtures
 
         public override void TearDown()
         {
-            _runtime.Container.GetInstance<ISubscriptionsStorage>().ClearAll();
             _runtime.Dispose();
         }
     }

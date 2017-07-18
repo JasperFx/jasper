@@ -15,14 +15,14 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
     public class SubscriptionActivator : ISubscriptionActivator
     {
-        private readonly ISubscriptionsStorage _subscriptions;
+        private readonly ISubscriptionsRepository _subscriptions;
         private readonly IEnvelopeSender _sender;
         private readonly INodeDiscovery _nodeDiscovery;
         private readonly IEnumerable<ISubscriptionRequirements> _requirements;
         private readonly ChannelGraph _channels;
 
         public SubscriptionActivator(
-            ISubscriptionsStorage subscriptions,
+            ISubscriptionsRepository subscriptions,
             IEnvelopeSender sender,
             INodeDiscovery nodeDiscovery,
             IEnumerable<ISubscriptionRequirements> requirements,

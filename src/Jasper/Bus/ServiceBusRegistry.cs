@@ -33,7 +33,6 @@ namespace Jasper.Bus
 
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
-            ForSingletonOf<ISubscriptionsStorage>().UseIfNone<SubscriptionsStorage>();
 
             For<ISerializer>().Add<NewtonsoftSerializer>();
 

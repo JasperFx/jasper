@@ -65,6 +65,27 @@ namespace Jasper.Consul.Testing
         }
 
         [Fact]
+        public async Task find_subscriptions_for_a_message_type()
+        {
+            var subscriptions = new Subscription[]
+            {
+                new Subscription(typeof(GreenMessage)){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(GreenMessage)){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(GreenMessage)){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(BlueMessage)){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(RedMessage)){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(OrangeMessage)){Role = SubscriptionRole.Subscribes},
+            };
+
+            subscriptions.Each(x => x.NodeName = "ConsulSampleApp");
+
+            await theRepository.PersistSubscriptions(subscriptions);
+
+            var greens = await theRepository.GetSubscribersFor(typeof(GreenMessage));
+            greens.Length.ShouldBe(3);
+        }
+
+        [Fact]
         public async Task remove_subscriptions()
         {
             var subscriptions = new Subscription[]

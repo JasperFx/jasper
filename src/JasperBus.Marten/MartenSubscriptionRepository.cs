@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Util;
 using Marten;
+using Marten.Schema.Arguments;
 
 namespace JasperBus.Marten
 {
@@ -49,6 +52,19 @@ namespace JasperBus.Marten
                 }
 
                 return session.SaveChangesAsync();
+            }
+        }
+
+        public async Task<Subscription[]> GetSubscribersFor(Type messageType)
+        {
+            using (var query = _documentStore.QuerySession())
+            {
+                var docs = await query.Query<Subscription>()
+                    .Where(x => x.MessageType == messageType.ToTypeAlias() && x.NodeName == _graph.Name &&
+                                x.Role == SubscriptionRole.Publishes)
+                    .ToListAsync();
+
+                return docs.ToArray();
             }
         }
 

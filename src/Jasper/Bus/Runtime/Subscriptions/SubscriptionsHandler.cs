@@ -13,11 +13,11 @@ namespace Jasper.Bus.Runtime.Subscriptions
     public class SubscriptionsHandler
     {
         private readonly ChannelGraph _graph;
-        private readonly ISubscriptionsStorage _subscriptions;
+        private readonly ISubscriptionsRepository _subscriptions;
         private readonly INodeDiscovery _nodeDiscovery;
         private readonly IMessageRouter _router;
 
-        public SubscriptionsHandler(ChannelGraph graph, ISubscriptionsStorage subscriptions, INodeDiscovery nodeDiscovery, IMessageRouter router)
+        public SubscriptionsHandler(ChannelGraph graph, ISubscriptionsRepository subscriptions, INodeDiscovery nodeDiscovery, IMessageRouter router)
         {
             _graph = graph;
             _subscriptions = subscriptions;

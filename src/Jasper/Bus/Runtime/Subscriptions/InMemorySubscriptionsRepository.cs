@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
@@ -17,6 +19,12 @@ namespace Jasper.Bus.Runtime.Subscriptions
             }
 
             return Task.CompletedTask;
+        }
+
+        public Task<Subscription[]> GetSubscribersFor(Type messageType)
+        {
+            var matching = _subscriptions.Where(x => x.Role == SubscriptionRole.Publishes && x.MessageType == messageType.ToTypeAlias()).ToArray();
+            return Task.FromResult(matching);
         }
 
         public void Dispose()

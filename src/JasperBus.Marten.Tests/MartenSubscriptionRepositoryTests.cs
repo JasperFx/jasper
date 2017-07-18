@@ -131,20 +131,20 @@ namespace JasperBus.Marten.Tests
     {
         public static Task<Subscription[]> GetActiveSubscriptions(this IntegrationContext ctx)
         {
-            return ctx.Runtime.Container.GetInstance<ISubscriptionsStorage>().GetActiveSubscriptions();
+            return ctx.Runtime.Container.GetInstance<ISubscriptionsRepository>().GetActiveSubscriptions();
         }
 
         public static Task<Subscription[]> GetPublishedSubscriptions(this IntegrationContext ctx)
         {
             return
-                ctx.Runtime.Container.GetInstance<ISubscriptionsStorage>()
+                ctx.Runtime.Container.GetInstance<ISubscriptionsRepository>()
                     .LoadSubscriptions(SubscriptionRole.Publishes);
         }
 
         public static Task<Subscription[]> GetSubscribedSubscriptions(this IntegrationContext ctx)
         {
             return
-                ctx.Runtime.Container.GetInstance<ISubscriptionsStorage>()
+                ctx.Runtime.Container.GetInstance<ISubscriptionsRepository>()
                     .LoadSubscriptions(SubscriptionRole.Subscribes);
         }
 

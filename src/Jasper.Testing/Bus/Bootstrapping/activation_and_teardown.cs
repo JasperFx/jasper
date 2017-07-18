@@ -38,12 +38,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
 
         [Fact]
-        public void subscriptions_storage_must_be_a_singleton()
-        {
-            theRuntime.Container.Model.For<ISubscriptionsStorage>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();
-        }
-
-        [Fact]
         public void should_have_the_envelope_sender_registered()
         {
             theRuntime.Container.DefaultRegistrationIs<IEnvelopeSender, EnvelopeSender>();

@@ -6,6 +6,7 @@ using Consul;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Util;
 
 namespace Jasper.Consul.Internal
 {
@@ -48,16 +49,18 @@ namespace Jasper.Consul.Internal
             );
         }
 
+        public async Task<Subscription[]> GetSubscribersFor(Type messageType)
+        {
+            var prefix = messageType.ToTypeAlias().ConsulIdPrefix();
+            var subs = await client.KV.List(prefix);
+            return subs.Response?.Select(kv => deserialize<Subscription>(kv.Value)).ToArray() ?? new Subscription[0];
+        }
+
         public async Task<IEnumerable<Subscription>> AllSubscriptions()
         {
             var subs = await client.KV.List(SUBSCRIPTION_PREFIX);
             return subs.Response?.Select(kv => deserialize<Subscription>(kv.Value)) ?? new Subscription[0];
         }
-
-
-
-
-
 
     }
 
@@ -67,7 +70,12 @@ namespace Jasper.Consul.Internal
         {
             if (subscription.Id == Guid.Empty) subscription.Id = Guid.NewGuid();
 
-            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.Id}";
+            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.MessageType}/{subscription.Id}";
+        }
+
+        public static string ConsulIdPrefix(this string messageType)
+        {
+            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{messageType}";
         }
     }
 
