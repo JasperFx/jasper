@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
 
@@ -64,17 +65,17 @@ namespace Jasper.Testing.Bus.Samples
 
     public class MartenSubscriptionRepository : ISubscriptionsRepository
     {
-        public void PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole)
+        public Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             throw new NotImplementedException();
         }

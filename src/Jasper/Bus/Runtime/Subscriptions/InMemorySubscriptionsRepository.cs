@@ -1,38 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
-    public interface ISubscriptionsRepository : IDisposable
-    {
-        void PersistSubscriptions(IEnumerable<Subscription> subscriptions);
-        IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole);
-        void RemoveSubscriptions(IEnumerable<Subscription> subscriptions);
-    }
-
     public class InMemorySubscriptionsRepository : ISubscriptionsRepository
     {
         private readonly List<Subscription> _subscriptions = new List<Subscription>();
 
-        public void RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            subscriptions.Each(sub => _subscriptions.Remove(sub));
+            foreach (var subscription in subscriptions)
+            {
+                _subscriptions.Remove(subscription);
+            }
+
+            return Task.CompletedTask;
         }
 
         public void Dispose()
         {
         }
 
-        public void PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            subscriptions.Where(x => !_subscriptions.Contains(x)).Each(x => _subscriptions.Add(x));
+            _subscriptions.Fill(subscriptions);
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole)
+        public Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
         {
-            return _subscriptions.Where(x => x.Role == subscriptionRole);
+            var matching = _subscriptions.Where(x => x.Role == subscriptionRole).ToArray();
+            return Task.FromResult(matching);
         }
+    }
+
+    public interface ISubscriptionsRepository : IDisposable
+    {
+        Task PersistSubscriptions(IEnumerable<Subscription> subscriptions);
+        Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole);
+        Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions);
     }
 }

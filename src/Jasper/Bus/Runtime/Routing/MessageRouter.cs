@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
@@ -29,16 +30,24 @@ namespace Jasper.Bus.Runtime.Routing
             _routes.Clear();
         }
 
-        public MessageRoute[] Route(Type messageType)
+        public async Task<MessageRoute[]> Route(Type messageType)
         {
-            return _routes.GetOrAdd(messageType, type => compileRoutes(type).ToArray());
+            if (!_routes.ContainsKey(messageType))
+            {
+                var routes = (await compileRoutes(messageType)).ToArray();
+                _routes[messageType] = routes;
+
+                return routes;
+            }
+
+            return _routes[messageType];
         }
 
-        public MessageRoute RouteForDestination(Envelope envelope)
+        public async Task<MessageRoute> RouteForDestination(Envelope envelope)
         {
 
             var messageType = envelope.Message.GetType();
-            var routes = Route(messageType);
+            var routes = await Route(messageType);
 
             var candidate = routes.FirstOrDefault(x => x.MatchesEnvelope(envelope));
             if (candidate != null) return candidate;
@@ -56,28 +65,29 @@ namespace Jasper.Bus.Runtime.Routing
                        contentType);
         }
 
-        private IEnumerable<MessageRoute> compileRoutes(Type messageType)
+        private async Task<List<MessageRoute>> compileRoutes(Type messageType)
         {
+            var list = new List<MessageRoute>();
+
             // TODO -- trace subscriptions that cannot be filled?
             var modelWriter = _serializers.WriterFor(messageType);
             var supported = modelWriter.ContentTypes;
 
             foreach (var channel in _channels.Distinct().Where(x => x.ShouldSendMessage(messageType)))
             {
-
                 var contentType = channel.AcceptedContentTypes.Intersect(supported).FirstOrDefault();
 
                 if (contentType.IsNotEmpty())
                 {
-                    yield return new MessageRoute(messageType, modelWriter, channel.Destination, contentType);
+                    list.Add(new MessageRoute(messageType, modelWriter, channel.Destination, contentType));
                 }
             }
 
-            foreach (var subscription in _subscriptions.GetSubscribersFor(messageType))
+            foreach (var subscription in await _subscriptions.GetSubscribersFor(messageType))
             {
                 if (subscription.Accepts.IsEmpty())
                 {
-                    yield return new MessageRoute(messageType, modelWriter, subscription.Receiver, "application/json");
+                    list.Add(new MessageRoute(messageType, modelWriter, subscription.Receiver, "application/json"));
                 }
                 else
                 {
@@ -87,10 +97,12 @@ namespace Jasper.Bus.Runtime.Routing
 
                     if (contentType.IsNotEmpty())
                     {
-                        yield return new MessageRoute(messageType, modelWriter, subscription.Receiver, contentType);
+                        list.Add(new MessageRoute(messageType, modelWriter, subscription.Receiver, contentType));
                     }
                 }
             }
+
+            return list;
 
 
         }

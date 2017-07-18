@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Consul;
 using Jasper.Bus;
@@ -41,7 +42,7 @@ namespace Jasper.Consul.Testing
         }
 
         [Fact]
-        public void persist_and_load_subscriptions()
+        public async Task persist_and_load_subscriptions()
         {
             var subscriptions = new Subscription[]
             {
@@ -53,9 +54,9 @@ namespace Jasper.Consul.Testing
 
             subscriptions.Each(x => x.NodeName = "ConsulSampleApp");
 
-            theRepository.PersistSubscriptions(subscriptions);
+            await theRepository.PersistSubscriptions(subscriptions);
 
-            var publishes = theRepository.LoadSubscriptions(SubscriptionRole.Publishes);
+            var publishes = await theRepository.LoadSubscriptions(SubscriptionRole.Publishes);
             publishes.Count().ShouldBe(3);
 
             publishes.Any(x => x.MessageType == typeof(GreenMessage).ToTypeAlias()).ShouldBeTrue();
@@ -64,7 +65,7 @@ namespace Jasper.Consul.Testing
         }
 
         [Fact]
-        public void remove_subscriptions()
+        public async Task remove_subscriptions()
         {
             var subscriptions = new Subscription[]
             {
@@ -76,12 +77,12 @@ namespace Jasper.Consul.Testing
 
             subscriptions.Each(x => x.NodeName = "ConsulSampleApp");
 
-            theRepository.PersistSubscriptions(subscriptions);
+            await theRepository.PersistSubscriptions(subscriptions);
 
-            theRepository.RemoveSubscriptions(new List<Subscription>{subscriptions[1], subscriptions[2]});
+            await theRepository.RemoveSubscriptions(new List<Subscription>{subscriptions[1], subscriptions[2]});
 
 
-            theRepository.LoadSubscriptions(SubscriptionRole.Publishes).Single()
+            (await theRepository.LoadSubscriptions(SubscriptionRole.Publishes)).Single()
                 .MessageType.ShouldBe(typeof(GreenMessage).ToTypeAlias());
 
         }

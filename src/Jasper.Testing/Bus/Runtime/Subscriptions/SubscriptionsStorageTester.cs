@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using TestMessages;
@@ -30,14 +31,14 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         }
 
         [Fact]
-        public void persists_subscriptions()
+        public async Task persists_subscriptions()
         {
-            _storage.PersistSubscriptions(_subscriptions);
+            await _storage.PersistSubscriptions(_subscriptions);
 
-            _repository.LoadSubscriptions(SubscriptionRole.Publishes)
+            (await _repository.LoadSubscriptions(SubscriptionRole.Publishes))
                 .ShouldHaveTheSameElementsAs(_subscriptions.Where(x => x.Role == SubscriptionRole.Publishes));
 
-            _repository.LoadSubscriptions(SubscriptionRole.Subscribes)
+            (await _repository.LoadSubscriptions(SubscriptionRole.Subscribes))
                 .ShouldHaveTheSameElementsAs(_subscriptions.Where(x => x.Role == SubscriptionRole.Subscribes));
 
             _cache.ActiveSubscriptions
@@ -45,38 +46,38 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         }
 
         [Fact]
-        public void removes_subscriptions()
+        public async Task removes_subscriptions()
         {
-            _storage.PersistSubscriptions(_subscriptions);
+            await _storage.PersistSubscriptions(_subscriptions);
 
-            _storage.RemoveSubscriptions(_subscriptions.Where(x => x.Role == SubscriptionRole.Publishes));
+            await _storage.RemoveSubscriptions(_subscriptions.Where(x => x.Role == SubscriptionRole.Publishes).ToArray());
 
-            _repository.LoadSubscriptions(SubscriptionRole.Publishes)
+            (await _repository.LoadSubscriptions(SubscriptionRole.Publishes))
                 .ShouldHaveCount(0);
 
             _cache.ActiveSubscriptions.ShouldHaveCount(0);
         }
 
         [Fact]
-        public void adds_missing_subscriptions_to_cache()
+        public async Task adds_missing_subscriptions_to_cache()
         {
-            _storage.PersistSubscriptions(_subscriptions);
+            await _storage.PersistSubscriptions(_subscriptions);
 
-            _repository.PersistSubscriptions(new []
+            await _repository.PersistSubscriptions(new []
             {
                 Subs.NewSubscription(role:SubscriptionRole.Publishes)
             });
 
             var expectedPublish = _subscriptions.Count(x => x.Role == SubscriptionRole.Publishes) + 1;
 
-            _storage.LoadSubscriptions(SubscriptionRole.Publishes)
+            (await _storage.LoadSubscriptions(SubscriptionRole.Publishes))
                 .ShouldHaveCount(expectedPublish);
 
             _cache.ActiveSubscriptions.ShouldHaveCount(expectedPublish);
         }
 
         [Fact]
-        public void subscribers_for_message()
+        public async Task subscribers_for_message()
         {
             var sub1 = Subs.NewSubscription(role: SubscriptionRole.Publishes);
             sub1.MessageType = typeof(PingMessage).FullName;
@@ -90,22 +91,22 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             sub3.MessageType = typeof(PingMessage).FullName;
             sub3.Receiver = "memory://PingReceiver2".ToUri();
 
-            _storage.PersistSubscriptions(new[] {sub1, sub2, sub3});
+            await _storage.PersistSubscriptions(new[] {sub1, sub2, sub3});
 
-            var pingSubscribers = _storage.GetSubscribersFor(typeof(PingMessage));
+            var pingSubscribers = await _storage.GetSubscribersFor(typeof(PingMessage));
             pingSubscribers.ShouldHaveTheSameElementsAs(sub1, sub3);
 
-            var pongSubscribers = _storage.GetSubscribersFor(typeof(PongMessage));
+            var pongSubscribers = await _storage.GetSubscribersFor(typeof(PongMessage));
             pongSubscribers.ShouldHaveTheSameElementsAs(sub2);
         }
 
         [Fact]
-        public void active_subscriptions()
+        public async Task active_subscriptions()
         {
-            _storage.PersistSubscriptions(_subscriptions);
+            await _storage.PersistSubscriptions(_subscriptions);
 
-            _storage.ActiveSubscriptions.ShouldHaveCount(3);
-            _storage.ActiveSubscriptions
+            (await _storage.GetActiveSubscriptions()).ShouldHaveCount(3);
+            (await _storage.GetActiveSubscriptions())
                 .ShouldHaveTheSameElementsAs(_subscriptions.Where(x => x.Role == SubscriptionRole.Publishes));
         }
     }

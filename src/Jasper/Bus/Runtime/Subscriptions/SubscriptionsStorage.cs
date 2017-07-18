@@ -1,23 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
-    public interface ISubscriptionsStorage
-    {
-
-
-        void PersistSubscriptions(IEnumerable<Subscription> subscriptions);
-        IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole);
-        void RemoveSubscriptions(IEnumerable<Subscription> subscriptions);
-        void ClearAll();
-
-        IEnumerable<Subscription> GetSubscribersFor(Type messageType);
-        IEnumerable<Subscription> ActiveSubscriptions { get; }
-    }
-
     public class SubscriptionsStorage : ISubscriptionsStorage
     {
         private readonly ISubscriptionsCache _cache;
@@ -31,39 +19,42 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _repository = repository;
         }
 
-        public void PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public async Task PersistSubscriptions(Subscription[] subscriptions)
         {
-            _repository.PersistSubscriptions(subscriptions);
+            await _repository.PersistSubscriptions(subscriptions);
             _cache.Store(subscriptions.Where(x => x.Role == SubscriptionRole.Publishes));
         }
 
-        public IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole)
+        public async Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
         {
-            var subscriptions = _repository.LoadSubscriptions(subscriptionRole).ToList();
+            var subscriptions = await _repository.LoadSubscriptions(subscriptionRole);
             if (subscriptionRole == SubscriptionRole.Publishes)
             {
                 _cache.Store(subscriptions);
             }
+
             return subscriptions;
         }
 
-        public void RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public async Task RemoveSubscriptions(Subscription[] subscriptions)
         {
-            _repository.RemoveSubscriptions(subscriptions);
+            await _repository.RemoveSubscriptions(subscriptions);
             subscriptions.Each(x => _cache.Remove(x));
         }
 
-        public void ClearAll()
+        public Task ClearAll()
         {
             _cache.ClearAll();
+
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<Subscription> GetSubscribersFor(Type messageType)
+        public async Task<Subscription[]> GetSubscribersFor(Type messageType)
         {
-            return ActiveSubscriptions
-                .Where(x => x.Matches(messageType));
+            var subscriptions = await GetActiveSubscriptions();
+            return subscriptions.Where(x => x.Matches(messageType)).ToArray();
         }
 
-        public IEnumerable<Subscription> ActiveSubscriptions => _cache.ActiveSubscriptions;
+        public Task<Subscription[]> GetActiveSubscriptions() => Task.FromResult(_cache.ActiveSubscriptions);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -21,23 +22,25 @@ namespace JasperBus.Marten
             _machineName = envSettings.MachineName;
         }
 
-        public void Register(ChannelGraph graph)
+        public Task Register(ChannelGraph graph)
         {
             LocalNode = new TransportNode(graph, _machineName);
             using (var session = _documentStore.LightweightSession())
             {
                 session.Store(LocalNode);
-                session.SaveChanges();
+                return session.SaveChangesAsync();
             }
         }
 
-        public IEnumerable<TransportNode> FindPeers()
+        public async Task<TransportNode[]> FindPeers()
         {
             using (var session = _documentStore.LightweightSession())
             {
-                return session.Query<TransportNode>()
+                var peers = await session.Query<TransportNode>()
                     .Where(x => x.NodeName == LocalNode.NodeName && x.Id != LocalNode.Id)
-                    .ToList();
+                    .ToListAsync();
+
+                return peers.ToArray();
             }
         }
     }

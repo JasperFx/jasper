@@ -75,7 +75,7 @@ namespace Jasper.Bus
 
             container.GetInstance<IDelayedJobProcessor>().Start(pipeline, Channels);
 
-            container.GetInstance<ISubscriptionActivator>().Activate();
+            await container.GetInstance<ISubscriptionActivator>().Activate();
         }
 
         private void startTransports(ITransport[] transports, IHandlerPipeline pipeline)

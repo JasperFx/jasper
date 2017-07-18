@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Util;
@@ -9,7 +10,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 {
     public interface ISubscriptionActivator
     {
-        void Activate();
+        Task Activate();
     }
 
     public class SubscriptionActivator : ISubscriptionActivator
@@ -34,13 +35,13 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _channels = channels;
         }
 
-        public void Activate()
+        public async Task Activate()
         {
-            _nodeDiscovery.Register(_channels);
-            setupSubscriptions(_channels);
+            await _nodeDiscovery.Register(_channels);
+            await setupSubscriptions(_channels);
         }
 
-        private void setupSubscriptions(ChannelGraph graph)
+        private async Task setupSubscriptions(ChannelGraph graph)
         {
             var staticSubscriptions = _requirements
                 .SelectMany(x => x.DetermineRequirements())
@@ -51,17 +52,18 @@ namespace Jasper.Bus.Runtime.Subscriptions
                     x.Role = SubscriptionRole.Subscribes;
                     x.Receiver = x.Receiver.ToMachineUri();
                     return x;
-                });
+                }).ToArray();
 
-            _subscriptions.PersistSubscriptions(staticSubscriptions);
+            await _subscriptions.PersistSubscriptions(staticSubscriptions);
 
-            sendSubscriptions();
+            await sendSubscriptions();
         }
 
-        private void sendSubscriptions()
+        private async Task sendSubscriptions()
         {
-            _subscriptions.LoadSubscriptions(SubscriptionRole.Subscribes)
-                .GroupBy(x => x.Source)
+            var subscriptions = await _subscriptions.LoadSubscriptions(SubscriptionRole.Subscribes);
+
+                subscriptions.GroupBy(x => x.Source)
                 .Each(group =>
                 {
                     var envelope = new Envelope

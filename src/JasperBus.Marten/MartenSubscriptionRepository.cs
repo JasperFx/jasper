@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -18,32 +19,36 @@ namespace JasperBus.Marten
             _documentStore = documentStore;
         }
 
-        public void PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             using (var session = _documentStore.LightweightSession())
             {
                 var existing = session.Query<Subscription>().Where(x => x.NodeName == _graph.Name).ToList();
                 var newReqs = subscriptions.Where(x => !existing.Contains(x)).ToList();
                 session.Store(newReqs);
-                session.SaveChanges();
+                return session.SaveChangesAsync();
             }
         }
 
-        public IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole)
+        public async Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
         {
             using (var session = _documentStore.LightweightSession())
             {
-                return session.Query<Subscription>()
-                    .Where(x => x.NodeName == _graph.Name && x.Role == subscriptionRole);
+                return (await session.Query<Subscription>()
+                    .Where(x => x.NodeName == _graph.Name && x.Role == subscriptionRole).ToListAsync()).ToArray();
             }
         }
 
-        public void RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             using (var session = _documentStore.LightweightSession())
             {
-                subscriptions.Each(sub => session.Delete<Subscription>(sub.Id));
-                session.SaveChanges();
+                foreach (var subscription in subscriptions)
+                {
+                    session.Delete(subscription.Id);
+                }
+
+                return session.SaveChangesAsync();
             }
         }
 

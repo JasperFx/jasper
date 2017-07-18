@@ -12,7 +12,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         void Remove(Subscription subscription);
 
-        IEnumerable<Subscription> ActiveSubscriptions { get; }
+        Subscription[] ActiveSubscriptions { get; }
     }
 
     // What if we said that the control channel has no parallelism?
@@ -35,6 +35,6 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _subscriptions.Remove(subscription);
         }
 
-        public IEnumerable<Subscription> ActiveSubscriptions => _subscriptions.ToArray();
+        public Subscription[] ActiveSubscriptions => _subscriptions.ToArray();
     }
 }

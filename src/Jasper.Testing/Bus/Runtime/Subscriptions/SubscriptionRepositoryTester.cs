@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Subscriptions;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         }
 
         [Fact]
-        public void store_subscriptions()
+        public async Task store_subscriptions()
         {
             var subs = new[]
             {
@@ -25,17 +26,17 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
                 Subs.ExistingSubscription(role: SubscriptionRole.Publishes)
             };
 
-            _repository.PersistSubscriptions(subs);
+            await _repository.PersistSubscriptions(subs);
 
-            _repository.LoadSubscriptions(SubscriptionRole.Subscribes)
+            (await _repository.LoadSubscriptions(SubscriptionRole.Subscribes))
                 .ShouldHaveTheSameElementsAs(subs.Where(x => x.Role == SubscriptionRole.Subscribes));
 
-            _repository.LoadSubscriptions(SubscriptionRole.Publishes)
+            (await _repository.LoadSubscriptions(SubscriptionRole.Publishes))
                 .ShouldHaveTheSameElementsAs(subs.Where(x => x.Role == SubscriptionRole.Publishes));
         }
 
         [Fact]
-        public void remove_subscriptions()
+        public async Task remove_subscriptions()
         {
             var subs = new[]
             {
@@ -44,11 +45,11 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
                 Subs.ExistingSubscription()
             };
 
-            _repository.PersistSubscriptions(subs);
+            await _repository.PersistSubscriptions(subs);
 
-            _repository.RemoveSubscriptions(new [] { subs.Last() });
+            await _repository.RemoveSubscriptions(new [] { subs.Last() });
 
-            var loadedSubs = _repository.LoadSubscriptions(SubscriptionRole.Subscribes);
+            var loadedSubs = await _repository.LoadSubscriptions(SubscriptionRole.Subscribes);
             loadedSubs.ShouldHaveTheSameElementsAs(subs.Take(2));
         }
     }

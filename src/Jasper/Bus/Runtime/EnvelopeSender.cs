@@ -42,7 +42,7 @@ namespace Jasper.Bus.Runtime
 
             if (envelope.Destination == null)
             {
-                var routes = _router.Route(envelope.Message.GetType());
+                var routes = await _router.Route(envelope.Message.GetType());
                 if (!routes.Any())
                 {
                     throw new NoRoutesException(envelope);
@@ -55,7 +55,7 @@ namespace Jasper.Bus.Runtime
             }
             else
             {
-                var route = _router.RouteForDestination(envelope);
+                var route = await _router.RouteForDestination(envelope);
                 await sendEnvelope(envelope, route, callback);
             }
 

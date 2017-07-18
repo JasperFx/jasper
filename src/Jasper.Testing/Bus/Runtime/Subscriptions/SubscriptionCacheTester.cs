@@ -76,12 +76,12 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             };
 
             _cache.Store(subscriptions);
-            _cache.ActiveSubscriptions.ShouldHaveTheSameElementsAs(subscriptions);
+            _cache.ActiveSubscriptions.ShouldHaveTheSameElementsAs<Subscription>(subscriptions);
 
             _cache.Remove(subscriptions[2]);
             subscriptions.RemoveAt(2);
             _cache.ActiveSubscriptions.ShouldHaveCount(3);
-            _cache.ActiveSubscriptions.ShouldHaveTheSameElementsAs(subscriptions);
+            _cache.ActiveSubscriptions.ShouldHaveTheSameElementsAs<Subscription>(subscriptions);
         }
 
     }

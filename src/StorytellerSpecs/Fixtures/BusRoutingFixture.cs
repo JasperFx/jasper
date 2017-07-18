@@ -66,7 +66,7 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("For message type {MessageType}")]
-        public void ForMessage([SelectionList("MessageTypes")] string MessageType)
+        public async Task ForMessage([SelectionList("MessageTypes")] string MessageType)
         {
             var messageType = messageTypeFor(MessageType);
 
@@ -77,7 +77,7 @@ namespace StorytellerSpecs.Fixtures
 
             var router = _runtime.Container.GetInstance<IMessageRouter>();
 
-            _tracks = router.Route(messageType);
+            _tracks = await router.Route(messageType);
         }
 
 
@@ -102,32 +102,36 @@ namespace StorytellerSpecs.Fixtures
         }
 
 
-        void ISubscriptionsStorage.PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        Task ISubscriptionsStorage.PersistSubscriptions(Subscription[] subscriptions)
         {
+            return Task.CompletedTask;
         }
 
-        IEnumerable<Subscription> ISubscriptionsStorage.LoadSubscriptions(SubscriptionRole subscriptionRole)
+        Task<Subscription[]> ISubscriptionsStorage.LoadSubscriptions(SubscriptionRole subscriptionRole)
         {
-            return _subscriptions.Where(x => x.Role == subscriptionRole);
+            var subscriptions = _subscriptions.Where(x => x.Role == subscriptionRole).ToArray();
+            return Task.FromResult(subscriptions);
         }
 
-        void ISubscriptionsStorage.RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        Task ISubscriptionsStorage.RemoveSubscriptions(Subscription[] subscriptions)
         {
-
+            return Task.CompletedTask;
         }
 
-        void ISubscriptionsStorage.ClearAll()
+        Task ISubscriptionsStorage.ClearAll()
         {
+            return Task.CompletedTask;
         }
 
-        IEnumerable<Subscription> ISubscriptionsStorage.GetSubscribersFor(Type messageType)
+        Task<Subscription[]> ISubscriptionsStorage.GetSubscribersFor(Type messageType)
         {
-            return _subscriptions.Where(x => x.MessageType == messageType.ToTypeAlias());
+            var subscriptions =  _subscriptions.Where(x => x.MessageType == messageType.ToTypeAlias()).ToArray();
+            return Task.FromResult(subscriptions);
         }
 
-        IEnumerable<Subscription> ISubscriptionsStorage.ActiveSubscriptions
+        Task<Subscription[]> ISubscriptionsStorage.GetActiveSubscriptions()
         {
-            get { throw new NotImplementedException(); }
+            throw new NotImplementedException();
         }
     }
 

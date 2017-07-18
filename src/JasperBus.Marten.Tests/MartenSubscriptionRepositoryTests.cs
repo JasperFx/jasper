@@ -67,16 +67,16 @@ namespace JasperBus.Marten.Tests
         {
             await _subscriptionsSetupTask;
 
-            var subscriptions = this.GetPublishedSubscriptions();
+            var subscriptions = await this.GetPublishedSubscriptions();
             subscriptions.ShouldHaveCount(1);
-            this.GetActiveSubscriptions().ShouldHaveTheSameElementsAs(subscriptions);
+            (await this.GetActiveSubscriptions()).ShouldHaveTheSameElementsAs(subscriptions);
             var sub1 = subscriptions.First();
             sub1.NodeName.ShouldBe("Primary");
             sub1.VerifySubscription<PingMessage>(source: _primaryQueueUri, destination: _secondaryQueueUri);
 
-            var subsSubscriptions = _subContext.GetPublishedSubscriptions();
+            var subsSubscriptions = await _subContext.GetPublishedSubscriptions();
             subsSubscriptions.ShouldHaveCount(1);
-            _subContext.GetActiveSubscriptions().ShouldHaveTheSameElementsAs(subsSubscriptions);
+            (await _subContext.GetActiveSubscriptions()).ShouldHaveTheSameElementsAs(subsSubscriptions);
             var sub2 = subsSubscriptions.First();
             sub2.NodeName.ShouldBe("Secondary");
             sub2.VerifySubscription<PongMessage>(source: _secondaryQueueUri, destination: _primaryQueueUri);
@@ -87,14 +87,14 @@ namespace JasperBus.Marten.Tests
         {
             await _subscriptionsSetupTask;
 
-            var subscriptions = this.GetSubscribedSubscriptions();
+            var subscriptions = await this.GetSubscribedSubscriptions();
             subscriptions.ShouldHaveCount(1);
             var sub1 = subscriptions.First();
             sub1.NodeName.ShouldBe("Primary");
             sub1.VerifySubscription<PongMessage>(source: _secondaryQueueUri, destination: _primaryQueueUri,
                 role: SubscriptionRole.Subscribes);
 
-            var subsSubscriptions = _subContext.GetSubscribedSubscriptions();
+            var subsSubscriptions = await _subContext.GetSubscribedSubscriptions();
             subsSubscriptions.ShouldHaveCount(1);
             var sub2 = subsSubscriptions.First();
             sub2.NodeName.ShouldBe("Secondary");
@@ -129,25 +129,23 @@ namespace JasperBus.Marten.Tests
 
     public static class Extensions
     {
-        public static IEnumerable<Subscription> GetActiveSubscriptions(this IntegrationContext ctx)
+        public static Task<Subscription[]> GetActiveSubscriptions(this IntegrationContext ctx)
         {
-            return ctx.Runtime.Container.GetInstance<ISubscriptionsStorage>().ActiveSubscriptions;
+            return ctx.Runtime.Container.GetInstance<ISubscriptionsStorage>().GetActiveSubscriptions();
         }
 
-        public static List<Subscription> GetPublishedSubscriptions(this IntegrationContext ctx)
+        public static Task<Subscription[]> GetPublishedSubscriptions(this IntegrationContext ctx)
         {
             return
                 ctx.Runtime.Container.GetInstance<ISubscriptionsStorage>()
-                    .LoadSubscriptions(SubscriptionRole.Publishes)
-                    .ToList();
+                    .LoadSubscriptions(SubscriptionRole.Publishes);
         }
 
-        public static List<Subscription> GetSubscribedSubscriptions(this IntegrationContext ctx)
+        public static Task<Subscription[]> GetSubscribedSubscriptions(this IntegrationContext ctx)
         {
             return
                 ctx.Runtime.Container.GetInstance<ISubscriptionsStorage>()
-                    .LoadSubscriptions(SubscriptionRole.Subscribes)
-                    .ToList();
+                    .LoadSubscriptions(SubscriptionRole.Subscribes);
         }
 
         public static void VerifySubscription<TMessageType>(this Subscription subscription,

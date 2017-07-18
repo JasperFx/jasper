@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Invocation;
@@ -24,7 +25,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _router = router;
         }
 
-        public IEnumerable<object> Handle(SubscriptionRequested message)
+        public async Task<IEnumerable<object>> Handle(SubscriptionRequested message)
         {
             var modifiedSubscriptions = message.Subscriptions
                 .Select(x =>
@@ -34,31 +35,29 @@ namespace Jasper.Bus.Runtime.Subscriptions
                     x.Role = SubscriptionRole.Publishes;
                     x.Source = x.Source.ToMachineUri();
                     return x;
-                });
+                }).ToArray();
 
-            _subscriptions.PersistSubscriptions(modifiedSubscriptions);
+            await _subscriptions.PersistSubscriptions(modifiedSubscriptions);
 
             _router.ClearAll();
 
-            return UpdateNodes();
-        }
+            var peers = await _nodeDiscovery.FindPeers();
 
-        public void Handle(SubscriptionsChanged message)
-        {
-            _subscriptions.LoadSubscriptions(SubscriptionRole.Publishes);
-            _router.ClearAll();
-        }
-
-        private IEnumerable<object> UpdateNodes()
-        {
-            return _nodeDiscovery.FindPeers().Select(node => new CascadeEnvelope
+            return peers.Select(node => new CascadeEnvelope
             {
                 Message = new SubscriptionsChanged(),
                 Destination = node.ControlChannel
             });
         }
+
+        public async Task Handle(SubscriptionsChanged message)
+        {
+            await _subscriptions.LoadSubscriptions(SubscriptionRole.Publishes);
+            _router.ClearAll();
+        }
     }
 
+    // TODO -- this might need to be somewhere else instead of tucked away here
     public class CascadeEnvelope : ISendMyself
     {
         public Uri Destination { get; set; }

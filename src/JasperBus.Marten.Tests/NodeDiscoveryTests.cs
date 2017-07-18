@@ -80,10 +80,10 @@ namespace JasperBus.Marten.Tests
             await history.WaitFor<SubscriptionsChanged>();
 
             var se1Subscriptions = _serviceEndpoint1.Runtime.Container.GetInstance<ISubscriptionsStorage>();
-            se1Subscriptions.ActiveSubscriptions.Count().ShouldBe(1, "Primary endpoint missing subscription");
+            (await se1Subscriptions.GetActiveSubscriptions()).Count().ShouldBe(1, "Primary endpoint missing subscription");
 
             var se2Subscriptions = _serviceEndpoint2.Runtime.Container.GetInstance<ISubscriptionsStorage>();
-            se2Subscriptions.ActiveSubscriptions.Count().ShouldBe(1, "Secondary endpoint missing subscription");
+            (await se2Subscriptions.GetActiveSubscriptions()).Count().ShouldBe(1, "Secondary endpoint missing subscription");
         }
 
         public override void Dispose()

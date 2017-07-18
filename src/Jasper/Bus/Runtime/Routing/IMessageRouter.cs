@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Jasper.Bus.Runtime.Routing
 {
     public interface IMessageRouter
     {
         void ClearAll();
-        MessageRoute[] Route(Type messageType);
-        MessageRoute RouteForDestination(Envelope envelopeDestination);
+        Task<MessageRoute[]> Route(Type messageType);
+        Task<MessageRoute> RouteForDestination(Envelope envelopeDestination);
     }
 }

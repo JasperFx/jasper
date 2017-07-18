@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Consul;
 using Jasper.Bus;
@@ -41,11 +42,11 @@ namespace Jasper.Consul.Testing
         }
 
         [Fact]
-        public void successfully_registers_itself_as_an_active_node()
+        public async Task successfully_registers_itself_as_an_active_node()
         {
             theNodeDiscovery.LocalNode.ShouldNotBeNull();
 
-            var peers = theNodeDiscovery.FindPeers();
+            var peers = await theNodeDiscovery.FindPeers();
 
             peers.Single().NodeName.ShouldBe("ConsulTestApp");
         }

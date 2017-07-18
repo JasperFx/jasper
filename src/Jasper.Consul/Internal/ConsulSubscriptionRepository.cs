@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Consul;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
@@ -22,9 +23,9 @@ namespace Jasper.Consul.Internal
             // Nothing, ConsulClient is disposed elsewhere
         }
 
-        public void PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            client.KV.Txn(
+            return client.KV.Txn(
                 subscriptions
                     .Select(s =>
                     {
@@ -32,25 +33,26 @@ namespace Jasper.Consul.Internal
                         return new KVTxnOp(SUBSCRIPTION_PREFIX + s.Id.ToString(), KVTxnVerb.Set) {Value = serialize(s)};
                     })
                     .ToList()
-            ).Wait();
+            );
         }
 
-        public IEnumerable<Subscription> LoadSubscriptions(SubscriptionRole subscriptionRole)
+        public async Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
         {
-            return AllSubscriptions().Where(s => s.NodeName == ServiceName && s.Role == subscriptionRole);
+            var subscriptions = await AllSubscriptions();
+            return subscriptions.Where(s => s.NodeName == ServiceName && s.Role == subscriptionRole).ToArray();
         }
 
-        public void RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            client.KV.Txn(subscriptions
+            return client.KV.Txn(subscriptions
                 .Select(s => new KVTxnOp(SUBSCRIPTION_PREFIX + s.Id, KVTxnVerb.Delete))
                 .ToList()
-            ).Wait();
+            );
         }
 
-        public IEnumerable<Subscription> AllSubscriptions()
+        public async Task<IEnumerable<Subscription>> AllSubscriptions()
         {
-            var subs = client.KV.List(SUBSCRIPTION_PREFIX).Result;
+            var subs = await client.KV.List(SUBSCRIPTION_PREFIX);
             return subs.Response?.Select(kv => deserialize<Subscription>(kv.Value)) ?? new Subscription[0];
         }
 
