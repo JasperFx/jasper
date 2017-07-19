@@ -11,12 +11,10 @@ namespace Jasper.Http.Configuration
     internal class HostBuilder : IWebHostBuilder
     {
         private readonly WebHostBuilder _inner;
-        private readonly ServiceRegistry _services;
 
 
         public HostBuilder()
         {
-            _services = new ServiceRegistry();
             _inner = new WebHostBuilder();
             _inner.ConfigureServices(_ =>
             {
@@ -57,12 +55,8 @@ namespace Jasper.Http.Configuration
         internal IWebHost Activate(IContainer container)
         {
             _inner.ConfigureServices(services => JasperStartup.Register(container, services));
-            
-            var host = _inner.Build();
 
-            // Annoying, but you do need to do it in this order
-            container.Configure(_ => _.AddRegistry(_services));
-            return host;
+            return _inner.Build();
         }
     }
 }

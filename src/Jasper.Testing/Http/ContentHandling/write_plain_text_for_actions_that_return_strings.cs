@@ -16,9 +16,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
         static HttpTesting()
         {
-            var registry = new JasperRegistry();
-
-            _runtime = JasperRuntime.For(registry);
+            _runtime = JasperRuntime.For<HttpTestingApp>();
 
             AssemblyLoadContext.Default.Unloading += context =>
             {
@@ -50,7 +48,7 @@ namespace Jasper.Testing.Http.ContentHandling
         {
             return HttpTesting.Scenario(_ =>
             {
-                _.Get.Url("string");
+                _.Get.Url("/string");
                 _.ContentShouldBe("some string");
                 _.ContentTypeShouldBe("text/plain");
             });

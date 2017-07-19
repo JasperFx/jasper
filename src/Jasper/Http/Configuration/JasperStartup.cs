@@ -36,7 +36,7 @@ namespace Jasper.Http.Configuration
             var startups = services
                 .Where(x => x.ServiceType == typeof(IStartup))
                 .Select(Build)
-                .ToArray<Func<IServiceProvider, IStartup>>();
+                .ToArray();
 
             services.AddTransient<IStartup>(sp =>
             {
