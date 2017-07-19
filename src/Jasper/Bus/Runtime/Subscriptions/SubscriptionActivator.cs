@@ -20,24 +20,23 @@ namespace Jasper.Bus.Runtime.Subscriptions
         private readonly INodeDiscovery _nodeDiscovery;
         private readonly IEnumerable<ISubscriptionRequirements> _requirements;
         private readonly ChannelGraph _channels;
+        private readonly EnvironmentSettings _settings;
 
-        public SubscriptionActivator(
-            ISubscriptionsRepository subscriptions,
-            IEnvelopeSender sender,
-            INodeDiscovery nodeDiscovery,
-            IEnumerable<ISubscriptionRequirements> requirements,
-            ChannelGraph channels)
+        public SubscriptionActivator(ISubscriptionsRepository subscriptions, IEnvelopeSender sender, INodeDiscovery nodeDiscovery, IEnumerable<ISubscriptionRequirements> requirements, ChannelGraph channels, EnvironmentSettings settings)
         {
             _subscriptions = subscriptions;
             _sender = sender;
             _nodeDiscovery = nodeDiscovery;
             _requirements = requirements;
             _channels = channels;
+            _settings = settings;
         }
 
         public async Task Activate()
         {
-            await _nodeDiscovery.Register(_channels);
+            var local = new TransportNode(_channels, _settings.MachineName);
+
+            await _nodeDiscovery.Register(local);
             await setupSubscriptions(_channels);
         }
 

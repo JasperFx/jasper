@@ -12,19 +12,17 @@ namespace JasperBus.Marten
     public class MartenNodeDiscovery : INodeDiscovery
     {
         private readonly IDocumentStore _documentStore;
-        private readonly string _machineName;
 
-        public TransportNode LocalNode { get; set; }
+        public TransportNode LocalNode { get; private set; }
 
-        public MartenNodeDiscovery(IDocumentStore documentStore, EnvironmentSettings envSettings)
+        public MartenNodeDiscovery(IDocumentStore documentStore)
         {
             _documentStore = documentStore;
-            _machineName = envSettings.MachineName;
         }
 
-        public Task Register(ChannelGraph graph)
+        public Task Register(TransportNode local)
         {
-            LocalNode = new TransportNode(graph, _machineName);
+            LocalNode = local;
             using (var session = _documentStore.LightweightSession())
             {
                 session.Store(LocalNode);

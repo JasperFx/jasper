@@ -17,9 +17,9 @@ namespace Jasper.Consul.Internal
         }
 
 
-        public Task Register(ChannelGraph graph)
+        public Task Register(TransportNode local)
         {
-            LocalNode = new TransportNode(graph, MachineName);
+            LocalNode = local;
 
             var consulKey = $"{TRANSPORTNODE_PREFIX}{LocalNode.NodeName}/{MachineName}";
 
