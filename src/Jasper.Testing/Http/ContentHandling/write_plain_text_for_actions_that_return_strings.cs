@@ -1,20 +1,22 @@
-﻿using System.Runtime.Loader;
+﻿using System;
+using System.Runtime.Loader;
+using System.Threading.Tasks;
+using Alba;
+using AlbaForJasper;
 using Jasper.Http;
 using Xunit;
 
 namespace Jasper.Testing.Http.ContentHandling
 {
-    public static class HttpTestingApp
+    public static class HttpTesting
     {
         public static string RootUrl = "http://localhost:5666";
 
         private static readonly JasperRuntime _runtime;
 
-        static HttpTestingApp()
+        static HttpTesting()
         {
             var registry = new JasperRegistry();
-            registry.UseFeature<AspNetCoreFeature>();
-            registry.Feature<AspNetCoreFeature>().Hosting.Port = 5666;
 
             _runtime = JasperRuntime.For(registry);
 
@@ -23,15 +25,43 @@ namespace Jasper.Testing.Http.ContentHandling
                 _runtime.Dispose();
             };
         }
+
+        public static Task<IScenarioResult> Scenario(Action<Scenario> configure)
+        {
+            return _runtime.Scenario(configure);
+        }
+    }
+
+    public class HttpTestingApp : JasperRegistry
+    {
+        public HttpTestingApp()
+        {
+            UseFeature<AspNetCoreFeature>();
+            Feature<AspNetCoreFeature>().Hosting.Port = 5666;
+
+        }
     }
 
 
     public class write_plain_text_for_actions_that_return_strings
     {
         [Fact]
-        public void write_as_text()
+        public Task write_as_text()
         {
+            return HttpTesting.Scenario(_ =>
+            {
+                _.Get.Url("string");
+                _.ContentShouldBe("some string");
+                _.ContentTypeShouldBe("text/plain");
+            });
+        }
+    }
 
+    public class StringEndpoint
+    {
+        public string get_string()
+        {
+            return "some string";
         }
     }
 }
