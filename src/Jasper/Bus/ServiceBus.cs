@@ -4,6 +4,7 @@ using Baseline.Dates;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Conneg;
 using Jasper.Util;
 
 namespace Jasper.Bus

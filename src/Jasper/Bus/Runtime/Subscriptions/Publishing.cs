@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Conneg;
 using Jasper.Util;
 using Newtonsoft.Json;
 

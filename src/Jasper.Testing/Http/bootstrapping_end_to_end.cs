@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Http;
@@ -13,7 +14,7 @@ using Xunit;
 
 namespace Jasper.Testing.Http
 {
-    public class bootstrapping_end_to_end
+    public class bootstrapping_end_to_end : IDisposable
     {
         private readonly JasperRuntime theRuntime;
 
@@ -22,8 +23,8 @@ namespace Jasper.Testing.Http
             TypeRepository.ClearAll();
 
             var registry = new JasperBusRegistry();
-            registry.UseFeature<HttpFeature>();
-            registry.Feature<HttpFeature>().Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
+            registry.UseFeature<AspNetCoreFeature>();
+            registry.Feature<AspNetCoreFeature>().Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
             registry.Handlers.ExcludeTypes(x => true);
 
@@ -33,14 +34,14 @@ namespace Jasper.Testing.Http
         [Fact]
         public void route_graph_is_registered()
         {
-            theRuntime.Container.GetInstance<RouteGraph>()
+            theRuntime.Get<RouteGraph>()
                 .Any().ShouldBeTrue();
         }
 
         [Fact]
         public void can_find_and_apply_endpoints_by_type_scanning()
         {
-            var routes = theRuntime.Container.GetInstance<RouteGraph>();
+            var routes = theRuntime.Get<RouteGraph>();
 
             routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)).ShouldBeTrue();
             routes.Any(x => x.Action.HandlerType == typeof(OtherEndpoint)).ShouldBeTrue();
@@ -55,15 +56,20 @@ namespace Jasper.Testing.Http
         [Fact]
         public void reverse_url_lookup_by_method()
         {
-            var urls = theRuntime.Container.GetInstance<IUrlRegistry>();
+            var urls = theRuntime.Get<IUrlRegistry>();
             urls.UrlFor<SimpleEndpoint>(x => x.get_hello()).ShouldBe("/hello");
         }
 
         [Fact]
         public void reverse_url_lookup_by_input_model()
         {
-            var urls = theRuntime.Container.GetInstance<IUrlRegistry>();
+            var urls = theRuntime.Get<IUrlRegistry>();
             urls.UrlFor<OtherModel>().ShouldBe("/other");
+        }
+
+        public void Dispose()
+        {
+            theRuntime?.Dispose();
         }
     }
 

@@ -6,6 +6,7 @@ using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Transports.InMemory;
+using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Invocation
 {

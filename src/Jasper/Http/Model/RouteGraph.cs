@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Jasper.Codegen;
+using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using StructureMap;
 
@@ -32,8 +33,13 @@ namespace Jasper.Http.Model
             _chains.Add(route);
         }
 
-        public void BuildRoutingTree(IGenerationConfig generation, IContainer container)
+        public void BuildRoutingTree(ConnegRules rules, IGenerationConfig generation, IContainer container)
         {
+            foreach (var chain in _chains)
+            {
+                rules.Apply(chain);
+            }
+
             var handlers = CompileAndBuildAll(generation, container);
 
             foreach (var handler in handlers)

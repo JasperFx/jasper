@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Conneg;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions

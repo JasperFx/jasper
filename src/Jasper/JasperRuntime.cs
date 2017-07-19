@@ -67,6 +67,16 @@ namespace Jasper
             return bootstrap(registry).GetAwaiter().GetResult();
         }
 
+        /// <summary>
+        /// Shorthand to fetch a service from the application container by type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T Get<T>()
+        {
+            return Container.GetInstance<T>();
+        }
+
 
         public IJasperRegistry Registry => _registry;
 

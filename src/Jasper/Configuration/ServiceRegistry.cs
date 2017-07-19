@@ -7,6 +7,7 @@ using StructureMap.Pipeline;
 
 namespace Jasper.Configuration
 {
+    [Obsolete("Not really helping anything here")]
     public class ServiceRegistry : Registry, IServiceCollection
     {
         /// <summary>

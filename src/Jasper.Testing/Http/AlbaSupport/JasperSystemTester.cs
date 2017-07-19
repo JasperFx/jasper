@@ -74,6 +74,7 @@ namespace Jasper.Testing.Http.AlbaSupport
             Services.For<IFakeService>().Use<FakeService>();
 
             var feature = Feature<AspNetCoreFeature>();
+            feature.Hosting.Port = 3001;
 
             feature.WebHostBuilder.Configure(app =>
             {
@@ -102,6 +103,7 @@ namespace Jasper.Testing.Http.AlbaSupport
             Services.For<IFakeService>().Use<FakeService>();
 
             var feature = Feature<AspNetCoreFeature>();
+            feature.Hosting.Port = 3001;
 
             feature.WebHostBuilder.UseStartup<AlbaTargetAppStartup>();
 

@@ -7,6 +7,7 @@ using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Routing
 {

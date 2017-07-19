@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Baseline;
+using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
-using Jasper.Conneg;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Serializers;
 using Jasper.Util;
 
-namespace Jasper.Bus.Runtime.Serializers
+namespace Jasper.Conneg
 {
     public class SerializationGraph
     {

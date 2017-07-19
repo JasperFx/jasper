@@ -2,6 +2,7 @@
 using System.Linq;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
