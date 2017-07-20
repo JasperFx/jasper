@@ -43,7 +43,7 @@ namespace DiagnosticsServiceHarness
         public BusRegistry()
         {
             var uri = "lq.tcp://localhost:2110/servicebus_example";
-            ListenForMessagesFrom(uri);
+            Channels.ListenForMessagesFrom(uri);
 
             Logging.UseConsoleLogging = true;
 

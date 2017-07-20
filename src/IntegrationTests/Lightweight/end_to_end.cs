@@ -29,7 +29,7 @@ namespace IntegrationTests.Lightweight
             theSender = JasperRuntime.For(new JasperBusRegistry());
 
             var receiver = new JasperBusRegistry();
-            receiver.ListenForMessagesFrom(theAddress);
+            receiver.Channels.ListenForMessagesFrom(theAddress);
             receiver.ErrorHandling.OnException<DivideByZeroException>().Requeue();
             receiver.ErrorHandling.OnException<TimeoutException>().RetryLater(1.Minutes());
 

@@ -103,7 +103,7 @@ namespace StorytellerSpecs.Fixtures
             _tracker = new AttemptTracker();
 
             var registry = new JasperBusRegistry();
-            registry.ListenForMessagesFrom("stub://1".ToUri());
+            registry.Channels.ListenForMessagesFrom("stub://1".ToUri());
             registry.Services.AddService<ITransport>(_transport);
             registry.Services.AddService(_tracker);
             registry.SendMessage<ErrorCausingMessage>()

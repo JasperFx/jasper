@@ -56,7 +56,7 @@ namespace StorytellerSpecs.Fixtures.InMemory
             _registry.SendMessages(type.Name, t => t == type).To(channel);
 
             // Just makes the test harness listen for things
-            _registry.ListenForMessagesFrom(channel);
+            _registry.Channels.ListenForMessagesFrom(channel);
         }
     }
 }

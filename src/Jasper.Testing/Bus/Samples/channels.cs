@@ -28,7 +28,7 @@ namespace Jasper.Testing.Bus.Samples
                 .To(settings.Pinger);
 
             // Listen for incoming messages from "Pinger"
-            ListenForMessagesFrom(settings.Pinger);
+            Channels.ListenForMessagesFrom(settings.Pinger);
         }
     }
 
@@ -37,7 +37,7 @@ namespace Jasper.Testing.Bus.Samples
         public PongApp(SampleSettings settings)
         {
             // Listen for incoming messages from "Ponger"
-            ListenForMessagesFrom(settings.Ponger);
+            Channels.ListenForMessagesFrom(settings.Ponger);
         }
     }
     // ENDSAMPLE
@@ -55,7 +55,7 @@ namespace Jasper.Testing.Bus.Samples
     {
         public ControlChannelApp(AppSettings settings)
         {
-            Channel(settings.Control)
+            Channels[settings.Control]
                 .UseAsControlChannel()
                 .DeliveryFastWithoutGuarantee();
         }
@@ -68,7 +68,7 @@ namespace Jasper.Testing.Bus.Samples
         public ListeningApp(SampleSettings settings)
         {
             // Listen for incoming messages from "Pinger"
-            ListenForMessagesFrom(settings.Pinger);
+            Channels.ListenForMessagesFrom(settings.Pinger);
         }
     }
     // ENDSAMPLE
@@ -94,12 +94,12 @@ namespace Jasper.Testing.Bus.Samples
         {
             // Declare that the "Control" channel
             // use the faster, but unsafe transport mechanism
-            Channel(settings.Control)
+            Channels[settings.Control]
                 .DeliveryFastWithoutGuarantee()
                 .UseAsControlChannel();
 
 
-            Channel(settings.Transactions)
+            Channels[settings.Transactions]
                 // This is the default, but you can
                 // still configure it explicitly
                 .DeliveryGuaranteed();

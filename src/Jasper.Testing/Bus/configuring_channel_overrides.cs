@@ -14,11 +14,11 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.ListenForMessagesFrom("memory://one");
-                _.ListenForMessagesFrom("memory://two");
-                _.ListenForMessagesFrom("memory://three");
+                _.Channels.ListenForMessagesFrom("memory://one");
+                _.Channels.ListenForMessagesFrom("memory://two");
+                _.Channels.ListenForMessagesFrom("memory://three");
 
-                _.Channel("memory://two").UseAsControlChannel();
+                _.Channels["memory://two"].UseAsControlChannel();
             });
 
             var controlChannel = channels().ControlChannel;
@@ -36,10 +36,10 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.ListenForMessagesFrom("memory://one");
-                _.ListenForMessagesFrom("memory://two")
+                _.Channels.ListenForMessagesFrom("memory://one");
+                _.Channels.ListenForMessagesFrom("memory://two")
                     .DeliveryFastWithoutGuarantee();
-                _.ListenForMessagesFrom("memory://three");
+                _.Channels.ListenForMessagesFrom("memory://three");
 
             });
 
@@ -63,7 +63,7 @@ namespace Jasper.Testing.Bus
                 _.SendMessage<Message2>().To("memory://two");
                 _.SendMessage<Message3>().To("memory://three");
 
-                _.Channel("memory://two")
+                _.Channels["memory://two"]
                     .ModifyWith<FakeModifier>()
                     .ModifyWith(new FakeModifier2());
             });
@@ -88,7 +88,7 @@ namespace Jasper.Testing.Bus
                 _.SendMessage<Message2>().To("memory://two");
                 _.SendMessage<Message3>().To("memory://three");
 
-                _.Channel("memory://two").AcceptedContentTypes("text/xml");
+                _.Channels["memory://two"].AcceptedContentTypes("text/xml");
             });
 
             channels()["memory://two"].AcceptedContentTypes.Single()
@@ -108,10 +108,10 @@ namespace Jasper.Testing.Bus
                 _.SendMessage<Message2>().To("memory://two");
                 _.SendMessage<Message3>().To("memory://three");
 
-                _.Channel("memory://two").AcceptedContentTypes("application/json", "fake/one")
+                _.Channels["memory://two"].AcceptedContentTypes("application/json", "fake/one")
                     .DefaultContentType("fake/two");
 
-                _.Channel("memory://three")
+                _.Channels["memory://three"]
                     .AcceptedContentTypes("application/json", "fake/one")
                     .DefaultContentType("fake/one");
             });

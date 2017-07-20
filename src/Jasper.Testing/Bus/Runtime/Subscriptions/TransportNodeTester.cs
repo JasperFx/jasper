@@ -20,8 +20,8 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         public TransportNodeTester()
         {
             _registry = new JasperBusRegistry {ServiceName = "NodeName"};
-            _registry.ListenForMessagesFrom(_incomingChannel);
-            _registry.Channel(_channel);
+            _registry.Channels.ListenForMessagesFrom(_incomingChannel);
+            _registry.Channels.Add(_channel);
             _bus = _registry.Feature<ServiceBusFeature>();
         }
 
@@ -37,7 +37,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         [Fact]
         public void sets_address_to_control_channel()
         {
-            _registry.ListenForMessagesFrom(_controlChannel).UseAsControlChannel();
+            _registry.Channels.ListenForMessagesFrom(_controlChannel).UseAsControlChannel();
 
             _bus.Channels.ControlChannel.Uri.ShouldBe(_controlChannel);
 

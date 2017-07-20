@@ -40,7 +40,7 @@ namespace JasperBus.Marten.Tests
                 _.Settings.Alter<MartenSubscriptionSettings>(x =>
                     x.ConnectionString = ConnectionSource.ConnectionString);
 
-                _.ListenForMessagesFrom(_primaryQueueUri);
+                _.Channels.ListenForMessagesFrom(_primaryQueueUri);
                 _.SubscribeLocally()
                     .ToSource(_secondaryQueueUri)
                     .ToMessage<PongMessage>();
@@ -55,7 +55,7 @@ namespace JasperBus.Marten.Tests
                 _.Settings.Alter<MartenSubscriptionSettings>(x =>
                     x.ConnectionString = ConnectionSource.ConnectionString);
 
-                _.ListenForMessagesFrom(_secondaryQueueUri);
+                _.Channels.ListenForMessagesFrom(_secondaryQueueUri);
                 _.SubscribeLocally()
                     .ToSource(_primaryQueueUri)
                     .ToMessage<PingMessage>();

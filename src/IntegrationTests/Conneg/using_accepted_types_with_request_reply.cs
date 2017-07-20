@@ -25,7 +25,7 @@ namespace IntegrationTests.Conneg
             var requestor = JasperRuntime.For(requestorRegistry);
 
             var replierRegistry = new JasperBusRegistry();
-            replierRegistry.ListenForMessagesFrom("jasper://localhost:2456/incoming");
+            replierRegistry.Channels.ListenForMessagesFrom("jasper://localhost:2456/incoming");
             var replier = JasperRuntime.For(replierRegistry);
 
 

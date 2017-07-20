@@ -31,7 +31,7 @@ namespace JasperBus.Marten.Tests
                 _.Services.ForSingletonOf<MessageHistory>().Use(new MessageHistory());
                 _.Services.AddService<IBusLogger, MessageTrackingLogger>();
                 _.Settings.Alter<MartenSubscriptionSettings>(x => x.ConnectionString = ConnectionSource.ConnectionString);
-                _.ListenForMessagesFrom(_clientUri);
+                _.Channels.ListenForMessagesFrom(_clientUri);
             });
 
             _serviceEndpoint1 = new SubContext(_ =>
@@ -41,7 +41,7 @@ namespace JasperBus.Marten.Tests
                 _.Services.ForSingletonOf<MessageHistory>().Use(new MessageHistory());
                 _.Services.AddService<IBusLogger, MessageTrackingLogger>();
                 _.Settings.Alter<MartenSubscriptionSettings>(x => x.ConnectionString = ConnectionSource.ConnectionString);
-                _.ListenForMessagesFrom(_primaryServiceUri);
+                _.Channels.ListenForMessagesFrom(_primaryServiceUri);
             });
 
             _serviceEndpoint2 = new SubContext(_ =>
@@ -52,7 +52,7 @@ namespace JasperBus.Marten.Tests
                 _.Services.AddService<IBusLogger, MessageTrackingLogger>();
                 _.Settings.Alter<EnvironmentSettings>(x => x.MachineName = "localhost");
                 _.Settings.Alter<MartenSubscriptionSettings>(x => x.ConnectionString = ConnectionSource.ConnectionString);
-                _.ListenForMessagesFrom(_secondaryServiceUri);
+                _.Channels.ListenForMessagesFrom(_secondaryServiceUri);
             });
         }
 

@@ -34,7 +34,7 @@ namespace StorytellerSpecs.Fixtures.LQ
     {
         private JasperBusRegistry _registry;
 
-        
+
 
         public override void SetUp()
         {
@@ -58,7 +58,7 @@ namespace StorytellerSpecs.Fixtures.LQ
             _registry.SendMessages(type.Name, t => t == type).To(channel);
 
             // Just makes the test harness listen for things
-            _registry.ListenForMessagesFrom(channel);
+            _registry.Channels.ListenForMessagesFrom(channel);
         }
     }
 

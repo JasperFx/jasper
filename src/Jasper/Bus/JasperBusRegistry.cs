@@ -15,33 +15,12 @@ namespace Jasper.Bus
 {
     public class JasperBusRegistry : JasperRegistry
     {
-        public HandlerSource Handlers => _bus.Handlers;
-
-        public Policies Policies => _bus.Policies;
-
-
-
-
-        public string ServiceName
+        public JasperBusRegistry()
         {
-            get => _bus.Channels.Name;
-            set => _bus.Channels.Name = value;
+            Channels = new ChannelConfiguration(_bus);
         }
 
-        public IHasErrorHandlers ErrorHandling => Policies;
-
-        public ChannelExpression ListenForMessagesFrom(Uri uri)
-        {
-            var node = _bus.Channels[uri];
-            node.Incoming = true;
-
-            return new ChannelExpression(_bus.Channels, node);
-        }
-
-        public ChannelExpression ListenForMessagesFrom(string uriString)
-        {
-            return ListenForMessagesFrom(uriString.ToUri());
-        }
+        public ChannelConfiguration Channels { get; }
 
         public SendExpression SendMessage<T>()
         {
@@ -214,17 +193,6 @@ namespace Jasper.Bus
             return new SubscriptionExpression(_bus, null);
         }
 
-        public ChannelExpression Channel(Uri uri)
-        {
-            var node = _bus.Channels[uri];
-            return new ChannelExpression(_bus.Channels, node);
-        }
-
-
-        public ChannelExpression Channel(string uriString)
-        {
-            return Channel(uriString.ToUri());
-        }
 
         public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_bus);
 

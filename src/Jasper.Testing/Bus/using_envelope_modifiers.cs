@@ -20,7 +20,7 @@ namespace Jasper.Testing.Bus
                 _.SendMessage<Message1>().To("memory://one");
                 _.SendMessage<Message2>().To("memory://two");
 
-                _.Channel("memory://one").ModifyWith<FooModifier>().ModifyWith<BarModifier>();
+                _.Channels["memory://one"].ModifyWith<FooModifier>().ModifyWith<BarModifier>();
             });
 
 

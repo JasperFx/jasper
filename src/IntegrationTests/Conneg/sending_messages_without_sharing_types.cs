@@ -111,7 +111,7 @@ namespace IntegrationTests.Conneg
         public BlueApp(MessageTracker tracker)
         {
             Services.ForSingletonOf<MessageTracker>().Use(tracker).Singleton();
-            ListenForMessagesFrom("jasper://localhost:2555/blue");
+            Channels.ListenForMessagesFrom("jasper://localhost:2555/blue");
         }
     }
 
@@ -121,7 +121,7 @@ namespace IntegrationTests.Conneg
         {
             SendMessage<GreenMessage>().To("jasper://localhost:2555/blue");
 
-            Channel("jasper://localhost:2555/blue").AcceptedContentTypes("text/plain");
+            Channels["jasper://localhost:2555/blue"].AcceptedContentTypes("text/plain");
 
             Services.For<MessageTracker>().Use("blow up", c =>
             {

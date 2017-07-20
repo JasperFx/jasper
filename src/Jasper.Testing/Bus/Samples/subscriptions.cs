@@ -35,7 +35,7 @@ namespace Jasper.Testing.Bus.Samples
             ServiceName = "MyApplication";
 
             // Incoming messages
-            ListenForMessagesFrom(settings.Receiving);
+            Channels.ListenForMessagesFrom(settings.Receiving);
 
             // Local subscription to only this node
             SubscribeLocally()

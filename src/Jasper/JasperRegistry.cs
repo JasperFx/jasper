@@ -4,13 +4,14 @@ using System.Linq;
 using System.Reflection;
 using Baseline;
 using Jasper.Bus;
+using Jasper.Bus.ErrorHandling;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Settings;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using StructureMap;
 using StructureMap.TypeRules;
+using Policies = Jasper.Bus.Configuration.Policies;
 
 namespace Jasper
 {
@@ -87,6 +88,16 @@ namespace Jasper
         public Logging Logging { get; }
 
         internal ServiceRegistry ExtensionServices { get; }
+        public HandlerSource Handlers => _bus.Handlers;
+        public Policies Policies => _bus.Policies;
+
+        public string ServiceName
+        {
+            get => _bus.Channels.Name;
+            set => _bus.Channels.Name = value;
+        }
+
+        public IHasErrorHandlers ErrorHandling => Policies;
 
         internal void ApplyExtensions(IJasperExtension[] extensions)
         {

@@ -20,7 +20,7 @@ namespace Jasper.Testing.Bus
             with(_ =>
             {
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Channel("fake://one");
+                _.Channels.Add("fake://one");
             });
 
             Channels.Where(x => x.Uri.Scheme == "memory").Any(x => x.Uri == "memory://one".ToUri())
@@ -35,7 +35,7 @@ namespace Jasper.Testing.Bus
             with(_ =>
             {
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Channel("fake://one");
+                _.Channels.Add("fake://one");
             });
 
             Channels["fake://one"].ShouldBeSameAs(Channels["memory://one"]);
@@ -53,7 +53,7 @@ namespace Jasper.Testing.Bus
                 _.Services.For<MessageTracker>().Use(tracker);
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
                 _.SendMessage<Message1>().To("fake://one");
-                _.ListenForMessagesFrom("fake://one");
+                _.Channels.ListenForMessagesFrom("fake://one");
             });
 
             var waiter = tracker.WaitFor<Message1>();
@@ -74,7 +74,7 @@ namespace Jasper.Testing.Bus
             {
                 _.Services.For<MessageTracker>().Use(tracker);
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.ListenForMessagesFrom("fake://one");
+                _.Channels.ListenForMessagesFrom("fake://one");
             });
 
             var waiter = tracker.WaitFor<Message1>();

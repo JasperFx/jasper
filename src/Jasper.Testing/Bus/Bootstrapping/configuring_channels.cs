@@ -13,13 +13,13 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void listen_for_messages_on_a_channel_positive()
         {
-            theRegistry.ListenForMessagesFrom(Uri1);
+            theRegistry.Channels.ListenForMessagesFrom(Uri1);
 
             // Send-only channel
             theRegistry.SendMessage<Message1>().To(Uri2);
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(theChannels[Uri1].Incoming);
-            ShouldBeBooleanExtensions.ShouldBeFalse(theChannels[Uri2].Incoming);
+            theChannels[Uri1].Incoming.ShouldBeTrue();
+            theChannels[Uri2].Incoming.ShouldBeFalse();
         }
 
         [Fact]

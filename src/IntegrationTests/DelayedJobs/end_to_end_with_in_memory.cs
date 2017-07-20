@@ -62,7 +62,7 @@ namespace IntegrationTests.DelayedJobs
             SendMessagesFromAssemblyContaining<DelayedMessageApp>()
                 .To("memory://incoming");
 
-            ListenForMessagesFrom("memory://incoming");
+            Channels.ListenForMessagesFrom("memory://incoming");
 
             Logging.UseConsoleLogging = true;
         }
