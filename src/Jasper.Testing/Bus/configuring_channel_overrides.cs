@@ -59,9 +59,9 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.SendMessage<Message1>().To("memory://one");
-                _.SendMessage<Message2>().To("memory://two");
-                _.SendMessage<Message3>().To("memory://three");
+                _.Messages.SendMessage<Message1>().To("memory://one");
+                _.Messages.SendMessage<Message2>().To("memory://two");
+                _.Messages.SendMessage<Message3>().To("memory://three");
 
                 _.Channels["memory://two"]
                     .ModifyWith<FakeModifier>()
@@ -84,9 +84,9 @@ namespace Jasper.Testing.Bus
             {
                 _.Serialization.Add<Serializer1>().Add<Serializer2>();
 
-                _.SendMessage<Message1>().To("memory://one");
-                _.SendMessage<Message2>().To("memory://two");
-                _.SendMessage<Message3>().To("memory://three");
+                _.Messages.SendMessage<Message1>().To("memory://one");
+                _.Messages.SendMessage<Message2>().To("memory://two");
+                _.Messages.SendMessage<Message3>().To("memory://three");
 
                 _.Channels["memory://two"].AcceptedContentTypes("text/xml");
             });
@@ -104,9 +104,9 @@ namespace Jasper.Testing.Bus
             {
                 _.Serialization.Add<Serializer1>().Add<Serializer2>();
 
-                _.SendMessage<Message1>().To("memory://one");
-                _.SendMessage<Message2>().To("memory://two");
-                _.SendMessage<Message3>().To("memory://three");
+                _.Messages.SendMessage<Message1>().To("memory://one");
+                _.Messages.SendMessage<Message2>().To("memory://two");
+                _.Messages.SendMessage<Message3>().To("memory://three");
 
                 _.Channels["memory://two"].AcceptedContentTypes("application/json", "fake/one")
                     .DefaultContentType("fake/two");

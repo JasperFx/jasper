@@ -21,7 +21,7 @@ namespace IntegrationTests.Conneg
             Reply1Writer.WasUsed = false;
 
             var requestorRegistry = new JasperBusRegistry();
-            requestorRegistry.SendMessage<Request1>().To("jasper://localhost:2456/incoming");
+            requestorRegistry.Messages.SendMessage<Request1>().To("jasper://localhost:2456/incoming");
             var requestor = JasperRuntime.For(requestorRegistry);
 
             var replierRegistry = new JasperBusRegistry();

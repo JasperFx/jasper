@@ -106,7 +106,7 @@ namespace StorytellerSpecs.Fixtures
             registry.Channels.ListenForMessagesFrom("stub://1".ToUri());
             registry.Services.AddService<ITransport>(_transport);
             registry.Services.AddService(_tracker);
-            registry.SendMessage<ErrorCausingMessage>()
+            registry.Messages.SendMessage<ErrorCausingMessage>()
                 .To("stub://1".ToUri());
 
             _runtime = JasperRuntime.For(registry);

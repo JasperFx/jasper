@@ -119,7 +119,7 @@ namespace IntegrationTests.Conneg
     {
         public GreenApp()
         {
-            SendMessage<GreenMessage>().To("jasper://localhost:2555/blue");
+            Messages.SendMessage<GreenMessage>().To("jasper://localhost:2555/blue");
 
             Channels["jasper://localhost:2555/blue"].AcceptedContentTypes("text/plain");
 

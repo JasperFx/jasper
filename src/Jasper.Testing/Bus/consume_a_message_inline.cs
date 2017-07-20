@@ -22,7 +22,7 @@ namespace Jasper.Testing.Bus
             {
                 _.Services.For<WorkTracker>().Use(theTracker);
 
-                _.SendMessagesFromAssemblyContaining<Message1>().To("memory://cascading");
+                _.Messages.SendMessagesFromAssemblyContaining<Message1>().To("memory://cascading");
 
                 _.Logging.LogBusEventsWith(this);
 
@@ -30,7 +30,7 @@ namespace Jasper.Testing.Bus
                 _.Policies.DefaultMaximumAttempts = 3;
             });
 
-            
+
         }
 
         [Fact]

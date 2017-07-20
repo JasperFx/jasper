@@ -26,6 +26,7 @@ namespace Jasper
             _bus = Feature<ServiceBusFeature>();
 
             Serialization = new JasperBusRegistry.SerializationExpression(_bus);
+            Channels = new ChannelConfiguration(_bus);
 
             _applicationServices = new ServiceRegistry();
             ExtensionServices = new ExtensionServiceRegistry();
@@ -53,6 +54,8 @@ namespace Jasper
             // between the web and the service bus
             Settings.Alter<JsonSerializerSettings>(_ => _.TypeNameHandling = TypeNameHandling.All);
         }
+
+        public ChannelConfiguration Channels { get; }
 
         public JasperBusRegistry.SerializationExpression Serialization { get; }
 

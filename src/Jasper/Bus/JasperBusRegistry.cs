@@ -13,28 +13,28 @@ using StructureMap.TypeRules;
 
 namespace Jasper.Bus
 {
-    public class JasperBusRegistry : JasperRegistry
+    public class MessagesExpression
     {
-        public JasperBusRegistry()
-        {
-            Channels = new ChannelConfiguration(_bus);
-        }
+        private readonly ServiceBusFeature _bus;
 
-        public ChannelConfiguration Channels { get; }
+        public MessagesExpression(ServiceBusFeature bus)
+        {
+            _bus = bus;
+        }
 
         public SendExpression SendMessage<T>()
         {
-            return new SendExpression(this, new SingleTypeRoutingRule<T>());
+            return new SendExpression(_bus, new SingleTypeRoutingRule<T>());
         }
 
         public SendExpression SendMessages(string description, Func<Type, bool> filter)
         {
-            return new SendExpression(this, new LambdaRoutingRule(description, filter));
+            return new SendExpression(_bus, new LambdaRoutingRule(description, filter));
         }
 
         public SendExpression SendMessagesInNamespace(string @namespace)
         {
-            return new SendExpression(this, new NamespaceRule(@namespace));
+            return new SendExpression(_bus, new NamespaceRule(@namespace));
         }
 
         public SendExpression SendMessagesInNamespaceContaining<T>()
@@ -44,7 +44,7 @@ namespace Jasper.Bus
 
         public SendExpression SendMessagesFromAssembly(Assembly assembly)
         {
-            return new SendExpression(this, new AssemblyRule(assembly));
+            return new SendExpression(_bus, new AssemblyRule(assembly));
         }
 
         public SendExpression SendMessagesFromAssemblyContaining<T>()
@@ -54,18 +54,18 @@ namespace Jasper.Bus
 
         public class SendExpression
         {
-            private readonly JasperBusRegistry _parent;
+            private readonly ServiceBusFeature _bus;
             private readonly IRoutingRule _routing;
 
-            public SendExpression(JasperBusRegistry parent, IRoutingRule routing)
+            public SendExpression(ServiceBusFeature bus, IRoutingRule routing)
             {
-                _parent = parent;
+                _bus = bus;
                 _routing = routing;
             }
 
             public SendExpression To(Uri address)
             {
-                _parent._bus.Channels[address].Rules.Add(_routing);
+                _bus.Channels[address].Rules.Add(_routing);
                 return this;
             }
 
@@ -74,10 +74,24 @@ namespace Jasper.Bus
                 return To(address.ToUri());
             }
         }
+    }
+
+
+    public class JasperBusRegistry : JasperRegistry
+    {
+        public JasperBusRegistry()
+        {
+            Messages = new MessagesExpression(_bus);
+        }
+
+        public MessagesExpression Messages { get; }
+
 
         public class SerializationExpression
         {
             private readonly ServiceBusFeature _parent;
+
+
 
             public SerializationExpression(ServiceBusFeature parent)
             {
