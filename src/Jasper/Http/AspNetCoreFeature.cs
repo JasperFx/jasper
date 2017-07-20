@@ -30,7 +30,6 @@ namespace Jasper.Http
             _builder = new HostBuilder();
         }
 
-        public GenerationConfig Generation { get; } = new GenerationConfig("JasperHttp.Generated");
 
         public IWebHostBuilder WebHostBuilder => _builder;
 

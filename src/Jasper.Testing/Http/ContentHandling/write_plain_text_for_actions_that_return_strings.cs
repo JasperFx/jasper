@@ -43,7 +43,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
     public class write_plain_text_for_actions_that_return_strings
     {
-        [Fact]
+        //[Fact]
         public Task write_as_text()
         {
             return HttpTesting.Scenario(_ =>
