@@ -3,7 +3,7 @@ using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus
 {
-    public class ChannelConfiguration : JasperRegistry
+    public class ChannelConfiguration
     {
         private readonly ServiceBusFeature _bus;
 
