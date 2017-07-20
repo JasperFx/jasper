@@ -1,9 +1,11 @@
-﻿using Jasper.Bus;
+﻿using System;
+using Jasper.Bus;
 using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Jasper
 {
+    [Obsolete("Going to make this be unnecessary")]
     public class JasperBusWithAspNetCoreRegistry : JasperBusRegistry
     {
         public JasperBusWithAspNetCoreRegistry()

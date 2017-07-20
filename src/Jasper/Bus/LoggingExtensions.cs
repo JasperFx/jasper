@@ -6,22 +6,22 @@ namespace Jasper.Bus
     {
         public static void LogBusEventsWith<T>(this Logging logging) where T : IBusLogger
         {
-            logging.As<ILogging>().Parent.Services.AddService<IBusLogger, T>();
+            logging.Parent.Services.AddService<IBusLogger, T>();
         }
 
         public static void LogBusEventsWith(this Logging logging, IBusLogger logger)
         {
-            logging.As<ILogging>().Parent.Services.AddService<IBusLogger>(logger);
+            logging.Parent.Services.AddService<IBusLogger>(logger);
         }
 
         public static void LogTransportEventsWith<T>(this Logging logging) where T : ITransportLogger
         {
-            logging.As<ILogging>().Parent.Services.AddService<ITransportLogger, T>();
+            logging.Parent.Services.AddService<ITransportLogger, T>();
         }
 
         public static void LogTransportEventsWith(this Logging logging, ITransportLogger logger)
         {
-            logging.As<ILogging>().Parent.Services.AddService<ITransportLogger>(logger);
+            logging.Parent.Services.AddService<ITransportLogger>(logger);
         }
     }
 }

@@ -13,7 +13,7 @@ using StructureMap.TypeRules;
 
 namespace Jasper.Bus
 {
-    public class JasperBusRegistry : JasperRegistry, IBusConfiguration
+    public class JasperBusRegistry : JasperRegistry
     {
         public HandlerSource Handlers => _bus.Handlers;
 

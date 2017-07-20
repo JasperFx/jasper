@@ -117,25 +117,4 @@ namespace Jasper
         }
 
     }
-
-    public class Logging : ILogging
-    {
-        private readonly JasperRegistry _parent;
-
-        public Logging(JasperRegistry parent)
-        {
-            _parent = parent;
-        }
-
-        JasperRegistry ILogging.Parent => _parent;
-
-        public bool UseConsoleLogging { get; set; } = false;
-    }
-
-    public interface ILogging
-    {
-        JasperRegistry Parent { get; }
-    }
-
-    public class ExtensionServiceRegistry : ServiceRegistry{}
 }
