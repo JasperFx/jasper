@@ -26,8 +26,15 @@ namespace Jasper.Bus
 
         }
 
+        /// <summary>
+        /// Disable all conventional discovery of message handlers
+        /// </summary>
+        public bool ConventionalDiscoveryDisabled { get; set; }
+
         internal async Task<HandlerCall[]> FindCalls(IJasperRegistry registry)
         {
+            if (ConventionalDiscoveryDisabled) return new HandlerCall[0];
+
             if (registry.ApplicationAssembly == null) return new HandlerCall[0];
 
 

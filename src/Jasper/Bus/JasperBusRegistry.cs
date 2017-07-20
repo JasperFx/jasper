@@ -15,36 +15,27 @@ namespace Jasper.Bus
 {
     public class JasperBusRegistry : JasperRegistry, IBusConfiguration
     {
-        private readonly ServiceBusFeature _feature;
+        public HandlerSource Handlers => _bus.Handlers;
 
-        public JasperBusRegistry(ServiceBusFeature feature = null)
-        {
-            _feature = feature ?? Feature<ServiceBusFeature>();
+        public Policies Policies => _bus.Policies;
 
-            Serialization = new SerializationExpression(_feature);
-        }
 
-        public HandlerSource Handlers => _feature.Handlers;
-
-        public Policies Policies => _feature.Policies;
-
-        public SerializationExpression Serialization { get; }
 
 
         public string ServiceName
         {
-            get => _feature.Channels.Name;
-            set => _feature.Channels.Name = value;
+            get => _bus.Channels.Name;
+            set => _bus.Channels.Name = value;
         }
 
         public IHasErrorHandlers ErrorHandling => Policies;
 
         public ChannelExpression ListenForMessagesFrom(Uri uri)
         {
-            var node = _feature.Channels[uri];
+            var node = _bus.Channels[uri];
             node.Incoming = true;
 
-            return new ChannelExpression(_feature.Channels, node);
+            return new ChannelExpression(_bus.Channels, node);
         }
 
         public ChannelExpression ListenForMessagesFrom(string uriString)
@@ -95,7 +86,7 @@ namespace Jasper.Bus
 
             public SendExpression To(Uri address)
             {
-                _parent._feature.Channels[address].Rules.Add(_routing);
+                _parent._bus.Channels[address].Rules.Add(_routing);
                 return this;
             }
 
@@ -215,18 +206,18 @@ namespace Jasper.Bus
 
         public SubscriptionExpression SubscribeAt(Uri receiving)
         {
-            return new SubscriptionExpression(_feature, receiving);
+            return new SubscriptionExpression(_bus, receiving);
         }
 
         public SubscriptionExpression SubscribeLocally()
         {
-            return new SubscriptionExpression(_feature, null);
+            return new SubscriptionExpression(_bus, null);
         }
 
         public ChannelExpression Channel(Uri uri)
         {
-            var node = _feature.Channels[uri];
-            return new ChannelExpression(_feature.Channels, node);
+            var node = _bus.Channels[uri];
+            return new ChannelExpression(_bus.Channels, node);
         }
 
 
@@ -235,7 +226,7 @@ namespace Jasper.Bus
             return Channel(uriString.ToUri());
         }
 
-        public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_feature);
+        public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_bus);
 
         public class DelayedJobExpression
         {

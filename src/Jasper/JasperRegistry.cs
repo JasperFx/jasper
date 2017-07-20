@@ -18,9 +18,14 @@ namespace Jasper
     {
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
         private readonly ServiceRegistry _applicationServices;
+        protected readonly ServiceBusFeature _bus;
 
         public JasperRegistry()
         {
+            _bus = Feature<ServiceBusFeature>();
+
+            Serialization = new JasperBusRegistry.SerializationExpression(_bus);
+
             _applicationServices = new ServiceRegistry();
             ExtensionServices = new ExtensionServiceRegistry();
 
@@ -47,6 +52,8 @@ namespace Jasper
             // between the web and the service bus
             Settings.Alter<JsonSerializerSettings>(_ => _.TypeNameHandling = TypeNameHandling.All);
         }
+
+        public JasperBusRegistry.SerializationExpression Serialization { get; }
 
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 

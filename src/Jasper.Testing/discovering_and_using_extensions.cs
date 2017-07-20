@@ -29,6 +29,8 @@ namespace Jasper.Testing
             Module1.Module1Extension.Registry = null;
 
             var registry = new JasperRegistry();
+            registry.Feature<ServiceBusFeature>().Handlers.ConventionalDiscoveryDisabled = true;
+
             var runtime = JasperRuntime.For(registry);
 
             runtime.ShouldNotBeNull();
@@ -79,9 +81,13 @@ namespace Jasper.Testing
     {
         public AppWithOverrides()
         {
+            Feature<ServiceBusFeature>().Handlers.ConventionalDiscoveryDisabled = true;
+
             Settings.Alter<ModuleSettings>(_ => _.From = "Application");
 
             Services.For<IModuleService>().Use<AppsModuleService>();
+
+
         }
     }
 
