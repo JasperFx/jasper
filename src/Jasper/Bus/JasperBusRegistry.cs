@@ -1,48 +1,27 @@
 ﻿using System;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Delayed;
-using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Conneg;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Bus
 {
     public class JasperBusRegistry : JasperRegistry
     {
 
-        public class SerializationExpression
+
+
+        public SubscriptionExpression SubscribeAt(string receiving)
         {
-            private readonly ServiceBusFeature _parent;
+            return SubscribeAt(receiving.ToUri());
+        }
 
+        public SubscriptionExpression SubscribeAt(Uri receiving)
+        {
+            return new SubscriptionExpression(_bus, receiving);
+        }
 
-
-            public SerializationExpression(ServiceBusFeature parent)
-            {
-                _parent = parent;
-            }
-
-
-            public SerializationExpression Add<T>() where T : ISerializer
-            {
-                _parent.Services.For<ISerializer>().Add<T>();
-                return this;
-            }
-
-
-            /// <summary>
-            /// Specify or override the preferred order of serialization usage for the application
-            /// </summary>
-            /// <param name="contentTypes"></param>
-            /// <returns></returns>
-            public SerializationExpression ContentPreferenceOrder(params string[] contentTypes)
-            {
-                _parent.Channels.AcceptedContentTypes.Clear();
-                _parent.Channels.AcceptedContentTypes.AddRange(contentTypes);
-                return this;
-            }
+        public SubscriptionExpression SubscribeLocally()
+        {
+            return new SubscriptionExpression(_bus, null);
         }
 
         public class SubscriptionExpression
@@ -59,7 +38,7 @@ namespace Jasper.Bus
             }
 
             /// <summary>
-            /// Specify the publishing source of the events you want to subscribe to
+            ///     Specify the publishing source of the events you want to subscribe to
             /// </summary>
             /// <param name="sourceProperty"></param>
             /// <returns></returns>
@@ -69,14 +48,14 @@ namespace Jasper.Bus
             }
 
             /// <summary>
-            /// Specify the publishing source of the events you want to subscribe to
+            ///     Specify the publishing source of the events you want to subscribe to
             /// </summary>
             /// <param name="sourceProperty"></param>
             /// <returns></returns>
             public TypeSubscriptionExpression ToSource(Uri sourceProperty)
             {
                 var requirement = _receiving == null
-                    ? (ISubscriptionRequirement)new LocalSubscriptionRequirement(sourceProperty)
+                    ? (ISubscriptionRequirement) new LocalSubscriptionRequirement(sourceProperty)
                     : new GroupSubscriptionRequirement(sourceProperty, _receiving);
 
                 _parent.Services.AddService(requirement);
@@ -107,61 +86,5 @@ namespace Jasper.Bus
                 }
             }
         }
-
-        public void OnMissingHandler<T>() where T : IMissingHandler
-        {
-            Services.AddService<IMissingHandler, T>();
-        }
-
-        public void OnMissingHandler(IMissingHandler handler)
-        {
-            Services.For<IMissingHandler>().Add(handler);
-        }
-
-        public SubscriptionExpression SubscribeAt(string receiving)
-        {
-            return SubscribeAt(receiving.ToUri());
-        }
-
-        public SubscriptionExpression SubscribeAt(Uri receiving)
-        {
-            return new SubscriptionExpression(_bus, receiving);
-        }
-
-        public SubscriptionExpression SubscribeLocally()
-        {
-            return new SubscriptionExpression(_bus, null);
-        }
-
-
-        public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_bus);
-
-        public class DelayedJobExpression
-        {
-            private readonly ServiceBusFeature _feature;
-
-            public DelayedJobExpression(ServiceBusFeature feature)
-            {
-                _feature = feature;
-            }
-
-            public void RunInMemory()
-            {
-                _feature.DelayedJobsRunInMemory = true;
-            }
-
-            public void Use<T>() where T : class, IDelayedJobProcessor
-            {
-                _feature.DelayedJobsRunInMemory = false;
-                _feature.Services.ForSingletonOf<IDelayedJobProcessor>().Use<T>();
-            }
-
-            public void Use(IDelayedJobProcessor delayedJobs)
-            {
-                _feature.DelayedJobsRunInMemory = false;
-                _feature.Services.ForSingletonOf<IDelayedJobProcessor>().Use(delayedJobs);
-            }
-        }
     }
 }
-

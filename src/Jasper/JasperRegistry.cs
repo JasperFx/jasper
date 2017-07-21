@@ -25,7 +25,7 @@ namespace Jasper
         {
             _bus = Feature<ServiceBusFeature>();
 
-            Serialization = new JasperBusRegistry.SerializationExpression(_bus);
+            Serialization = new SerializationExpression(_bus);
             Channels = new ChannelConfiguration(_bus);
             Messages = new MessagesExpression(_bus);
 
@@ -34,16 +34,7 @@ namespace Jasper
 
             Services = _applicationServices;
 
-            var assembly = this.GetType().GetAssembly();
-            var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
-            if (!Equals(assembly, typeof(JasperRegistry).GetAssembly()) && !isFeature)
-            {
-                ApplicationAssembly = assembly;
-            }
-            else
-            {
-                ApplicationAssembly = CallingAssembly.Find();
-            }
+            determineApplicationAssembly();
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
             Generation = new GenerationConfig($"{name}.Generated");
@@ -56,11 +47,27 @@ namespace Jasper
             Settings.Alter<JsonSerializerSettings>(_ => _.TypeNameHandling = TypeNameHandling.All);
         }
 
+        private void determineApplicationAssembly()
+        {
+            var assembly = this.GetType().GetAssembly();
+            var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
+            if (!Equals(assembly, typeof(JasperRegistry).GetAssembly()) && !isFeature)
+            {
+                ApplicationAssembly = assembly;
+            }
+            else
+            {
+                ApplicationAssembly = CallingAssembly.Find();
+            }
+        }
+
+        public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_bus);
+
         public MessagesExpression Messages { get; }
 
         public ChannelConfiguration Channels { get; }
 
-        public JasperBusRegistry.SerializationExpression Serialization { get; }
+        public SerializationExpression Serialization { get; }
 
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
