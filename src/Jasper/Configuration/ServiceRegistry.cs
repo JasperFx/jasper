@@ -7,11 +7,10 @@ using StructureMap.Pipeline;
 
 namespace Jasper.Configuration
 {
-    [Obsolete("Not really helping anything here")]
     public class ServiceRegistry : Registry, IServiceCollection
     {
         /// <summary>
-        /// Sets the instanceault implementation of a service if there is no
+        /// Sets the instance default implementation of a service if there is no
         /// previous registration
         /// </summary>
         /// <typeparam name="TService"></typeparam>
@@ -24,7 +23,7 @@ namespace Jasper.Configuration
 
 
         /// <summary>
-        /// Sets the instanceault implementation of a service if there is no
+        /// Sets the instance default implementation of a service if there is no
         /// previous registration
         /// </summary>
         public void SetServiceIfNone(Type type, Instance instance)
@@ -34,7 +33,7 @@ namespace Jasper.Configuration
 
 
         /// <summary>
-        /// Sets the instanceault implementation of a service if there is no
+        /// Sets the instance default implementation of a service if there is no
         /// previous registration
         /// </summary>
         /// <typeparam name="TService"></typeparam>
@@ -45,7 +44,7 @@ namespace Jasper.Configuration
         }
 
         /// <summary>
-        /// Sets the instanceault implementation of a service if there is no
+        /// Sets the instance default implementation of a service if there is no
         /// previous registration
         /// </summary>
         /// <param name="interfaceType"></param>
