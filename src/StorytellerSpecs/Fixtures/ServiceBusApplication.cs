@@ -4,6 +4,8 @@ using System.Linq;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;

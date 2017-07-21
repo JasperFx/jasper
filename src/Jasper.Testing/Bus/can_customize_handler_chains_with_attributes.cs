@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Codegen;
 using Jasper.Codegen.Compilation;

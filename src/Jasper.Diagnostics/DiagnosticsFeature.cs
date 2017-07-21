@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using StructureMap;

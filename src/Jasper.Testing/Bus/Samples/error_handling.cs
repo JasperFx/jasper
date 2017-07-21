@@ -5,6 +5,7 @@ using System.Security;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;

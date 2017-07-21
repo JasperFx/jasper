@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Jasper;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Logging;
 using Jasper.Diagnostics;
 using StructureMap;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Routing;
 
 namespace Jasper.Bus.Runtime

@@ -8,6 +8,7 @@ using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using System.Threading.Tasks;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;

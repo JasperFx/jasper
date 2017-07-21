@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Consul;
+using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Newtonsoft.Json;

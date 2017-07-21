@@ -1,4 +1,5 @@
-﻿using Jasper.Bus.Configuration;
+﻿using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Shouldly;
 using Xunit;
 

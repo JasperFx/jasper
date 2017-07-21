@@ -1,4 +1,5 @@
 ﻿using Jasper.Bus;
+using Jasper.Bus.Logging;
 using NSubstitute;
 using Shouldly;
 using Xunit;

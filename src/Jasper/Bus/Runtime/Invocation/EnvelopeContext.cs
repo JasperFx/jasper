@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 
 namespace Jasper.Bus.Runtime.Invocation

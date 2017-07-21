@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper;
 using Jasper.Bus;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Configuration;
 

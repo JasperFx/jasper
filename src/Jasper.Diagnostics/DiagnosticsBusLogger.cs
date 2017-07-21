@@ -1,5 +1,6 @@
 using System;
 using Jasper.Bus;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Diagnostics.Messages;
 

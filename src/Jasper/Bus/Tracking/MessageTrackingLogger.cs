@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Tracking

@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
+using Jasper.Bus.Logging;
 using Shouldly;
 using Xunit;
 

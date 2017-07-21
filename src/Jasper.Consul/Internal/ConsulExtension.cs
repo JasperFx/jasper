@@ -1,5 +1,6 @@
 ﻿using Jasper;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Jasper.Configuration;
 using Jasper.Consul.Internal;
 

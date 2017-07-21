@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Baseline;
 using Jasper.Bus;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Codegen;

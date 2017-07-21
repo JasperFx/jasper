@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;

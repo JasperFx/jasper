@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Testing.Bus.Runtime;
