@@ -51,7 +51,7 @@ namespace IntegrationTests.Consul
         }
     }
 
-    public class ConsulUsingApp : JasperBusRegistry
+    public class ConsulUsingApp : JasperRegistry
     {
         public string prop1 = Guid.NewGuid().ToString();
         public string prop2 = Guid.NewGuid().ToString();

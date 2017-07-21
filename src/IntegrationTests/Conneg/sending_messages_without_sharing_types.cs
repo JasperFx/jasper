@@ -106,7 +106,7 @@ namespace IntegrationTests.Conneg
         }
     }
 
-    public class BlueApp : JasperBusRegistry
+    public class BlueApp : JasperRegistry
     {
         public BlueApp(MessageTracker tracker)
         {
@@ -115,7 +115,7 @@ namespace IntegrationTests.Conneg
         }
     }
 
-    public class GreenApp : JasperBusRegistry
+    public class GreenApp : JasperRegistry
     {
         public GreenApp()
         {

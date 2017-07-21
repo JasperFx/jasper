@@ -25,7 +25,7 @@ namespace Jasper.Consul.Testing
                 client.KV.DeleteTree(ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX).Wait();
             }
 
-            var registry = new JasperBusRegistry();
+            var registry = new JasperRegistry();
             registry.ServiceName = "ConsulSampleApp";
 
             registry.Services.For<ISubscriptionsRepository>()

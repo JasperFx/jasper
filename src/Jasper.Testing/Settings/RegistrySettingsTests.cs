@@ -11,12 +11,12 @@ namespace Jasper.Testing.Settings
 {
     public class RegistrySettingsTests : IDisposable
     {
-        private JasperBusRegistry theRegistry;
+        private JasperRegistry theRegistry;
         private JasperRuntime _runtime;
 
         public RegistrySettingsTests()
         {
-            theRegistry = new JasperBusRegistry();
+            theRegistry = new JasperRegistry();
             theRegistry.Handlers.ExcludeTypes(x => true);
         }
 

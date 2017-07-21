@@ -38,7 +38,7 @@ namespace DiagnosticsServiceHarness
         }
     }
 
-    public class BusRegistry : JasperBusRegistry
+    public class BusRegistry : JasperRegistry
     {
         public BusRegistry()
         {

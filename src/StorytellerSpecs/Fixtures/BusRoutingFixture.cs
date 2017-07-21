@@ -18,7 +18,7 @@ namespace StorytellerSpecs.Fixtures
     public class BusRoutingFixture : BusFixture, ISubscriptionsRepository
     {
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
-        private JasperBusRegistry _registry;
+        private JasperRegistry _registry;
         private MessageRoute[] _tracks;
         private JasperRuntime _runtime;
 
@@ -90,7 +90,7 @@ namespace StorytellerSpecs.Fixtures
 
         public override void SetUp()
         {
-            _registry = new JasperBusRegistry();
+            _registry = new JasperRegistry();
             _registry.Services.For<ISubscriptionsRepository>().Use(this);
         }
 

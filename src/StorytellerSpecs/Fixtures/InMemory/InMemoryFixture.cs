@@ -32,11 +32,11 @@ namespace StorytellerSpecs.Fixtures.InMemory
     [Hidden]
     public class InMemoryServiceBusApplication : InMemoryFixture
     {
-        private JasperBusRegistry _registry;
+        private JasperRegistry _registry;
 
         public override void SetUp()
         {
-            _registry = new JasperBusRegistry();
+            _registry = new JasperRegistry();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
         }
 

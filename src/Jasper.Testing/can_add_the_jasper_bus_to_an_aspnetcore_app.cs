@@ -66,7 +66,7 @@ namespace Jasper.Testing
         }
     }
 
-    public class SimpleJasperBusApp : JasperBusRegistry
+    public class SimpleJasperBusApp : JasperRegistry
     {
         public SimpleJasperBusApp() : base()
         {

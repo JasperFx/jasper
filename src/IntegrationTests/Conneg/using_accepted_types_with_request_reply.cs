@@ -20,11 +20,11 @@ namespace IntegrationTests.Conneg
             Reply1Reader.WasUsed = false;
             Reply1Writer.WasUsed = false;
 
-            var requestorRegistry = new JasperBusRegistry();
+            var requestorRegistry = new JasperRegistry();
             requestorRegistry.Messages.SendMessage<Request1>().To("jasper://localhost:2456/incoming");
             var requestor = JasperRuntime.For(requestorRegistry);
 
-            var replierRegistry = new JasperBusRegistry();
+            var replierRegistry = new JasperRegistry();
             replierRegistry.Channels.ListenForMessagesFrom("jasper://localhost:2456/incoming");
             var replier = JasperRuntime.For(replierRegistry);
 

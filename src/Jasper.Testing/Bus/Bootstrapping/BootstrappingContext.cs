@@ -15,7 +15,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public readonly Uri Uri3 = new Uri("stub://3");
         public readonly Uri Uri4 = new Uri("stub://4");
 
-        public readonly JasperBusRegistry theRegistry = new JasperBusRegistry();
+        public readonly JasperRegistry theRegistry = new JasperRegistry();
 
         private Lazy<JasperRuntime> _runtime;
 

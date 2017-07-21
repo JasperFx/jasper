@@ -13,13 +13,13 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         private readonly Uri _channel = "memory://channel".ToUri();
         private readonly Uri _controlChannel = "memory://control".ToUri();
         private readonly string _machineName = "Machine";
-        private readonly JasperBusRegistry _registry;
+        private readonly JasperRegistry _registry;
         private readonly ServiceBusFeature _bus;
         private TransportNode _transportNode;
 
         public TransportNodeTester()
         {
-            _registry = new JasperBusRegistry {ServiceName = "NodeName"};
+            _registry = new JasperRegistry {ServiceName = "NodeName"};
             _registry.Channels.ListenForMessagesFrom(_incomingChannel);
             _registry.Channels.Add(_channel);
             _bus = _registry.Feature<ServiceBusFeature>();

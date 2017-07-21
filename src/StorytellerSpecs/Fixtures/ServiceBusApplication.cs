@@ -118,12 +118,12 @@ namespace StorytellerSpecs.Fixtures
     [Hidden]
     public class ServiceBusApplication : BusFixture
     {
-        private JasperBusRegistry _registry;
+        private JasperRegistry _registry;
         private bool _waitForSubscriptions;
 
         public override void SetUp()
         {
-            _registry = new JasperBusRegistry();
+            _registry = new JasperRegistry();
             _waitForSubscriptions = false;
 
             _registry.Services.AddService<ITransport, StubTransport>();

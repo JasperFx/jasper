@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -121,7 +122,7 @@ namespace JasperBus.Marten.Tests
 
     public class SubContext : IntegrationContext
     {
-        public SubContext(Action<JasperBusRegistry> setup)
+        public SubContext(Action<JasperRegistry> setup)
         {
             with(setup);
         }

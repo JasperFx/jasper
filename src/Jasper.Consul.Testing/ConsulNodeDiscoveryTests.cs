@@ -23,7 +23,7 @@ namespace Jasper.Consul.Testing
                 client.KV.DeleteTree(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX).Wait();
             }
 
-            var registry = new JasperBusRegistry
+            var registry = new JasperRegistry
             {
                 ServiceName = "ConsulTestApp"
             };

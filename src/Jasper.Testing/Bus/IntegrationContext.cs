@@ -15,11 +15,11 @@ namespace Jasper.Testing.Bus
 
         protected void withAllDefaults()
         {
-            with(new JasperBusRegistry());
+            with(new JasperRegistry());
             Handlers = Runtime.Container.GetInstance<HandlerGraph>();
         }
 
-        protected void with(JasperBusRegistry registry)
+        protected void with(JasperRegistry registry)
         {
             registry.Services.Scan(_ =>
             {
@@ -33,9 +33,9 @@ namespace Jasper.Testing.Bus
             Handlers = Runtime.Container.GetInstance<HandlerGraph>();
         }
 
-        protected void with(Action<JasperBusRegistry> configuration)
+        protected void with(Action<JasperRegistry> configuration)
         {
-            var registry = new JasperBusRegistry();
+            var registry = new JasperRegistry();
 
 
             configuration(registry);
@@ -43,7 +43,7 @@ namespace Jasper.Testing.Bus
             with(registry);
         }
 
-        protected void with<T>() where T : JasperBusRegistry, new()
+        protected void with<T>() where T : JasperRegistry, new()
         {
             var registry = new T();
             with(registry);

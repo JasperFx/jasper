@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 namespace Jasper
 {
     [Obsolete("Going to make this be unnecessary")]
-    public class JasperBusWithAspNetCoreRegistry : JasperBusRegistry
+    public class JasperBusWithAspNetCoreRegistry : JasperRegistry
     {
         public JasperBusWithAspNetCoreRegistry()
         {

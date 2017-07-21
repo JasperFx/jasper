@@ -55,7 +55,7 @@ namespace IntegrationTests.DelayedJobs
         }
     }
 
-    public class DelayedMessageApp : JasperBusRegistry
+    public class DelayedMessageApp : JasperRegistry
     {
         public DelayedMessageApp() : base()
         {

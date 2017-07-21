@@ -3,7 +3,7 @@
 1. Add the Diagnostic Services to your `JasperRegistry`
 
 ```csharp
-public class BusRegistry : JasperBusRegistry
+public class BusRegistry : JasperRegistry
 {
     public BusRegistry()
     {

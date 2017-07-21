@@ -25,7 +25,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: configuring-subscriptions
-    public class LocalApp : JasperBusRegistry
+    public class LocalApp : JasperRegistry
     {
         public LocalApp(NodeSettings settings)
         {
@@ -53,7 +53,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: SubscriptionStorageOverride
-    public class SubscriptionStorageApp : JasperBusRegistry
+    public class SubscriptionStorageApp : JasperRegistry
     {
         public SubscriptionStorageApp()
         {

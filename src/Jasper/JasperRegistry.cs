@@ -5,6 +5,7 @@ using System.Reflection;
 using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Runtime;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Settings;
@@ -140,5 +141,19 @@ namespace Jasper
             Include(extension);
         }
 
+        public SubscriptionExpression SubscribeAt(string receiving)
+        {
+            return SubscribeAt(receiving.ToUri());
+        }
+
+        public SubscriptionExpression SubscribeAt(Uri receiving)
+        {
+            return new SubscriptionExpression(_bus, receiving);
+        }
+
+        public SubscriptionExpression SubscribeLocally()
+        {
+            return new SubscriptionExpression(_bus, null);
+        }
     }
 }

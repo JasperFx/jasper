@@ -18,7 +18,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: PingApp
-    public class PingApp : JasperBusRegistry
+    public class PingApp : JasperRegistry
     {
         public PingApp(SampleSettings settings)
         {
@@ -32,7 +32,7 @@ namespace Jasper.Testing.Bus.Samples
         }
     }
 
-    public class PongApp : JasperBusRegistry
+    public class PongApp : JasperRegistry
     {
         public PongApp(SampleSettings settings)
         {
@@ -51,7 +51,7 @@ namespace Jasper.Testing.Bus.Samples
     }
 
     // SAMPLE: ControlChannelApp
-    public class ControlChannelApp : JasperBusRegistry
+    public class ControlChannelApp : JasperRegistry
     {
         public ControlChannelApp(AppSettings settings)
         {
@@ -63,7 +63,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: ListeningApp
-    public class ListeningApp : JasperBusRegistry
+    public class ListeningApp : JasperRegistry
     {
         public ListeningApp(SampleSettings settings)
         {
@@ -88,7 +88,7 @@ namespace Jasper.Testing.Bus.Samples
             = new Uri("lq.tcp://localhost:2346/transactions");
     }
 
-    public class BigApp : JasperBusRegistry
+    public class BigApp : JasperRegistry
     {
         public BigApp(AppSettings settings)
         {
@@ -123,7 +123,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: StaticRoutingApp
-    public class StaticRoutingApp : JasperBusRegistry
+    public class StaticRoutingApp : JasperRegistry
     {
         public StaticRoutingApp(AppSettings settings)
         {

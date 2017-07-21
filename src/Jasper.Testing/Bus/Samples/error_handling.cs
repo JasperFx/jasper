@@ -35,7 +35,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: MyApp-with-error-handling
-    public class MyApp : JasperBusRegistry
+    public class MyApp : JasperRegistry
     {
         public MyApp()
         {
@@ -45,7 +45,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: GlobalErrorHandlingConfiguration
-    public class GlobalRetryApp : JasperBusRegistry
+    public class GlobalRetryApp : JasperRegistry
     {
         public GlobalRetryApp()
         {
@@ -106,7 +106,7 @@ namespace Jasper.Testing.Bus.Samples
     public class SqlException : Exception{}
 
     // SAMPLE: filtering-by-exception-type
-    public class FilteredApp : JasperBusRegistry
+    public class FilteredApp : JasperRegistry
     {
         public FilteredApp()
         {
@@ -118,7 +118,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: continuation-actions
-    public class ContinuationTypes : JasperBusRegistry
+    public class ContinuationTypes : JasperRegistry
     {
         public ContinuationTypes()
         {
@@ -141,7 +141,7 @@ namespace Jasper.Testing.Bus.Samples
 
 
     // SAMPLE: RespondWithMessages
-    public class RespondWithMessages : JasperBusRegistry
+    public class RespondWithMessages : JasperRegistry
     {
         public RespondWithMessages()
         {
@@ -180,7 +180,7 @@ namespace Jasper.Testing.Bus.Samples
     // ENDSAMPLE
 
     // SAMPLE: Registering-CustomErrorHandler
-    public class CustomErrorHandlingApp : JasperBusRegistry
+    public class CustomErrorHandlingApp : JasperRegistry
     {
         public CustomErrorHandlingApp()
         {
