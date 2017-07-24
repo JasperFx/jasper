@@ -42,8 +42,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
             registry.AspNetCore.UseEnvironment("Fake");
             registry.Settings.With<IHostingEnvironment>(_ =>
             {
-                throw new Exception("Got here");
-                //environment = _.EnvironmentName;
+                environment = _.EnvironmentName;
             });
 
             using (var runtime = JasperRuntime.For(registry))

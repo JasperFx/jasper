@@ -36,6 +36,11 @@ namespace Jasper.Settings
             }
         }
 
+        internal void SetSource(T settings)
+        {
+            _source = c => settings;
+        }
+
         public void Replace(Func<IConfigurationRoot, T> source)
         {
             _alterations.Clear();

@@ -146,7 +146,8 @@ namespace Jasper.Settings
             var hosting = new HostingEnvironment();
             hosting.Initialize(applicationName, contentRootPath, options);
 
-            Replace<IHostingEnvironment>(hosting);
+
+            forType<IHostingEnvironment>().SetSource(hosting);
 
             foreach (var settings in _settings.Values)
             {
