@@ -8,7 +8,7 @@ using StructureMap;
 using StructureMap.Pipeline;
 using Xunit;
 
-namespace Jasper.Testing
+namespace Jasper.Testing.AspNetCoreIntegration
 {
     public class service_registrations_with_aspnet_core_abstractions
     {

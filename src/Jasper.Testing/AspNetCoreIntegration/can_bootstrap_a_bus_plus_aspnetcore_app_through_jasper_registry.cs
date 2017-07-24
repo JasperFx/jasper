@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing
+namespace Jasper.Testing.AspNetCoreIntegration
 {
     public class can_bootstrap_a_bus_plus_aspnetcore_app_through_jasper_registry : IDisposable
     {

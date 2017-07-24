@@ -10,6 +10,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Settings;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using StructureMap.TypeRules;
@@ -44,9 +45,6 @@ namespace Jasper
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
 
-            // TODO -- this is *temporary*. Will need to at a minimum get this segregated
-            // between the web and the service bus
-            Settings.Alter<JsonSerializerSettings>(_ => _.TypeNameHandling = TypeNameHandling.All);
         }
 
         private void determineApplicationAssembly()
@@ -63,6 +61,8 @@ namespace Jasper
             }
         }
 
+        public IWebHostBuilder AspNetCore => Settings;
+
         public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_bus);
 
         public MessagesExpression Messages { get; }
@@ -74,8 +74,6 @@ namespace Jasper
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
         public GenerationConfig Generation { get; }
-
-
 
         public Assembly ApplicationAssembly { get; private set; }
 

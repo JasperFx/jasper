@@ -1,22 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Baseline;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
 using StructureMap;
 
 namespace Jasper.Settings
 {
-    public class JasperSettings : ISettingsProvider
+    public class JasperSettings : ISettingsProvider, IWebHostBuilder
     {
         private readonly Dictionary<Type, ISettingsBuilder> _settings
             = new Dictionary<Type, ISettingsBuilder>();
 
-        private readonly JasperRegistry _registry;
+        private readonly JasperRegistry _parent;
+        private readonly IConfigurationRoot _config;
 
-        public JasperSettings(JasperRegistry registry)
+        public JasperSettings(JasperRegistry parent)
         {
-            _registry = registry;
+            _parent = parent;
+            Replace<ILoggerFactory>(new LoggerFactory());
+
+            _config = new ConfigurationBuilder()
+                .AddEnvironmentVariables(prefix: "ASPNETCORE_")
+                .Build();
         }
 
         internal bool ApplyingExtensions { get; set; }
@@ -66,7 +78,7 @@ namespace Jasper.Settings
         /// <summary>
         ///     Alter a settings object after it is loaded
         /// </summary>
-        public void Alter<T>(Action<T> alteration) where T : class, new()
+        public void Alter<T>(Action<T> alteration) where T : class
         {
             var builder = forType<T>();
             if (ApplyingExtensions)
@@ -96,7 +108,7 @@ namespace Jasper.Settings
         /// <summary>
         ///     Replace a settings object after it is loaded
         /// </summary>
-        public void Replace<T>(T settings) where T : class, new()
+        public void Replace<T>(T settings) where T : class
         {
             forType<T>().Replace(settings);
         }
@@ -114,25 +126,90 @@ namespace Jasper.Settings
             throw new NotImplementedException("Used for testing, just do it end to end now");
         }
 
-        public void Bootstrap()
+        internal void Bootstrap()
         {
             // Have ISettingsProvider delegate to JasperSettings
 
-            var config = _registry.Configuration.Build();
+            var config = _parent.Configuration.Build();
 
-            _registry.Services.ForSingletonOf<IConfigurationRoot>().Use(config);
-            _registry.Services.ForSingletonOf<ISettingsProvider>().Use<SettingsProvider>();
-            _registry.Services.Policies.OnMissingFamily<SettingsPolicy>();
+            _parent.Services.ForSingletonOf<IConfigurationRoot>().Use(config);
+            _parent.Services.ForSingletonOf<ISettingsProvider>().Use<SettingsProvider>();
+            _parent.Services.Policies.OnMissingFamily<SettingsPolicy>();
+
+            var options = new WebHostOptions(_config);
+
+            var appEnvironment = PlatformServices.Default.Application;
+            var contentRootPath = determineContentRootPath(options.ContentRootPath, appEnvironment.ApplicationBasePath);
+            var applicationName = options.ApplicationName ?? appEnvironment.ApplicationName;
+
+            // Initialize the hosting environment
+            var hosting = new HostingEnvironment();
+            hosting.Initialize(applicationName, contentRootPath, options);
+
+            Replace<IHostingEnvironment>(hosting);
 
             foreach (var settings in _settings.Values)
             {
-                settings.Apply(config, _registry);
+                settings.Apply(config, _parent);
             }
+        }
+
+        private string determineContentRootPath(string contentRootPath, string basePath)
+        {
+            if (contentRootPath.IsEmpty())
+            {
+                return basePath;
+            }
+
+            return Path.IsPathRooted(contentRootPath)
+                ? contentRootPath
+                : basePath.ToFullPath().AppendPath(contentRootPath);
         }
 
         public void BindToConfigSection<T>(string sectionName) where T : class, new()
         {
             Configure<T>(c => c.GetSection(sectionName));
+        }
+
+        IWebHost IWebHostBuilder.Build()
+        {
+            throw new NotSupportedException("Jasper needs to control the lifecycle of the hosting construction and teardown");
+        }
+
+        IWebHostBuilder IWebHostBuilder.UseLoggerFactory(ILoggerFactory loggerFactory)
+        {
+            if (loggerFactory == null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
+            }
+
+            Replace(loggerFactory);
+
+            return this;
+        }
+
+        IWebHostBuilder IWebHostBuilder.ConfigureServices(Action<IServiceCollection> configureServices)
+        {
+            configureServices(_parent.Services);
+
+            return this;
+        }
+
+        IWebHostBuilder IWebHostBuilder.ConfigureLogging(Action<ILoggerFactory> configureLogging)
+        {
+            Alter(configureLogging);
+            return this;
+        }
+
+        IWebHostBuilder IWebHostBuilder.UseSetting(string key, string value)
+        {
+            _config[key] = value;
+            return this;
+        }
+
+        string IWebHostBuilder.GetSetting(string key)
+        {
+            return _config[key];
         }
     }
 }
