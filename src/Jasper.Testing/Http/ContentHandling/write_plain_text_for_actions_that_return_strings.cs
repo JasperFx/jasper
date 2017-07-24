@@ -24,6 +24,8 @@ namespace Jasper.Testing.Http.ContentHandling
             };
         }
 
+        public static JasperRuntime Runtime => _runtime;
+
         public static Task<IScenarioResult> Scenario(Action<Scenario> configure)
         {
             return _runtime.Scenario(configure);
@@ -34,6 +36,7 @@ namespace Jasper.Testing.Http.ContentHandling
     {
         public HttpTestingApp()
         {
+            Handlers.ConventionalDiscoveryDisabled = true;
             UseFeature<AspNetCoreFeature>();
             Feature<AspNetCoreFeature>().Hosting.Port = 5666;
 

@@ -116,7 +116,7 @@ namespace Jasper.Settings
         /// <summary>
         ///     Modify the application using loaded settings
         /// </summary>
-        public void With<T>(Action<T> alteration) where T : class, new()
+        public void With<T>(Action<T> alteration) where T : class
         {
             forType<T>().With(alteration);
         }
