@@ -14,12 +14,12 @@ namespace Jasper.Http
         private const string JasperRouterKey = "JasperRouter";
         public static readonly string JasperHasBeenApplied = "JasperHasBeenApplied";
 
-        public static void StoreRouter(this IApplicationBuilder builder, Router router)
+        internal static void StoreRouter(this IApplicationBuilder builder, Router router)
         {
             builder.Properties.Add(JasperRouterKey, router);
         }
 
-        public static void MarkJasperHasBeenApplied(this IApplicationBuilder builder)
+        internal static void MarkJasperHasBeenApplied(this IApplicationBuilder builder)
         {
             if (!builder.Properties.ContainsKey(JasperHasBeenApplied))
             {
@@ -27,7 +27,7 @@ namespace Jasper.Http
             }
         }
 
-        public static bool HasJasperBeenApplied(this IApplicationBuilder builder)
+        internal static bool HasJasperBeenApplied(this IApplicationBuilder builder)
         {
             return builder.Properties.ContainsKey(JasperHasBeenApplied);
         }
@@ -60,6 +60,7 @@ namespace Jasper.Http
 
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
         {
+            registry.Feature<AspNetCoreFeature>().BootstrappedWithinAspNetCore = true;
             var runtime = JasperRuntime.For(registry);
             builder.ConfigureServices(services =>
             {

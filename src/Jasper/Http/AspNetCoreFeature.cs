@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
@@ -53,6 +52,8 @@ namespace Jasper.Http
 
         public IWebHostBuilder WebHostBuilder => _builder;
 
+        internal bool BootstrappedWithinAspNetCore { get; set; }
+
         public void Dispose()
         {
             _host?.Dispose();
@@ -69,7 +70,10 @@ namespace Jasper.Http
             _services.For<RouteGraph>().Use(Routes);
             _services.For<IUrlRegistry>().Use(Routes.Router.Urls);
 
-            _services.For<IServer>().Add<NulloServer>().Singleton();
+            if (!BootstrappedWithinAspNetCore)
+            {
+                _services.For<IServer>().Add<NulloServer>().Singleton();
+            }
 
             return _services;
         }
@@ -82,36 +86,16 @@ namespace Jasper.Http
 
                 Routes.BuildRoutingTree(rules, generation, runtime.Container);
 
-                _host = _builder.Activate(runtime.Container, Routes.Router);
+                if (!BootstrappedWithinAspNetCore)
+                {
+                    _host = _builder.Activate(runtime.Container, Routes.Router);
 
-                runtime.Container.Inject(_host);
+                    runtime.Container.Inject(_host);
 
-                _host.Start();
+                    _host.Start();
+                }
             });
         }
     }
 
-    [Obsolete("Seemed like a good idea at the time, but prolly unnecessary w/ newer ASP.Net Core stuff")]
-    public class HostingConfiguration
-    {
-        public bool UseKestrel { get; set; } = true;
-        public bool UseIIS { get; set; } = true;
-        public int Port { get; set; } = 3000;
-        public string ContentRoot { get; set; } = Directory.GetCurrentDirectory();
-    }
-
-    public class NulloServer : IServer
-    {
-        public void Dispose()
-        {
-
-        }
-
-        public void Start<TContext>(IHttpApplication<TContext> application)
-        {
-
-        }
-
-        public IFeatureCollection Features { get; } = new FeatureCollection();
-    }
 }
