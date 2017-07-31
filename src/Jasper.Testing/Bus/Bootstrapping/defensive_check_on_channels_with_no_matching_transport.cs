@@ -16,7 +16,10 @@ namespace Jasper.Testing.Bus.Bootstrapping
                 registry.Channels.Add("foo://2");
                 registry.Handlers.ExcludeTypes(x => true);
 
-                JasperRuntime.For(registry);
+                using (var runtime = JasperRuntime.For(registry))
+                {
+
+                }
             });
 
             ex.Message.ShouldContain("foo://1");

@@ -14,14 +14,6 @@ namespace Jasper.Http.Routing
         {
             _root = new Node("");
             _all.Add(string.Empty, _root);
-
-            NotFound = c =>
-            {
-                c.Response.StatusCode = 404;
-                c.Response.Headers["status-description"] = "Resource not found";
-
-                return c.Response.WriteAsync("Resource not found");
-            };
         }
 
         public void AddRoute(Route route)
@@ -73,6 +65,5 @@ namespace Jasper.Http.Routing
             return route.Trim().TrimStart('/').TrimEnd('/').Split('/');
         }
 
-        public RequestDelegate NotFound { get; set; }
     }
 }

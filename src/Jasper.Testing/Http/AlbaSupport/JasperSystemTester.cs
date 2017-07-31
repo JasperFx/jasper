@@ -76,7 +76,7 @@ namespace Jasper.Testing.Http.AlbaSupport
             var feature = Feature<AspNetCoreFeature>();
             feature.Hosting.Port = 3001;
 
-            feature.WebHostBuilder.Configure(app =>
+            Http.Configure(app =>
             {
                 app.Run(c =>
                 {

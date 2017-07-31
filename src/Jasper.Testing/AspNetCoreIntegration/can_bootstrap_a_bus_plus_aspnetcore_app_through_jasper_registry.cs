@@ -5,6 +5,7 @@ using Jasper.Bus;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -58,15 +59,17 @@ namespace Jasper.Testing.AspNetCoreIntegration
 
     }
 
-    public class JasperServerApp : JasperBusWithAspNetCoreRegistry
+    public class JasperServerApp : JasperRegistry
     {
         public JasperServerApp()
         {
-            Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-            Services.AddService<IFakeService, FakeService>();
-            Services.AddService<IWidget, Widget>(); 
-            UseStartup<Startup>();
-            Hosting.Port = 3002;
+            Handlers.ConventionalDiscoveryDisabled = true;
+
+            Http
+                .UseKestrel()
+                .UseUrls("http://localhost:3002")
+                .UseStartup<Startup>();
+
         }
     }
 

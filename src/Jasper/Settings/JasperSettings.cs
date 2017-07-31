@@ -19,6 +19,8 @@ namespace Jasper.Settings
             = new Dictionary<Type, ISettingsBuilder>();
 
         private readonly JasperRegistry _parent;
+
+        [Obsolete("Try to use from within WebHostBuilder")]
         private readonly IConfigurationRoot _config;
 
         public JasperSettings(JasperRegistry parent)
@@ -136,36 +138,12 @@ namespace Jasper.Settings
             _parent.Services.ForSingletonOf<ISettingsProvider>().Use<SettingsProvider>();
             _parent.Services.Policies.OnMissingFamily<SettingsPolicy>();
 
-            var options = new WebHostOptions(_config);
-
-            var appEnvironment = PlatformServices.Default.Application;
-            var contentRootPath = determineContentRootPath(options.ContentRootPath, appEnvironment.ApplicationBasePath);
-            var applicationName = options.ApplicationName ?? appEnvironment.ApplicationName;
-
-            // Initialize the hosting environment
-            var hosting = new HostingEnvironment();
-            hosting.Initialize(applicationName, contentRootPath, options);
-
-
-            forType<IHostingEnvironment>().SetSource(hosting);
-
             foreach (var settings in _settings.Values)
             {
                 settings.Apply(config, _parent);
             }
         }
 
-        private string determineContentRootPath(string contentRootPath, string basePath)
-        {
-            if (contentRootPath.IsEmpty())
-            {
-                return basePath;
-            }
-
-            return Path.IsPathRooted(contentRootPath)
-                ? contentRootPath
-                : basePath.ToFullPath().AppendPath(contentRootPath);
-        }
 
         public void BindToConfigSection<T>(string sectionName) where T : class, new()
         {

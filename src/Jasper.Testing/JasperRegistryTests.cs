@@ -24,9 +24,10 @@ namespace Jasper.Testing
             registry.Services.For<IWidget>().Use<Widget>();
             registry.Services.For<IFakeService>().Use<FakeService>();
 
-            var runtime = JasperRuntime.For(registry);
-
-            runtime.Container.Model.DefaultTypeFor<IFoo>().ShouldBe(typeof(Foo));
+            using (var runtime = JasperRuntime.For(registry))
+            {
+                runtime.Container.Model.DefaultTypeFor<IFoo>().ShouldBe(typeof(Foo));
+            }
         }
 
         public interface IFoo { }

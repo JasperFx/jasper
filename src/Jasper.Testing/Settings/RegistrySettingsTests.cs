@@ -44,9 +44,11 @@ namespace Jasper.Testing.Settings
         public void can_modify_registry()
         {
             var app = new MyApp();
-            var runtime = JasperRuntime.For(app);
-            var myApp = (MyApp) runtime.Registry;
-            myApp.MySetting.ShouldBe(true);
+            using (var runtime = JasperRuntime.For(app))
+            {
+                var myApp = (MyApp) runtime.Registry;
+                myApp.MySetting.ShouldBe(true);
+            }
         }
 
         [Fact]
@@ -83,13 +85,15 @@ namespace Jasper.Testing.Settings
                 _.SomeSetting = 29;
             });
 
-            var runtime = JasperRuntime.For(app);
-            var container = new Container(runtime.Registry.Services);
-            var mySettings = container.GetInstance<MySettings>();
-            var colors = container.GetInstance<Colors>();
+            using (var runtime = JasperRuntime.For(app))
+            {
+                var container = new Container(runtime.Registry.Services);
+                var mySettings = container.GetInstance<MySettings>();
+                var colors = container.GetInstance<Colors>();
 
-            mySettings.SomeSetting.ShouldBe(29);
-            colors.Red.ShouldBe("#ff0000");
+                mySettings.SomeSetting.ShouldBe(29);
+                colors.Red.ShouldBe("#ff0000");
+            }
         }
 
         public void Dispose()

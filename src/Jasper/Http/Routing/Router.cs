@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Http.Routing.Codegen;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing
@@ -21,9 +22,14 @@ namespace Jasper.Http.Routing
             var route = new Route(pattern, method, appfunc);
 
             Add(route);
-
-            
         }
+
+        public RequestDelegate NotFound { get; set; } = c =>
+        {
+            c.Response.StatusCode = 404;
+            c.Response.Headers["status-description"] = "Resource Not Found";
+            return c.Response.WriteAsync("Resource Not Found");
+        };
 
         public UrlGraph Urls { get; } = new UrlGraph();
 
@@ -33,13 +39,22 @@ namespace Jasper.Http.Routing
             Urls.Register(route);
         }
 
-        // TODO -- dunno that this needs to be done by verb. Reconsider
-        public void AddNotFoundHandler(string method, RequestDelegate handler)
+        public Task Invoke(HttpContext context)
         {
-            _trees[method.ToUpperInvariant()].NotFound = handler;
+            return Invoke(context, c =>
+            {
+                c.Response.StatusCode = 404;
+                return Task.CompletedTask;
+            });
         }
 
-        public Task Invoke(HttpContext context)
+        public RequestDelegate Apply(RequestDelegate @delegate)
+        {
+            NotFound = @delegate;
+            return Invoke;
+        }
+
+        public Task Invoke(HttpContext context, Func<HttpContext, Task> next)
         {
             string[] segments;
             var route = SelectRoute(context, out segments);
@@ -47,14 +62,18 @@ namespace Jasper.Http.Routing
             context.Items.Add(RoutingFrames.Segments, segments);
 
             // TODO -- add some error handling to 500 here. May also change how segments are being smuggled into the HttpContext
-            if (route == null) return _trees[context.Request.Method].NotFound(context);
+            if (route == null)
+            {
+                context.Response.StatusCode = 404;
+                return Task.CompletedTask;
+            }
 
             context.Response.StatusCode = 200;
 
             context.SetSegments(segments);
             // TODO -- going to eliminate this.
             route.SetValues(context, segments);
-            
+
 
             return route.Invoker(context);
         }

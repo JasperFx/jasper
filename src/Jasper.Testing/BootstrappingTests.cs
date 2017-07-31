@@ -31,7 +31,7 @@ namespace Jasper.Testing
         }
     }
 
-    public class when_bootstrapping_a_runtime_with_multiple_features
+    public class when_bootstrapping_a_runtime_with_multiple_features : IDisposable
     {
         private readonly JasperRegistry theRegistry = new JasperRegistry();
         private FakeFeature1 feature1;
@@ -99,6 +99,14 @@ namespace Jasper.Testing
 
             theRuntime.Container.Model.DefaultTypeFor<IFeatureService3>()
                 .ShouldBe(typeof(FeatureService3));
+        }
+
+        public void Dispose()
+        {
+            feature1?.Dispose();
+            feature2?.Dispose();
+            feature3?.Dispose();
+            theRuntime?.Dispose();
         }
     }
 

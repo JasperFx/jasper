@@ -32,11 +32,12 @@ namespace Jasper.Testing
             var registry = new JasperRegistry();
             registry.Feature<ServiceBusFeature>().Handlers.ConventionalDiscoveryDisabled = true;
 
-            var runtime = JasperRuntime.For(registry);
+            using (var runtime = JasperRuntime.For(registry))
+            {
+                runtime.ShouldNotBeNull();
 
-            runtime.ShouldNotBeNull();
-
-            Module1Extension.Registry.ShouldBe(registry);
+                Module1Extension.Registry.ShouldBe(registry);
+            }
         }
 
         [Fact]

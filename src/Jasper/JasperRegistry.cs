@@ -9,6 +9,7 @@ using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using Jasper.Http;
 using Jasper.Settings;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -45,7 +46,11 @@ namespace Jasper
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
 
+            Http = Feature<AspNetCoreFeature>().WebHostBuilder;
+
         }
+
+        public IWebHostBuilder Http { get; }
 
         private void determineApplicationAssembly()
         {
