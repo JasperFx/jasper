@@ -5,13 +5,12 @@ using Jasper.Configuration;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
-namespace Jasper.Http.Configuration
+namespace Jasper.Http
 {
-    public class JasperStartup : IStartup
+    internal class JasperStartup : IStartup
     {
 
         public static IStartup Build(IServiceProvider provider, ServiceDescriptor descriptor)

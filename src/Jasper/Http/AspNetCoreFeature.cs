@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Codegen;
 using Jasper.Configuration;
-using Jasper.Http.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
@@ -14,19 +14,21 @@ using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StructureMap;
 
 namespace Jasper.Http
 {
 
 
-    public class AspNetCoreFeature : IFeature
+    public class AspNetCoreFeature : IFeature, IWebHostBuilder
     {
+        private readonly WebHostBuilder _inner;
+
         public readonly ActionSource Actions = new ActionSource();
 
         public readonly RouteGraph Routes = new RouteGraph();
 
-        private readonly HostBuilder _builder;
         private readonly Registry _services;
         private IWebHost _host;
 
@@ -35,22 +37,18 @@ namespace Jasper.Http
             Actions.IncludeClassesSuffixedWithEndpoint();
 
             _services = new Registry();
-            _builder = new HostBuilder(this);
-            _builder.ConfigureServices(_ =>
-            {
-                _.Add(new ServiceDescriptor(typeof(Router), Routes.Router));
-                _.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
-            });
+            _services.For<Router>().Use(Routes.Router);
+            _services.For<IHttpContextAccessor>().Use<HttpContextAccessor>().ContainerScoped();
+
+            _inner = new WebHostBuilder();
         }
 
-        public string EnvironmentName
+        internal string EnvironmentName
         {
-            get => _builder.GetSetting(WebHostDefaults.EnvironmentKey);
-            set => _builder.UseEnvironment(value);
+            get => _inner.GetSetting(WebHostDefaults.EnvironmentKey);
+            set => this.UseEnvironment(value);
         }
 
-
-        public IWebHostBuilder WebHostBuilder => _builder;
 
         internal bool BootstrappedWithinAspNetCore { get; set; }
 
@@ -59,7 +57,7 @@ namespace Jasper.Http
             _host?.Dispose();
         }
 
-        public async Task<Registry> Bootstrap(JasperRegistry registry)
+        async Task<Registry> IFeature.Bootstrap(JasperRegistry registry)
         {
             var actions = await Actions.FindActions(registry.ApplicationAssembly);
             foreach (var methodCall in actions)
@@ -78,7 +76,7 @@ namespace Jasper.Http
             return _services;
         }
 
-        public Task Activate(JasperRuntime runtime, IGenerationConfig generation)
+        Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
         {
             return Task.Factory.StartNew(() =>
             {
@@ -86,15 +84,51 @@ namespace Jasper.Http
 
                 Routes.BuildRoutingTree(rules, generation, runtime.Container);
 
-                if (!BootstrappedWithinAspNetCore)
-                {
-                    _host = _builder.Activate(runtime.Container, Routes.Router);
+                if (BootstrappedWithinAspNetCore) return;
 
-                    runtime.Container.Inject(_host);
-
-                    _host.Start();
-                }
+                activateLocally(runtime);
             });
+        }
+
+        private void activateLocally(JasperRuntime runtime)
+        {
+            _inner.ConfigureServices(services => JasperStartup.Register(runtime.Container, services, Routes.Router));
+
+            _host = _inner.Build();
+
+            runtime.Container.Inject(_host);
+
+            _host.Start();
+        }
+
+        IWebHost IWebHostBuilder.Build()
+        {
+            throw new NotSupportedException("Jasper needs to do the web host building within its bootstrapping");
+        }
+
+        IWebHostBuilder IWebHostBuilder.UseLoggerFactory(ILoggerFactory loggerFactory)
+        {
+            return _inner.UseLoggerFactory(loggerFactory);
+        }
+
+        IWebHostBuilder IWebHostBuilder.ConfigureServices(Action<IServiceCollection> configureServices)
+        {
+            return _inner.ConfigureServices(configureServices);
+        }
+
+        IWebHostBuilder IWebHostBuilder.ConfigureLogging(Action<ILoggerFactory> configureLogging)
+        {
+            return _inner.ConfigureLogging(configureLogging);
+        }
+
+        IWebHostBuilder IWebHostBuilder.UseSetting(string key, string value)
+        {
+            return _inner.UseSetting(key, value);
+        }
+
+        string IWebHostBuilder.GetSetting(string key)
+        {
+            return _inner.GetSetting(key);
         }
     }
 

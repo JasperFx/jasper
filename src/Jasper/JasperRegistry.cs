@@ -24,12 +24,10 @@ namespace Jasper
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
         private readonly ServiceRegistry _applicationServices;
         protected readonly ServiceBusFeature _bus;
-        private readonly AspNetCoreFeature _aspnetcore;
 
         public JasperRegistry()
         {
             _bus = Feature<ServiceBusFeature>();
-            _aspnetcore = Feature<AspNetCoreFeature>();
 
             Serialization = new SerializationExpression(_bus);
             Channels = new ChannelConfiguration(_bus);
@@ -40,7 +38,7 @@ namespace Jasper
 
             Services = _applicationServices;
 
-            determineApplicationAssembly();
+            ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
             Generation = new GenerationConfig($"{name}.Generated");
@@ -48,31 +46,17 @@ namespace Jasper
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
 
-            Http = Feature<AspNetCoreFeature>().WebHostBuilder;
+            Http = Feature<AspNetCoreFeature>();
 
         }
 
         public string EnvironmentName
         {
-            get => _aspnetcore.EnvironmentName;
-            set => _aspnetcore.EnvironmentName = value;
+            get => Http.EnvironmentName;
+            set => Http.EnvironmentName = value;
         }
 
-        public IWebHostBuilder Http { get; }
-
-        private void determineApplicationAssembly()
-        {
-            var assembly = this.GetType().GetAssembly();
-            var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
-            if (!Equals(assembly, typeof(JasperRegistry).GetAssembly()) && !isFeature)
-            {
-                ApplicationAssembly = assembly;
-            }
-            else
-            {
-                ApplicationAssembly = CallingAssembly.Find();
-            }
-        }
+        public AspNetCoreFeature Http { get; }
 
         public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_bus);
 

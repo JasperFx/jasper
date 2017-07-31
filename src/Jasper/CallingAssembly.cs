@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using StructureMap.TypeRules;
 
 namespace Jasper
 {
@@ -49,12 +50,12 @@ namespace Jasper
             var names = candidate.Split('.');
             for (var i = names.Length - 2; i > 0; i--)
             {
-                var possibility = string.Join(".", names.Take(i).ToArray());
+                var possibility = String.Join(".", names.Take(i).ToArray());
 
                 try
                 {
 
-                    assembly = System.Reflection.Assembly.Load(new AssemblyName(possibility));
+                    assembly = Assembly.Load(new AssemblyName(possibility));
                     break;
                 }
                 catch
@@ -64,6 +65,20 @@ namespace Jasper
             }
 
             return assembly;
+        }
+
+        public static Assembly DetermineApplicationAssembly(JasperRegistry registry)
+        {
+            var assembly = registry.GetType().GetAssembly();
+            var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
+            if (!Equals(assembly, typeof(JasperRegistry).GetAssembly()) && !isFeature)
+            {
+                return assembly;
+            }
+            else
+            {
+                return CallingAssembly.Find();
+            }
         }
     }
 }

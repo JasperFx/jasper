@@ -1,6 +1,5 @@
 ﻿using System;
 using Baseline;
-using Jasper.Http.Configuration;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Builder;
