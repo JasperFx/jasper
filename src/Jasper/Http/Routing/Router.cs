@@ -41,11 +41,7 @@ namespace Jasper.Http.Routing
 
         public Task Invoke(HttpContext context)
         {
-            return Invoke(context, c =>
-            {
-                c.Response.StatusCode = 404;
-                return Task.CompletedTask;
-            });
+            return Invoke(context, NotFound);
         }
 
         public RequestDelegate Apply(RequestDelegate @delegate)
@@ -54,7 +50,7 @@ namespace Jasper.Http.Routing
             return Invoke;
         }
 
-        public Task Invoke(HttpContext context, Func<HttpContext, Task> next)
+        public Task Invoke(HttpContext context, RequestDelegate next)
         {
             string[] segments;
             var route = SelectRoute(context, out segments);
@@ -62,8 +58,7 @@ namespace Jasper.Http.Routing
             // TODO -- add some error handling to 500 here. May also change how segments are being smuggled into the HttpContext
             if (route == null)
             {
-                context.Response.StatusCode = 404;
-                return Task.CompletedTask;
+                return next(context);
             }
 
             context.Response.StatusCode = 200;

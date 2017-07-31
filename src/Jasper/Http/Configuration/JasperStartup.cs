@@ -5,6 +5,7 @@ using Jasper.Configuration;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
@@ -12,6 +13,7 @@ namespace Jasper.Http.Configuration
 {
     public class JasperStartup : IStartup
     {
+
         public static IStartup Build(IServiceProvider provider, ServiceDescriptor descriptor)
         {
             if (descriptor.ImplementationInstance != null)
@@ -52,10 +54,9 @@ namespace Jasper.Http.Configuration
 
         public JasperStartup(IContainer container, IStartup[] others, Router router)
         {
-            // TODO -- WHAT IF THERE ARE NO STARTUPS HERE?
             _container = container;
             _others = others;
-            _router = router;
+            _router = router ?? throw new ArgumentNullException(nameof(router));
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -78,15 +79,20 @@ namespace Jasper.Http.Configuration
 
         public void Configure(IApplicationBuilder app)
         {
+            app.StoreRouter(_router);
+
             foreach (var startup in _others)
             {
                 startup.Configure(app);
             }
 
-            // TODO -- temporary, this will need to be smarter later
-
-            app.Run(_router.Invoke);
+            if (!app.HasJasperBeenApplied())
+            {
+                app.Run(_router.Invoke);
+            }
         }
     }
+
+
 
 }

@@ -36,13 +36,24 @@ namespace Jasper.Testing.AspNetCoreIntegration
         }
 
         [Fact]
-        public Task use_jasper_http_handlers_by_default()
+        public async Task use_jasper_http_handlers_by_default()
         {
-            return scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/jasper/trace");
                 _.ContentShouldBe("jasper was called");
                 _.ContentTypeShouldBe("text/plain");
+            });
+        }
+
+        [Fact]
+        public Task default_404_behavior()
+        {
+            return scenario(_ =>
+            {
+                _.Get.Url("/wacky");
+                _.StatusCodeShouldBe(404);
+                _.ContentShouldBe("Resource Not Found");
             });
         }
 
@@ -72,10 +83,38 @@ namespace Jasper.Testing.AspNetCoreIntegration
         }
 
         [Fact]
+        public Task default_404_behavior_with_middleware_in_front()
+        {
+            theRegistry.Http.Configure(app =>
+            {
+                app.Use(next =>
+                {
+                    return context =>
+                    {
+                        context.Response.Headers["x-middleware"] = "true";
+
+                        return next(context);
+                    };
+                });
+            });
+
+            return scenario(_ =>
+            {
+                _.Get.Url("/wacky");
+                _.StatusCodeShouldBe(404);
+                _.ContentShouldBe("Resource Not Found");
+
+                _.Header("x-middleware").SingleValueShouldEqual("true");
+            });
+        }
+
+        [Fact]
         public async Task use_middleware_behind_jasper()
         {
-            theRegistry.Http.UseJasper().Configure(app =>
+            theRegistry.Http.Configure(app =>
             {
+                app.AddJasper();
+
                 app.Run(c =>
                 {
                     c.Response.StatusCode = 200;

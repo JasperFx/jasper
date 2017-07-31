@@ -19,10 +19,6 @@ namespace Jasper.Http.Configuration
         {
             _parent = parent;
             _inner = new WebHostBuilder();
-            _inner.ConfigureServices(_ =>
-            {
-                _.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
-            });
         }
 
         public IWebHost Build()

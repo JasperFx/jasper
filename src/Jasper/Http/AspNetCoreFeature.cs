@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Jasper.Codegen;
@@ -7,13 +8,19 @@ using Jasper.Http.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
 namespace Jasper.Http
 {
+
+
     public class AspNetCoreFeature : IFeature
     {
         public readonly ActionSource Actions = new ActionSource();
@@ -30,6 +37,11 @@ namespace Jasper.Http
 
             _services = new Registry();
             _builder = new HostBuilder(this);
+            _builder.ConfigureServices(_ =>
+            {
+                _.Add(new ServiceDescriptor(typeof(Router), Routes.Router));
+                _.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            });
         }
 
         public string EnvironmentName
