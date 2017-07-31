@@ -66,8 +66,6 @@ namespace Jasper
             }
         }
 
-        public IWebHostBuilder AspNetCore => Settings;
-
         public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_bus);
 
         public MessagesExpression Messages { get; }

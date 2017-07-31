@@ -13,24 +13,17 @@ using StructureMap;
 
 namespace Jasper.Settings
 {
-    public class JasperSettings : ISettingsProvider, IWebHostBuilder
+    public class JasperSettings : ISettingsProvider
     {
         private readonly Dictionary<Type, ISettingsBuilder> _settings
             = new Dictionary<Type, ISettingsBuilder>();
 
         private readonly JasperRegistry _parent;
 
-        [Obsolete("Try to use from within WebHostBuilder")]
-        private readonly IConfigurationRoot _config;
-
         public JasperSettings(JasperRegistry parent)
         {
             _parent = parent;
             Replace<ILoggerFactory>(new LoggerFactory());
-
-            _config = new ConfigurationBuilder()
-                .AddEnvironmentVariables(prefix: "ASPNETCORE_")
-                .Build();
         }
 
         internal bool ApplyingExtensions { get; set; }
@@ -150,45 +143,6 @@ namespace Jasper.Settings
             Configure<T>(c => c.GetSection(sectionName));
         }
 
-        IWebHost IWebHostBuilder.Build()
-        {
-            throw new NotSupportedException("Jasper needs to control the lifecycle of the hosting construction and teardown");
-        }
 
-        IWebHostBuilder IWebHostBuilder.UseLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            if (loggerFactory == null)
-            {
-                throw new ArgumentNullException(nameof(loggerFactory));
-            }
-
-            Replace(loggerFactory);
-
-            return this;
-        }
-
-        IWebHostBuilder IWebHostBuilder.ConfigureServices(Action<IServiceCollection> configureServices)
-        {
-            configureServices(_parent.Services);
-
-            return this;
-        }
-
-        IWebHostBuilder IWebHostBuilder.ConfigureLogging(Action<ILoggerFactory> configureLogging)
-        {
-            Alter(configureLogging);
-            return this;
-        }
-
-        IWebHostBuilder IWebHostBuilder.UseSetting(string key, string value)
-        {
-            _config[key] = value;
-            return this;
-        }
-
-        string IWebHostBuilder.GetSetting(string key)
-        {
-            return _config[key];
-        }
     }
 }
