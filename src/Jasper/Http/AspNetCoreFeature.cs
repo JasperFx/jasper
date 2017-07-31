@@ -32,6 +32,12 @@ namespace Jasper.Http
             _builder = new HostBuilder(this);
         }
 
+        public string EnvironmentName
+        {
+            get => _builder.GetSetting(WebHostDefaults.EnvironmentKey);
+            set => _builder.UseEnvironment(value);
+        }
+
 
         public IWebHostBuilder WebHostBuilder => _builder;
 

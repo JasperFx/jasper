@@ -24,10 +24,12 @@ namespace Jasper
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
         private readonly ServiceRegistry _applicationServices;
         protected readonly ServiceBusFeature _bus;
+        private AspNetCoreFeature _aspnetcore;
 
         public JasperRegistry()
         {
             _bus = Feature<ServiceBusFeature>();
+            _aspnetcore = Feature<AspNetCoreFeature>();
 
             Serialization = new SerializationExpression(_bus);
             Channels = new ChannelConfiguration(_bus);
@@ -48,6 +50,12 @@ namespace Jasper
 
             Http = Feature<AspNetCoreFeature>().WebHostBuilder;
 
+        }
+
+        public string EnvironmentName
+        {
+            get => _aspnetcore.EnvironmentName;
+            set => _aspnetcore.EnvironmentName = value;
         }
 
         public IWebHostBuilder Http { get; }

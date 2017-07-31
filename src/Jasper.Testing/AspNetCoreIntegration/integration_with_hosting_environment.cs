@@ -18,12 +18,12 @@ namespace Jasper.Testing.AspNetCoreIntegration
                 .ShouldBeOfType<HostingEnvironment>();
         }
 
-        //[Fact]
+        [Fact]
         public void hosting_environment_uses_config()
         {
             var registry = new JasperRegistry();
             registry.Handlers.ConventionalDiscoveryDisabled = true;
-            registry.Http.UseEnvironment("Fake");
+            registry.EnvironmentName = "Fake";
 
             using (var runtime = JasperRuntime.For(registry))
             {
@@ -32,24 +32,20 @@ namespace Jasper.Testing.AspNetCoreIntegration
             }
         }
 
-        //[Fact]
-        public void can_do_a_with_on_hosting_environment()
+        [Fact]
+        public void hosting_environment_uses_config_2()
         {
-            string environment = null;
-
             var registry = new JasperRegistry();
             registry.Handlers.ConventionalDiscoveryDisabled = true;
-            registry.Http.UseEnvironment("Fake");
-            registry.Settings.With<IHostingEnvironment>(_ =>
-            {
-                environment = _.EnvironmentName;
-            });
+            registry.Http.UseEnvironment("Fake2");
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                environment.ShouldBe("Fake");
+                runtime.Get<IHostingEnvironment>()
+                    .EnvironmentName.ShouldBe("Fake2");
             }
         }
+
 
         public class FakeSettings
         {
