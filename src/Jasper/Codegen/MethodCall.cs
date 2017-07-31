@@ -49,6 +49,8 @@ namespace Jasper.Codegen
 
                 ReturnVariable = new Variable(variableType, name, this);
             }
+
+            _variables = new Variable[method.GetParameters().Length];
         }
 
 
@@ -69,9 +71,17 @@ namespace Jasper.Codegen
 
         protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
-            _variables = Method.GetParameters()
-                .Select(param => findVariable(param, chain))
-                .ToArray();
+            var parameters = Method.GetParameters().ToArray();
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (_variables[i] != null)
+                {
+                    continue;
+                }
+
+                var param = parameters[i];
+                _variables[i] = findVariable(param, chain);
+            }
 
             foreach (var variable in _variables)
             {
