@@ -11,11 +11,12 @@ namespace Jasper.Http
 {
     public static class JasperWebHostBuilderExtensions
     {
+        private const string JasperRouterKey = "JasperRouter";
         public static readonly string JasperHasBeenApplied = "JasperHasBeenApplied";
 
         public static void StoreRouter(this IApplicationBuilder builder, Router router)
         {
-            builder.Properties.Add("JasperRouter", router);
+            builder.Properties.Add(JasperRouterKey, router);
         }
 
         public static void MarkJasperHasBeenApplied(this IApplicationBuilder builder)
@@ -38,25 +39,18 @@ namespace Jasper.Http
                 throw new InvalidOperationException("Jasper has already been applied to this web application");
             }
 
-            if (app.Properties.ContainsKey("JasperRouter"))
-            {
-                var router = app.Properties["JasperRouter"].As<Router>();
+            var router = app.Properties.ContainsKey(JasperRouterKey)
+                ? app.Properties[JasperRouterKey].As<Router>()
+                : app.ApplicationServices.GetRequiredService<Router>();
 
-                app.MarkJasperHasBeenApplied();
-                return app.Use(next => c => router.Invoke(c, next));
-            }
-            else
-            {
-                // PUll the router out of services?
-                throw new NotImplementedException();
-            }
+            app.MarkJasperHasBeenApplied();
 
-            return app;
+            return app.Use(next => c => router.Invoke(c, next));
         }
 
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder)
         {
-            throw new NotImplementedException();
+            return builder.UseJasper(new JasperRegistry());
         }
 
         public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder) where T : JasperRegistry, new()
@@ -66,23 +60,16 @@ namespace Jasper.Http
 
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
         {
-            // TODO -- work over this entire thing
-
-            // TODO -- right now this is assuming that it's registered last, but what if it's not?
-
             var runtime = JasperRuntime.For(registry);
             builder.ConfigureServices(services =>
             {
                 services.AddSingleton(runtime);
-                JasperStartup.Register(runtime.Container, services, runtime.Get<RouteGraph>().Router);
-            });
 
-            // TODO -- configure JasperHttp middleware if it exists
+                JasperStartup.Register(runtime.Container, services, registry.Feature<AspNetCoreFeature>().Routes.Router);
+            });
 
             return builder;
         }
-
-        // TODO -- an option for basic Jasper Http
     }
 
 }

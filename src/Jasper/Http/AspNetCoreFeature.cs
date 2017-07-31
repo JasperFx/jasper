@@ -91,6 +91,7 @@ namespace Jasper.Http
         }
     }
 
+    [Obsolete("Seemed like a good idea at the time, but prolly unnecessary w/ newer ASP.Net Core stuff")]
     public class HostingConfiguration
     {
         public bool UseKestrel { get; set; } = true;
@@ -99,7 +100,7 @@ namespace Jasper.Http
         public string ContentRoot { get; set; } = Directory.GetCurrentDirectory();
     }
 
-    internal class NulloServer : IServer
+    public class NulloServer : IServer
     {
         public void Dispose()
         {

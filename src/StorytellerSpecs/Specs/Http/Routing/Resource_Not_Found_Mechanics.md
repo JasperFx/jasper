@@ -3,19 +3,21 @@
 -> id = f8a5de9e-e93f-4879-9b60-9b9d2fdb9b88
 -> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2015-12-04T00:00:00.0000000
+-> last-updated = 2017-07-31T17:18:22.2939610Z
 -> tags = 
 
 [Router]
 |> RoutesAre
     [table]
-    |> RoutesAre-row HttpMethod=GET, Pattern=planets
-    |> RoutesAre-row HttpMethod=GET, Pattern=planets/hoth
-    |> RoutesAre-row HttpMethod=GET, Pattern=planets/naboo
+    |HttpMethod|Pattern      |
+    |GET       |planets      |
+    |GET       |planets/hoth |
+    |GET       |planets/naboo|
 
 |> TheResultShouldBe
     [table]
-    |> TheResultShouldBe-row HttpMethod=GET, Url=/planets/tattooine, Status=404, Body=Resource not found, Arguments=NONE
-    |> TheResultShouldBe-row HttpMethod=POST, Url=/planets, Status=404, Body=Resource not found, Arguments=NONE
+    |HttpMethod|Url               |Status|Body              |Arguments|
+    |GET       |/planets/tattooine|404   |Resource Not Found|NONE     |
+    |POST      |/planets          |404   |Resource Not Found|NONE     |
 
 ~~~
