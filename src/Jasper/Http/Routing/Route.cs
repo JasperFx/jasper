@@ -19,7 +19,7 @@ namespace Jasper.Http.Routing
         /// <returns></returns>
         public static Route For(string url, string httpMethod)
         {
-            return new Route(url, httpMethod ?? HttpVerbs.GET, env => Task.CompletedTask);
+            return new Route(url, httpMethod ?? HttpVerbs.GET);
         }
 
         public static ISegment ToParameter(string path, int position)
@@ -49,16 +49,14 @@ namespace Jasper.Http.Routing
         private readonly List<ISegment> _segments = new List<ISegment>();
 
 
-        public Route(string pattern, string httpMethod, RequestDelegate handler)
+        public Route(string pattern, string httpMethod)
         {
             if (pattern == null) throw new ArgumentNullException(nameof(pattern));
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
 
             pattern = pattern.TrimStart('/').TrimEnd('/');
 
             Name = pattern;
             HttpMethod = httpMethod;
-            Invoker = handler;
 
             var segments = pattern.Split('/');
             for (int i = 0; i < segments.Length; i++)
@@ -86,12 +84,11 @@ namespace Jasper.Http.Routing
                     "The spread parameter can only be the last segment in a route");
         }
 
-        public Route(ISegment[] segments, string httpVerb, RequestDelegate appfunc)
+        public Route(ISegment[] segments, string httpVerb)
         {
             _segments.AddRange(segments);
 
             HttpMethod = httpVerb;
-            Invoker = appfunc;
 
             Pattern = _segments.Select(x => x.SegmentPath).Join("/");
             Name = Pattern;
@@ -140,7 +137,6 @@ namespace Jasper.Http.Routing
 
         public string Name { get; set; }
         public string HttpMethod { get; }
-        public RequestDelegate Invoker { get; set; }
 
         public string NodePath
         {

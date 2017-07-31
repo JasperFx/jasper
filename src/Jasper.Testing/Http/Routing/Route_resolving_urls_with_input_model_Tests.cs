@@ -17,7 +17,7 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void get_parameters_from_field()
         {
-            var route = new Route("foo/:Key", "GET", Empty);
+            var route = new Route("foo/:Key", "GET");
             route.GetArgument("Key").MapToField<InputModel>("Key");
 
             var dict = route.ToParameters(new InputModel {Key = "Rand"});
@@ -29,7 +29,7 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void get_parameters_from_property()
         {
-            var route = new Route("foo/:Color", "GET", Empty);
+            var route = new Route("foo/:Color", "GET");
             route.GetArgument("Color").MapToProperty<InputModel>(x => x.Color);
 
             var dict = route.ToParameters(new InputModel {Color = Color.Blue});
@@ -40,7 +40,7 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void multiple_field_and_property()
         {
-            var route = new Route("foo/:Color/:Key", "GET", Empty);
+            var route = new Route("foo/:Color/:Key", "GET");
             route.GetArgument("Color").MapToProperty<InputModel>(x => x.Color);
             route.GetArgument("Key").MapToField<InputModel>("Key");
 
@@ -54,7 +54,7 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void write_a_string_field()
         {
-            var route = new Route("foo/:Key", "GET", Empty);
+            var route = new Route("foo/:Key", "GET");
             route.InputType = typeof (InputModel);
             route.GetArgument("Key").MapToField<InputModel>("Key");
 
@@ -70,7 +70,7 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void write_a_number_field()
         {
-            var route = new Route("foo/:Number", "GET", Empty);
+            var route = new Route("foo/:Number", "GET");
             route.InputType = typeof(InputModel);
             route.GetArgument("Number").MapToField<InputModel>("Number");
 
@@ -86,7 +86,7 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void write_an_enum_property()
         {
-            var route = new Route("foo/:Color", "GET", Empty);
+            var route = new Route("foo/:Color", "GET");
             route.InputType = typeof(InputModel);
             route.GetArgument("Color").MapToProperty<InputModel>(x => x.Color);
 

@@ -20,7 +20,7 @@ namespace StorytellerSpecs.Fixtures.Routing
         [ExposeAsTable("If the routes are")]
         public void RoutesAre(string Route)
         {
-            var route = new Route(Route, HttpVerbs.GET, _ => Task.CompletedTask);
+            var route = new Route(Route, HttpVerbs.GET);
 
             _tree.AddRoute(route);
         }

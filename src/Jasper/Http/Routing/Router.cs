@@ -19,7 +19,7 @@ namespace Jasper.Http.Routing
 
         public void Add(string method, string pattern,RequestDelegate appfunc)
         {
-            var route = new Route(pattern, method, appfunc);
+            var route = new Route(pattern, method);
 
             Add(route);
         }
@@ -59,8 +59,6 @@ namespace Jasper.Http.Routing
             string[] segments;
             var route = SelectRoute(context, out segments);
 
-            context.Items.Add(RoutingFrames.Segments, segments);
-
             // TODO -- add some error handling to 500 here. May also change how segments are being smuggled into the HttpContext
             if (route == null)
             {
@@ -71,11 +69,12 @@ namespace Jasper.Http.Routing
             context.Response.StatusCode = 200;
 
             context.SetSegments(segments);
+
+
             // TODO -- going to eliminate this.
             route.SetValues(context, segments);
 
-
-            return route.Invoker(context);
+            return route.Handler.Handle(context);
         }
 
         public Route SelectRoute(HttpContext context, out string[] segments)

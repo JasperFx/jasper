@@ -12,7 +12,7 @@ namespace StorytellerSpecs.Fixtures.Routing
         [ExposeAsTable("Route Creation and Parsing")]
         public void CreateLeaf(string Route, out string NodePath, [Default("false")]out bool HasSpread, [Default("NONE")] out ParameterExpectation Parameters)
         {
-            var leaf = new Route(Route, HttpVerbs.GET, c => Task.CompletedTask);
+            var leaf = new Route(Route, HttpVerbs.GET);
             NodePath = leaf.NodePath;
             HasSpread = leaf.HasSpread;
 

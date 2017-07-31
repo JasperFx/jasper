@@ -86,7 +86,7 @@ namespace Jasper.Http.Routing
 
             }
 
-            var route = new Route(segments, verb, env => Task.CompletedTask)
+            var route = new Route(segments, verb)
             {
                 HandlerType = handlerType,
                 Method = method,

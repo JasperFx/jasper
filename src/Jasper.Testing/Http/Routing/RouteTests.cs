@@ -43,7 +43,7 @@ namespace Jasper.Testing.Http.Routing
         {
             Action action = () =>
             {
-                new Route("a/.../b", "GET", env => Task.CompletedTask);
+                new Route("a/.../b", "GET");
             };
             action.ShouldThrow<ArgumentOutOfRangeException>();
         }
@@ -53,7 +53,7 @@ namespace Jasper.Testing.Http.Routing
         {
             Action action = () =>
             {
-                new Route("a/.../b/...", "GET", env => Task.CompletedTask);
+                new Route("a/.../b/...", "GET");
             };
 
             action.ShouldThrow<InvalidOperationException>();
@@ -73,14 +73,8 @@ namespace Jasper.Testing.Http.Routing
             {new Segment("folder", 0), new Segment("folder2", 1), new RouteArgument("name", 2)};
 
 
-            route = new Route(segments, HttpVerbs.PUT, env => Task.CompletedTask);
+            route = new Route(segments, HttpVerbs.PUT);
 
-        }
-
-        [Fact]
-        public void should_have_the_invoker()
-        {
-            ShouldBeNullExtensions.ShouldNotBeNull(route.Invoker);
         }
 
         [Fact]
