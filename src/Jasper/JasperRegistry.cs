@@ -24,7 +24,7 @@ namespace Jasper
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
         private readonly ServiceRegistry _applicationServices;
         protected readonly ServiceBusFeature _bus;
-        private AspNetCoreFeature _aspnetcore;
+        private readonly AspNetCoreFeature _aspnetcore;
 
         public JasperRegistry()
         {

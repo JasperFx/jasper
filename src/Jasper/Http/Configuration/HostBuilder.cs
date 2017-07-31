@@ -1,7 +1,6 @@
 ﻿using System;
 using Jasper.Configuration;
 using Jasper.Http.Routing;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,27 +9,6 @@ using StructureMap;
 
 namespace Jasper.Http.Configuration
 {
-    internal class JasperRequestDelegateStartup : IStartup
-    {
-        private readonly Router _router;
-
-        public JasperRequestDelegateStartup(Router router)
-        {
-            _router = router;
-        }
-
-        public IServiceProvider ConfigureServices(IServiceCollection services)
-        {
-            // TODO -- sounds goofy, but this never gets used
-            return null;
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.Use(_router.Apply);
-        }
-    }
-
     internal class HostBuilder : IWebHostBuilder
     {
         private readonly AspNetCoreFeature _parent;
@@ -77,9 +55,9 @@ namespace Jasper.Http.Configuration
             return _inner.GetSetting(key);
         }
 
-        internal IWebHost Activate(IContainer container)
+        internal IWebHost Activate(IContainer container, Router router)
         {
-            _inner.ConfigureServices(services => JasperStartup.Register(container, services));
+            _inner.ConfigureServices(services => JasperStartup.Register(container, services, router));
 
             return _inner.Build();
         }

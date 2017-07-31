@@ -2,6 +2,7 @@
 using System.Linq;
 using Baseline;
 using Jasper.Configuration;
+using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +32,7 @@ namespace Jasper.Http.Configuration
             return sp => Build(sp, service);
         }
 
-        public static void Register(IContainer container, IServiceCollection services)
+        public static void Register(IContainer container, IServiceCollection services, Router router)
         {
             var startups = services
                 .Where(x => x.ServiceType == typeof(IStartup))
@@ -41,18 +42,20 @@ namespace Jasper.Http.Configuration
             services.AddTransient<IStartup>(sp =>
             {
                 var others = startups.Select(x => x(sp)).ToArray();
-                return new JasperStartup(container, others);
+                return new JasperStartup(container, others, router);
             });
         }
 
         private readonly IContainer _container;
         private readonly IStartup[] _others;
+        private readonly Router _router;
 
-        public JasperStartup(IContainer container, IStartup[] others)
+        public JasperStartup(IContainer container, IStartup[] others, Router router)
         {
             // TODO -- WHAT IF THERE ARE NO STARTUPS HERE?
             _container = container;
             _others = others;
+            _router = router;
         }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -79,6 +82,10 @@ namespace Jasper.Http.Configuration
             {
                 startup.Configure(app);
             }
+
+            // TODO -- temporary, this will need to be smarter later
+
+            app.Run(_router.Invoke);
         }
     }
 

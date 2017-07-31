@@ -46,9 +46,6 @@ namespace Jasper.Http
             _host?.Dispose();
         }
 
-        [Obsolete("Not gonna be necessary any more")]
-        public HostingConfiguration Hosting { get; } = new HostingConfiguration();
-
         public async Task<Registry> Bootstrap(JasperRegistry registry)
         {
             var actions = await Actions.FindActions(registry.ApplicationAssembly);
@@ -73,7 +70,7 @@ namespace Jasper.Http
 
                 Routes.BuildRoutingTree(rules, generation, runtime.Container);
 
-                _host = _builder.Activate(runtime.Container);
+                _host = _builder.Activate(runtime.Container, Routes.Router);
 
                 runtime.Container.Inject(_host);
 

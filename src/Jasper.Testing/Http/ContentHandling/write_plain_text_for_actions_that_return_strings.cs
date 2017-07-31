@@ -37,9 +37,6 @@ namespace Jasper.Testing.Http.ContentHandling
         public HttpTestingApp()
         {
             Handlers.ConventionalDiscoveryDisabled = true;
-            UseFeature<AspNetCoreFeature>();
-            Feature<AspNetCoreFeature>().Hosting.Port = 5666;
-
         }
     }
 
