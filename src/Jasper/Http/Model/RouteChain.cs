@@ -120,6 +120,8 @@ namespace Jasper.Http.Model
 
             list.Add(Action);
 
+            list.AddRange(Postprocessors);
+
             return list;
         }
     }

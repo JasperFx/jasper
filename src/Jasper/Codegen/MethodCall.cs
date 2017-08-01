@@ -25,9 +25,6 @@ namespace Jasper.Codegen
             return new MethodCall(typeof(T), method);
         }
 
-        private Variable _target;
-        private Variable[] _variables;
-
 
         // What's it got to know?
         // whether it returns a variable
@@ -50,8 +47,10 @@ namespace Jasper.Codegen
                 ReturnVariable = new Variable(variableType, name, this);
             }
 
-            _variables = new Variable[method.GetParameters().Length];
+            Variables = new Variable[method.GetParameters().Length];
         }
+
+        public Variable Target { get; set; }
 
 
         private Variable findVariable(ParameterInfo param, GeneratedMethod chain)
@@ -69,39 +68,79 @@ namespace Jasper.Codegen
             return chain.TryFindVariableByName(type, param.Name, out variable) ? variable : chain.FindVariable(type);
         }
 
+        public Variable[] Variables { get; }
+
+        public bool TrySetParameter(Variable variable)
+        {
+            var parameters = Method.GetParameters().Select(x => x.ParameterType).ToArray();
+            if (parameters.Count(x => variable.VariableType.CanBeCastTo(x)) == 1)
+            {
+                var index = Array.IndexOf(parameters, variable.VariableType);
+                Variables[index] = variable;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool TrySetParameter(string parameterName, Variable variable)
+        {
+            var parameters = Method.GetParameters().ToArray();
+            var matching = parameters.FirstOrDefault(x =>
+                variable.VariableType.CanBeCastTo(x.ParameterType) && x.Name == parameterName);
+
+            if (matching == null) return false;
+
+            var index = Array.IndexOf(parameters, matching);
+            Variables[index] = variable;
+
+            return true;
+        }
+
         protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             var parameters = Method.GetParameters().ToArray();
             for (int i = 0; i < parameters.Length; i++)
             {
-                if (_variables[i] != null)
+                if (Variables[i] != null)
                 {
                     continue;
                 }
 
                 var param = parameters[i];
-                _variables[i] = findVariable(param, chain);
+                Variables[i] = findVariable(param, chain);
             }
 
-            foreach (var variable in _variables)
+            foreach (var variable in Variables)
             {
                 yield return variable;
             }
 
+            if (!Method.IsStatic && Target == null)
+            {
+                Target = chain.FindVariable(HandlerType);
+            }
+
             if (!Method.IsStatic)
             {
-                _target = chain.FindVariable(HandlerType);
-                yield return _target;
+                yield return Target;
             }
+
+
         }
+
+
 
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            var callingCode = $"{Method.Name}({_variables.Select(x => x.Usage).Join(", ")})";
+            var callingCode = $"{Method.Name}({Variables.Select(x => x.Usage).Join(", ")})";
             var target = Method.IsStatic
                 ? HandlerType.NameInCode()
-                : _target.Usage;
+                : Target.Usage;
 
             var returnValue = "";
             var suffix = "";

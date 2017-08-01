@@ -33,6 +33,11 @@ namespace Jasper.Codegen
         public void ResolveVariables(GeneratedMethod method)
         {
             var variables = resolveVariables(method);
+            if (variables.Any(x => x == null))
+            {
+                throw new InvalidOperationException($"Frame {this} could not resolve one of its variables");
+            }
+
             uses.AddRange(variables);
         }
 

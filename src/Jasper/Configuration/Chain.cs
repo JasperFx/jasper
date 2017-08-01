@@ -30,6 +30,9 @@ namespace Jasper.Configuration
         where TModifyAttribute : Attribute, IModifyChain<TChain>
     {
         public IList<Frame> Middleware { get; } = new List<Frame>();
+
+        public IList<Frame> Postprocessors { get; } = new List<Frame>();
+
         protected abstract MethodCall[] handlerCalls();
 
         private bool isConfigureMethod(MethodInfo method)

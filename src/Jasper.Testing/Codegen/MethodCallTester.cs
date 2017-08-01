@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Codegen;
 using Shouldly;
+using StructureMap.Diagnostics;
 using Xunit;
 using Xunit.Sdk;
 
@@ -59,6 +60,41 @@ namespace Jasper.Testing.Codegen
             @call.ReturnVariable.Usage.ShouldBe(Variable.DefaultArgName(typeof(ErrorMessage)));
             @call.ReturnVariable.Creator.ShouldBeSameAs(@call);
         }
+
+        [Fact]
+        public void explicitly_set_parameter_by_variable_type()
+        {
+            var @call = MethodCall.For<MethodCallTarget>(x => x.DoSomething(0, 0, null));
+
+            var stringVariable = Variable.For<string>();
+            var generalInt = Variable.For<int>();
+
+            // Only one of that type, so it works
+            @call.TrySetParameter(stringVariable)
+                .ShouldBeTrue();
+
+            @call.Variables[2].ShouldBeTheSameAs(stringVariable);
+
+            // Multiple parameters of the same type, nothing
+            @call.TrySetParameter(generalInt).ShouldBeFalse();
+            @call.Variables[0].ShouldBeNull();
+            @call.Variables[1].ShouldBeNull();
+        }
+
+        [Fact]
+        public void explicitly_set_parameter_by_variable_type_and_name()
+        {
+            var @call = MethodCall.For<MethodCallTarget>(x => x.DoSomething(0, 0, null));
+
+            var generalInt = Variable.For<int>();
+
+            @call.TrySetParameter("count", generalInt)
+                .ShouldBeTrue();
+
+            @call.Variables[0].ShouldBeNull();
+            @call.Variables[1].ShouldBeTheSameAs(generalInt);
+            @call.Variables[2].ShouldBeNull();
+        }
     }
 
     public class MethodCallTarget
@@ -80,7 +116,12 @@ namespace Jasper.Testing.Codegen
 
         public void Go(string text)
         {
-            
+
+        }
+
+        public void DoSomething(int age, int count, string name)
+        {
+
         }
 
         public Task<string> GetString()

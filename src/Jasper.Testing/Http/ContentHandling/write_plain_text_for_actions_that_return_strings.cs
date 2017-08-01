@@ -8,6 +8,25 @@ using Xunit;
 
 namespace Jasper.Testing.Http.ContentHandling
 {
+    public class write_plain_text_for_actions_that_return_strings
+    {
+        [Fact]
+        public Task write_as_text()
+        {
+            using (var runtime = JasperRuntime.For<HttpTestingApp>())
+            {
+
+            }
+
+            return HttpTesting.Scenario(_ =>
+            {
+                _.Get.Url("/string");
+                _.ContentShouldBe("some string");
+                _.ContentTypeShouldBe("text/plain");
+            });
+        }
+    }
+
     public static class HttpTesting
     {
         public static string RootUrl = "http://localhost:5666";
@@ -40,20 +59,6 @@ namespace Jasper.Testing.Http.ContentHandling
         }
     }
 
-
-    public class write_plain_text_for_actions_that_return_strings
-    {
-        //[Fact]
-        public Task write_as_text()
-        {
-            return HttpTesting.Scenario(_ =>
-            {
-                _.Get.Url("/string");
-                _.ContentShouldBe("some string");
-                _.ContentTypeShouldBe("text/plain");
-            });
-        }
-    }
 
     public class StringEndpoint
     {
