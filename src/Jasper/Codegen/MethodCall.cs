@@ -26,9 +26,6 @@ namespace Jasper.Codegen
         }
 
 
-        // What's it got to know?
-        // whether it returns a variable
-
         public MethodCall(Type handlerType, MethodInfo method) : base(method.IsAsync())
         {
             HandlerType = handlerType;
@@ -49,6 +46,11 @@ namespace Jasper.Codegen
 
             Variables = new Variable[method.GetParameters().Length];
         }
+
+        /// <summary>
+        /// Call a method on the current object
+        /// </summary>
+        public bool IsLocal { get; set; }
 
         public Variable Target { get; set; }
 
@@ -119,17 +121,15 @@ namespace Jasper.Codegen
                 yield return variable;
             }
 
-            if (!Method.IsStatic && Target == null)
+            if (!Method.IsStatic && !IsLocal)
             {
-                Target = chain.FindVariable(HandlerType);
-            }
+                if (Target == null)
+                {
+                    Target = chain.FindVariable(HandlerType);
+                }
 
-            if (!Method.IsStatic)
-            {
                 yield return Target;
             }
-
-
         }
 
 
@@ -137,10 +137,14 @@ namespace Jasper.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            var callingCode = $"{Method.Name}({Variables.Select(x => x.Usage).Join(", ")})";
-            var target = Method.IsStatic
-                ? HandlerType.NameInCode()
-                : Target.Usage;
+            var methodName = Method.Name;
+            if (Method.IsGenericMethod)
+            {
+                methodName += $"<{Method.GetGenericArguments().Select(x => x.FullName).Join(", ")}>";
+            }
+
+            var callingCode = $"{methodName}({Variables.Select(x => x.Usage).Join(", ")})";
+            var target = determineTarget();
 
             var returnValue = "";
             var suffix = "";
@@ -165,9 +169,20 @@ namespace Jasper.Codegen
 
             // TODO -- will need to see if it's IDisposable too
 
-            writer.Write($"{returnValue}{target}.{callingCode}{suffix};");
+            writer.Write($"{returnValue}{target}{callingCode}{suffix};");
 
             Next?.GenerateCode(method, writer);
+        }
+
+        private string determineTarget()
+        {
+            if (IsLocal) return string.Empty;
+
+            var target = Method.IsStatic
+                ? HandlerType.NameInCode()
+                : Target.Usage;
+
+            return target + ".";
         }
 
 

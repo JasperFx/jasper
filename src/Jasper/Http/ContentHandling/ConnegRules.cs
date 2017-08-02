@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using Baseline;
-using Jasper.Codegen;
 using Jasper.Conneg;
 using Jasper.Http.Model;
-using Jasper.Http.Routing;
 
 namespace Jasper.Http.ContentHandling
 {
@@ -22,34 +18,27 @@ namespace Jasper.Http.ContentHandling
             _serializers = serializers;
 
             _writers.Add(new WriteText());
+
+            _writers.Add(new WriteJson());
+            _readers.Add(new ReadJson());
         }
 
         public void Apply(RouteChain chain)
         {
             if (chain.InputType != null)
             {
-                var rule = _readers.FirstOrDefault(x => x.Applies(chain));
-                var frames = rule?.DetermineReaders(chain) ?? jsonReadersFor(chain);
+                var rule = _readers.First(x => x.Applies(chain));
+                var frames = rule?.DetermineReaders(chain);
                 chain.Middleware.AddRange(frames);
             }
 
             if (chain.ResourceType != null)
             {
-                var rule = _writers.FirstOrDefault(x => x.Applies(chain));
-                var frames = rule?.DetermineWriters(chain) ?? jsonWritersFor(chain);
+                var rule = _writers.First(x => x.Applies(chain));
+                var frames = rule?.DetermineWriters(chain);
 
                 chain.Postprocessors.AddRange(frames);
             }
-        }
-
-        private IEnumerable<Frame> jsonReadersFor(RouteChain chain)
-        {
-            yield break;
-        }
-
-        private IEnumerable<Frame> jsonWritersFor(RouteChain chain)
-        {
-            yield break;
         }
     }
 }

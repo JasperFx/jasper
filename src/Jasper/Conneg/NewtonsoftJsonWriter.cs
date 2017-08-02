@@ -1,13 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace Jasper.Conneg
 {
+
+    // TODO -- This needs to be a singleton!
     public class NewtonsoftJsonWriter<T> : IMediaWriter
     {
-        // TODO -- apply character pooling here
+        // TODO -- apply character pooling here, and buffering
 
         private readonly JsonSerializer _serializer;
 
@@ -35,9 +38,14 @@ namespace Jasper.Conneg
             }
         }
 
-        public Task Write(object model, Stream stream)
+        public Task WriteToStream(object model, HttpResponse response)
         {
-            _serializer.Serialize(new JsonTextWriter(new StreamWriter(stream)), model);
+            // TODO -- there's a GH issue open to optimize this, but I'm waiting until there
+            // are benchmarks in place
+            _serializer.Serialize(new JsonTextWriter(new StreamWriter(response.Body){AutoFlush = true}), model);
+
+            response.Headers["content-type"] = ContentType;
+
             return Task.CompletedTask;
         }
 

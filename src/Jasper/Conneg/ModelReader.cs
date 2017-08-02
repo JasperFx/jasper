@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
@@ -43,16 +44,16 @@ namespace Jasper.Conneg
                 return false;
             }
 
-            model = _readers[contentType].Read(data);
+            model = _readers[contentType].ReadFromData(data);
 
             return true;
         }
 
-        public Task<T> TryRead<T>(string contentType, Stream stream) where T : class
+        public Task<T> TryRead<T>(string contentType, HttpRequest request) where T : class
         {
             return !_readers.ContainsKey(contentType)
                 ? Task.FromResult(default(T))
-                : _readers[contentType].Read<T>(stream);
+                : _readers[contentType].ReadFromRequest<T>(request);
         }
 
         public bool HasAnyReaders { get; }

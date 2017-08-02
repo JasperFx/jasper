@@ -7,6 +7,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using Jasper.Conneg;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Http;
 using StructureMap;
@@ -72,6 +73,16 @@ namespace Jasper.Http.Model
 
             handler.Chain = this;
 
+            if (ReaderType != null)
+            {
+                handler.Reader = container.GetInstance(ReaderType).As<IMediaReader>();
+            }
+
+            if (WriterType != null)
+            {
+                handler.Writer = container.GetInstance(WriterType).As<IMediaWriter>();
+            }
+
             return handler;
         }
 
@@ -82,6 +93,10 @@ namespace Jasper.Http.Model
         public Route Route { get; }
         public Type InputType { get; }
         public Type ResourceType { get; }
+
+        // TODO -- validate that the type implements IMediaReader/IMediaWriter
+        public Type ReaderType { get; set; }
+        public Type WriterType { get; set; }
 
         public override string ToString()
         {

@@ -10,6 +10,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Conneg;
 using Jasper.Testing;
 using Jasper.Util;
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
@@ -83,7 +84,7 @@ namespace IntegrationTests.Conneg
             return Encoding.UTF8.GetBytes(name);
         }
 
-        public Task Write(object model, Stream stream)
+        public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
         }
@@ -94,13 +95,13 @@ namespace IntegrationTests.Conneg
         public string MessageType { get; } = typeof(BlueMessage).ToTypeAlias();
         public Type DotNetType { get; } = typeof(BlueMessage);
         public string ContentType { get; } = "text/plain";
-        public object Read(byte[] data)
+        public object ReadFromData(byte[] data)
         {
             var name = Encoding.UTF8.GetString(data);
             return new BlueMessage {Name = name};
         }
 
-        public Task<T> Read<T>(Stream stream)
+        public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             throw new NotImplementedException();
         }

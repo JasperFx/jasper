@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Util;
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
@@ -71,7 +72,7 @@ namespace Jasper.Testing.Conneg
         public Type DotNetType { get; }
         public string ContentType { get; }
 
-        public object Read(byte[] data)
+        public object ReadFromData(byte[] data)
         {
             return new ConnegMessage
             {
@@ -80,7 +81,7 @@ namespace Jasper.Testing.Conneg
             };
         }
 
-        public Task<T> Read<T>(Stream stream)
+        public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             throw new NotImplementedException();
         }

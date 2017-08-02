@@ -7,6 +7,7 @@ using Jasper;
 using Jasper.Bus;
 using Jasper.Conneg;
 using Jasper.Util;
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
@@ -70,7 +71,7 @@ namespace IntegrationTests.Conneg
         public string MessageType { get; } = typeof(Reply1).ToTypeAlias();
         public Type DotNetType { get; } = typeof(Reply1);
         public string ContentType { get; } = "text/plain";
-        public object Read(byte[] data)
+        public object ReadFromData(byte[] data)
         {
             WasUsed = true;
 
@@ -83,7 +84,7 @@ namespace IntegrationTests.Conneg
 
         public static bool WasUsed { get; set; }
 
-        public Task<T> Read<T>(Stream stream)
+        public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             throw new NotImplementedException();
         }
@@ -102,7 +103,7 @@ namespace IntegrationTests.Conneg
 
         public static bool WasUsed { get; set; }
 
-        public Task Write(object model, Stream stream)
+        public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
         }

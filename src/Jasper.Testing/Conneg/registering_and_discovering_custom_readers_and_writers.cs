@@ -6,6 +6,7 @@ using Jasper.Conneg;
 using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
@@ -72,7 +73,7 @@ namespace Jasper.Testing.Conneg
             throw new NotImplementedException();
         }
 
-        public Task Write(object model, Stream stream)
+        public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
         }
@@ -83,12 +84,12 @@ namespace Jasper.Testing.Conneg
         public string MessageType { get; } = typeof(OverriddenJsonMessage).ToTypeAlias();
         public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
         public string ContentType { get; } = "application/json";
-        public object Read(byte[] data)
+        public object ReadFromData(byte[] data)
         {
             throw new NotImplementedException();
         }
 
-        public Task<T> Read<T>(Stream stream)
+        public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             throw new NotImplementedException();
         }
@@ -99,12 +100,12 @@ namespace Jasper.Testing.Conneg
         public string MessageType { get; } = typeof(Message1).ToTypeAlias();
         public Type DotNetType { get; } = typeof(Message1);
         public string ContentType { get; } = "green";
-        public object Read(byte[] data)
+        public object ReadFromData(byte[] data)
         {
             throw new NotImplementedException();
         }
 
-        public Task<T> Read<T>(Stream stream)
+        public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             throw new NotImplementedException();
         }
@@ -120,7 +121,7 @@ namespace Jasper.Testing.Conneg
             throw new NotImplementedException();
         }
 
-        public Task Write(object model, Stream stream)
+        public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
         }
@@ -135,7 +136,7 @@ namespace Jasper.Testing.Conneg
             throw new NotImplementedException();
         }
 
-        public Task Write(object model, Stream stream)
+        public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
         }

@@ -10,6 +10,7 @@ using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Conneg;
 using Jasper.Util;
+using Microsoft.AspNetCore.Http;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -139,7 +140,7 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        public Task Write(object model, Stream stream)
+        public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
         }

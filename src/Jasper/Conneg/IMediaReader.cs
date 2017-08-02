@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
@@ -10,7 +10,7 @@ namespace Jasper.Conneg
         Type DotNetType { get; }
 
         string ContentType { get; }
-        object Read(byte[] data);
-        Task<T> Read<T>(Stream stream);
+        object ReadFromData(byte[] data);
+        Task<T> ReadFromRequest<T>(HttpRequest request);
     }
 }

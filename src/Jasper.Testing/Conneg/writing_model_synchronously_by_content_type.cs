@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
@@ -105,7 +106,7 @@ namespace Jasper.Testing.Conneg
             return Encoding.UTF8.GetBytes($"{model.As<ConnegMessage>().Name}:{ContentType}");
         }
 
-        public Task Write(object model, Stream stream)
+        public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
         }

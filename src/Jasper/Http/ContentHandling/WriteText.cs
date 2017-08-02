@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Jasper.Codegen;
 using Jasper.Http.Model;
 
@@ -14,13 +16,18 @@ namespace Jasper.Http.ContentHandling
         public IEnumerable<Frame> DetermineWriters(RouteChain chain)
         {
             // TODO -- later, vary this for text/html or other things somehow
-            yield return new SetContentType("text/plain");
+            yield return new CallWriteText(chain.Action.ReturnVariable);
+        }
+    }
 
+    public class CallWriteText : MethodCall
+    {
+        private static readonly MethodInfo _method = typeof(RouteHandler).GetMethod(nameof(RouteHandler.WriteText));
 
-            var encode = new GetBytes(chain.Action.ReturnVariable);
-            yield return encode;
-
-            yield return new WriteTextToResponse(encode);
+        public CallWriteText(Variable text) : base(typeof(CallWriteText), _method)
+        {
+            Variables[0] = text;
+            IsLocal = true;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
@@ -10,6 +10,6 @@ namespace Jasper.Conneg
 
         string ContentType { get; }
         byte[] Write(object model);
-        Task Write(object model, Stream stream);
+        Task WriteToStream(object model, HttpResponse response);
     }
 }
