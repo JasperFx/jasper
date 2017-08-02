@@ -30,14 +30,14 @@ namespace IntegrationTests.Lightweight
 
             var receiver = new JasperRegistry();
             receiver.Channels.ListenForMessagesFrom(theAddress);
-            receiver.ErrorHandling.OnException<DivideByZeroException>().Requeue();
-            receiver.ErrorHandling.OnException<TimeoutException>().RetryLater(1.Minutes());
+            receiver.Messages.ErrorHandling.OnException<DivideByZeroException>().Requeue();
+            receiver.Messages.ErrorHandling.OnException<TimeoutException>().RetryLater(1.Minutes());
 
-            receiver.Policies.DefaultMaximumAttempts = 3;
+            receiver.Messages.Policies.DefaultMaximumAttempts = 3;
 
             delayedJobs = new FakeDelayedJobProcessor();
 
-            receiver.DelayedJobs.Use(delayedJobs);
+            receiver.Messages.DelayedProcessing.Use(delayedJobs);
 
             theTracker = new MessageTracker();
             receiver.Services.For<MessageTracker>().Use(theTracker);

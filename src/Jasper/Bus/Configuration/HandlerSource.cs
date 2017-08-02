@@ -31,7 +31,7 @@ namespace Jasper.Bus.Configuration
         /// </summary>
         public bool ConventionalDiscoveryDisabled { get; set; }
 
-        internal async Task<HandlerCall[]> FindCalls(IJasperRegistry registry)
+        internal async Task<HandlerCall[]> FindCalls(JasperRegistry registry)
         {
             if (ConventionalDiscoveryDisabled) return new HandlerCall[0];
 

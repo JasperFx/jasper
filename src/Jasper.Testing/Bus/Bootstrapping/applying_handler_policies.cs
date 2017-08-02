@@ -14,9 +14,9 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void can_apply_a_wrapper_to_all_chains()
         {
-            with(_ => _.Policies.Global<WrapWithSimple>());
+            with(_ => _.Messages.Policies.Global<WrapWithSimple>());
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(chainFor<MovieAdded>().Middleware.OfType<SimpleWrapper>().Any());
+            chainFor<MovieAdded>().Middleware.OfType<SimpleWrapper>().Any().ShouldBeTrue();
         }
     }
 

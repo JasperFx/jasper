@@ -174,13 +174,13 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("When a Message1 is received, it cascades a matching Message2")]
         public void ReceivingMessage1CascadesMessage2()
         {
-            _registry.Handlers.IncludeType<Cascader1>();
+            _registry.Messages.Handlers.IncludeType<Cascader1>();
         }
 
         [FormatAs("When Message2 is received, it cascades matching Message3 and Message4")]
         public void ReceivingMessage2CascadesMultiples()
         {
-            _registry.Handlers.IncludeType<Cascader2>();
+            _registry.Messages.Handlers.IncludeType<Cascader2>();
         }
 
         [FormatAs("Listen for incoming messages from {channel}")]

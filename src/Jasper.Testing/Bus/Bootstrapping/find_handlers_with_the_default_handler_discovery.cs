@@ -74,7 +74,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void extra_suffix()
         {
-            with(x => x.Handlers.IncludeClassesSuffixedWith("Watcher"));
+            with(x => x.Messages.Handlers.IncludeClassesSuffixedWith("Watcher"));
 
             chainFor<MovieAdded>().ShouldHaveHandler<MovieWatcher>(x => x.Watch(null));
         }
@@ -82,7 +82,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void handler_types_from_a_marker_interface()
         {
-            with(x => x.Handlers.IncludeTypesImplementing<IMovieThing>());
+            with(x => x.Messages.Handlers.IncludeTypesImplementing<IMovieThing>());
 
             chainFor<MovieAdded>().ShouldHaveHandler<EpisodeWatcher>(x => x.Handle(new MovieAdded()));
         }
@@ -100,13 +100,13 @@ namespace Jasper.Testing.Bus.Bootstrapping
     {
         public void Handle(MovieAdded added)
         {
-            
+
         }
     }
 
     public abstract class MovieEvent : IMovieEvent
     {
-        
+
     }
 
     public class MovieAdded : MovieEvent
@@ -133,7 +133,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
     {
         public void Watch(MovieAdded added)
         {
-            
+
         }
     }
 
@@ -141,12 +141,12 @@ namespace Jasper.Testing.Bus.Bootstrapping
     {
         public void Record(IMovieEvent @event)
         {
-            
+
         }
 
         public void Record2(MovieEvent @event)
         {
-            
+
         }
 
         public void Handle(MovieAdded added)

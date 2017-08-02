@@ -16,7 +16,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
         private void theAppIs(Action<IApplicationBuilder> configure)
         {
             var registry = new JasperRegistry();
-            registry.Handlers.ConventionalDiscoveryDisabled = true;
+            registry.Messages.Handlers.ConventionalDiscoveryDisabled = true;
 
             _alba = SystemUnderTest.For(builder =>
             {

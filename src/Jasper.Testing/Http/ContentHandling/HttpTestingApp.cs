@@ -4,7 +4,7 @@
     {
         public HttpTestingApp()
         {
-            Handlers.ConventionalDiscoveryDisabled = true;
+            Messages.Handlers.ConventionalDiscoveryDisabled = true;
         }
     }
 }

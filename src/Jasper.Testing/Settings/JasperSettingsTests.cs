@@ -19,7 +19,7 @@ namespace Jasper.Testing.Settings
         public JasperSettingsTests()
         {
             theRegistry = new JasperRegistry();
-            theRegistry.Handlers.ExcludeTypes(x => true);
+            theRegistry.Messages.Handlers.ExcludeTypes(x => true);
         }
 
         private T get<T>()

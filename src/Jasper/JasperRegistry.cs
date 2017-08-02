@@ -19,7 +19,7 @@ using Policies = Jasper.Bus.Configuration.Policies;
 
 namespace Jasper
 {
-    public class JasperRegistry : IJasperRegistry
+    public class JasperRegistry
     {
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
         private readonly ServiceRegistry _applicationServices;
@@ -58,8 +58,6 @@ namespace Jasper
 
         public AspNetCoreFeature Http { get; }
 
-        public DelayedJobExpression DelayedJobs => new DelayedJobExpression(_bus);
-
         public MessagesExpression Messages { get; }
 
         public ChannelConfiguration Channels { get; }
@@ -76,6 +74,7 @@ namespace Jasper
 
         public JasperSettings Settings { get; }
 
+        // TODO -- might make this be internal, or at least hidden a bit
         public void UseFeature<T>() where T : IFeature, new()
         {
             if (!_features.ContainsKey(typeof(T)))
@@ -96,16 +95,13 @@ namespace Jasper
         public Logging Logging { get; }
 
         internal ServiceRegistry ExtensionServices { get; }
-        public HandlerSource Handlers => _bus.Handlers;
-        public Policies Policies => _bus.Policies;
+
 
         public string ServiceName
         {
             get => _bus.Channels.Name;
             set => _bus.Channels.Name = value;
         }
-
-        public IHasErrorHandlers ErrorHandling => Policies;
 
         internal void ApplyExtensions(IJasperExtension[] extensions)
         {

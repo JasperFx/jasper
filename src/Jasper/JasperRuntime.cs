@@ -78,10 +78,6 @@ namespace Jasper
         }
 
 
-        public IJasperRegistry Registry => _registry;
-
-
-
         private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
         {
             applyExtensions(registry);

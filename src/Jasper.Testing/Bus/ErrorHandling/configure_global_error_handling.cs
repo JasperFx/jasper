@@ -13,7 +13,7 @@ namespace Jasper.Testing.Bus.ErrorHandling
         {
             with(_ =>
             {
-                _.ErrorHandling.OnException<TimeoutException>()
+                _.Messages.ErrorHandling.OnException<TimeoutException>()
                     .Requeue();
 
 

@@ -17,7 +17,7 @@ namespace Jasper.Testing.Settings
         public RegistrySettingsTests()
         {
             theRegistry = new JasperRegistry();
-            theRegistry.Handlers.ExcludeTypes(x => true);
+            theRegistry.Messages.Handlers.ExcludeTypes(x => true);
         }
 
         private T get<T>()
@@ -46,8 +46,7 @@ namespace Jasper.Testing.Settings
             var app = new MyApp();
             using (var runtime = JasperRuntime.For(app))
             {
-                var myApp = (MyApp) runtime.Registry;
-                myApp.MySetting.ShouldBe(true);
+                app.MySetting.ShouldBe(true);
             }
         }
 
@@ -61,14 +60,8 @@ namespace Jasper.Testing.Settings
                 _.Services.For<IFakeService>().Use<FakeService>();
             });
 
-            var registry = runtime.Registry;
-            registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-            registry.Services.For<IWidget>().Use<Widget>();
-            registry.Services.For<IFakeService>().Use<FakeService>();
 
-
-            var container = new Container(registry.Services);
-            var settings = container.GetInstance<MySettings>();
+            var settings = runtime.Get<MySettings>();
             settings.SomeSetting.ShouldBe(0);
         }
 
@@ -87,9 +80,8 @@ namespace Jasper.Testing.Settings
 
             using (var runtime = JasperRuntime.For(app))
             {
-                var container = new Container(runtime.Registry.Services);
-                var mySettings = container.GetInstance<MySettings>();
-                var colors = container.GetInstance<Colors>();
+                var mySettings = runtime.Get<MySettings>();
+                var colors = runtime.Get<Colors>();
 
                 mySettings.SomeSetting.ShouldBe(29);
                 colors.Red.ShouldBe("#ff0000");

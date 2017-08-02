@@ -26,7 +26,7 @@ namespace Jasper.Testing.Http
             registry.UseFeature<AspNetCoreFeature>();
             registry.Feature<AspNetCoreFeature>().Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
-            registry.Handlers.ExcludeTypes(x => true);
+            registry.Messages.Handlers.ExcludeTypes(x => true);
 
             theRuntime = JasperRuntime.For(registry);
         }

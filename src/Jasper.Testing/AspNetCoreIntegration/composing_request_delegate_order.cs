@@ -18,7 +18,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
 
         public composing_request_delegate_order()
         {
-            theRegistry.Handlers.ConventionalDiscoveryDisabled = true;
+            theRegistry.Messages.Handlers.ConventionalDiscoveryDisabled = true;
             _runtime = new Lazy<JasperRuntime>(() => JasperRuntime.For(theRegistry));
         }
 

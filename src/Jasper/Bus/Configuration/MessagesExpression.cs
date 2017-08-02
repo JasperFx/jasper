@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
 using StructureMap.TypeRules;
@@ -14,6 +15,13 @@ namespace Jasper.Bus.Configuration
         {
             _bus = bus;
         }
+
+        public HandlerSource Handlers => _bus.Handlers;
+        public Policies Policies => _bus.Policies;
+
+        public DelayedJobExpression DelayedProcessing => new DelayedJobExpression(_bus);
+
+        public IHasErrorHandlers ErrorHandling => Policies;
 
         public SendExpression SendMessage<T>()
         {
