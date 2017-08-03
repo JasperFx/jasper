@@ -53,7 +53,7 @@ namespace Jasper.Testing.Bus
             {
                 _.Services.For<MessageTracker>().Use(tracker);
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Messages.SendMessage<Message1>().To("fake://one");
+                _.Messaging.Send<Message1>().To("fake://one");
                 _.Channels.ListenForMessagesFrom("fake://one");
             });
 
@@ -95,8 +95,8 @@ namespace Jasper.Testing.Bus
                 _.Configuration.AddInMemoryCollection(
                     new Dictionary<string, string> {{"outgoing", "jasper://server1:2200/outgoing"}, { "incoming", "jasper://server1:2200/incoming" } });
 
-                _.Messages.SendMessage<Message1>().To("config://outgoing");
-                _.Messages.SendMessage<Message1>().To("config://incoming");
+                _.Messaging.Send<Message1>().To("config://outgoing");
+                _.Messaging.Send<Message1>().To("config://incoming");
             });
 
             Channels["config://outgoing"].Uri.ShouldBe("jasper://server1:2200/outgoing".ToUri());

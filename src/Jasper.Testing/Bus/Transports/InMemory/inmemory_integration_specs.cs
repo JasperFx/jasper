@@ -17,7 +17,7 @@ namespace Jasper.Testing.Bus.Transports.InMemory
         {
             with(_ =>
             {
-                _.Messages.SendMessage<Message1>().To("memory://incoming");
+                _.Messaging.Send<Message1>().To("memory://incoming");
 
                 _.Services.For<MessageTracker>().Use(theTracker);
 

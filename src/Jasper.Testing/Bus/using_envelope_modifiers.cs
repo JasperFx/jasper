@@ -17,8 +17,8 @@ namespace Jasper.Testing.Bus
 
             with(_ =>
             {
-                _.Messages.SendMessage<Message1>().To("memory://one");
-                _.Messages.SendMessage<Message2>().To("memory://two");
+                _.Messaging.Send<Message1>().To("memory://one");
+                _.Messaging.Send<Message2>().To("memory://two");
 
                 _.Channels["memory://one"].ModifyWith<FooModifier>().ModifyWith<BarModifier>();
             });

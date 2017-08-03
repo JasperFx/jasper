@@ -24,7 +24,7 @@ namespace Jasper.Testing.Bus.Samples
         {
             // Configuring PingApp to send PingMessage's
             // to the PongApp
-            Messages.SendMessage<PingMessage>()
+            Messaging.Send<PingMessage>()
                 .To(settings.Pinger);
 
             // Listen for incoming messages from "Pinger"
@@ -128,33 +128,33 @@ namespace Jasper.Testing.Bus.Samples
         public StaticRoutingApp(AppSettings settings)
         {
             // Explicitly add a single message type
-            Messages.SendMessage<PingMessage>()
+            Messaging.Send<PingMessage>()
                 .To(settings.Transactions);
 
             // Publish any types matching the supplied filter
             // to this channel
-            Messages.SendMessages("Message suffix", type => type.Name.EndsWith("Message"))
+            Messaging.SendMatching("Message suffix", type => type.Name.EndsWith("Message"))
                 .To(settings.Transactions);
 
             // Publish any message type contained in the assembly
             // to this channel, by supplying a type contained
             // within that assembly
-            Messages.SendMessagesFromAssemblyContaining<PingMessage>()
+            Messaging.SendFromAssemblyContaining<PingMessage>()
                 .To(settings.Transactions);
 
             // Publish any message type contained in the named
             // assembly to this channel
-            Messages.SendMessagesFromAssembly(Assembly.Load(new AssemblyName("MyMessageLibrary")))
+            Messaging.SendFromAssembly(Assembly.Load(new AssemblyName("MyMessageLibrary")))
                 .To(settings.Transactions);
 
             // Publish any message type contained in the
             // namespace given to this channel
-            Messages.SendMessagesInNamespace("MyMessageLibrary")
+            Messaging.SendFromNamespace("MyMessageLibrary")
                 .To(settings.Transactions);
 
             // Publish any message type contained in the namespace
             // of the type to this channel
-            Messages.SendMessagesInNamespaceContaining<PingMessage>()
+            Messaging.SendFromNamespaceContaining<PingMessage>()
                 .To(settings.Transactions);
         }
     }

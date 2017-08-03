@@ -165,7 +165,7 @@ namespace StorytellerSpecs.Fixtures
             [SelectionList("Channels")] Uri channel)
         {
             var type = messageTypeFor(messageType);
-            _registry.Messages.SendMessages(type.Name, t => t == type).To(channel);
+            _registry.Messaging.SendMatching(type.Name, t => t == type).To(channel);
 
             // Just makes the test harness listen for things
             _registry.Channels.ListenForMessagesFrom(channel);
@@ -174,13 +174,13 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("When a Message1 is received, it cascades a matching Message2")]
         public void ReceivingMessage1CascadesMessage2()
         {
-            _registry.Messages.Handlers.IncludeType<Cascader1>();
+            _registry.Messaging.Handlers.IncludeType<Cascader1>();
         }
 
         [FormatAs("When Message2 is received, it cascades matching Message3 and Message4")]
         public void ReceivingMessage2CascadesMultiples()
         {
-            _registry.Messages.Handlers.IncludeType<Cascader2>();
+            _registry.Messaging.Handlers.IncludeType<Cascader2>();
         }
 
         [FormatAs("Listen for incoming messages from {channel}")]

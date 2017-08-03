@@ -40,7 +40,7 @@ namespace Jasper.Testing.Bus.Samples
     {
         public MyApp()
         {
-            Messages.Policies.Global<ErrorHandlingPolicy>();
+            Messaging.Policies.Global<ErrorHandlingPolicy>();
         }
     }
     // ENDSAMPLE
@@ -50,11 +50,11 @@ namespace Jasper.Testing.Bus.Samples
     {
         public GlobalRetryApp()
         {
-            Messages.ErrorHandling
+            Messaging.ErrorHandling
                 .OnException<TimeoutException>()
                 .RetryLater(5.Seconds());
 
-            Messages.ErrorHandling
+            Messaging.ErrorHandling
                 .OnException<SecurityException>()
                 .MoveToErrorQueue();
         }
@@ -111,9 +111,9 @@ namespace Jasper.Testing.Bus.Samples
     {
         public FilteredApp()
         {
-            Messages.ErrorHandling.OnException<SqlException>().Requeue();
+            Messaging.ErrorHandling.OnException<SqlException>().Requeue();
 
-            Messages.ErrorHandling.OnException(typeof(InvalidOperationException)).Retry();
+            Messaging.ErrorHandling.OnException(typeof(InvalidOperationException)).Retry();
         }
     }
     // ENDSAMPLE
@@ -125,17 +125,17 @@ namespace Jasper.Testing.Bus.Samples
         {
             // Try to execute the message again without going
             // back through the queue
-            Messages.ErrorHandling.OnException<SqlException>().Retry();
+            Messaging.ErrorHandling.OnException<SqlException>().Retry();
 
             // Retry the message again, but wait for the specified time
-            Messages.ErrorHandling.OnException<SqlException>().RetryLater(3.Seconds());
+            Messaging.ErrorHandling.OnException<SqlException>().RetryLater(3.Seconds());
 
             // Put the message back into the queue where it will be
             // attempted again
-            Messages.ErrorHandling.OnException<SqlException>().Requeue();
+            Messaging.ErrorHandling.OnException<SqlException>().Requeue();
 
             // Move the message into the error queue for this transport
-            Messages.ErrorHandling.OnException<SqlException>().MoveToErrorQueue();
+            Messaging.ErrorHandling.OnException<SqlException>().MoveToErrorQueue();
         }
     }
     // ENDSAMPLE
@@ -146,7 +146,7 @@ namespace Jasper.Testing.Bus.Samples
     {
         public RespondWithMessages()
         {
-            Messages.ErrorHandling.OnException<SecurityException>()
+            Messaging.ErrorHandling.OnException<SecurityException>()
                 .RespondWithMessage((ex, envelope) =>
                 {
                     return new FailedOnSecurity(ex.Message);
@@ -186,7 +186,7 @@ namespace Jasper.Testing.Bus.Samples
         public CustomErrorHandlingApp()
         {
             // TODO -- make a nicer syntax for this
-            Messages.ErrorHandling.ErrorHandlers.Add(new CustomErrorHandler());
+            Messaging.ErrorHandling.ErrorHandlers.Add(new CustomErrorHandler());
         }
     }
     // ENDSAMPLE

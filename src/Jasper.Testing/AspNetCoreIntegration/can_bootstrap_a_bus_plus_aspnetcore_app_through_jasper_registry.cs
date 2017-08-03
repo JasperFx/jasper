@@ -63,7 +63,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
     {
         public JasperServerApp()
         {
-            Messages.Handlers.ConventionalDiscoveryDisabled = true;
+            Messaging.Handlers.ConventionalDiscoveryDisabled = true;
 
             Http
                 .UseKestrel()

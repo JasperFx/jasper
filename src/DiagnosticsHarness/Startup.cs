@@ -101,8 +101,8 @@ namespace DiagnosticsHarness
              public BusRegistry()
              {
                  var uri = "lq.tcp://localhost:2110/servicebus_example";
-                 Messages.SendMessage<MiddlewareMessage>().To(uri);
-                 Messages.SendMessage<AMessageThatWillError>().To(uri);
+                 Messaging.Send<MiddlewareMessage>().To(uri);
+                 Messaging.Send<AMessageThatWillError>().To(uri);
 
                  Logging.UseConsoleLogging = true;
                  Logging.LogTransportEventsWith<ConsoleTransportLogger>();

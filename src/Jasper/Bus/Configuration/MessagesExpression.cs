@@ -23,34 +23,34 @@ namespace Jasper.Bus.Configuration
 
         public IHasErrorHandlers ErrorHandling => Policies;
 
-        public SendExpression SendMessage<T>()
+        public SendExpression Send<T>()
         {
             return new SendExpression(_bus, new SingleTypeRoutingRule<T>());
         }
 
-        public SendExpression SendMessages(string description, Func<Type, bool> filter)
+        public SendExpression SendMatching(string description, Func<Type, bool> filter)
         {
             return new SendExpression(_bus, new LambdaRoutingRule(description, filter));
         }
 
-        public SendExpression SendMessagesInNamespace(string @namespace)
+        public SendExpression SendFromNamespace(string @namespace)
         {
             return new SendExpression(_bus, new NamespaceRule(@namespace));
         }
 
-        public SendExpression SendMessagesInNamespaceContaining<T>()
+        public SendExpression SendFromNamespaceContaining<T>()
         {
-            return SendMessagesInNamespace(typeof(T).Namespace);
+            return SendFromNamespace(typeof(T).Namespace);
         }
 
-        public SendExpression SendMessagesFromAssembly(Assembly assembly)
+        public SendExpression SendFromAssembly(Assembly assembly)
         {
             return new SendExpression(_bus, new AssemblyRule(assembly));
         }
 
-        public SendExpression SendMessagesFromAssemblyContaining<T>()
+        public SendExpression SendFromAssemblyContaining<T>()
         {
-            return SendMessagesFromAssembly(typeof(T).GetAssembly());
+            return SendFromAssembly(typeof(T).GetAssembly());
         }
 
         public class SendExpression

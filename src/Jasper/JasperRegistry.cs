@@ -33,7 +33,7 @@ namespace Jasper
 
             Serialization = new SerializationExpression(_bus);
             Channels = new ChannelConfiguration(_bus);
-            Messages = new MessagesExpression(_bus);
+            Messaging = new MessagesExpression(_bus);
 
             _applicationServices = new ServiceRegistry();
             ExtensionServices = new ExtensionServiceRegistry();
@@ -59,7 +59,7 @@ namespace Jasper
 
         public AspNetCoreFeature Http { get; }
 
-        public MessagesExpression Messages { get; }
+        public MessagesExpression Messaging { get; }
 
         public ChannelConfiguration Channels { get; }
 
@@ -146,7 +146,7 @@ namespace Jasper
         }
 
 
-
+        // TODO -- move this under Messaging
         public SubscriptionExpression SubscribeAt(string receiving)
         {
             return SubscribeAt(receiving.ToUri());
