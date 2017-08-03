@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -19,7 +20,7 @@ using Policies = Jasper.Bus.Configuration.Policies;
 
 namespace Jasper
 {
-    public class JasperRegistry
+    public class JasperRegistry : IFeatures
     {
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
         private readonly ServiceRegistry _applicationServices;
@@ -27,7 +28,8 @@ namespace Jasper
 
         public JasperRegistry()
         {
-            _bus = Feature<ServiceBusFeature>();
+            _bus = Features.For<ServiceBusFeature>();
+            Http = Features.For<AspNetCoreFeature>();
 
             Serialization = new SerializationExpression(_bus);
             Channels = new ChannelConfiguration(_bus);
@@ -46,7 +48,6 @@ namespace Jasper
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
 
-            Http = Feature<AspNetCoreFeature>();
 
         }
 
@@ -74,8 +75,19 @@ namespace Jasper
 
         public JasperSettings Settings { get; }
 
-        // TODO -- might make this be internal, or at least hidden a bit
-        public void UseFeature<T>() where T : IFeature, new()
+        public IFeatures Features => this;
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public IEnumerator<IFeature> GetEnumerator()
+        {
+            return _features.Values.GetEnumerator();
+        }
+
+        void IFeatures.Include<T>()
         {
             if (!_features.ContainsKey(typeof(T)))
             {
@@ -83,14 +95,16 @@ namespace Jasper
             }
         }
 
-        public T Feature<T>() where T : IFeature, new()
+
+        T IFeatures.For<T>()
         {
-            UseFeature<T>();
+            if (!_features.ContainsKey(typeof(T)))
+            {
+                _features.Add(typeof(T), new T());
+            }
 
             return _features[typeof(T)].As<T>();
         }
-
-        public IFeature[] Features => _features.Values.ToArray();
 
         public Logging Logging { get; }
 
@@ -131,6 +145,8 @@ namespace Jasper
             Include(extension);
         }
 
+
+
         public SubscriptionExpression SubscribeAt(string receiving)
         {
             return SubscribeAt(receiving.ToUri());
@@ -145,5 +161,11 @@ namespace Jasper
         {
             return new SubscriptionExpression(_bus, null);
         }
+    }
+
+    public interface IFeatures : IEnumerable<IFeature>
+    {
+        void Include<T>() where T : IFeature, new();
+        T For<T>() where T : IFeature, new();
     }
 }

@@ -43,13 +43,13 @@ namespace Jasper.Testing
         {
             theRegistry.Services.AddService<IMainService, MainService>();
 
-            feature1 = theRegistry.Feature<FakeFeature1>();
+            feature1 = theRegistry.Features.For<FakeFeature1>();
             feature1.Services.For<IFeatureService1>().Use<FeatureService1>();
 
-            feature2 = theRegistry.Feature<FakeFeature2>();
+            feature2 = theRegistry.Features.For<FakeFeature2>();
             feature2.Services.For<IFeatureService2>().Use<FeatureService2>();
 
-            feature3 = theRegistry.Feature<FakeFeature3>();
+            feature3 = theRegistry.Features.For<FakeFeature3>();
             feature3.Services.For<IFeatureService3>().Use<FeatureService3>();
 
             theRegistry.Services.AddService<IFakeStore, FakeStore>();
@@ -130,11 +130,11 @@ namespace Jasper.Testing
             theRegistry.Services.For<IWidget>().Use<Widget>();
             theRegistry.Services.For<IFakeService>().Use<FakeService>();
 
-            feature1 = theRegistry.Feature<FakeFeature1>();
+            feature1 = theRegistry.Features.For<FakeFeature1>();
 
-            feature2 = theRegistry.Feature<FakeFeature2>();
+            feature2 = theRegistry.Features.For<FakeFeature2>();
 
-            feature3 = theRegistry.Feature<FakeFeature3>();
+            feature3 = theRegistry.Features.For<FakeFeature3>();
 
             theRuntime = JasperRuntime.For(theRegistry);
 

@@ -22,7 +22,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             _registry = new JasperRegistry {ServiceName = "NodeName"};
             _registry.Channels.ListenForMessagesFrom(_incomingChannel);
             _registry.Channels.Add(_channel);
-            _bus = _registry.Feature<ServiceBusFeature>();
+            _bus = _registry.Features.For<ServiceBusFeature>();
         }
 
         public TransportNode TransportNode {

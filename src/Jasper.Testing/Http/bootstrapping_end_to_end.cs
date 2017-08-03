@@ -23,8 +23,7 @@ namespace Jasper.Testing.Http
             TypeRepository.ClearAll();
 
             var registry = new JasperRegistry();
-            registry.UseFeature<AspNetCoreFeature>();
-            registry.Feature<AspNetCoreFeature>().Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
+            registry.Http.Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
             registry.Messages.Handlers.ExcludeTypes(x => true);
 

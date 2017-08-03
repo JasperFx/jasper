@@ -59,13 +59,13 @@ namespace Jasper.Http
 
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
         {
-            registry.Feature<AspNetCoreFeature>().BootstrappedWithinAspNetCore = true;
+            registry.Features.For<AspNetCoreFeature>().BootstrappedWithinAspNetCore = true;
             var runtime = JasperRuntime.For(registry);
             builder.ConfigureServices(services =>
             {
                 services.AddSingleton(runtime);
 
-                JasperStartup.Register(runtime.Container, services, registry.Feature<AspNetCoreFeature>().Routes.Router);
+                JasperStartup.Register(runtime.Container, services, registry.Features.For<AspNetCoreFeature>().Routes.Router);
             });
 
             return builder;
