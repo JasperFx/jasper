@@ -5,7 +5,6 @@ using Consul;
 
 namespace Jasper.Consul.Internal
 {
-    // TODO -- clean this code up and eliminate the duplication. It's at spike quality code at the moment
     public interface IConsulGateway
     {
         Task<string> GetProperty(string key);

@@ -48,8 +48,7 @@ namespace Jasper.Bus
         {
             var container = runtime.Container;
 
-            // TODO -- will need to be smart enough to do the conglomerate
-            // generation config of the base, with service bus specific stuff
+
             _graph.Compile(generation, container);
 
             // TODO -- create a new "BusStartup" class that does all of this kind of stuff

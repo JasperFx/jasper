@@ -115,10 +115,9 @@ namespace Jasper.Bus.Delayed
 
             public DelayedJob ToReport()
             {
-                // TODO -- add message type here
                 return new DelayedJob(Envelope.CorrelationId)
                 {
-                    ExecutionTime = ExecutionTime, From = Envelope.ReceivedAt.ToString(), ReceivedAt = ReceivedAt
+                    ExecutionTime = ExecutionTime, From = Envelope.ReceivedAt.ToString(), ReceivedAt = ReceivedAt, MessageType = Envelope.MessageType
                 };
             }
         }

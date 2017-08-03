@@ -4,7 +4,6 @@ using StructureMap.Graph;
 
 namespace Jasper.Bus.Configuration
 {
-    // TODO -- might be smart to move this up to Jasper's core
     public class ActionMethodFilter : CompositeFilter<MethodInfo>
     {
         public ActionMethodFilter()

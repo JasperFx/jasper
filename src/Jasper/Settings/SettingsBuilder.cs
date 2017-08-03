@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Settings
 {
-    // TODO -- deal w/ packages and ordering later
     public interface ISettingsBuilder
     {
         void Apply(IConfigurationRoot config, JasperRegistry registry);

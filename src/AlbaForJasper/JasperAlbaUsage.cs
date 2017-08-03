@@ -8,8 +8,6 @@ namespace AlbaForJasper
     {
         private readonly JasperRuntime _runtime;
 
-        // TODO -- bring in the IHostingEnvironment attached to the runtime
-        // When it exists. See https://github.com/JasperFx/jasper/issues/91
         public JasperAlbaUsage(JasperRuntime runtime) : base(null)
         {
             _runtime = runtime;
