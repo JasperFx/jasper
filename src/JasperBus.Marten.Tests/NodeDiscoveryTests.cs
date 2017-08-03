@@ -69,7 +69,7 @@ namespace JasperBus.Marten.Tests
                     new Subscription(typeof(PingMessage))
                     {
                         Id = Guid.NewGuid(),
-                        NodeName = "Client",
+                        Publisher = "Client",
                         Role = SubscriptionRole.Subscribes,
                         Receiver = _clientUri,
                         Source = "jasper://loadbalancer:5000/service".ToUri()

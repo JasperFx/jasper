@@ -23,8 +23,13 @@ namespace Jasper.Bus.Runtime.Subscriptions
         public Guid Id { get; set; }
         public Uri Source { get; set; }
         public Uri Receiver { get; set; }
+
         public string MessageType { get; set; }
-        public string NodeName { get; set; }
+
+        /// <summary>
+        /// Service name of the publishing application
+        /// </summary>
+        public string Publisher { get; set; }
         public SubscriptionRole Role { get; set; }
 
         public string Accepts { get; set; } = "application/json";
@@ -51,7 +56,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         protected bool Equals(Subscription other)
         {
-            return Equals(Source, other.Source) && Equals(Receiver, other.Receiver) && string.Equals(MessageType, other.MessageType) && string.Equals(NodeName, other.NodeName) && string.Equals(Role, other.Role);
+            return Equals(Source, other.Source) && Equals(Receiver, other.Receiver) && string.Equals(MessageType, other.MessageType) && string.Equals(Publisher, other.Publisher) && string.Equals(Role, other.Role);
         }
 
         public override bool Equals(object obj)
@@ -69,14 +74,14 @@ namespace Jasper.Bus.Runtime.Subscriptions
                 var hashCode = (Source != null ? Source.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Receiver != null ? Receiver.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (MessageType != null ? MessageType.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (NodeName != null ? NodeName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Publisher != null ? Publisher.GetHashCode() : 0);
                 return hashCode;
             }
         }
 
         public override string ToString()
         {
-            return $"Source: {Source}, Receiver: {Receiver}, MessageType: {MessageType}, NodeName: {NodeName}";
+            return $"Source: {Source}, Receiver: {Receiver}, MessageType: {MessageType}, NodeName: {Publisher}";
         }
 
         public bool Matches(Type inputType)

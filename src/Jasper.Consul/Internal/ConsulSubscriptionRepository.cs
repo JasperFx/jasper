@@ -37,7 +37,7 @@ namespace Jasper.Consul.Internal
         public async Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
         {
             var subscriptions = await AllSubscriptions();
-            return subscriptions.Where(s => s.NodeName == ServiceName && s.Role == subscriptionRole).ToArray();
+            return subscriptions.Where(s => s.Publisher == ServiceName && s.Role == subscriptionRole).ToArray();
         }
 
         public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)

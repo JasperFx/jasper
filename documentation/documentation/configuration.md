@@ -1,4 +1,4 @@
-<!--title: Configuration-->
+<!--title: Application Configuration-->
 
 ## Quick Start
 

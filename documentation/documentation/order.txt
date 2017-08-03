@@ -1,4 +1,5 @@
 getting_started
+bootstrapping
 configuration
-servicebus
+messaging
 diagnostics

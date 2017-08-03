@@ -14,6 +14,7 @@ namespace Jasper.Bus.Configuration
             _parent = parent;
             _receiving = receiving;
 
+            // TODO -- this shouldn't be here
             parent.Services.AddType(typeof(ISubscriptionRequirements), typeof(SubscriptionRequirements));
         }
 

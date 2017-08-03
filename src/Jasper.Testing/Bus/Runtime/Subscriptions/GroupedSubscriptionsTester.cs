@@ -67,7 +67,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         [Fact]
         public void sets_the_node_name_from_the_channel_graph()
         {
-            theSubscriptions.Select(x => x.NodeName).Distinct()
+            theSubscriptions.Select(x => x.Publisher).Distinct()
                 .Single().ShouldBe(_graph.Name);
         }
 

@@ -34,7 +34,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
                 yield return new Subscription(messageType)
                 {
-                    NodeName = channels.Name,
+                    Publisher = channels.Name,
                     Receiver = _receiver,
                     Source = _source,
                     Accepts = contentTypes.Join(",")

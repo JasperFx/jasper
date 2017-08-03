@@ -73,14 +73,14 @@ namespace JasperBus.Marten.Tests
             subscriptions.ShouldHaveCount(1);
             (await this.GetActiveSubscriptions()).ShouldHaveTheSameElementsAs(subscriptions);
             var sub1 = subscriptions.First();
-            sub1.NodeName.ShouldBe("Primary");
+            sub1.Publisher.ShouldBe("Primary");
             sub1.VerifySubscription<PingMessage>(source: _primaryQueueUri, destination: _secondaryQueueUri);
 
             var subsSubscriptions = await _subContext.GetPublishedSubscriptions();
             subsSubscriptions.ShouldHaveCount(1);
             (await _subContext.GetActiveSubscriptions()).ShouldHaveTheSameElementsAs(subsSubscriptions);
             var sub2 = subsSubscriptions.First();
-            sub2.NodeName.ShouldBe("Secondary");
+            sub2.Publisher.ShouldBe("Secondary");
             sub2.VerifySubscription<PongMessage>(source: _secondaryQueueUri, destination: _primaryQueueUri);
         }
 
@@ -92,14 +92,14 @@ namespace JasperBus.Marten.Tests
             var subscriptions = await this.GetSubscribedSubscriptions();
             subscriptions.ShouldHaveCount(1);
             var sub1 = subscriptions.First();
-            sub1.NodeName.ShouldBe("Primary");
+            sub1.Publisher.ShouldBe("Primary");
             sub1.VerifySubscription<PongMessage>(source: _secondaryQueueUri, destination: _primaryQueueUri,
                 role: SubscriptionRole.Subscribes);
 
             var subsSubscriptions = await _subContext.GetSubscribedSubscriptions();
             subsSubscriptions.ShouldHaveCount(1);
             var sub2 = subsSubscriptions.First();
-            sub2.NodeName.ShouldBe("Secondary");
+            sub2.Publisher.ShouldBe("Secondary");
             sub2.VerifySubscription<PingMessage>(source: _primaryQueueUri, destination: _secondaryQueueUri,
                 role: SubscriptionRole.Subscribes);
         }

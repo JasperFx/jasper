@@ -52,7 +52,7 @@ namespace Jasper.Consul.Testing
                 new Subscription(typeof(OrangeMessage)){Role = SubscriptionRole.Subscribes},
             };
 
-            subscriptions.Each(x => x.NodeName = "ConsulSampleApp");
+            subscriptions.Each(x => x.Publisher = "ConsulSampleApp");
 
             await theRepository.PersistSubscriptions(subscriptions);
 
@@ -77,7 +77,7 @@ namespace Jasper.Consul.Testing
                 new Subscription(typeof(OrangeMessage)){Role = SubscriptionRole.Subscribes},
             };
 
-            subscriptions.Each(x => x.NodeName = "ConsulSampleApp");
+            subscriptions.Each(x => x.Publisher = "ConsulSampleApp");
 
             await theRepository.PersistSubscriptions(subscriptions);
 
@@ -96,7 +96,7 @@ namespace Jasper.Consul.Testing
                 new Subscription(typeof(OrangeMessage)){Role = SubscriptionRole.Subscribes},
             };
 
-            subscriptions.Each(x => x.NodeName = "ConsulSampleApp");
+            subscriptions.Each(x => x.Publisher = "ConsulSampleApp");
 
             await theRepository.PersistSubscriptions(subscriptions);
 

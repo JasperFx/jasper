@@ -47,7 +47,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
                 .Select(x =>
                 {
                     x.Id = Guid.NewGuid();
-                    x.NodeName = graph.Name;
+                    x.Publisher = graph.Name;
                     x.Role = SubscriptionRole.Subscribes;
                     x.Receiver = x.Receiver.ToMachineUri();
                     return x;

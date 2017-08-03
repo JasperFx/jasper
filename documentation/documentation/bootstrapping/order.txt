@@ -1,0 +1,4 @@
+jasper
+aspnetcore
+jasperregistry
+environment_tests

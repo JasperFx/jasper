@@ -12,7 +12,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             return new Subscription
             {
                 MessageType = Guid.NewGuid().ToString(),
-                NodeName = nodeName ?? "TheNode",
+                Publisher = nodeName ?? "TheNode",
                 Receiver = "memory://receiver".ToUri(),
                 Source = "memory://source".ToUri(),
                 Role = role
@@ -26,7 +26,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
 
             if (nodeName.IsNotEmpty())
             {
-                subscription.NodeName = nodeName;
+                subscription.Publisher = nodeName;
             }
 
             return subscription;

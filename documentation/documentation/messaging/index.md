@@ -1,9 +1,9 @@
-<!--title: Jasper Service Bus-->
+<!--title: Messaging-->
 
 JasperBus is a direct descendent of the <a href="https://fubumvc.github.io/documentation/servicebus/">service bus feature in FubuMVC</a>, which in turn
 was heavily influenced and built as a replacement for the <a href="https://hibernatingrhinos.com/oss/rhino-service-bus">Rhino Service Bus</a>. 
 
-## Why use JasperBus?
+## Why use Jasper?
 
 TODO -- much more here.
 
