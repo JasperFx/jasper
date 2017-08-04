@@ -65,7 +65,7 @@ namespace Jasper.Http.Routing
                 _segments.Add(segment);
             }
 
-            
+
 
             Pattern = string.Join("/", _segments.Select(x => x.SegmentPath));
 
@@ -129,7 +129,7 @@ namespace Jasper.Http.Routing
 
         public bool HasParameters => HasSpread || _arguments.Value.Any();
 
-        public IEnumerable<RouteArgument> Arguments => _arguments.Value.ToArray(); 
+        public IEnumerable<RouteArgument> Arguments => _arguments.Value.ToArray();
 
         public string Pattern { get; }
 
@@ -215,6 +215,7 @@ namespace Jasper.Http.Routing
         {
             return "/" + _segments.Select(x => x.SegmentFromParameters(parameters)).Join("/");
         }
+
 
 
     }

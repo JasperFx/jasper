@@ -59,5 +59,44 @@ namespace Jasper.Http.Model
         {
             return _chains.GetEnumerator();
         }
+
+        public IEnumerable<RouteChain> Gets
+        {
+            get { return this.Where(x => x.RespondsToMethod("GET")); }
+        }
+
+
+        public IEnumerable<RouteChain> Posts
+        {
+            get { return this.Where(x => x.RespondsToMethod("POST")); }
+        }
+
+
+        public IEnumerable<RouteChain> Puts
+        {
+            get { return this.Where(x => x.RespondsToMethod("PUT")); }
+        }
+
+
+        public IEnumerable<RouteChain> Deletes
+        {
+            get { return this.Where(x => x.RespondsToMethod("DELETE")); }
+        }
+
+
+        public IEnumerable<RouteChain> Heads
+        {
+            get { return this.Where(x => x.RespondsToMethod("HEAD")); }
+        }
+
+        /// <summary>
+        /// Union of routed chains that respond to GET or HEAD
+        /// </summary>
+        public IEnumerable<RouteChain> Resources => Gets.Union(Heads);
+
+        /// <summary>
+        /// Union of routed chains that respond to POST, PUT, or DELETE
+        /// </summary>
+        public IEnumerable<RouteChain> Commands => Posts.Union(Puts).Union(Deletes);
     }
 }

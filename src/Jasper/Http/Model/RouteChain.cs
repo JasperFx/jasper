@@ -165,5 +165,10 @@ namespace Jasper.Http.Model
 
             return list;
         }
+
+        public bool RespondsToMethod(string httpMethod)
+        {
+            return Route.HttpMethod.EqualsIgnoreCase(httpMethod);
+        }
     }
 }
