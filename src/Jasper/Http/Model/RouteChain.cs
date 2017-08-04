@@ -17,6 +17,8 @@ namespace Jasper.Http.Model
     public class RouteChain : Chain<RouteChain, ModifyRouteAttribute>,IGenerates<RouteHandler>
     {
         public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
+        private Type _readerType;
+        private Type _writerType;
 
         public static RouteChain For<T>(Expression<Action<T>> expression)
         {
@@ -94,9 +96,33 @@ namespace Jasper.Http.Model
         public Type InputType { get; }
         public Type ResourceType { get; }
 
-        // TODO -- validate that the type implements IMediaReader/IMediaWriter
-        public Type ReaderType { get; set; }
-        public Type WriterType { get; set; }
+        public Type ReaderType
+        {
+            get => _readerType;
+            set
+            {
+                if (value != null && !value.CanBeCastTo<IMediaReader>())
+                {
+                    throw new ArgumentOutOfRangeException($"Type {value} must be assignable to {typeof(IMediaReader).FullName}");
+                }
+
+                _readerType = value;
+            }
+        }
+
+        public Type WriterType
+        {
+            get => _writerType;
+            set
+            {
+                if (value != null && !value.CanBeCastTo<IMediaWriter>())
+                {
+                    throw new ArgumentOutOfRangeException($"Type {value} must be assignable to {typeof(IMediaWriter).FullName}");
+                }
+
+                _writerType = value;
+            }
+        }
 
         public override string ToString()
         {
