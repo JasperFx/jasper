@@ -21,8 +21,9 @@ namespace Jasper.Bus.Runtime.Subscriptions
         private readonly IEnumerable<ISubscriptionRequirements> _requirements;
         private readonly ChannelGraph _channels;
         private readonly EnvironmentSettings _settings;
+        private readonly IUriLookup[] _lookups;
 
-        public SubscriptionActivator(ISubscriptionsRepository subscriptions, IEnvelopeSender sender, INodeDiscovery nodeDiscovery, IEnumerable<ISubscriptionRequirements> requirements, ChannelGraph channels, EnvironmentSettings settings)
+        public SubscriptionActivator(ISubscriptionsRepository subscriptions, IEnvelopeSender sender, INodeDiscovery nodeDiscovery, IEnumerable<ISubscriptionRequirements> requirements, ChannelGraph channels, EnvironmentSettings settings, IUriLookup[] lookups)
         {
             _subscriptions = subscriptions;
             _sender = sender;
@@ -30,6 +31,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _requirements = requirements;
             _channels = channels;
             _settings = settings;
+            _lookups = lookups;
         }
 
         public async Task Activate()
@@ -53,9 +55,36 @@ namespace Jasper.Bus.Runtime.Subscriptions
                     return x;
                 }).ToArray();
 
+            await applyLookups(staticSubscriptions);
+
             await _subscriptions.PersistSubscriptions(staticSubscriptions);
 
             await sendSubscriptions();
+        }
+
+        internal async Task applyLookups(Subscription[] staticSubscriptions)
+        {
+            foreach (var lookup in _lookups)
+            {
+                var matching = staticSubscriptions.Where(x => x.Receiver.Scheme == lookup.Protocol).ToArray();
+                var actuals = await lookup.Lookup(matching.Select(x => x.Receiver).ToArray());
+
+                for (int i = 0; i < matching.Length; i++)
+                {
+                    matching[i].Receiver = actuals[i];
+                }
+            }
+
+            foreach (var lookup in _lookups)
+            {
+                var matching = staticSubscriptions.Where(x => x.Source.Scheme == lookup.Protocol).ToArray();
+                var actuals = await lookup.Lookup(matching.Select(x => x.Source).ToArray());
+
+                for (int i = 0; i < matching.Length; i++)
+                {
+                    matching[i].Source = actuals[i];
+                }
+            }
         }
 
         private async Task sendSubscriptions()

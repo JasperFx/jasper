@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Routing;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Bus.Transports;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +17,38 @@ namespace Jasper.Testing.Bus
 {
     public class using_uri_lookups : IntegrationContext
     {
+        [Fact]
+        public async Task static_routing_rules_respect_the_uri_lookup()
+        {
+            with(_ =>
+            {
+                _.Services.For<IUriLookup>().Add<FakeUriLookup>();
+                _.Messaging.Send<Message1>().To("fake://one");
+            });
+
+            var router = Runtime.Get<IMessageRouter>();
+            var tracks = await router.Route(typeof(Message1));
+
+            tracks.Single().Destination.ShouldBe("memory://one".ToUri());
+        }
+
+        [Fact]
+        public async Task dynamic_subscriptions_respect_uri_lookups()
+        {
+            with(_ =>
+            {
+                _.Services.For<IUriLookup>().Add<FakeUriLookup>();
+                _.SubscribeAt("fake://one").ToSource("fake://two").ToMessage<Message2>();
+            });
+
+
+            var subscriptions = await Runtime.Get<ISubscriptionsRepository>().LoadSubscriptions(SubscriptionRole.Subscribes);
+
+            var subscription = subscriptions.Single();
+            subscription.Receiver.ShouldBe("memory://one".ToUri());
+            subscription.Source.ShouldBe("memory://two".ToUri());
+        }
+
         [Fact]
         public void ChannelGraph_is_corrected_by_the_lookups()
         {

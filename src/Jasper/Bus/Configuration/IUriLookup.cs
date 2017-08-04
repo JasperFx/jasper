@@ -10,4 +10,6 @@ namespace Jasper.Bus.Configuration
         Task<Uri[]> Lookup(Uri[] originals);
     }
 
+
+
 }
