@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Routing;
@@ -15,17 +16,17 @@ namespace Jasper.Bus.Runtime
         private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
 
-        public EnvelopeSender(IBusLogger[] loggers, IMessageRouter router, ChannelGraph channels, IEnumerable<ITransport> transports)
+        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, ChannelGraph channels, IEnumerable<ITransport> transports)
         {
             _router = router;
             _channels = channels;
 
             foreach (var transport in transports)
             {
-                Baseline.DictionaryExtensions.SmartAdd(_transports, transport.Protocol, transport);
+                _transports.SmartAdd(transport.Protocol, transport);
             }
 
-            Logger = BusLogger.Combine(loggers);
+            Logger = logger;
         }
 
         public IBusLogger Logger { get;}

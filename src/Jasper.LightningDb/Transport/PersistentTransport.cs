@@ -31,12 +31,12 @@ namespace Jasper.LightningDb.Transport
         private Uri _replyUri;
         private Task _persistedOutgoing;
 
-        public PersistentTransport(BusSettings settings, LightningDbSettings lqSettings, IBusLogger logger)
+        public PersistentTransport(BusSettings settings, LightningDbSettings lqSettings, CompositeLogger logger)
         {
             _settings = settings;
             _lqSettings = lqSettings;
             _logger = logger;
-            
+
         }
 
         void ISenderCallback.Successful(OutgoingMessageBatch outgoing)
@@ -109,7 +109,7 @@ namespace Jasper.LightningDb.Transport
 
 
             _sender.Start(this);
-            
+
             _persistence = new LightningDbPersistence(_lqSettings);
 
             chooseReplyNode(channels, nodes);

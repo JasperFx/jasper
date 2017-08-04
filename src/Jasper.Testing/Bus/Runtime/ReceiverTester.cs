@@ -74,7 +74,7 @@ namespace Jasper.Testing.Bus.Runtime
             return Task.CompletedTask;
         }
 
-        public IBusLogger Logger { get; } = new BusLogger();
+        public IBusLogger Logger { get; } = new NulloBusLogger();
         public Task InvokeNow(object message)
         {
             throw new NotImplementedException();

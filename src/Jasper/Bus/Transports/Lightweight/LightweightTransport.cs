@@ -23,7 +23,7 @@ namespace Jasper.Bus.Transports.Lightweight
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
         private LightweightQueues _queues;
 
-        public LightweightTransport(BusSettings settings, IInMemoryQueue inmemory, IBusLogger logger)
+        public LightweightTransport(BusSettings settings, IInMemoryQueue inmemory, CompositeLogger logger)
         {
             _settings = settings;
             _inmemory = inmemory;

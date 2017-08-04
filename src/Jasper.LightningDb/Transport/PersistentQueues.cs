@@ -55,7 +55,7 @@ namespace Jasper.LightningDb.Transport
                 return ReceivedStatus.QueueDoesNotExist;
             }
 
-            
+
 
             try
             {

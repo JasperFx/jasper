@@ -8,7 +8,7 @@ namespace Jasper.Bus.Tracking
     /// Useful for automated testing scenarios against the service bus to "know"
     /// when all outstanding messages are completed. DO NOT USE IN PRODUCTION!!!
     /// </summary>
-    public class MessageTrackingLogger : BusLogger
+    public class MessageTrackingLogger : BusLoggerBase
     {
         public static readonly string Envelope = "Envelope";
         public static readonly string Execution = "Execution";

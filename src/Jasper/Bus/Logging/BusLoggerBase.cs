@@ -3,21 +3,8 @@ using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Logging
 {
-    public class BusLogger : IBusLogger
+    public abstract class BusLoggerBase : IBusLogger
     {
-        public static IBusLogger Combine(IBusLogger[] loggers)
-        {
-            switch (loggers.Length)
-            {
-                case 0:
-                    return new BusLogger();
-                case 1:
-                    return loggers[0];
-                default:
-                    return new CompositeLogger(loggers);
-            }
-        }
-
         public virtual void Sent(Envelope envelope)
         {
 

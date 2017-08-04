@@ -29,7 +29,7 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly IInMemoryQueue _inMemoryQueue;
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(IEnvelopeSender sender, SerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, IInMemoryQueue inMemoryQueue, IBusLogger[] loggers, IMissingHandler[] missingHandlers)
+        public HandlerPipeline(IEnvelopeSender sender, SerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, IInMemoryQueue inMemoryQueue, CompositeLogger logger, IMissingHandler[] missingHandlers)
         {
             _sender = sender;
             _serializer = serializers;
@@ -39,7 +39,7 @@ namespace Jasper.Bus.Runtime.Invocation
             _inMemoryQueue = inMemoryQueue;
             _missingHandlers = missingHandlers;
 
-            Logger = BusLogger.Combine(loggers);
+            Logger = logger;
         }
 
         public IBusLogger Logger { get; }
