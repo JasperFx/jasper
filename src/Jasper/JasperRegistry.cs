@@ -28,7 +28,12 @@ namespace Jasper
 
         public JasperRegistry()
         {
+
             _bus = Features.For<ServiceBusFeature>();
+
+
+
+
             Http = Features.For<AspNetCoreFeature>();
 
             Serialization = new SerializationExpression(_bus);
@@ -42,6 +47,8 @@ namespace Jasper
 
             ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
 
+            deriveServiceName();
+
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
             Generation = new GenerationConfig($"{name}.Generated");
 
@@ -49,6 +56,18 @@ namespace Jasper
             Settings = new JasperSettings(this);
 
 
+        }
+
+        private void deriveServiceName()
+        {
+            if (GetType() == typeof(JasperRegistry))
+            {
+                ServiceName = ApplicationAssembly?.GetName().Name ?? "JasperService";
+            }
+            else
+            {
+                ServiceName = GetType().Name.Replace("JasperRegistry", "").Replace("Registry", "");
+            }
         }
 
         public string EnvironmentName
