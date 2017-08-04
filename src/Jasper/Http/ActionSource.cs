@@ -34,9 +34,11 @@ namespace Jasper.Http
             var parameterCount = method.GetParameters() == null ? 0 : method.GetParameters().Length;
             if (parameterCount > 1) return false;
 
-            if (method.GetParameters().Any(x => TypeExtensions.IsSimple(x.ParameterType))) return false;
+            if (method.GetParameters().Any(x => x.ParameterType.IsSimple())) return false;
 
             var hasOutput = method.ReturnType != typeof(void);
+
+            if (hasOutput && method.ReturnType == typeof(int)) return true;
 
             if (hasOutput && !method.ReturnType.GetTypeInfo().IsClass) return false;
 
