@@ -5,6 +5,8 @@ using Baseline;
 using Jasper.Http.Routing.Codegen;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Http.Routing
 {
@@ -50,7 +52,7 @@ namespace Jasper.Http.Routing
             return Invoke;
         }
 
-        public Task Invoke(HttpContext context, RequestDelegate next)
+        public async Task Invoke(HttpContext context, RequestDelegate next)
         {
             string[] segments;
             var route = SelectRoute(context, out segments);
@@ -58,18 +60,30 @@ namespace Jasper.Http.Routing
             // TODO -- add some error handling to 500 here. May also change how segments are being smuggled into the HttpContext
             if (route == null)
             {
-                return next(context);
+                await next(context);
             }
+            else
+            {
+                context.Response.StatusCode = 200;
 
-            context.Response.StatusCode = 200;
-
-            context.SetSegments(segments);
+                context.SetSegments(segments);
 
 
-            // TODO -- going to eliminate this.
-            route.SetValues(context, segments);
+                // TODO -- going to eliminate this.
+                route.SetValues(context, segments);
 
-            return route.Handler.Handle(context);
+                try
+                {
+                    await route.Handler.Handle(context);
+                }
+                catch (Exception e)
+                {
+                    // TODO -- do something fancier here
+                    context.RequestServices.GetService<ILogger<HttpContext>>().LogError(new EventId(500), e, "Request Failed");
+                    context.Response.StatusCode = 500;
+                    await context.Response.WriteAsync(e.ToString());
+                }
+            }
         }
 
         public Route SelectRoute(HttpContext context, out string[] segments)
