@@ -53,7 +53,7 @@ namespace Jasper.Bus.Model
 
         public List<MethodCall> Handlers = new List<MethodCall>();
 
-        private List<Frame> determineFrames()
+        public List<Frame> DetermineFrames()
         {
             if (!Handlers.Any())
             {
@@ -123,7 +123,7 @@ namespace Jasper.Bus.Model
                 BaseType = typeof(MessageHandler)
             };
 
-            var method = new HandleMessageMethod(determineFrames());
+            var method = new HandleMessageMethod(DetermineFrames());
             method.Sources.Add(new MessageHandlerVariableSource(MessageType));
 
             @class.AddMethod(method);

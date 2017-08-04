@@ -4,10 +4,13 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Baseline.Reflection;
 using Jasper.Codegen;
+using Jasper.Codegen.Compilation;
 using Jasper.Codegen.StructureMap;
+using Jasper.Configuration;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Http.Routing.Codegen;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Shouldly;
 using StructureMap;
 using Xunit;
@@ -82,10 +85,45 @@ namespace Jasper.Testing.Http.Model
                 chainFor(x => x.put_command()).WriterType = GetType();
             });
         }
+
+        [Fact]
+        public void will_apply_generic_chain_attributes()
+        {
+            var chain = chainFor(x => x.post_select_name(null));
+            var frames = chain.DetermineFrames();
+
+            chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
+            chain.Middleware.Any(x => x is FakeMiddleware2).ShouldBeTrue();
+        }
+    }
+
+    public class FakeMiddleware1 : Frame
+    {
+        public FakeMiddleware1() : base(false)
+        {
+        }
+
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+        {
+
+        }
+    }
+
+    public class FakeMiddleware2 : Frame
+    {
+        public FakeMiddleware2() : base(false)
+        {
+        }
+
+        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+        {
+
+        }
     }
 
     public class RouteChainTarget
     {
+        [Middleware(typeof(FakeMiddleware1), typeof(FakeMiddleware2))]
         public void post_select_name(string name)
         {
 

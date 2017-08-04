@@ -13,6 +13,7 @@ namespace Jasper.Configuration
         public abstract void Modify(IChain chain);
     }
 
+
     public interface IModifyChain<T> where T : IChain
     {
         void Modify(T chain);
@@ -21,6 +22,7 @@ namespace Jasper.Configuration
     public interface IChain
     {
         IList<Frame> Middleware { get; }
+        IList<Frame> Postprocessors { get; }
     }
 
 
@@ -63,7 +65,7 @@ namespace Jasper.Configuration
 
             var handlerAtts = handlers.SelectMany(x => x.HandlerType.GetTypeInfo()
                 .GetCustomAttributes<TModifyAttribute>());
-                ;
+
             var methodAtts = handlers.SelectMany(x => x.Method.GetCustomAttributes<TModifyAttribute>());
 
             foreach (var attribute in handlerAtts.Concat(methodAtts))

@@ -1,5 +1,8 @@
 ﻿using System.Linq;
 using Jasper.Bus.Model;
+using Jasper.Codegen;
+using Jasper.Codegen.Compilation;
+using Jasper.Configuration;
 using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
@@ -39,8 +42,19 @@ namespace Jasper.Testing.Bus.Model
             chain.MaximumAttempts.ShouldBe(1);
         }
 
+        [Fact]
+        public void apply_generic_middleware()
+        {
+            var chain = HandlerChain.For<Target>(x => x.Go(null));
+            var frames = chain.DetermineFrames();
+
+            chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
+            chain.Middleware.Any(x => x is FakeMiddleware2).ShouldBeTrue();
+        }
+
         public class Target
         {
+            [Middleware(typeof(FakeMiddleware1), typeof(FakeMiddleware2))]
             public void Go(Message1 message)
             {
 
@@ -52,6 +66,30 @@ namespace Jasper.Testing.Bus.Model
             }
 
 
+        }
+
+        public class FakeMiddleware1 : Frame
+        {
+            public FakeMiddleware1() : base(false)
+            {
+            }
+
+            public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+            {
+
+            }
+        }
+
+        public class FakeMiddleware2 : Frame
+        {
+            public FakeMiddleware2() : base(false)
+            {
+            }
+
+            public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+            {
+
+            }
         }
 
     }
