@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus;
+using Jasper.Codegen;
 using Jasper.Http;
+using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Testing.Bus.Compilation;
@@ -26,6 +29,9 @@ namespace Jasper.Testing.Http
             registry.Http.Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
             registry.Messaging.Handlers.ExcludeTypes(x => true);
+
+            registry.Services.AddService<IWriterRule, CustomWriterRule>();
+            registry.Services.AddService<IReaderRule, CustomReaderRule>();
 
             theRuntime = JasperRuntime.For(registry);
         }
@@ -66,9 +72,44 @@ namespace Jasper.Testing.Http
             urls.UrlFor<OtherModel>().ShouldBe("/other");
         }
 
+        [Fact]
+        public void can_apply_custom_conneg_rules()
+        {
+            var rules = theRuntime.Get<ConnegRules>();
+            rules.Readers.First().ShouldBeOfType<CustomReaderRule>();
+            rules.Writers.First().ShouldBeOfType<CustomWriterRule>();
+        }
+
         public void Dispose()
         {
             theRuntime?.Dispose();
+        }
+    }
+
+
+    public class CustomReaderRule : IReaderRule
+    {
+        public bool Applies(RouteChain chain)
+        {
+            return false;
+        }
+
+        public IEnumerable<Frame> DetermineReaders(RouteChain chain)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class CustomWriterRule : IWriterRule
+    {
+        public bool Applies(RouteChain chain)
+        {
+            return false;
+        }
+
+        public IEnumerable<Frame> DetermineWriters(RouteChain chain)
+        {
+            throw new NotImplementedException();
         }
     }
 
