@@ -22,7 +22,7 @@ namespace Jasper.Consul.Internal
         {
             LocalNode = local;
 
-            var consulKey = $"{TRANSPORTNODE_PREFIX}{LocalNode.NodeName}/{MachineName}";
+            var consulKey = $"{TRANSPORTNODE_PREFIX}{LocalNode.ServiceName}/{MachineName}";
 
             return client.KV.Put(new KVPair(TRANSPORTNODE_PREFIX + "/")
             {

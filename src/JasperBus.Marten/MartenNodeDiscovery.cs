@@ -35,7 +35,7 @@ namespace JasperBus.Marten
             using (var session = _documentStore.LightweightSession())
             {
                 var peers = await session.Query<TransportNode>()
-                    .Where(x => x.NodeName == LocalNode.NodeName && x.Id != LocalNode.Id)
+                    .Where(x => x.ServiceName == LocalNode.ServiceName && x.Id != LocalNode.Id)
                     .ToListAsync();
 
                 return peers.ToArray();

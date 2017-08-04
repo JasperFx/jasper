@@ -25,14 +25,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             _bus = _registry.Features.For<ServiceBusFeature>();
         }
 
-        public TransportNode TransportNode {
-            get
-            {
-                if(_transportNode == null)
-                    _transportNode = new TransportNode(_bus.Channels, _machineName);
-                return _transportNode;
-            }
-        }
+        public TransportNode TransportNode => _transportNode ?? (_transportNode = new TransportNode(_bus.Channels, _machineName));
 
         [Fact]
         public void sets_address_to_control_channel()
@@ -59,7 +52,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         [Fact]
         public void sets_nodeName()
         {
-            TransportNode.NodeName.ShouldBe(_registry.ServiceName);
+            TransportNode.ServiceName.ShouldBe(_registry.ServiceName);
         }
 
         [Fact]

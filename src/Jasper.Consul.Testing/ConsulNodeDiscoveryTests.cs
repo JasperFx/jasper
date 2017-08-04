@@ -48,7 +48,7 @@ namespace Jasper.Consul.Testing
 
             var peers = await theNodeDiscovery.FindPeers();
 
-            peers.Single().NodeName.ShouldBe("ConsulTestApp");
+            peers.Single().ServiceName.ShouldBe("ConsulTestApp");
         }
     }
 }

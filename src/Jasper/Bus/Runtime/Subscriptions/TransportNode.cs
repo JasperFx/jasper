@@ -13,13 +13,13 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public TransportNode(ChannelGraph graph, string machineName)
         {
-            NodeName = graph.Name;
+            ServiceName = graph.Name;
             ControlChannel = graph.ControlChannel?.Uri ?? graph.FirstOrDefault(x => x.Incoming)?.Uri;
             MachineName = machineName;
-            Id = $"{NodeName}@{machineName}";
+            Id = $"{ServiceName}@{machineName}";
         }
 
-        public string NodeName { get; set; }
+        public string ServiceName { get; set; }
         public string Id { get; set; }
 
         [Obsolete("Think this will be obsolete w/ the address")]
@@ -29,7 +29,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public override string ToString()
         {
-            return $"Id: {Id}, MachineName: {MachineName}, NodeName: {NodeName}";
+            return $"Id: {Id}, MachineName: {MachineName}, NodeName: {ServiceName}";
         }
     }
 }
