@@ -59,7 +59,7 @@ namespace Jasper.Http.Routing
             return "/" + route.Pattern;
         }
 
-        private static void assertNoParameters(Route route) 
+        private static void assertNoParameters(Route route)
         {
             if (route.HasParameters || route.HasSpread)
                 throw new UrlResolutionException($"Route {route} has arguments and cannot be resolved this way");
@@ -137,6 +137,19 @@ namespace Jasper.Http.Routing
             var route = RouteFor(typeof(THandler), method);
 
             return route.ReadRouteDataFromMethodArguments(expression);
+        }
+
+        public string UrlFor(Type handlerType, string methodName)
+        {
+            var routes = _routesPerHandler[handlerType];
+            var route = routes.FirstOrDefault(x => x.Method.Name == methodName);
+
+            if (route == null)
+            {
+                throw new ArgumentOutOfRangeException($"Could not find a route for handler {handlerType.FullName}.{methodName}()");
+            }
+
+            return "/" + route.Pattern;
         }
 
         public string UrlFor(string routeName, IDictionary<string, object> parameters = null)

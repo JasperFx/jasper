@@ -89,7 +89,7 @@ namespace Jasper.Testing.Http.Routing
             urls.UrlFor(model).ShouldBe("/qsandroute/test/23?Param=42");
         }
         */
-        
+
         [Fact]
         public void retrieve_url_by_urn_name_with_parameters()
         {
@@ -103,7 +103,7 @@ namespace Jasper.Testing.Http.Routing
         {
             urls.UrlFor("A").ShouldBe("/one/a");
         }
-        
+
 
         [Fact]
         public void retrieve_a_url_for_a_model_and_http_method()
@@ -145,6 +145,12 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [Fact]
+        public void url_for_handler_type_and_method_positive_by_method_name()
+        {
+            urls.UrlFor(typeof(OneController), nameof(OneController.head_one_m3)).ShouldBe("/one/m3");
+        }
+
+        [Fact]
         public void url_for_handler_type_and_method_negative_case_should_throw_204()
         {
             Exception<UrlResolutionException>.ShouldBeThrownBy(() => {
@@ -153,7 +159,7 @@ namespace Jasper.Testing.Http.Routing
             });
         }
 
-        
+
         [Fact]
         public void url_for_by_type_respects_the_absolute_path()
         {
@@ -162,7 +168,7 @@ namespace Jasper.Testing.Http.Routing
         }
 
 
-        
+
     }
 
 
