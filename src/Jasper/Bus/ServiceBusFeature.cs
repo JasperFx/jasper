@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -76,6 +77,22 @@ namespace Jasper.Bus
             container.GetInstance<IDelayedJobProcessor>().Start(pipeline, Channels);
 
             await container.GetInstance<ISubscriptionActivator>().Activate();
+        }
+
+        public void Describe(JasperRuntime runtime, TextWriter writer)
+        {
+            var incoming = Channels.Where(x => x.Incoming).Distinct().ToArray();
+            if (incoming.Any())
+            {
+                foreach (var node in incoming)
+                {
+                    writer.WriteLine($"Listening for messages at {node.Uri}");
+                }
+            }
+            else
+            {
+                writer.WriteLine("No incoming message channels configured");
+            }
         }
 
         private void startTransports(ITransport[] transports, IHandlerPipeline pipeline)

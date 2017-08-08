@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
@@ -29,6 +30,12 @@ namespace Jasper.Diagnostics
                 _server = new DiagnosticsServer();
                 _server.Start(settings, runtime.Container);
             });
+        }
+
+        public void Describe(JasperRuntime runtime, TextWriter writer)
+        {
+            // TODO -- do more here, at least tell them the location
+            writer.WriteLine("Diagostics are running...");
         }
 
         void IDisposable.Dispose()

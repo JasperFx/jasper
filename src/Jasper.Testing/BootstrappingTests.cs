@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Jasper.Codegen;
 using Jasper.Configuration;
@@ -185,6 +186,11 @@ namespace Jasper.Testing
             Runtime = runtime;
             WasActivated = true;
             return Task.CompletedTask;
+        }
+
+        public void Describe(JasperRuntime runtime, TextWriter writer)
+        {
+            throw new NotImplementedException();
         }
 
         public JasperRuntime Runtime { get; set; }

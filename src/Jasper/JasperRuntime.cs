@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
+using Microsoft.AspNetCore.Hosting;
 using StructureMap;
 using StructureMap.Graph;
 
@@ -13,8 +15,8 @@ namespace Jasper
 {
     public class JasperRuntime : IDisposable
     {
-        public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
         private readonly JasperRegistry _registry;
+        private bool isDisposing;
 
         private JasperRuntime(JasperRegistry registry, Registry[] serviceRegistries)
         {
@@ -23,9 +25,7 @@ namespace Jasper
                 _.AddRegistry(registry.ExtensionServices);
                 _.AddRegistry(registry.Services);
                 foreach (var serviceRegistry in serviceRegistries)
-                {
                     _.AddRegistry(serviceRegistry);
-                }
 
                 _.For<JasperRuntime>().Use(this);
             })
@@ -38,7 +38,28 @@ namespace Jasper
             registry.Generation.Assemblies.Add(registry.ApplicationAssembly);
 
             _registry = registry;
+        }
 
+        public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
+
+        public IContainer Container { get; }
+
+        public bool IsDisposed { get; private set; }
+
+        public void Dispose()
+        {
+            // Because StackOverflowException's are a drag
+            if (IsDisposed || isDisposing) return;
+
+            isDisposing = true;
+
+            foreach (var feature in _registry.Features)
+                feature.Dispose();
+
+            Container.DisposalLock = DisposalLock.Unlocked;
+            Container?.Dispose();
+
+            IsDisposed = true;
         }
 
         public static JasperRuntime Basic()
@@ -68,7 +89,7 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Shorthand to fetch a service from the application container by type
+        ///     Shorthand to fetch a service from the application container by type
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -99,8 +120,6 @@ namespace Jasper
             return runtime;
         }
 
-        public IContainer Container { get;}
-
         private static void applyExtensions(JasperRegistry registry)
         {
             var assemblies = AssemblyFinder
@@ -117,25 +136,19 @@ namespace Jasper
             registry.ApplyExtensions(extensions);
         }
 
-        public bool IsDisposed { get; private set; }
-        private bool isDisposing;
-
-        public void Dispose()
+        public void Describe(TextWriter writer)
         {
-            // Because StackOverflowException's are a drag
-            if (IsDisposed || isDisposing) return;
+            var hosting = Get<IHostingEnvironment>();
+            writer.WriteLine($"Hosting environment: {hosting.EnvironmentName}");
+            writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
 
-            isDisposing = true;
 
             foreach (var feature in _registry.Features)
             {
-                feature.Dispose();
+                feature.Describe(this, writer);
             }
-
-            Container.DisposalLock = DisposalLock.Unlocked;
-            Container?.Dispose();
-
-            IsDisposed = true;
         }
     }
 }
+
+

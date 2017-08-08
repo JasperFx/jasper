@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -88,6 +89,16 @@ namespace Jasper.Http
 
                 activateLocally(runtime);
             });
+        }
+
+        public void Describe(JasperRuntime runtime, TextWriter writer)
+        {
+            var addressesFeature = runtime.Get<IWebHost>().ServerFeatures.Get<IServerAddressesFeature>();
+            var urls = addressesFeature?.Addresses ?? new string[0];
+            foreach (var url in urls)
+            {
+                writer.WriteLine($"Now listening on: {url}");
+            }
         }
 
         private void activateLocally(JasperRuntime runtime)

@@ -25,7 +25,9 @@ namespace Jasper.Testing.AspNetCoreIntegration
                 .UseStartup<Startup>()
                 .UseJasper<SimpleJasperBusApp>();
 
+
             theHost = builder.Build();
+
             theHost.Start();
 
         }
