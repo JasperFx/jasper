@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Baseline;
 using Jasper.Codegen;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
@@ -35,6 +36,8 @@ namespace Jasper.Http.Model
 
         public void BuildRoutingTree(ConnegRules rules, IGenerationConfig generation, IContainer container)
         {
+            assertNoDuplicateRoutes();
+
             foreach (var chain in _chains)
             {
                 rules.Apply(chain);
@@ -47,6 +50,26 @@ namespace Jasper.Http.Model
                 var route = handler.Chain.Route;
                 route.Handler = handler;
                 Router.Add(route);
+            }
+        }
+
+
+
+        private void assertNoDuplicateRoutes()
+        {
+            var duplicates = _chains
+                .GroupBy(x => x.Route.Name)
+                .Where(x => x.Count() > 1)
+                .Select(group => new DuplicateRoutesException(@group)).ToArray();
+
+            if (duplicates.Length == 1)
+            {
+                throw duplicates[0];
+            }
+
+            if (duplicates.Any())
+            {
+                throw new AggregateException(duplicates);
             }
         }
 
@@ -98,5 +121,12 @@ namespace Jasper.Http.Model
         /// Union of routed chains that respond to POST, PUT, or DELETE
         /// </summary>
         public IEnumerable<RouteChain> Commands => Posts.Union(Puts).Union(Deletes);
+    }
+
+    public class DuplicateRoutesException : Exception
+    {
+        public DuplicateRoutesException(IEnumerable<RouteChain> chains) : base($"Duplicated route with pattern {chains.First().Route.Name} between {chains.Select(x => $"{x.Action}").Join(", ")}")
+        {
+        }
     }
 }

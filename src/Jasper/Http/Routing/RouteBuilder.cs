@@ -12,7 +12,23 @@ namespace Jasper.Http.Routing
     // This is mostly tested through Storyteller specs
     public static class RouteBuilder
     {
+        public const string Index = "Index";
+        public static readonly string[] SpecialClassNames = new string[]{"HomeEndpoint", "ServiceEndpoint"};
         public static readonly IList<string> InputTypeNames = new List<string> {"input", "query", "message", "body"};
+        public static readonly Dictionary<string, string> SpecialMethodNames;
+
+        static RouteBuilder()
+        {
+            SpecialMethodNames = new Dictionary<string, string>
+            {
+                {Index, "GET"},
+            };
+
+            foreach (var httpVerb in HttpVerbs.All)
+            {
+                SpecialMethodNames.Add(httpVerb.ToLower().Capitalize(), httpVerb.ToUpper());
+            }
+        }
 
         public static Route Build<T>(Expression<Action<T>> expression)
         {
@@ -33,8 +49,6 @@ namespace Jasper.Http.Routing
                 .Select(x => x.Replace("@", "_")).ToArray();
 
 
-
-
             var verb = HttpVerbs.All.FirstOrDefault(x => x.EqualsIgnoreCase(parts[0]));
             if (verb.IsNotEmpty())
             {
@@ -49,6 +63,13 @@ namespace Jasper.Http.Routing
                 .Select((x, position) => new Segment(x.ToLowerInvariant(), position))
                 .OfType<ISegment>()
                 .ToArray();
+
+            if (SpecialClassNames.Contains(handlerType.Name) && SpecialMethodNames.ContainsKey(method.Name))
+            {
+                pattern = "/";
+                verb = SpecialMethodNames[method.Name];
+                segments = new ISegment[0];
+            }
 
 
             // TODO -- eliminate the old Fubu input model routing?

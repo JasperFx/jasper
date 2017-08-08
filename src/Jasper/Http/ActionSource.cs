@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Reflection;
 using Jasper.Codegen;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
@@ -30,6 +31,10 @@ namespace Jasper.Http
         public static bool IsCandidate(MethodInfo method)
         {
             if (method.DeclaringType == typeof(object)) return false;
+
+            if (method.HasAttribute<JasperIgnoreAttribute>()) return false;
+            if (method.DeclaringType.HasAttribute<JasperIgnoreAttribute>()) return false;
+
 
             var parameterCount = method.GetParameters() == null ? 0 : method.GetParameters().Length;
             if (parameterCount > 1) return false;

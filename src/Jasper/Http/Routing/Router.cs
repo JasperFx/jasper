@@ -16,7 +16,7 @@ namespace Jasper.Http.Routing
 
         public Router()
         {
-            HttpVerbs.All.Each(x => _trees.Add(x, new RouteTree()));
+            HttpVerbs.All.Each(x => _trees.Add(x, new RouteTree(x)));
         }
 
         public void Add(string method, string pattern,RequestDelegate appfunc)

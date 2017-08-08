@@ -98,7 +98,7 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void still_derives_the_name()
         {
-            route.Name.ShouldBe("folder/folder2/:name");
+            route.Name.ShouldBe("PUT:folder/folder2/:name");
         }
 
         [Fact]

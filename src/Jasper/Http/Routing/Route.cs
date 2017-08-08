@@ -55,7 +55,7 @@ namespace Jasper.Http.Routing
 
             pattern = pattern.TrimStart('/').TrimEnd('/');
 
-            Name = pattern;
+
             HttpMethod = httpMethod;
 
             var segments = pattern.Split('/');
@@ -68,6 +68,20 @@ namespace Jasper.Http.Routing
 
 
             Pattern = string.Join("/", _segments.Select(x => x.SegmentPath));
+
+            Name = $"{HttpMethod}:{Pattern}";
+
+            setupArgumentsAndSpread();
+        }
+
+        public Route(ISegment[] segments, string httpVerb)
+        {
+            _segments.AddRange(segments);
+
+            HttpMethod = httpVerb;
+
+            Pattern = _segments.Select(x => x.SegmentPath).Join("/");
+            Name = $"{HttpMethod}:{Pattern}";
 
             setupArgumentsAndSpread();
         }
@@ -84,17 +98,7 @@ namespace Jasper.Http.Routing
                     "The spread parameter can only be the last segment in a route");
         }
 
-        public Route(ISegment[] segments, string httpVerb)
-        {
-            _segments.AddRange(segments);
 
-            HttpMethod = httpVerb;
-
-            Pattern = _segments.Select(x => x.SegmentPath).Join("/");
-            Name = Pattern;
-
-            setupArgumentsAndSpread();
-        }
 
         public IEnumerable<ISegment> Segments => _segments;
 
