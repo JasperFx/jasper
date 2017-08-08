@@ -14,8 +14,6 @@ namespace Jasper.Bus.Configuration
             Excludes += method => method.Name == nameof(IDisposable.Dispose);
             Excludes += method => method.ContainsGenericParameters;
             Excludes += method => method.IsSpecialName;
-            Excludes += method => !method.HasAttribute<JasperIgnoreAttribute>();
-            Excludes += method => !method.DeclaringType.HasAttribute<JasperIgnoreAttribute>();
         }
 
         public void IgnoreMethodsDeclaredBy<T>()

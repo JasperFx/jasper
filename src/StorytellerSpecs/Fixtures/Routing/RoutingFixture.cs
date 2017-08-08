@@ -14,7 +14,7 @@ namespace StorytellerSpecs.Fixtures.Routing
 
         public override void SetUp()
         {
-            _tree = new RouteTree();
+            _tree = new RouteTree("GET");
         }
 
         [ExposeAsTable("If the routes are")]
