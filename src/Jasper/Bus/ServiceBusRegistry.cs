@@ -16,11 +16,11 @@ namespace Jasper.Bus
     {
         internal ServiceBusRegistry()
         {
-            ForSingletonOf<IInMemoryQueue>().Use<InMemoryQueue>();
+            ForSingletonOf<ILoopbackQueue>().Use<LoopbackQueue>();
 
             For<ITransport>().Singleton().AddInstances(_ =>
             {
-                _.Type<InMemoryTransport>();
+                _.Type<LoopbackTransport>();
                 _.Type<LightweightTransport>();
             });
 

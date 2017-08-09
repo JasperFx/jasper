@@ -30,7 +30,7 @@ namespace Jasper.Bus.Delayed
 
         public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
         {
-            _sender = channels[InMemoryTransport.Delayed].Sender;
+            _sender = channels[LoopbackTransport.Delayed].Sender;
         }
 
         public async Task PlayAll()

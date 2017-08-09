@@ -60,9 +60,9 @@ namespace IntegrationTests.DelayedJobs
         public DelayedMessageApp() : base()
         {
             Messaging.SendFromAssemblyContaining<DelayedMessageApp>()
-                .To("memory://incoming");
+                .To("loopback://incoming");
 
-            Channels.ListenForMessagesFrom("memory://incoming");
+            Channels.ListenForMessagesFrom("loopback://incoming");
 
             Logging.UseConsoleLogging = true;
         }

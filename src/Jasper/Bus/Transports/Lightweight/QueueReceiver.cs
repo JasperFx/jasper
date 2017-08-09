@@ -13,7 +13,7 @@ namespace Jasper.Bus.Transports.Lightweight
         private readonly ActionBlock<Envelope> _block;
         public string QueueName { get; }
 
-        public QueueReceiver(string queueName, IHandlerPipeline pipeline, ChannelGraph channels, ChannelNode node, IInMemoryQueue inmemory)
+        public QueueReceiver(string queueName, IHandlerPipeline pipeline, ChannelGraph channels, ChannelNode node, ILoopbackQueue inmemory)
         {
             QueueName = queueName;
             var receiver = new Receiver(pipeline, channels, node);
@@ -27,7 +27,7 @@ namespace Jasper.Bus.Transports.Lightweight
             _block = new ActionBlock<Envelope>(m => receive(inmemory, receiver, m), options);
         }
 
-        private Task receive(IInMemoryQueue inmemory, Receiver receiver, Envelope m)
+        private Task receive(ILoopbackQueue inmemory, Receiver receiver, Envelope m)
         {
             var callback = new LightweightCallback(inmemory);
             return receiver.Receive(m.Data, m.Headers, callback);

@@ -4,29 +4,29 @@
 -> lifecycle = Acceptance
 -> max-retries = 0
 -> last-updated = 2017-07-13T14:39:46.4334010Z
--> tags = 
+-> tags =
 
 [BusRouting]
 |> SubscriptionsAre
     [table]
     |MessageType|Destination    |Accepts         |
-    |Message1   |memory://one/  |application/json|
-    |Message2   |memory://two/  |NULL            |
-    |Message1   |memory://three/|application/json|
-    |Message2   |memory://four/ |application/json|
+    |Message1   |loopback://one/  |application/json|
+    |Message2   |loopback://two/  |NULL            |
+    |Message1   |loopback://three/|application/json|
+    |Message2   |loopback://four/ |application/json|
 
 |> ForMessage MessageType=Message1
 |> TheRoutesShouldBe
     [rows]
     |Destination   |ContentType     |
-    |memory://one  |application/json|
-    |memory://three|application/json|
+    |loopback://one  |application/json|
+    |loopback://three|application/json|
 
 |> ForMessage MessageType=Message2
 |> TheRoutesShouldBe
     [rows]
     |Destination  |ContentType     |
-    |memory://two |application/json|
-    |memory://four|application/json|
+    |loopback://two |application/json|
+    |loopback://four|application/json|
 
 ~~~

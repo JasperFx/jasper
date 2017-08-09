@@ -4,16 +4,16 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-07-13T16:29:35.4045020Z
--> tags = 
+-> tags =
 
 [BusRouting]
 |> SubscriptionsAre
     [table]
     |MessageType|Destination                |Accepts                |
-    |Message1   |memory://one/              |blue,green,red         |
-    |Message1   |memory://two/              |purple,application/json|
-    |Message1   |memory://three/            |NULL                   |
-    |Message1   |memory://four/             |missing,green          |
+    |Message1   |loopback://one/              |blue,green,red         |
+    |Message1   |loopback://two/              |purple,application/json|
+    |Message1   |loopback://three/            |NULL                   |
+    |Message1   |loopback://four/             |missing,green          |
     |Message1   |jasper://localhost:2201/one|red, purple            |
 
 |> SerializersAre contentTypes=green
@@ -28,9 +28,9 @@ There are no matching content types for the subscription to jasper://localhost:2
 |> TheRoutesShouldBe
     [rows]
     |Destination   |ContentType     |
-    |memory://one  |blue            |
-    |memory://two  |application/json|
-    |memory://three|application/json|
-    |memory://four |green           |
+    |loopback://one  |blue            |
+    |loopback://two  |application/json|
+    |loopback://three|application/json|
+    |loopback://four |green           |
 
 ~~~

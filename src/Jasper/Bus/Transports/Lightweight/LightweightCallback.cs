@@ -8,9 +8,9 @@ namespace Jasper.Bus.Transports.Lightweight
 {
     public class LightweightCallback : IMessageCallback
     {
-        private readonly IInMemoryQueue _retries;
+        private readonly ILoopbackQueue _retries;
 
-        public LightweightCallback(IInMemoryQueue retries)
+        public LightweightCallback(ILoopbackQueue retries)
         {
             _retries = retries;
         }
@@ -39,7 +39,7 @@ namespace Jasper.Bus.Transports.Lightweight
 
         public Task Requeue(Envelope envelope)
         {
-            return _retries.Send(envelope, InMemoryTransport.Retries);
+            return _retries.Send(envelope, LoopbackTransport.Retries);
         }
 
         public Task Send(Envelope envelope)

@@ -165,7 +165,7 @@ namespace Jasper.Bus
 
             if (DelayedJobsRunInMemory)
             {
-                Channels.AddChannelIfMissing(InMemoryTransport.Delayed).Incoming = true;
+                Channels.AddChannelIfMissing(LoopbackTransport.Delayed).Incoming = true;
 
                 Services.ForSingletonOf<IDelayedJobProcessor>().Use<InMemoryDelayedJobProcessor>();
             }

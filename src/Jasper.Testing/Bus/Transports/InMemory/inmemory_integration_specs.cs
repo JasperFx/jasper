@@ -17,7 +17,7 @@ namespace Jasper.Testing.Bus.Transports.InMemory
         {
             with(_ =>
             {
-                _.Messaging.Send<Message1>().To("memory://incoming");
+                _.Messaging.Send<Message1>().To("loopback://incoming");
 
                 _.Services.For<MessageTracker>().Use(theTracker);
 
@@ -32,7 +32,7 @@ namespace Jasper.Testing.Bus.Transports.InMemory
         [Fact]
         public void automatically_sticks_in_replies_queue()
         {
-            Channels.HasChannel(InMemoryTransport.Retries)
+            Channels.HasChannel(LoopbackTransport.Retries)
                 .ShouldBeTrue();
         }
 

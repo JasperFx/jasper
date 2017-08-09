@@ -15,16 +15,16 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.Channels.ListenForMessagesFrom("memory://one");
-                _.Channels.ListenForMessagesFrom("memory://two");
-                _.Channels.ListenForMessagesFrom("memory://three");
+                _.Channels.ListenForMessagesFrom("loopback://one");
+                _.Channels.ListenForMessagesFrom("loopback://two");
+                _.Channels.ListenForMessagesFrom("loopback://three");
 
-                _.Channels["memory://two"].UseAsControlChannel();
+                _.Channels["loopback://two"].UseAsControlChannel();
             });
 
             var controlChannel = channels().ControlChannel;
 
-            controlChannel.Uri.ShouldBe("memory://two".ToUri());
+            controlChannel.Uri.ShouldBe("loopback://two".ToUri());
         }
 
         private ChannelGraph channels()
@@ -37,21 +37,21 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.Channels.ListenForMessagesFrom("memory://one");
-                _.Channels.ListenForMessagesFrom("memory://two")
+                _.Channels.ListenForMessagesFrom("loopback://one");
+                _.Channels.ListenForMessagesFrom("loopback://two")
                     .DeliveryFastWithoutGuarantee();
-                _.Channels.ListenForMessagesFrom("memory://three");
+                _.Channels.ListenForMessagesFrom("loopback://three");
 
             });
 
             var channelGraph = channels();
-            channelGraph["memory://two".ToUri()]
+            channelGraph["loopback://two".ToUri()]
                 .Mode.ShouldBe(DeliveryMode.DeliveryFastWithoutGuarantee);
 
-            channelGraph["memory://one".ToUri()]
+            channelGraph["loopback://one".ToUri()]
                 .Mode.ShouldBe(DeliveryMode.DeliveryGuaranteed);
 
-            channelGraph["memory://three".ToUri()]
+            channelGraph["loopback://three".ToUri()]
                 .Mode.ShouldBe(DeliveryMode.DeliveryGuaranteed);
         }
 
@@ -60,21 +60,21 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.Messaging.Send<Message1>().To("memory://one");
-                _.Messaging.Send<Message2>().To("memory://two");
-                _.Messaging.Send<Message3>().To("memory://three");
+                _.Messaging.Send<Message1>().To("loopback://one");
+                _.Messaging.Send<Message2>().To("loopback://two");
+                _.Messaging.Send<Message3>().To("loopback://three");
 
-                _.Channels["memory://two"]
+                _.Channels["loopback://two"]
                     .ModifyWith<FakeModifier>()
                     .ModifyWith(new FakeModifier2());
             });
 
             var channelGraph = channels();
 
-            channelGraph["memory://one".ToUri()].Modifiers.Any().ShouldBeFalse();
-            channelGraph["memory://three".ToUri()].Modifiers.Any().ShouldBeFalse();
+            channelGraph["loopback://one".ToUri()].Modifiers.Any().ShouldBeFalse();
+            channelGraph["loopback://three".ToUri()].Modifiers.Any().ShouldBeFalse();
 
-            channelGraph["memory://two".ToUri()].Modifiers.Select(x => x.GetType())
+            channelGraph["loopback://two".ToUri()].Modifiers.Select(x => x.GetType())
                 .ShouldHaveTheSameElementsAs(typeof(FakeModifier), typeof(FakeModifier2));
         }
 
@@ -85,14 +85,14 @@ namespace Jasper.Testing.Bus
             {
                 _.Serialization.Add<Serializer1>().Add<Serializer2>();
 
-                _.Messaging.Send<Message1>().To("memory://one");
-                _.Messaging.Send<Message2>().To("memory://two");
-                _.Messaging.Send<Message3>().To("memory://three");
+                _.Messaging.Send<Message1>().To("loopback://one");
+                _.Messaging.Send<Message2>().To("loopback://two");
+                _.Messaging.Send<Message3>().To("loopback://three");
 
-                _.Channels["memory://two"].AcceptedContentTypes("text/xml");
+                _.Channels["loopback://two"].AcceptedContentTypes("text/xml");
             });
 
-            channels()["memory://two"].AcceptedContentTypes.Single()
+            channels()["loopback://two"].AcceptedContentTypes.Single()
                 .ShouldBe("text/xml");
 
             // Bad test
@@ -105,22 +105,22 @@ namespace Jasper.Testing.Bus
             {
                 _.Serialization.Add<Serializer1>().Add<Serializer2>();
 
-                _.Messaging.Send<Message1>().To("memory://one");
-                _.Messaging.Send<Message2>().To("memory://two");
-                _.Messaging.Send<Message3>().To("memory://three");
+                _.Messaging.Send<Message1>().To("loopback://one");
+                _.Messaging.Send<Message2>().To("loopback://two");
+                _.Messaging.Send<Message3>().To("loopback://three");
 
-                _.Channels["memory://two"].AcceptedContentTypes("application/json", "fake/one")
+                _.Channels["loopback://two"].AcceptedContentTypes("application/json", "fake/one")
                     .DefaultContentType("fake/two");
 
-                _.Channels["memory://three"]
+                _.Channels["loopback://three"]
                     .AcceptedContentTypes("application/json", "fake/one")
                     .DefaultContentType("fake/one");
             });
 
-            channels()["memory://two"].AcceptedContentTypes
+            channels()["loopback://two"].AcceptedContentTypes
                 .ShouldHaveTheSameElementsAs("fake/two", "application/json", "fake/one");
 
-            channels()["memory://three"].AcceptedContentTypes.First()
+            channels()["loopback://three"].AcceptedContentTypes.First()
                 .ShouldBe("fake/one");
         }
 

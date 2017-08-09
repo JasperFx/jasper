@@ -4,25 +4,25 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-04-18T21:35:24.3173393Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    memory://one
+    loopback://one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    memory://two
+    loopback://two
     ```
 
     |> ReceivingMessage1CascadesMessage2
     |> ListenForMessagesFrom
     ``` channel
-    memory://two
+    loopback://two
     ```
 
 
@@ -30,7 +30,7 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt  |MessageType|Name          |
-    |memory://one|Message1   |Jamaal Charles|
-    |memory://two|Message2   |Jamaal Charles|
+    |loopback://one|Message1   |Jamaal Charles|
+    |loopback://two|Message2   |Jamaal Charles|
 
 ~~~

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Transports.InMemory
 {
-    public class InMemorySender : ISender
+    public class LoopbackSender : ISender
     {
         private readonly Uri _destination;
-        private readonly IInMemoryQueue _queue;
+        private readonly ILoopbackQueue _queue;
 
-        public InMemorySender(Uri destination, IInMemoryQueue queue)
+        public LoopbackSender(Uri destination, ILoopbackQueue queue)
         {
             _queue = queue;
             _destination = destination;

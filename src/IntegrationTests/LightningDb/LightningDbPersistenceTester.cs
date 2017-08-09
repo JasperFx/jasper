@@ -158,13 +158,13 @@ namespace IntegrationTests.LightningDb
         {
             var envelopes = new Envelope[]
             {
-                envelope(),  
-                envelope(),  
-                envelope(),  
-                envelope(),  
-                envelope(),  
-                envelope(),  
-                envelope(),  
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
+                envelope(),
             };
 
             thePersistence.Store(LightningDbPersistence.Outgoing, envelopes);
@@ -176,7 +176,7 @@ namespace IntegrationTests.LightningDb
             envelopes[4].Attempts = 1;
 
 
-            var batch = new OutgoingMessageBatch("memory://one".ToUri(), envelopes );
+            var batch = new OutgoingMessageBatch("loopback://one".ToUri(), envelopes );
 
             thePersistence.PersistBasedOnSentAttempts(batch, 3);
 

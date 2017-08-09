@@ -15,7 +15,7 @@ namespace Jasper.Bus.Transports.Lightweight
     public class LightweightTransport : ITransport, ISenderCallback
     {
         private readonly BusSettings _settings;
-        private readonly IInMemoryQueue _inmemory;
+        private readonly ILoopbackQueue _inmemory;
         private readonly IBusLogger _logger;
         private readonly SendingAgent _sender;
         private readonly Uri _replyUri;
@@ -23,7 +23,7 @@ namespace Jasper.Bus.Transports.Lightweight
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
         private LightweightQueues _queues;
 
-        public LightweightTransport(BusSettings settings, IInMemoryQueue inmemory, CompositeLogger logger)
+        public LightweightTransport(BusSettings settings, ILoopbackQueue inmemory, CompositeLogger logger)
         {
             _settings = settings;
             _inmemory = inmemory;

@@ -4,24 +4,24 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-04-18T15:00:58.4857118Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
     [ServiceBusApplication]
     |> ListenForMessagesFrom
     ``` channel
-    memory://one
+    loopback://one
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    memory://one
+    loopback://one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    memory://one
+    loopback://one
     ```
 
 
@@ -30,7 +30,7 @@ There is no handler for UnhandledMessage in this configuration
 
 |> SendMessageDirectly messageType=UnhandledMessage, name=Bill
 ``` address
-memory://one
+loopback://one
 ```
 
 |> SendMessage messageType=Message1, name=Suzy
@@ -38,7 +38,7 @@ memory://one
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                 |MessageType|Name   |
-    |memory://one|Message1   |Suzy   |
-    |memory://one|Message2   |Russell|
+    |loopback://one|Message1   |Suzy   |
+    |loopback://one|Message2   |Russell|
 
 ~~~

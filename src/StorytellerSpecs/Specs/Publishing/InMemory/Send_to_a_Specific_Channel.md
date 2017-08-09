@@ -4,7 +4,7 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-04-18T20:34:18.0228532Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
@@ -12,35 +12,35 @@
     |> SendMessage messageType=Message1, channel=stub://one
     |> SendMessage messageType=Message2
     ``` channel
-    memory://two
+    loopback://two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    memory://three
+    loopback://three
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    memory://four
+    loopback://four
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    memory://four
+    loopback://four
     ```
 
 
 |> SendMessageDirectly messageType=Message1, name=Hank
 ``` address
-memory://three
+loopback://three
 ```
 
 |> TheMessagesSentShouldBe
     [rows]
     |> TheMessagesSentShouldBe-row MessageType=Message1, Name=Hank
     ``` ReceivedAt
-    memory://three
+    loopback://three
     ```
 
 

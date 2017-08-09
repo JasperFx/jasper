@@ -18,7 +18,7 @@ namespace Jasper.Testing.Bus.Runtime
         public ReceiverContentTypeHandling()
         {
             theGraph = new ChannelGraph();
-            theNode = new ChannelNode(new Uri("memory://foo"));
+            theNode = new ChannelNode(new Uri("loopback://foo"));
 
             thePipeline = new RecordingHandlerPipeline();
 

@@ -30,7 +30,7 @@ namespace Jasper.Testing.Bus.Serializers
                 ContentType = "application/json"
             };
 
-            serialization.Deserialize(envelope, new ChannelNode("memory://one".ToUri()))
+            serialization.Deserialize(envelope, new ChannelNode("loopback://one".ToUri()))
                 .ShouldBeOfType<Message2>();
         }
 
@@ -51,7 +51,7 @@ namespace Jasper.Testing.Bus.Serializers
                 ContentType = null
             };
 
-            serialization.Deserialize(envelope, new ChannelNode("memory://one".ToUri()))
+            serialization.Deserialize(envelope, new ChannelNode("loopback://one".ToUri()))
                 .ShouldBeOfType<Message2>();
         }
     }

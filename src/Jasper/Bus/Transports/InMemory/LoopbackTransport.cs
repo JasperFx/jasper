@@ -7,19 +7,19 @@ using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus.Transports.InMemory
 {
-    public class InMemoryTransport : ITransport
+    public class LoopbackTransport : ITransport
     {
-        private readonly InMemorySettings _settings;
+        private readonly LoopbackSettings _settings;
         private Uri _replyUri;
-        private readonly IInMemoryQueue _queue;
+        private readonly ILoopbackQueue _queue;
 
-        public InMemoryTransport(InMemorySettings settings, IInMemoryQueue queue)
+        public LoopbackTransport(LoopbackSettings settings, ILoopbackQueue queue)
         {
             _settings = settings;
             _queue = queue;
         }
 
-        public string Protocol => "memory";
+        public string Protocol => "loopback";
 
         public Task Send(Envelope envelope, Uri destination)
         {
@@ -44,7 +44,7 @@ namespace Jasper.Bus.Transports.InMemory
             {
                 node.Destination = node.Uri;
                 node.ReplyUri = _replyUri;
-                node.Sender = new InMemorySender(node.Uri, _queue);
+                node.Sender = new LoopbackSender(node.Uri, _queue);
 
                 _queue.ListenForMessages(node, pipeline, channels);
 
@@ -61,7 +61,7 @@ namespace Jasper.Bus.Transports.InMemory
 
         }
 
-        public static readonly Uri Delayed = "memory://delayed".ToUri();
-        public static readonly Uri Retries = "memory://retries".ToUri();
+        public static readonly Uri Delayed = "loopback://delayed".ToUri();
+        public static readonly Uri Retries = "loopback://retries".ToUri();
     }
 }

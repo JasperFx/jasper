@@ -17,10 +17,10 @@ namespace Jasper.Testing.Bus
 
             with(_ =>
             {
-                _.Messaging.Send<Message1>().To("memory://one");
-                _.Messaging.Send<Message2>().To("memory://two");
+                _.Messaging.Send<Message1>().To("loopback://one");
+                _.Messaging.Send<Message2>().To("loopback://two");
 
-                _.Channels["memory://one"].ModifyWith<FooModifier>().ModifyWith<BarModifier>();
+                _.Channels["loopback://one"].ModifyWith<FooModifier>().ModifyWith<BarModifier>();
             });
 
 

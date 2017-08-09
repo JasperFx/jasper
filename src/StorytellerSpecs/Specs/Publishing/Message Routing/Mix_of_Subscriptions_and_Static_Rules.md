@@ -4,10 +4,10 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-07-13T16:29:42.4676280Z
--> tags = 
+-> tags =
 
 [BusRouting]
-|> SendMessage messageType=Message1, channel=memory://one/
+|> SendMessage messageType=Message1, channel=loopback://one/
 |> SendMessage messageType=Message2
 ``` channel
 jasper://localhost:2201/one
@@ -16,17 +16,17 @@ jasper://localhost:2201/one
 |> SubscriptionsAre
     [table]
     |MessageType|Destination    |Accepts         |
-    |Message1   |memory://two/  |application/json|
-    |Message1   |memory://three/|NULL            |
-    |Message2   |memory://four/ |application/json|
+    |Message1   |loopback://two/  |application/json|
+    |Message1   |loopback://three/|NULL            |
+    |Message2   |loopback://four/ |application/json|
 
 |> ForMessage MessageType=Message1
 |> TheRoutesShouldBe
     [rows]
     |Destination   |ContentType     |
-    |memory://one  |application/json|
-    |memory://two  |application/json|
-    |memory://three|application/json|
+    |loopback://one  |application/json|
+    |loopback://two  |application/json|
+    |loopback://three|application/json|
 
 |> ForMessage MessageType=Message2
 ~~~

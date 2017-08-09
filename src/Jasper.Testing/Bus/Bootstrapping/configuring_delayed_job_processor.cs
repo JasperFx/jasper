@@ -12,9 +12,9 @@ namespace Jasper.Testing.Bus.Bootstrapping
         {
             theRegistry.Messaging.DelayedProcessing.RunInMemory();
 
-            theChannels.HasChannel(InMemoryTransport.Delayed).ShouldBeTrue();
+            theChannels.HasChannel(LoopbackTransport.Delayed).ShouldBeTrue();
 
-            var channel = theChannels[InMemoryTransport.Delayed];
+            var channel = theChannels[LoopbackTransport.Delayed];
             channel.Incoming.ShouldBeTrue();
             channel.Sender.ShouldNotBeNull();
         }

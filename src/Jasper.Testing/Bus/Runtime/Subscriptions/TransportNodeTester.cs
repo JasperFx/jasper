@@ -9,9 +9,9 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
 {
     public class TransportNodeTester
     {
-        private readonly Uri _incomingChannel = "memory://incoming".ToUri();
-        private readonly Uri _channel = "memory://channel".ToUri();
-        private readonly Uri _controlChannel = "memory://control".ToUri();
+        private readonly Uri _incomingChannel = "loopback://incoming".ToUri();
+        private readonly Uri _channel = "loopback://channel".ToUri();
+        private readonly Uri _controlChannel = "loopback://control".ToUri();
         private readonly string _machineName = "Machine";
         private readonly JasperRegistry _registry;
         private readonly ServiceBusFeature _bus;

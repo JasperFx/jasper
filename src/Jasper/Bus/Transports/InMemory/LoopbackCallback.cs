@@ -5,16 +5,16 @@ using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus.Transports.InMemory
 {
-    public class InMemoryCallback : IMessageCallback
+    public class LoopbackCallback : IMessageCallback
     {
-        private readonly InMemoryQueue _queue;
-        private readonly InMemoryMessage _message;
+        private readonly LoopbackQueue _queue;
+        private readonly LoopbackMessage _message;
         private readonly Uri _destination;
 
         public bool Successful { get; private set; } = false;
         public bool Failed { get; private set; } = false;
 
-        public InMemoryCallback(InMemoryQueue queue, InMemoryMessage message, Uri destination)
+        public LoopbackCallback(LoopbackQueue queue, LoopbackMessage message, Uri destination)
         {
             _queue = queue;
             _message = message;
@@ -61,7 +61,7 @@ namespace Jasper.Bus.Transports.InMemory
         public Task Send(Envelope envelope)
         {
 
-            var message = new InMemoryMessage(envelope, DateTime.UtcNow);
+            var message = new LoopbackMessage(envelope, DateTime.UtcNow);
 
             return _queue.Send(message, envelope.Destination);
         }

@@ -24,7 +24,7 @@ namespace Jasper.Testing.Bus
             {
                 _.Services.For<WorkTracker>().Use(theTracker);
 
-                _.Messaging.SendFromAssemblyContaining<Message1>().To("memory://cascading");
+                _.Messaging.SendFromAssemblyContaining<Message1>().To("loopback://cascading");
 
                 _.Logging.LogBusEventsWith(this);
 

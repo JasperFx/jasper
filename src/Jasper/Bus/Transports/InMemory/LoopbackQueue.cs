@@ -10,23 +10,12 @@ using Microsoft.Extensions.Options;
 
 namespace Jasper.Bus.Transports.InMemory
 {
-    public interface IInMemoryQueue
+    public class LoopbackQueue : IDisposable, ILoopbackQueue
     {
-        void SendToReceiver(Uri destination, IReceiver receiver, InMemoryMessage message);
-        void Start(IEnumerable<ChannelNode> nodes);
-        Task Send(Envelope envelope, Uri destination);
-        Task Send(InMemoryMessage message, Uri destination);
-        Task Delay(InMemoryMessage message, Uri destination, TimeSpan delayTime);
-        void ListenForMessages(ChannelNode node, IHandlerPipeline pipeline, ChannelGraph channels);
-        Envelope EnvelopeForInlineMessage(object message);
-    }
+        private readonly IDictionary<Uri, BroadcastBlock<LoopbackMessage>> _buffers = new Dictionary<Uri, BroadcastBlock<LoopbackMessage>>();
+        private readonly LoopbackSettings _settings;
 
-    public class InMemoryQueue : IDisposable, IInMemoryQueue
-    {
-        private readonly IDictionary<Uri, BroadcastBlock<InMemoryMessage>> _buffers = new Dictionary<Uri, BroadcastBlock<InMemoryMessage>>();
-        private readonly InMemorySettings _settings;
-
-        public InMemoryQueue(InMemorySettings settings)
+        public LoopbackQueue(LoopbackSettings settings)
         {
             _settings = settings;
         }
@@ -34,15 +23,15 @@ namespace Jasper.Bus.Transports.InMemory
         public Envelope EnvelopeForInlineMessage(object message)
         {
             var envelope = Envelope.ForMessage(message);
-            envelope.Destination = InMemoryTransport.Retries;
-            envelope.Callback = new InMemoryCallback(this, InMemoryMessage.ForEnvelope(envelope), InMemoryTransport.Retries);
+            envelope.Destination = LoopbackTransport.Retries;
+            envelope.Callback = new LoopbackCallback(this, LoopbackMessage.ForEnvelope(envelope), LoopbackTransport.Retries);
 
             return envelope;
         }
 
-        public void SendToReceiver(Uri destination, IReceiver receiver, InMemoryMessage message)
+        public void SendToReceiver(Uri destination, IReceiver receiver, LoopbackMessage message)
         {
-            var callback = new InMemoryCallback(this, message, destination);
+            var callback = new LoopbackCallback(this, message, destination);
             message.Headers[Envelope.ReceivedAtKey] = destination.ToString();
 
             if (message.Message == null)
@@ -67,7 +56,7 @@ namespace Jasper.Bus.Transports.InMemory
 
                 foreach (var node in nodes.Distinct())
                 {
-                    _buffers.Add(node.Uri, new BroadcastBlock<InMemoryMessage>(_ => _, bufferOptions));
+                    _buffers.Add(node.Uri, new BroadcastBlock<LoopbackMessage>(_ => _, bufferOptions));
                 }
             }
             catch (Exception e)
@@ -79,18 +68,18 @@ namespace Jasper.Bus.Transports.InMemory
 
         public Task Send(Envelope envelope, Uri destination)
         {
-            var payload = InMemoryMessage.ForEnvelope(envelope);
+            var payload = LoopbackMessage.ForEnvelope(envelope);
 
             return Send(payload, destination);
         }
 
-        public Task Send(InMemoryMessage message, Uri destination)
+        public Task Send(LoopbackMessage message, Uri destination)
         {
             return _buffers[destination].SendAsync(message);
         }
 
         [Obsolete("Going to use the new delayed processor")]
-        public async Task Delay(InMemoryMessage message, Uri destination, TimeSpan delayTime)
+        public async Task Delay(LoopbackMessage message, Uri destination, TimeSpan delayTime)
         {
             await Task.Delay(delayTime).ConfigureAwait(false);
             await Send(message, destination).ConfigureAwait(false);
@@ -117,7 +106,7 @@ namespace Jasper.Bus.Transports.InMemory
                 MaxDegreeOfParallelism = node.MaximumParallelization
             };
 
-            var actionBlock = new ActionBlock<InMemoryMessage>(message =>
+            var actionBlock = new ActionBlock<LoopbackMessage>(message =>
             {
                 SendToReceiver(node.Uri, receiver, message);
             }, options);

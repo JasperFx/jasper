@@ -14,12 +14,12 @@ namespace Jasper.Bus.Transports.Lightweight
     public class LightweightQueues : IReceiverCallback, IDisposable
     {
         private readonly IBusLogger _logger;
-        private readonly IInMemoryQueue _queue;
+        private readonly ILoopbackQueue _queue;
         private readonly IHandlerPipeline _pipeline;
         private readonly ChannelGraph _channels;
         private readonly Dictionary<string, QueueReceiver > _receivers = new Dictionary<string, QueueReceiver >();
 
-        public LightweightQueues(IBusLogger logger, IInMemoryQueue queue, IHandlerPipeline pipeline, ChannelGraph channels)
+        public LightweightQueues(IBusLogger logger, ILoopbackQueue queue, IHandlerPipeline pipeline, ChannelGraph channels)
         {
             _logger = logger;
             _queue = queue;

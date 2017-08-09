@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bus
             var router = Runtime.Get<IMessageRouter>();
             var tracks = await router.Route(typeof(Message1));
 
-            tracks.Single().Destination.ShouldBe("memory://one".ToUri());
+            tracks.Single().Destination.ShouldBe("loopback://one".ToUri());
         }
 
         [Fact]
@@ -45,8 +45,8 @@ namespace Jasper.Testing.Bus
             var subscriptions = await Runtime.Get<ISubscriptionsRepository>().LoadSubscriptions(SubscriptionRole.Subscribes);
 
             var subscription = subscriptions.Single();
-            subscription.Receiver.ShouldBe("memory://one".ToUri());
-            subscription.Source.ShouldBe("memory://two".ToUri());
+            subscription.Receiver.ShouldBe("loopback://one".ToUri());
+            subscription.Source.ShouldBe("loopback://two".ToUri());
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Jasper.Testing.Bus
                 _.Channels.Add("fake://one");
             });
 
-            Channels.Where(x => x.Uri.Scheme == "memory").Any(x => x.Uri == "memory://one".ToUri())
+            Channels.Where(x => x.Uri.Scheme == "loopback").Any(x => x.Uri == "loopback://one".ToUri())
                 .ShouldBeTrue();
 
 
@@ -73,9 +73,9 @@ namespace Jasper.Testing.Bus
                 _.Channels.Add("fake://one");
             });
 
-            Channels["fake://one"].ShouldBeSameAs(Channels["memory://one"]);
+            Channels["fake://one"].ShouldBeSameAs(Channels["loopback://one"]);
 
-            Channels["fake://one"].Uri.ShouldBe("memory://one".ToUri());
+            Channels["fake://one"].Uri.ShouldBe("loopback://one".ToUri());
         }
 
         [Fact]
@@ -97,7 +97,7 @@ namespace Jasper.Testing.Bus
 
             var envelope = await waiter;
 
-            envelope.Destination.ShouldBe("memory://one".ToUri());
+            envelope.Destination.ShouldBe("loopback://one".ToUri());
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace Jasper.Testing.Bus
 
             var envelope = await waiter;
 
-            envelope.Destination.ShouldBe("memory://one".ToUri());
+            envelope.Destination.ShouldBe("loopback://one".ToUri());
         }
 
         [Fact]
@@ -143,7 +143,7 @@ namespace Jasper.Testing.Bus
         public string Protocol { get; } = "fake";
         public Task<Uri[]> Lookup(Uri[] originals)
         {
-            var actuals = originals.Select(x => $"memory://{x.Host}".ToUri());
+            var actuals = originals.Select(x => $"loopback://{x.Host}".ToUri());
 
             return Task.FromResult(actuals.ToArray());
         }

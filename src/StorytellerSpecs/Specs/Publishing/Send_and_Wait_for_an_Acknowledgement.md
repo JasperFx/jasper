@@ -4,14 +4,14 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-07-06T18:26:22.2482512Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
     [ServiceBusApplication]
-    |> SendMessage messageType=Message1, channel=memory://one/
-    |> SendMessage messageType=ErrorMessage, channel=memory://one/
-    |> ListenForMessagesFrom channel=memory://one/
+    |> SendMessage messageType=Message1, channel=loopback://one/
+    |> SendMessage messageType=ErrorMessage, channel=loopback://one/
+    |> ListenForMessagesFrom channel=loopback://one/
 
 
 Happy Path

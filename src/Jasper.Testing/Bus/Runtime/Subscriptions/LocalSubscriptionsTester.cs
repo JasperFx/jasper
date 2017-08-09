@@ -21,9 +21,9 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
     {
         public readonly BusSettings _settings = new BusSettings
         {
-            Upstream = new Uri("memory://upstream"),
-            Downstream = new Uri("memory://downstream"),
-            Outbound = new Uri("memory://outbound")
+            Upstream = new Uri("loopback://upstream"),
+            Downstream = new Uri("loopback://downstream"),
+            Outbound = new Uri("loopback://outbound")
         };
         private readonly ChannelGraph _graph;
         private readonly Uri _localReplyUri;
