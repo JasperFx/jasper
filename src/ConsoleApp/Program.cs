@@ -21,4 +21,12 @@ namespace ConsoleApp
             Channels.ListenForMessagesFrom("jasper://localhost:2222/incoming");
         }
     }
+
+    public class HomeEndpoint
+    {
+        public string Get()
+        {
+            return "Hello, world.";
+        }
+    }
 }
