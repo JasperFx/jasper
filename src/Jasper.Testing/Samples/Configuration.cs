@@ -18,6 +18,14 @@ namespace Jasper.Testing.Samples
             {
                 _.SomeSetting = 5;
             });
+
+            // or additionally use IConfiguration
+            Settings.Alter<MySettings>((config, settings) =>
+            {
+                settings.SomeSetting = int.Parse(config["SomeKey"]);
+            });
+
+
             // ENDSAMPLE
 
             // SAMPLE: replace-settings
