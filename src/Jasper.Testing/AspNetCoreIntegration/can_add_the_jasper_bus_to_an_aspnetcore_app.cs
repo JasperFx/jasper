@@ -6,6 +6,8 @@ using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
+using Jasper.Testing.Samples;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Shouldly;
 using Xunit;
@@ -18,6 +20,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
 
         public can_add_the_jasper_bus_to_an_aspnetcore_app()
         {
+            // SAMPLE: adding-jasper-to-aspnetcore-app
             var builder = new WebHostBuilder();
             builder
                 .UseKestrel()
@@ -29,7 +32,36 @@ namespace Jasper.Testing.AspNetCoreIntegration
             theHost = builder.Build();
 
             theHost.Start();
+            // ENDSAMPLE
 
+        }
+
+        public void sample()
+        {
+            // SAMPLE: ordering-middleware-with-jasper
+            var builder = new WebHostBuilder();
+            builder
+                .UseKestrel()
+                .UseUrls("http://localhost:3003")
+                .Configure(app =>
+                {
+                    app.UseMiddleware<CustomMiddleware>();
+
+                    // Add the Jasper middleware
+                    app.AddJasper();
+
+                    // Nothing stopping you from using Jasper *and*
+                    // MVC, NancyFx, or any other ASP.Net Core
+                    // compatible framework
+                    app.AddMvc();
+                })
+                .UseJasper<SimpleJasperBusApp>();
+
+
+            theHost = builder.Build();
+
+            theHost.Start();
+            // ENDSAMPLE
         }
 
         public void Dispose()
@@ -68,9 +100,11 @@ namespace Jasper.Testing.AspNetCoreIntegration
         }
     }
 
+    // SAMPLE: SimpleJasperBusApp
     public class SimpleJasperBusApp : JasperRegistry
+    // ENDSAMPLE
     {
-        public SimpleJasperBusApp() : base()
+        public SimpleJasperBusApp()
         {
             Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
             Services.AddService<IFakeService, FakeService>();
@@ -78,6 +112,12 @@ namespace Jasper.Testing.AspNetCoreIntegration
         }
     }
 
-
+    public static class FakeExtensions
+    {
+        public static IApplicationBuilder AddMvc(this IApplicationBuilder app)
+        {
+            return app;
+        }
+    }
 }
 

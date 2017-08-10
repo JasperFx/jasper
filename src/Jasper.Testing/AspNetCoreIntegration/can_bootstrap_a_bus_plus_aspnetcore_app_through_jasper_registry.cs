@@ -59,6 +59,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
 
     }
 
+    // SAMPLE: ConfiguringAspNetCoreWithinJasperRegistry
     public class JasperServerApp : JasperRegistry
     {
         public JasperServerApp()
@@ -72,6 +73,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
 
         }
     }
+    // ENDSAMPLE
 
     public class Startup
     {
