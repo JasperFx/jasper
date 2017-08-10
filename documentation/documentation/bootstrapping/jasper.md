@@ -1,1 +1,0 @@
-<!--title:Idiomatic Jasper Bootstrapping-->

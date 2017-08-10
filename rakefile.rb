@@ -89,7 +89,7 @@ desc "Integration Tests"
 task :integrationtests => [:compile] do
 	sh "dotnet test src/IntegrationTests/IntegrationTests.csproj"
 	sh "dotnet test src/JasperBus.Marten.Tests/JasperBus.Marten.Tests.csproj"
-	
+
 end
 
 desc 'npm install for Diagnostics'
@@ -167,8 +167,6 @@ task :publish => [:prepare_docs] do
 	if Dir.exists? 'doc-target'
 		FileUtils.rm_rf 'doc-target'
 	end
-
-	sh "dotnet restore"
 
 	Dir.mkdir 'doc-target'
 	sh "git clone https://github.com/jasperfx/jasperfx.github.io.git doc-target"

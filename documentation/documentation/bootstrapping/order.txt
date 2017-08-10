@@ -1,4 +1,5 @@
-jasper
+configuring_jasper
+configuration
+console
 aspnetcore
-jasperregistry
 environment_tests
