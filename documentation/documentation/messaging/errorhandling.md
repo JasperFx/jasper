@@ -1,7 +1,7 @@
 <!--title: Error Handling-->
 
 
-The sad truth is that JasperBus will not unfrequently hit exceptions as it processes messages. In all cases, JasperBus will first log the exception using the <[linkto:documentation/servicebus/logging;title=the IBusLogger sinks]>. After that, it walks through the configured error handling policies to
+The sad truth is that JasperBus will not unfrequently hit exceptions as it processes messages. In all cases, JasperBus will first log the exception using the <[linkto:documentation/messaging/logging;title=the IBusLogger sinks]>. After that, it walks through the configured error handling policies to
 determine what to do next with the message. In the absence of any confugured error handling policies,
 JasperBus will move any message that causes an exception into the error queue for the
 transport that the message arrived from on the first attempt.

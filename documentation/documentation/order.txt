@@ -1,5 +1,11 @@
 getting_started
 bootstrapping
-configuration
 messaging
+http
+ioc
+middleware_and_codegen
+conventions
+extensions
 diagnostics
+testing
+cli

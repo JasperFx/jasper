@@ -20,7 +20,7 @@ messages to be received by **every node** in the application cluster.
 
 
 See also:
-* <[linkto:documentation/servicebus/channels]> for information on static routing rules.
+* <[linkto:documentation/messaging/channels]> for information on static routing rules.
 
 
 

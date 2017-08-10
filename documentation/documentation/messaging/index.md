@@ -1,23 +1,7 @@
 <!--title: Messaging-->
 
-JasperBus is a direct descendent of the <a href="https://fubumvc.github.io/documentation/servicebus/">service bus feature in FubuMVC</a>, which in turn
-was heavily influenced and built as a replacement for the <a href="https://hibernatingrhinos.com/oss/rhino-service-bus">Rhino Service Bus</a>. 
-
-## Why use Jasper?
-
-TODO -- much more here.
-
-* Very little intrusion into the actual application code
-* CoreCLR Support out of the gate
-* Diagnostics 
-* XCopy Deployable -- easy deployment, easy 
-* As a more flexible and performant replacement for MediatR
-
-
-## Quickstart
-
-TODO -- stuff here.
-
+Jasper is a direct descendent of the <a href="https://fubumvc.github.io/documentation/servicebus/">service bus feature in FubuMVC</a>, which in turn
+was heavily influenced and built as a replacement for the <a href="https://hibernatingrhinos.com/oss/rhino-service-bus">Rhino Service Bus</a>.
 
 ## Terminology
 

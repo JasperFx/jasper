@@ -1,6 +1,6 @@
 <!--title:Adding Jasper to an ASP.Net Core Application-->
 
-<div class="alert alert-warning">This functionality is very likely to change as it gets used more often and should be considered very preliminary</div>
+<div class="alert alert-info">This functionality is very likely to change as it gets used more often and should be considered very preliminary</div>
 
 .Net is Microsoft's world, and the rest of us are just living in it. Unlike its predecessor [FubuMVC](http://fubumvc.github.io), Jasper tries to 
 play nice as a citizen in the greater ASP.Net Core ecosystem. To that end, you can use Jasper within an ASP.Net Core application as

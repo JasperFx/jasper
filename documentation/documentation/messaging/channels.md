@@ -10,14 +10,14 @@ and an in memory transport for testing.
 Channels require a little more work. First off, channels are identified and configured by a Uri matching the 
 desired transport, port, and queue name. 
 
-We first need to build a <[linkto:documentation/configuration;title="Settings" object]> for two channels
+We first need to build a <[linkto:documentation/bootstrapping/configuration;title="Settings" object]> for two channels
 identified as `Pinger` and `Ponger`:
 
 <[sample:SampleSettings]>
 
 All the `SampleSettings` class is is a way to identify channels and act as a means to communicate the channel Uri's to
 the service bus model. I'm hard coding the Uri's in the code above, but that information can be pulled from any kind of configuration using
-the built in support for <[linkto:documentation/configuration;title=strong typed configuration]> in Jasper.
+the built in support for <[linkto:documentation/bootstrapping/configuration;title=strong typed configuration]> in Jasper.
 
 To configure service bus channels, it's easiest to define your application with a `JasperBusRegistry` class.
 
@@ -53,7 +53,7 @@ _SendMessage****_ methods as shown below:
 Do note that doing the message type filtering by namespace will also include child namespaces. In
 our own usage we try to rely on either namespace rules or by using shared message assemblies. 
 
-See also the <[linkto:documentation/servicebus/subscriptions]>
+See also the <[linkto:documentation/messaging/subscriptions]>
 
 ## Message Persistence
 
