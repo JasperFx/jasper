@@ -1,10 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Jasper.Conneg
 {
-    public class ModelWriter
+    public class ModelWriter : IEnumerable<IMediaWriter>
     {
         private readonly Dictionary<string, IMediaWriter> _writers
             = new Dictionary<string, IMediaWriter>();
@@ -80,6 +81,16 @@ namespace Jasper.Conneg
             }
 
             return null;
+        }
+
+        public IEnumerator<IMediaWriter> GetEnumerator()
+        {
+            return _writers.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

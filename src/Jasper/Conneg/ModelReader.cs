@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
-    public class ModelReader
+    public class ModelReader : IEnumerable<IMediaReader>
     {
         private readonly Dictionary<string, IMediaReader> _readers = new Dictionary<string, IMediaReader>();
 
@@ -57,5 +58,14 @@ namespace Jasper.Conneg
         }
 
         public bool HasAnyReaders { get; }
+        public IEnumerator<IMediaReader> GetEnumerator()
+        {
+            return _readers.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

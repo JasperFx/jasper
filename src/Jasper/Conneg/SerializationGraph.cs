@@ -118,5 +118,15 @@ namespace Jasper.Conneg
 
             return new ModelReader(fromSerializers.Concat(readers).ToArray());
         }
+
+        public bool HasMultipleReaders(Type messageType)
+        {
+            return ReaderFor(messageType.ToTypeAlias()).Count(x => x.DotNetType == messageType) > 1;
+        }
+
+        public bool HasMultipleWriters(Type messageType)
+        {
+            return WriterFor(messageType).Count() > 1;
+        }
     }
 }

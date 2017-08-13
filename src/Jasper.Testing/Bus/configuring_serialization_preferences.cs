@@ -86,12 +86,12 @@ namespace Jasper.Testing.Bus
         public string ContentType { get; }
         public IMediaReader[] ReadersFor(Type messageType)
         {
-            throw new NotImplementedException();
+            return new IMediaReader[0];
         }
 
         public IMediaWriter[] WritersFor(Type messageType)
         {
-            throw new NotImplementedException();
+            return new IMediaWriter[0];
         }
     }
 

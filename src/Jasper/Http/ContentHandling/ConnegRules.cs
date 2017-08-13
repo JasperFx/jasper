@@ -32,8 +32,8 @@ namespace Jasper.Http.ContentHandling
             _writers.Add(new WriteText());
 
 
-            _writers.Add(new WriteJson());
-            _readers.Add(new ReadJson());
+            _writers.Add(new DefaultWriterRule(_serializers));
+            _readers.Add(new DefaultReaderRule(_serializers));
         }
 
         public IEnumerable<IWriterRule> Writers => _writers;
