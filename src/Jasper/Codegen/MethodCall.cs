@@ -137,29 +137,13 @@ namespace Jasper.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            var methodName = Method.Name;
-            if (Method.IsGenericMethod)
-            {
-                methodName += $"<{Method.GetGenericArguments().Select(x => x.FullName).Join(", ")}>";
-            }
-
-            var callingCode = $"{methodName}({Variables.Select(x => x.Usage).Join(", ")})";
-            var target = determineTarget();
+            var invokeMethod = invocationCode();
 
             var returnValue = "";
-            var suffix = "";
 
             if (IsAsync)
             {
-                if (method.AsyncMode == AsyncMode.ReturnFromLastNode)
-                {
-                    returnValue = "return ";
-                }
-                else
-                {
-                    returnValue = "await ";
-                    suffix = ".ConfigureAwait(false)";
-                }
+                returnValue = method.AsyncMode == AsyncMode.ReturnFromLastNode ? "return " : "await ";
             }
 
             if (ReturnVariable != null)
@@ -169,9 +153,51 @@ namespace Jasper.Codegen
 
             // TODO -- will need to see if it's IDisposable too
 
-            writer.Write($"{returnValue}{target}{callingCode}{suffix};");
+            
+
+            writer.Write($"{returnValue}{invokeMethod};");
 
             Next?.GenerateCode(method, writer);
+        }
+
+        private string invocationCode()
+        {
+            var methodName = Method.Name;
+            if (Method.IsGenericMethod)
+            {
+                methodName += $"<{Method.GetGenericArguments().Select(x => x.FullName).Join(", ")}>";
+            }
+
+            var callingCode = $"{methodName}({Variables.Select(x => x.Usage).Join(", ")})";
+            var target = determineTarget();
+            var invokeMethod = $"{target}{callingCode}";
+            return invokeMethod;
+        }
+
+        /// <summary>
+        /// Code to invoke the method without any assignment to a variable
+        /// </summary>
+        /// <returns></returns>
+        public string InvocationCode()
+        {
+            return IsAsync ? "await " + invocationCode() : invocationCode();
+        }
+
+        /// <summary>
+        /// Code to invoke the method and set a variable to the returned value
+        /// </summary>
+        /// <returns></returns>
+        public string AssignmentCode()
+        {
+            if (ReturnVariable == null)
+            {
+                throw new InvalidOperationException($"Method {this} does not have a return value");
+            }
+
+            return IsAsync
+                ? $"var {ReturnVariable.Usage} = await {InvocationCode()}"
+                : $"var {ReturnVariable.Usage} = {InvocationCode()}";
+
         }
 
         private string determineTarget()

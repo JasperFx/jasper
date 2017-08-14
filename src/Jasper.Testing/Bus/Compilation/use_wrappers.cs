@@ -95,7 +95,7 @@ namespace Jasper.Testing.Bus.Compilation
             _session = new Variable(typeof(IFakeSession), "session", this);
         }
 
-        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             _store = chain.FindVariable(typeof(IFakeStore));
             yield return _store;
