@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Codegen;
@@ -10,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.Http.ContentHandling
 {
-    public class ConnegRules
+    public class ConnegRules : IWriterRule, IReaderRule
     {
         private readonly SerializationGraph _serializers;
         private readonly IList<IWriterRule> _writers = new List<IWriterRule>();
@@ -32,8 +33,8 @@ namespace Jasper.Http.ContentHandling
             _writers.Add(new WriteText());
 
 
-            _writers.Add(new DefaultWriterRule(_serializers));
-            _readers.Add(new DefaultReaderRule(_serializers));
+            _writers.Add(this);
+            _readers.Add(this);
         }
 
         public IEnumerable<IWriterRule> Writers => _writers;
@@ -56,6 +57,45 @@ namespace Jasper.Http.ContentHandling
 
                 chain.Postprocessors.AddRange(frames);
             }
+        }
+
+        bool IWriterRule.Applies(RouteChain chain)
+        {
+            return true;
+        }
+
+        IEnumerable<Frame> IReaderRule.DetermineReaders(RouteChain chain)
+        {
+            if (_serializers.HasMultipleReaders(chain.InputType))
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                chain.Reader = _serializers.JsonReaderFor(chain.InputType);
+
+                yield return new UseReader(chain);
+            }
+        }
+
+        IEnumerable<Frame> IWriterRule.DetermineWriters(RouteChain chain)
+        {
+            if (_serializers.HasMultipleWriters(chain.ResourceType))
+            {
+                throw new NotImplementedException();
+            }
+            else
+
+            {
+                chain.Writer = _serializers.JsonWriterFor(chain.ResourceType);
+
+                yield return new UseWriter(chain);
+            }
+        }
+
+        bool IReaderRule.Applies(RouteChain chain)
+        {
+            return true;
         }
     }
 
