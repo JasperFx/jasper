@@ -60,6 +60,11 @@ namespace Jasper.Codegen
 
         public IList<Variable> Dependencies { get; } = new List<Variable>();
 
+        public Variable(Type variableType) : this(variableType, DefaultArgName(variableType))
+        {
+
+        }
+
         public Variable(Type variableType, string usage)
         {
             VariableType = variableType;

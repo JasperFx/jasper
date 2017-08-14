@@ -24,11 +24,16 @@ namespace Jasper.Testing.Http.ContentHandling
         }
     }
 
-    public class CustomReaderWriterEndpoint
+    public class CustomReaderWriterEndpoint : IDisposable
     {
         public SpecialOutput post_special_output(SpecialInput input)
         {
             return new SpecialOutput{Value = input.Name};
+        }
+
+        public void Dispose()
+        {
+            // nothing, just wanna test the codegen
         }
     }
 

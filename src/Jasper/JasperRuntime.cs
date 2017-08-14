@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +34,7 @@ namespace Jasper
                 DisposalLock = DisposalLock.Ignore
             };
 
+            registry.Generation.Sources.Add(new NoArgConstructor());
             registry.Generation.Sources.Add(new StructureMapServices(Container));
             registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
             registry.Generation.Assemblies.Add(registry.ApplicationAssembly);
