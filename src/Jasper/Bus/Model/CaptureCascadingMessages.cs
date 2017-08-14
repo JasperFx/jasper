@@ -22,7 +22,7 @@ namespace Jasper.Bus.Model
             Next?.GenerateCode(method, writer);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             _context = chain.FindVariable(typeof(IInvocationContext));
 

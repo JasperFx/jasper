@@ -102,7 +102,7 @@ namespace Jasper.Codegen
             return true;
         }
 
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             var parameters = Method.GetParameters().ToArray();
             for (int i = 0; i < parameters.Length; i++)

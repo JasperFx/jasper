@@ -151,7 +151,7 @@ namespace Jasper.Testing.Codegen
 
         }
 
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             Resolved = chain.FindVariableByName(_dependency, _name);
             yield return Resolved;

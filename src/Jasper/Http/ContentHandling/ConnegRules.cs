@@ -89,7 +89,7 @@ namespace Jasper.Http.ContentHandling
             Next?.GenerateCode(method, writer);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             yield return _return;
 

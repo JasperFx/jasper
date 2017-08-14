@@ -142,7 +142,7 @@ namespace Jasper.Testing.Http
             _session = new Variable(typeof(IFakeSession), "session", this);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             _store = chain.FindVariable(typeof(IFakeStore));
             yield return _store;

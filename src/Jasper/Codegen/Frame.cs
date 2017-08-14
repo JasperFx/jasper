@@ -41,7 +41,7 @@ namespace Jasper.Codegen
             uses.AddRange(variables);
         }
 
-        protected virtual IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        protected internal virtual IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
         {
             yield break;
         }
