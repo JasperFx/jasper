@@ -75,18 +75,14 @@ namespace Jasper.Http.Model
 
             handler.Chain = this;
 
-            if (ReaderType != null)
-            {
-                handler.Reader = container.GetInstance(ReaderType).As<IMediaReader>();
-            }
-
-            if (WriterType != null)
-            {
-                handler.Writer = container.GetInstance(WriterType).As<IMediaWriter>();
-            }
+            handler.Reader = Reader;
+            handler.Writer = Writer;
 
             return handler;
         }
+
+        public IMediaReader Reader { get; set; }
+        public IMediaWriter Writer { get; set; }
 
         public string TypeName { get; }
 
@@ -95,34 +91,6 @@ namespace Jasper.Http.Model
         public Route Route { get; }
         public Type InputType { get; }
         public Type ResourceType { get; }
-
-        public Type ReaderType
-        {
-            get => _readerType;
-            set
-            {
-                if (value != null && !value.CanBeCastTo<IMediaReader>())
-                {
-                    throw new ArgumentOutOfRangeException($"Type {value} must be assignable to {typeof(IMediaReader).FullName}");
-                }
-
-                _readerType = value;
-            }
-        }
-
-        public Type WriterType
-        {
-            get => _writerType;
-            set
-            {
-                if (value != null && !value.CanBeCastTo<IMediaWriter>())
-                {
-                    throw new ArgumentOutOfRangeException($"Type {value} must be assignable to {typeof(IMediaWriter).FullName}");
-                }
-
-                _writerType = value;
-            }
-        }
 
         public override string ToString()
         {

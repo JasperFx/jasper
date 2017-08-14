@@ -68,23 +68,6 @@ namespace Jasper.Testing.Http.Model
 
         }
 
-        [Fact]
-        public void reject_invalid_types_to_media_reader()
-        {
-            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() =>
-            {
-                chainFor(x => x.put_command()).ReaderType = GetType();
-            });
-        }
-
-        [Fact]
-        public void reject_invalid_types_to_media_writer()
-        {
-            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() =>
-            {
-                chainFor(x => x.put_command()).WriterType = GetType();
-            });
-        }
 
         [Fact]
         public void will_apply_generic_chain_attributes()

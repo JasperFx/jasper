@@ -28,8 +28,7 @@ namespace Jasper.Http.ContentHandling
             }
             else
             {
-                chain.ReaderType = typeof(NewtonsoftJsonReader<>)
-                    .MakeGenericType(chain.InputType);
+                chain.Reader = _serializers.JsonReaderFor(chain.InputType);
 
                 yield return new UseReader(chain);
             }

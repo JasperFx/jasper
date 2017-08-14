@@ -128,5 +128,19 @@ namespace Jasper.Conneg
         {
             return WriterFor(messageType).Count() > 1;
         }
+
+        public IMediaReader JsonReaderFor(Type inputType)
+        {
+            return _serializers["application/json"]
+                .ReadersFor(inputType)
+                .FirstOrDefault(x => x.ContentType == "application/json");
+        }
+
+        public IMediaWriter JsonWriterFor(Type resourceType)
+        {
+            return _serializers["application/json"]
+                .WritersFor(resourceType)
+                .FirstOrDefault(x => x.ContentType == "application/json");
+        }
     }
 }

@@ -29,8 +29,7 @@ namespace Jasper.Http.ContentHandling
             else
 
             {
-                chain.WriterType = typeof(NewtonsoftJsonWriter<>)
-                    .MakeGenericType(chain.ResourceType);
+                chain.Writer = _serializers.JsonWriterFor(chain.ResourceType);
 
                 yield return new UseWriter(chain);
             }
