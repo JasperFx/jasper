@@ -13,12 +13,12 @@ namespace Jasper.Codegen
 
         public IfBlock(Variable variable, params Frame[] inner) : this(variable.Usage, inner)
         {
-            
+
         }
 
         protected override void generateCode(GeneratedMethod method, ISourceWriter writer, Frame inner)
         {
-            writer.WriteLine($"BLOCK:if ({Condition})");
+            writer.Write($"BLOCK:if ({Condition})");
             inner.GenerateCode(method, writer);
             writer.FinishBlock();
         }
