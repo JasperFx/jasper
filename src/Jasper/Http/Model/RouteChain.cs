@@ -77,9 +77,28 @@ namespace Jasper.Http.Model
 
             handler.Reader = Reader;
             handler.Writer = Writer;
+            handler.ConnegReader = ConnegReader;
+            handler.ConnegWriter = ConnegWriter;
 
             return handler;
         }
+
+        public void ApplyConneg(SerializationGraph graph)
+        {
+            if (InputType != null)
+            {
+                ConnegReader = graph.ReaderFor(InputType);
+            }
+
+            if (ResourceType != null)
+            {
+                ConnegWriter = graph.WriterFor(ResourceType);
+            }
+        }
+
+        public ModelWriter ConnegWriter { get; set; }
+
+        public ModelReader ConnegReader { get; set; }
 
         public IMediaReader Reader { get; set; }
         public IMediaWriter Writer { get; set; }

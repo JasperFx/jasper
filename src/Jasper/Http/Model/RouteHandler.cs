@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Jasper.Conneg;
 using Microsoft.AspNetCore.Http;
@@ -21,6 +22,18 @@ namespace Jasper.Http.Model
 
         public IMediaReader Reader { get; set; }
         public IMediaWriter Writer { get; set; }
+        public ModelReader ConnegReader { get; set; }
+        public ModelWriter ConnegWriter { get; set; }
+
+        internal IMediaReader SelectReader(HttpRequest request)
+        {
+            return ConnegReader[request.ContentType];
+        }
+
+        internal IMediaWriter SelectWriter(HttpRequest request)
+        {
+            return ConnegWriter.ChooseWriter(request.Headers["accepts"]);
+        }
 
     }
 }

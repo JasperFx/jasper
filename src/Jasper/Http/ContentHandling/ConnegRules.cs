@@ -64,16 +64,20 @@ namespace Jasper.Http.ContentHandling
             if (customWriters.Length == 1)
             {
                 chain.Writer = customWriters.Single();
-                chain.Postprocessors.Add(new UseWriter(chain));
+                chain.Postprocessors.Add(new UseWriter(chain, true));
             }
             else if (customWriters.Length > 1)
             {
-                throw new NotImplementedException();
+                chain.ConnegWriter = _serializers.WriterFor(chain.ResourceType);
+                var selectWriter = new SelectWriter();
+                chain.Middleware.Add(selectWriter);
+                chain.Middleware.Add(new CheckForMissing(406, selectWriter.ReturnVariable));
+                chain.Middleware.Add(new UseWriter(chain, false));
             }
             else
             {
                 chain.Writer = _serializers.JsonWriterFor(chain.ResourceType);
-                chain.Postprocessors.Add(new UseWriter(chain));
+                chain.Postprocessors.Add(new UseWriter(chain, true));
             }
 
             return true;
@@ -86,16 +90,20 @@ namespace Jasper.Http.ContentHandling
             if (customReaders.Length == 1)
             {
                 chain.Reader = customReaders.Single();
-                chain.Middleware.Add(new UseReader(chain));
+                chain.Middleware.Add(new UseReader(chain, true));
             }
             else if (customReaders.Length > 1)
             {
-                throw new NotImplementedException();
+                chain.ConnegReader = _serializers.ReaderFor(chain.InputType);
+                var selectReader = new SelectReader();
+                chain.Middleware.Add(selectReader);
+                chain.Middleware.Add(new CheckForMissing(415, selectReader.ReturnVariable));
+                chain.Middleware.Add(new UseReader(chain, false));
             }
             else
             {
                 chain.Reader = _serializers.JsonReaderFor(chain.InputType);
-                chain.Middleware.Add(new UseReader(chain));
+                chain.Middleware.Add(new UseReader(chain, true));
             }
 
             return true;

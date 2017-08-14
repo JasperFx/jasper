@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Codegen;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
@@ -35,7 +36,8 @@ namespace Jasper.Conneg
 
         public string[] ContentTypes { get; }
 
-        public IMediaReader this[string contentType] => _readers[contentType];
+        public IMediaReader this[string contentType] =>
+            _readers.ContainsKey(contentType) ? _readers[contentType] : null;
 
         public bool TryRead(string contentType, byte[] data, out object model)
         {

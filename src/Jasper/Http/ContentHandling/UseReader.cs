@@ -16,9 +16,13 @@ namespace Jasper.Http.ContentHandling
 
         }
 
-        public UseReader(RouteChain chain) : base(typeof(IMediaReader), selectMethod(chain.InputType))
+        public UseReader(RouteChain chain, bool isLocal) : base(typeof(IMediaReader), selectMethod(chain.InputType))
         {
-            Target = new Variable(typeof(IMediaReader), nameof(RouteHandler.Reader));
+
+            if (isLocal)
+            {
+                Target = new Variable(typeof(IMediaReader), nameof(RouteHandler.Reader));
+            }
 
             creates.Add(ReturnVariable);
         }

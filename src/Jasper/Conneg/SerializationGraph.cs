@@ -105,6 +105,14 @@ namespace Jasper.Conneg
             return _modelReaders.GetOrAdd(messageType, compileReader);
         }
 
+        public ModelReader ReaderFor(Type inputType)
+        {
+            var readers = _readers.Where(x => x.DotNetType == inputType);
+            var serialized = _serializers.Values.SelectMany(x => x.ReadersFor(inputType));
+
+            return new ModelReader(readers.Concat(serialized).ToArray());
+        }
+
         private ModelReader compileReader(string messageType)
         {
             var readers = _readers.Where(x => x.MessageType == messageType).ToArray();
@@ -142,5 +150,7 @@ namespace Jasper.Conneg
         {
             return _readers.Where(x => x.DotNetType == inputType).ToArray();
         }
+
+
     }
 }

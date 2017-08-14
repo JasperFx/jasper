@@ -41,7 +41,7 @@ namespace Jasper.Conneg
                 return false;
             }
 
-            var writer = _selections.GetOrAdd(accepted ?? _defaultMimeType, select);
+            var writer = ChooseWriter(accepted);
             if (writer == null)
             {
                 contentType = null;
@@ -55,6 +55,11 @@ namespace Jasper.Conneg
 
                 return true;
             }
+        }
+
+        public IMediaWriter ChooseWriter(string accepted)
+        {
+            return _selections.GetOrAdd(accepted ?? _defaultMimeType, @select);
         }
 
         private IMediaWriter select(string contentType)
