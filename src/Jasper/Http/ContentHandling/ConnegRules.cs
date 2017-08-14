@@ -64,6 +64,7 @@ namespace Jasper.Http.ContentHandling
             if (customWriters.Length == 1)
             {
                 chain.Writer = customWriters.Single();
+                chain.Postprocessors.Add(new UseWriter(chain));
             }
             else if (customWriters.Length > 1)
             {
@@ -85,6 +86,7 @@ namespace Jasper.Http.ContentHandling
             if (customReaders.Length == 1)
             {
                 chain.Reader = customReaders.Single();
+                chain.Middleware.Add(new UseReader(chain));
             }
             else if (customReaders.Length > 1)
             {

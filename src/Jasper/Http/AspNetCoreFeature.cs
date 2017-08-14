@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using Jasper.Conneg;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
@@ -68,6 +69,16 @@ namespace Jasper.Http
 
             _services.For<RouteGraph>().Use(Routes);
             _services.For<IUrlRegistry>().Use(Routes.Router.Urls);
+
+            if (registry.ApplicationAssembly != null)
+            {
+                _services.Scan(_ =>
+                {
+                    _.Assembly(registry.ApplicationAssembly);
+                    _.AddAllTypesOf<IMediaReader>();
+                    _.AddAllTypesOf<IMediaWriter>();
+                });
+            }
 
             if (!BootstrappedWithinAspNetCore)
             {
