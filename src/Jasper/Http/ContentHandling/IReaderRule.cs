@@ -6,7 +6,6 @@ namespace Jasper.Http.ContentHandling
 {
     public interface IReaderRule
     {
-        bool Applies(RouteChain chain);
-        IEnumerable<Frame> DetermineReaders(RouteChain chain);
+        bool TryToApply(RouteChain chain);
     }
 }

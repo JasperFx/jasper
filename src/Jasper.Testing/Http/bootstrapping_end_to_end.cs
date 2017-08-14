@@ -89,27 +89,17 @@ namespace Jasper.Testing.Http
 
     public class CustomReaderRule : IReaderRule
     {
-        public bool Applies(RouteChain chain)
+        public bool TryToApply(RouteChain chain)
         {
             return false;
-        }
-
-        public IEnumerable<Frame> DetermineReaders(RouteChain chain)
-        {
-            throw new NotImplementedException();
         }
     }
 
     public class CustomWriterRule : IWriterRule
     {
-        public bool Applies(RouteChain chain)
+        public bool TryToApply(RouteChain chain)
         {
             return false;
-        }
-
-        public IEnumerable<Frame> DetermineWriters(RouteChain chain)
-        {
-            throw new NotImplementedException();
         }
     }
 

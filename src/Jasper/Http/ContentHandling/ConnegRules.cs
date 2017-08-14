@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
 using Jasper.Conneg;
 using Jasper.Http.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.Http.ContentHandling
@@ -45,40 +42,22 @@ namespace Jasper.Http.ContentHandling
         {
             if (chain.InputType != null)
             {
-                var rule = _readers.First(x => x.Applies(chain));
-                var frames = rule?.DetermineReaders(chain);
-                chain.Middleware.AddRange(frames);
+                foreach (var reader in _readers)
+                {
+                    if (reader.TryToApply(chain)) break;
+                }
             }
 
             if (chain.ResourceType != null)
             {
-                var rule = _writers.First(x => x.Applies(chain));
-                var frames = rule?.DetermineWriters(chain);
-
-                chain.Postprocessors.AddRange(frames);
+                foreach (var writer in _writers)
+                {
+                    if (writer.TryToApply(chain)) break;
+                }
             }
         }
 
-        bool IWriterRule.Applies(RouteChain chain)
-        {
-            return true;
-        }
-
-        IEnumerable<Frame> IReaderRule.DetermineReaders(RouteChain chain)
-        {
-            if (_serializers.HasMultipleReaders(chain.InputType))
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                chain.Reader = _serializers.JsonReaderFor(chain.InputType);
-
-                yield return new UseReader(chain);
-            }
-        }
-
-        IEnumerable<Frame> IWriterRule.DetermineWriters(RouteChain chain)
+        bool IWriterRule.TryToApply(RouteChain chain)
         {
             if (_serializers.HasMultipleWriters(chain.ResourceType))
             {
@@ -88,53 +67,25 @@ namespace Jasper.Http.ContentHandling
 
             {
                 chain.Writer = _serializers.JsonWriterFor(chain.ResourceType);
-
-                yield return new UseWriter(chain);
+                chain.Postprocessors.Add(new UseWriter(chain));
             }
-        }
 
-        bool IReaderRule.Applies(RouteChain chain)
-        {
             return true;
         }
-    }
 
-    public class StatusCodeWriter : IWriterRule
-    {
-        public bool Applies(RouteChain chain)
+        bool IReaderRule.TryToApply(RouteChain chain)
         {
-            return chain.ResourceType == typeof(int);
-        }
+            if (_serializers.HasMultipleReaders(chain.InputType))
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                chain.Reader = _serializers.JsonReaderFor(chain.InputType);
+                chain.Middleware.Add(new UseReader(chain));
+            }
 
-        public IEnumerable<Frame> DetermineWriters(RouteChain chain)
-        {
-            yield return new SetStatusCode(chain);
-        }
-    }
-
-    public class SetStatusCode : Frame
-    {
-        private Variable _response;
-        private readonly Variable _return;
-
-        public SetStatusCode(RouteChain chain) : base(false)
-        {
-            _return = chain.Action.ReturnVariable;
-        }
-
-        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-        {
-            writer.WriteLine($"{_response.Usage}.{nameof(HttpResponse.StatusCode)} = {_return.Usage};");
-
-            Next?.GenerateCode(method, writer);
-        }
-
-        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
-        {
-            yield return _return;
-
-            _response = chain.FindVariable(typeof(HttpResponse));
-            yield return _response;
+            return true;
         }
     }
 }
