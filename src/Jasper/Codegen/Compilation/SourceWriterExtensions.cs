@@ -1,10 +1,17 @@
-
+﻿
 using System;
+using System.Threading.Tasks;
+using Baseline;
 
 namespace Jasper.Codegen.Compilation
 {
     public static class SourceWriterExtensions
     {
+        private static readonly string returnCompletedTask = $"return {typeof(Task).FullName}.{nameof(Task.CompletedTask)};";
+
+        private static readonly string returnFromResult =
+            $"return {typeof(Task).FullName}.{nameof(Task.FromResult)}({{0}});";
+
         public static void Namespace(this ISourceWriter writer, string @namespace)
         {
             writer.Write($"BLOCK:namespace {@namespace}");
@@ -23,5 +30,32 @@ namespace Jasper.Codegen.Compilation
 
             writer.FinishBlock();
         }
+
+        public static void WriteReturnStatement(this ISourceWriter writer, IGeneratedMethod method)
+        {
+            if (method.AsyncMode == AsyncMode.AsyncTask)
+            {
+                writer.WriteLine("return;");
+            }
+            else
+            {
+                writer.WriteLine(returnCompletedTask);
+            }
+        }
+
+        public static void WriteReturnStatement(this ISourceWriter writer, IGeneratedMethod method, Variable variable)
+        {
+            // TODO -- what if the variable is a task?
+            if (method.AsyncMode == AsyncMode.AsyncTask)
+            {
+                writer.WriteLine($"return {variable.Usage};");
+            }
+            else
+            {
+                writer.WriteLine(returnFromResult.ToFormat(variable.Usage));
+            }
+        }
+
+
     }
 }

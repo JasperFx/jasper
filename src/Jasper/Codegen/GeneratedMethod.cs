@@ -8,7 +8,15 @@ using Jasper.Util;
 
 namespace Jasper.Codegen
 {
-    public class GeneratedMethod
+    public interface IGeneratedMethod
+    {
+        string MethodName { get; }
+        bool Virtual { get; set; }
+        AsyncMode AsyncMode { get; }
+        IEnumerable<Argument> Arguments { get; }
+    }
+
+    public class GeneratedMethod : IGeneratedMethod
     {
         // TODO -- add an option for a static method
 
