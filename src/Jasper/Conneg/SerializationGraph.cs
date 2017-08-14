@@ -119,16 +119,6 @@ namespace Jasper.Conneg
             return new ModelReader(fromSerializers.Concat(readers).ToArray());
         }
 
-        public bool HasMultipleReaders(Type messageType)
-        {
-            return ReaderFor(messageType.ToTypeAlias()).Count(x => x.DotNetType == messageType) > 1;
-        }
-
-        public bool HasMultipleWriters(Type messageType)
-        {
-            return WriterFor(messageType).Count() > 1;
-        }
-
         public IMediaReader JsonReaderFor(Type inputType)
         {
             return _serializers["application/json"]
@@ -141,6 +131,16 @@ namespace Jasper.Conneg
             return _serializers["application/json"]
                 .WritersFor(resourceType)
                 .FirstOrDefault(x => x.ContentType == "application/json");
+        }
+
+        public IMediaWriter[] CustomWritersFor(Type resourceType)
+        {
+            return _writers.Where(x => x.DotNetType == resourceType).ToArray();
+        }
+
+        public IMediaReader[] CustomReadersFor(Type inputType)
+        {
+            return _readers.Where(x => x.DotNetType == inputType).ToArray();
         }
     }
 }

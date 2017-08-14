@@ -59,12 +59,17 @@ namespace Jasper.Http.ContentHandling
 
         bool IWriterRule.TryToApply(RouteChain chain)
         {
-            if (_serializers.HasMultipleWriters(chain.ResourceType))
+            var customWriters = _serializers.CustomWritersFor(chain.ResourceType);
+
+            if (customWriters.Length == 1)
+            {
+                chain.Writer = customWriters.Single();
+            }
+            else if (customWriters.Length > 1)
             {
                 throw new NotImplementedException();
             }
             else
-
             {
                 chain.Writer = _serializers.JsonWriterFor(chain.ResourceType);
                 chain.Postprocessors.Add(new UseWriter(chain));
@@ -75,7 +80,13 @@ namespace Jasper.Http.ContentHandling
 
         bool IReaderRule.TryToApply(RouteChain chain)
         {
-            if (_serializers.HasMultipleReaders(chain.InputType))
+            var customReaders = _serializers.CustomReadersFor(chain.InputType);
+
+            if (customReaders.Length == 1)
+            {
+                chain.Reader = customReaders.Single();
+            }
+            else if (customReaders.Length > 1)
             {
                 throw new NotImplementedException();
             }
