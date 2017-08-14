@@ -50,7 +50,7 @@ namespace Jasper.Http.Routing
             return resolveRoute(httpMethod, routes);
         }
 
-        public string UrlFor<T>(string httpMethod = null) where T : class
+        public string UrlFor<T>(string httpMethod = null) 
         {
             var route = RouteFor<T>(httpMethod);
 

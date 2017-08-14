@@ -9,7 +9,7 @@ namespace Jasper.Http.Routing
     {
         string UrlFor(object model, string httpMethod = null);
 
-        string UrlFor<T>(string httpMethod = null) where T : class;
+        string UrlFor<T>(string httpMethod = null);
 
         string UrlFor(Type handlerType, MethodInfo method = null, string httpMethod = null);
 

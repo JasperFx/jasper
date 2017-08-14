@@ -1,4 +1,4 @@
-namespace Jasper.Codegen.Compilation
+﻿namespace Jasper.Codegen.Compilation
 {
     public interface ISourceWriter
     {
