@@ -51,9 +51,7 @@ namespace Jasper.Http.Routing
 
         public Route(string pattern, string httpMethod)
         {
-            if (pattern == null) throw new ArgumentNullException(nameof(pattern));
-
-            pattern = pattern.TrimStart('/').TrimEnd('/');
+            pattern = pattern?.TrimStart('/').TrimEnd('/') ?? throw new ArgumentNullException(nameof(pattern));
 
 
             HttpMethod = httpMethod;

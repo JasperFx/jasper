@@ -20,7 +20,7 @@ namespace Jasper.Testing.Http
 
             var frames = chain.DetermineFrames();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(frames.OfType<FakeTransaction>().Any());
+            frames.OfType<FakeTransaction>().Any().ShouldBeTrue();
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace Jasper.Testing.Http
 
             var frames = chain.DetermineFrames();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(frames.OfType<FakeWrapper>().Any());
+            frames.OfType<FakeWrapper>().Any().ShouldBeTrue();
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Jasper.Testing.Http
 
             var frames = chain.DetermineFrames();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(frames.OfType<FakeWrapper2>().Any());
+            frames.OfType<FakeWrapper2>().Any().ShouldBeTrue();
         }
 
         [Fact]
@@ -50,27 +50,28 @@ namespace Jasper.Testing.Http
 
             var frames = chain.DetermineFrames();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(frames.OfType<FakeWrapper3>().Any());
+            frames.OfType<FakeWrapper3>().Any().ShouldBeTrue();
         }
     }
 
+    [JasperIgnore]
     public class ConfiguredEndpoint
     {
         public void get_configured()
         {
-            
+
         }
 
         [FakeWrapper2]
         public void get_wrapper2()
         {
-            
+
         }
 
         [FakeWrapper3]
         public void get_wrapper3()
         {
-            
+
         }
 
         public static void Configure(RouteChain chain)
@@ -93,7 +94,7 @@ namespace Jasper.Testing.Http
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            
+
         }
     }
 

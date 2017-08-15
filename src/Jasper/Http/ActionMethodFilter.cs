@@ -16,7 +16,6 @@ namespace Jasper.Http
             Excludes += method => method.DeclaringType == typeof(object);
             Excludes += method => method.Name == ReflectionHelper.GetMethod<IDisposable>(x => x.Dispose()).Name;
             Excludes += method => method.ContainsGenericParameters;
-            Excludes += method => method.GetParameters().Any(x => TypeExtensions.IsSimple(x.ParameterType));
             Excludes += method => method.IsSpecialName;
         }
 

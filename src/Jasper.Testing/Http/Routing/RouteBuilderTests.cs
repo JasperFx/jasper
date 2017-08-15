@@ -43,21 +43,22 @@ namespace Jasper.Testing.Http.Routing
         }
     }
 
+    [JasperIgnore]
     public class SomeEndpoint
     {
         public void Go()
         {
-            
+
         }
 
         public void post_something(Input1 input)
         {
-            
+
         }
 
         public void delete_something(string name)
         {
-            
+
         }
 
         [RouteName("Finn")]
@@ -67,5 +68,5 @@ namespace Jasper.Testing.Http.Routing
         }
     }
 
-    
+
 }

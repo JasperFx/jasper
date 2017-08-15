@@ -22,6 +22,8 @@ namespace Jasper.Http.Routing.Codegen
             {typeof(uint), "uint"},
             {typeof(ulong), "ulong"},
             {typeof(Guid), typeof(Guid).FullName},
+            {typeof(DateTime), typeof(DateTime).FullName},
+            {typeof(DateTimeOffset), typeof(DateTimeOffset).FullName}
         };
 
         public static bool CanBeRouteArgument(Type type)

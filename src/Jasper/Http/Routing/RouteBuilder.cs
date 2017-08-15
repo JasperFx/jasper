@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Http.Routing.Codegen;
 
 namespace Jasper.Http.Routing
 {
@@ -75,8 +76,7 @@ namespace Jasper.Http.Routing
             // TODO -- eliminate the old Fubu input model routing?
             Type inputType = DetermineInputType(method);
 
-            // TODO -- the "can I do this" check needs to be against RoutingFrames.CanParse()
-            var hasPrimitives = method.GetParameters().Any(x => x.ParameterType == typeof(Guid) || RouteArgument.Conversions.Has(x.ParameterType));
+            var hasPrimitives = method.GetParameters().Any(x => x.ParameterType == typeof(string) || RoutingFrames.CanParse(x.ParameterType));
             if (hasPrimitives)
             {
                 for (var i = 0; i < segments.Length; i++)

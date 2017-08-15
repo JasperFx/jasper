@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Codegen;
+using Jasper.Http.Routing;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
 using TypeExtensions = Baseline.TypeExtensions;
@@ -35,22 +36,7 @@ namespace Jasper.Http
             if (method.HasAttribute<JasperIgnoreAttribute>()) return false;
             if (method.DeclaringType.HasAttribute<JasperIgnoreAttribute>()) return false;
 
-
-            var parameterCount = method.GetParameters() == null ? 0 : method.GetParameters().Length;
-            if (parameterCount > 1) return false;
-
-            if (method.GetParameters().Any(x => x.ParameterType.IsSimple())) return false;
-
-            var hasOutput = method.ReturnType != typeof(void);
-
-            if (hasOutput && method.ReturnType == typeof(int)) return true;
-
-            if (hasOutput && !method.ReturnType.GetTypeInfo().IsClass) return false;
-
-
-            if (hasOutput) return true;
-
-            return parameterCount == 1;
+            return HttpVerbs.All.Any(x => method.Name.StartsWith(x + "_", StringComparison.OrdinalIgnoreCase));
         }
 
 

@@ -38,7 +38,7 @@ namespace Jasper.Http.Routing.Codegen
         {
             var alias = RoutingFrames.TypeOutputs[Variable.VariableType];
             writer.WriteLine($"{alias} {Variable.Usage};");
-            writer.Write($"BLOCK:if (!{alias}.TryParse(segments[{Position}], out {Variable.Usage}))"); 
+            writer.Write($"BLOCK:if (!{alias}.TryParse(segments[{Position}], out {Variable.Usage}))");
             writer.WriteLine($"{RouteGraph.Context}.{nameof(HttpContext.Response)}.{nameof(HttpResponse.StatusCode)} = 400;");
             writer.WriteLine(method.ToExitStatement());
             writer.FinishBlock();
@@ -49,4 +49,7 @@ namespace Jasper.Http.Routing.Codegen
 
 
     }
+
+
+
 }

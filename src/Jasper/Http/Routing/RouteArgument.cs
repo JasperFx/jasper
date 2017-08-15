@@ -18,8 +18,8 @@ namespace Jasper.Http.Routing
 
         static RouteArgument()
         {
-            // TODO -- eliminate this later when Baseline catches up
             Conversions.RegisterConversion(Guid.Parse);
+            Conversions.RegisterConversion(DateTimeOffset.Parse);
         }
 
         private Func<string, object> _converter = x => x;
@@ -124,13 +124,14 @@ namespace Jasper.Http.Routing
 
         public Type ArgType
         {
-            get { return _argType; }
+            get => _argType;
             set
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                _argType = value;
+                _argType = value ?? throw new ArgumentNullException(nameof(value));
 
                 _converter = Conversions.FindConverter(ArgType);
+
+                if (_converter == null) throw new ArgumentOutOfRangeException(nameof(value), $"Could not find a conversion for type {value.FullName}");
             }
         }
 
