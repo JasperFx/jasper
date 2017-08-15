@@ -52,5 +52,15 @@ namespace Jasper.Bus.Configuration
         {
             return this[uri];
         }
+
+        public void DefaultIs(string uriString)
+        {
+            DefaultIs(uriString.ToUri());
+        }
+
+        public void DefaultIs(Uri uriString)
+        {
+            _bus.Channels.DefaultChannel = _bus.Channels[uriString];
+        }
     }
 }

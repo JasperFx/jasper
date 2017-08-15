@@ -30,7 +30,7 @@ namespace Jasper.Bus.Transports.InMemory
         {
             channels.AddChannelIfMissing(Retries);
 
-            var nodes = channels.Where(x => x.Uri.Scheme == Protocol).ToArray();
+            var nodes = channels.Where(x => x.Uri.Scheme == Protocol).ToList();
             if (!nodes.Any()) return;
 
             var replyNode = nodes.FirstOrDefault(x => x.Incoming) ??
@@ -38,6 +38,9 @@ namespace Jasper.Bus.Transports.InMemory
 
             replyNode.Incoming = true;
             _replyUri = replyNode.Uri;
+
+            nodes.Add(replyNode);
+
             _queue.Start(nodes);
 
             foreach (var node in nodes)

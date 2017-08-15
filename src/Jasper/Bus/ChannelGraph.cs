@@ -26,6 +26,8 @@ namespace Jasper.Bus
         // if it is not explicitly set
         public ChannelNode ControlChannel { get; set; }
 
+        public ChannelNode DefaultChannel { get; set; }
+
         public ChannelNode this[Uri uri]
         {
             get

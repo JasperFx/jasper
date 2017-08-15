@@ -71,6 +71,11 @@ namespace Jasper.Bus
                 Channels.ControlChannel.MaximumParallelization = 1;
             }
 
+            if (Channels.DefaultChannel == null)
+            {
+                Channels.DefaultChannel = Channels.IncomingChannelsFor("loopback").FirstOrDefault();
+            }
+
 
             startTransports(transports, pipeline);
 
