@@ -86,8 +86,8 @@ namespace Jasper.Bus.Transports.Lightweight
 
         public void Dispose()
         {
-            _sender.Complete();
-            _grouper.Complete();
+            _sender?.Complete();
+            _grouper?.Complete();
             _outgoing?.Dispose();
         }
     }

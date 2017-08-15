@@ -51,6 +51,11 @@ namespace Jasper.Codegen.StructureMap
                 return new ServiceVariable(type, Nested);
             }
 
+            if (type.IsConcreteWithDefaultCtor())
+            {
+                return new NoArgCreationVariable(type);
+            }
+
             if (type.IsConcrete())
             {
                 return new ServiceVariable(type, Nested);

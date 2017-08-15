@@ -34,7 +34,6 @@ namespace Jasper
                 DisposalLock = DisposalLock.Ignore
             };
 
-            registry.Generation.Sources.Add(new NoArgConstructor());
             registry.Generation.Sources.Add(new StructureMapServices(Container));
             registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
             registry.Generation.Assemblies.Add(registry.ApplicationAssembly);

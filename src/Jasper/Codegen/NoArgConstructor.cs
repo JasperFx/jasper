@@ -4,20 +4,6 @@ using Baseline;
 
 namespace Jasper.Codegen
 {
-    public class NoArgConstructor : IVariableSource
-    {
-        public bool Matches(Type type)
-        {
-            return false;
-            return type.IsConcreteWithDefaultCtor();
-        }
-
-        public Variable Create(Type type)
-        {
-            return new NoArgCreationVariable(type);
-        }
-    }
-
     public class NoArgCreationVariable : Variable
     {
         public NoArgCreationVariable(Type variableType) : base(variableType)
