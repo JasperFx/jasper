@@ -58,7 +58,7 @@ namespace StorytellerSpecs.Fixtures
 
         public IMediaReader[] ReadersFor(Type messageType)
         {
-            throw new NotImplementedException();
+            return new IMediaReader[0];
         }
 
         public IMediaWriter[] WritersFor(Type messageType)
