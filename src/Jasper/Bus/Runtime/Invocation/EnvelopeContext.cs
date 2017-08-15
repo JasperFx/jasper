@@ -63,7 +63,7 @@ namespace Jasper.Bus.Runtime.Invocation
         {
             if (original.AckRequested)
             {
-                await sendAcknowledgement(original);
+                await SendAcknowledgement(original);
             }
 
             foreach (var o in cascadingMessages)
@@ -72,7 +72,7 @@ namespace Jasper.Bus.Runtime.Invocation
             }
         }
 
-        private Task sendAcknowledgement(Envelope original)
+        public Task SendAcknowledgement(Envelope original)
         {
             var envelope = new Envelope
             {

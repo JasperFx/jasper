@@ -102,11 +102,30 @@ namespace Jasper.Bus.Runtime.Invocation
             return InvokeNow(envelope);
         }
 
-        public Task InvokeNow(Envelope envelope)
+        public async Task InvokeNow(Envelope envelope)
         {
+            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
+
+            var handler = _graph.HandlerFor(envelope.Message.GetType());
+            if (handler == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(envelope), $"No known handler for message type {envelope.Message.GetType().FullName}");
+            }
+
             using (var context = new EnvelopeContext(this, envelope, _sender, _delayedJobs))
             {
-                return ProcessMessage(envelope, context);
+                try
+                {
+                    await handler.Handle(context);
+
+                    // TODO -- what do we do here if this fails?
+                    await context.SendAllQueuedOutgoingMessages();
+                }
+                catch (Exception e)
+                {
+                    Logger.LogException(e, $"Invocation of {envelope} failed!");
+                    throw;
+                }
             }
         }
 
@@ -127,7 +146,7 @@ namespace Jasper.Bus.Runtime.Invocation
             var handler = _graph.HandlerFor(envelope.Message.GetType());
             if (handler == null)
             {
-                processNoHandlerLogic(envelope);
+                await processNoHandlerLogic(envelope, context);
             }
             else
             {
@@ -158,7 +177,7 @@ namespace Jasper.Bus.Runtime.Invocation
             }
         }
 
-        private void processNoHandlerLogic(Envelope envelope)
+        private async Task processNoHandlerLogic(Envelope envelope, EnvelopeContext context)
         {
             Logger.NoHandlerFor(envelope);
 
@@ -172,6 +191,11 @@ namespace Jasper.Bus.Runtime.Invocation
                 {
                     Logger.LogException(e);
                 }
+            }
+
+            if (envelope.AckRequested)
+            {
+                await context.SendAcknowledgement(envelope);
             }
         }
 

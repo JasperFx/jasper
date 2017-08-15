@@ -41,7 +41,7 @@ namespace Jasper.Bus
         /// Error actions will not be executed and the message consumers will not be retried
         /// if an error happens.
         /// </summary>
-        Task Consume<T>(T message);
+        Task Invoke<T>(T message);
 
         /// <summary>
         /// Send a message that should be executed at the given time

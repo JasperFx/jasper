@@ -43,9 +43,22 @@ namespace Jasper.Testing.Bus
 
             };
 
-            await Bus.Consume(message);
+            await Bus.Invoke(message);
 
             theTracker.LastMessage.ShouldBeSameAs(message);
+        }
+
+        [Fact]
+        public Task exceptions_will_be_thrown_to_caller()
+        {
+            var message = new Message5
+            {
+                FailThisManyTimes = 1
+            };
+
+
+            return Testing.Exception<DivideByZeroException>
+                .ShouldBeThrownByAsync(() => Bus.Invoke(message));
         }
 
         [Fact]
@@ -56,7 +69,7 @@ namespace Jasper.Testing.Bus
 
             };
 
-            await Bus.Consume(message);
+            await Bus.Invoke(message);
 
             var m1 = await theTracker.Message1;
             m1.Id.ShouldBe(message.Id);
@@ -68,7 +81,14 @@ namespace Jasper.Testing.Bus
         [Fact]
         public async Task will_log_an_exception()
         {
-            await Bus.Consume(new Message5 {FailThisManyTimes = 1});
+            try
+            {
+                await Bus.Invoke(new Message5 {FailThisManyTimes = 1});
+            }
+            catch (Exception)
+            {
+
+            }
 
             Exceptions.Any().ShouldBeTrue();
         }
@@ -144,7 +164,7 @@ namespace Jasper.Testing.Bus
 
         public object[] Handle(Envelope envelope, Message5 message)
         {
-            if (message.FailThisManyTimes >= envelope.Attempts)
+            if (message.FailThisManyTimes != 0 && message.FailThisManyTimes >= envelope.Attempts)
             {
                 throw new DivideByZeroException();
             }

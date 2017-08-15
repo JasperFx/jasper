@@ -20,11 +20,14 @@ namespace Jasper.Testing.Bus
             {
                 r.Services.AddService<IMissingHandler, NoMessageHandler1>();
                 r.Services.AddService<IMissingHandler, NoMessageHandler2>();
+
+                // Hack until we get a default queue
+                r.Messaging.Send<MessageWithNoHandler>().To("loopback://incoming");
             });
 
             var msg1 = new MessageWithNoHandler();
 
-            await Bus.Consume(msg1);
+            await Bus.SendAndWait(msg1);
 
             await NoMessageHandler1.Finished;
             await NoMessageHandler2.Finished;

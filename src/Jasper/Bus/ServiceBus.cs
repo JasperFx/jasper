@@ -76,7 +76,7 @@ namespace Jasper.Bus
             return _sender.Send(new Envelope { Message = message, Destination = destination});
         }
 
-        public Task Consume<T>(T message)
+        public Task Invoke<T>(T message)
         {
             return _pipeline.InvokeNow(message);
         }

@@ -21,5 +21,6 @@ namespace Jasper.Bus.Runtime.Invocation
 
         IBusLogger Logger { get; }
         IDelayedJobProcessor DelayedJobs { get; }
+        Task SendAcknowledgement(Envelope original);
     }
 }

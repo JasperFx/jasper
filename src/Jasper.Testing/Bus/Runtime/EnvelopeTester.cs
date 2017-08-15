@@ -267,7 +267,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var envelope = new Envelope();
 
-            ShouldBeNullExtensions.ShouldBeNull(envelope.ReceivedAt);
+            envelope.ReceivedAt.ShouldBeNull();
 
             var uri = "fake://thing".ToUri();
             envelope.ReceivedAt = uri;
@@ -280,7 +280,7 @@ namespace Jasper.Testing.Bus.Runtime
         public void reply_requested()
         {
             var envelope = new Envelope();
-            ShouldBeNullExtensions.ShouldBeNull(envelope.ReplyRequested);
+            envelope.ReplyRequested.ShouldBeNull();
 
 
             envelope.ReplyRequested = "Foo";
@@ -295,21 +295,21 @@ namespace Jasper.Testing.Bus.Runtime
         public void ack_requested()
         {
             var envelope = new Envelope();
-            ShouldBeBooleanExtensions.ShouldBeFalse(envelope.AckRequested);
+            envelope.AckRequested.ShouldBeFalse();
 
 
             envelope.AckRequested = true;
             envelope.Headers[Envelope.AckRequestedKey].ShouldBe("true");
-            ShouldBeBooleanExtensions.ShouldBeTrue(envelope.AckRequested);
+            envelope.AckRequested.ShouldBeTrue();
 
             envelope.AckRequested = false;
-            ShouldBeBooleanExtensions.ShouldBeFalse(envelope.Headers.ContainsKey(Envelope.AckRequestedKey));
+            envelope.Headers.ContainsKey(Envelope.AckRequestedKey).ShouldBeFalse();
         }
 
         [Fact]
         public void execution_time_is_null_by_default()
         {
-            ShouldBeNullExtensions.ShouldBeNull(new Envelope().ExecutionTime);
+            new Envelope().ExecutionTime.ShouldBeNull();
         }
 
         [Fact]
