@@ -43,6 +43,9 @@ namespace Jasper.Bus
         /// </summary>
         Task Invoke<T>(T message);
 
+
+        Task Enqueue<T>(T message);
+
         /// <summary>
         /// Send a message that should be executed at the given time
         /// </summary>

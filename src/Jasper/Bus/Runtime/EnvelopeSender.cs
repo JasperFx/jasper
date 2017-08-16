@@ -64,6 +64,18 @@ namespace Jasper.Bus.Runtime
             return envelope.CorrelationId;
         }
 
+        public Task EnqueueLocally(object message)
+        {
+            var channel = _channels.DefaultChannel;
+            var envelope = new Envelope
+            {
+                Message = message,
+                Destination = channel.Uri
+            };
+
+            return Send(envelope);
+        }
+
         private async Task<Envelope> sendEnvelope(Envelope envelope, MessageRoute route, IMessageCallback callback)
         {
             if (route == null) throw new ArgumentNullException(nameof(route));

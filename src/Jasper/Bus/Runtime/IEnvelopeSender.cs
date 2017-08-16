@@ -8,6 +8,7 @@ namespace Jasper.Bus.Runtime
     {
         Task<string> Send(Envelope envelope);
         Task<string> Send(Envelope envelope, IMessageCallback callback);
+        Task EnqueueLocally(object message);
     }
 
     public class NoRoutesException : Exception

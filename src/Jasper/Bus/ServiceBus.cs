@@ -81,6 +81,11 @@ namespace Jasper.Bus
             return _pipeline.InvokeNow(message);
         }
 
+        public Task Enqueue<T>(T message)
+        {
+            return _sender.EnqueueLocally(message);
+        }
+
         public void DelaySend<T>(T message, DateTime time)
         {
             _sender.Send(new Envelope

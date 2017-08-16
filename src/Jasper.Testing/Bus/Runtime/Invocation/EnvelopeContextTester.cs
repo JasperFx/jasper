@@ -315,6 +315,11 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             return Task.FromResult(envelope.CorrelationId);
         }
 
+        public Task EnqueueLocally(object message)
+        {
+            throw new NotImplementedException();
+        }
+
         public string FailureAcknowledgementMessage { get; set; }
     }
 }
