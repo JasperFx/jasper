@@ -45,7 +45,7 @@ namespace Jasper.Testing.Bus
             var subscriptions = await Runtime.Get<ISubscriptionsRepository>().LoadSubscriptions(SubscriptionRole.Subscribes);
 
             var subscription = subscriptions.Single();
-            subscription.Receiver.ShouldBe("loopback://one".ToUri());
+            subscription.Destination.ShouldBe("loopback://one".ToUri());
             subscription.Source.ShouldBe("loopback://two".ToUri());
         }
 

@@ -13,7 +13,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             var s1 = new Subscription(typeof(Message1))
             {
                 Publisher = "Service1",
-                Receiver = "foo://1".ToUri(),
+                Destination = "foo://1".ToUri(),
                 Source = "foo://2".ToUri(),
                 Role = SubscriptionRole.Subscribes
             };
@@ -21,7 +21,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             var s2 = new Subscription(typeof(Message1))
             {
                 Publisher = s1.Publisher,
-                Receiver = s1.Receiver,
+                Destination = s1.Destination,
                 Source = s1.Source,
                 Role = SubscriptionRole.Subscribes
             };
@@ -37,10 +37,10 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             s2.ShouldNotBe(s1);
 
             s2.MessageType = s1.MessageType;
-            s2.Receiver = "foo://3".ToUri();
+            s2.Destination = "foo://3".ToUri();
             s2.ShouldNotBe(s1);
 
-            s2.Receiver = s1.Receiver;
+            s2.Destination = s1.Destination;
             s2.Source = "foo://4".ToUri();
             s2.ShouldNotBe(s1);
 

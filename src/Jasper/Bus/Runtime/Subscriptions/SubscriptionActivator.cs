@@ -51,7 +51,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
                     x.Id = Guid.NewGuid();
                     x.Publisher = graph.Name;
                     x.Role = SubscriptionRole.Subscribes;
-                    x.Receiver = x.Receiver.ToMachineUri();
+                    x.Destination = x.Destination.ToMachineUri();
                     return x;
                 }).ToArray();
 
@@ -66,12 +66,12 @@ namespace Jasper.Bus.Runtime.Subscriptions
         {
             foreach (var lookup in _lookups)
             {
-                var matching = staticSubscriptions.Where(x => x.Receiver.Scheme == lookup.Protocol).ToArray();
-                var actuals = await lookup.Lookup(matching.Select(x => x.Receiver).ToArray());
+                var matching = staticSubscriptions.Where(x => x.Destination.Scheme == lookup.Protocol).ToArray();
+                var actuals = await lookup.Lookup(matching.Select(x => x.Destination).ToArray());
 
                 for (int i = 0; i < matching.Length; i++)
                 {
-                    matching[i].Receiver = actuals[i];
+                    matching[i].Destination = actuals[i];
                 }
             }
 

@@ -32,7 +32,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
                 yield return new Subscription(messageType)
                 {
                     Publisher = channels.Name,
-                    Receiver = receiver.Uri,
+                    Destination = receiver.Uri,
                     Source = _source,
                     Accepts = contentTypes.Join(",")
                 };

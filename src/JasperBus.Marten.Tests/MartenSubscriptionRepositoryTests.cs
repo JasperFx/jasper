@@ -158,7 +158,7 @@ namespace JasperBus.Marten.Tests
             subscription.Role.ShouldBe(role);
             subscription.MessageType.ShouldBe(typeof(TMessageType).FullName);
             subscription.Source.ShouldBe(role == SubscriptionRole.Publishes ? source.ToMachineUri() : source);
-            subscription.Receiver.ShouldBe(destination.ToMachineUri());
+            subscription.Destination.ShouldBe(destination.ToMachineUri());
         }
     }
 }

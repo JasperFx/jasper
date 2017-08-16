@@ -74,7 +74,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         [Fact]
         public void should_set_the_receiver_uri_to_the_reply_uri_of_the_matching_transport()
         {
-            theSubscriptions.First().Receiver
+            theSubscriptions.First().Destination
                 .ShouldBe(_localReplyUri);
         }
 

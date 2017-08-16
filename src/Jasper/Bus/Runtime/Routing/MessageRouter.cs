@@ -91,7 +91,7 @@ namespace Jasper.Bus.Runtime.Routing
             {
                 if (subscription.Accepts.IsEmpty())
                 {
-                    list.Add(new MessageRoute(messageType, modelWriter, subscription.Receiver, "application/json"));
+                    list.Add(new MessageRoute(messageType, modelWriter, subscription.Destination, "application/json"));
                 }
                 else
                 {
@@ -101,7 +101,7 @@ namespace Jasper.Bus.Runtime.Routing
 
                     if (contentType.IsNotEmpty())
                     {
-                        list.Add(new MessageRoute(messageType, modelWriter, subscription.Receiver, contentType));
+                        list.Add(new MessageRoute(messageType, modelWriter, subscription.Destination, contentType));
                     }
                 }
             }

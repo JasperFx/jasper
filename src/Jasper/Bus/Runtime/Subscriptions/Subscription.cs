@@ -22,7 +22,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public Guid Id { get; set; }
         public Uri Source { get; set; }
-        public Uri Receiver { get; set; }
+        public Uri Destination { get; set; }
 
         public string MessageType { get; set; }
 
@@ -50,13 +50,13 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public Subscription ReceivedBy(Uri uri)
         {
-            Receiver = uri;
+            Destination = uri;
             return this;
         }
 
         protected bool Equals(Subscription other)
         {
-            return Equals(Source, other.Source) && Equals(Receiver, other.Receiver) && string.Equals(MessageType, other.MessageType) && string.Equals(Publisher, other.Publisher) && string.Equals(Role, other.Role);
+            return Equals(Source, other.Source) && Equals(Destination, other.Destination) && string.Equals(MessageType, other.MessageType) && string.Equals(Publisher, other.Publisher) && string.Equals(Role, other.Role);
         }
 
         public override bool Equals(object obj)
@@ -72,7 +72,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             unchecked
             {
                 var hashCode = (Source != null ? Source.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Receiver != null ? Receiver.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Destination != null ? Destination.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (MessageType != null ? MessageType.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Publisher != null ? Publisher.GetHashCode() : 0);
                 return hashCode;
@@ -81,7 +81,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public override string ToString()
         {
-            return $"Source: {Source}, Receiver: {Receiver}, MessageType: {MessageType}, NodeName: {Publisher}";
+            return $"Source: {Source}, Receiver: {Destination}, MessageType: {MessageType}, NodeName: {Publisher}";
         }
 
         public bool Matches(Type inputType)

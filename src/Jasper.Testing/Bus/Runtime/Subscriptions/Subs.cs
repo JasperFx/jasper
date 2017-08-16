@@ -13,7 +13,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             {
                 MessageType = Guid.NewGuid().ToString(),
                 Publisher = nodeName ?? "TheNode",
-                Receiver = "loopback://receiver".ToUri(),
+                Destination = "loopback://receiver".ToUri(),
                 Source = "loopback://source".ToUri(),
                 Role = role
             };

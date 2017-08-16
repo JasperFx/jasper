@@ -71,7 +71,7 @@ namespace JasperBus.Marten.Tests
                         Id = Guid.NewGuid(),
                         Publisher = "Client",
                         Role = SubscriptionRole.Subscribes,
-                        Receiver = _clientUri,
+                        Destination = _clientUri,
                         Source = "jasper://loadbalancer:5000/service".ToUri()
                     }
                 }

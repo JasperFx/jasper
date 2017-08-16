@@ -30,7 +30,7 @@ namespace StorytellerSpecs.Fixtures
             var subscription = new Subscription(messageType)
             {
                 Accepts = Accepts,
-                Receiver = Destination,
+                Destination = Destination,
                 Role = SubscriptionRole.Publishes
             };
 

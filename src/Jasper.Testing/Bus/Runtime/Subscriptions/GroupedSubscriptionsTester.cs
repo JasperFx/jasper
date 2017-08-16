@@ -60,7 +60,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         [Fact]
         public void should_set_the_receiver_uri_to_the_explicitly_chosen_uri()
         {
-            theSubscriptions.First().Receiver
+            theSubscriptions.First().Destination
                 .ShouldBe(_settings.Incoming);
         }
 
