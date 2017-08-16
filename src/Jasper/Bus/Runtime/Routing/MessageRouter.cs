@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Conneg;
@@ -16,14 +17,16 @@ namespace Jasper.Bus.Runtime.Routing
         private readonly SerializationGraph _serializers;
         private readonly ChannelGraph _channels;
         private readonly ISubscriptionsRepository _subscriptions;
+        private readonly HandlerGraph _handlers;
 
         private readonly ConcurrentDictionary<Type, MessageRoute[]> _routes = new ConcurrentDictionary<Type, MessageRoute[]>();
 
-        public MessageRouter(SerializationGraph serializers, ChannelGraph channels, ISubscriptionsRepository subscriptions)
+        public MessageRouter(SerializationGraph serializers, ChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers)
         {
             _serializers = serializers;
             _channels = channels;
             _subscriptions = subscriptions;
+            _handlers = handlers;
         }
 
         public void ClearAll()
@@ -103,9 +106,15 @@ namespace Jasper.Bus.Runtime.Routing
                 }
             }
 
+            if (!list.Any())
+            {
+                if (_handlers.HandlerFor(messageType) != null && _channels.DefaultChannel != null)
+                {
+                    list.Add(new MessageRoute(messageType, modelWriter, _channels.DefaultChannel.Uri, "application/json"));
+                }
+            }
+
             return list;
-
-
         }
     }
 }

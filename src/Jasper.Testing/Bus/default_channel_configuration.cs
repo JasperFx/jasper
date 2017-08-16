@@ -1,5 +1,9 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Bus;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Routing;
+using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Bus
@@ -34,6 +38,78 @@ namespace Jasper.Testing.Bus
                 channels.DefaultChannel
                     .ShouldBeTheSameAs(channels["loopback://incoming"]);
             }
+        }
+
+
+        [Fact]
+        public async Task will_route_to_the_default_channel_if_there_is_a_handler_but_no_routes()
+        {
+            using (var runtime = JasperRuntime.For(_ =>
+            {
+                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Channels.DefaultIs("loopback://incoming");
+                _.Messaging.Handlers.IncludeType<DefaultRoutedMessageHandler>();
+            }))
+            {
+                var router = runtime.Get<IMessageRouter>();
+
+                var routes = await router.Route(typeof(DefaultRoutedMessage));
+
+                routes.Single().Destination.ShouldBe("loopback://incoming".ToUri());
+            }
+        }
+
+        [Fact]
+        public async Task will_not_route_to_the_default_channel_if_there_is_a_handler_and_routes()
+        {
+            using (var runtime = JasperRuntime.For(_ =>
+            {
+                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Channels.DefaultIs("loopback://incoming");
+                _.Messaging.Handlers.IncludeType<DefaultRoutedMessageHandler>();
+
+                _.Messaging.Send<DefaultRoutedMessage>().To("jasper://localhost:2444/outgoing");
+            }))
+            {
+                var router = runtime.Get<IMessageRouter>();
+
+                var routes = await router.Route(typeof(DefaultRoutedMessage));
+
+                routes.Single().Destination.ShouldBe("jasper://localhost:2444/outgoing".ToUri());
+            }
+        }
+
+        [Fact]
+        public async Task will_not_route_locally_with_no_handler()
+        {
+            using (var runtime = JasperRuntime.For(_ =>
+            {
+                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Channels.DefaultIs("loopback://incoming");
+
+            }))
+            {
+                var router = runtime.Get<IMessageRouter>();
+
+                var routes = await router.Route(typeof(DefaultRoutedMessage));
+
+                routes.Any().ShouldBeFalse();
+            }
+        }
+
+
+    }
+
+    public class DefaultRoutedMessage
+    {
+
+    }
+
+    public class DefaultRoutedMessageHandler
+    {
+        public void Handle(DefaultRoutedMessage message)
+        {
+
         }
     }
 }

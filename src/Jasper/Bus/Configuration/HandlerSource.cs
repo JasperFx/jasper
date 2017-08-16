@@ -15,6 +15,7 @@ namespace Jasper.Bus.Configuration
     {
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
+        private readonly IList<Type> _explicitTypes = new List<Type>();
 
         public HandlerSource()
         {
@@ -33,7 +34,10 @@ namespace Jasper.Bus.Configuration
 
         internal async Task<HandlerCall[]> FindCalls(JasperRegistry registry)
         {
-            if (ConventionalDiscoveryDisabled) return new HandlerCall[0];
+            if (ConventionalDiscoveryDisabled)
+            {
+                return _explicitTypes.SelectMany(actionsFromType).ToArray();
+            }
 
             if (registry.ApplicationAssembly == null) return new HandlerCall[0];
 
@@ -45,7 +49,7 @@ namespace Jasper.Bus.Configuration
                 .ConfigureAwait(false);
 
 
-            return types.Where(x => !x.HasAttribute<NotHandlerAttribute>()).SelectMany(actionsFromType).ToArray();
+            return types.Where(x => !x.HasAttribute<NotHandlerAttribute>()).Concat(_explicitTypes).SelectMany(actionsFromType).ToArray();
         }
 
         private IEnumerable<HandlerCall> actionsFromType(Type type)
@@ -121,7 +125,7 @@ namespace Jasper.Bus.Configuration
         /// <typeparam name="T"></typeparam>
         public void IncludeType<T>()
         {
-            IncludeTypes(_ => _ == typeof(T));
+            _explicitTypes.Add(typeof(T));
         }
     }
 }
