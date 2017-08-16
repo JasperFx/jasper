@@ -1,10 +1,27 @@
 using System;
+using System.Linq;
 using System.Net;
 using Baseline;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
+    public class SubscriptionDelta
+    {
+        public SubscriptionDelta(Subscription[] expected, Subscription[] actual)
+        {
+            Matched = expected.Intersect(actual).ToArray();
+            NewSubscriptions = expected.Where(x => !Matched.Contains(x)).ToArray();
+            ObsoleteSubscriptions = actual.Where(x => !Matched.Contains(x)).ToArray();
+        }
+
+        public Subscription[] ObsoleteSubscriptions { get; set; }
+
+        public Subscription[] NewSubscriptions { get; }
+
+        public Subscription[] Matched { get; }
+    }
+
     public class Subscription
     {
         public Subscription(Type messageType, Uri destination)
@@ -57,7 +74,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         protected bool Equals(Subscription other)
         {
-            return Equals(Source, other.Source) && Equals(Destination, other.Destination) && string.Equals(MessageType, other.MessageType) && string.Equals(Publisher, other.Publisher) && string.Equals(Role, other.Role);
+            return Equals(Destination, other.Destination) && string.Equals(MessageType, other.MessageType) && string.Equals(Accepts, other.Accepts);
         }
 
         public override bool Equals(object obj)
@@ -65,17 +82,16 @@ namespace Jasper.Bus.Runtime.Subscriptions
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Subscription)obj);
+            return Equals((Subscription) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = (Source != null ? Source.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Destination != null ? Destination.GetHashCode() : 0);
+                var hashCode = (Destination != null ? Destination.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (MessageType != null ? MessageType.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Publisher != null ? Publisher.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Accepts != null ? Accepts.GetHashCode() : 0);
                 return hashCode;
             }
         }
