@@ -30,7 +30,6 @@ namespace Jasper.Bus.Runtime.Subscriptions
             var modifiedSubscriptions = message.Subscriptions
                 .Select(x =>
                 {
-                    x.Id = Guid.NewGuid();
                     x.Publisher = _graph.Name;
                     x.Role = SubscriptionRole.Publishes;
                     x.Source = x.Source.ToMachineUri();

@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using Baseline;
 using Jasper.Util;
 
@@ -6,21 +7,29 @@ namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class Subscription
     {
-        public static Subscription For<T>()
+        public Subscription(Type messageType, Uri destination)
         {
-            return new Subscription(typeof(T));
-        }
+            if (destination == null) throw new ArgumentNullException(nameof(destination));
 
-        public Subscription(Type messageType)
-        {
-            MessageType = messageType.ToTypeAlias();
+            Destination = destination;
+            MessageType = messageType?.ToTypeAlias() ?? throw new ArgumentNullException(nameof(messageType));
         }
 
         public Subscription()
         {
         }
 
-        public Guid Id { get; set; }
+        public string Id
+        {
+            get
+            {
+                var destination = WebUtility.UrlDecode(Destination.ToString());
+                var contentType = WebUtility.UrlDecode(Accepts);
+
+                return $"{MessageType}/{destination}/{contentType}";
+            }
+        }
+
         public Uri Source { get; set; }
         public Uri Destination { get; set; }
 
@@ -33,14 +42,6 @@ namespace Jasper.Bus.Runtime.Subscriptions
         public SubscriptionRole Role { get; set; }
 
         public string Accepts { get; set; } = "application/json";
-
-        public Subscription Clone()
-        {
-            var clone = (Subscription)this.MemberwiseClone();
-            clone.Id = Guid.Empty;
-
-            return clone;
-        }
 
         public Subscription SourcedFrom(Uri uri)
         {
@@ -84,9 +85,5 @@ namespace Jasper.Bus.Runtime.Subscriptions
             return $"Source: {Source}, Receiver: {Destination}, MessageType: {MessageType}, NodeName: {Publisher}";
         }
 
-        public bool Matches(Type inputType)
-        {
-            return inputType.GetFullName() == MessageType;
-        }
     }
 }

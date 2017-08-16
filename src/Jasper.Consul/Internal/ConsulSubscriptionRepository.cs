@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Consul;
 using Jasper.Bus;
@@ -42,6 +43,8 @@ namespace Jasper.Consul.Internal
 
         public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
+
+
             var ops = subscriptions
                 .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Delete));
 
@@ -69,9 +72,7 @@ namespace Jasper.Consul.Internal
     {
         public static string ConsulId(this Subscription subscription)
         {
-            if (subscription.Id == Guid.Empty) subscription.Id = Guid.NewGuid();
-
-            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.MessageType}/{subscription.Id}";
+            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.Id}";
         }
 
         public static string ConsulIdPrefix(this string messageType)

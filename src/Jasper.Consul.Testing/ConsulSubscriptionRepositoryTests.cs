@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Consul;
 using Jasper.Bus;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Consul.Internal;
 using Jasper.Util;
@@ -15,6 +16,8 @@ namespace Jasper.Consul.Testing
 {
     public class ConsulSubscriptionRepositoryTests : IDisposable
     {
+        private Uri theDestination = "something://localhost:3333/here".ToUri();
+
         private readonly JasperRuntime _runtime;
         private ISubscriptionsRepository theRepository;
 
@@ -46,10 +49,10 @@ namespace Jasper.Consul.Testing
         {
             var subscriptions = new Subscription[]
             {
-                new Subscription(typeof(GreenMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(BlueMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(RedMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(OrangeMessage)){Role = SubscriptionRole.Subscribes},
+                new Subscription(typeof(GreenMessage), theDestination){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(BlueMessage), theDestination){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(RedMessage), theDestination){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(OrangeMessage), theDestination){Role = SubscriptionRole.Subscribes},
             };
 
             subscriptions.Each(x => x.Publisher = "ConsulSampleApp");
@@ -69,12 +72,12 @@ namespace Jasper.Consul.Testing
         {
             var subscriptions = new Subscription[]
             {
-                new Subscription(typeof(GreenMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(GreenMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(GreenMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(BlueMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(RedMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(OrangeMessage)){Role = SubscriptionRole.Subscribes},
+                new Subscription(typeof(GreenMessage), "something://localhost:3333/here".ToUri()){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(GreenMessage), "something://localhost:4444/here".ToUri()){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(GreenMessage), "something://localhost:5555/here".ToUri()){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(BlueMessage), theDestination){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(RedMessage), theDestination){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(OrangeMessage), theDestination){Role = SubscriptionRole.Subscribes},
             };
 
             subscriptions.Each(x => x.Publisher = "ConsulSampleApp");
@@ -90,10 +93,10 @@ namespace Jasper.Consul.Testing
         {
             var subscriptions = new Subscription[]
             {
-                new Subscription(typeof(GreenMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(BlueMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(RedMessage)){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(OrangeMessage)){Role = SubscriptionRole.Subscribes},
+                new Subscription(typeof(GreenMessage), theDestination){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(BlueMessage), theDestination){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(RedMessage), theDestination){Role = SubscriptionRole.Publishes},
+                new Subscription(typeof(OrangeMessage), theDestination){Role = SubscriptionRole.Subscribes},
             };
 
             subscriptions.Each(x => x.Publisher = "ConsulSampleApp");

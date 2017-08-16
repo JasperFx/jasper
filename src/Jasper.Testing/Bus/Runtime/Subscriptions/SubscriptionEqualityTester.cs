@@ -10,18 +10,16 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         [Fact]
         public void equals_if_all_are_equal()
         {
-            var s1 = new Subscription(typeof(Message1))
+            var s1 = new Subscription(typeof(Message1), "foo://1".ToUri())
             {
                 Publisher = "Service1",
-                Destination = "foo://1".ToUri(),
                 Source = "foo://2".ToUri(),
                 Role = SubscriptionRole.Subscribes
             };
 
-            var s2 = new Subscription(typeof(Message1))
+            var s2 = new Subscription(typeof(Message1), s1.Destination)
             {
                 Publisher = s1.Publisher,
-                Destination = s1.Destination,
                 Source = s1.Source,
                 Role = SubscriptionRole.Subscribes
             };

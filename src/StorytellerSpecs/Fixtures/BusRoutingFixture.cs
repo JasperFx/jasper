@@ -27,10 +27,9 @@ namespace StorytellerSpecs.Fixtures
         public void SubscriptionsAre([SelectionList("MessageTypes")]string MessageType, [SelectionList("Channels")] Uri Destination, string Accepts)
         {
             var messageType = messageTypeFor(MessageType);
-            var subscription = new Subscription(messageType)
+            var subscription = new Subscription(messageType, Destination)
             {
                 Accepts = Accepts,
-                Destination = Destination,
                 Role = SubscriptionRole.Publishes
             };
 

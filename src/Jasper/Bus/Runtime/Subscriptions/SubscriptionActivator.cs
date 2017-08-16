@@ -48,7 +48,6 @@ namespace Jasper.Bus.Runtime.Subscriptions
                 .SelectMany(x => x.DetermineRequirements())
                 .Select(x =>
                 {
-                    x.Id = Guid.NewGuid();
                     x.Publisher = graph.Name;
                     x.Role = SubscriptionRole.Subscribes;
                     x.Destination = x.Destination.ToMachineUri();

@@ -22,7 +22,6 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         public static Subscription ExistingSubscription(string nodeName = null, SubscriptionRole role = SubscriptionRole.Subscribes)
         {
             var subscription = NewSubscription();
-            subscription.Id = Guid.NewGuid();
 
             if (nodeName.IsNotEmpty())
             {

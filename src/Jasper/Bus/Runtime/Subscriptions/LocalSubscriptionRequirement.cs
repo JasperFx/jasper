@@ -29,10 +29,9 @@ namespace Jasper.Bus.Runtime.Subscriptions
             {
                 var contentTypes = serialization.ReaderFor(messageType.ToTypeAlias()).ContentTypes;
 
-                yield return new Subscription(messageType)
+                yield return new Subscription(messageType, receiver.Uri)
                 {
                     Publisher = channels.Name,
-                    Destination = receiver.Uri,
                     Source = _source,
                     Accepts = contentTypes.Join(",")
                 };
