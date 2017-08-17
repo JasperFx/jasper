@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
@@ -47,6 +48,7 @@ namespace Jasper
         public IContainer Container { get; }
 
         public bool IsDisposed { get; private set; }
+        public ServiceCapabilities ServiceCapabilities { get; private set; }
 
         public void Dispose()
         {

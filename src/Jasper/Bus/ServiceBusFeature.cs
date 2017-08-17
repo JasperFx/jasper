@@ -11,12 +11,14 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Bus.Transports.InMemory;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
+using CapabilityGraph = Jasper.Bus.Runtime.Subscriptions.New.CapabilityGraph;
 using Policies = Jasper.Bus.Configuration.Policies;
 
 namespace Jasper.Bus
@@ -25,6 +27,8 @@ namespace Jasper.Bus
     {
         private HandlerGraph _graph;
         public HandlerSource Handlers { get; } = new HandlerSource();
+
+        public CapabilityGraph Capabilities = new CapabilityGraph();
 
         public GenerationConfig Generation { get; } = new GenerationConfig("JasperBus.Generated");
 

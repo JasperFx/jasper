@@ -24,6 +24,7 @@ namespace Jasper.Bus.Runtime.Routing
         public Type MessageType { get; }
         public Uri Destination { get; }
         public string ContentType { get; }
+        public string Publisher { get; set; }
 
 
         public Envelope CloneForSending(Envelope envelope)

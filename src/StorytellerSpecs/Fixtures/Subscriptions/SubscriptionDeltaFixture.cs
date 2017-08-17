@@ -4,7 +4,7 @@ using Jasper.Bus.Runtime.Subscriptions;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
-namespace StorytellerSpecs.Fixtures
+namespace StorytellerSpecs.Fixtures.Subscriptions
 {
     public class SubscriptionDeltaFixture : Fixture
     {
