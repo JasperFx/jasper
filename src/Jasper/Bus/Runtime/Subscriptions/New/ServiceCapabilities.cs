@@ -1,4 +1,6 @@
-﻿namespace Jasper.Bus.Runtime.Subscriptions.New
+﻿using System.Linq;
+
+namespace Jasper.Bus.Runtime.Subscriptions.New
 {
     public class ServiceCapabilities
     {
@@ -7,5 +9,10 @@
         public NewSubscription[] Subscriptions { get; set; }
 
         public string[] Errors { get; set; } = new string[0];
+
+        public bool Publishes<T>()
+        {
+            return Published.Any(x => x.DotNetType == typeof(T));
+        }
     }
 }

@@ -7,6 +7,7 @@ using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Conneg;
+using StructureMap.Graph.Scanning;
 
 namespace Jasper.Bus.Runtime.Subscriptions.New
 {
@@ -14,6 +15,12 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
     {
         private readonly IList<PublishedMessage> _published = new List<PublishedMessage>();
         private readonly IList<SubscriptionRequirement> _requirements = new List<SubscriptionRequirement>();
+        private readonly IList<Func<Type, bool>> _publishFilters = new List<Func<Type, bool>>();
+
+        public CapabilityGraph()
+        {
+            _publishFilters.Add(type => type.HasAttribute<PublishAttribute>());
+        }
 
         public Uri DefaultReceiverLocation { get; set; }
 
@@ -25,9 +32,25 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
         public Task<ServiceCapabilities> Compile(HandlerGraph handlers, SerializationGraph serialization,
             ChannelGraph channels, JasperRuntime runtime)
         {
-            // TODO -- do some type scanning here
+            if (runtime.ApplicationAssembly == null)
+            {
+                return Task.FromResult(compile(handlers, serialization, channels));
+            }
 
-            return Task.FromResult(compile(handlers, serialization, channels));
+            return TypeRepository.FindTypes(runtime.ApplicationAssembly,
+                    TypeClassification.Closed | TypeClassification.Closed, type => _publishFilters.Any(x => x(type)))
+                .ContinueWith(t =>
+                {
+                    foreach (var type in t.Result)
+                    {
+                        Publish(type);
+                    }
+
+                    return compile(handlers, serialization, channels);
+                });
+
+
+
         }
 
 
@@ -107,17 +130,20 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
 
         IPublishing IPublishing.Message<T>()
         {
-            throw new NotImplementedException();
+            Publish(typeof(T));
+            return this;
         }
 
         IPublishing IPublishing.Message(Type messageType)
         {
-            throw new NotImplementedException();
+            Publish(messageType);
+            return this;
         }
 
         IPublishing IPublishing.MessagesMatching(Func<Type, bool> filter)
         {
-            throw new NotImplementedException();
+            _publishFilters.Add(filter);
+            return this;
         }
     }
 }
