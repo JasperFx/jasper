@@ -41,6 +41,8 @@ namespace Jasper.Conneg
             _writers.AddRange(writers);
         }
 
+        public IEnumerable<ISerializer> Serializers => _serializers.Values;
+
         public object Deserialize(Envelope envelope, ChannelNode node)
         {
             var contentType = envelope.ContentType ?? node.AcceptedContentTypes.FirstOrDefault() ?? "application/json";

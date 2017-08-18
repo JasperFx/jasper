@@ -49,30 +49,14 @@ namespace Jasper.Bus
             return bootstrap(registry);
         }
 
-        async Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
+        Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
         {
             var container = runtime.Container;
 
 
             _graph.Compile(generation, container);
 
-            // TODO -- create a new "BusStartup" class that does all of this kind of stuff
-            var lookups = container.GetAllInstances<IUriLookup>();
-            await Channels.ApplyLookups(lookups);
-
-
-
-            configureSerializationOrder(runtime);
-
-            var pipeline = container.GetInstance<IHandlerPipeline>();
-
-            var transports = container.GetAllInstances<ITransport>().ToArray();
-
-            Channels.StartTransports(pipeline, transports);
-
-            container.GetInstance<IDelayedJobProcessor>().Start(pipeline, Channels);
-
-            await container.GetInstance<ISubscriptionActivator>().Activate();
+            return runtime.Get<ServiceBusActivator>().Activate(Channels);
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
@@ -91,22 +75,7 @@ namespace Jasper.Bus
             }
         }
 
-        private void configureSerializationOrder(JasperRuntime runtime)
-        {
-            var contentTypes = runtime.Container.GetAllInstances<ISerializer>()
-                .Select(x => x.ContentType).ToArray();
 
-            var unknown = Channels.AcceptedContentTypes.Where(x => !contentTypes.Contains(x)).ToArray();
-            if (unknown.Any())
-            {
-                throw new UnknownContentTypeException(unknown, contentTypes);
-            }
-
-            foreach (var contentType in contentTypes)
-            {
-                Channels.AcceptedContentTypes.Fill(contentType);
-            }
-        }
 
         private async Task<Registry> bootstrap(JasperRegistry registry)
         {
