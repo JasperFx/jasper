@@ -127,5 +127,10 @@ namespace Jasper.Bus.Configuration
         {
             _explicitTypes.Add(typeof(T));
         }
+
+        public void IncludeType(Type type)
+        {
+            _explicitTypes.Add(type);
+        }
     }
 }

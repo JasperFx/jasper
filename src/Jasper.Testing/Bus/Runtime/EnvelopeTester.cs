@@ -386,26 +386,31 @@ namespace Jasper.Testing.Bus.Runtime
         }
     }
 
+    [TypeAlias("Message1")]
     public class Message1
     {
         public Guid Id = Guid.NewGuid();
     }
 
+    [TypeAlias("Message2")]
     public class Message2
     {
         public Guid Id = Guid.NewGuid();
     }
 
+    [TypeAlias("Message3")]
     public class Message3
     {
 
     }
 
+    [TypeAlias("Message4")]
     public class Message4
     {
 
     }
 
+    [TypeAlias("Message5")]
     public class Message5
     {
         public Guid Id = Guid.NewGuid();
