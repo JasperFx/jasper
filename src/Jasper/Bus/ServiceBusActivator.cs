@@ -15,6 +15,7 @@ namespace Jasper.Bus
 {
     public class ServiceBusActivator
     {
+        private readonly BusSettings _settings;
         private readonly IHandlerPipeline _pipeline;
         private readonly IDelayedJobProcessor _delayedJobs;
         private readonly ISubscriptionActivator _subscriptions;
@@ -22,8 +23,9 @@ namespace Jasper.Bus
         private readonly ITransport[] _transports;
         private readonly IUriLookup[] _lookups;
 
-        public ServiceBusActivator(IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, ISubscriptionActivator subscriptions, SerializationGraph serialization, ITransport[] transports, IUriLookup[] lookups)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, ISubscriptionActivator subscriptions, SerializationGraph serialization, ITransport[] transports, IUriLookup[] lookups)
         {
+            _settings = settings;
             _pipeline = pipeline;
             _delayedJobs = delayedJobs;
             _subscriptions = subscriptions;
@@ -36,14 +38,17 @@ namespace Jasper.Bus
         {
             var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime);
 
-            await channels.ApplyLookups(_lookups);
+            if (!_settings.DisableAllTransports)
+            {
+                await channels.ApplyLookups(_lookups);
 
-            configureSerializationOrder(channels);
+                configureSerializationOrder(channels);
 
-            channels.StartTransports(_pipeline, _transports);
-            _delayedJobs.Start(_pipeline, channels);
+                channels.StartTransports(_pipeline, _transports);
+                _delayedJobs.Start(_pipeline, channels);
 
-            await _subscriptions.Activate();
+                await _subscriptions.Activate();
+            }
 
             runtime.Capabilities = await capabilityCompilation;
         }
