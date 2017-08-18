@@ -16,6 +16,7 @@ using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
 using Jasper.LightningDb.Transport;
+using Jasper.Util;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
@@ -183,6 +184,7 @@ namespace StorytellerSpecs.Fixtures
         }
     }
 
+    [TypeAlias("ErrorMessage")]
     public class ErrorMessage
     {
 
@@ -207,22 +209,27 @@ namespace StorytellerSpecs.Fixtures
 
     }
 
+    [TypeAlias("Message1")]
     public class Message1 : Message
     {
     }
 
+    [TypeAlias("Message2")]
     public class Message2 : Message
     {
     }
 
+    [TypeAlias("Message3")]
     public class Message3 : Message
     {
     }
 
+    [TypeAlias("Message4")]
     public class Message4 : Message
     {
     }
 
+    [TypeAlias("Message5")]
     public class Message5 : Message
     {
     }

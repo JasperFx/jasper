@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline;
@@ -81,7 +82,11 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
         private NewSubscription[] determineSubscriptions(HandlerGraph handlers, SerializationGraph serialization,
             ChannelGraph channels)
         {
-            var messageTypes = handlers.Chains.Select(x => x.MessageType).ToArray();
+            var messageTypes = handlers.Chains
+                .Select(x => x.MessageType)
+                .Where(t => t.GetTypeInfo().Assembly != GetType().GetTypeInfo().Assembly)
+                .ToArray();
+
             return _requirements.SelectMany(x =>
                     x.DetermineSubscriptions(serialization, messageTypes, DefaultReceiverLocation))
                 .Distinct()

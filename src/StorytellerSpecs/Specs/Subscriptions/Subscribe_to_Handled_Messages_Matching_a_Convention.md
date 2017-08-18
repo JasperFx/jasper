@@ -3,7 +3,7 @@
 -> id = bc2e9048-ca01-4cae-9788-31299fda3879
 -> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2017-08-18T15:06:04.4869860Z
+-> last-updated = 2017-08-18T15:48:22.6850000Z
 -> tags = 
 
 [Capabilities]
@@ -11,14 +11,13 @@
     [ServiceCapability]
     |> HandlesMessages
         [table]
-        |MessageType     |
-        |Message1        |
-        |Message2        |
-        |Message3        |
-        |ErrorMessage    |
-        |UnhandledMessage|
+        |MessageType |
+        |Message1    |
+        |Message2    |
+        |Message3    |
+        |ErrorMessage|
 
-    |> DefaultSubscriptionReceiverIs receiver=
+    |> DefaultSubscriptionReceiverIs
     ``` uri
     jasper://server1:2222/incoming
     ```

@@ -10,15 +10,37 @@ using StoryTeller.Grammars.Tables;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions
 {
+    public class FakeHandler<T>
+    {
+        public void Handle(T message)
+        {
+            // do nothing
+        }
+    }
+
+
     [Hidden]
     public class ServiceCapabilityFixture : BusFixture
     {
         private JasperRegistry _registry;
 
+        private readonly Dictionary<Type, Type> _handlerTypes = new Dictionary<Type, Type>
+        {
+            {typeof(Message1), typeof(Message1Handler) },
+            {typeof(Message2), typeof(Message2Handler) },
+            {typeof(Message3), typeof(Message3Handler) },
+            {typeof(Message4), typeof(Message4Handler) },
+            {typeof(Message5), typeof(Message5Handler) },
+            {typeof(Message6), typeof(Message6Handler) },
+            {typeof(ErrorMessage), typeof(ErrorMessageHandler) },
+
+        };
+           
+
         public override void SetUp()
         {
             _registry = new JasperRegistry();
-            _registry.Messaging.Handlers.ConventionalDiscoveryDisabled = false;
+            _registry.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
         }
 
         public override void TearDown()
@@ -46,7 +68,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             var type = messageTypeFor(MessageType);
 
-            var handlerType = typeof(MessageHandler<>).MakeGenericType(type);
+            var handlerType = _handlerTypes[type];
 
             _registry.Messaging.Handlers.IncludeType(handlerType);
         }
@@ -78,10 +100,10 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         [FormatAs("Publishes message {MessageType} with extra content types {contentTypes}")]
         public void PublishesWithExtraContentTypes(
-            [SelectionList("MessageTypes")]string messageType,
+            [SelectionList("MessageTypes")]string MessageType,
             string[] contentTypes)
         {
-            var type = messageTypeFor(messageType);
+            var type = messageTypeFor(MessageType);
             _registry.Publishing.Message(type);
 
             foreach (var contentType in contentTypes)
@@ -92,9 +114,9 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         }
 
         [FormatAs("The default subscription receiver is {uri}")]
-        public void DefaultSubscriptionReceiverIs([SelectionList("Channels")]string receiver)
+        public void DefaultSubscriptionReceiverIs([SelectionList("Channels")]string uri)
         {
-            _registry.Subscriptions.At(receiver);
+            _registry.Subscriptions.At(uri);
         }
 
 
