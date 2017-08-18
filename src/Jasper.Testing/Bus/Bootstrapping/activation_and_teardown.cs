@@ -26,6 +26,12 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
 
         [Fact]
+        public void has_service_capabilities()
+        {
+            theRuntime.Capabilities.ShouldNotBeNull();
+        }
+
+        [Fact]
         public void transports_must_be_a_singleton()
         {
             theRuntime.Container.Model.For<ITransport>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();

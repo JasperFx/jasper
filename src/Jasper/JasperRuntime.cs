@@ -48,7 +48,7 @@ namespace Jasper
         public IContainer Container { get; }
 
         public bool IsDisposed { get; private set; }
-        public ServiceCapabilities ServiceCapabilities { get; private set; }
+        public ServiceCapabilities Capabilities { get; internal set; }
 
         public void Dispose()
         {

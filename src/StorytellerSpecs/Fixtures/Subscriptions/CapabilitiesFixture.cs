@@ -139,7 +139,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             ServiceCapabilities capabilities = null;
             using (var runtime = JasperRuntime.For(_registry))
             {
-                capabilities = runtime.ServiceCapabilities;
+                capabilities = runtime.Capabilities;
             }
 
             Context.State.RetrieveOrAdd<List<ServiceCapabilities>>(() => new List<ServiceCapabilities>())

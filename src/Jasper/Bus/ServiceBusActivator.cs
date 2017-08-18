@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
+using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Conneg;
 
 namespace Jasper.Bus
@@ -30,8 +32,10 @@ namespace Jasper.Bus
             _lookups = lookups;
         }
 
-        public async Task Activate(ChannelGraph channels)
+        public async Task Activate(HandlerGraph handlers, ChannelGraph channels, CapabilityGraph capabilities, JasperRuntime runtime)
         {
+            var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime);
+
             await channels.ApplyLookups(_lookups);
 
             configureSerializationOrder(channels);
@@ -40,6 +44,8 @@ namespace Jasper.Bus
             _delayedJobs.Start(_pipeline, channels);
 
             await _subscriptions.Activate();
+
+            runtime.Capabilities = await capabilityCompilation;
         }
 
         private void configureSerializationOrder(ChannelGraph channels)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
@@ -21,9 +22,17 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
             _published.Add(new PublishedMessage(messageType));
         }
 
+        public Task<ServiceCapabilities> Compile(HandlerGraph handlers, SerializationGraph serialization,
+            ChannelGraph channels, JasperRuntime runtime)
+        {
+            // TODO -- do some type scanning here
+
+            return Task.FromResult(compile(handlers, serialization, channels));
+        }
 
 
-        public ServiceCapabilities DetermineCapabilities(HandlerGraph handlers, SerializationGraph serialization,
+
+        private ServiceCapabilities compile(HandlerGraph handlers, SerializationGraph serialization,
             ChannelGraph channels)
         {
             return new ServiceCapabilities

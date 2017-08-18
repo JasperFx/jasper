@@ -56,7 +56,7 @@ namespace Jasper.Bus
 
             _graph.Compile(generation, container);
 
-            return runtime.Get<ServiceBusActivator>().Activate(Channels);
+            return runtime.Get<ServiceBusActivator>().Activate(_graph, Channels, Capabilities, runtime);
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
