@@ -13,5 +13,7 @@ namespace Jasper.Bus
             TypeNameHandling = TypeNameHandling.Auto,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects
         };
+
+        public bool ThrowOnValidationErrors { get; set; } = true;
     }
 }

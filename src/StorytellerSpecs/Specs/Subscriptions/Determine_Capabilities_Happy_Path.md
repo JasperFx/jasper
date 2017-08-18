@@ -1,9 +1,9 @@
 # Determine Capabilities Happy Path
 
 -> id = 41bd4c2d-d619-479e-a15f-937450c704fa
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-08-18T14:44:31.7119880Z
+-> last-updated = 2017-08-18T19:49:03.6706640Z
 -> tags = 
 
 [Capabilities]
@@ -21,7 +21,7 @@
     |> Publishes messageType=Message1
     |> Publishes messageType=Message2
     |> Publishes messageType=Message3
-    |> DefaultSubscriptionReceiverIs receiver=
+    |> DefaultSubscriptionReceiverIs
     ``` uri
     jasper://server:2000/incoming
     ```

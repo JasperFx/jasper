@@ -1,9 +1,9 @@
 # Subscribe to all Handled Message Types
 
 -> id = af234277-481e-4dff-86a5-22ae8f615bc1
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-08-18T14:55:38.0159710Z
+-> last-updated = 2017-08-18T19:49:03.6601400Z
 -> tags = 
 
 [Capabilities]

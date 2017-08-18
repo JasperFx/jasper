@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
@@ -36,7 +37,8 @@ namespace Jasper.Bus
 
         public async Task Activate(HandlerGraph handlers, ChannelGraph channels, CapabilityGraph capabilities, JasperRuntime runtime)
         {
-            var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime);
+            var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime, _transports);
+
 
             if (!_settings.DisableAllTransports)
             {
@@ -51,6 +53,10 @@ namespace Jasper.Bus
             }
 
             runtime.Capabilities = await capabilityCompilation;
+            if (runtime.Capabilities.Errors.Any() && _settings.ThrowOnValidationErrors)
+            {
+                throw new InvalidSubscriptionException(runtime.Capabilities.Errors);
+            }
         }
 
         private void configureSerializationOrder(ChannelGraph channels)
@@ -70,4 +76,12 @@ namespace Jasper.Bus
             }
         }
     }
+
+    public class InvalidSubscriptionException : Exception
+    {
+        public InvalidSubscriptionException(string[] errors) : base($"Subscription errors detected:{Environment.NewLine}{errors.Select(e => $"* {e}{Environment.NewLine}")}")
+        {
+        }
+    }
+
 }

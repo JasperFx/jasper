@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using Baseline;
 using Jasper.Util;
+using Newtonsoft.Json;
 
 namespace Jasper.Bus.Runtime.Subscriptions.New
 {
@@ -11,11 +12,14 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
     {
         public NewSubscription(Type messageType, Uri destination)
         {
-            if (destination == null) throw new ArgumentNullException(nameof(destination));
-
+            // Okay to let destination be null here.
             Destination = destination;
             MessageType = messageType?.ToTypeAlias() ?? throw new ArgumentNullException(nameof(messageType));
+            DotNetType = messageType;
         }
+
+        [JsonIgnore]
+        public Type DotNetType { get; }
 
         public NewSubscription()
         {

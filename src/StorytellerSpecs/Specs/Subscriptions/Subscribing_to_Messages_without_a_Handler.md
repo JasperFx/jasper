@@ -1,9 +1,9 @@
 # Subscribing to Messages without a Handler
 
 -> id = 4c5b692a-c0a0-4478-8ffa-b3c8c66434e8
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-08-18T14:48:09.6481490Z
+-> last-updated = 2017-08-18T19:49:03.6622600Z
 -> tags = 
 
 [Capabilities]
@@ -13,7 +13,7 @@
         [table]
         |> HandlesMessages-row MessageType=Message4
 
-    |> DefaultSubscriptionReceiverIs receiver=
+    |> DefaultSubscriptionReceiverIs
     ``` uri
     jasper://server:2000/incoming
     ```
@@ -31,7 +31,7 @@
     [Rows]
     |> TheErrorsDetectedWere-row
     ``` expected
-    No handler for message "Message5" referenced in a subscription
+    No handler for message 'Message5' referenced in a subscription
     ```
 
 

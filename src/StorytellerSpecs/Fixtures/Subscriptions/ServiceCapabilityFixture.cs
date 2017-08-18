@@ -35,7 +35,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             {typeof(ErrorMessage), typeof(ErrorMessageHandler) },
 
         };
-           
+
 
         public override void SetUp()
         {
@@ -48,6 +48,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             _registry.Settings.Alter<BusSettings>(_ =>
             {
                 _.DisableAllTransports = true;
+                _.ThrowOnValidationErrors = false;
             });
 
             ServiceCapabilities capabilities = null;

@@ -1,9 +1,9 @@
 # Subscribe to Handled Messages Matching a Convention
 
 -> id = bc2e9048-ca01-4cae-9788-31299fda3879
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-08-18T15:48:22.6850000Z
+-> last-updated = 2017-08-18T19:49:03.6730230Z
 -> tags = 
 
 [Capabilities]

@@ -30,12 +30,11 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
             _published.Add(new PublishedMessage(messageType));
         }
 
-        public Task<ServiceCapabilities> Compile(HandlerGraph handlers, SerializationGraph serialization,
-            ChannelGraph channels, JasperRuntime runtime)
+        public Task<ServiceCapabilities> Compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, JasperRuntime runtime, ITransport[] transports)
         {
             if (runtime.ApplicationAssembly == null)
             {
-                return Task.FromResult(compile(handlers, serialization, channels));
+                return Task.FromResult(compile(handlers, serialization, channels, transports));
             }
 
             return TypeRepository.FindTypes(runtime.ApplicationAssembly,
@@ -47,7 +46,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
                         Publish(type);
                     }
 
-                    return compile(handlers, serialization, channels);
+                    return compile(handlers, serialization, channels, transports);
                 });
 
 
@@ -56,15 +55,32 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
 
 
 
-        private ServiceCapabilities compile(HandlerGraph handlers, SerializationGraph serialization,
-            ChannelGraph channels)
+        private ServiceCapabilities compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, ITransport[] transports)
         {
-            return new ServiceCapabilities
+            var capabilities = new ServiceCapabilities
             {
                 ServiceName = channels.Name,
                 Subscriptions = determineSubscriptions(handlers, serialization, channels),
                 Published = determinePublishedMessages(serialization, channels)
             };
+
+            // Now, do some validation
+            var missingDestination = capabilities.Subscriptions
+                .Where(x => x.Destination == null)
+                .Select(s => $"Could not determine an incoming receiver for message '{s.MessageType}'");
+
+            var validTransports = transports.Select(x => x.Protocol).ToArray();
+            var invalidTransport = capabilities.Subscriptions
+                .Where(x => x.Destination != null && !validTransports.Contains(x.Destination.Scheme))
+                .Select(x => $"Unknown transport '{x.Destination.Scheme}' for subscription to message '{x.MessageType}'");
+
+            var missingHandlers = capabilities.Subscriptions
+                .Where(x => !handlers.CanHandle(x.DotNetType))
+                .Select(x => $"No handler for message '{x.MessageType}' referenced in a subscription");
+
+            capabilities.Errors = missingDestination.Concat(invalidTransport).Concat(missingHandlers).ToArray();
+
+            return capabilities;
         }
 
         private PublishedMessage[] determinePublishedMessages(SerializationGraph serialization, ChannelGraph channels)

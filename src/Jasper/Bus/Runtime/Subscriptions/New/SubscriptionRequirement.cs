@@ -15,7 +15,6 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
         public IEnumerable<NewSubscription> DetermineSubscriptions(SerializationGraph serialization, Type[] allTypes, Uri defaultReceiver)
         {
             var receiver = ReceiverLocation ?? defaultReceiver;
-            if (receiver == null) throw new ArgumentOutOfRangeException(nameof(defaultReceiver), "No explicit receiver location or default receiver");
 
             return Includes.SelectMany(allTypes.Where)
                 .Concat(MessageTypes)

@@ -100,5 +100,10 @@ namespace Jasper.Bus.Model
         }
 
         public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
+
+        public bool CanHandle(Type messageType)
+        {
+            return _chains.ContainsKey(messageType);
+        }
     }
 }
