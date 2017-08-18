@@ -68,20 +68,7 @@ namespace Jasper.Bus
 
             var transports = container.GetAllInstances<ITransport>().ToArray();
 
-            verifyTransports(transports);
-
-            if (Channels.ControlChannel != null)
-            {
-                Channels.ControlChannel.MaximumParallelization = 1;
-            }
-
-            if (Channels.DefaultChannel == null)
-            {
-                Channels.DefaultChannel = Channels.IncomingChannelsFor("loopback").FirstOrDefault();
-            }
-
-
-            startTransports(transports, pipeline);
+            Channels.StartTransports(pipeline, transports);
 
             container.GetInstance<IDelayedJobProcessor>().Start(pipeline, Channels);
 
@@ -101,27 +88,6 @@ namespace Jasper.Bus
             else
             {
                 writer.WriteLine("No incoming message channels configured");
-            }
-        }
-
-        private void startTransports(ITransport[] transports, IHandlerPipeline pipeline)
-        {
-            foreach (var transport in transports)
-            {
-                transport.Start(pipeline, Channels);
-
-                Channels
-                    .Where(x => x.Uri.Scheme == transport.Protocol && x.Sender == null)
-                    .Each(x => { x.Sender = new NulloSender(transport, x.Uri); });
-            }
-        }
-
-        private void verifyTransports(ITransport[] transports)
-        {
-            var unknowns = Channels.Distinct().Where(x => transports.All(t => t.Protocol != x.Uri.Scheme)).ToArray();
-            if (unknowns.Length > 0)
-            {
-                throw new UnknownTransportException(unknowns);
             }
         }
 

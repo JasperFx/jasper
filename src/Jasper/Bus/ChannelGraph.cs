@@ -4,8 +4,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus
 {
@@ -90,6 +92,34 @@ namespace Jasper.Bus
                     node.Uri = actuals[i];
                     _nodes[node.Uri] = node;
                 }
+            }
+        }
+
+        internal void StartTransports(IHandlerPipeline pipeline, ITransport[] transports)
+        {
+            var unknowns = _nodes.Values.Distinct().Where(x => transports.All(t => t.Protocol != x.Uri.Scheme)).ToArray();
+            if (unknowns.Length > 0)
+            {
+                throw new UnknownTransportException(unknowns);
+            }
+
+            if (ControlChannel != null)
+            {
+                ControlChannel.MaximumParallelization = 1;
+            }
+
+            if (DefaultChannel == null)
+            {
+                DefaultChannel = IncomingChannelsFor("loopback").FirstOrDefault();
+            }
+
+            foreach (var transport in transports)
+            {
+                transport.Start(pipeline, this);
+
+                _nodes.Values
+                    .Where(x => x.Uri.Scheme == transport.Protocol && x.Sender == null)
+                    .Each(x => { x.Sender = new NulloSender(transport, x.Uri); });
             }
         }
     }
