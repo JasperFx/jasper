@@ -30,27 +30,26 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
             _published.Add(new PublishedMessage(messageType));
         }
 
-        public Task<ServiceCapabilities> Compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, JasperRuntime runtime, ITransport[] transports)
+        public async Task<ServiceCapabilities> Compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, JasperRuntime runtime, ITransport[] transports, UriAliasLookup lookups)
         {
-            if (runtime.ApplicationAssembly == null)
+            if (runtime.ApplicationAssembly != null)
             {
-                return Task.FromResult(compile(handlers, serialization, channels, transports));
+                var publishedTypes = await TypeRepository.FindTypes(runtime.ApplicationAssembly,
+                    TypeClassification.Closed | TypeClassification.Closed, type => _publishFilters.Any(x => x(type)));
+
+                foreach (var type in publishedTypes)
+                {
+                    Publish(type);
+                }
             }
 
-            return TypeRepository.FindTypes(runtime.ApplicationAssembly,
-                    TypeClassification.Closed | TypeClassification.Closed, type => _publishFilters.Any(x => x(type)))
-                .ContinueWith(t =>
-                {
-                    foreach (var type in t.Result)
-                    {
-                        Publish(type);
-                    }
-
-                    return compile(handlers, serialization, channels, transports);
-                });
 
 
+            var capabilities = compile(handlers, serialization, channels, transports);
 
+            await capabilities.ApplyLookups(lookups);
+
+            return capabilities;
         }
 
 

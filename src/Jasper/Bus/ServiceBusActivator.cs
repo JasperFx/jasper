@@ -37,7 +37,7 @@ namespace Jasper.Bus
 
         public async Task Activate(HandlerGraph handlers, ChannelGraph channels, CapabilityGraph capabilities, JasperRuntime runtime)
         {
-            var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime, _transports);
+            var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime, _transports, _lookups);
 
 
             if (!_settings.DisableAllTransports)
