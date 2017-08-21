@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Jasper.Bus;
 using Jasper.Conneg;
 using Microsoft.AspNetCore.Http;
 

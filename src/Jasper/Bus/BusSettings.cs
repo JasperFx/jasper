@@ -15,5 +15,7 @@ namespace Jasper.Bus
         };
 
         public bool ThrowOnValidationErrors { get; set; } = true;
+
+        public bool AllowNonVersionedSerialization { get; set; } = true;
     }
 }

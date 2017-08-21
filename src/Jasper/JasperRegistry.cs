@@ -33,7 +33,7 @@ namespace Jasper
 
             Http = Features.For<AspNetCoreFeature>();
 
-            Serialization = new SerializationExpression(_bus);
+            Serialization = new SerializationExpression(_bus, this);
             Channels = new ChannelConfiguration(_bus);
             Messaging = new MessagesExpression(_bus);
 

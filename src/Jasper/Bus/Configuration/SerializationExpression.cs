@@ -5,12 +5,13 @@ namespace Jasper.Bus.Configuration
     public class SerializationExpression
     {
         private readonly ServiceBusFeature _parent;
+        private readonly JasperRegistry _top;
 
 
-
-        public SerializationExpression(ServiceBusFeature parent)
+        public SerializationExpression(ServiceBusFeature parent, JasperRegistry top)
         {
             _parent = parent;
+            _top = top;
         }
 
 
@@ -31,6 +32,11 @@ namespace Jasper.Bus.Configuration
             _parent.Channels.AcceptedContentTypes.Clear();
             _parent.Channels.AcceptedContentTypes.AddRange(contentTypes);
             return this;
+        }
+
+        public void DisallowNonVersionedSerialization()
+        {
+            _top.Settings.Alter<BusSettings>(x => x.AllowNonVersionedSerialization = false);
         }
     }
 }

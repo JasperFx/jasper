@@ -124,7 +124,7 @@ namespace Jasper.Conneg
             var candidateTypes = _readers.Select(x => x.DotNetType).Concat(chainCandidates).Distinct();
 
             var fromSerializers =
-                _serializers.Values.SelectMany(x => candidateTypes.SelectMany(x.ReadersFor));
+                _serializers.Values.SelectMany(x => candidateTypes.SelectMany(messageType1 => x.ReadersFor(messageType1)));
 
             return new ModelReader(fromSerializers.Concat(readers).ToArray());
         }

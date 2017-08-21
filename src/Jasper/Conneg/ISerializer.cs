@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Baseline;
+using Jasper.Bus;
 
 namespace Jasper.Conneg
 {

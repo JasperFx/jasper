@@ -15,12 +15,12 @@ namespace Jasper.Conneg
         private readonly JsonSerializer _serializer;
 
         public NewtonsoftJsonWriter(JsonSerializer serializer)
-            : this(serializer, "application/json")
+            : this("application/json", serializer)
         {
             _serializer = _serializer;
         }
 
-        public NewtonsoftJsonWriter(JsonSerializer serializer, string contentType)
+        public NewtonsoftJsonWriter(string contentType, JsonSerializer serializer)
         {
             _serializer = serializer;
             ContentType = contentType;

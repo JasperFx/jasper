@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Baseline;
 using Jasper.Bus;
+using Jasper.Util;
 using Newtonsoft.Json;
 
 namespace Jasper.Conneg
@@ -9,11 +12,13 @@ namespace Jasper.Conneg
     public class NewtonsoftSerializer : ISerializer
     {
         private readonly Newtonsoft.Json.JsonSerializer _serializer;
+        private readonly BusSettings _settings;
 
         public NewtonsoftSerializer(BusSettings settings)
         {
             //settings.TypeNameHandling = TypeNameHandling.Objects;
             _serializer = Newtonsoft.Json.JsonSerializer.Create(settings.JsonSerialization);
+            _settings = settings;
         }
 
         public void Serialize(object message, Stream stream)
@@ -30,23 +35,49 @@ namespace Jasper.Conneg
         }
 
         public string ContentType => "application/json";
+
+        private IEnumerable<IMediaReader> determineReaders(Type messageType)
+        {
+            if (_settings.AllowNonVersionedSerialization)
+            {
+                yield return typeof(NewtonsoftJsonReader<>).CloseAndBuildAs<IMediaReader>(_serializer, messageType);
+
+                if (messageType.HasAttribute<VersionAttribute>())
+                {
+                    yield return typeof(NewtonsoftJsonReader<>).CloseAndBuildAs<IMediaReader>(messageType.ToContentType("json"), _serializer, messageType);
+                }
+            }
+            else
+            {
+                yield return typeof(NewtonsoftJsonReader<>).CloseAndBuildAs<IMediaReader>(messageType.ToContentType("json"), _serializer, messageType);
+            }
+        }
+
         public IMediaReader[] ReadersFor(Type messageType)
         {
-            // TODO -- this will be more later when we get the versions sorted out
-
-            return new IMediaReader[]
-            {
-                typeof(NewtonsoftJsonReader<>).CloseAndBuildAs<IMediaReader>(_serializer, messageType)
-            };
+            return determineReaders(messageType).ToArray();
         }
 
         public IMediaWriter[] WritersFor(Type messageType)
         {
-            // TODO -- this will be more later when we get the versions sorted out
-            return new IMediaWriter[]
+            return determineWriters(messageType).ToArray();
+        }
+
+        private IEnumerable<IMediaWriter> determineWriters(Type messageType)
+        {
+            if (_settings.AllowNonVersionedSerialization)
             {
-                typeof(NewtonsoftJsonWriter<>).CloseAndBuildAs<IMediaWriter>(_serializer, messageType)
-            };
+                yield return typeof(NewtonsoftJsonWriter<>).CloseAndBuildAs<IMediaWriter>(_serializer, messageType);
+
+                if (messageType.HasAttribute<VersionAttribute>())
+                {
+                    yield return typeof(NewtonsoftJsonWriter<>).CloseAndBuildAs<IMediaWriter>(messageType.ToContentType("json"), _serializer, messageType);
+                }
+            }
+            else
+            {
+                yield return typeof(NewtonsoftJsonWriter<>).CloseAndBuildAs<IMediaWriter>(messageType.ToContentType("json"), _serializer, messageType);
+            }
         }
     }
 }
