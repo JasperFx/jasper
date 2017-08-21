@@ -57,11 +57,13 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
 
         private ServiceCapabilities compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, ITransport[] transports)
         {
+            var validTransports = transports.Select(x => x.Protocol).ToArray();
+
             var capabilities = new ServiceCapabilities
             {
                 ServiceName = channels.Name,
                 Subscriptions = determineSubscriptions(handlers, serialization, channels),
-                Published = determinePublishedMessages(serialization, channels)
+                Published = determinePublishedMessages(serialization, channels, validTransports)
             };
 
             // Now, do some validation
@@ -69,7 +71,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
                 .Where(x => x.Destination == null)
                 .Select(s => $"Could not determine an incoming receiver for message '{s.MessageType}'");
 
-            var validTransports = transports.Select(x => x.Protocol).ToArray();
+
             var invalidTransport = capabilities.Subscriptions
                 .Where(x => x.Destination != null && !validTransports.Contains(x.Destination.Scheme))
                 .Select(x => $"Unknown transport '{x.Destination.Scheme}' for subscription to message '{x.MessageType}'");
@@ -80,16 +82,18 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
 
             capabilities.Errors = missingDestination.Concat(invalidTransport).Concat(missingHandlers).ToArray();
 
+
             return capabilities;
         }
 
-        private PublishedMessage[] determinePublishedMessages(SerializationGraph serialization, ChannelGraph channels)
+        private PublishedMessage[] determinePublishedMessages(SerializationGraph serialization, ChannelGraph channels, string[] validTransports)
         {
             foreach (var published in _published)
             {
                 published.ServiceName = channels.Name;
                 var writer = serialization.WriterFor(published.DotNetType);
                 published.ContentTypes = writer.ContentTypes;
+                published.Transports = validTransports;
             }
 
             return _published.ToArray();

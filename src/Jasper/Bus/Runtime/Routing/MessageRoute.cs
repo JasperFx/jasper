@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Baseline;
 using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Conneg;
 using Jasper.Util;
@@ -8,11 +9,6 @@ namespace Jasper.Bus.Runtime.Routing
 {
     public class MessageRoute
     {
-        public static bool TryToMatch(PublishedMessage published, NewSubscription subscription, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
-        {
-            throw new NotImplementedException();
-        }
-
         private readonly IMediaWriter _writer;
 
         public MessageRoute(Type messageType, ModelWriter writer, Uri destination, string contentType)
@@ -59,6 +55,40 @@ namespace Jasper.Bus.Runtime.Routing
             if (Destination != envelope.Destination) return false;
 
             return !envelope.AcceptedContentTypes.Any() || envelope.AcceptedContentTypes.Contains(ContentType);
+        }
+
+        public static bool TryToRoute(PublishedMessage sender, NewSubscription receiver, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
+        {
+            route = null;
+            mismatch = null;
+
+            var transportsMatch = (sender.Transports ?? new string[0]).Contains(receiver.Destination.Scheme);
+
+            var contentType = SelectContentType(sender, receiver);
+
+            if (transportsMatch && contentType.IsNotEmpty())
+            {
+                route = new MessageRoute(sender.DotNetType, null, receiver.Destination, contentType);
+                return true;
+            }
+
+            mismatch = new PublisherSubscriberMismatch(sender, receiver)
+            {
+                IncompatibleTransports = !transportsMatch,
+                IncompatibleContentTypes = contentType == null
+            };
+
+            return false;
+
+        }
+
+        private static string SelectContentType(PublishedMessage sender, NewSubscription receiver)
+        {
+            var matchingContentTypes = receiver.Accept.Intersect(sender.ContentTypes).ToArray();
+            // Always try to use the versioned or specific reader/writer if one exists
+            var contentType = matchingContentTypes.FirstOrDefault(x => x != "application/json")
+                              ?? matchingContentTypes.FirstOrDefault();
+            return contentType;
         }
     }
 }
