@@ -45,5 +45,43 @@ namespace Jasper.Testing.Bus.Runtime.Routing
             mismatch.IncompatibleContentTypes.ShouldBeTrue();
             mismatch.IncompatibleTransports.ShouldBeTrue();
         }
+
+        [Fact]
+        public void pick_the_first_matching_content_type_that_is_not_app_json()
+        {
+            var published = new PublishedMessage(typeof(Message1))
+            {
+                ContentTypes = new string[] {"application/json", "app/v2", "app/v3"},
+                Transports = new string[]{"loopback"}
+
+            };
+
+            var subscription = new NewSubscription(typeof(Message1), "loopback://one".ToUri());
+            subscription.Accept = new string[]{"application/json", "app/v1", "app/v3"};
+
+            MessageRoute.TryToRoute(published, subscription, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
+                .ShouldBeTrue();
+
+            route.ContentType.ShouldBe("app/v3");
+        }
+
+        [Fact]
+        public void use_json_if_that_is_the_only_match    ()
+        {
+            var published = new PublishedMessage(typeof(Message1))
+            {
+                ContentTypes = new string[] {"application/json", "app/v2", "app/v3"},
+                Transports = new string[]{"loopback"}
+
+            };
+
+            var subscription = new NewSubscription(typeof(Message1), "loopback://one".ToUri());
+            subscription.Accept = new string[]{"application/json", "app/v4", "app/v5"};
+
+            MessageRoute.TryToRoute(published, subscription, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
+                .ShouldBeTrue();
+
+            route.ContentType.ShouldBe("application/json");
+        }
     }
 }
