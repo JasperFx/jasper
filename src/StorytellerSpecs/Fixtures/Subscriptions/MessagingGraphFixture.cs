@@ -9,7 +9,7 @@ using StoryTeller;
 namespace StorytellerSpecs.Fixtures.Subscriptions
 {
     [Hidden]
-    public class MessagingGraphFixture : Fixture
+    public class MessagingGraphFixture : BusFixture
     {
         private MessagingGraph _graph;
         private PublisherSubscriberMismatch _mismatch;
@@ -62,6 +62,16 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 {_graph.Mismatches.Select(x => $"* {x}{Environment.NewLine}")}
 
 ");
+        }
+
+        public IGrammar MismatchPropertiesAre()
+        {
+            return VerifyPropertiesOf<PublisherSubscriberMismatch>("The mismatch properties should be",_ =>
+            {
+                _.Object = () => _mismatch;
+                _.Check(x => x.IncompatibleTransports);
+                _.Check(x => x.IncompatibleContentTypes);
+            });
         }
 
         [FormatAs("There are no subscription errors of any kind")]
