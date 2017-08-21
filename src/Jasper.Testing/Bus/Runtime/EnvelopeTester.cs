@@ -382,7 +382,7 @@ namespace Jasper.Testing.Bus.Runtime
                 }
             };
 
-            envelope.MessageType.ShouldBe(typeof(Message1).FullName);
+            envelope.MessageType.ShouldBe(typeof(Message1).ToTypeAlias());
         }
     }
 

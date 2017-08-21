@@ -21,9 +21,9 @@ namespace Jasper.Bus.Runtime.Subscriptions
         private readonly IEnumerable<ISubscriptionRequirements> _requirements;
         private readonly ChannelGraph _channels;
         private readonly EnvironmentSettings _settings;
-        private readonly IUriLookup[] _lookups;
+        private readonly UriAliasLookup _lookups;
 
-        public SubscriptionActivator(ISubscriptionsRepository subscriptions, IEnvelopeSender sender, INodeDiscovery nodeDiscovery, IEnumerable<ISubscriptionRequirements> requirements, ChannelGraph channels, EnvironmentSettings settings, IUriLookup[] lookups)
+        public SubscriptionActivator(ISubscriptionsRepository subscriptions, IEnvelopeSender sender, INodeDiscovery nodeDiscovery, IEnumerable<ISubscriptionRequirements> requirements, ChannelGraph channels, EnvironmentSettings settings, UriAliasLookup lookups)
         {
             _subscriptions = subscriptions;
             _sender = sender;
@@ -63,26 +63,15 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         internal async Task applyLookups(Subscription[] staticSubscriptions)
         {
-            foreach (var lookup in _lookups)
+            var destinations = staticSubscriptions.Select(x => x.Destination)
+                .Concat(staticSubscriptions.Select(x => x.Source)).Distinct().ToArray();
+
+            await _lookups.ReadAliases(destinations);
+
+            foreach (var subscription in staticSubscriptions)
             {
-                var matching = staticSubscriptions.Where(x => x.Destination.Scheme == lookup.Protocol).ToArray();
-                var actuals = await lookup.Lookup(matching.Select(x => x.Destination).ToArray());
-
-                for (int i = 0; i < matching.Length; i++)
-                {
-                    matching[i].Destination = actuals[i];
-                }
-            }
-
-            foreach (var lookup in _lookups)
-            {
-                var matching = staticSubscriptions.Where(x => x.Source.Scheme == lookup.Protocol).ToArray();
-                var actuals = await lookup.Lookup(matching.Select(x => x.Source).ToArray());
-
-                for (int i = 0; i < matching.Length; i++)
-                {
-                    matching[i].Source = actuals[i];
-                }
+                subscription.Destination = _lookups.Resolve(subscription.Destination);
+                subscription.Source = _lookups.Resolve(subscription.Source);
             }
         }
 

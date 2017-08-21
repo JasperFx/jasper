@@ -43,6 +43,8 @@ namespace Jasper.Bus
 
             ForSingletonOf<IMessageRouter>().Use<MessageRouter>();
 
+            ForSingletonOf<UriAliasLookup>().Use<UriAliasLookup>();
+
         }
     }
 }

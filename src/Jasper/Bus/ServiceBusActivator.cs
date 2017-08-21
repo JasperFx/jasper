@@ -22,9 +22,9 @@ namespace Jasper.Bus
         private readonly ISubscriptionActivator _subscriptions;
         private readonly SerializationGraph _serialization;
         private readonly ITransport[] _transports;
-        private readonly IUriLookup[] _lookups;
+        private readonly UriAliasLookup _lookups;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, ISubscriptionActivator subscriptions, SerializationGraph serialization, ITransport[] transports, IUriLookup[] lookups)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, ISubscriptionActivator subscriptions, SerializationGraph serialization, ITransport[] transports, UriAliasLookup lookups)
         {
             _settings = settings;
             _pipeline = pipeline;

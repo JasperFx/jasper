@@ -17,13 +17,18 @@ namespace Jasper.Testing.Util
         [Fact]
         public void use_the_types_full_name_otherwise()
         {
-            typeof(Message1).ToTypeAlias()
-                .ShouldBe(typeof(Message1).FullName);
+            typeof(MySpecialMessage).ToTypeAlias()
+                .ShouldBe(typeof(MySpecialMessage).FullName);
         }
     }
 
     [TypeAlias("MyThing")]
     public class AliasedMessage
+    {
+
+    }
+
+    public class MySpecialMessage
     {
 
     }

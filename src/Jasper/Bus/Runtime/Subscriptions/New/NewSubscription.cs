@@ -21,6 +21,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
         [JsonIgnore]
         public Type DotNetType { get; }
 
+        // for serialization
         public NewSubscription()
         {
         }

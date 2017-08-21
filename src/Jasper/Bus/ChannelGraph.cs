@@ -79,19 +79,18 @@ namespace Jasper.Bus
             return _nodes.Values.Where(x => x.Incoming && x.Uri.Scheme == scheme);
         }
 
-        internal async Task ApplyLookups(IEnumerable<IUriLookup> lookups)
+        internal async Task ApplyLookups(UriAliasLookup lookups)
         {
-            foreach (var lookup in lookups)
-            {
-                var matching = _nodes.Values.Where(x => x.Uri.Scheme == lookup.Protocol).ToArray();
-                var actuals = await lookup.Lookup(matching.Select(x => x.Uri).ToArray());
+            var all = _nodes.Values.Select(x => x.Destination).ToArray();
+            await lookups.ReadAliases(all);
 
-                for (int i = 0; i < matching.Length; i++)
-                {
-                    var node = matching[i];
-                    node.Uri = actuals[i];
-                    _nodes[node.Uri] = node;
-                }
+            foreach (var node in _nodes.Values.ToArray())
+            {
+                var resolved = lookups.Resolve(node.Destination);
+                if (resolved == node.Destination) continue;
+
+                node.Uri = resolved;
+                _nodes[node.Uri] = node;
             }
         }
 
