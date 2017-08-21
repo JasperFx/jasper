@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Baseline;
 using Jasper.Util;
 using Newtonsoft.Json;
 
@@ -20,5 +21,10 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
 
         public string ServiceName { get; set; }
         public string[] ContentTypes { get; set; }
+
+        public override string ToString()
+        {
+            return $"{nameof(DotNetType)}: {DotNetType}, {nameof(ServiceName)}: {ServiceName}, {nameof(ContentTypes)}: {ContentTypes.Join(", ")}";
+        }
     }
 }

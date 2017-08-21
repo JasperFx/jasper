@@ -67,5 +67,10 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
         }
 
         public static IEqualityComparer<NewSubscription> DestinationMessageTypeComparer { get; } = new DestinationMessageTypeEqualityComparer();
+
+        public override string ToString()
+        {
+            return $"{nameof(DotNetType)}: {DotNetType}, {nameof(Destination)}: {Destination}, {nameof(MessageType)}: {MessageType}, {nameof(ServiceName)}: {ServiceName}, {nameof(Accept)}: {Accept}";
+        }
     }
 }

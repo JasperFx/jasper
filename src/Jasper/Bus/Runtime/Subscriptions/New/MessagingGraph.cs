@@ -7,6 +7,10 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
     {
         public MessagingGraph(ServiceCapabilities[] capabilities)
         {
+            NoPublishers = new NewSubscription[0];
+            NoSubscribers = new PublishedMessage[0];
+            Matched = new MessageRoute[0];
+            Mismatches = new PublisherSubscriberMismatch[0];
 
         }
 

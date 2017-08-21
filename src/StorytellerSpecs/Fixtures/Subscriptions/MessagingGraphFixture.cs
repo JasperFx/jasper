@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Subscriptions.New;
 using StoryTeller;
@@ -13,9 +14,14 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         private MessagingGraph _graph;
         private PublisherSubscriberMismatch _mismatch;
 
+        public MessagingGraphFixture()
+        {
+            Title = "Messaging Graph State and Validation";
+        }
+
         public override void SetUp()
         {
-            var list = Context.State.Retrieve<IList<ServiceCapabilities>>();
+            var list = Context.State.Retrieve<List<ServiceCapabilities>>();
             _graph = new MessagingGraph(list.ToArray());
         }
 
@@ -23,7 +29,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             return VerifySetOf<MessageRoute>(() => _graph.Matched)
                 .Titled("The message routes should be")
-                .MatchOn(x => x.MessageType, x => x.Destination, x => x.Publisher, x => x.ContentType);
+                .MatchOn(x => x.MessageType, x => x.Publisher, x => x.Receiver, x => x.ContentType);
         }
 
         public IGrammar NoSubscribersShouldBe()
@@ -57,6 +63,16 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 {_graph.Mismatches.Select(x => $"* {x}{Environment.NewLine}")}
 
 ");
+        }
+
+        [FormatAs("There are no subscription errors of any kind")]
+        public bool NoSubscriptionErrors()
+        {
+            StoryTellerAssert.Fail(_graph.Mismatches.Any(), () => $"Detected publisher/subscriber mismatches{Environment.NewLine}" + _graph.Mismatches.Select(x => x.ToString()).Join(Environment.NewLine));
+            StoryTellerAssert.Fail(_graph.NoPublishers.Any(), () => $"Detected subscriptions with no publishers{Environment.NewLine}" + _graph.NoPublishers.Select(x => x.ToString()).Join(Environment.NewLine));
+            StoryTellerAssert.Fail(_graph.NoSubscribers.Any(), () => $"Detected published messages with no subscribers{Environment.NewLine}" + _graph.NoSubscribers.Select(x => x.ToString()).Join(Environment.NewLine));
+
+            return true;
         }
 
 

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Baseline;
+using Jasper.Bus;
 
 namespace Jasper.Util
 {
@@ -62,6 +63,22 @@ namespace Jasper.Util
             }
 
             return string.Join("_", parts);
+        }
+
+        public static string ToVersion(this Type messageType)
+        {
+            return messageType.HasAttribute<VersionAttribute>()
+                ? messageType.GetAttribute<VersionAttribute>().Version
+                : "V1";
+        }
+
+        public static string ToContentType(this Type messageType, string format)
+        {
+            var alias = messageType.ToTypeAlias().ToLowerInvariant();
+            var version = messageType.ToVersion().ToLower();
+
+            return $"application/vnd.{alias}.{version}+{format}";
+
         }
     }
 }

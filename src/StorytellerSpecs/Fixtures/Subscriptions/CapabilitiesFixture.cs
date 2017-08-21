@@ -53,5 +53,10 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                 .Titled("The required subscriptions should be")
                 .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accept);
         }
+
+        public IGrammar ValidationShouldBe()
+        {
+            return Embed<MessagingGraphFixture>("The messaging capability across services should be");
+        }
     }
 }
