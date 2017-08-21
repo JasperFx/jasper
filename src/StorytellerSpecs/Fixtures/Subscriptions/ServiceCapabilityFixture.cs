@@ -57,8 +57,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                 capabilities = runtime.Capabilities;
             }
 
-            Context.State.RetrieveOrAdd(() => new List<ServiceCapabilities>())
-                .Add(capabilities);
+            Context.State.Store(capabilities);
 
 
 

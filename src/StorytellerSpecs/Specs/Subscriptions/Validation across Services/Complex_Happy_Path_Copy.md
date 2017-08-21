@@ -1,9 +1,9 @@
-# Complex Happy Path Copy
+# Complex Happy Path
 
 -> id = e75fff9e-b804-468c-b4b8-0179f6bd8884
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-08-18T20:22:54.2569900Z
+-> last-updated = 2017-08-21T15:13:48.4876140Z
 -> tags = 
 
 [Capabilities]
@@ -18,7 +18,6 @@
     [ServiceCapability]
     |> ServiceNameIs serviceName=Publisher2
     |> Publishes messageType=Message4
-    |> Publishes messageType=Message6
 
 |> ForService
     [ServiceCapability]

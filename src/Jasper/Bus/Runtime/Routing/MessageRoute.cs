@@ -11,18 +11,23 @@ namespace Jasper.Bus.Runtime.Routing
     {
         private readonly IMediaWriter _writer;
 
-        public MessageRoute(Type messageType, ModelWriter writer, Uri destination, string contentType)
+        public MessageRoute(Type messageType, Uri destination, string contentType)
         {
             if (destination == null)
             {
                 throw new ArgumentNullException(nameof(destination));
             }
 
-            _writer = writer[contentType];
             MessageType = messageType.ToTypeAlias();
             DotNetType = messageType;
             Destination = destination;
             ContentType = contentType;
+        }
+
+        public MessageRoute(Type messageType, ModelWriter writer, Uri destination, string contentType)
+            : this(messageType, destination, contentType)
+        {
+            _writer = writer[contentType];
         }
 
         public string MessageType { get; }
@@ -68,7 +73,11 @@ namespace Jasper.Bus.Runtime.Routing
 
             if (transportsMatch && contentType.IsNotEmpty())
             {
-                route = new MessageRoute(sender.DotNetType, null, receiver.Destination, contentType);
+                route = new MessageRoute(sender.DotNetType, receiver.Destination, contentType)
+                {
+                    Publisher = sender.ServiceName,
+                    Receiver = receiver.ServiceName
+                };
                 return true;
             }
 

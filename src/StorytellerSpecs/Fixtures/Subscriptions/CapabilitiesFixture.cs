@@ -9,10 +9,16 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
     public class CapabilitiesFixture : BusFixture
     {
         private ServiceCapabilities _current;
+        private readonly IList<ServiceCapabilities> _services = new List<ServiceCapabilities>();
 
         public CapabilitiesFixture()
         {
             Title = "Messaging and Subscription Fixture";
+        }
+
+        public override void SetUp()
+        {
+            _services.Clear();
         }
 
         public IGrammar ForService()
@@ -20,8 +26,8 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             return Embed<ServiceCapabilityFixture>("If a service has capabilities:")
                 .After(c =>
                 {
-                    _current = Context.State.Retrieve<List<ServiceCapabilities>>()
-                        .LastOrDefault();
+                    _current = Context.State.Retrieve<ServiceCapabilities>();
+                    _services.Add(_current);
                 });
         }
 
@@ -56,7 +62,8 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public IGrammar ValidationShouldBe()
         {
-            return Embed<MessagingGraphFixture>("The messaging capability across services should be");
+            return Embed<MessagingGraphFixture>("The messaging capability across services should be")
+                .Before(c => c.State.Store(new MessagingGraph(_services.ToArray())));
         }
     }
 }

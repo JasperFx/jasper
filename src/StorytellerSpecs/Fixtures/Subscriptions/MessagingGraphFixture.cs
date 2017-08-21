@@ -21,8 +21,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public override void SetUp()
         {
-            var list = Context.State.Retrieve<List<ServiceCapabilities>>();
-            _graph = new MessagingGraph(list.ToArray());
+            _graph = Context.State.Retrieve<MessagingGraph>();
         }
 
         public IGrammar TheMessageTracksShouldBe()

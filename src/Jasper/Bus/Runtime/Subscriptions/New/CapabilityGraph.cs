@@ -66,6 +66,12 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
                 Published = determinePublishedMessages(serialization, channels, validTransports)
             };
 
+            // Hokey.
+            foreach (var subscription in capabilities.Subscriptions)
+            {
+                subscription.ServiceName = channels.Name;
+            }
+
             // Now, do some validation
             var missingDestination = capabilities.Subscriptions
                 .Where(x => x.Destination == null)
@@ -110,7 +116,6 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
             return _requirements.SelectMany(x =>
                     x.DetermineSubscriptions(serialization, messageTypes, DefaultReceiverLocation))
                 .Distinct()
-                .Each(x => x.ServiceName = channels.Name)
                 .ToArray();
         }
 

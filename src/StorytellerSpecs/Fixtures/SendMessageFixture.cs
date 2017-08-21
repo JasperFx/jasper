@@ -234,6 +234,7 @@ namespace StorytellerSpecs.Fixtures
     {
     }
 
+    [TypeAlias("Message6")]
     public class Message6 : Message
     {
     }

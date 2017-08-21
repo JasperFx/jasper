@@ -1,9 +1,9 @@
 # Simple Happy Path
 
 -> id = 25203f15-d72d-4b5d-950f-df36da4dab1e
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-08-18T20:23:51.4418390Z
+-> last-updated = 2017-08-21T15:12:23.1288790Z
 -> tags = 
 
 [Capabilities]
@@ -24,7 +24,7 @@
         |Message2   |
         |Message3   |
 
-    |> DefaultSubscriptionReceiverIs uri=loopback://one/
+    |> SubscribeToAllHandledMessages destination=loopback://one
 
 |> ValidationShouldBe
     [MessagingGraph]
