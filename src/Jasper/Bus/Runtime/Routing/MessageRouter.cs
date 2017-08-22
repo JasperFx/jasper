@@ -98,6 +98,7 @@ namespace Jasper.Bus.Runtime.Routing
                     if (MessageRoute.TryToRoute(published, subscription, out MessageRoute route,
                         out PublisherSubscriberMismatch mismatch))
                     {
+                        route.Writer = modelWriter[route.ContentType];
                         list.Add(route);
                     }
                     else

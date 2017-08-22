@@ -49,12 +49,12 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public IGrammar TheMessagesSentShouldBe()
         {
-            return VerifySetOf(sent).Titled("All the messages sent should be")
+            return VerifySetOf(received).Titled("All the messages received should be")
                 .MatchOn(x => x.ServiceName, x => x.MessageType, x => x.Name);
         }
 
 
-        private IList<MessageRecord> sent()
+        private IList<MessageRecord> received()
         {
             return _nodes.Tracker.Records;
         }
@@ -164,6 +164,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             registry.Services.For<MessageTracker>().Use(Tracker);
             registry.Services.For<MessageHistory>().Use(History);
+            registry.Services.For<ISubscriptionsRepository>().Use(Subscriptions);
 
             registry.Services.AddService<IBusLogger, MessageTrackingLogger>();
 

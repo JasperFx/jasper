@@ -9,8 +9,6 @@ namespace Jasper.Bus.Runtime.Routing
 {
     public class MessageRoute
     {
-        private readonly IMediaWriter _writer;
-
         public MessageRoute(Type messageType, Uri destination, string contentType)
         {
             if (destination == null)
@@ -27,8 +25,10 @@ namespace Jasper.Bus.Runtime.Routing
         public MessageRoute(Type messageType, ModelWriter writer, Uri destination, string contentType)
             : this(messageType, destination, contentType)
         {
-            _writer = writer[contentType];
+            Writer = writer[contentType];
         }
+
+        public IMediaWriter Writer { get; internal set; }
 
         public string MessageType { get; }
 
@@ -49,7 +49,7 @@ namespace Jasper.Bus.Runtime.Routing
             var sending = envelope.Clone();
 
             sending.ContentType = envelope.ContentType ?? ContentType;
-            sending.Data = _writer.Write(envelope.Message);
+            sending.Data = Writer.Write(envelope.Message);
             sending.Destination = Destination;
 
             return sending;
