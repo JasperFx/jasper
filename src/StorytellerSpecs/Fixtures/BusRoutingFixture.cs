@@ -8,6 +8,7 @@ using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Conneg;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
@@ -29,8 +30,7 @@ namespace StorytellerSpecs.Fixtures
             var messageType = messageTypeFor(MessageType);
             var subscription = new Subscription(messageType, Destination)
             {
-                Accepts = Accepts,
-                Role = SubscriptionRole.Publishes
+                Accept = new string[]{"application/json"}
             };
 
             _subscriptions.Add(subscription);
@@ -105,12 +105,6 @@ namespace StorytellerSpecs.Fixtures
         Task ISubscriptionsRepository.PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             return Task.CompletedTask;
-        }
-
-        Task<Subscription[]> ISubscriptionsRepository.LoadSubscriptions(SubscriptionRole subscriptionRole)
-        {
-            var subscriptions = _subscriptions.Where(x => x.Role == subscriptionRole).ToArray();
-            return Task.FromResult(subscriptions);
         }
 
         Task ISubscriptionsRepository.RemoveSubscriptions(IEnumerable<Subscription> subscriptions)

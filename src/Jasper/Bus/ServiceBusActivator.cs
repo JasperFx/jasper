@@ -19,20 +19,20 @@ namespace Jasper.Bus
         private readonly BusSettings _settings;
         private readonly IHandlerPipeline _pipeline;
         private readonly IDelayedJobProcessor _delayedJobs;
-        private readonly ISubscriptionActivator _subscriptions;
         private readonly SerializationGraph _serialization;
         private readonly ITransport[] _transports;
         private readonly UriAliasLookup _lookups;
+        private readonly INodeDiscovery _nodes;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, ISubscriptionActivator subscriptions, SerializationGraph serialization, ITransport[] transports, UriAliasLookup lookups)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, SerializationGraph serialization, ITransport[] transports, UriAliasLookup lookups, INodeDiscovery nodes)
         {
             _settings = settings;
             _pipeline = pipeline;
             _delayedJobs = delayedJobs;
-            _subscriptions = subscriptions;
             _serialization = serialization;
             _transports = transports;
             _lookups = lookups;
+            _nodes = nodes;
         }
 
         public async Task Activate(HandlerGraph handlers, ChannelGraph channels, CapabilityGraph capabilities, JasperRuntime runtime)
@@ -49,7 +49,10 @@ namespace Jasper.Bus
                 channels.StartTransports(_pipeline, _transports);
                 _delayedJobs.Start(_pipeline, channels);
 
-                await _subscriptions.Activate();
+                var local = new TransportNode(channels, _settings.MachineName);
+
+                await _nodes.Register(local);
+
             }
 
             runtime.Capabilities = await capabilityCompilation;

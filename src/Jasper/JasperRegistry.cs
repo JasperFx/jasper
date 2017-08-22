@@ -159,25 +159,6 @@ namespace Jasper
             Include(extension);
         }
 
-
-        [Obsolete("will be replaced by the new subscriptions")]
-        public SubscriptionExpression SubscribeAt(string receiving)
-        {
-            return SubscribeAt(receiving.ToUri());
-        }
-
-        [Obsolete("will be replaced by the new subscriptions")]
-        public SubscriptionExpression SubscribeAt(Uri receiving)
-        {
-            return new SubscriptionExpression(_bus, receiving);
-        }
-
-        [Obsolete("will be replaced by the new subscriptions")]
-        public SubscriptionExpression SubscribeLocally()
-        {
-            return new SubscriptionExpression(_bus, null);
-        }
-
         public ISubscriptions Subscriptions => _bus.Capabilities;
 
         public IPublishing Publishing => _bus.Capabilities;

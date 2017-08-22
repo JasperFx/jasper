@@ -28,7 +28,6 @@ namespace Jasper.Bus
             For<IEnvelopeSender>().Use<EnvelopeSender>();
             For<IServiceBus>().Use<ServiceBus>();
             For<IHandlerPipeline>().Use<HandlerPipeline>();
-            For<ISubscriptionActivator>().Use<SubscriptionActivator>();
 
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();

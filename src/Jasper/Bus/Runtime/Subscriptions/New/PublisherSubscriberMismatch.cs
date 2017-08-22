@@ -2,7 +2,7 @@
 {
     public class PublisherSubscriberMismatch
     {
-        public PublisherSubscriberMismatch(PublishedMessage publisher, NewSubscription subscription)
+        public PublisherSubscriberMismatch(PublishedMessage publisher, Subscription subscription)
         {
             MessageType = subscription.MessageType;
             Publisher = publisher.ServiceName;

@@ -32,22 +32,6 @@ namespace Jasper.Testing.Bus
             tracks.Single().Destination.ShouldBe("loopback://one".ToUri());
         }
 
-        [Fact]
-        public async Task dynamic_subscriptions_respect_uri_lookups()
-        {
-            with(_ =>
-            {
-                _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.SubscribeAt("fake://one").ToSource("fake://two").ToMessage<Message2>();
-            });
-
-
-            var subscriptions = await Runtime.Get<ISubscriptionsRepository>().LoadSubscriptions(SubscriptionRole.Subscribes);
-
-            var subscription = subscriptions.Single();
-            subscription.Destination.ShouldBe("loopback://one".ToUri());
-            subscription.Source.ShouldBe("loopback://two".ToUri());
-        }
 
         [Fact]
         public void ChannelGraph_is_corrected_by_the_lookups()

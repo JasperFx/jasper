@@ -6,6 +6,7 @@ using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Util;
 using Marten;
 using Marten.Schema.Arguments;
@@ -27,19 +28,10 @@ namespace JasperBus.Marten
         {
             using (var session = _documentStore.LightweightSession())
             {
-                var existing = session.Query<Subscription>().Where(x => x.Publisher == _graph.Name).ToList();
+                var existing = session.Query<Subscription>().Where(x => x.ServiceName == _graph.Name).ToList();
                 var newReqs = subscriptions.Where(x => !existing.Contains(x)).ToList();
                 session.Store(newReqs);
                 return session.SaveChangesAsync();
-            }
-        }
-
-        public async Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
-        {
-            using (var session = _documentStore.LightweightSession())
-            {
-                return (await session.Query<Subscription>()
-                    .Where(x => x.Publisher == _graph.Name && x.Role == subscriptionRole).ToListAsync()).ToArray();
             }
         }
 
@@ -61,8 +53,7 @@ namespace JasperBus.Marten
             using (var query = _documentStore.QuerySession())
             {
                 var docs = await query.Query<Subscription>()
-                    .Where(x => x.MessageType == messageType.ToTypeAlias() && x.Publisher == _graph.Name &&
-                                x.Role == SubscriptionRole.Publishes)
+                    .Where(x => x.MessageType == messageType.ToTypeAlias())
                     .ToListAsync();
 
                 return docs.ToArray();

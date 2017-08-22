@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 
 namespace Jasper.Testing.Bus.Samples
 {
@@ -37,17 +38,17 @@ namespace Jasper.Testing.Bus.Samples
             // Incoming messages
             Channels.ListenForMessagesFrom(settings.Receiving);
 
-            // Local subscription to only this node
-            SubscribeLocally()
-                .ToSource(settings.OtherApp)
-                .ToMessage<OtherAppMessage1>();
-
-            // Global subscription to the all the
-            // running nodes in this clustered application
-            SubscribeAt(settings.Receiving)
-                .ToSource(settings.OtherApp)
-                .ToMessage<OtherAppMessage2>()
-                .ToMessage<OtherAppMessage3>();
+//            // Local subscription to only this node
+//            SubscribeLocally()
+//                .ToSource(settings.OtherApp)
+//                .ToMessage<OtherAppMessage1>();
+//
+//            // Global subscription to the all the
+//            // running nodes in this clustered application
+//            SubscribeAt(settings.Receiving)
+//                .ToSource(settings.OtherApp)
+//                .ToMessage<OtherAppMessage2>()
+//                .ToMessage<OtherAppMessage3>();
         }
     }
     // ENDSAMPLE
@@ -65,12 +66,12 @@ namespace Jasper.Testing.Bus.Samples
 
     public class MartenSubscriptionRepository : ISubscriptionsRepository
     {
-        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public void Dispose()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
+        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             throw new NotImplementedException();
         }
@@ -80,23 +81,7 @@ namespace Jasper.Testing.Bus.Samples
             throw new NotImplementedException();
         }
 
-        Task<Subscription[]> ISubscriptionsRepository.GetSubscribersFor(Type messageType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Uri> GetSubscribersFor(Type messageType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Subscription> ActiveSubscriptions { get; }
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RegisterForChanges(Action<IEnumerable<Subscription>> updateHandler)
+        public Task<Subscription[]> GetSubscribersFor(Type messageType)
         {
             throw new NotImplementedException();
         }

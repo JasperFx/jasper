@@ -1,5 +1,6 @@
 ﻿using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Testing.Util;
 using Jasper.Util;
 using Shouldly;
@@ -17,13 +18,6 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
 
             new Subscription(typeof(AliasedMessage), "jasper://localhost:2222/queue".ToUri())
                 .MessageType.ShouldBe("Alias.1");
-        }
-
-        [Fact]
-        public void new_subscriptions_accept_json_by_default()
-        {
-            new Subscription(typeof(Message1), "jasper://localhost:2222/queue".ToUri()).Accepts
-                .ShouldBe("application/json");
         }
     }
 

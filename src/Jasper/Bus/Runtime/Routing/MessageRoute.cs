@@ -62,7 +62,7 @@ namespace Jasper.Bus.Runtime.Routing
             return !envelope.AcceptedContentTypes.Any() || envelope.AcceptedContentTypes.Contains(ContentType);
         }
 
-        public static bool TryToRoute(PublishedMessage sender, NewSubscription receiver, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
+        public static bool TryToRoute(PublishedMessage sender, Subscription receiver, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
         {
             route = null;
             mismatch = null;
@@ -91,7 +91,7 @@ namespace Jasper.Bus.Runtime.Routing
 
         }
 
-        private static string SelectContentType(PublishedMessage sender, NewSubscription receiver)
+        private static string SelectContentType(PublishedMessage sender, Subscription receiver)
         {
             var matchingContentTypes = receiver.Accept.Intersect(sender.ContentTypes).ToArray();
             // Always try to use the versioned or specific reader/writer if one exists

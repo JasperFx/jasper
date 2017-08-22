@@ -55,7 +55,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public IGrammar TheSubscriptionsAre()
         {
-            return VerifySetOf<NewSubscription>(() => _current.Subscriptions)
+            return VerifySetOf<Subscription>(() => _current.Subscriptions)
                 .Titled("The required subscriptions should be")
                 .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accept);
         }

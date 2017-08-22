@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -18,7 +19,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                 {
                     _.SetProperty(x => x.MessageType);
                     _.SetProperty(x => x.Destination);
-                    _.SetProperty(x => x.Accepts);
+                    _.SetProperty(x => x.Accept);
                     _.Do(x => _actual.Add(x));
                 }).AsTable("The existing subscriptions in storage are")
                 .Before(() => _actual.Clear());
@@ -30,7 +31,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                 {
                     _.SetProperty(x => x.MessageType);
                     _.SetProperty(x => x.Destination);
-                    _.SetProperty(x => x.Accepts);
+                    _.SetProperty(x => x.Accept);
                     _.Do(x => _expected.Add(x));
                 }).AsTable("The expected subscriptions are")
                 .Before(() => _expected.Clear())
@@ -41,14 +42,14 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             return VerifySetOf<Subscription>(() => _delta.NewSubscriptions)
                 .Titled("The missing subscriptions to be created are")
-                .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accepts);
+                .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accept);
         }
 
         public IGrammar ToBeDeleted()
         {
             return VerifySetOf<Subscription>(() => _delta.ObsoleteSubscriptions)
                 .Titled("The obsolete subscriptions to be deleted are")
-                .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accepts);
+                .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accept);
         }
     }
 }

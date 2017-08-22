@@ -40,7 +40,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public IGrammar NoPublishersShouldBe()
         {
-            return VerifySetOf<NewSubscription>(() => _graph.NoPublishers)
+            return VerifySetOf<Subscription>(() => _graph.NoPublishers)
                 .Titled("The subscriptions with no publishers are")
                 .MatchOn(x => x.ServiceName, x => x.MessageType, x => x.Destination);
         }

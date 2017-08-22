@@ -148,14 +148,6 @@ namespace StorytellerSpecs.Fixtures
             var history = runtime.Container.GetInstance<MessageHistory>();
             var graph = runtime.Container.GetInstance<HandlerGraph>();
 
-            if (_waitForSubscriptions)
-            {
-                var waiter = history.Watch(() => { });
-                StoryTellerAssert.Fail(
-                    !waiter.Wait(60.Seconds())
-                    || waiter.Result.All(x => x.MessageType != typeof(SubscriptionRequested)),
-                    "SubscriptionRequested message was never received");
-            }
 
             Context.State.Store(runtime);
         }
@@ -189,24 +181,5 @@ namespace StorytellerSpecs.Fixtures
             _registry.Channels.ListenForMessagesFrom(channel);
         }
 
-        [FormatAs("Subscribe locally to {messageType} from {channel}")]
-        public void SubscribeLocally([SelectionList("MessageTypes")] string messageType, [SelectionList("Channels")] Uri channel)
-        {
-            var type = messageTypeFor(messageType);
-            _registry.SubscribeLocally()
-                .ToSource(channel)
-                .ToMessage(type);
-            _waitForSubscriptions = true;
-        }
-
-        [FormatAs("Subscribe on {receiveChannel} to {messageType} from {channel}")]
-        public void SubscribeAt([SelectionList("MessageTypes")] string messageType, [SelectionList("Channels")] Uri channel, [SelectionList("Channels")] Uri receiveChannel)
-        {
-            var type = messageTypeFor(messageType);
-            _registry.SubscribeAt(receiveChannel)
-                .ToSource(channel)
-                .ToMessage(type);
-            _waitForSubscriptions = true;
-        }
     }
 }

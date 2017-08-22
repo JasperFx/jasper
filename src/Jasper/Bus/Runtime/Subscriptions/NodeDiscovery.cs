@@ -16,7 +16,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
     {
         private readonly string _machineName;
 
-        public InMemoryNodeDiscovery(EnvironmentSettings envSettings)
+        public InMemoryNodeDiscovery(BusSettings envSettings)
         {
             _machineName = envSettings.MachineName;
         }

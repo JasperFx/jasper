@@ -12,7 +12,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
 
         public Uri ReceiverLocation { get; set; } // could be a default here
 
-        public IEnumerable<NewSubscription> DetermineSubscriptions(SerializationGraph serialization, Type[] allTypes, Uri defaultReceiver)
+        public IEnumerable<Subscription> DetermineSubscriptions(SerializationGraph serialization, Type[] allTypes, Uri defaultReceiver)
         {
             var receiver = ReceiverLocation ?? defaultReceiver;
 
@@ -22,7 +22,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
                 .Select(type =>
                 {
                     var reader = serialization.ReaderFor(type);
-                    return new NewSubscription(type, receiver)
+                    return new Subscription(type, receiver)
                     {
                         Accept = reader.ContentTypes
                     };

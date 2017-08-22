@@ -16,7 +16,7 @@ namespace Jasper.Testing.Bus.Runtime.Routing
                 ContentTypes = new string[] {"one", "two"}
             };
 
-            var subscription = new NewSubscription(typeof(Message1), "loopback://one".ToUri());
+            var subscription = new Subscription(typeof(Message1), "loopback://one".ToUri());
             subscription.Accept = new string[]{"three"};
 
             MessageRoute.TryToRoute(published, subscription, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
@@ -36,7 +36,7 @@ namespace Jasper.Testing.Bus.Runtime.Routing
                 Transports = new string[]{"jasper"}
             };
 
-            var subscription = new NewSubscription(typeof(Message1), "fake://one".ToUri());
+            var subscription = new Subscription(typeof(Message1), "fake://one".ToUri());
             subscription.Accept = new string[]{"three"};
 
             MessageRoute.TryToRoute(published, subscription, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
@@ -56,7 +56,7 @@ namespace Jasper.Testing.Bus.Runtime.Routing
 
             };
 
-            var subscription = new NewSubscription(typeof(Message1), "loopback://one".ToUri());
+            var subscription = new Subscription(typeof(Message1), "loopback://one".ToUri());
             subscription.Accept = new string[]{"application/json", "app/v1", "app/v3"};
 
             MessageRoute.TryToRoute(published, subscription, out MessageRoute route, out PublisherSubscriberMismatch mismatch)
@@ -75,7 +75,7 @@ namespace Jasper.Testing.Bus.Runtime.Routing
 
             };
 
-            var subscription = new NewSubscription(typeof(Message1), "loopback://one".ToUri());
+            var subscription = new Subscription(typeof(Message1), "loopback://one".ToUri());
             subscription.Accept = new string[]{"application/json", "app/v4", "app/v5"};
 
             MessageRoute.TryToRoute(published, subscription, out MessageRoute route, out PublisherSubscriberMismatch mismatch)

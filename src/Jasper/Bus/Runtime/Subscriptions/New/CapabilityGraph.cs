@@ -104,7 +104,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
             return _published.ToArray();
         }
 
-        private NewSubscription[] determineSubscriptions(HandlerGraph handlers, SerializationGraph serialization,
+        private Subscription[] determineSubscriptions(HandlerGraph handlers, SerializationGraph serialization,
             ChannelGraph channels)
         {
             var messageTypes = handlers.Chains

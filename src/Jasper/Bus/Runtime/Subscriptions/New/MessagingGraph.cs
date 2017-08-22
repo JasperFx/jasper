@@ -10,7 +10,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
     {
         private readonly List<MessageRoute> _routes = new List<MessageRoute>();
         private readonly List<PublishedMessage> _noSubscribers = new List<PublishedMessage>();
-        private readonly List<NewSubscription> _noPublishers = new List<NewSubscription>();
+        private readonly List<Subscription> _noPublishers = new List<Subscription>();
         private readonly List<PublisherSubscriberMismatch> _mismatches = new List<PublisherSubscriberMismatch>();
 
         public MessagingGraph(ServiceCapabilities[] capabilities)
@@ -56,7 +56,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
             return services;
         }
 
-        private void tryToMatch(PublishedMessage sender, NewSubscription receiver)
+        private void tryToMatch(PublishedMessage sender, Subscription receiver)
         {
             if (MessageRoute.TryToRoute(sender, receiver, out MessageRoute route,
                 out PublisherSubscriberMismatch mismatch))
@@ -71,13 +71,13 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
         }
 
 
-        private static Dictionary<string, List<NewSubscription>> organizeSubscriptions(ServiceCapabilities[] capabilities)
+        private static Dictionary<string, List<Subscription>> organizeSubscriptions(ServiceCapabilities[] capabilities)
         {
             var groups = capabilities.SelectMany(x => x.Subscriptions).GroupBy(x => x.MessageType);
-            var subscriptions = new Dictionary<string, List<NewSubscription>>();
+            var subscriptions = new Dictionary<string, List<Subscription>>();
             foreach (var @group in groups)
             {
-                subscriptions.Add(@group.Key, new List<NewSubscription>(@group));
+                subscriptions.Add(@group.Key, new List<Subscription>(@group));
             }
 
             return subscriptions;
@@ -98,7 +98,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
 
         public PublishedMessage[] NoSubscribers => _noSubscribers.ToArray();
 
-        public NewSubscription[] NoPublishers => _noPublishers.ToArray();
+        public Subscription[] NoPublishers => _noPublishers.ToArray();
 
         public PublisherSubscriberMismatch[] Mismatches => _mismatches.ToArray();
 

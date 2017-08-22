@@ -14,7 +14,7 @@ namespace Jasper.Consul.Internal
         private readonly ChannelGraph _channels;
 
 
-        protected ConsulService(ConsulSettings settings, ChannelGraph channels, EnvironmentSettings envSettings)
+        protected ConsulService(ConsulSettings settings, ChannelGraph channels, BusSettings envSettings)
         {
             _channels = channels;
             client = settings.Client;

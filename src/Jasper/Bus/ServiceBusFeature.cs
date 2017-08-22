@@ -83,7 +83,6 @@ namespace Jasper.Bus
 
             _graph = new HandlerGraph();
             _graph.AddRange(calls);
-            _graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionRequested())));
             _graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged())));
 
             _graph.Group();

@@ -8,6 +8,7 @@ using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Util;
 
 namespace Jasper.Consul.Internal
@@ -16,7 +17,7 @@ namespace Jasper.Consul.Internal
     {
         public const string SUBSCRIPTION_PREFIX = GLOBAL_PREFIX + "subscription/";
 
-        public ConsulSubscriptionRepository(ConsulSettings settings, ChannelGraph channels, EnvironmentSettings envSettings)
+        public ConsulSubscriptionRepository(ConsulSettings settings, ChannelGraph channels, BusSettings envSettings)
             : base(settings, channels, envSettings)
         {
         }
@@ -33,12 +34,6 @@ namespace Jasper.Consul.Internal
                 .ToList();
 
             return client.KV.Txn(ops);
-        }
-
-        public async Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
-        {
-            var subscriptions = await AllSubscriptions();
-            return subscriptions.Where(s => s.Publisher == ServiceName && s.Role == subscriptionRole).ToArray();
         }
 
         public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)

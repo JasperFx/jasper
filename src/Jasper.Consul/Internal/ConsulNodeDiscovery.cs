@@ -13,7 +13,7 @@ namespace Jasper.Consul.Internal
     {
         public const string TRANSPORTNODE_PREFIX = GLOBAL_PREFIX + "node/";
 
-        public ConsulNodeDiscovery(ConsulSettings settings, ChannelGraph channels, EnvironmentSettings envSettings) : base(settings, channels, envSettings)
+        public ConsulNodeDiscovery(ConsulSettings settings, ChannelGraph channels, BusSettings envSettings) : base(settings, channels, envSettings)
         {
         }
 

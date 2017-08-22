@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Jasper.Bus
 {
@@ -17,5 +18,18 @@ namespace Jasper.Bus
         public bool ThrowOnValidationErrors { get; set; } = true;
 
         public bool AllowNonVersionedSerialization { get; set; } = true;
+
+        private string _machineName;
+
+        public string MachineName
+        {
+            get
+            {
+                if (_machineName == null)
+                    return _machineName = Environment.MachineName;
+                return _machineName;
+            }
+            set => _machineName = value;
+        }
     }
 }

@@ -7,6 +7,7 @@ using Consul;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Consul.Internal;
 using Jasper.Util;
 using Shouldly;
@@ -49,22 +50,21 @@ namespace Jasper.Consul.Testing
         {
             var subscriptions = new Subscription[]
             {
-                new Subscription(typeof(GreenMessage), theDestination){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(BlueMessage), theDestination){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(RedMessage), theDestination){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(OrangeMessage), theDestination){Role = SubscriptionRole.Subscribes},
+                new Subscription(typeof(GreenMessage), theDestination),
+                new Subscription(typeof(BlueMessage), theDestination),
+                new Subscription(typeof(RedMessage), theDestination),
+                new Subscription(typeof(OrangeMessage), theDestination),
             };
 
-            subscriptions.Each(x => x.Publisher = "ConsulSampleApp");
+            subscriptions.Each(x => x.ServiceName = "ConsulSampleApp");
 
             await theRepository.PersistSubscriptions(subscriptions);
 
-            var publishes = await theRepository.LoadSubscriptions(SubscriptionRole.Publishes);
-            publishes.Count().ShouldBe(3);
+            var publishes = await theRepository.GetSubscribersFor(typeof(GreenMessage));
+
+            publishes.Count().ShouldBe(1);
 
             publishes.Any(x => x.MessageType == typeof(GreenMessage).ToTypeAlias()).ShouldBeTrue();
-            publishes.Any(x => x.MessageType == typeof(RedMessage).ToTypeAlias()).ShouldBeTrue();
-            publishes.Any(x => x.MessageType == typeof(BlueMessage).ToTypeAlias()).ShouldBeTrue();
         }
 
         [Fact]
@@ -72,15 +72,15 @@ namespace Jasper.Consul.Testing
         {
             var subscriptions = new Subscription[]
             {
-                new Subscription(typeof(GreenMessage), "something://localhost:3333/here".ToUri()){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(GreenMessage), "something://localhost:4444/here".ToUri()){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(GreenMessage), "something://localhost:5555/here".ToUri()){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(BlueMessage), theDestination){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(RedMessage), theDestination){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(OrangeMessage), theDestination){Role = SubscriptionRole.Subscribes},
+                new Subscription(typeof(GreenMessage), "something://localhost:3333/here".ToUri()){},
+                new Subscription(typeof(GreenMessage), "something://localhost:4444/here".ToUri()){},
+                new Subscription(typeof(GreenMessage), "something://localhost:5555/here".ToUri()){},
+                new Subscription(typeof(BlueMessage), theDestination){},
+                new Subscription(typeof(RedMessage), theDestination){},
+                new Subscription(typeof(OrangeMessage), theDestination){},
             };
 
-            subscriptions.Each(x => x.Publisher = "ConsulSampleApp");
+            subscriptions.Each(x => x.ServiceName = "ConsulSampleApp");
 
             await theRepository.PersistSubscriptions(subscriptions);
 
@@ -88,28 +88,6 @@ namespace Jasper.Consul.Testing
             greens.Length.ShouldBe(3);
         }
 
-        [Fact]
-        public async Task remove_subscriptions()
-        {
-            var subscriptions = new Subscription[]
-            {
-                new Subscription(typeof(GreenMessage), theDestination){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(BlueMessage), theDestination){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(RedMessage), theDestination){Role = SubscriptionRole.Publishes},
-                new Subscription(typeof(OrangeMessage), theDestination){Role = SubscriptionRole.Subscribes},
-            };
-
-            subscriptions.Each(x => x.Publisher = "ConsulSampleApp");
-
-            await theRepository.PersistSubscriptions(subscriptions);
-
-            await theRepository.RemoveSubscriptions(new List<Subscription>{subscriptions[1], subscriptions[2]});
-
-
-            (await theRepository.LoadSubscriptions(SubscriptionRole.Publishes)).Single()
-                .MessageType.ShouldBe(typeof(GreenMessage).ToTypeAlias());
-
-        }
 
 
     }

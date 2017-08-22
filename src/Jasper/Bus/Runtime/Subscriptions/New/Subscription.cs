@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 
 namespace Jasper.Bus.Runtime.Subscriptions.New
 {
-    public class NewSubscription
+    public class Subscription
     {
-        public NewSubscription(Type messageType, Uri destination)
+        public Subscription(Type messageType, Uri destination)
         {
             // Okay to let destination be null here.
             Destination = destination;
@@ -22,7 +22,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
         public Type DotNetType { get; }
 
         // for serialization
-        public NewSubscription()
+        public Subscription()
         {
         }
 
@@ -47,9 +47,9 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
 
         }
 
-        private sealed class DestinationMessageTypeEqualityComparer : IEqualityComparer<NewSubscription>
+        private sealed class DestinationMessageTypeEqualityComparer : IEqualityComparer<Subscription>
         {
-            public bool Equals(NewSubscription x, NewSubscription y)
+            public bool Equals(Subscription x, Subscription y)
             {
                 if (ReferenceEquals(x, y)) return true;
                 if (ReferenceEquals(x, null)) return false;
@@ -58,7 +58,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
                 return Equals(x.Destination, y.Destination) && string.Equals(x.MessageType, y.MessageType);
             }
 
-            public int GetHashCode(NewSubscription obj)
+            public int GetHashCode(Subscription obj)
             {
                 unchecked
                 {
@@ -67,7 +67,7 @@ namespace Jasper.Bus.Runtime.Subscriptions.New
             }
         }
 
-        public static IEqualityComparer<NewSubscription> DestinationMessageTypeComparer { get; } = new DestinationMessageTypeEqualityComparer();
+        public static IEqualityComparer<Subscription> DestinationMessageTypeComparer { get; } = new DestinationMessageTypeEqualityComparer();
 
         public override string ToString()
         {

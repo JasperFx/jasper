@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions
@@ -23,7 +24,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public Task<Subscription[]> GetSubscribersFor(Type messageType)
         {
-            var matching = _subscriptions.Where(x => x.Role == SubscriptionRole.Publishes && x.MessageType == messageType.ToTypeAlias()).ToArray();
+            var matching = _subscriptions.Where(x => x.MessageType == messageType.ToTypeAlias()).ToArray();
             return Task.FromResult(matching);
         }
 
@@ -35,12 +36,6 @@ namespace Jasper.Bus.Runtime.Subscriptions
         {
             _subscriptions.Fill(subscriptions);
             return Task.CompletedTask;
-        }
-
-        public Task<Subscription[]> LoadSubscriptions(SubscriptionRole subscriptionRole)
-        {
-            var matching = _subscriptions.Where(x => x.Role == subscriptionRole).ToArray();
-            return Task.FromResult(matching);
         }
     }
 }

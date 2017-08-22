@@ -15,13 +15,6 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
 
             MockFor<IMessageRouter>().Received().ClearAll();
         }
-        
-        [Fact]
-        public void should_reset_message_router_on_subscriptions_requested()
-        {
-            ClassUnderTest.Handle(new SubscriptionRequested {Subscriptions = Array.Empty<Subscription>()});
 
-            MockFor<IMessageRouter>().Received().ClearAll();
-        }
     }
 }

@@ -89,21 +89,7 @@ namespace Jasper.Bus.Runtime.Routing
 
             foreach (var subscription in await _subscriptions.GetSubscribersFor(messageType))
             {
-                if (subscription.Accepts.IsEmpty())
-                {
-                    list.Add(new MessageRoute(messageType, modelWriter, subscription.Destination, "application/json"));
-                }
-                else
-                {
-                    var accepted = subscription.Accepts.Split(',');
-
-                    var contentType = accepted.Intersect(supported).FirstOrDefault();
-
-                    if (contentType.IsNotEmpty())
-                    {
-                        list.Add(new MessageRoute(messageType, modelWriter, subscription.Destination, contentType));
-                    }
-                }
+                throw new NotImplementedException("create a published message and use MessageRoute.TryToRoute()");
             }
 
             if (!list.Any())
