@@ -9,6 +9,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Util;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Jasper.Consul.Internal
 {
@@ -54,9 +55,16 @@ namespace Jasper.Consul.Internal
             return subs.Response?.Select(kv => deserialize<Subscription>(kv.Value)).ToArray() ?? new Subscription[0];
         }
 
-        public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
+        public async Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
         {
-            throw new NotImplementedException();
+            var existing = await AllSubscriptions();
+
+            var toRemove = existing.Where(x => x.ServiceName == serviceName).Select(x => new KVTxnOp(x.ConsulId(), KVTxnVerb.Delete));
+
+            var adds = subscriptions
+                .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Set) {Value = serialize(s)});
+
+            await client.KV.Txn(toRemove.Concat(adds).ToList());
         }
 
         public async Task<IEnumerable<Subscription>> AllSubscriptions()

@@ -88,6 +88,39 @@ namespace Jasper.Consul.Testing
         }
 
 
+        [Fact]
+        public async Task replace_subscriptions_for_a_service()
+        {
+            var subscriptions = new Subscription[]
+            {
+                new Subscription(typeof(GreenMessage), "something://localhost:3333/here".ToUri()){ServiceName = "One"},
+                new Subscription(typeof(GreenMessage), "something://localhost:4444/here".ToUri()){ServiceName = "Two"},
+                new Subscription(typeof(GreenMessage), "something://localhost:5555/here".ToUri()){ServiceName = "Two"},
+                new Subscription(typeof(BlueMessage), theDestination){ServiceName = "One"},
+                new Subscription(typeof(RedMessage), theDestination){ServiceName = "One"},
+                new Subscription(typeof(OrangeMessage), theDestination){ServiceName = "One"},
+            };
+
+            await theRepository.PersistSubscriptions(subscriptions);
+
+            var replacements = new Subscription[]
+            {
+                new Subscription(typeof(GreenMessage), "something://localhost:3335/here".ToUri()){ServiceName = "One"},
+                new Subscription(typeof(BlueMessage), theDestination){ServiceName = "One"},
+            };
+
+            await theRepository.ReplaceSubscriptions("One", replacements);
+
+            var known = await theRepository.As<ConsulSubscriptionRepository>().AllSubscriptions();
+
+            var ones = known.Where(x => x.ServiceName == "One").ToArray();
+
+            ones.Length.ShouldBe(2);
+            ones.Select(x => x.MessageType).OrderBy(x => x)
+                .ShouldHaveTheSameElementsAs(typeof(BlueMessage).ToTypeAlias(), typeof(GreenMessage).ToTypeAlias());
+        }
+
+
 
     }
 
