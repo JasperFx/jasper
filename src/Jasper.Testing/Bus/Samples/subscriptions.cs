@@ -84,5 +84,10 @@ namespace Jasper.Testing.Bus.Samples
         {
             throw new NotImplementedException();
         }
+
+        public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

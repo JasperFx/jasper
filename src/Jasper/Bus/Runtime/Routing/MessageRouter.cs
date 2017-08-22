@@ -87,7 +87,8 @@ namespace Jasper.Bus.Runtime.Routing
                 }
             }
 
-            foreach (var subscription in await _subscriptions.GetSubscribersFor(messageType))
+            var subscriptions = await _subscriptions.GetSubscribersFor(messageType);
+            foreach (var subscription in subscriptions)
             {
                 throw new NotImplementedException("create a published message and use MessageRoute.TryToRoute()");
             }

@@ -59,6 +59,11 @@ namespace JasperBus.Marten
             }
         }
 
+        public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
             _documentStore?.Dispose();

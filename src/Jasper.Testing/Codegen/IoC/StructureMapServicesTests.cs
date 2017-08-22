@@ -3,6 +3,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using StructureMap;
 using Xunit;
@@ -80,6 +81,14 @@ namespace Jasper.Testing.Codegen.IoC
                 .ShouldBeSameAs(StructureMapServices.Nested);
         }
 
+        [Fact]
+        public void can_handle_closed_generic_types()
+        {
+            var type = typeof(MessageHandler<>).MakeGenericType(typeof(Message1));
+            theServices.Matches(type)
+                .ShouldBeTrue();
+        }
+
         public class ScopedService
         {
 
@@ -88,6 +97,14 @@ namespace Jasper.Testing.Codegen.IoC
         public class SingletonService
         {
 
+        }
+
+        public class MessageHandler<T>
+        {
+            public void Handle(T message)
+            {
+
+            }
         }
     }
 }

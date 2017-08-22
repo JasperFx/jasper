@@ -117,6 +117,11 @@ namespace StorytellerSpecs.Fixtures
             return Task.FromResult(subscriptions);
         }
 
+        public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
 

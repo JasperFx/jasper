@@ -26,6 +26,8 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public override void SetUp()
         {
             _nodes = new NodesCollection();
+            _publisher = null;
+            _initialized = false;
         }
 
         public override void TearDown()
@@ -72,9 +74,15 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                     };
 
                     _publisher = _nodes.Add(registry);
+
+
                 }
 
+                await _nodes.StoreSubscriptions();
+
                 _publisher.ResetSubscriptions();
+
+                _initialized = true;
             }
 
             var history = _nodes.History;
@@ -110,6 +118,12 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             _registry = new JasperRegistry();
             _registry.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+
+            _registry.Messaging.Handlers.IncludeType<Message1Handler>();
+            _registry.Messaging.Handlers.IncludeType<Message2Handler>();
+            _registry.Messaging.Handlers.IncludeType<Message3Handler>();
+            _registry.Messaging.Handlers.IncludeType<Message4Handler>();
+            _registry.Messaging.Handlers.IncludeType<Message5Handler>();
         }
 
         public override void TearDown()
@@ -132,9 +146,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             var type = messageTypeFor(messageType);
 
             _registry.Subscriptions.To(type).At(uri);
-
-            var handlerType = typeof(MessageHandler<>).MakeGenericType(type);
-            _registry.Messaging.Handlers.IncludeType(handlerType);
         }
 
 

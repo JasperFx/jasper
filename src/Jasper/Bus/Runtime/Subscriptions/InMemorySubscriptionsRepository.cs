@@ -27,6 +27,12 @@ namespace Jasper.Bus.Runtime.Subscriptions
             return Task.FromResult(matching);
         }
 
+        public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
+        {
+            _subscriptions.RemoveAll(x => x.ServiceName == serviceName);
+            return Task.CompletedTask;
+        }
+
         public void Dispose()
         {
         }

@@ -6,10 +6,10 @@ namespace Jasper.Bus.Runtime.Subscriptions
 {
     public static class RuntimeSubscriptionExtensions
     {
-        // TODO -- do a full replacement by service name here.
         public static Task PersistSubscriptions(this JasperRuntime runtime)
         {
-            throw new NotImplementedException();
+            var repository = runtime.Get<ISubscriptionsRepository>();
+            return repository.ReplaceSubscriptions(runtime.ServiceName, runtime.Capabilities.Subscriptions);
         }
 
         public static void ResetSubscriptions(this JasperRuntime runtime)
