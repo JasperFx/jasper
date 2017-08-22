@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Runtime.Subscriptions.New;
 
 namespace Jasper.Testing.Bus.Samples
 {

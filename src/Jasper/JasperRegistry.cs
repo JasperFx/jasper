@@ -8,7 +8,7 @@ using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Subscriptions.New;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Http;

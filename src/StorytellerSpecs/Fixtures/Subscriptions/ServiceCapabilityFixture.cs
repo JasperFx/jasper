@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Subscriptions.New;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Conneg;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Runtime.Routing;
-using Jasper.Bus.Runtime.Subscriptions.New;
+using Jasper.Bus.Runtime.Subscriptions;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions

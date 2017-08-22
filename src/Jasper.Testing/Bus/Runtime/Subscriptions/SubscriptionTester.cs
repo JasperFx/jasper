@@ -1,6 +1,5 @@
 ﻿using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Testing.Util;
 using Jasper.Util;
 using Shouldly;

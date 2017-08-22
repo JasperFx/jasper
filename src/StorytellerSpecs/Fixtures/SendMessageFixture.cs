@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Authentication.ExtendedProtection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -99,7 +100,7 @@ namespace StorytellerSpecs.Fixtures
 
             return bus().Request<Message2>(message).ContinueWith(t =>
             {
-                _runtime.Container.GetInstance<MessageTracker>().Records.Add(new MessageRecord("stub://replies".ToUri(), t.Result));
+                _runtime.Container.GetInstance<MessageTracker>().Records.Add(new MessageRecord("Some Service","stub://replies".ToUri(), t.Result));
             });
         }
 
@@ -261,9 +262,9 @@ namespace StorytellerSpecs.Fixtures
 
     public abstract class MessageHandler<T> where T : Message
     {
-        public void Handle(T message, MessageTracker tracker, Envelope envelope)
+        public void Handle(T message, MessageTracker tracker, Envelope envelope, JasperRuntime runtime)
         {
-            tracker.Records.Add(new MessageRecord(envelope.ReceivedAt, message));
+            tracker.Records.Add(new MessageRecord(runtime.ServiceName, envelope.ReceivedAt, message));
         }
     }
 
@@ -298,12 +299,15 @@ namespace StorytellerSpecs.Fixtures
 
     public class MessageRecord
     {
-        public MessageRecord(Uri receivedAt, Message message)
+        public MessageRecord(string serviceName, Uri receivedAt, Message message)
         {
+            ServiceName = serviceName;
             MessageType = message.GetType().Name;
             Name = message.Name;
             ReceivedAt = receivedAt.ToLocalHostUri();
         }
+
+        public string ServiceName { get; set; }
 
         public Uri ReceivedAt { get; set; }
 

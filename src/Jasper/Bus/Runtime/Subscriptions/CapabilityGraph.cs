@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
@@ -10,7 +9,7 @@ using Jasper.Bus.Model;
 using Jasper.Conneg;
 using StructureMap.Graph.Scanning;
 
-namespace Jasper.Bus.Runtime.Subscriptions.New
+namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class CapabilityGraph : ISubscriptions, IPublishing
     {

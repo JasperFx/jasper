@@ -11,14 +11,13 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Bus.Transports.InMemory;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
-using CapabilityGraph = Jasper.Bus.Runtime.Subscriptions.New.CapabilityGraph;
+using CapabilityGraph = Jasper.Bus.Runtime.Subscriptions.CapabilityGraph;
 using Policies = Jasper.Bus.Configuration.Policies;
 
 namespace Jasper.Bus

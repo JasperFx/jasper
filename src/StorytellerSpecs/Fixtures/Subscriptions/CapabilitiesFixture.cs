@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Bus.Runtime.Subscriptions.New;
+using Jasper.Bus.Runtime.Subscriptions;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions

@@ -3,7 +3,7 @@ using Baseline;
 using Jasper.Util;
 using Newtonsoft.Json;
 
-namespace Jasper.Bus.Runtime.Subscriptions.New
+namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class PublishedMessage
     {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions

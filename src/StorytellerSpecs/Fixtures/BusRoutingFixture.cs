@@ -8,7 +8,6 @@ using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Conneg;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;

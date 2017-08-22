@@ -7,7 +7,6 @@ using Consul;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Consul.Internal;
 using Jasper.Util;
 using Shouldly;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using Jasper.Bus.Runtime.Subscriptions.New;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Conneg;
 using Jasper.Util;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Jasper.Conneg;
 
-namespace Jasper.Bus.Runtime.Subscriptions.New
+namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class SubscriptionRequirement : ISubscriptionExpression
     {

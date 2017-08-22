@@ -5,7 +5,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Bus.Runtime.Subscriptions.New;
+using Jasper.Bus;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
@@ -41,6 +42,8 @@ namespace Jasper
             registry.Generation.Assemblies.Add(registry.ApplicationAssembly);
 
             _registry = registry;
+
+            _bus = new Lazy<IServiceBus>(() => Get<IServiceBus>());
         }
 
         public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
@@ -152,6 +155,12 @@ namespace Jasper
                 feature.Describe(this, writer);
             }
         }
+
+        private readonly Lazy<IServiceBus> _bus;
+
+        public IServiceBus Bus => _bus.Value;
+
+        public string ServiceName => _registry.ServiceName;
     }
 }
 

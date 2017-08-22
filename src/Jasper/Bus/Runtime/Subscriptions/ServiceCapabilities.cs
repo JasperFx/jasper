@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Jasper.Bus.Configuration;
 
-namespace Jasper.Bus.Runtime.Subscriptions.New
+namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class ServiceCapabilities
     {

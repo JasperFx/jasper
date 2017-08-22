@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime.Subscriptions.New;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {

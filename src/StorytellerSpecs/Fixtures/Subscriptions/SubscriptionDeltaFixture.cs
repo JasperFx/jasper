@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Runtime.Subscriptions.New;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 

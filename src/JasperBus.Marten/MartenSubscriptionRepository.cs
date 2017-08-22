@@ -6,7 +6,6 @@ using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Util;
 using Marten;
 using Marten.Schema.Arguments;

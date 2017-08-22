@@ -9,7 +9,6 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Runtime.Subscriptions.New;
 using Jasper.Conneg;
 
 namespace Jasper.Bus
