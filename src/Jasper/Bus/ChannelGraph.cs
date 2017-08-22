@@ -96,6 +96,8 @@ namespace Jasper.Bus
 
         internal void StartTransports(IHandlerPipeline pipeline, ITransport[] transports)
         {
+            ValidTransports = transports.Select(x => x.Protocol).ToArray();
+
             var unknowns = _nodes.Values.Distinct().Where(x => transports.All(t => t.Protocol != x.Uri.Scheme)).ToArray();
             if (unknowns.Length > 0)
             {
@@ -121,5 +123,7 @@ namespace Jasper.Bus
                     .Each(x => { x.Sender = new NulloSender(transport, x.Uri); });
             }
         }
+
+        public string[] ValidTransports { get; private set; } = new string[0];
     }
 }

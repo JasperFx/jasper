@@ -1,5 +1,6 @@
 ﻿using System;
 using Baseline;
+using Jasper.Conneg;
 using Jasper.Util;
 using Newtonsoft.Json;
 
@@ -11,6 +12,12 @@ namespace Jasper.Bus.Runtime.Subscriptions
         {
             MessageType = messageType.ToTypeAlias();
             DotNetType = messageType;
+        }
+
+        public PublishedMessage(Type messageType, ModelWriter modelWriter, ChannelGraph channels) : this(messageType)
+        {
+            ContentTypes = modelWriter.ContentTypes;
+            Transports = channels.ValidTransports;
         }
 
         [JsonIgnore]
