@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Description>Jasper Service Bus subscription storage in Marten</Description>
     <VersionPrefix>0.2.1-alpha</VersionPrefix>
@@ -18,13 +17,10 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Marten" Version="1.5.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="Marten" Version="2.2.0" />
+  </ItemGroup>
 </Project>

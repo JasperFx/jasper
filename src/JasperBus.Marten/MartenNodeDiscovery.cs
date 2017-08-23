@@ -15,18 +15,18 @@ namespace JasperBus.Marten
 
         public TransportNode LocalNode { get; private set; }
 
-        public MartenNodeDiscovery(IDocumentStore documentStore)
+        public MartenNodeDiscovery(MartenSubscriptionSettings settings)
         {
-            _documentStore = documentStore;
+            _documentStore = settings.Store;
         }
 
-        public Task Register(TransportNode local)
+        public async Task Register(TransportNode local)
         {
             LocalNode = local;
             using (var session = _documentStore.LightweightSession())
             {
                 session.Store(LocalNode);
-                return session.SaveChangesAsync();
+                await session.SaveChangesAsync();
             }
         }
 
@@ -35,7 +35,7 @@ namespace JasperBus.Marten
             using (var session = _documentStore.LightweightSession())
             {
                 var peers = await session.Query<TransportNode>()
-                    .Where(x => x.ServiceName == LocalNode.ServiceName && x.Id != LocalNode.Id)
+                    .Where(x => x.ServiceName == LocalNode.ServiceName)
                     .ToListAsync();
 
                 return peers.ToArray();

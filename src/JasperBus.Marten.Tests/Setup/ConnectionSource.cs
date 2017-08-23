@@ -6,7 +6,8 @@ namespace JasperBus.Marten.Tests.Setup
 {
     public class ConnectionSource : ConnectionFactory
     {
-        public static readonly string ConnectionString = Environment.GetEnvironmentVariable("marten_testing_database");
+        public static readonly string Default = "Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres";
+        public static readonly string ConnectionString = Environment.GetEnvironmentVariable("marten_testing_database") ?? Default;
 
         static ConnectionSource()
         {

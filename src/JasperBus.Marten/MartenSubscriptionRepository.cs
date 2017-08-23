@@ -12,29 +12,26 @@ using Marten.Schema.Arguments;
 
 namespace JasperBus.Marten
 {
+
     public class MartenSubscriptionRepository : ISubscriptionsRepository
     {
-        private readonly ChannelGraph _graph;
         private readonly IDocumentStore _documentStore;
 
-        public MartenSubscriptionRepository(IDocumentStore documentStore, ChannelGraph graph)
+        public MartenSubscriptionRepository(MartenSubscriptionSettings settings)
         {
-            _graph = graph;
-            _documentStore = documentStore;
+            _documentStore = settings.Store;
         }
 
-        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public async Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             using (var session = _documentStore.LightweightSession())
             {
-                var existing = session.Query<Subscription>().Where(x => x.ServiceName == _graph.Name).ToList();
-                var newReqs = subscriptions.Where(x => !existing.Contains(x)).ToList();
-                session.Store(newReqs);
-                return session.SaveChangesAsync();
+                session.Store(subscriptions.ToArray());
+                await session.SaveChangesAsync();
             }
         }
 
-        public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public async Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
             using (var session = _documentStore.LightweightSession())
             {
@@ -43,7 +40,7 @@ namespace JasperBus.Marten
                     session.Delete(subscription.Id);
                 }
 
-                return session.SaveChangesAsync();
+                await session.SaveChangesAsync();
             }
         }
 
@@ -59,14 +56,29 @@ namespace JasperBus.Marten
             }
         }
 
-        public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
+        public async Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
         {
-            throw new NotImplementedException();
+            using (var session = _documentStore.OpenSession())
+            {
+                session.DeleteWhere<Subscription>(x => x.ServiceName == serviceName);
+                session.Store(subscriptions);
+
+                await session.SaveChangesAsync();
+            }
         }
 
         public void Dispose()
         {
             _documentStore?.Dispose();
+        }
+
+        public async Task<IReadOnlyList<Subscription>> AllSubscriptions()
+        {
+            using (var query = _documentStore.QuerySession())
+            {
+                var list = await query.Query<Subscription>().ToListAsync();
+                return list;
+            }
         }
     }
 }
