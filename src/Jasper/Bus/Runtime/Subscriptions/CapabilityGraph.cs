@@ -44,23 +44,21 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
 
 
-            var capabilities = compile(handlers, serialization, channels, transports);
-
-            await capabilities.ApplyLookups(lookups);
+            var capabilities = await compile(handlers, serialization, channels, transports, lookups);
 
             return capabilities;
         }
 
 
 
-        private ServiceCapabilities compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, ITransport[] transports)
+        private async Task<ServiceCapabilities> compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, ITransport[] transports, UriAliasLookup lookups)
         {
             var validTransports = transports.Select(x => x.Protocol).ToArray();
 
             var capabilities = new ServiceCapabilities
             {
                 ServiceName = channels.Name,
-                Subscriptions = determineSubscriptions(handlers, serialization, channels),
+                Subscriptions = determineSubscriptions(handlers, serialization),
                 Published = determinePublishedMessages(serialization, channels, validTransports)
             };
 
@@ -69,6 +67,8 @@ namespace Jasper.Bus.Runtime.Subscriptions
             {
                 subscription.ServiceName = channels.Name;
             }
+
+            await capabilities.ApplyLookups(lookups);
 
             // Now, do some validation
             var missingDestination = capabilities.Subscriptions
@@ -103,13 +103,13 @@ namespace Jasper.Bus.Runtime.Subscriptions
             return _published.ToArray();
         }
 
-        private Subscription[] determineSubscriptions(HandlerGraph handlers, SerializationGraph serialization,
-            ChannelGraph channels)
+        private Subscription[] determineSubscriptions(HandlerGraph handlers, SerializationGraph serialization)
         {
             var messageTypes = handlers.Chains
                 .Select(x => x.MessageType)
                 .Where(t => t.GetTypeInfo().Assembly != GetType().GetTypeInfo().Assembly)
                 .ToArray();
+
 
             return _requirements.SelectMany(x =>
                     x.DetermineSubscriptions(serialization, messageTypes, DefaultReceiverLocation))

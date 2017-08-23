@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using StructureMap.TypeRules;
@@ -39,6 +40,8 @@ namespace Jasper
             return assembly.GetName().Name.StartsWith("System.");
         }
 
+        private static readonly IList<string> _misses = new List<string>();
+
         private static Assembly findAssembly(string stacktraceLine)
         {
             var candidate = stacktraceLine.Trim().Substring(3);
@@ -52,6 +55,8 @@ namespace Jasper
             {
                 var possibility = String.Join(".", names.Take(i).ToArray());
 
+                if (_misses.Contains(possibility)) continue;
+
                 try
                 {
 
@@ -60,7 +65,7 @@ namespace Jasper
                 }
                 catch
                 {
-                    // Nothing
+                    _misses.Add(possibility);
                 }
             }
 
