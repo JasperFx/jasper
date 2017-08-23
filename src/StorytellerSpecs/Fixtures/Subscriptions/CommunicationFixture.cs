@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
 using StoryTeller;
+using StoryTeller.Grammars.Tables;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions
 {
@@ -33,6 +36,12 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public override void TearDown()
         {
             _nodes.Dispose();
+        }
+
+        [ExposeAsTable("The 'standin' Uri lookups are")]
+        public void UriAliasesAre(Uri Alias, Uri Actual)
+        {
+            _nodes.Aliases[Alias] = Actual;
         }
 
         public IGrammar ForService()
@@ -104,6 +113,8 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
     }
 
+
+
     [Hidden]
     public class NodeFixture : BusFixture
     {
@@ -141,23 +152,28 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public void SubscribesTo([SelectionList("MessageTypes")] string messageType, int port)
         {
             var uri = $"jasper://localhost:{port}/local".ToUri();
+            SubscribeAtUri(messageType, uri);
+        }
+
+        [FormatAs("Handles and subscibes to message {messageType} at Uri {uri}")]
+        public void SubscribeAtUri(string messageType, Uri uri)
+        {
             _registry.Channels.ListenForMessagesFrom(uri);
 
             var type = messageTypeFor(messageType);
 
             _registry.Subscriptions.To(type).At(uri);
         }
-
-
     }
 
-    public class NodesCollection : IDisposable
+    public class NodesCollection : IDisposable, IUriLookup
     {
         public readonly MessageTracker Tracker = new MessageTracker();
         public readonly MessageHistory History = new MessageHistory();
         public readonly InMemorySubscriptionsRepository Subscriptions = new InMemorySubscriptionsRepository();
 
         private readonly IList<JasperRuntime> _runtimes = new List<JasperRuntime>();
+
 
 
         public JasperRuntime Add(JasperRegistry registry)
@@ -167,11 +183,22 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             registry.Services.For<ISubscriptionsRepository>().Use(Subscriptions);
 
             registry.Services.AddService<IBusLogger, MessageTrackingLogger>();
+            registry.Services.For<IUriLookup>().Add(this);
 
             var runtime = JasperRuntime.For(registry);
             _runtimes.Add(runtime);
 
             return runtime;
+        }
+
+        public string Protocol { get; } = "standin";
+
+        public readonly Dictionary<Uri, Uri> Aliases = new Dictionary<Uri, Uri>();
+
+        public Task<Uri[]> Lookup(Uri[] originals)
+        {
+            var actuals = originals.Select(x => Aliases[x]);
+            return Task.FromResult(actuals.ToArray());
         }
 
         public async Task StoreSubscriptions()
