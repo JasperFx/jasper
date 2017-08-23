@@ -45,7 +45,7 @@ namespace Jasper.Bus
 
         public Envelope EnvelopeForRequestResponse<TResponse>(object request)
         {
-            var messageType = typeof(TResponse).ToTypeAlias();
+            var messageType = typeof(TResponse).ToMessageAlias();
             var reader = _serialization.ReaderFor(messageType);
 
             var envelope = new Envelope

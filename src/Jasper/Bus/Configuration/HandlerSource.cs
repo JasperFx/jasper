@@ -20,7 +20,7 @@ namespace Jasper.Bus.Configuration
         public HandlerSource()
         {
             _methodFilters = new ActionMethodFilter();
-            _methodFilters.Excludes += m => m.HasAttribute<NotHandlerAttribute>();
+            _methodFilters.Excludes += m => m.HasAttribute<JasperIgnoreAttribute>();
 
             IncludeClassesSuffixedWith("Handler");
             IncludeClassesSuffixedWith("Consumer");
@@ -49,7 +49,7 @@ namespace Jasper.Bus.Configuration
                 .ConfigureAwait(false);
 
 
-            return types.Where(x => !x.HasAttribute<NotHandlerAttribute>()).Concat(_explicitTypes).SelectMany(actionsFromType).ToArray();
+            return types.Where(x => !x.HasAttribute<JasperIgnoreAttribute>()).Concat(_explicitTypes).SelectMany(actionsFromType).ToArray();
         }
 
         private IEnumerable<HandlerCall> actionsFromType(Type type)

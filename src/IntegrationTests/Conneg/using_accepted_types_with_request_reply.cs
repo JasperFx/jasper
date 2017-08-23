@@ -68,7 +68,7 @@ namespace IntegrationTests.Conneg
 
     public class Reply1Reader : IMediaReader
     {
-        public string MessageType { get; } = typeof(Reply1).ToTypeAlias();
+        public string MessageType { get; } = typeof(Reply1).ToMessageAlias();
         public Type DotNetType { get; } = typeof(Reply1);
         public string ContentType { get; } = "text/plain";
         public object ReadFromData(byte[] data)

@@ -9,6 +9,7 @@ using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Http;
+using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace Jasper.Testing.Bus.Compilation
             services.For<Http.Tracking>().Use(theTracking);
             services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
 
-            
+
         }
 
 
@@ -52,18 +53,19 @@ namespace Jasper.Testing.Bus.Compilation
         }
     }
 
+    [JasperIgnore]
     public class TransactionalHandler
     {
         [FakeTransaction]
         public void Handle(Message1 message)
         {
-            
+
         }
 
         [GenericFakeTransaction]
         public void Handle(Message2 message)
         {
-            
+
         }
     }
 

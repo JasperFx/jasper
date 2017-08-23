@@ -49,7 +49,7 @@ namespace JasperBus.Marten
             using (var query = _documentStore.QuerySession())
             {
                 var docs = await query.Query<Subscription>()
-                    .Where(x => x.MessageType == messageType.ToTypeAlias())
+                    .Where(x => x.MessageType == messageType.ToMessageAlias())
                     .ToListAsync();
 
                 return docs.ToArray();

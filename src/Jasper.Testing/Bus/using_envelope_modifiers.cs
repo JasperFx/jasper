@@ -32,8 +32,8 @@ namespace Jasper.Testing.Bus
             await Bus.SendAndWait(new Message1());
             await Bus.SendAndWait(new Message2());
 
-            var envelopeForChannelOne = EnvelopeCatchingHandler.Received.First(x => x.MessageType == typeof(Message1).ToTypeAlias());
-            var envelopeForChannelTwo = EnvelopeCatchingHandler.Received.First(x => x.MessageType == typeof(Message2).ToTypeAlias());
+            var envelopeForChannelOne = EnvelopeCatchingHandler.Received.First(x => x.MessageType == typeof(Message1).ToMessageAlias());
+            var envelopeForChannelTwo = EnvelopeCatchingHandler.Received.First(x => x.MessageType == typeof(Message2).ToMessageAlias());
 
             envelopeForChannelOne.Headers["foo"].ShouldBe("yes");
             envelopeForChannelOne.Headers["bar"].ShouldBe("yes");

@@ -113,7 +113,7 @@ namespace StorytellerSpecs.Fixtures
 
         Task<Subscription[]> ISubscriptionsRepository.GetSubscribersFor(Type messageType)
         {
-            var subscriptions =  _subscriptions.Where(x => x.MessageType == messageType.ToTypeAlias()).ToArray();
+            var subscriptions =  _subscriptions.Where(x => x.MessageType == messageType.ToMessageAlias()).ToArray();
             return Task.FromResult(subscriptions);
         }
 

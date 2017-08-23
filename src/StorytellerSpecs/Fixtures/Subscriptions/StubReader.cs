@@ -10,7 +10,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
     {
         public StubReader(Type messageType, string contentType)
         {
-            MessageType = messageType.ToTypeAlias();
+            MessageType = messageType.ToMessageAlias();
             DotNetType = messageType;
             ContentType = contentType;
         }

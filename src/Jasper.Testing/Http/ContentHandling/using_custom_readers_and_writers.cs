@@ -49,7 +49,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
     public class SpecialReader : IMediaReader
     {
-        public string MessageType { get; } = typeof(SpecialInput).ToTypeAlias();
+        public string MessageType { get; } = typeof(SpecialInput).ToMessageAlias();
         public Type DotNetType { get; } = typeof(SpecialInput);
         public string ContentType { get; } = "text/special";
         public object ReadFromData(byte[] data)

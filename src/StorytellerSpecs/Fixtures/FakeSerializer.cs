@@ -66,5 +66,10 @@ namespace StorytellerSpecs.Fixtures
         {
             return new IMediaWriter[]{new FakeWriter(messageType, ContentType), };
         }
+
+        public IMediaReader VersionedReaderFor(Type incomingType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

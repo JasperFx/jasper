@@ -50,7 +50,7 @@ namespace Jasper.Consul.Internal
 
         public async Task<Subscription[]> GetSubscribersFor(Type messageType)
         {
-            var prefix = messageType.ToTypeAlias().ConsulIdPrefix();
+            var prefix = messageType.ToMessageAlias().ConsulIdPrefix();
             var subs = await client.KV.List(prefix);
             return subs.Response?.Select(kv => deserialize<Subscription>(kv.Value)).ToArray() ?? new Subscription[0];
         }

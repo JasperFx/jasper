@@ -20,7 +20,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         }
     }
 
-    [TypeAlias("Alias.1")]
+    [MessageAlias("Alias.1")]
     public class AliasedMessage
     {
 

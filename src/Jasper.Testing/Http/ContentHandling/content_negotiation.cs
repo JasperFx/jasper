@@ -149,7 +149,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
     public class XmlWriter<T> : IMediaWriter
     {
-        public string MessageType { get; } = typeof(T).ToTypeAlias();
+        public string MessageType { get; } = typeof(T).ToMessageAlias();
         public Type DotNetType { get; } = typeof(T);
         public string ContentType { get; } = "text/xml";
 
@@ -170,7 +170,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
     public class XmlReader<T> : IMediaReader
     {
-        public string MessageType { get; } = typeof(T).ToTypeAlias();
+        public string MessageType { get; } = typeof(T).ToMessageAlias();
         public Type DotNetType { get; } = typeof(T);
         public string ContentType { get; } = "text/xml";
         public object ReadFromData(byte[] data)

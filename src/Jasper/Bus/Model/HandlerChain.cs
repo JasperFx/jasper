@@ -118,17 +118,24 @@ namespace Jasper.Bus.Model
 
         public GeneratedClass ToClass(IGenerationConfig config)
         {
-            var @class = new GeneratedClass(config, TypeName)
+            try
             {
-                BaseType = typeof(MessageHandler)
-            };
+                var @class = new GeneratedClass(config, TypeName)
+                {
+                    BaseType = typeof(MessageHandler)
+                };
 
-            var method = new HandleMessageMethod(DetermineFrames());
-            method.Sources.Add(new MessageHandlerVariableSource(MessageType));
+                var method = new HandleMessageMethod(DetermineFrames());
+                method.Sources.Add(new MessageHandlerVariableSource(MessageType));
 
-            @class.AddMethod(method);
+                @class.AddMethod(method);
 
-            return @class;
+                return @class;
+            }
+            catch (Exception e)
+            {
+                throw new CodeGenerationException(this, e);
+            }
         }
     }
 

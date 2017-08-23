@@ -23,7 +23,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public Task<Subscription[]> GetSubscribersFor(Type messageType)
         {
-            var matching = _subscriptions.Where(x => x.MessageType == messageType.ToTypeAlias()).ToArray();
+            var matching = _subscriptions.Where(x => x.MessageType == messageType.ToMessageAlias()).ToArray();
             return Task.FromResult(matching);
         }
 

@@ -95,7 +95,7 @@ namespace Jasper.Testing.Bus.Runtime
                 CorrelationId = Guid.NewGuid().ToString(),
                 OriginalId = Guid.NewGuid().ToString(),
                 ReplyUri = "foo://bar".ToUri(),
-                ReplyRequested = typeof(Message1).ToTypeAlias()
+                ReplyRequested = typeof(Message1).ToMessageAlias()
             };
 
             var childMessage = new Message1();
@@ -382,35 +382,35 @@ namespace Jasper.Testing.Bus.Runtime
                 }
             };
 
-            envelope.MessageType.ShouldBe(typeof(Message1).ToTypeAlias());
+            envelope.MessageType.ShouldBe(typeof(Message1).ToMessageAlias());
         }
     }
 
-    [TypeAlias("Message1")]
+    [MessageAlias("Message1")]
     public class Message1
     {
         public Guid Id = Guid.NewGuid();
     }
 
-    [TypeAlias("Message2")]
+    [MessageAlias("Message2")]
     public class Message2
     {
         public Guid Id = Guid.NewGuid();
     }
 
-    [TypeAlias("Message3")]
+    [MessageAlias("Message3")]
     public class Message3
     {
 
     }
 
-    [TypeAlias("Message4")]
+    [MessageAlias("Message4")]
     public class Message4
     {
 
     }
 
-    [TypeAlias("Message5")]
+    [MessageAlias("Message5")]
     public class Message5
     {
         public Guid Id = Guid.NewGuid();

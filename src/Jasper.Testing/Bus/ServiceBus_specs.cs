@@ -37,7 +37,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void the_envelope_is_sent_with_reply_requested_header()
         {
-            theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).ToTypeAlias());
+            theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).ToMessageAlias());
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void the_envelope_is_sent_with_reply_requested_header()
         {
-            theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).ToTypeAlias());
+            theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).ToMessageAlias());
         }
 
         [Fact]

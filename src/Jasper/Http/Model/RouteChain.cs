@@ -118,26 +118,33 @@ namespace Jasper.Http.Model
 
         public GeneratedClass ToClass(IGenerationConfig config)
         {
-            var @class = new GeneratedClass(config, TypeName)
+            try
             {
-                BaseType = typeof(RouteHandler)
-            };
+                var @class = new GeneratedClass(config, TypeName)
+                {
+                    BaseType = typeof(RouteHandler)
+                };
 
-            var frames = DetermineFrames();
-            // TODO -- this usage is awkward. Let's make the frames be a property that's easier to add to
-            // maybe add some method chaining
-            var method = new GeneratedMethod(nameof(RouteHandler.Handle),
-                new Argument[] {Argument.For<HttpContext>(RouteGraph.Context)}, frames)
+                var frames = DetermineFrames();
+                // TODO -- this usage is awkward. Let's make the frames be a property that's easier to add to
+                // maybe add some method chaining
+                var method = new GeneratedMethod(nameof(RouteHandler.Handle),
+                    new Argument[] {Argument.For<HttpContext>(RouteGraph.Context)}, frames)
+                {
+                    Overrides = true
+                };
+
+                method.Sources.Add(new ContextVariableSource());
+                method.DerivedVariables.AddRange(HttpContextVariables);
+
+                @class.AddMethod(method);
+
+                return @class;
+            }
+            catch (Exception e)
             {
-                Overrides = true
-            };
-
-            method.Sources.Add(new ContextVariableSource());
-            method.DerivedVariables.AddRange(HttpContextVariables);
-
-            @class.AddMethod(method);
-
-            return @class;
+                throw new CodeGenerationException(this, e);
+            }
         }
 
         public List<Frame> DetermineFrames()

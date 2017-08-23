@@ -22,7 +22,7 @@ namespace Jasper.Conneg
         {
             _serializer = serializer;
             DotNetType = typeof(T);
-            MessageType = typeof(T).ToTypeAlias();
+            MessageType = typeof(T).ToMessageAlias();
             ContentType = contentType;
         }
 

@@ -10,19 +10,19 @@ namespace Jasper.Testing.Util
         [Fact]
         public void respect_the_type_alias_attribute()
         {
-            typeof(AliasedMessage).ToTypeAlias()
+            typeof(AliasedMessage).ToMessageAlias()
                 .ShouldBe("MyThing");
         }
 
         [Fact]
         public void use_the_types_full_name_otherwise()
         {
-            typeof(MySpecialMessage).ToTypeAlias()
+            typeof(MySpecialMessage).ToMessageAlias()
                 .ShouldBe(typeof(MySpecialMessage).FullName);
         }
     }
 
-    [TypeAlias("MyThing")]
+    [MessageAlias("MyThing")]
     public class AliasedMessage
     {
 

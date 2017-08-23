@@ -25,7 +25,7 @@ namespace Jasper.Testing.Util
         public void to_content_type_with_version_attribute()
         {
             typeof(MyMessage).ToContentType("json")
-                .ShouldBe($"application/vnd.{typeof(MyMessage).ToTypeAlias().ToLower()}.v2+json");
+                .ShouldBe($"application/vnd.{typeof(MyMessage).ToMessageAlias().ToLower()}.v2+json");
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Jasper.Testing.Util
 
     }
 
-    [Version("V2"), TypeAlias("MyMessage")]
+    [Version("V2"), MessageAlias("MyMessage")]
     public class MyMessage
     {
 

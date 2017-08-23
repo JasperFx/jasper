@@ -14,7 +14,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
         {
             // Okay to let destination be null here.
             Destination = destination;
-            MessageType = messageType?.ToTypeAlias() ?? throw new ArgumentNullException(nameof(messageType));
+            MessageType = messageType?.ToMessageAlias() ?? throw new ArgumentNullException(nameof(messageType));
             DotNetType = messageType;
         }
 

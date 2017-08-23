@@ -16,7 +16,7 @@ namespace Jasper.Bus.Runtime.Routing
                 throw new ArgumentNullException(nameof(destination));
             }
 
-            MessageType = messageType.ToTypeAlias();
+            MessageType = messageType.ToMessageAlias();
             DotNetType = messageType;
             Destination = destination;
             ContentType = contentType;
@@ -58,6 +58,8 @@ namespace Jasper.Bus.Runtime.Routing
         public bool MatchesEnvelope(Envelope envelope)
         {
             if (Destination != envelope.Destination) return false;
+
+            if (envelope.ContentType != null) return ContentType == envelope.ContentType;
 
             return !envelope.AcceptedContentTypes.Any() || envelope.AcceptedContentTypes.Contains(ContentType);
         }

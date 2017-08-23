@@ -44,7 +44,7 @@ namespace Jasper.Conneg
 
                 if (messageType.HasAttribute<VersionAttribute>())
                 {
-                    yield return typeof(NewtonsoftJsonReader<>).CloseAndBuildAs<IMediaReader>(messageType.ToContentType("json"), _serializer, messageType);
+                    yield return VersionedReaderFor(messageType);
                 }
             }
             else
@@ -61,6 +61,11 @@ namespace Jasper.Conneg
         public IMediaWriter[] WritersFor(Type messageType)
         {
             return determineWriters(messageType).ToArray();
+        }
+
+        public IMediaReader VersionedReaderFor(Type incomingType)
+        {
+            return typeof(NewtonsoftJsonReader<>).CloseAndBuildAs<IMediaReader>(incomingType.ToContentType("json"), _serializer, incomingType);
         }
 
         private IEnumerable<IMediaWriter> determineWriters(Type messageType)

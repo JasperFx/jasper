@@ -93,6 +93,11 @@ namespace Jasper.Testing.Bus
         {
             return new IMediaWriter[0];
         }
+
+        public IMediaReader VersionedReaderFor(Type incomingType)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Serializer1 : FakeSerializer

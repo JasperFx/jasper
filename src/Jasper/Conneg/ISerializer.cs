@@ -15,5 +15,6 @@ namespace Jasper.Conneg
 
         IMediaReader[] ReadersFor(Type messageType);
         IMediaWriter[] WritersFor(Type messageType);
+        IMediaReader VersionedReaderFor(Type incomingType);
     }
 }

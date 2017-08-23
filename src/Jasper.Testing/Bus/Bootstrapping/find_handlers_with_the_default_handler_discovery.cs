@@ -153,7 +153,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         {
         }
 
-        [NotHandler]
+        [JasperIgnore]
         public void Handle2(MovieAdded added)
         {
         }
@@ -172,7 +172,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
     }
 
-    [NotHandler]
+    [JasperIgnore]
     public class BlockbusterHandler
     {
         public void Handle(MovieAdded added)

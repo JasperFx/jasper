@@ -10,7 +10,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
     {
         public PublishedMessage(Type messageType)
         {
-            MessageType = messageType.ToTypeAlias();
+            MessageType = messageType.ToMessageAlias();
             DotNetType = messageType;
         }
 

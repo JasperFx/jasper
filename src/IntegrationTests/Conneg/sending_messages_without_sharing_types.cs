@@ -92,7 +92,7 @@ namespace IntegrationTests.Conneg
 
     public class BlueTextReader : IMediaReader
     {
-        public string MessageType { get; } = typeof(BlueMessage).ToTypeAlias();
+        public string MessageType { get; } = typeof(BlueMessage).ToMessageAlias();
         public Type DotNetType { get; } = typeof(BlueMessage);
         public string ContentType { get; } = "text/plain";
         public object ReadFromData(byte[] data)
@@ -132,13 +132,13 @@ namespace IntegrationTests.Conneg
         }
     }
 
-    [TypeAlias("Structural.Typed.Message")]
+    [MessageAlias("Structural.Typed.Message")]
     public class BlueMessage
     {
         public string Name { get; set; }
     }
 
-    [TypeAlias("Structural.Typed.Message")]
+    [MessageAlias("Structural.Typed.Message")]
     public class GreenMessage
     {
         public string Name { get; set; }

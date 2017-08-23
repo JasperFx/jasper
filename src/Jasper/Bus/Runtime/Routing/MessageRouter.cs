@@ -58,10 +58,9 @@ namespace Jasper.Bus.Runtime.Routing
 
 
             var modelWriter = _serializers.WriterFor(messageType);
-            var contentType = envelope.AcceptedContentTypes.Intersect(modelWriter.ContentTypes).FirstOrDefault()
+            var contentType = envelope.ContentType ?? envelope.AcceptedContentTypes.Intersect(modelWriter.ContentTypes).FirstOrDefault()
                               ?? "application/json";
 
-            // TODO -- memoize this some day vs type & destination
             return new MessageRoute(
                        messageType,
                        modelWriter,

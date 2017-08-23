@@ -230,7 +230,7 @@ namespace StorytellerSpecs.Fixtures
             throw ex;
         }
 
-        [NotHandler]
+        [JasperIgnore]
         public static Type GetExceptionType(string messageErrorType)
         {
             var type = ExceptionTypes.FirstOrDefault(x => x.Name == messageErrorType);

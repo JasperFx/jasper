@@ -11,7 +11,9 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Codegen;
 using Jasper.Configuration;
+using Jasper.Conneg;
 using Jasper.Http;
+using Jasper.Http.ContentHandling;
 using Jasper.Settings;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +31,8 @@ namespace Jasper
 
         public JasperRegistry()
         {
+            Features.Include<ConnegDiscoveryFeature>();
+
             _bus = Features.For<ServiceBusFeature>();
 
             Http = Features.For<AspNetCoreFeature>();

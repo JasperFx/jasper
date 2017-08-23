@@ -63,7 +63,7 @@ namespace Jasper.Consul.Testing
 
             publishes.Count().ShouldBe(1);
 
-            publishes.Any(x => x.MessageType == typeof(GreenMessage).ToTypeAlias()).ShouldBeTrue();
+            publishes.Any(x => x.MessageType == typeof(GreenMessage).ToMessageAlias()).ShouldBeTrue();
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace Jasper.Consul.Testing
 
             ones.Length.ShouldBe(2);
             ones.Select(x => x.MessageType).OrderBy(x => x)
-                .ShouldHaveTheSameElementsAs(typeof(BlueMessage).ToTypeAlias(), typeof(GreenMessage).ToTypeAlias());
+                .ShouldHaveTheSameElementsAs(typeof(BlueMessage).ToMessageAlias(), typeof(GreenMessage).ToMessageAlias());
         }
 
 

@@ -35,7 +35,7 @@ namespace Jasper.Bus.Runtime
             get => _message;
             set
             {
-                MessageType = value?.GetType().ToTypeAlias();
+                MessageType = value?.GetType().ToMessageAlias();
                 _message = value;
             }
         }
@@ -77,7 +77,7 @@ namespace Jasper.Bus.Runtime
 
         public bool MatchesResponse(object message)
         {
-            return message.GetType().ToTypeAlias() == ReplyRequested;
+            return message.GetType().ToMessageAlias() == ReplyRequested;
         }
 
 

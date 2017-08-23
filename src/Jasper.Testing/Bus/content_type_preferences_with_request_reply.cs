@@ -32,7 +32,7 @@ namespace Jasper.Testing.Bus
 
     public class Message1TextReader : IMediaReader
     {
-        public string MessageType { get; } = typeof(Message1).ToTypeAlias();
+        public string MessageType { get; } = typeof(Message1).ToMessageAlias();
         public Type DotNetType { get; } = typeof(Message1);
         public string ContentType { get; } = "text/message1";
         public object ReadFromData(byte[] data)
@@ -48,7 +48,7 @@ namespace Jasper.Testing.Bus
 
     public class Message1OddballReader : IMediaReader
     {
-        public string MessageType { get; } = typeof(Message1).ToTypeAlias();
+        public string MessageType { get; } = typeof(Message1).ToMessageAlias();
         public Type DotNetType { get; } = typeof(Message3);
         public string ContentType { get; } = "text/oddball";
         public object ReadFromData(byte[] data)

@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Baseline;
 using Jasper.Bus;
+using Jasper.Conneg;
 
 namespace Jasper.Util
 {
@@ -15,11 +16,11 @@ namespace Jasper.Util
     /// type
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class TypeAliasAttribute : Attribute
+    public class MessageAliasAttribute : Attribute
     {
         public string Alias { get; }
 
-        public TypeAliasAttribute(string alias)
+        public MessageAliasAttribute(string alias)
         {
             Alias = alias;
         }
@@ -43,11 +44,17 @@ namespace Jasper.Util
             return sb.ToString();
         }
 
-        public static string ToTypeAlias(this Type type)
+        public static string ToMessageAlias(this Type type)
         {
-            if (type.HasAttribute<TypeAliasAttribute>())
+            if (type.HasAttribute<MessageAliasAttribute>())
             {
-                return type.GetAttribute<TypeAliasAttribute>().Alias;
+                return type.GetAttribute<MessageAliasAttribute>().Alias;
+            }
+
+            if (type.Closes(typeof(IForwardsTo<>)))
+            {
+                var forwardedType = type.FindInterfaceThatCloses(typeof(IForwardsTo<>)).GetGenericArguments().Single();
+                return forwardedType.ToMessageAlias();
             }
 
             var nameToAlias = type.FullName;
@@ -74,7 +81,7 @@ namespace Jasper.Util
 
         public static string ToContentType(this Type messageType, string format)
         {
-            var alias = messageType.ToTypeAlias().ToLowerInvariant();
+            var alias = messageType.ToMessageAlias().ToLowerInvariant();
             var version = messageType.ToVersion().ToLower();
 
             return $"application/vnd.{alias}.{version}+{format}";

@@ -17,10 +17,11 @@ namespace Jasper.Conneg
     {
         public static SerializationGraph Basic()
         {
-            return new SerializationGraph(new HandlerGraph(), new List<ISerializer>{new NewtonsoftSerializer(new BusSettings())}, new List<IMediaReader>(), new List<IMediaWriter>());
+            return new SerializationGraph(new HandlerGraph(), new Forwarders(), new List<ISerializer>{new NewtonsoftSerializer(new BusSettings())}, new List<IMediaReader>(), new List<IMediaWriter>());
         }
 
         private readonly HandlerGraph _handlers;
+        private readonly Forwarders _forwarders;
         private readonly Dictionary<string, ISerializer> _serializers = new Dictionary<string, ISerializer>();
 
         private readonly IList<IMediaReader> _readers = new List<IMediaReader>();
@@ -29,9 +30,10 @@ namespace Jasper.Conneg
         private readonly ConcurrentDictionary<string, ModelReader> _modelReaders = new ConcurrentDictionary<string, ModelReader>();
         private readonly ConcurrentDictionary<Type, ModelWriter> _modelWriters = new ConcurrentDictionary<Type, ModelWriter>();
 
-        public SerializationGraph(HandlerGraph handlers, IEnumerable<ISerializer> serializers, IEnumerable<IMediaReader> readers, IEnumerable<IMediaWriter> writers)
+        public SerializationGraph(HandlerGraph handlers, Forwarders forwarders, IEnumerable<ISerializer> serializers, IEnumerable<IMediaReader> readers, IEnumerable<IMediaWriter> writers)
         {
             _handlers = handlers;
+            _forwarders = forwarders;
             foreach (var serializer in serializers)
             {
                 _serializers.SmartAdd(serializer.ContentType, serializer);
@@ -112,21 +114,31 @@ namespace Jasper.Conneg
             var readers = _readers.Where(x => x.DotNetType == inputType);
             var serialized = _serializers.Values.SelectMany(x => x.ReadersFor(inputType));
 
-            return new ModelReader(readers.Concat(serialized).ToArray());
+            var forwarded = _forwarders.ForwardingTypesTo(inputType).SelectMany(incomingType =>
+            {
+                return _serializers.Values.Select(x =>
+                {
+                    var inner = x.VersionedReaderFor(incomingType);
+                    return typeof(ForwardingMediaReader<>).CloseAndBuildAs<IMediaReader>(inner, inputType);
+                });
+            });
+
+
+            return new ModelReader(readers.Concat(serialized).Concat(forwarded).ToArray());
         }
 
         private ModelReader compileReader(string messageType)
         {
             var readers = _readers.Where(x => x.MessageType == messageType).ToArray();
-            var chainCandidates = _handlers.Chains.Where(x => x.MessageType.ToTypeAlias() == messageType)
+            var chainCandidates = _handlers.Chains.Where(x => x.MessageType.ToMessageAlias() == messageType)
                 .Select(x => x.MessageType);
 
-            var candidateTypes = _readers.Select(x => x.DotNetType).Concat(chainCandidates).Distinct();
+            var candidateTypes = readers.Select(x => x.DotNetType).Concat(chainCandidates).Distinct();
 
-            var fromSerializers =
-                _serializers.Values.SelectMany(x => candidateTypes.SelectMany(messageType1 => x.ReadersFor(messageType1)));
+            var fromHandlers = candidateTypes.SelectMany(x => ReaderFor(x).Where(r => r.MessageType == messageType));
 
-            return new ModelReader(fromSerializers.Concat(readers).ToArray());
+
+            return new ModelReader(fromHandlers.Concat(readers).Distinct().ToArray());
         }
 
         public IMediaReader JsonReaderFor(Type inputType)
