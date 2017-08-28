@@ -103,7 +103,8 @@ end
 desc 'Build Nuspec packages'
 task :pack do
 	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
-	sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
+  sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
+  sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
 	sh "dotnet pack src/JasperBus.Marten/JasperBus.Marten.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
 end
 

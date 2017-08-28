@@ -1,6 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Description>Core Library for JasperFx Applications</Description>
+    <VersionPrefix>0.5.0-alpha</VersionPrefix>
+    <Authors>Jeremy D. Miller</Authors>
     <TargetFramework>netstandard1.5</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Jasper.CommandLine</AssemblyName>
+    <PackageId>Jasper.CommandLine</PackageId>
+    <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
+    <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Core Library for JasperFx Applications</Description>
-    <VersionPrefix>0.3.0-alpha</VersionPrefix>
+    <VersionPrefix>0.5.0-alpha</VersionPrefix>
     <Authors>Jeremy D. Miller</Authors>
     <TargetFramework>netstandard1.5</TargetFramework>
     <DebugType>portable</DebugType>
