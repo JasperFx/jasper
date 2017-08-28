@@ -1,38 +1,39 @@
 ﻿using System;
 using System.Reflection;
+using Baseline;
 using Oakton;
 
 namespace Jasper.CommandLine
 {
     public static class JasperAgent
     {
-        internal static JasperRegistry Registry { get; set; }
-
-
         public static int Run(JasperRegistry registry, string[] args = null)
         {
             args = args ?? new string[]{"run"};
 
-            Registry = registry ?? throw new ArgumentNullException(nameof(registry));
+            if (registry == null) throw new ArgumentNullException(nameof(registry));
 
 
-            var executor = buildExecutor(_ => { });
+            var executor = buildExecutor(registry);
 
             return executor.Execute(args);
         }
 
         // TODO -- later, add extensibility into this thing
-        private static CommandExecutor buildExecutor(Action<CommandFactory> configure)
+        private static CommandExecutor buildExecutor(JasperRegistry registry)
         {
-            var executor = CommandExecutor.For(factory =>
+            return CommandExecutor.For(factory =>
             {
                 factory.RegisterCommands(typeof(RunCommand).GetTypeInfo().Assembly);
-                configure(factory);
+                factory.ConfigureRun = cmd =>
+                {
+                    if (cmd.Input is JasperInput)
+                    {
+                        cmd.Input.As<JasperInput>().Registry = registry;
+                    }
+                };
 
             });
-
-
-            return executor;
         }
 
         public static int Run<T>(Action<T> configure = null) where T : JasperRegistry, new()

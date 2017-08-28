@@ -7,34 +7,45 @@ using Oakton;
 
 namespace Jasper.CommandLine
 {
-    public class RunInput
+    public abstract class JasperInput
     {
+        internal JasperRegistry Registry { get; set; }
+
         [Description("Use to override the ASP.Net Environment name")]
         public string EnvironmentFlag { get; set; }
 
         [Description("Write out much more information at startup and enables console logging")]
         public bool VerboseFlag { get; set; }
+
+        internal JasperRuntime BuildRuntime()
+        {
+            if (VerboseFlag)
+            {
+                Console.WriteLine("Verbose flag is on.");
+                Registry.Logging.UseConsoleLogging = true;
+            }
+
+            if (EnvironmentFlag.IsNotEmpty())
+            {
+                Registry.EnvironmentName = EnvironmentFlag;
+                Console.WriteLine($"Overriding the Environment Name to '{EnvironmentFlag}'");
+            }
+
+            return JasperRuntime.For(Registry);
+        }
     }
 
+    public class RunInput : JasperInput
+    {
+
+    }
+
+    [Description("Runs the configured Jasper application")]
     public class RunCommand : OaktonCommand<RunInput>
     {
         public override bool Execute(RunInput input)
         {
-            if (input.VerboseFlag)
-            {
-                Console.WriteLine("Verbose flag is on.");
-                JasperAgent.Registry.Logging.UseConsoleLogging = true;
-
-            }
-
-            if (input.EnvironmentFlag.IsNotEmpty())
-            {
-                JasperAgent.Registry.EnvironmentName = input.EnvironmentFlag;
-                Console.WriteLine($"Overriding the Environment Name to '{input.EnvironmentFlag}'");
-            }
-
-
-            var runtime = JasperRuntime.For(JasperAgent.Registry);
+            var runtime = input.BuildRuntime();
 
             var done = new ManualResetEventSlim(false);
             var cts = new CancellationTokenSource();
