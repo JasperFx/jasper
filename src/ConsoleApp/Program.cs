@@ -6,12 +6,12 @@ namespace MyApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             // This bootstraps and runs the Jasper
             // application as defined by MyAppRegistry
             // until the executable is stopped
-            JasperAgent.Run<MyAppRegistry>(args);
+            return JasperAgent.Run<MyAppRegistry>(args);
         }
     }
 }

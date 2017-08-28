@@ -1,14 +1,15 @@
 ﻿using Jasper;
+using Jasper.CommandLine;
 
 namespace MyApp
 {
-    /*
+/*
     class SampleUsages
     {
         // SAMPLE: JasperAgent-programmatic-customization
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            JasperAgent.Run<MyAppRegistry>(_ =>
+            return JasperAgent.Run<MyAppRegistry>(args, _ =>
             {
                 if (args.Length == 1)
                 {
@@ -22,7 +23,7 @@ namespace MyApp
     class SampleUsages2
     {
         // SAMPLE: JasperAgent-programmatic-construction
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             // This gives you the ability to programmatically
             // construct the application based on the command line
@@ -30,9 +31,9 @@ namespace MyApp
             var registry = new JasperRegistry();
 
 
-            JasperAgent.Run(registry);
+            return JasperAgent.Run(registry);
         }
         // ENDSAMPLE
     }
-    */
+*/
 }

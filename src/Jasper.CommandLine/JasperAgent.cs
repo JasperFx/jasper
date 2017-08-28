@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using Oakton;
 
 namespace Jasper.CommandLine
 {
@@ -7,43 +9,53 @@ namespace Jasper.CommandLine
         internal static JasperRegistry Registry { get; set; }
 
 
-        public static void Run(JasperRegistry registry, string[] args = null)
+        public static int Run(JasperRegistry registry, string[] args = null)
         {
-            args = args ?? new string[0];
+            args = args ?? new string[]{"run"};
 
             Registry = registry ?? throw new ArgumentNullException(nameof(registry));
 
-            if (args.Length == 0)
-            {
-                new RunCommand().Execute(new RunInput());
-            }
-            else
-            {
-                throw new NotImplementedException("Send it through Oakton");
-            }
+
+            var executor = buildExecutor(_ => { });
+
+            return executor.Execute(args);
         }
 
-        public static void Run<T>(Action<T> configure = null) where T : JasperRegistry, new()
+        // TODO -- later, add extensibility into this thing
+        private static CommandExecutor buildExecutor(Action<CommandFactory> configure)
         {
-            Run<T>(null, configure);
+            var executor = CommandExecutor.For(factory =>
+            {
+                factory.RegisterCommands(typeof(RunCommand).GetTypeInfo().Assembly);
+                configure(factory);
+
+            });
+
+
+            return executor;
         }
 
-        public static void Run(Action<JasperRegistry> configure)
+        public static int Run<T>(Action<T> configure = null) where T : JasperRegistry, new()
         {
-            Run<JasperRegistry>(null, configure);
+            return Run<T>(null, configure);
         }
 
-        public static void Run<T>(string[] args, Action<T> configure = null) where T : JasperRegistry, new()
+        public static int Run(Action<JasperRegistry> configure)
+        {
+            return Run<JasperRegistry>(null, configure);
+        }
+
+        public static int Run<T>(string[] args, Action<T> configure = null) where T : JasperRegistry, new()
         {
             var registry = new T();
             configure?.Invoke(registry);
 
-            Run(registry, args);
+            return Run(registry, args);
         }
 
-        public static void Run(string[] args, Action<JasperRegistry> configure)
+        public static int Run(string[] args, Action<JasperRegistry> configure)
         {
-            Run<JasperRegistry>(args, configure);
+            return Run<JasperRegistry>(args, configure);
         }
 
     }
