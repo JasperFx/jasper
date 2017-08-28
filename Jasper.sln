@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.16
@@ -36,6 +36,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.Consul.Testing", "src\Jasper.Consul.Testing\Jasper.Consul.Testing.csproj", "{0DDA33BD-C94F-479A-8717-5738A554F3B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "src\ConsoleApp\ConsoleApp.csproj", "{3FA62C1A-7046-4CFB-8124-284EC7BD3660}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.CommandLine", "src\Jasper.CommandLine\Jasper.CommandLine.csproj", "{7641E3E9-4E43-4036-89D6-6594F437A230}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -251,8 +253,23 @@ Global
 		{3FA62C1A-7046-4CFB-8124-284EC7BD3660}.Release|x64.Build.0 = Release|Any CPU
 		{3FA62C1A-7046-4CFB-8124-284EC7BD3660}.Release|x86.ActiveCfg = Release|Any CPU
 		{3FA62C1A-7046-4CFB-8124-284EC7BD3660}.Release|x86.Build.0 = Release|Any CPU
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Debug|x64.ActiveCfg = Debug|x64
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Debug|x64.Build.0 = Debug|x64
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Debug|x86.ActiveCfg = Debug|x86
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Debug|x86.Build.0 = Debug|x86
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Release|x64.ActiveCfg = Release|x64
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Release|x64.Build.0 = Release|x64
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Release|x86.ActiveCfg = Release|x86
+		{7641E3E9-4E43-4036-89D6-6594F437A230}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7641E3E9-4E43-4036-89D6-6594F437A230} = {FDA90F80-A5C9-403F-B2F6-C229F4D6FFA7}
 	EndGlobalSection
 EndGlobal

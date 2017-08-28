@@ -2,15 +2,15 @@
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 
-namespace Jasper
+namespace Jasper.CommandLine
 {
     public static class JasperAgent
     {
-        public static void Run(JasperRegistry registry)
+        public static void Run(JasperRegistry registry, string[] args = null)
         {
+            args = args ?? new string[0];
+
             var runtime = JasperRuntime.For(registry);
 
             var done = new ManualResetEventSlim(false);
@@ -44,7 +44,7 @@ namespace Jasper
                     runtime.Describe(Console.Out);
 
                     Console.WriteLine("Application started. Press Ctrl+C to shut down.");
-                    done.Wait();
+                    done.Wait(cts.Token);
                 }
             }
             finally
@@ -55,15 +55,25 @@ namespace Jasper
 
         public static void Run<T>(Action<T> configure = null) where T : JasperRegistry, new()
         {
-            var registry = new T();
-            configure?.Invoke(registry);
-
-            Run(registry);
+            Run<T>(null, configure);
         }
 
         public static void Run(Action<JasperRegistry> configure)
         {
-            Run<JasperRegistry>(configure);
+            Run<JasperRegistry>(null, configure);
+        }
+
+        public static void Run<T>(string[] args, Action<T> configure = null) where T : JasperRegistry, new()
+        {
+            var registry = new T();
+            configure?.Invoke(registry);
+
+            Run(registry, args);
+        }
+
+        public static void Run(string[] args, Action<JasperRegistry> configure)
+        {
+            Run<JasperRegistry>(args, configure);
         }
 
     }
