@@ -55,6 +55,11 @@ namespace Jasper
 
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
+
+            if (JasperEnvironment.Name.IsNotEmpty())
+            {
+                EnvironmentName = JasperEnvironment.Name;
+            }
         }
 
         private void deriveServiceName()

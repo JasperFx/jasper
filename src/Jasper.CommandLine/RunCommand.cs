@@ -12,7 +12,11 @@ namespace Jasper.CommandLine
         internal JasperRegistry Registry { get; set; }
 
         [Description("Use to override the ASP.Net Environment name")]
-        public string EnvironmentFlag { get; set; }
+        public string EnvironmentFlag
+        {
+            set => JasperEnvironment.Name = value;
+
+        }
 
         [Description("Write out much more information at startup and enables console logging")]
         public bool VerboseFlag { get; set; }
@@ -23,12 +27,6 @@ namespace Jasper.CommandLine
             {
                 Console.WriteLine("Verbose flag is on.");
                 Registry.Logging.UseConsoleLogging = true;
-            }
-
-            if (EnvironmentFlag.IsNotEmpty())
-            {
-                Registry.EnvironmentName = EnvironmentFlag;
-                Console.WriteLine($"Overriding the Environment Name to '{EnvironmentFlag}'");
             }
 
             return JasperRuntime.For(Registry);
