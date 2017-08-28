@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading;
+using Baseline;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -19,6 +20,20 @@ namespace Jasper.CommandLine
     {
         public override bool Execute(RunInput input)
         {
+            if (input.VerboseFlag)
+            {
+                Console.WriteLine("Verbose flag is on.");
+                JasperAgent.Registry.Logging.UseConsoleLogging = true;
+
+            }
+
+            if (input.EnvironmentFlag.IsNotEmpty())
+            {
+                JasperAgent.Registry.EnvironmentName = input.EnvironmentFlag;
+                Console.WriteLine($"Overriding the Environment Name to '{input.EnvironmentFlag}'");
+            }
+
+
             var runtime = JasperRuntime.For(JasperAgent.Registry);
 
             var done = new ManualResetEventSlim(false);
