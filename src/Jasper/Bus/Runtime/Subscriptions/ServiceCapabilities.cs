@@ -1,14 +1,20 @@
 ﻿using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Bus.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class ServiceCapabilities
     {
         public string ServiceName { get; set; }
-        public PublishedMessage[] Published { get; set; }
-        public Subscription[] Subscriptions { get; set; }
+
+        public PublishedMessage[] Published { get; set; } = new PublishedMessage[0];
+
+        public Subscription[] Subscriptions { get; set; } = new Subscription[0];
 
         public string[] Errors { get; set; } = new string[0];
 
@@ -19,13 +25,39 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public async Task ApplyLookups(UriAliasLookup lookups)
         {
-            var all = Subscriptions.Select(x => x.Destination).Distinct().ToArray();
+            var all = Subscriptions.Select(x => x.Destination).Where(x => x != null).Distinct().ToArray();
             await lookups.ReadAliases(all);
 
-            foreach (var subscription in Subscriptions)
+            foreach (var subscription in Subscriptions.Where(x => x.Destination != null))
             {
                 subscription.Destination = lookups.Resolve(subscription.Destination);
             }
+        }
+
+        public void WriteToFile(string file)
+        {
+            var settings = serializationSettings();
+
+            var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
+            new FileSystem().WriteStringToFile(file, json);
+        }
+
+        private static JsonSerializerSettings serializationSettings()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver {NamingStrategy = new CamelCaseNamingStrategy()},
+                TypeNameHandling = TypeNameHandling.None
+            };
+            return settings;
+        }
+
+        public static ServiceCapabilities ReadFromFile(string file)
+        {
+            var settings = serializationSettings();
+            var json = new FileSystem().ReadStringFromFile(file);
+
+            return JsonConvert.DeserializeObject<ServiceCapabilities>(json, settings);
         }
     }
 }

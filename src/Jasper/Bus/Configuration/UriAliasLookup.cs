@@ -22,7 +22,7 @@ namespace Jasper.Bus.Configuration
         public async Task ReadAliases(Uri[] raw)
         {
             var unknown = raw
-                .Where(x => !_aliases.ContainsKey(x))
+                .Where(x => x != null && !_aliases.ContainsKey(x))
                 .GroupBy(x => x.Scheme)
                 .Where(x => _lookups.ContainsKey(x.Key));
 

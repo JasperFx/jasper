@@ -8,6 +8,13 @@ namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class PublishedMessage
     {
+        /// <summary>
+        /// For serialization only
+        /// </summary>
+        public PublishedMessage()
+        {
+        }
+
         public PublishedMessage(Type messageType)
         {
             MessageType = messageType.ToMessageAlias();
@@ -23,7 +30,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
         [JsonIgnore]
         public Type DotNetType { get; }
 
-        public string MessageType { get; }
+        public string MessageType { get; set; }
 
         public string ServiceName { get; set; }
         public string[] ContentTypes { get; set; }

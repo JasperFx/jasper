@@ -1,5 +1,6 @@
 ﻿using Jasper;
 using Microsoft.AspNetCore.Hosting;
+using StorytellerSpecs.Fixtures;
 
 namespace MyApp
 {
@@ -13,7 +14,27 @@ namespace MyApp
 
             // TODO -- use the new syntax from GH-163 when it exists
             Channels.ListenForMessagesFrom("jasper://localhost:2222/incoming");
+
+
+
+            Publishing.Message<Message1>();
+            Publishing.Message<Message2>();
+            Publishing.Message<Message3>();
+
+            Subscriptions.At("jasper://server1:2222");
+            Subscriptions.To<Message4>();
+            Subscriptions.To<Message5>();
         }
     }
     // ENDSAMPLE
+
+
+    public class MessageHandler
+    {
+        public void Handle(Message1 msg){}
+        public void Handle(Message2 msg){}
+        public void Handle(Message3 msg){}
+        public void Handle(Message4 msg){}
+        public void Handle(Message5 msg){}
+    }
 }

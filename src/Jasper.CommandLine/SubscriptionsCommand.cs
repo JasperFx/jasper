@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using Baseline;
 using Jasper.Bus;
 using Oakton;
 
@@ -18,7 +20,7 @@ namespace Jasper.CommandLine
         public SubscriptionsAction Action { get; set; } = SubscriptionsAction.list;
 
         [Description("Override the directory where subscription data is kept")]
-        public string DirectoryFlag { get; set; }
+        public string DirectoryFlag { get; set; } = Directory.GetCurrentDirectory();
 
         [Description("Override the file path to export or read the subscription data")]
         public string FileFlag { get; set; }
@@ -65,7 +67,13 @@ namespace Jasper.CommandLine
 
         private void export(JasperRuntime runtime, SubscriptionsInput input)
         {
-            throw new NotImplementedException();
+            var file = input.FileFlag ?? input.DirectoryFlag
+                           .AppendPath($"{runtime.ServiceName}.capabilities.json");
+
+            Console.WriteLine("Writing subscriptions to file " + file);
+
+            runtime.Capabilities.WriteToFile(file);
+
         }
 
         private void writeList(JasperRuntime runtime)
