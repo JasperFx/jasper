@@ -36,10 +36,16 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public void WriteToFile(string file)
         {
+            var json = ToJson();
+            new FileSystem().WriteStringToFile(file, json);
+        }
+
+        public string ToJson()
+        {
             var settings = serializationSettings();
 
             var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
-            new FileSystem().WriteStringToFile(file, json);
+            return json;
         }
 
         private static JsonSerializerSettings serializationSettings()

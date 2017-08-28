@@ -78,7 +78,8 @@ namespace Jasper.CommandLine
 
         private void writeList(JasperRuntime runtime)
         {
-            throw new NotImplementedException();
+            var json = runtime.Capabilities.ToJson();
+            Console.WriteLine(json);
         }
     }
 }
