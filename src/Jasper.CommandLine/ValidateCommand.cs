@@ -1,30 +1,23 @@
-﻿using Jasper.Bus;
+﻿using System;
+using Jasper.Bus;
 using Oakton;
 
 namespace Jasper.CommandLine
 {
-    public class ValidateInput : JasperInput
-    {
-
-    }
-
     [Description("Validate the configuration and environment for this Jasper application")]
     public class ValidateCommand : OaktonCommand<JasperInput>
     {
         public override bool Execute(JasperInput input)
         {
-            input.Registry.Settings.Alter<BusSettings>(_ =>
-            {
-                _.ThrowOnValidationErrors = false;
-            });
-
+            Console.WriteLine("Bootstrapping the system and running all checks...");
             using (var runtime = input.BuildRuntime())
             {
-                // TODO -- actually validate here.
+                // nothing really to do
             }
+
+            ConsoleWriter.Write(ConsoleColor.Green, "All systems good!");
 
             return true;
         }
     }
-
 }
