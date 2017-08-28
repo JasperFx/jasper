@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Baseline;
+using Baseline.Dates;
 using Jasper.Bus;
+using Jasper.Bus.Runtime.Subscriptions;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -11,7 +15,7 @@ namespace Jasper.CommandLine
         list,
         export,
         publish,
-        delta
+        validate
     }
 
     public class SubscriptionsInput : JasperInput
@@ -24,6 +28,10 @@ namespace Jasper.CommandLine
 
         [Description("Override the file path to export or read the subscription data")]
         public string FileFlag { get; set; }
+
+        [Description("Do not fail the execution if any errors are detected")]
+        [FlagAlias("ignore-failures", 'i')]
+        public bool IgnoreFailuresFlag { get; set; }
     }
 
     public class SubscriptionsCommand : OaktonCommand<SubscriptionsInput>
@@ -38,6 +46,11 @@ namespace Jasper.CommandLine
 
         public override bool Execute(SubscriptionsInput input)
         {
+            if (input.Action == SubscriptionsAction.validate)
+            {
+                input.Registry.Settings.Alter<BusSettings>(x => x.ThrowOnValidationErrors = false);
+            }
+
             using (var runtime = input.BuildRuntime())
             {
                 switch (input.Action)
@@ -53,16 +66,92 @@ namespace Jasper.CommandLine
                     case SubscriptionsAction.publish:
                         publish(runtime);
                         break;
+
+
+                    case SubscriptionsAction.validate:
+                        validate(runtime, input);
+                        break;
                 }
             }
 
             return true;
         }
 
+        private void validate(JasperRuntime runtime, SubscriptionsInput input)
+        {
+            var files = new FileSystem();
+            var dict = new Dictionary<string, ServiceCapabilities>();
+
+            files.FindFiles(input.DirectoryFlag, FileSet.Shallow("*.capabilities.json"))
+                .Each(file =>
+                {
+                    try
+                    {
+                        Console.WriteLine("Reading " + file);
+
+                        var capabilities = ServiceCapabilities.ReadFromFile(file);
+                        if (dict.ContainsKey(capabilities.ServiceName))
+                        {
+                            ConsoleWriter.Write(ConsoleColor.Yellow,
+                                $"Duplicate service name '{capabilities.ServiceName}' from file {file}");
+                        }
+                        else
+                        {
+                            dict.Add(capabilities.ServiceName, capabilities);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        ConsoleWriter.Write(ConsoleColor.Yellow, "Failed to read capabilities from file " + file);
+                        Console.WriteLine(e);
+                    }
+                });
+
+            if (dict.ContainsKey(runtime.ServiceName))
+            {
+                dict[runtime.ServiceName] = runtime.Capabilities;
+            }
+            else
+            {
+                dict.Add(runtime.ServiceName, runtime.Capabilities);
+            }
+
+            var messaging = new MessagingGraph(dict.Values.ToArray());
+
+            Console.WriteLine(messaging.ToJson());
+
+            if (input.FileFlag.IsNotEmpty())
+            {
+                Console.WriteLine("Writing the messaging graph to " + input.FileFlag);
+                messaging.WriteToFile(input.FileFlag);
+            }
+
+            if (messaging.HasAnyErrors())
+            {
+                ConsoleWriter.Write(ConsoleColor.Yellow, "Messaging errors detected!");
+
+                if (!input.IgnoreFailuresFlag)
+                {
+                    throw new Exception("Validation failures detected.");
+                }
+            }
+            else
+            {
+                ConsoleWriter.Write(ConsoleColor.Green, "All messages have matching, valid publishers and subscribers");
+            }
+        }
+
 
         private void publish(JasperRuntime runtime)
         {
-            throw new NotImplementedException();
+            var repository = runtime.Get<ISubscriptionsRepository>();
+
+            Console.WriteLine($"Writing subscriptions to {repository}");
+
+            repository.ReplaceSubscriptions(runtime.ServiceName, runtime.Capabilities.Subscriptions)
+                .Wait(1.Minutes());
+
+            ConsoleWriter.Write(ConsoleColor.Green, "Success!");
         }
 
         private void export(JasperRuntime runtime, SubscriptionsInput input)

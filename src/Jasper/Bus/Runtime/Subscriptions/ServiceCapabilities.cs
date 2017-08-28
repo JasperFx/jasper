@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
@@ -8,7 +7,42 @@ using Newtonsoft.Json.Serialization;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
-    public class ServiceCapabilities
+    public abstract class JsonPersistable<T>
+    {
+        public void WriteToFile(string file)
+        {
+            var json = ToJson();
+            new FileSystem().WriteStringToFile(file, json);
+        }
+
+        public string ToJson()
+        {
+            var settings = serializationSettings();
+
+            var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
+            return json;
+        }
+
+        private static JsonSerializerSettings serializationSettings()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver {NamingStrategy = new CamelCaseNamingStrategy()},
+                TypeNameHandling = TypeNameHandling.None
+            };
+            return settings;
+        }
+
+        public static T ReadFromFile(string file)
+        {
+            var settings = serializationSettings();
+            var json = new FileSystem().ReadStringFromFile(file);
+
+            return JsonConvert.DeserializeObject<T>(json, settings);
+        }
+    }
+
+    public class ServiceCapabilities : JsonPersistable<ServiceCapabilities>
     {
         public string ServiceName { get; set; }
 
@@ -34,36 +68,6 @@ namespace Jasper.Bus.Runtime.Subscriptions
             }
         }
 
-        public void WriteToFile(string file)
-        {
-            var json = ToJson();
-            new FileSystem().WriteStringToFile(file, json);
-        }
 
-        public string ToJson()
-        {
-            var settings = serializationSettings();
-
-            var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
-            return json;
-        }
-
-        private static JsonSerializerSettings serializationSettings()
-        {
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver {NamingStrategy = new CamelCaseNamingStrategy()},
-                TypeNameHandling = TypeNameHandling.None
-            };
-            return settings;
-        }
-
-        public static ServiceCapabilities ReadFromFile(string file)
-        {
-            var settings = serializationSettings();
-            var json = new FileSystem().ReadStringFromFile(file);
-
-            return JsonConvert.DeserializeObject<ServiceCapabilities>(json, settings);
-        }
     }
 }

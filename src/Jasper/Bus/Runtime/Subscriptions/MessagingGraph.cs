@@ -5,7 +5,7 @@ using Jasper.Bus.Runtime.Routing;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
-    public class MessagingGraph
+    public class MessagingGraph : JsonPersistable<MessagingGraph>
     {
         private readonly List<MessageRoute> _routes = new List<MessageRoute>();
         private readonly List<PublishedMessage> _noSubscribers = new List<PublishedMessage>();
@@ -101,5 +101,10 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public PublisherSubscriberMismatch[] Mismatches => _mismatches.ToArray();
 
+
+        public bool HasAnyErrors()
+        {
+            return NoPublishers.Any() || NoPublishers.Any() || Mismatches.Any();
+        }
     }
 }
