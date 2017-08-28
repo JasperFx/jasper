@@ -9,14 +9,16 @@ namespace Jasper.CommandLine
     {
         public static int Run(JasperRegistry registry, string[] args = null)
         {
-            args = args ?? new string[]{"run"};
+            if (args == null || args.Length == 0)
+            {
+                args = new string[]{"run"};
+            }
+
 
             if (registry == null) throw new ArgumentNullException(nameof(registry));
 
 
-            var executor = buildExecutor(registry);
-
-            return executor.Execute(args);
+            return buildExecutor(registry).Execute(args);
         }
 
         // TODO -- later, add extensibility into this thing

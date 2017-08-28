@@ -1,5 +1,5 @@
 ﻿// SAMPLE: QuickStartConsoleMain
-using Jasper;
+
 using Jasper.CommandLine;
 
 namespace MyApp
