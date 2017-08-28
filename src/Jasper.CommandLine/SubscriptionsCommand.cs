@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Bus;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -6,7 +7,6 @@ namespace Jasper.CommandLine
     public enum SubscriptionsAction
     {
         list,
-        validate,
         export,
         publish,
         delta
@@ -35,6 +35,40 @@ namespace Jasper.CommandLine
         }
 
         public override bool Execute(SubscriptionsInput input)
+        {
+            using (var runtime = input.BuildRuntime())
+            {
+                switch (input.Action)
+                {
+                    case SubscriptionsAction.list:
+                        writeList(runtime);
+                        break;
+
+                    case SubscriptionsAction.export:
+                        export(runtime, input);
+                        break;
+
+                    case SubscriptionsAction.publish:
+                        publish(runtime);
+                        break;
+                }
+            }
+
+            return true;
+        }
+
+
+        private void publish(JasperRuntime runtime)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void export(JasperRuntime runtime, SubscriptionsInput input)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void writeList(JasperRuntime runtime)
         {
             throw new NotImplementedException();
         }

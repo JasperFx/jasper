@@ -7,7 +7,7 @@ using Oakton;
 
 namespace Jasper.CommandLine
 {
-    public abstract class JasperInput
+    public class JasperInput
     {
         internal JasperRegistry Registry { get; set; }
 
