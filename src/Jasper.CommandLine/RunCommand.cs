@@ -7,41 +7,10 @@ using Oakton;
 
 namespace Jasper.CommandLine
 {
-    public class JasperInput
-    {
-        internal JasperRegistry Registry { get; set; }
-
-        [Description("Use to override the ASP.Net Environment name")]
-        public string EnvironmentFlag
-        {
-            set => JasperEnvironment.Name = value;
-
-        }
-
-        [Description("Write out much more information at startup and enables console logging")]
-        public bool VerboseFlag { get; set; }
-
-        internal JasperRuntime BuildRuntime()
-        {
-            if (VerboseFlag)
-            {
-                Console.WriteLine("Verbose flag is on.");
-                Registry.Logging.UseConsoleLogging = true;
-            }
-
-            return JasperRuntime.For(Registry);
-        }
-    }
-
-    public class RunInput : JasperInput
-    {
-
-    }
-
     [Description("Runs the configured Jasper application")]
-    public class RunCommand : OaktonCommand<RunInput>
+    public class RunCommand : OaktonCommand<JasperInput>
     {
-        public override bool Execute(RunInput input)
+        public override bool Execute(JasperInput input)
         {
             var runtime = input.BuildRuntime();
 
