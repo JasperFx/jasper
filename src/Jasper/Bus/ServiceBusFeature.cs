@@ -88,7 +88,7 @@ namespace Jasper.Bus
             Policies.Apply(_graph);
 
             Services.For<HandlerGraph>().Use(_graph);
-            Services.For<ChannelGraph>().Use(Channels);
+            Services.For<IChannelGraph>().Use(Channels);
 
             if (registry.ApplicationAssembly != null)
             {

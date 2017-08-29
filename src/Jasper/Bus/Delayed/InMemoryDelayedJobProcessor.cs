@@ -28,7 +28,7 @@ namespace Jasper.Bus.Delayed
             _outstandingJobs[envelope.CorrelationId] = new InMemoryDelayedJob(this, envelope, executionTime);
         }
 
-        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
+        public void Start(IHandlerPipeline pipeline, IChannelGraph channels)
         {
             _sender = channels[LoopbackTransport.Delayed].Sender;
         }

@@ -29,7 +29,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _published.Add(new PublishedMessage(messageType));
         }
 
-        public async Task<ServiceCapabilities> Compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, JasperRuntime runtime, ITransport[] transports, UriAliasLookup lookups)
+        public async Task<ServiceCapabilities> Compile(HandlerGraph handlers, SerializationGraph serialization, IChannelGraph channels, JasperRuntime runtime, ITransport[] transports, UriAliasLookup lookups)
         {
             if (runtime.ApplicationAssembly != null)
             {
@@ -51,7 +51,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
 
 
-        private async Task<ServiceCapabilities> compile(HandlerGraph handlers, SerializationGraph serialization, ChannelGraph channels, ITransport[] transports, UriAliasLookup lookups)
+        private async Task<ServiceCapabilities> compile(HandlerGraph handlers, SerializationGraph serialization, IChannelGraph channels, ITransport[] transports, UriAliasLookup lookups)
         {
             var validTransports = transports.Select(x => x.Protocol).ToArray();
 
@@ -90,7 +90,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             return capabilities;
         }
 
-        private PublishedMessage[] determinePublishedMessages(SerializationGraph serialization, ChannelGraph channels, string[] validTransports)
+        private PublishedMessage[] determinePublishedMessages(SerializationGraph serialization, IChannelGraph channels, string[] validTransports)
         {
             foreach (var published in _published)
             {

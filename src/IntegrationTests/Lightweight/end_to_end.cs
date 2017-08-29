@@ -132,7 +132,7 @@ namespace IntegrationTests.Lightweight
             throw new NotImplementedException();
         }
 
-        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
+        public void Start(IHandlerPipeline pipeline, IChannelGraph channels)
         {
 
         }

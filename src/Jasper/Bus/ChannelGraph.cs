@@ -11,13 +11,34 @@ using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus
 {
-    public class ChannelGraph : IContentTypeAware, IDisposable, IEnumerable<ChannelNode>
+    public interface IChannelGraph : IEnumerable<ChannelNode>
+    {
+        ChannelNode this[string uriString] { get; }
+        ChannelNode this[Uri uri] { get; }
+        string DefaultContentType { get; }
+
+        ChannelNode DefaultChannel { get; }
+        ChannelNode ControlChannel { get; }
+
+        string Name { get; }
+
+        string[] ValidTransports { get;}
+        ChannelNode TryGetChannel(Uri address);
+        bool HasChannel(Uri uri);
+
+        string[] AcceptedContentTypes { get; }
+    }
+
+    public class ChannelGraph : IContentTypeAware, IDisposable, IChannelGraph
     {
         private readonly ConcurrentDictionary<Uri, ChannelNode> _nodes = new ConcurrentDictionary<Uri, ChannelNode>();
 
         public readonly List<string> AcceptedContentTypes = new List<string>();
+        private bool _locked;
         IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
         public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
+
+        string[] IChannelGraph.AcceptedContentTypes => AcceptedContentTypes.ToArray();
 
         /// <summary>
         /// Used to identify the instance of the running Jasper node
@@ -122,6 +143,8 @@ namespace Jasper.Bus
                     .Where(x => x.Uri.Scheme == transport.Protocol && x.Sender == null)
                     .Each(x => { x.Sender = new NulloSender(transport, x.Uri); });
             }
+
+            _locked = true;
         }
 
         public string[] ValidTransports { get; private set; } = new string[0];

@@ -20,6 +20,6 @@ namespace Jasper.Bus.Delayed
 
         DelayedJob[] QueuedJobs();
 
-        void Start(IHandlerPipeline pipeline, ChannelGraph channels);
+        void Start(IHandlerPipeline pipeline, IChannelGraph channels);
     }
 }

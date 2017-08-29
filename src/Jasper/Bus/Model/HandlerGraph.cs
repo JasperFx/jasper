@@ -19,7 +19,7 @@ namespace Jasper.Bus.Model
 
         private void assertNotGrouped()
         {
-            if (_hasGrouped) throw new InvalidOperationException("This HandlerGraph has already been grouped");
+            if (_hasGrouped) throw new InvalidOperationException("This HandlerGraph has already been grouped/compiled");
         }
 
         public void Add(HandlerCall call)

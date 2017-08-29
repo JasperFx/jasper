@@ -21,7 +21,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             DotNetType = messageType;
         }
 
-        public PublishedMessage(Type messageType, ModelWriter modelWriter, ChannelGraph channels) : this(messageType)
+        public PublishedMessage(Type messageType, ModelWriter modelWriter, IChannelGraph channels) : this(messageType)
         {
             ContentTypes = modelWriter.ContentTypes;
             Transports = channels.ValidTransports;

@@ -11,7 +11,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
         {
         }
 
-        public TransportNode(ChannelGraph graph, string machineName)
+        public TransportNode(IChannelGraph graph, string machineName)
         {
             ServiceName = graph.Name;
             ControlChannel = graph.ControlChannel?.Uri ?? graph.FirstOrDefault(x => x.Incoming)?.Uri;

@@ -15,11 +15,11 @@ namespace Jasper.Bus.Runtime
     public class Receiver : IReceiver
     {
         private readonly IHandlerPipeline _pipeline;
-        private readonly ChannelGraph _graph;
+        private readonly IChannelGraph _graph;
         private readonly ChannelNode _node;
         private readonly Uri _address;
 
-        public Receiver(IHandlerPipeline pipeline, ChannelGraph graph, ChannelNode node)
+        public Receiver(IHandlerPipeline pipeline, IChannelGraph graph, ChannelNode node)
         {
             _pipeline = pipeline;
             _graph = graph;

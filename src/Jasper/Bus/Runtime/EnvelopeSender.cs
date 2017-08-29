@@ -12,11 +12,11 @@ namespace Jasper.Bus.Runtime
     public class EnvelopeSender : IEnvelopeSender
     {
         private readonly IMessageRouter _router;
-        private readonly ChannelGraph _channels;
+        private readonly IChannelGraph _channels;
         private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
 
-        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, ChannelGraph channels, IEnumerable<ITransport> transports)
+        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, IEnumerable<ITransport> transports)
         {
             _router = router;
             _channels = channels;

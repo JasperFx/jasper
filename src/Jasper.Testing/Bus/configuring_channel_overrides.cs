@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
@@ -29,7 +30,7 @@ namespace Jasper.Testing.Bus
 
         private ChannelGraph channels()
         {
-            return Runtime.Container.GetInstance<ChannelGraph>();
+            return Runtime.Container.GetInstance<IChannelGraph>().As<ChannelGraph>();
         }
 
         [Fact]

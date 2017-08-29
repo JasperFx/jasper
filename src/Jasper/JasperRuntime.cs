@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Bus;
+using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Codegen;
 using Jasper.Codegen.StructureMap;
@@ -51,7 +52,8 @@ namespace Jasper
 
             _registry = registry;
 
-            _bus = new Lazy<IServiceBus>(() => Get<IServiceBus>());
+            _bus = new Lazy<IServiceBus>(Get<IServiceBus>);
+
         }
 
         public Assembly ApplicationAssembly => _registry.ApplicationAssembly;

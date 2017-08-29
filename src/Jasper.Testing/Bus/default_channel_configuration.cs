@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
@@ -19,7 +20,7 @@ namespace Jasper.Testing.Bus
             }))
             {
 
-                var channels = runtime.Get<ChannelGraph>();
+                var channels = runtime.Get<IChannelGraph>().As<ChannelGraph>();
                 channels.DefaultChannel
                     .ShouldBeTheSameAs(channels.IncomingChannelsFor("loopback").Single());
             }
@@ -34,7 +35,7 @@ namespace Jasper.Testing.Bus
                 _.Channels.DefaultIs("loopback://incoming");
             }))
             {
-                var channels = runtime.Get<ChannelGraph>();
+                var channels = runtime.Get<IChannelGraph>().As<ChannelGraph>();
                 channels.DefaultChannel
                     .ShouldBeTheSameAs(channels["loopback://incoming"]);
             }

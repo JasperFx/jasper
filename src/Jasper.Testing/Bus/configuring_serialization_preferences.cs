@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Serializers;
@@ -15,7 +16,7 @@ namespace Jasper.Testing.Bus
         {
             withAllDefaults();
 
-            Runtime.Container.GetInstance<ChannelGraph>().AcceptedContentTypes.ShouldHaveTheSameElementsAs("application/json");
+            Channels.AcceptedContentTypes.ShouldHaveTheSameElementsAs("application/json");
 
             Bootstrapping.ContainerExtensions.ShouldHaveRegistration<ISerializer, NewtonsoftSerializer>(Runtime.Container);
         }
@@ -29,7 +30,7 @@ namespace Jasper.Testing.Bus
                 _.Serialization.Add<Serializer2>();
             });
 
-            Runtime.Container.GetInstance<ChannelGraph>().AcceptedContentTypes
+            Channels.AcceptedContentTypes
                 .ShouldHaveTheSameElementsAs("application/json", "fake/one", "fake/two");
 
             Bootstrapping.ContainerExtensions.ShouldHaveRegistration<ISerializer, Serializer1>(Runtime.Container);
@@ -47,7 +48,7 @@ namespace Jasper.Testing.Bus
             });
 
             // Back fills anything missing
-            Runtime.Container.GetInstance<ChannelGraph>().AcceptedContentTypes
+            Channels.AcceptedContentTypes
                 .ShouldHaveTheSameElementsAs("fake/two", "application/json", "fake/one");
         }
 
