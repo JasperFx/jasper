@@ -22,18 +22,6 @@ namespace Jasper.Bus.Configuration
         }
 
 
-        /// <summary>
-        /// Specify or override the preferred order of serialization usage for the application
-        /// </summary>
-        /// <param name="contentTypes"></param>
-        /// <returns></returns>
-        public SerializationExpression ContentPreferenceOrder(params string[] contentTypes)
-        {
-            _parent.Channels.AcceptedContentTypes.Clear();
-            _parent.Channels.AcceptedContentTypes.AddRange(contentTypes);
-            return this;
-        }
-
         public void DisallowNonVersionedSerialization()
         {
             _top.Settings.Alter<BusSettings>(x => x.AllowNonVersionedSerialization = false);

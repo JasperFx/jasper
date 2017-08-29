@@ -14,7 +14,6 @@ namespace Jasper.Bus
     public interface IChannelGraph : IEnumerable<ChannelNode>
     {
         IChannel this[Uri uri] { get; }
-        string DefaultContentType { get; }
 
         IChannel DefaultChannel { get; }
         IChannel ControlChannel { get; }
@@ -24,20 +23,14 @@ namespace Jasper.Bus
         string[] ValidTransports { get;}
         IChannel TryGetChannel(Uri address);
         bool HasChannel(Uri uri);
-
-        string[] AcceptedContentTypes { get; }
     }
 
-    public class ChannelGraph : IContentTypeAware, IDisposable, IChannelGraph
+    public class ChannelGraph : IDisposable, IChannelGraph
     {
         private readonly ConcurrentDictionary<Uri, ChannelNode> _nodes = new ConcurrentDictionary<Uri, ChannelNode>();
 
-        public readonly List<string> AcceptedContentTypes = new List<string>();
         private bool _locked;
-        IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
-        public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
 
-        string[] IChannelGraph.AcceptedContentTypes => AcceptedContentTypes.ToArray();
 
         /// <summary>
         /// Used to identify the instance of the running Jasper node

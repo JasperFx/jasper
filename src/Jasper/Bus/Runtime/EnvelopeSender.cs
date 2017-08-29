@@ -94,12 +94,6 @@ namespace Jasper.Bus.Runtime
                 var channel = _channels.TryGetChannel(route.Destination);
                 channel?.ApplyModifiers(sending);
 
-                // Don't override the explicitly set Accepts
-                if (!sending.AcceptedContentTypes.Any())
-                {
-                    sending.AcceptedContentTypes = _channels.AcceptedContentTypes.ToArray();
-                }
-
                 if (channel != null)
                 {
                     await sendToStaticChannel(callback, sending, channel);

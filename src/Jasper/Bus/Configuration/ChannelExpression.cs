@@ -44,26 +44,6 @@ namespace Jasper.Bus.Configuration
             return this;
         }
 
-        public ChannelExpression DefaultContentType(string contentType)
-        {
-            if (_node.AcceptedContentTypes.Contains(contentType))
-            {
-                _node.AcceptedContentTypes.Remove(contentType);
-            }
-
-            _node.AcceptedContentTypes.Insert(0, contentType);
-
-            return this;
-        }
-
-        public ChannelExpression AcceptedContentTypes(params string[] contentTypes)
-        {
-            _node.AcceptedContentTypes.Clear();
-            _node.AcceptedContentTypes.AddRange(contentTypes);
-
-            return this;
-        }
-
         public ChannelExpression MaximumParallelization(int maximumParallelHandlers    )
         {
             _node.MaximumParallelization = maximumParallelHandlers;

@@ -20,7 +20,7 @@ namespace Jasper.Bus
         void ApplyModifiers(Envelope envelope);
     }
 
-    public class ChannelNode : IContentTypeAware, IChannel
+    public class ChannelNode : IChannel
     {
         public Uri Uri { get; internal set; }
 
@@ -32,11 +32,7 @@ namespace Jasper.Bus
             Destination = uri;
         }
 
-        public readonly List<string> AcceptedContentTypes = new List<string>{"application/json"};
-
-        IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
         public bool Incoming { get; set; }
-        public string DefaultContentType => AcceptedContentTypes.FirstOrDefault();
 
         public IList<IRoutingRule> Rules = new List<IRoutingRule>();
 

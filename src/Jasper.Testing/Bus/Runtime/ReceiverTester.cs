@@ -37,10 +37,6 @@ namespace Jasper.Testing.Bus.Runtime
         [Fact]
         public void the_envelope_content_type_wins()
         {
-            theGraph.AcceptedContentTypes.Add("text/json");
-            theNode.AcceptedContentTypes.Add("text/xml");
-
-
             var headers = new Dictionary<string, string>();
             headers[Envelope.ContentTypeKey] = "text/plain";
             theReceiver.Receive(new byte[0], headers, Substitute.For<IMessageCallback>());

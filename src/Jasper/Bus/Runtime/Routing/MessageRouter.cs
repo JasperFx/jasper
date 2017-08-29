@@ -78,7 +78,7 @@ namespace Jasper.Bus.Runtime.Routing
 
             foreach (var channel in _channels.Distinct().Where(x => x.ShouldSendMessage(messageType)))
             {
-                var contentType = channel.AcceptedContentTypes.Intersect(supported).FirstOrDefault();
+                var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
 
                 if (contentType.IsNotEmpty())
                 {

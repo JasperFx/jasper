@@ -43,8 +43,6 @@ namespace Jasper.Bus
             {
                 await channels.ApplyLookups(_lookups);
 
-                configureSerializationOrder(channels);
-
                 channels.StartTransports(_pipeline, _transports);
                 _delayedJobs.Start(_pipeline, channels);
 
@@ -61,22 +59,6 @@ namespace Jasper.Bus
             }
         }
 
-        private void configureSerializationOrder(ChannelGraph channels)
-        {
-            var contentTypes = _serialization.Serializers
-                .Select(x => x.ContentType).ToArray();
-
-            var unknown = channels.AcceptedContentTypes.Where(x => !contentTypes.Contains(x)).ToArray();
-            if (unknown.Any())
-            {
-                throw new UnknownContentTypeException(unknown, contentTypes);
-            }
-
-            foreach (var contentType in contentTypes)
-            {
-                channels.AcceptedContentTypes.Fill(contentType);
-            }
-        }
     }
 
     public class InvalidSubscriptionException : Exception

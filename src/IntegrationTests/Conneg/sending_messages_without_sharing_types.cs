@@ -122,8 +122,6 @@ namespace IntegrationTests.Conneg
         {
             Messaging.Send<GreenMessage>().To("jasper://localhost:2555/blue");
 
-            Channels["jasper://localhost:2555/blue"].AcceptedContentTypes("text/plain");
-
             Services.For<MessageTracker>().Use("blow up", c =>
             {
                 throw new Exception("No.");

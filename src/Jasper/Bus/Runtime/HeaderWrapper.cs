@@ -7,7 +7,7 @@ using Jasper.Bus.Configuration;
 
 namespace Jasper.Bus.Runtime
 {
-    public class HeaderWrapper : IContentTypeAware
+    public class HeaderWrapper
     {
         public Uri Source
         {
@@ -138,7 +138,5 @@ namespace Jasper.Bus.Runtime
 
             return ExecutionTime.Value > utcNow;
         }
-
-        IEnumerable<string> IContentTypeAware.Accepts => AcceptedContentTypes;
     }
 }

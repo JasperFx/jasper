@@ -47,7 +47,7 @@ namespace Jasper.Conneg
 
         public object Deserialize(Envelope envelope, ChannelNode node)
         {
-            var contentType = envelope.ContentType ?? node.AcceptedContentTypes.FirstOrDefault() ?? "application/json";
+            var contentType = envelope.ContentType ?? "application/json";
 
             if (contentType.IsEmpty())
             {
@@ -78,7 +78,7 @@ namespace Jasper.Conneg
                 }
             }
 
-            var messageType = envelope.MessageType ?? node.AcceptedContentTypes.FirstOrDefault() ?? "application/json";
+            var messageType = envelope.MessageType ?? "application/json";
             if (_serializers.ContainsKey(messageType))
             {
                 using (var stream = new MemoryStream(envelope.Data))

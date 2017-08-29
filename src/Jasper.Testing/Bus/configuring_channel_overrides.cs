@@ -56,51 +56,6 @@ namespace Jasper.Testing.Bus
                 .ShouldHaveTheSameElementsAs(typeof(FakeModifier), typeof(FakeModifier2));
         }
 
-        [Fact]
-        public void set_accepted_content_types()
-        {
-            with(_ =>
-            {
-                _.Serialization.Add<Serializer1>().Add<Serializer2>();
-
-                _.Messaging.Send<Message1>().To("loopback://one");
-                _.Messaging.Send<Message2>().To("loopback://two");
-                _.Messaging.Send<Message3>().To("loopback://three");
-
-                _.Channels["loopback://two"].AcceptedContentTypes("text/xml");
-            });
-
-            channels()["loopback://two"].AcceptedContentTypes.Single()
-                .ShouldBe("text/xml");
-
-            // Bad test
-        }
-
-        [Fact]
-        public void set_default_content_type()
-        {
-            with(_ =>
-            {
-                _.Serialization.Add<Serializer1>().Add<Serializer2>();
-
-                _.Messaging.Send<Message1>().To("loopback://one");
-                _.Messaging.Send<Message2>().To("loopback://two");
-                _.Messaging.Send<Message3>().To("loopback://three");
-
-                _.Channels["loopback://two"].AcceptedContentTypes("application/json", "fake/one")
-                    .DefaultContentType("fake/two");
-
-                _.Channels["loopback://three"]
-                    .AcceptedContentTypes("application/json", "fake/one")
-                    .DefaultContentType("fake/one");
-            });
-
-            channels()["loopback://two"].AcceptedContentTypes
-                .ShouldHaveTheSameElementsAs("fake/two", "application/json", "fake/one");
-
-            channels()["loopback://three"].AcceptedContentTypes.First()
-                .ShouldBe("fake/one");
-        }
 
     }
 

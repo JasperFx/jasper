@@ -38,8 +38,7 @@ namespace Jasper.Bus.Runtime
                 ReceivedAt = _address
             };
 
-            // Do keep this here then.
-            envelope.ContentType = envelope.ContentType ?? _node.DefaultContentType ?? _graph.DefaultContentType;
+            envelope.ContentType = envelope.ContentType ?? "application/json";
 
             return _pipeline.Invoke(envelope, _node);
         }
@@ -56,8 +55,7 @@ namespace Jasper.Bus.Runtime
                 Callback = callback
             };
 
-            // Do keep this here then.
-            envelope.ContentType = envelope.ContentType ?? _node.DefaultContentType ?? _graph.DefaultContentType;
+            envelope.ContentType = envelope.ContentType ?? "application/json";
 
             return _pipeline.Invoke(envelope, _node);
         }
