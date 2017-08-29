@@ -116,6 +116,7 @@ namespace Jasper.LightningDb.Transport
             }
 
             public bool SupportsSend { get; } = false;
+            public string TransportScheme { get; } = "lq.tcp";
         }
 
 

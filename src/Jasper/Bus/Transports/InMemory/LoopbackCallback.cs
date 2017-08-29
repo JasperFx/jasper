@@ -67,5 +67,6 @@ namespace Jasper.Bus.Transports.InMemory
         }
 
         public bool SupportsSend { get; } = true;
+        public string TransportScheme { get; } = "loopback";
     }
 }

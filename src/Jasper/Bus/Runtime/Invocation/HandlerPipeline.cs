@@ -264,6 +264,8 @@ namespace Jasper.Bus.Runtime.Invocation
         }
 
         public bool SupportsSend { get; } = false;
+        public string TransportScheme { get; }
+
         public Task Requeue(Envelope envelope)
         {
             throw new NotImplementedException();

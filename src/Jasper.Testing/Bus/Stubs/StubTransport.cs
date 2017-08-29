@@ -151,5 +151,6 @@ namespace Jasper.Testing.Bus.Stubs
         }
 
         public bool SupportsSend { get; } = true;
+        public string TransportScheme { get; }
     }
 }

@@ -15,5 +15,7 @@ namespace Jasper.Bus.Runtime
         Task Send(Envelope envelope);
 
         bool SupportsSend { get; }
+
+        string TransportScheme { get; }
     }
 }

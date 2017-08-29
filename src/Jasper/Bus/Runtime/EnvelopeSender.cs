@@ -124,7 +124,7 @@ namespace Jasper.Bus.Runtime
             sending.Destination = address;
             sending.ReplyUri = transport.DefaultReplyUri();
 
-            if (callback == null)
+            if (callback == null || !callback.SupportsSend && callback.TransportScheme == sending.Destination.Scheme)
             {
                 await transport.Send(sending, sending.Destination).ConfigureAwait(false);
             }
@@ -139,7 +139,7 @@ namespace Jasper.Bus.Runtime
             sending.Destination = channel.Destination;
             sending.ReplyUri = channel.ReplyUri;
 
-            if (callback == null || !callback.SupportsSend)
+            if (callback == null || !callback.SupportsSend && callback.TransportScheme == sending.Destination.Scheme)
             {
                 await channel.Sender.Send(sending).ConfigureAwait(false);
             }

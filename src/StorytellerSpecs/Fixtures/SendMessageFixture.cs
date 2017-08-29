@@ -502,5 +502,6 @@ namespace StorytellerSpecs.Fixtures
         }
 
         public bool SupportsSend { get; } = false;
+        public string TransportScheme { get; } = "stub";
     }
 }

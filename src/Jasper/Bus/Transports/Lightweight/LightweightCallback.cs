@@ -48,5 +48,6 @@ namespace Jasper.Bus.Transports.Lightweight
         }
 
         public bool SupportsSend { get; } = false;
+        public string TransportScheme { get; } = "jasper";
     }
 }
