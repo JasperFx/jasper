@@ -33,7 +33,6 @@ namespace Jasper.Bus.Transports.Lightweight
 
         public Task MoveToErrors(ErrorReport report)
         {
-            // TODO -- something here:)
             return Task.CompletedTask;
         }
 

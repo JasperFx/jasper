@@ -39,8 +39,6 @@ namespace Jasper.Bus.Transports.Lightweight
 
                 while (!_isDisposed)
                 {
-                    // TODO -- might parallelize the receiving so that it passes off
-                    // sockets as fast as possible?
                     var socket = await _listener.AcceptSocketAsync();
                     _socketHandling.Post(socket);
                 }

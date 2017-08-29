@@ -38,7 +38,6 @@ namespace Jasper.Codegen
 
         private AssemblyGenerator buildGenerator(IGenerationConfig generation)
         {
-            // TODO -- should probably do a lot more here. See GH-6
             var generator = new AssemblyGenerator();
             generator.ReferenceAssembly(GetType().GetTypeInfo().Assembly);
             generator.ReferenceAssembly(typeof(Task).GetTypeInfo().Assembly);

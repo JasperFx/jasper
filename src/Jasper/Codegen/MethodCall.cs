@@ -151,10 +151,6 @@ namespace Jasper.Codegen
                 returnValue = $"var {ReturnVariable.Usage} = {returnValue}";
             }
 
-            // TODO -- will need to see if it's IDisposable too
-
-            
-
             writer.Write($"{returnValue}{invokeMethod};");
 
             Next?.GenerateCode(method, writer);

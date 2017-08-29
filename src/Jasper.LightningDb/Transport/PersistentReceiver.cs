@@ -88,7 +88,6 @@ namespace Jasper.LightningDb.Transport
 
             public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
             {
-                // TODO -- do something a wee bit more efficient later when we have lmdb backed delayed jobs
                 _parent._persistence.Remove(_parent.QueueName, _envelope);
                 delayedJobs.Enqueue(time, envelope);
 

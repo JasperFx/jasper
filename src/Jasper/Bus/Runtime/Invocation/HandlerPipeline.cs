@@ -118,7 +118,7 @@ namespace Jasper.Bus.Runtime.Invocation
                 {
                     await handler.Handle(context);
 
-                    // TODO -- what do we do here if this fails?
+                    // TODO -- what do we do here if this fails? Compensating actions?
                     await context.SendAllQueuedOutgoingMessages();
                 }
                 catch (Exception e)
@@ -132,7 +132,6 @@ namespace Jasper.Bus.Runtime.Invocation
 
         private void deserialize(Envelope envelope, ChannelNode receiver)
         {
-            // TODO -- Not super duper wild about this one.
             if (envelope.Message == null)
             {
                 envelope.Message = _serializer.Deserialize(envelope, receiver);
@@ -150,8 +149,6 @@ namespace Jasper.Bus.Runtime.Invocation
             }
             else
             {
-                // TODO -- have the EnvelopeContext.Retry be able to skip right down
-                // to the executeChain method here
                 var continuation = await executeChain(handler, context).ConfigureAwait(false);
 
                 await continuation.Execute(envelope, context, DateTime.UtcNow).ConfigureAwait(false);

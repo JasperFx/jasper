@@ -9,7 +9,6 @@ namespace Jasper.Codegen
 {
     public class GeneratedClass
     {
-        // TODO -- add an option for a static class
         public IGenerationConfig Config { get; }
 
         public string ClassName { get; }
@@ -27,7 +26,7 @@ namespace Jasper.Codegen
 
         public Type BaseType
         {
-            get { return _baseType; }
+            get => _baseType;
             set
             {
                 if (value == null)
@@ -116,8 +115,6 @@ namespace Jasper.Codegen
 
         private void writeDeclaration(ISourceWriter writer)
         {
-            // TODO -- pay attention to Visibility here
-
             var implemented = implements().ToArray();
 
             if (implemented.Any())
@@ -146,8 +143,6 @@ namespace Jasper.Codegen
 
     public enum Visibility
     {
-        // TODO -- add an option for protected internal some day
-
         Public,
         Protected,
         Private,

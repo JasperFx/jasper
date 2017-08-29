@@ -11,8 +11,6 @@ namespace Jasper.Bus.Transports
     {
         // Nothing but actually sending here. Worry about timeouts and retries somewhere
         // else
-
-        // TODO -- need a generic error here, or just let it bubble up? Cool w/ that TBH
         public static async Task Send(Stream stream, OutgoingMessageBatch batch, ISenderCallback callback)
         {
             var messageBytes = batch.Messages.Serialize();

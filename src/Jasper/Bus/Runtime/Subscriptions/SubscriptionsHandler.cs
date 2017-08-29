@@ -10,7 +10,6 @@ using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
-    // TODO -- could just fold this into IMessageRouter
     public class SubscriptionsHandler
     {
         private readonly IMessageRouter _router;

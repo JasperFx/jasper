@@ -18,8 +18,6 @@ namespace Jasper.Codegen
 
     public class GeneratedMethod : IGeneratedMethod
     {
-        // TODO -- add an option for a static method
-
         private readonly Argument[] _arguments;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
 
@@ -43,9 +41,6 @@ namespace Jasper.Codegen
 
         public void WriteMethod(ISourceWriter writer)
         {
-            // TODO -- needs to be able to do something besides Task
-            // TODO -- specify the return type
-            // TODO -- build synchronous methods?
             var returnValue = AsyncMode == AsyncMode.AsyncTask
                 ? "async Task"
                 : "Task";
@@ -56,9 +51,6 @@ namespace Jasper.Codegen
             }
 
             var arguments = Arguments.Select(x => x.Declaration).Join(", ");
-
-
-            // TODO -- pay attention to the Visibility
 
             writer.Write($"BLOCK:public {returnValue} {MethodName}({arguments})");
 

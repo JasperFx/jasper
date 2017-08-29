@@ -9,7 +9,6 @@ namespace Jasper.Bus.Runtime
     {
         string Protocol { get; }
 
-        // TODO -- Make this responsible for applying the reply uri
         Task Send(Envelope envelope, Uri destination);
 
         /// <summary>

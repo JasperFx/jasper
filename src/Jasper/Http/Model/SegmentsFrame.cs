@@ -17,12 +17,11 @@ namespace Jasper.Http.Model
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            // TODO -- move most of the code to a helper method
             writer.WriteLine($"var {RoutingFrames.Segments} = (string[]){RouteGraph.Context}.Items[\"{RoutingFrames.Segments}\"];");
 
             Next?.GenerateCode(method, writer);
         }
 
-        public override IEnumerable<Variable> Creates { get; } 
+        public override IEnumerable<Variable> Creates { get; }
     }
 }

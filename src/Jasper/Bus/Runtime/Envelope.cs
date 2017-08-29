@@ -243,11 +243,6 @@ namespace Jasper.Bus.Runtime
 
         public static string MaxAttemptsHeader = "max-delivery-attempts";
         public static string DeliverByHeader = "deliver-by";
-
-        public Dictionary<string, string> WriteHeaders()
-        {
-            throw new NotImplementedException();
-        }
     }
 
 }

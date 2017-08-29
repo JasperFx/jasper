@@ -126,8 +126,6 @@ namespace Jasper.Http.Model
                 };
 
                 var frames = DetermineFrames();
-                // TODO -- this usage is awkward. Let's make the frames be a property that's easier to add to
-                // maybe add some method chaining
                 var method = new GeneratedMethod(nameof(RouteHandler.Handle),
                     new Argument[] {Argument.For<HttpContext>(RouteGraph.Context)}, frames)
                 {

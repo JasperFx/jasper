@@ -57,7 +57,6 @@ namespace Jasper.Http.Routing
             string[] segments;
             var route = SelectRoute(context, out segments);
 
-            // TODO -- add some error handling to 500 here. May also change how segments are being smuggled into the HttpContext
             if (route == null)
             {
                 await next(context);
@@ -78,7 +77,6 @@ namespace Jasper.Http.Routing
                 }
                 catch (Exception e)
                 {
-                    // TODO -- do something fancier here
                     context.RequestServices.GetService<ILogger<HttpContext>>().LogError(new EventId(500), e, "Request Failed");
                     context.Response.StatusCode = 500;
                     await context.Response.WriteAsync(e.ToString());

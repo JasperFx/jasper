@@ -45,15 +45,9 @@ namespace Jasper.Codegen.Compilation
 
         public static void WriteReturnStatement(this ISourceWriter writer, IGeneratedMethod method, Variable variable)
         {
-            // TODO -- what if the variable is a task?
-            if (method.AsyncMode == AsyncMode.AsyncTask)
-            {
-                writer.WriteLine($"return {variable.Usage};");
-            }
-            else
-            {
-                writer.WriteLine(returnFromResult.ToFormat(variable.Usage));
-            }
+            writer.WriteLine(method.AsyncMode == AsyncMode.AsyncTask
+                ? $"return {variable.Usage};"
+                : returnFromResult.ToFormat(variable.Usage));
         }
 
 

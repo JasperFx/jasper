@@ -75,7 +75,6 @@ namespace Jasper.Bus.Runtime.Routing
         {
             var list = new List<MessageRoute>();
 
-            // TODO -- trace subscriptions that cannot be filled?
             var modelWriter = _serializers.WriterFor(messageType);
             var supported = modelWriter.ContentTypes;
 
