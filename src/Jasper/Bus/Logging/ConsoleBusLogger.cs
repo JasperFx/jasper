@@ -1,6 +1,7 @@
 ﻿using System;
 using Baseline;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 
 namespace Jasper.Bus.Logging
 {
@@ -55,6 +56,21 @@ namespace Jasper.Bus.Logging
         public void NoHandlerFor(Envelope envelope)
         {
             ConsoleWriter.Write(ConsoleColor.Yellow, $"No known handler for {envelope.Message?.GetType().Name}#{envelope.CorrelationId} from {envelope.ReplyUri}");
+        }
+
+        public void NoRoutesFor(Envelope envelope)
+        {
+            ConsoleWriter.Write(ConsoleColor.Yellow, $"No routes can be determined for {envelope}");
+        }
+
+        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        {
+            ConsoleWriter.Write(ConsoleColor.Yellow, $"Subscriber mismatch: {mismatch}");
+        }
+
+        public void Undeliverable(Envelope envelope)
+        {
+            ConsoleWriter.Write(ConsoleColor.Red, $"Could not deliver {envelope}");
         }
     }
 }

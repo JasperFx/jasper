@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 
 namespace Jasper.Bus.Logging
 {
@@ -18,7 +19,13 @@ namespace Jasper.Bus.Logging
         {
             foreach (var sink in Loggers)
             {
-                sink.Sent(envelope);
+                try
+                {
+                    sink.Sent(envelope);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -26,7 +33,13 @@ namespace Jasper.Bus.Logging
         {
             foreach (var sink in Loggers)
             {
-                sink.Received(envelope);
+                try
+                {
+                    sink.Received(envelope);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -34,7 +47,13 @@ namespace Jasper.Bus.Logging
         {
             foreach (var sink in Loggers)
             {
-                sink.ExecutionStarted(envelope);
+                try
+                {
+                    sink.ExecutionStarted(envelope);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -42,7 +61,13 @@ namespace Jasper.Bus.Logging
         {
             foreach (var sink in Loggers)
             {
-                sink.ExecutionFinished(envelope);
+                try
+                {
+                    sink.ExecutionFinished(envelope);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -50,7 +75,13 @@ namespace Jasper.Bus.Logging
         {
             foreach (var sink in Loggers)
             {
-                sink.MessageSucceeded(envelope);
+                try
+                {
+                    sink.MessageSucceeded(envelope);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -58,7 +89,13 @@ namespace Jasper.Bus.Logging
         {
             foreach (var sink in Loggers)
             {
-                sink.MessageFailed(envelope, ex);
+                try
+                {
+                    sink.MessageFailed(envelope, ex);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -66,7 +103,13 @@ namespace Jasper.Bus.Logging
         {
             foreach (var sink in Loggers)
             {
-                sink.LogException(ex, correlationId, message);
+                try
+                {
+                    sink.LogException(ex, correlationId, message);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -74,7 +117,55 @@ namespace Jasper.Bus.Logging
         {
             foreach (var sink in Loggers)
             {
-                sink.NoHandlerFor(envelope);
+                try
+                {
+                    sink.NoHandlerFor(envelope);
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        public void NoRoutesFor(Envelope envelope)
+        {
+            foreach (var sink in Loggers)
+            {
+                try
+                {
+                    sink.NoRoutesFor(envelope);
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        {
+            foreach (var sink in Loggers)
+            {
+                try
+                {
+                    sink.SubscriptionMismatch(mismatch);
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        public void Undeliverable(Envelope envelope)
+        {
+            foreach (var sink in Loggers)
+            {
+                try
+                {
+                    sink.Undeliverable(envelope);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
     }

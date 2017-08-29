@@ -156,7 +156,7 @@ namespace Jasper.Bus.Runtime.Invocation
             }
             catch (Exception e)
             {
-                // TODO -- we really, really have to do something here
+                Logger.Undeliverable(envelope);
                 Logger.LogException(e, envelope.CorrelationId, "Failure while trying to send a cascading message");
             }
 

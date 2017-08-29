@@ -2,6 +2,7 @@ using System;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Diagnostics.Messages;
 
 namespace Jasper.Diagnostics
@@ -39,6 +40,21 @@ namespace Jasper.Diagnostics
 
         public void NoHandlerFor(Envelope envelope)
         {
+        }
+
+        public void NoRoutesFor(Envelope envelope)
+        {
+
+        }
+
+        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        {
+
+        }
+
+        public void Undeliverable(Envelope envelope)
+        {
+            throw new NotImplementedException();
         }
 
         public void Received(Envelope envelope)

@@ -3,6 +3,7 @@ using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
 
 namespace Module1
@@ -64,6 +65,21 @@ namespace Module1
 
         public void NoHandlerFor(Envelope envelope)
         {
+        }
+
+        public void NoRoutesFor(Envelope envelope)
+        {
+
+        }
+
+        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        {
+
+        }
+
+        public void Undeliverable(Envelope envelope)
+        {
+
         }
     }
 

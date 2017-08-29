@@ -20,8 +20,6 @@ namespace Jasper.Http.Model
 
         protected override RouteChain[] chains => _chains.ToArray();
 
-        // TODO -- Commands & Queries methods. Shortcuts to find routes per method
-
         public void AddRoute(Type handlerType, MethodInfo method)
         {
             var methodCall = new MethodCall(handlerType, method);

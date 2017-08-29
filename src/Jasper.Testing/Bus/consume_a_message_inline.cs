@@ -7,6 +7,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
@@ -129,6 +130,21 @@ namespace Jasper.Testing.Bus
 
         void IBusLogger.NoHandlerFor(Envelope envelope)
         {
+        }
+
+        public void NoRoutesFor(Envelope envelope)
+        {
+
+        }
+
+        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        {
+
+        }
+
+        public void Undeliverable(Envelope envelope)
+        {
+
         }
     }
 

@@ -133,6 +133,12 @@ namespace Jasper.Bus.Transports.Lightweight
                 message.SentAttempts++;
             }
 
+            var expired = outgoing.Messages.Where(x => x.SentAttempts >= _settings.MaximumFireAndForgetSendingAttempts);
+            foreach (var envelope in expired)
+            {
+                _logger.Undeliverable(envelope);
+            }
+
             var groups = outgoing
                 .Messages
                 .Where(x => x.SentAttempts < _settings.MaximumFireAndForgetSendingAttempts)

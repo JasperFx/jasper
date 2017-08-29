@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -18,15 +19,17 @@ namespace Jasper.Bus.Runtime.Routing
         private readonly IChannelGraph _channels;
         private readonly ISubscriptionsRepository _subscriptions;
         private readonly HandlerGraph _handlers;
+        private readonly CompositeLogger _logger;
 
         private readonly ConcurrentDictionary<Type, MessageRoute[]> _routes = new ConcurrentDictionary<Type, MessageRoute[]>();
 
-        public MessageRouter(SerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers)
+        public MessageRouter(SerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, CompositeLogger logger)
         {
             _serializers = serializers;
             _channels = channels;
             _subscriptions = subscriptions;
             _handlers = handlers;
+            _logger = logger;
         }
 
         public void ClearAll()
@@ -102,7 +105,7 @@ namespace Jasper.Bus.Runtime.Routing
                     }
                     else
                     {
-                        // TODO -- need to log this with a new hook in IBusLogger
+                        _logger.SubscriptionMismatch(mismatch);
                     }
 
                 }

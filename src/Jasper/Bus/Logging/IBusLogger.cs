@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 
 namespace Jasper.Bus.Logging
 {
@@ -14,5 +15,11 @@ namespace Jasper.Bus.Logging
 
         void LogException(Exception ex, string correlationId = null, string message = "Exception detected:");
         void NoHandlerFor(Envelope envelope);
+
+        void NoRoutesFor(Envelope envelope);
+
+        void SubscriptionMismatch(PublisherSubscriberMismatch mismatch);
+
+        void Undeliverable(Envelope envelope);
     }
 }

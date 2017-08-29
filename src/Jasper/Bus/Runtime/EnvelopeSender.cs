@@ -47,6 +47,7 @@ namespace Jasper.Bus.Runtime
                 var routes = await _router.Route(envelope.Message.GetType());
                 if (!routes.Any())
                 {
+                    Logger.NoRoutesFor(envelope);
                     throw new NoRoutesException(envelope);
                 }
 

@@ -18,6 +18,7 @@ using Envelope = Jasper.Bus.Runtime.Envelope;
 
 namespace StorytellerSpecs.Fixtures
 {
+    // TODO -- move this to the new Jasper.Storyteller when it exists
     public class StorytellerBusLogger : IBusLogger
     {
         private readonly ISpecContext _context;
@@ -65,6 +66,21 @@ namespace StorytellerSpecs.Fixtures
         public void NoHandlerFor(Envelope envelope)
         {
             trace($"No handler for {envelope}");
+        }
+
+        public void NoRoutesFor(Envelope envelope)
+        {
+            trace($"No routing for {envelope}");
+        }
+
+        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        {
+            trace($"Subscription mismatch: {mismatch}");
+        }
+
+        public void Undeliverable(Envelope envelope)
+        {
+            trace($"Envelope {envelope} cannot be delivered");
         }
 
         private void trace(string message)

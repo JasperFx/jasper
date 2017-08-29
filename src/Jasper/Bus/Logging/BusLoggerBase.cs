@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Subscriptions;
 
 namespace Jasper.Bus.Logging
 {
@@ -35,6 +36,20 @@ namespace Jasper.Bus.Logging
         }
 
         public virtual void NoHandlerFor(Envelope envelope)
+        {
+        }
+
+        public virtual void NoRoutesFor(Envelope envelope)
+        {
+
+        }
+
+        public virtual void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        {
+
+        }
+
+        public virtual void Undeliverable(Envelope envelope)
         {
         }
     }
