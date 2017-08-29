@@ -83,7 +83,7 @@ namespace Jasper.Bus.Runtime
             var transportScheme = route.Destination.Scheme;
             if (_channels.HasChannel(route.Destination))
             {
-                transportScheme = _channels[route.Destination].Uri.Scheme;
+                transportScheme = _channels[route.Destination].Destination.Scheme;
             }
 
             ITransport transport = null;
@@ -134,7 +134,7 @@ namespace Jasper.Bus.Runtime
             }
         }
 
-        private static async Task sendToStaticChannel(IMessageCallback callback, Envelope sending, ChannelNode channel)
+        private static async Task sendToStaticChannel(IMessageCallback callback, Envelope sending, IChannel channel)
         {
             sending.Destination = channel.Destination;
             sending.ReplyUri = channel.ReplyUri;

@@ -13,17 +13,16 @@ namespace Jasper.Bus
 {
     public interface IChannelGraph : IEnumerable<ChannelNode>
     {
-        ChannelNode this[string uriString] { get; }
-        ChannelNode this[Uri uri] { get; }
+        IChannel this[Uri uri] { get; }
         string DefaultContentType { get; }
 
-        ChannelNode DefaultChannel { get; }
-        ChannelNode ControlChannel { get; }
+        IChannel DefaultChannel { get; }
+        IChannel ControlChannel { get; }
 
         string Name { get; }
 
         string[] ValidTransports { get;}
-        ChannelNode TryGetChannel(Uri address);
+        IChannel TryGetChannel(Uri address);
         bool HasChannel(Uri uri);
 
         string[] AcceptedContentTypes { get; }
@@ -49,7 +48,11 @@ namespace Jasper.Bus
         // if it is not explicitly set
         public ChannelNode ControlChannel { get; set; }
 
+        IChannel IChannelGraph.ControlChannel => ControlChannel;
+
         public ChannelNode DefaultChannel { get; set; }
+
+        IChannel IChannelGraph.DefaultChannel => DefaultChannel;
 
         public ChannelNode this[Uri uri]
         {
@@ -58,6 +61,8 @@ namespace Jasper.Bus
                 return _nodes.GetOrAdd(uri, key => new ChannelNode(uri));
             }
         }
+
+        IChannel IChannelGraph.this[Uri uri] => this[uri];
 
         public ChannelNode this[string uriString] => this[uriString.ToUri()];
 
@@ -93,6 +98,11 @@ namespace Jasper.Bus
             _nodes.TryGetValue(address, out node);
 
             return node;
+        }
+
+        IChannel IChannelGraph.TryGetChannel(Uri address)
+        {
+            return TryGetChannel(address);
         }
 
         public IEnumerable<ChannelNode> IncomingChannelsFor(string scheme)

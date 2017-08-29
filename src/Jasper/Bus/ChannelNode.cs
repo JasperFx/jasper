@@ -8,6 +8,7 @@ using Jasper.Bus.Runtime.Routing;
 
 namespace Jasper.Bus
 {
+    [Obsolete("No longer valid")]
     public enum DeliveryMode
     {
         /// <summary>
@@ -21,7 +22,16 @@ namespace Jasper.Bus
         DeliveryFastWithoutGuarantee
     }
 
-    public class ChannelNode : IContentTypeAware
+    public interface IChannel
+    {
+        Uri Uri { get; }
+        Uri ReplyUri { get; set; }
+        Uri Destination { get; set; }
+        ISender Sender { get; set; }
+        void ApplyModifiers(Envelope envelope);
+    }
+
+    public class ChannelNode : IContentTypeAware, IChannel
     {
         public Uri Uri { get; internal set; }
 
