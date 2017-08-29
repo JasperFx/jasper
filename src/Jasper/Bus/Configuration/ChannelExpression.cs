@@ -23,37 +23,6 @@ namespace Jasper.Bus.Configuration
         }
 
         /// <summary>
-        /// Require this channel to be guaranteed delivery
-        /// </summary>
-        /// <returns></returns>
-        public ChannelExpression DeliveryGuaranteed()
-        {
-            _node.Mode = DeliveryMode.DeliveryGuaranteed;
-            return this;
-        }
-
-        /// <summary>
-        /// Opt out of guaranteed delivery for a faster, but unsafe transport. Suitable for control queues
-        /// </summary>
-        /// <returns></returns>
-        public ChannelExpression DeliveryFastWithoutGuarantee()
-        {
-            _node.Mode = DeliveryMode.DeliveryFastWithoutGuarantee;
-            return this;
-        }
-
-        /// <summary>
-        /// Alter the sending and receiving mode of this channel
-        /// </summary>
-        /// <param name="mode"></param>
-        /// <returns></returns>
-        public ChannelExpression Mode(DeliveryMode mode)
-        {
-            _node.Mode = mode;
-            return this;
-        }
-
-        /// <summary>
         /// Add an IEnvelopeModifier that will apply to only this channel
         /// </summary>
         /// <typeparam name="TModifier"></typeparam>

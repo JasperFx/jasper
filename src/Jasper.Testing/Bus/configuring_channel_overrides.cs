@@ -34,29 +34,6 @@ namespace Jasper.Testing.Bus
         }
 
         [Fact]
-        public void configure_delivery_mode()
-        {
-            with(_ =>
-            {
-                _.Channels.ListenForMessagesFrom("loopback://one");
-                _.Channels.ListenForMessagesFrom("loopback://two")
-                    .DeliveryFastWithoutGuarantee();
-                _.Channels.ListenForMessagesFrom("loopback://three");
-
-            });
-
-            var channelGraph = channels();
-            channelGraph["loopback://two".ToUri()]
-                .Mode.ShouldBe(DeliveryMode.DeliveryFastWithoutGuarantee);
-
-            channelGraph["loopback://one".ToUri()]
-                .Mode.ShouldBe(DeliveryMode.DeliveryGuaranteed);
-
-            channelGraph["loopback://three".ToUri()]
-                .Mode.ShouldBe(DeliveryMode.DeliveryGuaranteed);
-        }
-
-        [Fact]
         public void add_envelope_modifiers()
         {
             with(_ =>

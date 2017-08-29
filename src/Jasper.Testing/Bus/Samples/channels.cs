@@ -56,8 +56,7 @@ namespace Jasper.Testing.Bus.Samples
         public ControlChannelApp(AppSettings settings)
         {
             Channels[settings.Control]
-                .UseAsControlChannel()
-                .DeliveryFastWithoutGuarantee();
+                .UseAsControlChannel();
         }
     }
     // ENDSAMPLE
@@ -94,16 +93,8 @@ namespace Jasper.Testing.Bus.Samples
         {
             // Declare that the "Control" channel
             // use the faster, but unsafe transport mechanism
-            Channels[settings.Control]
-                .DeliveryFastWithoutGuarantee()
+            Channels["jasper://localhost:2222/control"]
                 .UseAsControlChannel();
-
-
-            Channels[settings.Transactions]
-                // This is the default, but you can
-                // still configure it explicitly
-                .DeliveryGuaranteed();
-
         }
     }
     // ENDSAMPLE

@@ -8,25 +8,14 @@ using Jasper.Bus.Runtime.Routing;
 
 namespace Jasper.Bus
 {
-    [Obsolete("No longer valid")]
-    public enum DeliveryMode
-    {
-        /// <summary>
-        /// If supported by the transport, this opts into guaranteed delivery mechanics for this channel
-        /// </summary>
-        DeliveryGuaranteed,
-
-        /// <summary>
-        /// If supported by the transport, this opts into a faster "fire and forget" mechanism for sending and receiving messages. Use this option for control channels.
-        /// </summary>
-        DeliveryFastWithoutGuarantee
-    }
-
     public interface IChannel
     {
         Uri Uri { get; }
         Uri ReplyUri { get; set; }
         Uri Destination { get; set; }
+
+        // TODO -- just bake this into IChannel. That'd allow
+        // you to bring the modifier stuff internally too
         ISender Sender { get; set; }
         void ApplyModifiers(Envelope envelope);
     }
@@ -60,7 +49,6 @@ namespace Jasper.Bus
         public Uri Destination { get; set; }
 
         public ISender Sender { get; set; }
-        public DeliveryMode Mode { get; set; } = DeliveryMode.DeliveryGuaranteed;
         public IList<IEnvelopeModifier> Modifiers { get; } = new List<IEnvelopeModifier>();
 
         public int MaximumParallelization { get; set; } = 5;
