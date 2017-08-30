@@ -30,8 +30,8 @@ namespace IntegrationTests.Lightweight
 
             var receiver = new JasperRegistry();
             receiver.Channels.ListenForMessagesFrom(theAddress);
-            receiver.Messaging.ErrorHandling.OnException<DivideByZeroException>().Requeue();
-            receiver.Messaging.ErrorHandling.OnException<TimeoutException>().RetryLater(1.Minutes());
+            receiver.ErrorHandling.OnException<DivideByZeroException>().Requeue();
+            receiver.ErrorHandling.OnException<TimeoutException>().RetryLater(1.Minutes());
 
             receiver.Messaging.Policies.DefaultMaximumAttempts = 3;
 

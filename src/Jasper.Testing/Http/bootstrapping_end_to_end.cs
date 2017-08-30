@@ -28,7 +28,7 @@ namespace Jasper.Testing.Http
             var registry = new JasperRegistry();
             registry.Http.Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
-            registry.Messaging.Handlers.ExcludeTypes(x => true);
+            registry.Handlers.ExcludeTypes(x => true);
 
             registry.Services.AddService<IWriterRule, CustomWriterRule>();
             registry.Services.AddService<IReaderRule, CustomReaderRule>();

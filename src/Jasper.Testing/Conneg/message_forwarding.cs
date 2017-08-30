@@ -26,8 +26,8 @@ namespace Jasper.Testing.Conneg
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
-                _.Messaging.Handlers.IncludeType<NewMessageHandler>();
+                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.IncludeType<NewMessageHandler>();
 
                 _.Http.Actions.ExcludeTypes(t => true);
             }))
@@ -49,8 +49,8 @@ namespace Jasper.Testing.Conneg
 
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
-                _.Messaging.Handlers.IncludeType<NewMessageHandler>();
+                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.IncludeType<NewMessageHandler>();
 
                 _.Services.For<MessageTracker>().Use(tracker);
 

@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bus
 
                 _.Logging.LogBusEventsWith(this);
 
-                _.Messaging.ErrorHandling.OnException<DivideByZeroException>().Requeue();
+                _.ErrorHandling.OnException<DivideByZeroException>().Requeue();
                 _.Messaging.Policies.DefaultMaximumAttempts = 3;
             });
 

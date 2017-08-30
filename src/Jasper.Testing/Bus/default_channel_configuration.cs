@@ -16,7 +16,7 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.ConventionalDiscoveryDisabled = true;
             }))
             {
 
@@ -31,7 +31,7 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.ConventionalDiscoveryDisabled = true;
                 _.Channels.DefaultIs("loopback://incoming");
             }))
             {
@@ -47,9 +47,9 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.ConventionalDiscoveryDisabled = true;
                 _.Channels.DefaultIs("loopback://incoming");
-                _.Messaging.Handlers.IncludeType<DefaultRoutedMessageHandler>();
+                _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
             }))
             {
                 var router = runtime.Get<IMessageRouter>();
@@ -65,9 +65,9 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.ConventionalDiscoveryDisabled = true;
                 _.Channels.DefaultIs("loopback://incoming");
-                _.Messaging.Handlers.IncludeType<DefaultRoutedMessageHandler>();
+                _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
 
                 _.Messaging.Send<DefaultRoutedMessage>().To("jasper://localhost:2444/outgoing");
             }))
@@ -85,7 +85,7 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.ConventionalDiscoveryDisabled = true;
                 _.Channels.DefaultIs("loopback://incoming");
 
             }))

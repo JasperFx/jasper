@@ -80,6 +80,11 @@ namespace Jasper
             set => Http.EnvironmentName = value;
         }
 
+        public HandlerSource Handlers => _bus.Handlers;
+
+        public IHasErrorHandlers ErrorHandling => _bus.Policies;
+
+
         public AspNetCoreFeature Http { get; }
 
         public MessagesExpression Messaging { get; }

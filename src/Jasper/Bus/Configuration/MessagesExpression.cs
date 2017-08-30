@@ -16,12 +16,11 @@ namespace Jasper.Bus.Configuration
             _bus = bus;
         }
 
-        public HandlerSource Handlers => _bus.Handlers;
         public Policies Policies => _bus.Policies;
 
         public DelayedJobExpression DelayedProcessing => new DelayedJobExpression(_bus);
 
-        public IHasErrorHandlers ErrorHandling => Policies;
+
 
         public SendExpression Send<T>()
         {

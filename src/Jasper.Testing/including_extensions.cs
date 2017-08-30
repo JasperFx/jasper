@@ -12,7 +12,7 @@ namespace Jasper.Testing
         {
             var registry = new JasperRegistry();
             registry.Include<OptionalExtension>();
-            registry.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+            registry.Handlers.ConventionalDiscoveryDisabled = true;
 
             using (var runtime = JasperRuntime.For(registry))
             {
@@ -25,7 +25,7 @@ namespace Jasper.Testing
         public void the_application_still_wins()
         {
             var registry = new JasperRegistry();
-            registry.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+            registry.Handlers.ConventionalDiscoveryDisabled = true;
             registry.Include<OptionalExtension>();
             registry.Services.For<IColorService>().Use<BlueService>();
 

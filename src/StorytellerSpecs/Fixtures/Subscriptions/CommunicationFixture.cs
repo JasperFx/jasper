@@ -128,13 +128,13 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public override void SetUp()
         {
             _registry = new JasperRegistry();
-            _registry.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+            _registry.Handlers.ConventionalDiscoveryDisabled = true;
 
-            _registry.Messaging.Handlers.IncludeType<Message1Handler>();
-            _registry.Messaging.Handlers.IncludeType<Message2Handler>();
-            _registry.Messaging.Handlers.IncludeType<Message3Handler>();
-            _registry.Messaging.Handlers.IncludeType<Message4Handler>();
-            _registry.Messaging.Handlers.IncludeType<Message5Handler>();
+            _registry.Handlers.IncludeType<Message1Handler>();
+            _registry.Handlers.IncludeType<Message2Handler>();
+            _registry.Handlers.IncludeType<Message3Handler>();
+            _registry.Handlers.IncludeType<Message4Handler>();
+            _registry.Handlers.IncludeType<Message5Handler>();
         }
 
         public override void TearDown()

@@ -30,7 +30,7 @@ namespace Jasper.Testing
             Module1.Module1Extension.Registry = null;
 
             var registry = new JasperRegistry();
-            registry.Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+            registry.Handlers.ConventionalDiscoveryDisabled = true;
 
             using (var runtime = JasperRuntime.For(registry))
             {
@@ -83,7 +83,7 @@ namespace Jasper.Testing
     {
         public AppWithOverrides()
         {
-            Messaging.Handlers.ConventionalDiscoveryDisabled = true;
+            Handlers.ConventionalDiscoveryDisabled = true;
 
             Settings.Alter<ModuleSettings>(_ => _.From = "Application");
 
