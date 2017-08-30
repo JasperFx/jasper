@@ -476,12 +476,6 @@ namespace StorytellerSpecs.Fixtures
             return Task.CompletedTask;
         }
 
-        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
-        {
-            DelayedTo = time;
-            return Task.CompletedTask;
-        }
-
         public Task MoveToErrors(ErrorReport report)
         {
             WasMovedToErrors = true;

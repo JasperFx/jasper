@@ -33,19 +33,6 @@ namespace Jasper.Bus.Transports.InMemory
             return Task.CompletedTask;
         }
 
-        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
-        {
-            var now = DateTime.UtcNow;
-            time = time.ToUniversalTime();
-            if (time > now)
-            {
-                delayedJobs.Enqueue(time, envelope);
-                return Task.CompletedTask;
-            }
-
-            return _queue.Send(_message, _destination);
-        }
-
         public Task MoveToErrors(ErrorReport report)
         {
             //TODO: what to do with errors?

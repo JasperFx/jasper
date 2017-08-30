@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
+using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
@@ -213,12 +214,20 @@ namespace Jasper.Bus.Runtime.Invocation
         {
             try
             {
-                await envelope.Callback.MoveToDelayedUntil(envelope, _delayedJobs, envelope.ExecutionTime.Value.ToUniversalTime());
+                envelope.Attempts++;
+                _delayedJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+                await envelope.Callback.MarkSuccessful();
             }
             catch (Exception e)
             {
-                await envelope.Callback.MarkFailed(e);
-                context.Logger.LogException(e, envelope.CorrelationId, "Failed to move delayed message to the delayed message queue");
+                if (envelope.Attempts >= 3)
+                {
+                    await envelope.Callback.MarkFailed(e);
+                    context.Logger.LogException(e, envelope.CorrelationId, "Failed to move delayed message to the delayed message queue");
+                }
+
+                var continuation = _graph.DetermineContinuation(envelope, e) ?? new MoveToErrorQueue(e);
+                await continuation.Execute(envelope, context, DateTime.UtcNow);
             }
         }
     }
@@ -241,11 +250,6 @@ namespace Jasper.Bus.Runtime.Invocation
         public Task MarkFailed(Exception ex)
         {
             throw new InlineMessageException("Failed while invoking an inline message", ex);
-        }
-
-        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
-        {
-            throw new NotImplementedException();
         }
 
         public Task MoveToErrors(ErrorReport report)

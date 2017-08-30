@@ -86,14 +86,6 @@ namespace Jasper.LightningDb.Transport
                 return Task.CompletedTask;
             }
 
-            public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
-            {
-                _parent._persistence.Remove(_parent.QueueName, _envelope);
-                delayedJobs.Enqueue(time, envelope);
-
-                return Task.CompletedTask;
-            }
-
             public Task MoveToErrors(ErrorReport report)
             {
                 // There's an outstanding issue for actually doing error reports

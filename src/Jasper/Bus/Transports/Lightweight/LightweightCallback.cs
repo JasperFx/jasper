@@ -25,12 +25,6 @@ namespace Jasper.Bus.Transports.Lightweight
             return Task.CompletedTask;
         }
 
-        public Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time)
-        {
-            delayedJobs.Enqueue(time, envelope);
-            return Task.CompletedTask;
-        }
-
         public Task MoveToErrors(ErrorReport report)
         {
             return Task.CompletedTask;

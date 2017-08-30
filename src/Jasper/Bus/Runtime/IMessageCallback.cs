@@ -14,9 +14,6 @@ namespace Jasper.Bus.Runtime
         [Obsolete("Remove as part of GH-190")]
         Task MarkFailed(Exception ex);
 
-        [Obsolete("now that we've decided not to make an LMDB backed version of delayed jobs, this is just unnecessary complexity and can be generalized")]
-        Task MoveToDelayedUntil(Envelope envelope, IDelayedJobProcessor delayedJobs, DateTime time);
-
         [Obsolete("Will be eliminated with GH-37")]
         Task MoveToErrors(ErrorReport report);
 

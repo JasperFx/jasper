@@ -14,7 +14,9 @@ namespace Jasper.Bus.ErrorHandling
 
         public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
-            return envelope.Callback.MoveToDelayedUntil(envelope, context.DelayedJobs, utcNow.Add(Delay));
+            context.DelayedJobs.Enqueue(utcNow.Add(Delay), envelope);
+            envelope.Callback.MarkSuccessful();
+            return Task.CompletedTask;
         }
 
         public TimeSpan Delay { get; }
