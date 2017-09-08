@@ -8,7 +8,7 @@ using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Util;
 using Microsoft.CodeAnalysis.CSharp;
 

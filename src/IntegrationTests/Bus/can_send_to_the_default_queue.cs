@@ -14,7 +14,7 @@ namespace IntegrationTests.Bus
         {
             StartTheReceiver(_ =>
             {
-                _.Channels.ListenForMessagesFrom("tcp://localhost:2255");
+                _.Transports.ListenForMessagesFrom("tcp://localhost:2255");
             });
 
             StartTheSender(_ =>
@@ -37,7 +37,7 @@ namespace IntegrationTests.Bus
         {
             StartTheReceiver(_ =>
             {
-                _.Channels.ListenForMessagesFrom("tcp://localhost:2266");
+                _.Transports.ListenForMessagesFrom("tcp://localhost:2266");
             });
 
             StartTheSender(_ =>

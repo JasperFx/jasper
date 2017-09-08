@@ -5,7 +5,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
 
-namespace Jasper.Bus.Settings
+namespace Jasper.Bus.Transports.Configuration
 {
     public class SubscriberAddress : ISubscriberAddress
     {

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Settings;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Core;
 
 namespace Jasper.Bus

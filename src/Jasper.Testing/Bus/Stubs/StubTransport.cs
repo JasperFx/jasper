@@ -7,8 +7,8 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Settings;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Util;
 
 namespace Jasper.Testing.Bus.Stubs

@@ -1,4 +1,4 @@
-﻿using Jasper.Bus.Settings;
+﻿using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
 
 namespace Jasper.Bus.Configuration

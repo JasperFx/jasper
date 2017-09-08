@@ -6,6 +6,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Testing.Bus.Stubs;
 
 namespace Jasper.Testing.Bus.Bootstrapping
@@ -40,6 +41,8 @@ namespace Jasper.Testing.Bus.Bootstrapping
                 _runtime.Value.Dispose();
             }
         }
+
+        public BusSettings theSettings => _runtime.Value.Get<BusSettings>();
 
         public JasperRuntime theRuntime => _runtime.Value;
 

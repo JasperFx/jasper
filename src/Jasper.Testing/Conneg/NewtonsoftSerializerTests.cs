@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Jasper.Bus;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
 using Jasper.Util;
 using Xunit;

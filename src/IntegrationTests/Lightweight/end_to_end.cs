@@ -32,7 +32,7 @@ namespace IntegrationTests.Lightweight
             theSender = JasperRuntime.For(new JasperRegistry());
 
             var receiver = new JasperRegistry();
-            receiver.Channels.ListenForMessagesFrom(theAddress);
+            receiver.Transports.ListenForMessagesFrom(theAddress);
             receiver.ErrorHandling.OnException<DivideByZeroException>().Requeue();
             receiver.ErrorHandling.OnException<TimeoutException>().RetryLater(1.Minutes());
 

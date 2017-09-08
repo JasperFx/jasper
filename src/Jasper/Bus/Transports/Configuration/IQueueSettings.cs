@@ -1,4 +1,4 @@
-﻿namespace Jasper.Bus.Settings
+﻿namespace Jasper.Bus.Transports.Configuration
 {
     public interface IQueueSettings
     {

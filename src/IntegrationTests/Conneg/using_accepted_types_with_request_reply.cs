@@ -24,11 +24,11 @@ namespace IntegrationTests.Conneg
 
             var requestorRegistry = new JasperRegistry();
             requestorRegistry.Messaging.Send<Request1>().To("tcp://localhost:2456/incoming");
-            requestorRegistry.Channels.ListenForMessagesFrom("tcp://localhost:1234/replies");
+            requestorRegistry.Transports.ListenForMessagesFrom("tcp://localhost:1234/replies");
             var requestor = JasperRuntime.For(requestorRegistry);
 
             var replierRegistry = new JasperRegistry();
-            replierRegistry.Channels.ListenForMessagesFrom("tcp://localhost:2456/incoming");
+            replierRegistry.Transports.ListenForMessagesFrom("tcp://localhost:2456/incoming");
             var replier = JasperRuntime.For(replierRegistry);
 
 

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
@@ -17,7 +17,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void listen_to_loopback()
         {
-            var queue = theSettings.ListenTo("loopback://incoming");
+            var queue = theSettings.ListenForMessagesFrom("loopback://incoming");
 
             queue.ShouldBeTheSameAs(theSettings.Loopback.Queues["incoming"]);
         }
@@ -25,19 +25,19 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void do_not_allow_two_listening_ports()
         {
-            theSettings.ListenTo("durable://localhost:2288/incoming");
+            theSettings.ListenForMessagesFrom("durable://localhost:2288/incoming");
 
             Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
             {
-                theSettings.ListenTo("durable://localhost:2289/incoming");
+                theSettings.ListenForMessagesFrom("durable://localhost:2289/incoming");
             });
         }
 
         [Fact]
         public void can_use_listen_to_multiple_times_with_the_same_schema_and_transport()
         {
-            theSettings.ListenTo("durable://localhost:2288/incoming");
-            theSettings.ListenTo("durable://localhost:2288/second");
+            theSettings.ListenForMessagesFrom("durable://localhost:2288/incoming");
+            theSettings.ListenForMessagesFrom("durable://localhost:2288/second");
 
             theSettings.Durable.Queues.Has("incoming").ShouldBeTrue();
             theSettings.Durable.Queues.Has("second").ShouldBeTrue();
@@ -47,11 +47,11 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void do_not_allow_multiple_transports_to_listen_on_the_same_port()
         {
-            theSettings.ListenTo("durable://localhost:2288/incoming");
+            theSettings.ListenForMessagesFrom("durable://localhost:2288/incoming");
 
             Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
             {
-                theSettings.ListenTo("tcp://localhost:2288/second");
+                theSettings.ListenForMessagesFrom("tcp://localhost:2288/second");
             });
 
         }
@@ -59,7 +59,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void listen_to_durable()
         {
-            var queue = theSettings.ListenTo("durable://localhost:2288/incoming");
+            var queue = theSettings.ListenForMessagesFrom("durable://localhost:2288/incoming");
 
             queue.ShouldBeTheSameAs(theSettings.Durable.Queues["incoming"]);
             theSettings.Durable.Port.ShouldBe(2288);
@@ -68,7 +68,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void listen_to_lightweight()
         {
-            var queue = theSettings.ListenTo("tcp://localhost:2299/one");
+            var queue = theSettings.ListenForMessagesFrom("tcp://localhost:2299/one");
 
             queue.ShouldBeTheSameAs(theSettings.Lightweight.Queues["one"]);
             theSettings.Lightweight.Port.ShouldBe(2299);
@@ -77,7 +77,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void listen_to_an_unknown_transport()
         {
-            var queue = theSettings.ListenTo("rabbitmq://server/one");
+            var queue = theSettings.ListenForMessagesFrom("rabbitmq://server/one");
 
             queue.ShouldBeTheSameAs(theSettings.Listeners.Single());
 
@@ -88,8 +88,8 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void listen_to_an_unknown_transport_is_idempotent()
         {
-            var queue = theSettings.ListenTo("rabbitmq://server/one");
-            var queue2 = theSettings.ListenTo("rabbitmq://server/one");
+            var queue = theSettings.ListenForMessagesFrom("rabbitmq://server/one");
+            var queue2 = theSettings.ListenForMessagesFrom("rabbitmq://server/one");
 
             queue.ShouldBeTheSameAs(queue2);
 
@@ -111,7 +111,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public async Task applies_lookups_to_listeners_happy_path()
         {
-            theSettings.ListenTo("fake://one").MaximumParallelization(3);
+            theSettings.ListenForMessagesFrom("fake://one").MaximumParallelization(3);
 
             var lookups = new UriAliasLookup(new IUriLookup[0]);
 

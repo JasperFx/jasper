@@ -43,7 +43,7 @@ namespace DiagnosticsServiceHarness
         public BusRegistry()
         {
             var uri = "durable://localhost:2110/servicebus_example";
-            Channels.ListenForMessagesFrom(uri);
+            Transports.ListenForMessagesFrom(uri);
 
             Logging.UseConsoleLogging = true;
 

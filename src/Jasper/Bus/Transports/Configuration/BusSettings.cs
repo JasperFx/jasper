@@ -11,9 +11,9 @@ using Jasper.Bus.Transports.Loopback;
 using Jasper.Util;
 using Newtonsoft.Json;
 
-namespace Jasper.Bus.Settings
+namespace Jasper.Bus.Transports.Configuration
 {
-    public class BusSettings
+    public class BusSettings : ITransportsExpression
     {
         private readonly LightweightCache<string, TransportSettings> _transports = new LightweightCache<string, TransportSettings>();
 
@@ -34,9 +34,9 @@ namespace Jasper.Bus.Settings
                 State = TransportState.Enabled
             };
 
-            ListenTo(TransportConstants.RetryUri).MaximumParallelization(5);
-            ListenTo(TransportConstants.DelayedUri).MaximumParallelization(5);
-            ListenTo(TransportConstants.RepliesUri).MaximumParallelization(5);
+            ListenForMessagesFrom(TransportConstants.RetryUri).MaximumParallelization(5);
+            ListenForMessagesFrom(TransportConstants.DelayedUri).MaximumParallelization(5);
+            ListenForMessagesFrom(TransportConstants.RepliesUri).MaximumParallelization(5);
         }
 
         // Was ChannelGraph.Name
@@ -44,12 +44,12 @@ namespace Jasper.Bus.Settings
 
         public Uri DefaultChannelAddress
         {
-            get { return _defaultChannelAddress; }
+            get => _defaultChannelAddress;
             set
             {
                 if (value != null && value.Scheme == LoopbackTransport.ProtocolName)
                 {
-                    ListenTo(value);
+                    ListenForMessagesFrom(value);
                 }
 
                 _defaultChannelAddress = value;
@@ -63,6 +63,22 @@ namespace Jasper.Bus.Settings
         public TransportSettings Durable => _transports[DurableTransport.ProtocolName];
 
         public TransportSettings Loopback => _transports[LoopbackTransport.ProtocolName];
+
+        void ITransportsExpression.DefaultIs(string uriString)
+        {
+            DefaultChannelAddress = uriString.ToUri();
+        }
+
+        void ITransportsExpression.DefaultIs(Uri uri)
+        {
+            DefaultChannelAddress = uri;
+        }
+
+        ITransportExpression ITransportsExpression.Durable => Durable;
+
+        ITransportExpression ITransportsExpression.Lightweight => Lightweight;
+
+        ILoopbackTransportExpression ITransportsExpression.Loopback => Loopback;
 
         public bool DisableAllTransports { get; set; }
 
@@ -84,7 +100,7 @@ namespace Jasper.Bus.Settings
         public readonly IList<Listener> Listeners = new List<Listener>();
 
 
-        public IQueueSettings ListenTo(Uri uri)
+        public IQueueSettings ListenForMessagesFrom(Uri uri)
         {
             if (_transports.Has(uri.Scheme))
             {
@@ -143,9 +159,9 @@ namespace Jasper.Bus.Settings
             }
         }
 
-        public IQueueSettings ListenTo(string uriString)
+        public IQueueSettings ListenForMessagesFrom(string uriString)
         {
-            return ListenTo(uriString.ToUri());
+            return ListenForMessagesFrom(uriString.ToUri());
         }
 
         public async Task ApplyLookups(UriAliasLookup lookups)
@@ -166,7 +182,7 @@ namespace Jasper.Bus.Settings
             foreach (var listener in listeners)
             {
                 listener.ReadAlias(lookups);
-                ListenTo(listener.Uri).MaximumParallelization(listener.MaximumParallelization);
+                ListenForMessagesFrom(listener.Uri).MaximumParallelization(listener.MaximumParallelization);
             }
         }
     }

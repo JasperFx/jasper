@@ -1,6 +1,6 @@
 ﻿using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Shouldly;
 using Xunit;
 

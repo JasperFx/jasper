@@ -10,7 +10,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Loopback;
 using Jasper.Codegen;
 using Jasper.Configuration;

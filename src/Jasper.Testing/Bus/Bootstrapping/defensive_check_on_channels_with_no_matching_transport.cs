@@ -13,8 +13,8 @@ namespace Jasper.Testing.Bus.Bootstrapping
             {
                 var registry = new JasperRegistry();
 
-                registry.Channels.ListenForMessagesFrom("foo://1");
-                registry.Channels.ListenForMessagesFrom("foo://2");
+                registry.Transports.ListenForMessagesFrom("foo://1");
+                registry.Transports.ListenForMessagesFrom("foo://2");
 
                 registry.Handlers.DisableConventionalDiscovery();
 

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
@@ -9,8 +7,8 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Settings;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
 
 namespace Jasper.Bus
@@ -40,6 +38,7 @@ namespace Jasper.Bus
         {
             var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime, _transports, _lookups);
 
+            var transports = _transports.Where(x => x.State == TransportState.Enabled).ToArray();
 
             if (!_settings.DisableAllTransports)
             {
@@ -47,7 +46,7 @@ namespace Jasper.Bus
 
 
 
-                channels.StartTransports(_pipeline, _settings, _transports);
+                channels.StartTransports(_pipeline, _settings, transports);
 
                 _delayedJobs.Start(_pipeline, channels);
 
@@ -65,12 +64,4 @@ namespace Jasper.Bus
         }
 
     }
-
-    public class InvalidSubscriptionException : Exception
-    {
-        public InvalidSubscriptionException(string[] errors) : base($"Subscription errors detected:{Environment.NewLine}{errors.Select(e => $"* {e}").Join(Environment.NewLine)}")
-        {
-        }
-    }
-
 }

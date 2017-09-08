@@ -40,7 +40,7 @@ namespace Jasper.Testing.Bus
             with(_ =>
             {
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Channels.ListenForMessagesFrom("fake://one");
+                _.Transports.ListenForMessagesFrom("fake://one");
             });
 
             Channels.Where(x => x.Uri.Scheme == "loopback").Any(x => x.Uri == "loopback://one".ToUri())
@@ -60,7 +60,7 @@ namespace Jasper.Testing.Bus
                 _.Services.For<MessageTracker>().Use(tracker);
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
                 _.Messaging.Send<Message1>().To("fake://one");
-                _.Channels.ListenForMessagesFrom("fake://one");
+                _.Transports.ListenForMessagesFrom("fake://one");
             });
 
             var waiter = tracker.WaitFor<Message1>();
@@ -81,7 +81,7 @@ namespace Jasper.Testing.Bus
             {
                 _.Services.For<MessageTracker>().Use(tracker);
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Channels.ListenForMessagesFrom("fake://one");
+                _.Transports.ListenForMessagesFrom("fake://one");
             });
 
             var waiter = tracker.WaitFor<Message1>();

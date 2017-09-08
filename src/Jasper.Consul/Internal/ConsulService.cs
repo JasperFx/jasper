@@ -3,7 +3,7 @@ using Consul;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Newtonsoft.Json;
 
 namespace Jasper.Consul.Internal

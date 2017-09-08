@@ -62,7 +62,7 @@ namespace IntegrationTests.DelayedJobs
             Messaging.SendFromAssemblyContaining<DelayedMessageApp>()
                 .To("loopback://incoming");
 
-            Channels.ListenForMessagesFrom("loopback://incoming");
+            Transports.ListenForMessagesFrom("loopback://incoming");
 
             Logging.UseConsoleLogging = true;
         }

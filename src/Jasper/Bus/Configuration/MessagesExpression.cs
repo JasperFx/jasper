@@ -3,7 +3,7 @@ using System.Reflection;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Util;
 using StructureMap.TypeRules;
 

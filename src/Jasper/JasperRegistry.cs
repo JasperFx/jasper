@@ -9,6 +9,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
@@ -38,7 +39,6 @@ namespace Jasper
             Http = Features.For<AspNetCoreFeature>();
 
             Serialization = new SerializationExpression(_bus, this);
-            Channels = new ChannelConfiguration(_bus);
             Messaging = new MessagesExpression(_bus);
 
             _applicationServices = new ServiceRegistry();
@@ -91,7 +91,7 @@ namespace Jasper
 
         public MessagesExpression Messaging { get; }
 
-        public ChannelConfiguration Channels { get; }
+        public ITransportsExpression Transports => _bus.Settings;
 
         public SerializationExpression Serialization { get; }
 

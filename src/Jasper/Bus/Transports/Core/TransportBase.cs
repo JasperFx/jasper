@@ -7,7 +7,7 @@ using Baseline.Dates;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Util;
 
 namespace Jasper.Bus.Transports.Core
@@ -18,7 +18,7 @@ namespace Jasper.Bus.Transports.Core
         public CompositeLogger Logger { get; }
         public IPersistence Persistence { get; }
 
-        private TransportSettings _settings;
+        private readonly TransportSettings _settings;
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
         private readonly SendingAgent _sender;
@@ -26,12 +26,13 @@ namespace Jasper.Bus.Transports.Core
         private ListeningAgent _listener;
         private QueueCollection _queues;
 
-        protected TransportBase(string protocol, IPersistence persistence, CompositeLogger logger, ISenderProtocol sendingProtocol)
+        protected TransportBase(string protocol, IPersistence persistence, CompositeLogger logger, ISenderProtocol sendingProtocol, BusSettings settings)
         {
             _sender = new SendingAgent(sendingProtocol);
             Protocol = protocol;
             Persistence = persistence;
             Logger = logger;
+            _settings = settings[Protocol];
         }
 
         public void Dispose()
@@ -137,8 +138,6 @@ namespace Jasper.Bus.Transports.Core
 
         public IChannel[] Start(IHandlerPipeline pipeline, BusSettings settings, OutgoingChannels channels)
         {
-            _settings = settings[Protocol];
-
             if (_settings.State == TransportState.Disabled) return new IChannel[0];
 
 

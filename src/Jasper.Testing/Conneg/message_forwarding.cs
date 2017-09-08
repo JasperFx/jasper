@@ -56,7 +56,7 @@ namespace Jasper.Testing.Conneg
 
 
                 _.Messaging.Send<OriginalMessage>().To(channel);
-                _.Channels.ListenForMessagesFrom(channel);
+                _.Transports.ListenForMessagesFrom(channel);
             }))
             {
                 var waiter = tracker.WaitFor<NewMessage>();

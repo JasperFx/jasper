@@ -1,6 +1,6 @@
 ﻿using System;
 using Jasper.Bus;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Oakton;
 
 namespace Jasper.CommandLine

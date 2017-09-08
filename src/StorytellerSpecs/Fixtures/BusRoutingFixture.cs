@@ -43,7 +43,7 @@ namespace StorytellerSpecs.Fixtures
             _registry.Messaging.SendMatching(type.Name, t => t == type).To(channel);
 
             // Just makes the test harness listen for things
-            _registry.Channels.ListenForMessagesFrom(channel);
+            _registry.Transports.ListenForMessagesFrom(channel);
         }
 
         [FormatAs("Additional serializers have content types {contentTypes}")]

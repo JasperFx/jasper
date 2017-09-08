@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bus.Samples
                 .To(settings.Pinger);
 
             // Listen for incoming messages from "Pinger"
-            Channels.ListenForMessagesFrom(settings.Pinger);
+            Transports.ListenForMessagesFrom(settings.Pinger);
         }
     }
 
@@ -38,7 +38,7 @@ namespace Jasper.Testing.Bus.Samples
         public PongApp(SampleSettings settings)
         {
             // Listen for incoming messages from "Ponger"
-            Channels.ListenForMessagesFrom(settings.Ponger);
+            Transports.ListenForMessagesFrom(settings.Ponger);
         }
     }
     // ENDSAMPLE
@@ -57,7 +57,7 @@ namespace Jasper.Testing.Bus.Samples
         public ListeningApp(SampleSettings settings)
         {
             // Listen for incoming messages from "Pinger"
-            Channels.ListenForMessagesFrom(settings.Pinger);
+            Transports.ListenForMessagesFrom(settings.Pinger);
         }
     }
     // ENDSAMPLE

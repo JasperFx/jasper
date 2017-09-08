@@ -112,7 +112,7 @@ namespace IntegrationTests.Conneg
         public BlueApp(MessageTracker tracker)
         {
             Services.ForSingletonOf<MessageTracker>().Use(tracker);
-            Channels.ListenForMessagesFrom("tcp://localhost:2555/blue");
+            Transports.ListenForMessagesFrom("tcp://localhost:2555/blue");
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<BlueHandler>();
         }

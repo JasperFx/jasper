@@ -12,10 +12,7 @@ namespace MyApp
         {
             Http.UseKestrel().UseUrls("http://localhost:3001");
 
-            // TODO -- use the new syntax from GH-163 when it exists
-            Channels.ListenForMessagesFrom("tcp://localhost:2222/incoming");
-
-
+            Transports.Lightweight.ListenOnPort(2222);
 
             Publishing.Message<Message1>();
             Publishing.Message<Message2>();

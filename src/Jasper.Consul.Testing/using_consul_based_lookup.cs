@@ -59,8 +59,8 @@ namespace IntegrationTests.Consul
 
         public ConsulUsingApp()
         {
-            Channels.ListenForMessagesFrom("consul://" + prop1);
-            Channels.ListenForMessagesFrom("consul://" + prop2);
+            Transports.ListenForMessagesFrom("consul://" + prop1);
+            Transports.ListenForMessagesFrom("consul://" + prop2);
         }
     }
 }

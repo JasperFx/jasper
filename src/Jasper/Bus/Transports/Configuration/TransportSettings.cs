@@ -4,7 +4,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Bus.Transports.Core;
 
-namespace Jasper.Bus.Settings
+namespace Jasper.Bus.Transports.Configuration
 {
     public class TransportSettings : ITransportExpression, IQueueIndexer, IEnumerable<QueueSettings>
     {

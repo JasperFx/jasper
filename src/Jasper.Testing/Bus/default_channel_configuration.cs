@@ -32,7 +32,7 @@ namespace Jasper.Testing.Bus
             using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
-                _.Channels.DefaultIs("loopback://incoming");
+                _.Transports.DefaultIs("loopback://incoming");
             }))
             {
                 var channels = runtime.Get<IChannelGraph>();
@@ -48,7 +48,7 @@ namespace Jasper.Testing.Bus
             using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
-                _.Channels.DefaultIs("loopback://incoming");
+                _.Transports.DefaultIs("loopback://incoming");
                 _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
             }))
             {
@@ -66,7 +66,7 @@ namespace Jasper.Testing.Bus
             using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
-                _.Channels.DefaultIs("loopback://incoming");
+                _.Transports.DefaultIs("loopback://incoming");
                 _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
 
                 _.Messaging.Send<DefaultRoutedMessage>().To("tcp://localhost:2444/outgoing");
@@ -86,7 +86,7 @@ namespace Jasper.Testing.Bus
             using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
-                _.Channels.DefaultIs("loopback://incoming");
+                _.Transports.DefaultIs("loopback://incoming");
 
             }))
             {

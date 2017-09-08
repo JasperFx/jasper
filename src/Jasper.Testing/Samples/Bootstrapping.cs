@@ -31,7 +31,7 @@ namespace Jasper.Testing.Samples
             // SAMPLE: Bootstrapping-Basic3
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Channels.ListenForMessagesFrom("tcp://localhost:2001");
+                _.Transports.ListenForMessagesFrom("tcp://localhost:2001");
             }))
             {
                 // do stuff
@@ -125,7 +125,7 @@ namespace Bootstrapping.Configuration2
 
             Configuration.AddEnvironmentVariables();
 
-            Channels.ListenForMessagesFrom("durable://localhost:2111/incoming");
+            Transports.ListenForMessagesFrom("durable://localhost:2111/incoming");
         }
     }
     // ENDSAMPLE

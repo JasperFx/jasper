@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jasper.Bus.Settings
+namespace Jasper.Bus.Transports.Configuration
 {
     public class QueueSettings : IQueueSettings
     {

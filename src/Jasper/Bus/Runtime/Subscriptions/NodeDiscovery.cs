@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {

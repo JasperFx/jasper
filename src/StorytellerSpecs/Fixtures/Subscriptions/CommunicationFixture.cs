@@ -159,7 +159,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         [FormatAs("Handles and subscibes to message {messageType} at Uri {uri}")]
         public void SubscribeAtUri(string messageType, Uri uri)
         {
-            _registry.Channels.ListenForMessagesFrom(uri);
+            _registry.Transports.ListenForMessagesFrom(uri);
 
             var type = messageTypeFor(messageType);
 

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Baseline;
 using Jasper.Bus;
-using Jasper.Bus.Settings;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Util;
 using Newtonsoft.Json;
 
