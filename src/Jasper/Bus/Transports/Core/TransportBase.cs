@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Baseline.Dates;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
@@ -113,6 +114,11 @@ namespace Jasper.Bus.Transports.Core
 
         public Task Send(Envelope envelope, Uri destination)
         {
+            if ((envelope.ReplyRequested.IsNotEmpty() || envelope.AckRequested) && _listener == null)
+            {
+                throw new InvalidOperationException($"Transport '{Protocol}' cannot send messages with reply-requested or ack-requested without a receiver for replies");
+            }
+
             envelope.Destination = destination;
             enqueue(envelope);
 

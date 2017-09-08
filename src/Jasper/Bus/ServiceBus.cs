@@ -24,7 +24,7 @@ namespace Jasper.Bus
             _serialization = serialization;
         }
 
-        public Task<TResponse> Request<TResponse>(object request, RequestOptions options = null)
+        public async Task<TResponse> Request<TResponse>(object request, RequestOptions options = null)
         {
             options = options ?? new RequestOptions();
 
@@ -36,11 +36,11 @@ namespace Jasper.Bus
             }
 
 
-            var task = _watcher.StartWatch<TResponse>(envelope.CorrelationId, options.Timeout);
+            var watcher = _watcher.StartWatch<TResponse>(envelope.CorrelationId, options.Timeout);
 
-            _sender.Send(envelope);
+            await _sender.Send(envelope);
 
-            return task;
+            return await watcher;
         }
 
         public Envelope EnvelopeForRequestResponse<TResponse>(object request)

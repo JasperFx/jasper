@@ -41,12 +41,6 @@ namespace Jasper.Testing.Bus
         }
 
         [Fact]
-        public void should_register_a_reply_listener()
-        {
-            theTask.ShouldBeTheSameAs(original);
-        }
-
-        [Fact]
         public void sends_the_envelope_to_the_sender()
         {
             ShouldBeNullExtensions.ShouldNotBeNull(theEnvelope);
@@ -85,12 +79,6 @@ namespace Jasper.Testing.Bus
         public void the_envelope_is_sent_with_reply_requested_header()
         {
             theEnvelope.ReplyRequested.ShouldBe(typeof(Message2).ToMessageAlias());
-        }
-
-        [Fact]
-        public void should_register_a_reply_listener()
-        {
-            theTask.ShouldBeTheSameAs(original);
         }
 
         [Fact]
