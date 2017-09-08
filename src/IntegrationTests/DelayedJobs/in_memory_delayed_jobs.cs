@@ -10,12 +10,13 @@ using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Testing;
 using Jasper.Testing.Bus;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.DelayedJobs
 {
-    public class in_memory_delayed_jobs : ISender
+    public class in_memory_delayed_jobs : IChannel
     {
         private readonly InMemoryDelayedJobProcessor theDelayedJobs;
         private readonly IList<Envelope> sent = new List<Envelope>();
@@ -24,7 +25,17 @@ namespace IntegrationTests.DelayedJobs
 
         public in_memory_delayed_jobs()
         {
-            theDelayedJobs = InMemoryDelayedJobProcessor.ForSender(this);
+            theDelayedJobs = InMemoryDelayedJobProcessor.ForChannel(this);
+        }
+
+        public string QueueName()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ShouldSendMessage(Type messageType)
+        {
+            throw new NotImplementedException();
         }
 
         public Task Send(Envelope envelope)
@@ -37,6 +48,11 @@ namespace IntegrationTests.DelayedJobs
 
             return Task.CompletedTask;
         }
+
+        public Uri Uri { get; }
+        public Uri ReplyUri { get; }
+        public Uri Destination { get; } = "loopback://delayed".ToUri();
+        public Uri Alias { get; }
 
         private Task<Envelope> waitForReceipt(Envelope envelope)
         {

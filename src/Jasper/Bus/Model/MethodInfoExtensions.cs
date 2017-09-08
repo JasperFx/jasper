@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Jasper.Bus.Runtime;
+using Jasper.Util;
 
 namespace Jasper.Bus.Model
 {

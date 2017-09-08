@@ -9,6 +9,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports;
 using Jasper.Conneg;
 
 namespace Jasper.Bus
@@ -34,16 +35,19 @@ namespace Jasper.Bus
             _nodes = nodes;
         }
 
-        public async Task Activate(HandlerGraph handlers, ChannelGraph channels, CapabilityGraph capabilities, JasperRuntime runtime)
+        public async Task Activate(HandlerGraph handlers, CapabilityGraph capabilities, JasperRuntime runtime, OutgoingChannels channels)
         {
             var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime, _transports, _lookups);
 
 
             if (!_settings.DisableAllTransports)
             {
-                await channels.ApplyLookups(_lookups);
+                await _settings.ApplyLookups(_lookups);
 
-                channels.StartTransports(_pipeline, _transports);
+
+
+                channels.StartTransports(_pipeline, _settings, _transports);
+
                 _delayedJobs.Start(_pipeline, channels);
 
                 var local = new TransportNode(channels, _settings.MachineName);

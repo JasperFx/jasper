@@ -1,5 +1,5 @@
 ﻿using Jasper.Bus.Delayed;
-using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Transports.Loopback;
 using Shouldly;
 using Xunit;
 
@@ -14,9 +14,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
 
             theChannels.HasChannel(LoopbackTransport.Delayed).ShouldBeTrue();
 
-            var channel = theChannels[LoopbackTransport.Delayed];
-            channel.Incoming.ShouldBeTrue();
-            channel.Sender.ShouldNotBeNull();
         }
 
         [Fact]

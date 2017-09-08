@@ -4,24 +4,24 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-06-26T19:52:19.8347215Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
     [ServiceBusApplication]
     |> ListenForMessagesFrom
     ``` channel
-    jasper://localhost:2201/one
+    tcp://localhost:2201/one
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    jasper://localhost:2201/one
+    tcp://localhost:2201/one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    jasper://localhost:2201/one
+    tcp://localhost:2201/one
     ```
 
 
@@ -30,7 +30,7 @@ There is no handler for UnhandledMessage in this configuration
 
 |> SendGarbledMessage
 ``` address
-jasper://localhost:2201/one
+tcp://localhost:2201/one
 ```
 
 |> SendMessage messageType=Message1, name=Suzy
@@ -38,7 +38,7 @@ jasper://localhost:2201/one
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                 |MessageType|Name   |
-    |jasper://localhost:2201/one|Message1   |Suzy   |
-    |jasper://localhost:2201/one|Message2   |Russell|
+    |tcp://localhost:2201/one|Message1   |Suzy   |
+    |tcp://localhost:2201/one|Message2   |Russell|
 
 ~~~

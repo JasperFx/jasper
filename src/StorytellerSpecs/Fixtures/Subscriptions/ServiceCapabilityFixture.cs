@@ -4,6 +4,7 @@ using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports;
 using Jasper.Conneg;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -40,7 +41,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public override void SetUp()
         {
             _registry = new JasperRegistry();
-            _registry.Handlers.ConventionalDiscoveryDisabled = true;
+            _registry.Handlers.DisableConventionalDiscovery(true);
         }
 
         public override void TearDown()

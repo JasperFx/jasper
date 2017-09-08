@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus.Transports.Lightweight
 {
     public class LightweightCallback : IMessageCallback
     {
-        private readonly ILoopbackQueue _retries;
+        private readonly IChannel _retries;
 
-        public LightweightCallback(ILoopbackQueue retries)
+        public LightweightCallback(IChannel retries)
         {
-            _retries = retries;
+            _retries = retries ?? throw new ArgumentNullException(nameof(retries));
         }
 
         public Task MarkSuccessful()
@@ -22,25 +21,30 @@ namespace Jasper.Bus.Transports.Lightweight
 
         public Task MarkFailed(Exception ex)
         {
-            return Task.CompletedTask;
+            throw new InlineMessageException("Failed while invoking an inline message", ex);
         }
 
         public Task MoveToErrors(ErrorReport report)
         {
+            // TODO -- need a general way to log errors against an ITransport
             return Task.CompletedTask;
-        }
-
-        public Task Requeue(Envelope envelope)
-        {
-            return _retries.Send(envelope, LoopbackTransport.Retries);
         }
 
         public Task Send(Envelope envelope)
         {
-            throw new NotSupportedException();
+            // nothing
+            return Task.CompletedTask;
         }
 
         public bool SupportsSend { get; } = false;
-        public string TransportScheme { get; } = "jasper";
+        public string TransportScheme => "retries";
+
+        public Task Requeue(Envelope envelope)
+        {
+            var clone = envelope.Clone();
+            clone.Destination = _retries.Destination;
+
+            return _retries.Send(clone);
+        }
     }
 }

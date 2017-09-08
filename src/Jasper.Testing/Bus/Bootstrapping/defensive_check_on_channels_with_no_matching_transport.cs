@@ -12,9 +12,11 @@ namespace Jasper.Testing.Bus.Bootstrapping
             var ex = Testing.Exception<UnknownTransportException>.ShouldBeThrownBy(() =>
             {
                 var registry = new JasperRegistry();
-                registry.Channels.Add("foo://1");
-                registry.Channels.Add("foo://2");
-                registry.Handlers.ExcludeTypes(x => true);
+
+                registry.Channels.ListenForMessagesFrom("foo://1");
+                registry.Channels.ListenForMessagesFrom("foo://2");
+
+                registry.Handlers.DisableConventionalDiscovery();
 
                 using (var runtime = JasperRuntime.For(registry))
                 {

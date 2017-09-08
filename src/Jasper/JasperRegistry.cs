@@ -56,6 +56,8 @@ namespace Jasper
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
 
+            Settings.Replace(_bus.Settings);
+
             if (JasperEnvironment.Name.IsNotEmpty())
             {
                 EnvironmentName = JasperEnvironment.Name;
@@ -141,8 +143,8 @@ namespace Jasper
 
         public string ServiceName
         {
-            get => _bus.Channels.Name;
-            set => _bus.Channels.Name = value;
+            get => _bus.Settings.ServiceName;
+            set => _bus.Settings.ServiceName = value;
         }
 
         internal void ApplyExtensions(IJasperExtension[] extensions)

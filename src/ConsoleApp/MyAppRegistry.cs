@@ -13,7 +13,7 @@ namespace MyApp
             Http.UseKestrel().UseUrls("http://localhost:3001");
 
             // TODO -- use the new syntax from GH-163 when it exists
-            Channels.ListenForMessagesFrom("jasper://localhost:2222/incoming");
+            Channels.ListenForMessagesFrom("tcp://localhost:2222/incoming");
 
 
 
@@ -21,7 +21,7 @@ namespace MyApp
             Publishing.Message<Message2>();
             Publishing.Message<Message3>();
 
-            Subscriptions.At("jasper://server1:2222");
+            Subscriptions.At("tcp://server1:2222");
             Subscriptions.To<Message4>();
             Subscriptions.To<Message5>();
         }

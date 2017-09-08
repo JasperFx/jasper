@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus;
-using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Transports.Loopback;
 using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;

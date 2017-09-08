@@ -2,11 +2,14 @@
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
 using Jasper.Bus.Transports.Lightweight;
 using Jasper.Testing;
+using Jasper.Util;
 using Shouldly;
 
 namespace IntegrationTests.Lightweight.Protocol
@@ -17,14 +20,14 @@ namespace IntegrationTests.Lightweight.Protocol
         protected StubSenderCallback theSender = new StubSenderCallback();
         private readonly IPAddress theAddress = IPAddress.Loopback;
         private readonly int thePort = 2112;
-        private Uri destination = $"lq.tcp://localhost:2112/incoming".ToUri();
+        private Uri destination = $"durable://localhost:2112/incoming".ToUri();
         private OutgoingMessageBatch theMessageBatch;
         private bool _isDisposed;
         private ListeningAgent _listener;
 
         public ProtocolContext()
         {
-            _listener = new ListeningAgent(theReceiver, thePort);
+            _listener = new ListeningAgent(theReceiver, thePort, "durable", CancellationToken.None);
 
 
 
@@ -95,7 +98,7 @@ namespace IntegrationTests.Lightweight.Protocol
         public ReceivedStatus StatusToReturn;
         public bool ThrowErrorOnReceived;
 
-        ReceivedStatus IReceiverCallback.Received(Envelope[] messages)
+        ReceivedStatus IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
             if (ThrowErrorOnReceived)
             {

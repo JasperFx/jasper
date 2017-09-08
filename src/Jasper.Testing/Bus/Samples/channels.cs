@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
+using Jasper.Util;
 
 namespace Jasper.Testing.Bus.Samples
 {
@@ -10,10 +11,10 @@ namespace Jasper.Testing.Bus.Samples
     public class SampleSettings
     {
         public Uri Pinger { get; set; } =
-            "lq.tcp://localhost:2352/pinger".ToUri();
+            "durable://localhost:2352/pinger".ToUri();
 
         public Uri Ponger { get; set; } =
-            "lq.tcp://localhost:2353/ponger".ToUri();
+            "durable://localhost:2353/ponger".ToUri();
     }
     // ENDSAMPLE
 
@@ -50,17 +51,6 @@ namespace Jasper.Testing.Bus.Samples
     {
     }
 
-    // SAMPLE: ControlChannelApp
-    public class ControlChannelApp : JasperRegistry
-    {
-        public ControlChannelApp(AppSettings settings)
-        {
-            Channels[settings.Control]
-                .UseAsControlChannel();
-        }
-    }
-    // ENDSAMPLE
-
     // SAMPLE: ListeningApp
     public class ListeningApp : JasperRegistry
     {
@@ -78,25 +68,15 @@ namespace Jasper.Testing.Bus.Samples
         // This channel handles "fire and forget"
         // control messages
         public Uri Control { get; set; }
-            = new Uri("lq.tcp://localhost:2345/control");
+            = new Uri("durable://localhost:2345/control");
 
 
         // This channel handles normal business
         // processing messages
         public Uri Transactions { get; set; }
-            = new Uri("lq.tcp://localhost:2346/transactions");
+            = new Uri("durable://localhost:2346/transactions");
     }
 
-    public class BigApp : JasperRegistry
-    {
-        public BigApp(AppSettings settings)
-        {
-            // Declare that the "Control" channel
-            // use the faster, but unsafe transport mechanism
-            Channels["jasper://localhost:2222/control"]
-                .UseAsControlChannel();
-        }
-    }
     // ENDSAMPLE
 
     // SAMPLE: sending-messages-for-static-routing

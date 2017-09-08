@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Baseline;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime
@@ -25,6 +27,7 @@ namespace Jasper.Bus.Runtime
         public static readonly string AckRequestedKey = "ack-requested";
         public static readonly string MessageTypeKey = "message-type";
         public static readonly string AcceptedContentTypesKey = "accepted-content-types";
+
 
         public byte[] Data;
         private object _message;
@@ -204,6 +207,24 @@ namespace Jasper.Bus.Runtime
                 return 0;
             }
             set { Headers[SentAttemptsHeaderKey] = value.ToString(); }
+        }
+
+        public Uri ReceivedAt
+        {
+            get
+            {
+                var uri = Headers.GetUri(Envelope.ReceivedAtKey);
+                if (uri == null) return null;
+
+                if (Queue.IsNotEmpty() && !uri.Segments.Contains(Queue))
+                {
+                    uri = (uri.ToString().TrimEnd('/') + Queue).ToUri();
+                }
+
+                return uri;
+            }
+            set { Headers.Set(Envelope.ReceivedAtKey, value); }
+
         }
 
         protected bool Equals(Envelope other)

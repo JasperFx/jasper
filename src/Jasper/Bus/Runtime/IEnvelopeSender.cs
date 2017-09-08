@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Bus.Transports;
 
 namespace Jasper.Bus.Runtime
 {

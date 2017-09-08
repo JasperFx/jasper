@@ -28,4 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Transport" />
+  </ItemGroup>
 </Project>

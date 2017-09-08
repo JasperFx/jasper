@@ -1,13 +1,12 @@
 ﻿using System;
 using Baseline;
+using Jasper.Bus.Runtime;
 using LightningDB;
 
 namespace Jasper.LightningDb
 {
     public class LightningDbSettings
     {
-        public int DefaultReplyPort { get; set; } = 2233;
-
         public string QueuePath { get; set; } = AppContext.BaseDirectory.AppendPath("jasperqueues");
 
         /// <summary>

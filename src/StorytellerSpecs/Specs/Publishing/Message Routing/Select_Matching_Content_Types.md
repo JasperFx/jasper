@@ -14,7 +14,7 @@
     |Message1   |loopback://two/              |purple,application/json|
     |Message1   |loopback://three/            |NULL                   |
     |Message1   |loopback://four/             |missing,green          |
-    |Message1   |jasper://localhost:2201/one|red, purple            |
+    |Message1   |tcp://localhost:2201/one|red, purple            |
 
 |> SerializersAre contentTypes=green
 |> CustomWritersAre
@@ -22,7 +22,7 @@
     |> CustomWritersAre-row MessageType=Message1, ContentType=blue
 
 
-There are no matching content types for the subscription to jasper://localhost:2201/one, so it doesn't appear here
+There are no matching content types for the subscription to tcp://localhost:2201/one, so it doesn't appear here
 
 |> ForMessage MessageType=Message1
 |> TheRoutesShouldBe

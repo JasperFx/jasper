@@ -6,18 +6,18 @@ using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Transports.Loopback;
 
 namespace Jasper.Bus.Delayed
 {
     public class InMemoryDelayedJobProcessor : IDelayedJobProcessor, IDisposable
     {
-        public static InMemoryDelayedJobProcessor ForSender(ISender sender)
+        public static InMemoryDelayedJobProcessor ForChannel(IChannel channel)
         {
-            return new InMemoryDelayedJobProcessor{_sender = sender};
+            return new InMemoryDelayedJobProcessor{_channel = channel};
         }
 
-        private ISender _sender;
+        private IChannel _channel;
 
         private readonly ConcurrentCache<string, InMemoryDelayedJob> _outstandingJobs
             = new ConcurrentCache<string, InMemoryDelayedJob>();
@@ -30,7 +30,7 @@ namespace Jasper.Bus.Delayed
 
         public void Start(IHandlerPipeline pipeline, IChannelGraph channels)
         {
-            _sender = channels[LoopbackTransport.Delayed].Sender;
+            _channel = channels[LoopbackTransport.Delayed];
         }
 
         public async Task PlayAll()
@@ -38,7 +38,7 @@ namespace Jasper.Bus.Delayed
             var outstanding = _outstandingJobs.ToArray();
             foreach (var job in outstanding)
             {
-                await _sender.Send(job.Envelope);
+                await _channel.Send(job.Envelope);
                 job.Cancel();
             }
         }
@@ -48,7 +48,7 @@ namespace Jasper.Bus.Delayed
             var outstanding = _outstandingJobs.Where(x => x.ExecutionTime <= executionTime).ToArray();
             foreach (var job in outstanding)
             {
-                await _sender.Send(job.Envelope);
+                await _channel.Send(job.Envelope);
                 job.Cancel();
             }
         }
@@ -102,7 +102,7 @@ namespace Jasper.Bus.Delayed
             {
                 return _cancellation.IsCancellationRequested
                     ? Task.CompletedTask
-                    : _parent._sender.Send(Envelope).ContinueWith(t => Cancel());
+                    : _parent._channel.Send(Envelope).ContinueWith(t => Cancel());
             }
 
             public void Cancel()

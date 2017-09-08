@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using IntegrationTests.Lightweight.Protocol;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
 using Jasper.Bus.Transports.Lightweight;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -15,12 +18,12 @@ namespace IntegrationTests.Lightweight
     {
         private readonly RecordingReceiverCallback theReceiver = new RecordingReceiverCallback();
         private ListeningAgent theListener;
-        private Uri destination = $"lq.tcp://localhost:2113/incoming".ToUri();
+        private Uri destination = $"durable://localhost:2113/incoming".ToUri();
         private SendingAgent theSender;
 
         public sender_to_receiver_agent()
         {
-            theListener = new ListeningAgent(theReceiver, 2113);
+            theListener = new ListeningAgent(theReceiver, 2113, "durable", CancellationToken.None);
             theSender = new SendingAgent();
 
             theListener.Start();
@@ -82,7 +85,7 @@ namespace IntegrationTests.Lightweight
 
         public int ExpectCount { get; set; }
 
-        public ReceivedStatus Received(Envelope[] messages)
+        public ReceivedStatus Received(Uri uri, Envelope[] messages)
         {
             ReceivedMessages.AddRange(messages);
 

@@ -16,7 +16,9 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
-using Jasper.LightningDb.Transport;
+using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Durable;
 using Jasper.Util;
 using StoryTeller;
 
@@ -32,17 +34,17 @@ namespace StorytellerSpecs.Fixtures
             Title = "Send Messages through the Service Bus";
         }
 
-        public override void SetUp()
-        {
-            PersistentTransport.DeleteAllStorage();
-        }
-
-
 
         public IGrammar IfTheApplicationIs()
         {
             return Embed<ServiceBusApplication>("If a service bus application is configured to")
-                .After(c => _runtime = c.State.Retrieve<JasperRuntime>());
+                .After(c =>
+                {
+                    _runtime = c.State.Retrieve<JasperRuntime>();
+                    _runtime.Get<IPersistence>().ClearAllStoredMessages();
+                });
+
+
         }
 
         [FormatAs("Send message {messageType} named {name}")]
@@ -327,13 +329,22 @@ namespace StorytellerSpecs.Fixtures
 
     public class StubTransport : ITransport
     {
-        public readonly LightweightCache<Uri, StubChannel> Channels =
-            new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri));
+        public readonly LightweightCache<Uri, StubChannel> Channels;
+        private IHandlerPipeline _pipeline;
+        private Uri _replyUri;
 
         public StubTransport(string scheme = "stub")
         {
-            ReplyChannel = Channels[new Uri($"{scheme}://replies")];
+            _replyUri = new Uri($"{scheme}://replies");
+
+            Channels =
+                new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, _replyUri, _pipeline, null));
+
+
+            ReplyChannel = Channels[_replyUri];
             Protocol = scheme;
+
+
         }
 
         public StubChannel ReplyChannel { get; set; }
@@ -349,31 +360,43 @@ namespace StorytellerSpecs.Fixtures
 
         public Task Send(Envelope envelope, Uri destination)
         {
-            return Channels[destination].Send(envelope.Data, envelope.Headers);
+            StubChannel tempQualifier = Channels[destination];
+            var callback = new StubMessageCallback(tempQualifier);
+            tempQualifier.Callbacks.Add(callback);
+            envelope.Callback = callback;
+
+            return _pipeline.Invoke(envelope);
         }
 
-        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
+
+
+        public IChannel[] Start(IHandlerPipeline pipeline, BusSettings settings, OutgoingChannels channels)
         {
-            foreach (var node in channels.IncomingChannelsFor(Protocol))
+            _pipeline = pipeline;
+
+            foreach (var address in settings.KnownSubscribers.Where(x => x.Uri.Scheme == Protocol))
             {
-                var receiver = new Receiver(pipeline, channels, node);
-                ReceiveAt(node, receiver);
+                Channels[address.Uri] = new StubChannel(address.Uri, _replyUri, pipeline, address);
             }
 
-            var replyNode = new ChannelNode(ReplyChannel.Address);
-            var replyReceiver = new Receiver(pipeline, channels, replyNode);
-            ReceiveAt(replyNode, replyReceiver);
+            foreach (var node in settings.Listeners.Where(x => x.Uri.Scheme == Protocol))
+            {
+                Channels.FillDefault(node.Uri);
+            }
 
-            channels.Where(x => x.Uri.Scheme == Protocol).Each(x => {
-                x.ReplyUri = ReplyChannel.Address;
-                x.Destination = x.Uri;
-            });
+
+
+            return Channels.GetAll().OfType<IChannel>().ToArray();
         }
 
         public Uri DefaultReplyUri()
         {
             return "stub://replies".ToUri();
         }
+
+        public TransportState State { get; } = TransportState.Enabled;
+
+        public bool Enabled { get; } = true;
 
         public IEnumerable<StubMessageCallback> CallbackHistory()
         {
@@ -390,53 +413,43 @@ namespace StorytellerSpecs.Fixtures
             return ReplyChannel.Address;
         }
 
-        public Uri ActualUriFor(ChannelNode node)
-        {
-            return (node.Uri.AbsoluteUri + "/actual").ToUri();
-        }
-
-        public void ReceiveAt(ChannelNode node, IReceiver receiver)
-        {
-            Channels[node.Uri].StartReceiving(receiver);
-        }
-
         public Uri CorrectedAddressFor(Uri address)
         {
             return address;
         }
     }
 
-    public class StubChannel
+    public class StubChannel :ChannelBase
     {
+        private readonly IHandlerPipeline _pipeline;
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
-        public StubChannel(Uri address)
+        public StubChannel(Uri address, Uri replyUri, IHandlerPipeline pipeline, SubscriberAddress subscriberAddress) : base(subscriberAddress ?? new SubscriberAddress(address), replyUri)
         {
+            _pipeline = pipeline;
             Address = address;
         }
 
         public bool WasDisposed { get; set; }
 
         public Uri Address { get; }
-
-        public IReceiver Receiver { get; set; }
+        public SubscriberAddress Subscription { get; set; }
 
         public void Dispose()
         {
             WasDisposed = true;
         }
 
-        public void StartReceiving(IReceiver receiver)
-        {
-            Receiver = receiver;
-        }
 
-        public async Task Send(byte[] data, IDictionary<string, string> headers)
+        protected override Task send(Envelope envelope)
         {
             var callback = new StubMessageCallback(this);
             Callbacks.Add(callback);
 
-            await Receiver?.Receive(data, headers, callback);
+            envelope.Callback = callback;
+
+            return _pipeline.Invoke(envelope);
+
         }
     }
 
@@ -486,7 +499,9 @@ namespace StorytellerSpecs.Fixtures
         public Task Requeue(Envelope envelope)
         {
             Requeued = true;
-            return _channel.Send(envelope.Data, envelope.Headers);
+
+
+            return _channel.Send(envelope);
         }
 
         public Task Send(Envelope envelope)
@@ -498,4 +513,7 @@ namespace StorytellerSpecs.Fixtures
         public bool SupportsSend { get; } = false;
         public string TransportScheme { get; } = "stub";
     }
+
+
+
 }

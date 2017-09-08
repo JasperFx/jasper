@@ -6,7 +6,7 @@ namespace Jasper.Testing.Http.ContentHandling
     {
         public HttpTestingApp()
         {
-            Handlers.ConventionalDiscoveryDisabled = true;
+            Handlers.DisableConventionalDiscovery(true);
 
             Services.AddService<IFakeStore, FakeStore>();
             Services.For<IWidget>().Use<Widget>();

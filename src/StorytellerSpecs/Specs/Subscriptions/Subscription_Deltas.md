@@ -4,35 +4,35 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-08-16T18:44:36.8758180Z
--> tags = 
+-> tags =
 
 [SubscriptionDelta]
 |> TheExistingAre
     [Rows]
     |MessageType|Destination     |Accepts|
-    |One        |jasper://server1|json   |
-    |Two        |jasper://server2|xml    |
-    |Three      |jasper://server3|text   |
-    |Four       |jasper://other  |text   |
+    |One        |tcp://server1|json   |
+    |Two        |tcp://server2|xml    |
+    |Three      |tcp://server3|text   |
+    |Four       |tcp://other  |text   |
 
 |> TheExpectedAre
     [Rows]
     |MessageType|Destination     |Accepts|
-    |One        |jasper://server1|json   |
-    |Two        |jasper://server2|xml    |
-    |Four       |jasper://server4|text   |
-    |Three      |jasper://server3|xml    |
+    |One        |tcp://server1|json   |
+    |Two        |tcp://server2|xml    |
+    |Four       |tcp://server4|text   |
+    |Three      |tcp://server3|xml    |
 
 |> ToBeCreated
     [rows]
     |MessageType|Destination     |Accepts|
-    |Three      |jasper://server3|xml    |
-    |Four       |jasper://server4|text   |
+    |Three      |tcp://server3|xml    |
+    |Four       |tcp://server4|text   |
 
 |> ToBeDeleted
     [rows]
     |MessageType|Destination     |Accepts|
-    |Three      |jasper://server3|text   |
-    |Four       |jasper://other  |text   |
+    |Three      |tcp://server3|text   |
+    |Four       |tcp://other  |text   |
 
 ~~~

@@ -7,6 +7,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Consul;
 using Jasper.Consul.Internal;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -32,8 +33,8 @@ namespace IntegrationTests.Consul
         private async Task seedData(ConsulUsingApp registry)
         {
             var gateway = new ConsulGateway(new ConsulSettings());
-            await gateway.SetProperty(registry.prop1, "jasper://localhost:2345/queue1");
-            await gateway.SetProperty(registry.prop2, "jasper://localhost:2345/queue2");
+            await gateway.SetProperty(registry.prop1, "tcp://localhost:2345/queue1");
+            await gateway.SetProperty(registry.prop2, "tcp://localhost:2345/queue2");
         }
 
         public void Dispose()
@@ -44,10 +45,10 @@ namespace IntegrationTests.Consul
         [Fact]
         public void should_look_up_actual_uri_from_consul()
         {
-            var channels = theRuntime.Container.GetInstance<ChannelGraph>();
+            var channels = theRuntime.Get<IChannelGraph>();
 
-            channels.HasChannel("jasper://localhost:2345/queue1".ToUri()).ShouldBeTrue();
-            channels.HasChannel("jasper://localhost:2345/queue2".ToUri()).ShouldBeTrue();
+            channels.HasChannel("tcp://localhost:2345/queue1".ToUri()).ShouldBeTrue();
+            channels.HasChannel("tcp://localhost:2345/queue2".ToUri()).ShouldBeTrue();
         }
     }
 

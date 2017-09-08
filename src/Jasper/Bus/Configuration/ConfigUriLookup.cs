@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Runtime;
+using Jasper.Util;
 using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Bus.Configuration

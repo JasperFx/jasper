@@ -11,10 +11,10 @@ namespace Jasper.Consul.Internal
     {
         protected const string GLOBAL_PREFIX = "jasper/";
 
-        private readonly ChannelGraph _channels;
+        private readonly IChannelGraph _channels;
 
 
-        protected ConsulService(ConsulSettings settings, ChannelGraph channels, BusSettings envSettings)
+        protected ConsulService(ConsulSettings settings, IChannelGraph channels, BusSettings envSettings)
         {
             _channels = channels;
             client = settings.Client;

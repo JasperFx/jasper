@@ -1,8 +1,10 @@
 ﻿using Jasper;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Durable;
 using Jasper.Configuration;
 using Jasper.LightningDb;
-using Jasper.LightningDb.Transport;
 
 [assembly:JasperModule(typeof(LmdbExtension))]
 
@@ -12,7 +14,7 @@ namespace Jasper.LightningDb
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Services.For<ITransport>().Use<PersistentTransport>().Singleton();
+            registry.Services.For<IPersistence>().Use<LightningDbPersistence>().Singleton();
         }
     }
 }

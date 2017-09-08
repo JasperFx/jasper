@@ -20,16 +20,18 @@ namespace Jasper.Bus.Runtime.Routing
         private readonly ISubscriptionsRepository _subscriptions;
         private readonly HandlerGraph _handlers;
         private readonly CompositeLogger _logger;
+        private readonly UriAliasLookup _lookup;
 
         private readonly ConcurrentDictionary<Type, MessageRoute[]> _routes = new ConcurrentDictionary<Type, MessageRoute[]>();
 
-        public MessageRouter(SerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, CompositeLogger logger)
+        public MessageRouter(SerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, CompositeLogger logger, UriAliasLookup lookup)
         {
             _serializers = serializers;
             _channels = channels;
             _subscriptions = subscriptions;
             _handlers = handlers;
             _logger = logger;
+            _lookup = lookup;
         }
 
         public void ClearAll()
@@ -52,6 +54,7 @@ namespace Jasper.Bus.Runtime.Routing
 
         public async Task<MessageRoute> RouteForDestination(Envelope envelope)
         {
+            envelope.Destination = _lookup.Resolve(envelope.Destination);
 
             var messageType = envelope.Message.GetType();
             var routes = await Route(messageType);

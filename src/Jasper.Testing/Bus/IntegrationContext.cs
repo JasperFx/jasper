@@ -12,7 +12,7 @@ namespace Jasper.Testing.Bus
 
         public IServiceBus Bus => Runtime.Container.GetInstance<IServiceBus>();
 
-        public ChannelGraph Channels => Runtime.Container.GetInstance<IChannelGraph>().As<ChannelGraph>();
+        public IChannelGraph Channels => Runtime.Get<IChannelGraph>();
 
         protected void withAllDefaults()
         {

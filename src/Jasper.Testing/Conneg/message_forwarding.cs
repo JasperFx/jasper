@@ -26,7 +26,7 @@ namespace Jasper.Testing.Conneg
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
                 _.Handlers.IncludeType<NewMessageHandler>();
 
                 _.Http.Actions.ExcludeTypes(t => true);
@@ -45,11 +45,11 @@ namespace Jasper.Testing.Conneg
         public async Task send_message_via_forwarding()
         {
             var tracker = new MessageTracker();
-            var channel = "jasper://localhost:2345/incoming".ToUri();
+            var channel = "tcp://localhost:2345/incoming".ToUri();
 
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
                 _.Handlers.IncludeType<NewMessageHandler>();
 
                 _.Services.For<MessageTracker>().Use(tracker);

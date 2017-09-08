@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
@@ -11,6 +13,7 @@ using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Testing.Bus.Runtime;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -19,8 +22,8 @@ namespace IntegrationTests.Lightweight
     public class end_to_end : IDisposable
     {
         private readonly JasperRuntime theSender;
-        private readonly Uri theAddress = "jasper://localhost:2114/incoming".ToUri();
-        private readonly MessageTracker theTracker;
+        private readonly Uri theAddress = "tcp://localhost:2114/incoming".ToUri();
+        private readonly MessageTracker theTracker = new MessageTracker();
         private readonly JasperRuntime theReceiver;
         private FakeDelayedJobProcessor delayedJobs;
 
@@ -39,10 +42,10 @@ namespace IntegrationTests.Lightweight
 
             receiver.Messaging.DelayedProcessing.Use(delayedJobs);
 
-            theTracker = new MessageTracker();
             receiver.Services.For<MessageTracker>().Use(theTracker);
 
             theReceiver = JasperRuntime.For(receiver);
+
         }
 
         public void Dispose()
@@ -56,7 +59,7 @@ namespace IntegrationTests.Lightweight
         {
             var waiter = theTracker.WaitFor<Message1>();
 
-            await theSender.Container.GetInstance<IServiceBus>().Send(theAddress, new Message1());
+            await theSender.Bus.Send(theAddress, new Message1());
 
             var env = await waiter;
 
@@ -68,7 +71,7 @@ namespace IntegrationTests.Lightweight
         {
             var waiter = theTracker.WaitFor<Message2>();
 
-            await theSender.Container.GetInstance<IServiceBus>().Send(theAddress, new Message2());
+            await theSender.Bus.Send(theAddress, new Message2());
 
             var env = await waiter;
 
@@ -173,18 +176,54 @@ namespace IntegrationTests.Lightweight
         }
     }
 
+    public interface ITracker
+    {
+        void Check(Envelope envelope, object message);
+    }
+
+    public class CountTracker<T> : ITracker
+    {
+        private readonly int _expected;
+        private readonly List<ITracker> _trackers;
+        private readonly TaskCompletionSource<bool> _completion = new TaskCompletionSource<bool>();
+        private int _count = 0;
+
+        public CountTracker(int expected, List<ITracker> trackers)
+        {
+            _expected = expected;
+            _trackers = trackers;
+        }
+
+        public Task<bool> Completion => _completion.Task;
+        public void Check(Envelope envelope, object message)
+        {
+            if (message is T)
+            {
+                Interlocked.Increment(ref _count);
+
+                if (_count >= _expected)
+                {
+                    _completion.TrySetResult(true);
+                    _trackers.Remove(this);
+                }
+            }
+        }
+    }
+
     public class MessageTracker
     {
         private readonly LightweightCache<Type, List<TaskCompletionSource<Envelope>>>
             _waiters = new LightweightCache<Type, List<TaskCompletionSource<Envelope>>>(t => new List<TaskCompletionSource<Envelope>>());
 
-        public MessageTracker()
-        {
-            Console.WriteLine("Making me");
-        }
+        private readonly ConcurrentBag<ITracker> _trackers = new ConcurrentBag<ITracker>();
 
         public void Record(object message, Envelope envelope)
         {
+            foreach (var tracker in _trackers)
+            {
+                tracker.Check(envelope, message);
+            }
+
             var messageType = message.GetType();
             var list = _waiters[messageType];
 

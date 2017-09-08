@@ -18,7 +18,7 @@ namespace Jasper.Testing.Bus
         public async Task enqueue_locally()
         {
             var registry = new JasperRegistry();
-            registry.Handlers.ConventionalDiscoveryDisabled = false;
+            registry.Handlers.DisableConventionalDiscovery(false);
             registry.Handlers.IncludeType<RecordCallHandler>();
             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
             registry.Services.AddService<IFakeService, FakeService>();

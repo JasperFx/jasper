@@ -4,24 +4,24 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-06-26T14:32:22.2023050Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    lq.tcp://localhost:2201/one
+    durable://localhost:2201/one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    lq.tcp://localhost:2201/two
+    durable://localhost:2201/two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    lq.tcp://localhost:2201/three
+    durable://localhost:2201/three
     ```
 
 
@@ -31,8 +31,8 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                   |MessageType|Name  |
-    |lq.tcp://localhost:2201/one  |Message1   |Tom   |
-    |lq.tcp://localhost:2201/two  |Message2   |Todd  |
-    |lq.tcp://localhost:2201/three|Message3   |Trevor|
+    |durable://localhost:2201/one  |Message1   |Tom   |
+    |durable://localhost:2201/two  |Message2   |Todd  |
+    |durable://localhost:2201/three|Message3   |Trevor|
 
 ~~~

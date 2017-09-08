@@ -4,7 +4,7 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-06-26T19:51:36.1617215Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
@@ -12,40 +12,40 @@
     |> SendMessage messageType=Message1, channel=stub://one
     |> SendMessage messageType=Message2
     ``` channel
-    jasper://localhost:2201/two
+    tcp://localhost:2201/two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    jasper://localhost:2201/three
+    tcp://localhost:2201/three
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    jasper://localhost:2201/four
+    tcp://localhost:2201/four
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    jasper://localhost:2201/four
+    tcp://localhost:2201/four
     ```
 
     |> ListenForMessagesFrom
     ``` channel
-    jasper://localhost:2201/three
+    tcp://localhost:2201/three
     ```
 
 
 |> SendMessageDirectly messageType=Message1, name=Hank
 ``` address
-jasper://localhost:2201/three
+tcp://localhost:2201/three
 ```
 
 |> TheMessagesSentShouldBe
     [rows]
     |> TheMessagesSentShouldBe-row MessageType=Message1, Name=Hank
     ``` ReceivedAt
-    jasper://localhost:2201/three
+    tcp://localhost:2201/three
     ```
 
 

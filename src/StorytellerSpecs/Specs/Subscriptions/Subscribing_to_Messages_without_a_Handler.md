@@ -4,7 +4,7 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-08-18T19:49:03.6622600Z
--> tags = 
+-> tags =
 
 [Capabilities]
 |> ForService
@@ -15,7 +15,7 @@
 
     |> DefaultSubscriptionReceiverIs
     ``` uri
-    jasper://server:2000/incoming
+    tcp://server:2000/incoming
     ```
 
     |> SubscribesTo messageType=Message4
@@ -24,8 +24,8 @@
 |> TheSubscriptionsAre
     [rows]
     |MessageType|Destination                  |Accept          |
-    |Message4   |jasper://server:2000/incoming|application/json|
-    |Message5   |jasper://server:2000/incoming|application/json|
+    |Message4   |tcp://server:2000/incoming|application/json|
+    |Message5   |tcp://server:2000/incoming|application/json|
 
 |> TheErrorsDetectedWere
     [Rows]

@@ -22,7 +22,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
         public void hosting_environment_uses_config()
         {
             var registry = new JasperRegistry();
-            registry.Handlers.ConventionalDiscoveryDisabled = true;
+            registry.Handlers.DisableConventionalDiscovery(true);
             registry.EnvironmentName = "Fake";
 
             using (var runtime = JasperRuntime.For(registry))
@@ -36,7 +36,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
         public void hosting_environment_uses_config_2()
         {
             var registry = new JasperRegistry();
-            registry.Handlers.ConventionalDiscoveryDisabled = true;
+            registry.Handlers.DisableConventionalDiscovery(true);
             registry.Http.UseEnvironment("Fake2");
 
             using (var runtime = JasperRuntime.For(registry))

@@ -1,6 +1,7 @@
 ﻿using System;
 using Consul;
 using Jasper.Bus.Runtime;
+using Jasper.Util;
 
 namespace Jasper.Consul
 {

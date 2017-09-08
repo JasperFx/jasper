@@ -4,6 +4,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports;
 using Jasper.Testing.Bus.Stubs;
 using Shouldly;
 using StructureMap.Pipeline;

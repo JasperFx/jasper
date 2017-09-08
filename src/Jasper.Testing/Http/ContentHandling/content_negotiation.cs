@@ -23,7 +23,7 @@ namespace Jasper.Testing.Http.ContentHandling
         {
             _runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
                 _.Services.For<IMediaReader>().Add<XmlReader<SpecialInput>>();
                 _.Services.For<IMediaWriter>().Add<XmlWriter<SpecialOutput>>();
 

@@ -5,6 +5,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
 using Jasper.Testing.Bus.Runtime;
+using Jasper.Util;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
@@ -30,7 +31,7 @@ namespace Jasper.Testing.Bus.Serializers
                 ContentType = "application/json"
             };
 
-            serialization.Deserialize(envelope, new ChannelNode("loopback://one".ToUri()))
+            serialization.Deserialize(envelope)
                 .ShouldBeOfType<Message2>();
         }
 
@@ -51,7 +52,7 @@ namespace Jasper.Testing.Bus.Serializers
                 ContentType = null
             };
 
-            serialization.Deserialize(envelope, new ChannelNode("loopback://one".ToUri()))
+            serialization.Deserialize(envelope)
                 .ShouldBeOfType<Message2>();
         }
     }

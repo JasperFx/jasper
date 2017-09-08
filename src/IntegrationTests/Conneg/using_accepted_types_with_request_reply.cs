@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using Jasper;
 using Jasper.Bus;
 using Jasper.Conneg;
@@ -22,18 +23,19 @@ namespace IntegrationTests.Conneg
             Reply1Writer.WasUsed = false;
 
             var requestorRegistry = new JasperRegistry();
-            requestorRegistry.Messaging.Send<Request1>().To("jasper://localhost:2456/incoming");
+            requestorRegistry.Messaging.Send<Request1>().To("tcp://localhost:2456/incoming");
+            requestorRegistry.Channels.ListenForMessagesFrom("tcp://localhost:1234/replies");
             var requestor = JasperRuntime.For(requestorRegistry);
 
             var replierRegistry = new JasperRegistry();
-            replierRegistry.Channels.ListenForMessagesFrom("jasper://localhost:2456/incoming");
+            replierRegistry.Channels.ListenForMessagesFrom("tcp://localhost:2456/incoming");
             var replier = JasperRuntime.For(replierRegistry);
 
 
             try
             {
                 var reply = await requestor.Container.GetInstance<IServiceBus>()
-                    .Request<Reply1>(new Request1 {One = 3, Two = 4});
+                    .Request<Reply1>(new Request1 {One = 3, Two = 4}, new RequestOptions{Timeout = 60.Seconds()});
 
                 reply.Sum.ShouldBe(7);
 

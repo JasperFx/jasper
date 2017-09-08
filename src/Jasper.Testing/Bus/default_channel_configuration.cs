@@ -4,6 +4,7 @@ using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -16,13 +17,12 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
             }))
             {
 
-                var channels = runtime.Get<IChannelGraph>().As<ChannelGraph>();
-                channels.DefaultChannel
-                    .ShouldBeTheSameAs(channels.IncomingChannelsFor("loopback").Single());
+                var channels = runtime.Get<IChannelGraph>();
+                channels.DefaultChannel.Destination.ShouldBe("loopback://replies".ToUri());
             }
         }
 
@@ -31,13 +31,13 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
                 _.Channels.DefaultIs("loopback://incoming");
             }))
             {
-                var channels = runtime.Get<IChannelGraph>().As<ChannelGraph>();
+                var channels = runtime.Get<IChannelGraph>();
                 channels.DefaultChannel
-                    .ShouldBeTheSameAs(channels["loopback://incoming"]);
+                    .ShouldBeTheSameAs(channels["loopback://incoming".ToUri()]);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
                 _.Channels.DefaultIs("loopback://incoming");
                 _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
             }))
@@ -65,18 +65,18 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
                 _.Channels.DefaultIs("loopback://incoming");
                 _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
 
-                _.Messaging.Send<DefaultRoutedMessage>().To("jasper://localhost:2444/outgoing");
+                _.Messaging.Send<DefaultRoutedMessage>().To("tcp://localhost:2444/outgoing");
             }))
             {
                 var router = runtime.Get<IMessageRouter>();
 
                 var routes = await router.Route(typeof(DefaultRoutedMessage));
 
-                routes.Single().Destination.ShouldBe("jasper://localhost:2444/outgoing".ToUri());
+                routes.Single().Destination.ShouldBe("tcp://localhost:2444/outgoing".ToUri());
             }
         }
 
@@ -85,7 +85,7 @@ namespace Jasper.Testing.Bus
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
                 _.Channels.DefaultIs("loopback://incoming");
 
             }))

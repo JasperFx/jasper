@@ -45,7 +45,7 @@ namespace IntegrationTests.Conneg
         {
             var waiter = theTracker.WaitFor<BlueMessage>();
 
-            await greenApp.Container.GetInstance<IServiceBus>().Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
+            await greenApp.Bus.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
 
             var envelope = await waiter;
 
@@ -60,7 +60,7 @@ namespace IntegrationTests.Conneg
         {
             var waiter = theTracker.WaitFor<BlueMessage>();
 
-            await greenApp.Container.GetInstance<IServiceBus>()
+            await greenApp.Bus
                 .Send(new GreenMessage {Name = "Magic Johnson"}, _ => _.ContentType = "text/plain");
 
             var envelope = await waiter;
@@ -111,8 +111,10 @@ namespace IntegrationTests.Conneg
     {
         public BlueApp(MessageTracker tracker)
         {
-            Services.ForSingletonOf<MessageTracker>().Use(tracker).Singleton();
-            Channels.ListenForMessagesFrom("jasper://localhost:2555/blue");
+            Services.ForSingletonOf<MessageTracker>().Use(tracker);
+            Channels.ListenForMessagesFrom("tcp://localhost:2555/blue");
+            Handlers.DisableConventionalDiscovery();
+            Handlers.IncludeType<BlueHandler>();
         }
     }
 
@@ -120,7 +122,8 @@ namespace IntegrationTests.Conneg
     {
         public GreenApp()
         {
-            Messaging.Send<GreenMessage>().To("jasper://localhost:2555/blue");
+            Messaging.Send<GreenMessage>().To("tcp://localhost:2555/blue");
+            Handlers.DisableConventionalDiscovery();
 
             Services.For<MessageTracker>().Use("blow up", c =>
             {

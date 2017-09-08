@@ -10,6 +10,7 @@ using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
+using Jasper.Bus.Transports;
 using Jasper.LightningDb;
 using StoryTeller;
 using StoryTeller.Results;

@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Bus.Runtime;
+using Jasper.Util;
 
 namespace Jasper.Bus.Configuration
 {
@@ -12,45 +13,14 @@ namespace Jasper.Bus.Configuration
             _bus = bus;
         }
 
-        public ChannelExpression ListenForMessagesFrom(Uri uri)
+        public IQueueSettings ListenForMessagesFrom(Uri uri)
         {
-            var node = _bus.Channels[uri];
-            node.Incoming = true;
-
-            return new ChannelExpression(_bus.Channels, node);
+            return _bus.Settings.ListenTo(uri);
         }
 
-        public ChannelExpression ListenForMessagesFrom(string uriString)
+        public IQueueSettings ListenForMessagesFrom(string uriString)
         {
             return ListenForMessagesFrom(uriString.ToUri());
-        }
-
-        public ChannelExpression this[Uri uri]
-        {
-            get
-            {
-                var node = _bus.Channels[uri];
-                return new ChannelExpression(_bus.Channels, node);
-            }
-        }
-
-        public ChannelExpression this[string uriString]
-        {
-            get
-            {
-                var node = _bus.Channels[uriString.ToUri()];
-                return new ChannelExpression(_bus.Channels, node);
-            }
-        }
-
-        public ChannelExpression Add(string uriString)
-        {
-            return this[uriString];
-        }
-
-        public ChannelExpression Add(Uri uri)
-        {
-            return this[uri];
         }
 
         public void DefaultIs(string uriString)
@@ -58,9 +28,9 @@ namespace Jasper.Bus.Configuration
             DefaultIs(uriString.ToUri());
         }
 
-        public void DefaultIs(Uri uriString)
+        public void DefaultIs(Uri uri)
         {
-            _bus.Channels.DefaultChannel = _bus.Channels[uriString];
+            _bus.Settings.DefaultChannelAddress = uri;
         }
     }
 }

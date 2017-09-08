@@ -7,6 +7,8 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports;
+using Jasper.Util;
 
 namespace Jasper.Testing.Bus.Stubs
 {
@@ -40,29 +42,25 @@ namespace Jasper.Testing.Bus.Stubs
             return Channels[destination].Send(envelope.Data, envelope.Headers);
         }
 
-        public Uri ActualUriFor(ChannelNode node)
-        {
-            return (node.Uri.AbsoluteUri + "/actual").ToUri();
-        }
-
-        public void ReceiveAt(ChannelNode node, IReceiver receiver)
-        {
-            Channels[node.Uri].StartReceiving(receiver);
-        }
 
         public Uri CorrectedAddressFor(Uri address)
         {
             return address;
         }
 
-        public void Start(IHandlerPipeline pipeline, ChannelGraph channels)
+        public IChannel[] Start(IHandlerPipeline pipeline, BusSettings settings, OutgoingChannels channels)
         {
+            return new IChannel[0];
         }
 
         public Uri DefaultReplyUri()
         {
             return "stub://replies".ToUri();
         }
+
+        public TransportState State { get; } = TransportState.Enabled;
+
+        public bool Enabled { get; } = true;
     }
 
     public class StubChannel
@@ -81,12 +79,12 @@ namespace Jasper.Testing.Bus.Stubs
 
         public Uri Address { get; }
 
-        public void StartReceiving(IReceiver receiver)
+        public void StartReceiving(Receiver receiver)
         {
             Receiver = receiver;
         }
 
-        public IReceiver Receiver { get; set; }
+        public Receiver Receiver { get; set; }
 
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
@@ -146,5 +144,50 @@ namespace Jasper.Testing.Bus.Stubs
 
         public bool SupportsSend { get; } = true;
         public string TransportScheme { get; }
+    }
+
+    public class Receiver
+    {
+        private readonly IHandlerPipeline _pipeline;
+        private readonly Uri _address;
+
+        public Receiver(IHandlerPipeline pipeline, Uri address)
+        {
+            _pipeline = pipeline;
+            _address = address;
+        }
+
+        public Task Receive(byte[] data, IDictionary<string, string> headers, IMessageCallback callback)
+        {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (headers == null) throw new ArgumentNullException(nameof(headers));
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+            var envelope = new Envelope(data, headers, callback)
+            {
+                ReceivedAt = _address
+            };
+
+            envelope.ContentType = envelope.ContentType ?? "application/json";
+
+            return _pipeline.Invoke(envelope);
+        }
+
+        public Task Receive(object message, IDictionary<string, string> headers, IMessageCallback callback)
+        {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (headers == null) throw new ArgumentNullException(nameof(headers));
+            if (callback == null) throw new ArgumentNullException(nameof(callback));
+
+            var envelope = new Envelope(headers)
+            {
+                Message = message,
+                Callback = callback
+            };
+
+            envelope.ContentType = envelope.ContentType ?? "application/json";
+
+            return _pipeline.Invoke(envelope);
+        }
     }
 }

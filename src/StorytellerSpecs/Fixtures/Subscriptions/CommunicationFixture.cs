@@ -10,6 +10,7 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
+using Jasper.Util;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -128,7 +129,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public override void SetUp()
         {
             _registry = new JasperRegistry();
-            _registry.Handlers.ConventionalDiscoveryDisabled = true;
+            _registry.Handlers.DisableConventionalDiscovery(true);
 
             _registry.Handlers.IncludeType<Message1Handler>();
             _registry.Handlers.IncludeType<Message2Handler>();
@@ -151,7 +152,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         [FormatAs("Handles and subscibes to message {messageType} at port {port}")]
         public void SubscribesTo([SelectionList("MessageTypes")] string messageType, int port)
         {
-            var uri = $"jasper://localhost:{port}/local".ToUri();
+            var uri = $"tcp://localhost:{port}/local".ToUri();
             SubscribeAtUri(messageType, uri);
         }
 

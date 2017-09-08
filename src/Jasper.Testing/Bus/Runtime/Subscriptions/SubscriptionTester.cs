@@ -12,10 +12,10 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
         [Fact]
         public void new_subscription_uses_the_type_alias()
         {
-            new Subscription(typeof(MySpecialMessage), "jasper://localhost:2222/queue".ToUri())
+            new Subscription(typeof(MySpecialMessage), "tcp://localhost:2222/queue".ToUri())
                 .MessageType.ShouldBe(typeof(MySpecialMessage).FullName);
 
-            new Subscription(typeof(AliasedMessage), "jasper://localhost:2222/queue".ToUri())
+            new Subscription(typeof(AliasedMessage), "tcp://localhost:2222/queue".ToUri())
                 .MessageType.ShouldBe("Alias.1");
         }
     }

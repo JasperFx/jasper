@@ -2,13 +2,20 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Baseline;
+using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Durable;
+using Jasper.Bus.Transports.Util;
 using LightningDB;
 
 namespace Jasper.LightningDb
 {
-    public class LightningDbPersistence : IDisposable
+    public class LightningDbPersistence : IPersistence, IDisposable
     {
         // TODO -- need to validate db names actually exist
 
@@ -85,11 +92,11 @@ namespace Jasper.LightningDb
             }
         }
 
-        public void Store(string databaseName, IEnumerable<Envelope> envelopes)
+        public void Store(string queueName, IEnumerable<Envelope> envelopes)
         {
             using (var tx = _environment.BeginTransaction())
             {
-                var db = _databaseCache[databaseName];
+                var db = _databaseCache[queueName];
 
                 foreach (var persistable in envelopes)
                 {
@@ -100,11 +107,11 @@ namespace Jasper.LightningDb
             }
         }
 
-        public void Store(string databaseName, Envelope envelope)
+        public void Store(string queueName, Envelope envelope)
         {
             using (var tx = _environment.BeginTransaction())
             {
-                var db = _databaseCache[databaseName];
+                var db = _databaseCache[queueName];
 
                 tx.Put(db, envelope.Identity(), envelope.Serialize());
 
@@ -112,11 +119,11 @@ namespace Jasper.LightningDb
             }
         }
 
-        public void Remove(string databaseName, IEnumerable<Envelope> envelopes)
+        public void Remove(string queueName, IEnumerable<Envelope> envelopes)
         {
             using (var tx = _environment.BeginTransaction())
             {
-                var db = _databaseCache[databaseName];
+                var db = _databaseCache[queueName];
 
                 foreach (var persistable in envelopes)
                 {
@@ -127,11 +134,11 @@ namespace Jasper.LightningDb
             }
         }
 
-        public void Remove(string databaseName, Envelope envelope)
+        public void Remove(string queueName, Envelope envelope)
         {
             using (var tx = _environment.BeginTransaction())
             {
-                var db = _databaseCache[databaseName];
+                var db = _databaseCache[queueName];
 
                 tx.Delete(db, envelope.Identity());
 
@@ -139,11 +146,11 @@ namespace Jasper.LightningDb
             }
         }
 
-        public void Replace(string databaseName, Envelope envelope)
+        public void Replace(string queueName, Envelope envelope)
         {
             using (var tx = _environment.BeginTransaction())
             {
-                var db = _databaseCache[databaseName];
+                var db = _databaseCache[queueName];
 
                 tx.Delete(db, envelope.Identity());
                 envelope.Id = MessageId.GenerateRandom();
@@ -180,13 +187,13 @@ namespace Jasper.LightningDb
             }
         }
 
-        public void ReadAll(string name, Action<Envelope> callback)
+        public void ReadAll(string name, Action<Envelope> callback, CancellationToken cancellation)
         {
             using (var tx = _environment.BeginTransaction(TransactionBeginFlags.ReadOnly))
             {
                 var db = _databaseCache[name];
                 using (var cursor = tx.CreateCursor(db))
-                    while (cursor.MoveNext())
+                    while (cursor.MoveNext() && !cancellation.IsCancellationRequested)
                     {
                         var current = cursor.Current;
                         var envelope = current.Value.ToEnvelope();
@@ -195,11 +202,56 @@ namespace Jasper.LightningDb
             }
         }
 
+        public void RecoverOutgoingMessages(Action<Envelope> action, CancellationToken cancellation)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                ReadAll(Outgoing, action, cancellation);
+            }, cancellation);
+        }
+
+        public void RecoverPersistedMessages(string[] queueNames, Action<Envelope> action, CancellationToken cancellation)
+        {
+            foreach (var queueName in queueNames)
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    ReadAll(queueName, action, cancellation);
+                }, cancellation);
+            }
+        }
+
+        public void StoreOutgoing(Envelope envelope)
+        {
+            Store(Outgoing, envelope);
+        }
+
+        public void ClearAllStoredMessages(string queuePath = null)
+        {
+            var fileSystem = new FileSystem();
+            if (queuePath == null)
+            {
+                //Find all queues matching queuePath regardless of port.
+                var jasperQueuePath = new LightningDbSettings().QueuePath;
+                queuePath = fileSystem.GetDirectory(jasperQueuePath);
+
+                var queues = fileSystem
+                    .ChildDirectoriesFor(queuePath)
+                    .Where(x => x.StartsWith(jasperQueuePath, StringComparison.OrdinalIgnoreCase));
+
+                queues.Each(x => fileSystem.DeleteDirectory(x));
+            }
+            else
+            {
+                fileSystem.DeleteDirectory(queuePath);
+            }
+        }
+
         public IList<Envelope> LoadAll(string name)
         {
             var list = new List<Envelope>();
 
-            ReadAll(name, e => list.Add(e));
+            ReadAll(name, e => list.Add(e), CancellationToken.None);
 
             return list;
         }
@@ -255,6 +307,18 @@ namespace Jasper.LightningDb
             }
         }
 
+        public void RemoveOutgoing(IList<Envelope> outgoingMessages)
+        {
+            Remove(Outgoing, outgoingMessages);
+        }
+
+        public void Initialize(string[] queueNames)
+        {
+            foreach (var name in queueNames)
+            {
+                OpenDatabase(name);
+            }
+        }
     }
 
 }

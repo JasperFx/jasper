@@ -14,7 +14,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
 
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Handlers.ConventionalDiscoveryDisabled = true;
+                _.Handlers.DisableConventionalDiscovery(true);
 
                 _.ServiceName = "AppWithSubscriptions";
 

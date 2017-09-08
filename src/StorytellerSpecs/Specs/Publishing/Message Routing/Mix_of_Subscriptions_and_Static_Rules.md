@@ -10,7 +10,7 @@
 |> SendMessage messageType=Message1, channel=loopback://one/
 |> SendMessage messageType=Message2
 ``` channel
-jasper://localhost:2201/one
+tcp://localhost:2201/one
 ```
 
 |> SubscriptionsAre

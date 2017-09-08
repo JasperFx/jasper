@@ -4,50 +4,50 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-06-26T19:52:19.8207215Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    jasper://localhost:2201/one
+    tcp://localhost:2201/one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    jasper://localhost:2201/two
+    tcp://localhost:2201/two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    jasper://localhost:2201/three
+    tcp://localhost:2201/three
     ```
 
     |> SendMessage messageType=Message4
     ``` channel
-    jasper://localhost:2201/four
+    tcp://localhost:2201/four
     ```
 
     |> ReceivingMessage2CascadesMultiples
     |> ListenForMessagesFrom
     ``` channel
-    jasper://localhost:2201/one
+    tcp://localhost:2201/one
     ```
 
     |> ListenForMessagesFrom
     ``` channel
-    jasper://localhost:2201/two
+    tcp://localhost:2201/two
     ```
 
     |> ListenForMessagesFrom
     ``` channel
-    jasper://localhost:2201/three
+    tcp://localhost:2201/three
     ```
 
     |> ListenForMessagesFrom
     ``` channel
-    jasper://localhost:2201/four
+    tcp://localhost:2201/four
     ```
 
 
@@ -55,8 +55,8 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                   |MessageType|Name      |
-    |jasper://localhost:2201/two  |Message2   |Tamba Hali|
-    |jasper://localhost:2201/three|Message3   |Tamba Hali|
-    |jasper://localhost:2201/four |Message4   |Tamba Hali|
+    |tcp://localhost:2201/two  |Message2   |Tamba Hali|
+    |tcp://localhost:2201/three|Message3   |Tamba Hali|
+    |tcp://localhost:2201/four |Message4   |Tamba Hali|
 
 ~~~

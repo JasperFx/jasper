@@ -17,7 +17,7 @@ namespace Jasper.Consul.Internal
     {
         public const string SUBSCRIPTION_PREFIX = GLOBAL_PREFIX + "subscription/";
 
-        public ConsulSubscriptionRepository(ConsulSettings settings, ChannelGraph channels, BusSettings envSettings)
+        public ConsulSubscriptionRepository(ConsulSettings settings, IChannelGraph channels, BusSettings envSettings)
             : base(settings, channels, envSettings)
         {
         }

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
+using Jasper.Bus.Transports;
 using Jasper.Conneg;
+using Jasper.Util;
 using StructureMap.Graph.Scanning;
 
 namespace Jasper.Bus.Runtime.Subscriptions

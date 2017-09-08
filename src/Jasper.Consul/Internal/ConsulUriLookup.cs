@@ -4,6 +4,7 @@ using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
+using Jasper.Util;
 
 namespace Jasper.Consul.Internal
 {

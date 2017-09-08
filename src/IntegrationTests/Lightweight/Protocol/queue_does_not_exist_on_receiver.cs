@@ -1,4 +1,6 @@
 ﻿using Baseline.Dates;
+using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
 using Jasper.Bus.Transports.Lightweight;
 using Shouldly;
 using Xunit;

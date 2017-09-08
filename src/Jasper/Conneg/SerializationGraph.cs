@@ -45,7 +45,7 @@ namespace Jasper.Conneg
 
         public IEnumerable<ISerializer> Serializers => _serializers.Values;
 
-        public object Deserialize(Envelope envelope, ChannelNode node)
+        public object Deserialize(Envelope envelope)
         {
             var contentType = envelope.ContentType ?? "application/json";
 

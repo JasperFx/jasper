@@ -3,8 +3,10 @@ using System.Linq;
 using Baseline;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
 using Jasper.LightningDb;
 using Jasper.Testing.Bus;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -40,7 +42,7 @@ namespace IntegrationTests.LightningDb
                 Id = MessageId.GenerateRandom(),
                 Queue = "incoming",
                 SubQueue = "subqueue",
-                Destination = "lq.tcp://localhost:2222/outgoing".ToUri(),
+                Destination = "durable://localhost:2222/outgoing".ToUri(),
                 MaxAttempts = 3,
                 SentAttempts = 2,
                 DeliverBy = DateTime.Today.ToUniversalTime()
@@ -51,7 +53,7 @@ namespace IntegrationTests.LightningDb
 
             envelope.Headers.Add("name", "Jeremy");
             envelope.Headers.Add("state", "Texas");
-            envelope.Headers.Add("reply-uri", "lq.tcp://localhost:2221/replies");
+            envelope.Headers.Add("reply-uri", "durable://localhost:2221/replies");
 
             return envelope;
         }

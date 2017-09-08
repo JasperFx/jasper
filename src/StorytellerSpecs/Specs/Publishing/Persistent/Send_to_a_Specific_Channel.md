@@ -4,7 +4,7 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-06-26T14:29:52.0172630Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
@@ -12,35 +12,35 @@
     |> SendMessage messageType=Message1, channel=stub://one
     |> SendMessage messageType=Message2
     ``` channel
-    lq.tcp://localhost:2201/two
+    durable://localhost:2201/two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    lq.tcp://localhost:2201/three
+    durable://localhost:2201/three
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    lq.tcp://localhost:2201/four
+    durable://localhost:2201/four
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    lq.tcp://localhost:2201/four
+    durable://localhost:2201/four
     ```
 
 
 |> SendMessageDirectly messageType=Message1, name=Hank
 ``` address
-lq.tcp://localhost:2201/three
+durable://localhost:2201/three
 ```
 
 |> TheMessagesSentShouldBe
     [rows]
     |> TheMessagesSentShouldBe-row MessageType=Message1, Name=Hank
     ``` ReceivedAt
-    lq.tcp://localhost:2201/three
+    durable://localhost:2201/three
     ```
 
 

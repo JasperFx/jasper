@@ -5,8 +5,11 @@ using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Durable;
 using Jasper.Bus.Transports.Lightweight;
+using Jasper.Bus.Transports.Loopback;
 using Jasper.Configuration;
 using Jasper.Conneg;
 
@@ -16,12 +19,11 @@ namespace Jasper.Bus
     {
         internal ServiceBusRegistry()
         {
-            ForSingletonOf<ILoopbackQueue>().Use<LoopbackQueue>();
-
             For<ITransport>().Singleton().AddInstances(_ =>
             {
                 _.Type<LoopbackTransport>();
                 _.Type<LightweightTransport>();
+                _.Type<DurableTransport>();
             });
 
 
@@ -43,6 +45,9 @@ namespace Jasper.Bus
             ForSingletonOf<IMessageRouter>().Use<MessageRouter>();
 
             ForSingletonOf<UriAliasLookup>().Use<UriAliasLookup>();
+
+            For<IPersistence>().Use<NulloPersistence>();
+
 
         }
     }

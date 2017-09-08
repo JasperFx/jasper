@@ -7,14 +7,15 @@ using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
-using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Transports.Lightweight;
+using Jasper.Bus.Transports.Loopback;
 using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Invocation
 {
     public interface IHandlerPipeline
     {
-        Task Invoke(Envelope envelope, ChannelNode receiver);
+        Task Invoke(Envelope envelope);
         IBusLogger Logger { get; }
         Task InvokeNow(object message);
         Task InvokeNow(Envelope envelope);
@@ -27,17 +28,17 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly HandlerGraph _graph;
         private readonly IReplyWatcher _replies;
         private readonly IDelayedJobProcessor _delayedJobs;
-        private readonly ILoopbackQueue _loopbackQueue;
+        private readonly IChannelGraph _channels;
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(IEnvelopeSender sender, SerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, ILoopbackQueue loopbackQueue, CompositeLogger logger, IMissingHandler[] missingHandlers)
+        public HandlerPipeline(IEnvelopeSender sender, SerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, CompositeLogger logger, IChannelGraph channels, IMissingHandler[] missingHandlers)
         {
             _sender = sender;
             _serializer = serializers;
             _graph = graph;
             _replies = replies;
             _delayedJobs = delayedJobs;
-            _loopbackQueue = loopbackQueue;
+            _channels = channels;
             _missingHandlers = missingHandlers;
 
             Logger = logger;
@@ -45,13 +46,13 @@ namespace Jasper.Bus.Runtime.Invocation
 
         public IBusLogger Logger { get; }
 
-        public async Task Invoke(Envelope envelope, ChannelNode receiver)
+        public async Task Invoke(Envelope envelope)
         {
             var now = DateTime.UtcNow;
 
             try
             {
-                await invoke(envelope, receiver, now).ConfigureAwait(false);
+                await invoke(envelope, now).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -62,7 +63,7 @@ namespace Jasper.Bus.Runtime.Invocation
             }
         }
 
-        private async Task invoke(Envelope envelope, ChannelNode receiver, DateTime now)
+        private async Task invoke(Envelope envelope, DateTime now)
         {
             using (var context = new EnvelopeContext(this, envelope, _sender, _delayedJobs))
             {
@@ -72,13 +73,13 @@ namespace Jasper.Bus.Runtime.Invocation
                 }
                 else if (envelope.ResponseId.IsNotEmpty())
                 {
-                    completeRequestWithRequestedResponse(envelope, receiver);
+                    completeRequestWithRequestedResponse(envelope);
                 }
                 else
                 {
                     try
                     {
-                        deserialize(envelope, receiver);
+                        deserialize(envelope);
                     }
                     catch (Exception e)
                     {
@@ -98,7 +99,11 @@ namespace Jasper.Bus.Runtime.Invocation
 
         public Task InvokeNow(object message)
         {
-            var envelope = _loopbackQueue.EnvelopeForInlineMessage(message);
+            var envelope = new Envelope
+            {
+                Message = message,
+                Callback = new LightweightCallback(_channels.DefaultRetryChannel)
+            };
 
             return InvokeNow(envelope);
         }
@@ -131,11 +136,11 @@ namespace Jasper.Bus.Runtime.Invocation
         }
 
 
-        private void deserialize(Envelope envelope, ChannelNode receiver)
+        private void deserialize(Envelope envelope)
         {
             if (envelope.Message == null)
             {
-                envelope.Message = _serializer.Deserialize(envelope, receiver);
+                envelope.Message = _serializer.Deserialize(envelope);
             }
         }
 
@@ -197,11 +202,11 @@ namespace Jasper.Bus.Runtime.Invocation
             }
         }
 
-        private void completeRequestWithRequestedResponse(Envelope envelope, ChannelNode receiver)
+        private void completeRequestWithRequestedResponse(Envelope envelope)
         {
             try
             {
-                deserialize(envelope, receiver);
+                deserialize(envelope);
                 _replies.Handle(envelope);
             }
             catch (Exception e)
@@ -229,55 +234,6 @@ namespace Jasper.Bus.Runtime.Invocation
                 var continuation = _graph.DetermineContinuation(envelope, e) ?? new MoveToErrorQueue(e);
                 await continuation.Execute(envelope, context, DateTime.UtcNow);
             }
-        }
-    }
-
-    [Obsolete("Replace this usage with an in-memory callback within the Consume()")]
-    public class InlineMessageCallback : IMessageCallback
-    {
-        private readonly object _message;
-
-        public InlineMessageCallback(object message)
-        {
-            _message = message;
-        }
-
-        public Task MarkSuccessful()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task MarkFailed(Exception ex)
-        {
-            throw new InlineMessageException("Failed while invoking an inline message", ex);
-        }
-
-        public Task MoveToErrors(ErrorReport report)
-        {
-            // TODO -- need a general way to log errors against an ITransport
-            return Task.CompletedTask;
-        }
-
-        public Task Send(Envelope envelope)
-        {
-            // nothing
-            return Task.CompletedTask;
-        }
-
-        public bool SupportsSend { get; } = false;
-        public string TransportScheme { get; }
-
-        public Task Requeue(Envelope envelope)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-
-    public class InlineMessageException : Exception
-    {
-        public InlineMessageException(string message, Exception innerException) : base(message, innerException)
-        {
         }
     }
 }

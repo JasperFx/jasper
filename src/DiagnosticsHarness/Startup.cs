@@ -100,7 +100,7 @@ namespace DiagnosticsHarness
          {
              public BusRegistry()
              {
-                 var uri = "lq.tcp://localhost:2110/servicebus_example";
+                 var uri = "durable://localhost:2110/servicebus_example";
                  Messaging.Send<MiddlewareMessage>().To(uri);
                  Messaging.Send<AMessageThatWillError>().To(uri);
 

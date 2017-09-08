@@ -4,14 +4,14 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-08-23T14:07:22.1808000Z
--> tags = 
+-> tags =
 
 [Communication]
 |> UriAliasesAre
     [table]
     |Alias        |Actual                          |
-    |standin://one|jasper://localhost:2244/incoming|
-    |standin://two|jasper://localhost:2255/incoming|
+    |standin://one|tcp://localhost:2244/incoming|
+    |standin://two|tcp://localhost:2255/incoming|
 
 |> ForService
     [Node]

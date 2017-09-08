@@ -3,6 +3,7 @@ using System.Reflection;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
+using Jasper.Util;
 using StructureMap.TypeRules;
 
 namespace Jasper.Bus.Configuration
@@ -63,16 +64,28 @@ namespace Jasper.Bus.Configuration
                 _routing = routing;
             }
 
-            public SendExpression To(Uri address)
+            public ISubscriberAddress To(Uri address)
             {
-                _bus.Channels[address].Rules.Add(_routing);
-                return this;
+                var subscriberAddress = _bus.Settings.SendTo(address);
+                subscriberAddress.Rules.Add(_routing);
+
+                return subscriberAddress;
             }
 
-            public SendExpression To(string address)
+            public ISubscriberAddress To(string address)
             {
                 return To(address.ToUri());
             }
+        }
+
+        public ISubscriberAddress SendAllMessagesTo(string uriString)
+        {
+            return SendAllMessagesTo(uriString.ToUri());
+        }
+
+        private ISubscriberAddress SendAllMessagesTo(Uri uri)
+        {
+            return SendMatching("all messages", _ => true).To(uri);
         }
     }
 }

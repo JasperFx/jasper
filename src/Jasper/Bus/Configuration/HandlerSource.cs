@@ -16,6 +16,7 @@ namespace Jasper.Bus.Configuration
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
         private readonly IList<Type> _explicitTypes = new List<Type>();
+        private bool _conventionalDiscoveryDisabled;
 
         public HandlerSource()
         {
@@ -30,11 +31,15 @@ namespace Jasper.Bus.Configuration
         /// <summary>
         /// Disable all conventional discovery of message handlers
         /// </summary>
-        public bool ConventionalDiscoveryDisabled { get; set; }
+        public HandlerSource DisableConventionalDiscovery(bool value = true)
+        {
+            _conventionalDiscoveryDisabled = value;
+            return this;
+        }
 
         internal async Task<HandlerCall[]> FindCalls(JasperRegistry registry)
         {
-            if (ConventionalDiscoveryDisabled)
+            if (_conventionalDiscoveryDisabled)
             {
                 return _explicitTypes.SelectMany(actionsFromType).ToArray();
             }

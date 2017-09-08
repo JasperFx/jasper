@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -11,7 +10,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.InMemory;
+using Jasper.Bus.Transports.Loopback;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
@@ -24,14 +23,16 @@ namespace Jasper.Bus
 {
     public class ServiceBusFeature : IFeature
     {
+        private readonly OutgoingChannels _channels = new OutgoingChannels();
         private HandlerGraph _graph;
         public HandlerSource Handlers { get; } = new HandlerSource();
+
 
         public CapabilityGraph Capabilities = new CapabilityGraph();
 
         public GenerationConfig Generation { get; } = new GenerationConfig("JasperBus.Generated");
 
-        public ChannelGraph Channels { get; } = new ChannelGraph();
+        public BusSettings Settings { get; } = new BusSettings();
 
         public Policies Policies { get; } = new Policies();
         public bool DelayedJobsRunInMemory { get; set; } = true;
@@ -40,7 +41,6 @@ namespace Jasper.Bus
 
         public void Dispose()
         {
-            Channels.Dispose();
         }
 
         Task<Registry> IFeature.Bootstrap(JasperRegistry registry)
@@ -55,23 +55,24 @@ namespace Jasper.Bus
 
             _graph.Compile(generation, container);
 
-            return runtime.Get<ServiceBusActivator>().Activate(_graph, Channels, Capabilities, runtime);
+            return runtime.Get<ServiceBusActivator>().Activate(_graph, Capabilities, runtime, _channels);
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
-            var incoming = Channels.Where(x => x.Incoming).Distinct().ToArray();
-            if (incoming.Any())
-            {
-                foreach (var node in incoming)
-                {
-                    writer.WriteLine($"Listening for messages at {node.Uri}");
-                }
-            }
-            else
-            {
-                writer.WriteLine("No incoming message channels configured");
-            }
+
+//            var incoming = Channels.Where(x => x.Incoming).Distinct().ToArray();
+//            if (incoming.Any())
+//            {
+//                foreach (var node in incoming)
+//                {
+//                    writer.WriteLine($"Listening for messages at {node.Uri}");
+//                }
+//            }
+//            else
+//            {
+//                writer.WriteLine("No incoming message channels configured");
+//            }
         }
 
 
@@ -88,7 +89,7 @@ namespace Jasper.Bus
             Policies.Apply(_graph);
 
             Services.For<HandlerGraph>().Use(_graph);
-            Services.For<IChannelGraph>().Use(Channels);
+            Services.For<IChannelGraph>().Use(_channels);
 
             if (registry.ApplicationAssembly != null)
             {
@@ -107,19 +108,10 @@ namespace Jasper.Bus
 
             if (DelayedJobsRunInMemory)
             {
-                Channels.AddChannelIfMissing(LoopbackTransport.Delayed).Incoming = true;
-
                 Services.ForSingletonOf<IDelayedJobProcessor>().Use<InMemoryDelayedJobProcessor>();
             }
 
             return Services;
-        }
-    }
-
-    public class UnknownTransportException : Exception
-    {
-        public UnknownTransportException(ChannelNode[] nodes) : base("Unknown transport types for " + nodes.Select(x => x.Uri.ToString()).Join(", "))
-        {
         }
     }
 }

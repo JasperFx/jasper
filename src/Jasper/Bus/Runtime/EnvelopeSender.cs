@@ -6,6 +6,7 @@ using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Routing;
+using Jasper.Bus.Transports;
 
 namespace Jasper.Bus.Runtime
 {
@@ -13,13 +14,15 @@ namespace Jasper.Bus.Runtime
     {
         private readonly IMessageRouter _router;
         private readonly IChannelGraph _channels;
+        private readonly UriAliasLookup _aliases;
         private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
 
-        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, IEnumerable<ITransport> transports)
+        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, UriAliasLookup aliases, IEnumerable<ITransport> transports)
         {
             _router = router;
             _channels = channels;
+            _aliases = aliases;
 
             foreach (var transport in transports)
             {
@@ -81,19 +84,12 @@ namespace Jasper.Bus.Runtime
         {
             if (route == null) throw new ArgumentNullException(nameof(route));
 
-            var transportScheme = route.Destination.Scheme;
-            if (_channels.HasChannel(route.Destination))
-            {
-                transportScheme = _channels[route.Destination].Destination.Scheme;
-            }
-
             ITransport transport = null;
-            if (_transports.TryGetValue(transportScheme, out transport))
+            if (_transports.TryGetValue(route.Destination.Scheme, out transport))
             {
                 var sending = route.CloneForSending(envelope);
 
                 var channel = _channels.TryGetChannel(route.Destination);
-                channel?.ApplyModifiers(sending);
 
                 if (channel != null)
                 {
@@ -110,7 +106,7 @@ namespace Jasper.Bus.Runtime
             }
             else
             {
-                throw new InvalidOperationException($"Unrecognized transport scheme '{transportScheme}'");
+                throw new InvalidOperationException($"Unrecognized transport scheme '{route.Destination.Scheme}'");
             }
         }
 
@@ -136,7 +132,7 @@ namespace Jasper.Bus.Runtime
 
             if (callback == null || !callback.SupportsSend && callback.TransportScheme == sending.Destination.Scheme)
             {
-                await channel.Sender.Send(sending).ConfigureAwait(false);
+                await channel.Send(sending).ConfigureAwait(false);
             }
             else
             {

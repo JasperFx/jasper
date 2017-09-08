@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Util;
 
 namespace Jasper.Bus.Configuration
 {
@@ -17,6 +18,23 @@ namespace Jasper.Bus.Configuration
             {
                 _lookups.SmartAdd(lookup.Protocol, lookup);
             }
+        }
+
+        public void SetAlias(Uri alias, Uri real)
+        {
+            if (_aliases.ContainsKey(alias))
+            {
+                _aliases[alias] = real;
+            }
+            else
+            {
+                _aliases.Add(alias, real);
+            }
+        }
+
+        public void SetAlias(string aliasUriString, string realUriString)
+        {
+            SetAlias(aliasUriString.ToUri(), realUriString.ToUri());
         }
 
         public async Task ReadAliases(Uri[] raw)
@@ -44,5 +62,7 @@ namespace Jasper.Bus.Configuration
         {
             return _aliases.ContainsKey(raw) ? _aliases[raw] : raw;
         }
+
+
     }
 }

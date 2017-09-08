@@ -9,10 +9,10 @@ namespace StorytellerSpecs.Fixtures.LQ
 {
     public abstract class LightningQueuesFixture : Fixture
     {
-        public static Uri Channel1 = new Uri("lq.tcp://localhost:2201/one");
-        public static Uri Channel2 = new Uri("lq.tcp://localhost:2201/two");
-        public static Uri Channel3 = new Uri("lq.tcp://localhost:2201/three");
-        public static Uri Channel4 = new Uri("lq.tcp://localhost:2201/four");
+        public static Uri Channel1 = new Uri("durable://localhost:2201/one");
+        public static Uri Channel2 = new Uri("durable://localhost:2201/two");
+        public static Uri Channel3 = new Uri("durable://localhost:2201/three");
+        public static Uri Channel4 = new Uri("durable://localhost:2201/four");
 
         protected readonly Type[] messageTypes = new Type[] { typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4), typeof(Message5), typeof(Message6) };
 

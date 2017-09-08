@@ -4,7 +4,7 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-08-18T19:49:03.6601400Z
--> tags = 
+-> tags =
 
 [Capabilities]
 |> ForService
@@ -18,7 +18,7 @@
 
     |> SubscribeToAllHandledMessages
     ``` destination
-    jasper://server1:2222/incoming
+    tcp://server1:2222/incoming
     ```
 
 
@@ -26,8 +26,8 @@
 |> TheSubscriptionsAre
     [rows]
     |MessageType|Destination                   |Accept          |
-    |Message1   |jasper://server1:2222/incoming|application/json|
-    |Message2   |jasper://server1:2222/incoming|application/json|
-    |Message3   |jasper://server1:2222/incoming|application/json|
+    |Message1   |tcp://server1:2222/incoming|application/json|
+    |Message2   |tcp://server1:2222/incoming|application/json|
+    |Message3   |tcp://server1:2222/incoming|application/json|
 
 ~~~

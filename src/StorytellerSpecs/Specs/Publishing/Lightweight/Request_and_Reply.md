@@ -4,7 +4,7 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-06-29T19:26:25.6184681Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
@@ -12,12 +12,12 @@
     |> ReceivingMessage1CascadesMessage2
     |> SendMessage messageType=Message1
     ``` channel
-    jasper://localhost:2201/one
+    tcp://localhost:2201/one
     ```
 
     |> ListenForMessagesFrom
     ``` channel
-    jasper://localhost:2201/one
+    tcp://localhost:2201/one
     ```
 
 
@@ -28,7 +28,7 @@ The 'stub://replies' is unfortunately hard-coded into the Storyteller fixture an
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                 |MessageType|Name                  |
-    |jasper://localhost:2201/one|Message1   |Thomas the Tank Engine|
+    |tcp://localhost:2201/one|Message1   |Thomas the Tank Engine|
     |stub://replies             |Message2   |Thomas the Tank Engine|
 
 ~~~

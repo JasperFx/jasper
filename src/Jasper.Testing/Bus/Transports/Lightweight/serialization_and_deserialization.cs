@@ -2,6 +2,9 @@
 using System.Linq;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Util;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -21,7 +24,7 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
                 Queue = "incoming",
                 SubQueue = "subqueue",
                 Data = new byte[]{1, 5, 6, 11, 2, 3},
-                Destination = "lq.tcp://localhost:2222/incoming".ToUri(),
+                Destination = "durable://localhost:2222/incoming".ToUri(),
                 MaxAttempts = 3,
                 SentAttempts = 2,
                 DeliverBy = DateTime.Today.ToUniversalTime()
@@ -29,7 +32,7 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
 
             outgoing.Headers.Add("name", "Jeremy");
             outgoing.Headers.Add("state", "Texas");
-            outgoing.Headers.Add("reply-uri", "lq.tcp://localhost:2221/replies");
+            outgoing.Headers.Add("reply-uri", "durable://localhost:2221/replies");
 
             var messageBytes = new []{outgoing}.Serialize();
             incoming = messageBytes.ToMessages().First();
@@ -70,7 +73,7 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
         {
             incoming.Headers["name"].ShouldBe("Jeremy");
             incoming.Headers["state"].ShouldBe("Texas");
-            incoming.Headers["reply-uri"].ShouldBe("lq.tcp://localhost:2221/replies");
+            incoming.Headers["reply-uri"].ShouldBe("durable://localhost:2221/replies");
         }
 
         [Fact]

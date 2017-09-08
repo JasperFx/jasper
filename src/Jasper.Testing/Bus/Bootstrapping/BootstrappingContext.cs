@@ -5,6 +5,7 @@ using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using Jasper.Testing.Bus.Stubs;
 
 namespace Jasper.Testing.Bus.Bootstrapping
@@ -42,7 +43,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
 
         public JasperRuntime theRuntime => _runtime.Value;
 
-        public ChannelGraph theChannels => _runtime.Value.Container.GetInstance<IChannelGraph>().As<ChannelGraph>();
+        public IChannelGraph theChannels => _runtime.Value.Get<IChannelGraph>();
 
         public StubTransport theTransport => _runtime.Value.Container.GetAllInstances<ITransport>()
             .OfType<StubTransport>()

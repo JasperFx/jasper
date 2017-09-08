@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Loopback;
 
 namespace Jasper.Util
 {
@@ -8,7 +11,14 @@ namespace Jasper.Util
     {
         public static string QueueName(this Uri uri)
         {
-            return uri.Segments.Last();
+            if (uri == null) return null;
+
+            if (uri.Scheme == LoopbackTransport.ProtocolName)
+            {
+                return uri.Host;
+            }
+
+            return uri.Segments.Skip(1).LastOrDefault() ?? TransportConstants.Default;
         }
 
         private static readonly HashSet<string> _locals = new HashSet<string>(new[] { "localhost", "127.0.0.1" }, StringComparer.OrdinalIgnoreCase);

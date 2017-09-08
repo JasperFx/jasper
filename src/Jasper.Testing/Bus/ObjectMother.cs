@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using NSubstitute;
 
 namespace Jasper.Testing.Bus

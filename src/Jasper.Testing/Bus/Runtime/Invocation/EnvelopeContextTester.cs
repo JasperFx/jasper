@@ -7,6 +7,8 @@ using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports;
+using Jasper.Util;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;

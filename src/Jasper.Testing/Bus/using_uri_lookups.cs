@@ -9,6 +9,7 @@ using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Bus.Transports;
+using Jasper.Util;
 using Microsoft.Extensions.Configuration;
 using Shouldly;
 using Xunit;
@@ -39,7 +40,7 @@ namespace Jasper.Testing.Bus
             with(_ =>
             {
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Channels.Add("fake://one");
+                _.Channels.ListenForMessagesFrom("fake://one");
             });
 
             Channels.Where(x => x.Uri.Scheme == "loopback").Any(x => x.Uri == "loopback://one".ToUri())
@@ -48,19 +49,6 @@ namespace Jasper.Testing.Bus
 
         }
 
-        [Fact]
-        public void ChannelGraph_can_use_the_alias_to_give_you_the_same_node()
-        {
-            with(_ =>
-            {
-                _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Channels.Add("fake://one");
-            });
-
-            Channels["fake://one"].ShouldBeSameAs(Channels["loopback://one"]);
-
-            Channels["fake://one"].Uri.ShouldBe("loopback://one".ToUri());
-        }
 
         [Fact]
         public async Task send_via_the_alias_and_messages_actually_get_there()
@@ -105,21 +93,6 @@ namespace Jasper.Testing.Bus
             envelope.Destination.ShouldBe("loopback://one".ToUri());
         }
 
-        [Fact]
-        public void can_use_config_lookups()
-        {
-            with(_ =>
-            {
-                _.Configuration.AddInMemoryCollection(
-                    new Dictionary<string, string> {{"outgoing", "jasper://server1:2200/outgoing"}, { "incoming", "jasper://server1:2200/incoming" } });
-
-                _.Messaging.Send<Message1>().To("config://outgoing");
-                _.Messaging.Send<Message1>().To("config://incoming");
-            });
-
-            Channels["config://outgoing"].Uri.ShouldBe("jasper://server1:2200/outgoing".ToUri());
-            Channels.HasChannel("jasper://server1:2200/outgoing".ToUri()).ShouldBeTrue();
-        }
     }
 
     public class FakeUriLookup : IUriLookup

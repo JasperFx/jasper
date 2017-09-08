@@ -4,24 +4,24 @@
 -> lifecycle = Regression
 -> max-retries = 0
 -> last-updated = 2017-06-26T19:52:19.8417215Z
--> tags = 
+-> tags =
 
 [SendMessage]
 |> IfTheApplicationIs
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    jasper://localhost:2201/one
+    tcp://localhost:2201/one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    jasper://localhost:2201/two
+    tcp://localhost:2201/two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    jasper://localhost:2201/three
+    tcp://localhost:2201/three
     ```
 
 
@@ -31,8 +31,8 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                   |MessageType|Name  |
-    |jasper://localhost:2201/one  |Message1   |Tom   |
-    |jasper://localhost:2201/two  |Message2   |Todd  |
-    |jasper://localhost:2201/three|Message3   |Trevor|
+    |tcp://localhost:2201/one  |Message1   |Tom   |
+    |tcp://localhost:2201/two  |Message2   |Todd  |
+    |tcp://localhost:2201/three|Message3   |Trevor|
 
 ~~~

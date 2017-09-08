@@ -12,6 +12,8 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
+using Jasper.Util;
 
 namespace StorytellerSpecs.Fixtures
 {

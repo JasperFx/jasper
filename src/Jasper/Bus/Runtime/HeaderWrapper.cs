@@ -7,6 +7,7 @@ using Jasper.Bus.Configuration;
 
 namespace Jasper.Bus.Runtime
 {
+    [Obsolete("Get rid of this with GH-")]
     public class HeaderWrapper
     {
         public Uri Source
@@ -58,13 +59,6 @@ namespace Jasper.Bus.Runtime
         {
             get { return Headers.GetUri(Envelope.DestinationKey); }
             set { Headers.Set(Envelope.DestinationKey, value); }
-        }
-
-        public Uri ReceivedAt
-        {
-            get { return Headers.GetUri(Envelope.ReceivedAtKey); }
-            set { Headers.Set(Envelope.ReceivedAtKey, value); }
-
         }
 
         public string[] AcceptedContentTypes
