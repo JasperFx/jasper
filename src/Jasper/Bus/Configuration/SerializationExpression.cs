@@ -1,4 +1,5 @@
-﻿using Jasper.Conneg;
+﻿using Jasper.Bus.Settings;
+using Jasper.Conneg;
 
 namespace Jasper.Bus.Configuration
 {

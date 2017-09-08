@@ -2,6 +2,7 @@
 using Baseline;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Util;
 
 namespace Jasper.Bus.Logging
 {

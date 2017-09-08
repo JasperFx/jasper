@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Bus.Configuration;
 
-namespace Jasper.Bus
+namespace Jasper.Bus.Settings
 {
     public class Listener : IQueueSettings
     {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Settings;
 using Jasper.Bus.Transports.Core;
 using Jasper.Bus.Transports.Lightweight;
 using Jasper.Util;

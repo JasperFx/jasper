@@ -1,6 +1,6 @@
 ﻿using Jasper.Bus.Runtime;
 
-namespace Jasper.Bus
+namespace Jasper.Bus.Settings
 {
     public interface ISubscriberAddress
     {

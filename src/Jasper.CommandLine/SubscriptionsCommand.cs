@@ -6,6 +6,7 @@ using Baseline;
 using Baseline.Dates;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Settings;
 using Oakton;
 
 namespace Jasper.CommandLine

@@ -9,6 +9,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Settings;
 using Jasper.Util;
 
 namespace Jasper.Conneg

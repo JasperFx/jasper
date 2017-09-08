@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Settings;
 using Jasper.Bus.Transports.Core;
 
 namespace Jasper.Bus.Transports.Loopback

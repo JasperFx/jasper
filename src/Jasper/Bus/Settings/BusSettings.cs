@@ -11,7 +11,7 @@ using Jasper.Bus.Transports.Loopback;
 using Jasper.Util;
 using Newtonsoft.Json;
 
-namespace Jasper.Bus
+namespace Jasper.Bus.Settings
 {
     public class BusSettings
     {

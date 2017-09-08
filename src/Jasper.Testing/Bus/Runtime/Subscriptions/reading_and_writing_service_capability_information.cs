@@ -1,5 +1,6 @@
 ﻿using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Settings;
 using Shouldly;
 using Xunit;
 

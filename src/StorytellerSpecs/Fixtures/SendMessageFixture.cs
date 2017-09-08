@@ -15,6 +15,7 @@ using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Settings;
 using Jasper.Bus.Tracking;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Core;

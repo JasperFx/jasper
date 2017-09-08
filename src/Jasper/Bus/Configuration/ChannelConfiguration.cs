@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Settings;
 using Jasper.Util;
 
 namespace Jasper.Bus.Configuration

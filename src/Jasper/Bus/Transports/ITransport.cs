@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Settings;
 
 namespace Jasper.Bus.Transports
 {
