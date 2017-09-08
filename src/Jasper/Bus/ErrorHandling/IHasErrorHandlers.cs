@@ -13,7 +13,7 @@ namespace Jasper.Bus.ErrorHandling
 
     public static class ErrorHandlingConfigurationExtensions
     {
-        public static IContinuation DetermineContinuation(this IHasErrorHandlers errorHandling, Envelope envelope, Exception ex)
+        internal static IContinuation DetermineContinuation(this IHasErrorHandlers errorHandling, Envelope envelope, Exception ex)
         {
             foreach (var handler in errorHandling.ErrorHandlers)
             {
@@ -24,9 +24,9 @@ namespace Jasper.Bus.ErrorHandling
             return null;
         }
 
-        public static ContinuationExpression OnException<T>(this IHasErrorHandlers handlers) where T : Exception
+        public static ContinuationExpression OnException<T>(this IHasErrorHandlers handlers, Func<T, bool> filter = null) where T : Exception
         {
-            return new OnExceptionExpression<T>(handlers);
+            return new OnExceptionExpression<T>(handlers, filter);
         }
 
         public static ContinuationExpression OnException(this IHasErrorHandlers handlers, Type type)
@@ -59,12 +59,17 @@ namespace Jasper.Bus.ErrorHandling
         {
             private readonly Lazy<ErrorHandler> _handler;
 
-            public OnExceptionExpression(IHasErrorHandlers parent)
+            public OnExceptionExpression(IHasErrorHandlers parent) : this(parent, e => true)
+            {
+
+            }
+
+            public OnExceptionExpression(IHasErrorHandlers parent, Func<T, bool> filter)
             {
                 _handler = new Lazy<ErrorHandler>(() =>
                 {
                     var handler = new ErrorHandler();
-                    handler.AddCondition(new ExceptionTypeMatch<T>());
+                    handler.AddCondition(new ExceptionTypeMatch<T>(filter));
                     parent.ErrorHandlers.Add(handler);
 
                     return handler;
