@@ -7,6 +7,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 
 namespace Jasper.Bus.Runtime
 {
@@ -15,14 +16,16 @@ namespace Jasper.Bus.Runtime
         private readonly IMessageRouter _router;
         private readonly IChannelGraph _channels;
         private readonly UriAliasLookup _aliases;
+        private readonly BusSettings _settings;
         private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
 
-        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, UriAliasLookup aliases, IEnumerable<ITransport> transports)
+        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, UriAliasLookup aliases, BusSettings settings, IEnumerable<ITransport> transports)
         {
             _router = router;
             _channels = channels;
             _aliases = aliases;
+            _settings = settings;
 
             foreach (var transport in transports)
             {
@@ -51,7 +54,11 @@ namespace Jasper.Bus.Runtime
                 if (!routes.Any())
                 {
                     Logger.NoRoutesFor(envelope);
-                    throw new NoRoutesException(envelope);
+
+                    if (_settings.NoRouteBehavior == NoRouteBehavior.ThrowOnNoRoutes)
+                    {
+                        throw new NoRoutesException(envelope);
+                    }
                 }
 
                 foreach (var route in routes)

@@ -93,7 +93,7 @@ namespace Jasper.Bus.Transports.Configuration
         public bool AllowNonVersionedSerialization { get; set; } = true;
 
         public string MachineName { get; set; } = Environment.MachineName;
-
+        public NoRouteBehavior NoRouteBehavior { get; set; } = NoRouteBehavior.ThrowOnNoRoutes;
 
 
         // Catches anything from unknown transports

@@ -22,6 +22,11 @@ namespace Jasper.Bus.Configuration
 
         public DelayedJobExpression DelayedProcessing => new DelayedJobExpression(_bus);
 
+        public NoRouteBehavior NoRouteBehavior
+        {
+            get => _bus.Settings.NoRouteBehavior;
+            set => _bus.Settings.NoRouteBehavior = value;
+        }
 
 
         public SendExpression Send<T>()
@@ -89,4 +94,6 @@ namespace Jasper.Bus.Configuration
             return SendMatching("all messages", _ => true).To(uri);
         }
     }
+
+
 }
