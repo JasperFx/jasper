@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -141,6 +142,16 @@ namespace Jasper.Bus.Transports.Core
         }
 
         public TransportState State => _settings.State;
+        public void Describe(TextWriter writer)
+        {
+            if (_settings != null)
+            {
+                foreach (var setting in _settings)
+                {
+                    writer.WriteLine($"Listening for messages at {setting.Uri}");
+                }
+            }
+        }
 
         public IChannel[] Start(IHandlerPipeline pipeline, BusSettings settings, OutgoingChannels channels)
         {

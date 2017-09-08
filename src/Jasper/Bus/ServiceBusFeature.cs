@@ -10,6 +10,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Loopback;
 using Jasper.Codegen;
@@ -61,6 +62,12 @@ namespace Jasper.Bus
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
+            var transports = runtime.Get<ITransport[]>();
+            foreach (var transport in transports.Where(x => x.State == TransportState.Enabled))
+            {
+                transport.Describe(writer);
+            }
+
 
 //            var incoming = Channels.Where(x => x.Incoming).Distinct().ToArray();
 //            if (incoming.Any())

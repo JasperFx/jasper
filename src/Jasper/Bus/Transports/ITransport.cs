@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -17,5 +18,6 @@ namespace Jasper.Bus.Transports
         Uri DefaultReplyUri();
 
         TransportState State { get; }
+        void Describe(TextWriter writer);
     }
 }

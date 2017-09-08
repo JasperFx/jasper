@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,16 @@ namespace Jasper.Bus.Transports.Loopback
         public string Protocol => ProtocolName;
 
         public TransportState State { get; } = TransportState.Enabled;
+        public void Describe(TextWriter writer)
+        {
+            if (_settings != null)
+            {
+                foreach (var setting in _settings)
+                {
+                    writer.WriteLine($"Processing messages at {setting.Uri}");
+                }
+            }
+        }
 
         public Task Send(Envelope envelope, Uri destination)
         {
@@ -41,6 +52,7 @@ namespace Jasper.Bus.Transports.Loopback
 
         public IChannel[] Start(IHandlerPipeline pipeline, BusSettings settings, OutgoingChannels channels)
         {
+            _settings = settings.Loopback;
             _retryChannel = new Lazy<IChannel>(() => channels.DefaultRetryChannel);
             return startListeners(pipeline, settings).ToArray();
         }
@@ -84,6 +96,7 @@ namespace Jasper.Bus.Transports.Loopback
 
         public static readonly Uri Delayed = "loopback://delayed".ToUri();
         public static readonly Uri Retries = "loopback://retries".ToUri();
+        private TransportSettings _settings;
 
         IMessageCallback IQueueProvider.BuildCallback(Envelope envelope, QueueReceiver receiver)
         {

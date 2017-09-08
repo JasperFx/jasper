@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Authentication.ExtendedProtection;
@@ -396,6 +397,10 @@ namespace StorytellerSpecs.Fixtures
         }
 
         public TransportState State { get; } = TransportState.Enabled;
+        public void Describe(TextWriter writer)
+        {
+            throw new NotImplementedException();
+        }
 
         public bool Enabled { get; } = true;
 

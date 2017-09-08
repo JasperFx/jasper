@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus;
@@ -60,6 +61,10 @@ namespace Jasper.Testing.Bus.Stubs
         }
 
         public TransportState State { get; } = TransportState.Enabled;
+        public void Describe(TextWriter writer)
+        {
+            throw new NotImplementedException();
+        }
 
         public bool Enabled { get; } = true;
     }
