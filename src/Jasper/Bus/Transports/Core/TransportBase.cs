@@ -31,8 +31,6 @@ namespace Jasper.Bus.Transports.Core
             Protocol = protocol;
             Persistence = persistence;
             Logger = logger;
-
-
         }
 
         public void Dispose()

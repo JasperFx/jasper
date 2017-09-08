@@ -79,7 +79,7 @@ namespace Jasper.Testing.Http.ContentHandling
         public string ContentType { get; } = "text/special";
         public byte[] Write(object model)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task WriteToStream(object model, HttpResponse response)

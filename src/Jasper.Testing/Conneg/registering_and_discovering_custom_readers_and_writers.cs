@@ -70,12 +70,12 @@ namespace Jasper.Testing.Conneg
         public string ContentType { get; } = "application/json";
         public byte[] Write(object model)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task WriteToStream(object model, HttpResponse response)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -86,12 +86,12 @@ namespace Jasper.Testing.Conneg
         public string ContentType { get; } = "application/json";
         public object ReadFromData(byte[] data)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -102,12 +102,12 @@ namespace Jasper.Testing.Conneg
         public string ContentType { get; } = "green";
         public object ReadFromData(byte[] data)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -118,12 +118,12 @@ namespace Jasper.Testing.Conneg
         public string ContentType { get; } = "green";
         public byte[] Write(object model)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task WriteToStream(object model, HttpResponse response)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -133,12 +133,12 @@ namespace Jasper.Testing.Conneg
         public string ContentType { get; } = "blue";
         public byte[] Write(object model)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task WriteToStream(object model, HttpResponse response)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

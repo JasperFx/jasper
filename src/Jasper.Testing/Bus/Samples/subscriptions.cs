@@ -67,27 +67,27 @@ namespace Jasper.Testing.Bus.Samples
     {
         public void Dispose()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task<Subscription[]> GetSubscribersFor(Type messageType)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

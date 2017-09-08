@@ -156,7 +156,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
         public byte[] Write(object model)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task WriteToStream(object model, HttpResponse response)
@@ -175,7 +175,7 @@ namespace Jasper.Testing.Http.ContentHandling
         public string ContentType { get; } = "text/xml";
         public object ReadFromData(byte[] data)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task<T1> ReadFromRequest<T1>(HttpRequest request)

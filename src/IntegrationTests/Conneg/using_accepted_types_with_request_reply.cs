@@ -88,7 +88,7 @@ namespace IntegrationTests.Conneg
 
         public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -107,7 +107,7 @@ namespace IntegrationTests.Conneg
 
         public Task WriteToStream(object model, HttpResponse response)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 

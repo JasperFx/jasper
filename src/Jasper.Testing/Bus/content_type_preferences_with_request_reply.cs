@@ -37,12 +37,12 @@ namespace Jasper.Testing.Bus
         public string ContentType { get; } = "text/message1";
         public object ReadFromData(byte[] data)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -53,12 +53,12 @@ namespace Jasper.Testing.Bus
         public string ContentType { get; } = "text/oddball";
         public object ReadFromData(byte[] data)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

@@ -140,7 +140,7 @@ namespace Jasper.Testing.Http.Model
 
         public Task<Resource2> get_resource2()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 

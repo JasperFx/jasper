@@ -108,12 +108,12 @@ namespace Jasper.Testing.Conneg
 
         public Task WriteToStream(object model, HttpResponse response)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Task Write(ConnegMessage model, Stream stream)
         {
-            throw new System.NotImplementedException();
+            throw new System.NotSupportedException();
         }
     }
 }

@@ -319,7 +319,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
 
         public Task EnqueueLocally(object message)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public string FailureAcknowledgementMessage { get; set; }

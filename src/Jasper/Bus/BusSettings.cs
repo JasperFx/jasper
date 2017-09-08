@@ -13,9 +13,6 @@ using Newtonsoft.Json;
 
 namespace Jasper.Bus
 {
-    // TODO
-    // 1. Assign a control channel as tcp, durable, http in that order. Automatically gets single threaded
-    // 2. Default channel?
     public class BusSettings
     {
         private readonly LightweightCache<string, TransportSettings> _transports = new LightweightCache<string, TransportSettings>();

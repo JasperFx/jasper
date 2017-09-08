@@ -83,7 +83,7 @@ namespace Jasper.Testing.Conneg
 
         public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
     }

@@ -26,9 +26,6 @@ namespace Jasper.Bus.Transports.Core
             _pipeline = pipeline;
             _cancellationToken = cancellationToken;
             _provider = provider;
-
-            // TODO -- need to make this configurable!!!
-            _default = AddQueue(TransportConstants.Default, 5);
         }
 
         public QueueReceiver AddQueue(string queueName, int parallelization)

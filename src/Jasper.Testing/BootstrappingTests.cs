@@ -190,7 +190,7 @@ namespace Jasper.Testing
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public JasperRuntime Runtime { get; set; }
