@@ -49,7 +49,8 @@ namespace Jasper.Bus.Runtime.Routing
             var sending = envelope.Clone();
 
             sending.ContentType = envelope.ContentType ?? ContentType;
-            sending.Data = Writer.Write(envelope.Message);
+
+            sending.Writer = Writer;
             sending.Destination = Destination;
 
             return sending;

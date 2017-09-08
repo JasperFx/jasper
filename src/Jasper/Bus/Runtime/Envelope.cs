@@ -4,6 +4,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Core;
+using Jasper.Conneg;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime
@@ -227,6 +228,8 @@ namespace Jasper.Bus.Runtime
 
         }
 
+        public IMediaWriter Writer { get; set; }
+
         protected bool Equals(Envelope other)
         {
             return Equals(Data, other.Data) && Equals(Message, other.Message) && Equals(Callback, other.Callback) && Equals(Headers, other.Headers);
@@ -264,6 +267,16 @@ namespace Jasper.Bus.Runtime
 
         public static string MaxAttemptsHeader = "max-delivery-attempts";
         public static string DeliverByHeader = "deliver-by";
+
+        public void WriteData()
+        {
+            if (Writer == null || Message == null)
+            {
+                throw new InvalidOperationException("This envelope is missing a Writer and/or Message");
+            }
+
+            Data = Writer.Write(Message);
+        }
     }
 
 }

@@ -120,6 +120,11 @@ namespace Jasper.Bus.Transports.Core
                 throw new InvalidOperationException($"Transport '{Protocol}' cannot send messages with reply-requested or ack-requested without a receiver for replies");
             }
 
+            if (envelope.Data == null)
+            {
+                envelope.WriteData();
+            }
+
             envelope.Destination = destination;
             enqueue(envelope);
 
