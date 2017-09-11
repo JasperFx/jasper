@@ -55,7 +55,7 @@ namespace Jasper.Bus.Runtime
                 {
                     Logger.NoRoutesFor(envelope);
 
-                    if (_settings.NoRouteBehavior == NoRouteBehavior.ThrowOnNoRoutes)
+                    if (_settings.NoMessageRouteBehavior == NoRouteBehavior.ThrowOnNoRoutes)
                     {
                         throw new NoRoutesException(envelope);
                     }

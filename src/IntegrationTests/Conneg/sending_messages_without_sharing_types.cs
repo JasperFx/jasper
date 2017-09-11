@@ -122,7 +122,7 @@ namespace IntegrationTests.Conneg
     {
         public GreenApp()
         {
-            Messaging.Send<GreenMessage>().To("tcp://localhost:2555/blue");
+            Send.Message<GreenMessage>().To("tcp://localhost:2555/blue");
             Handlers.DisableConventionalDiscovery();
 
             Services.For<MessageTracker>().Use("blow up", c =>

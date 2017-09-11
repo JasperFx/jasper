@@ -1,7 +1,9 @@
-﻿using Jasper.Bus.Delayed;
+﻿using System;
+using Jasper.Bus.Delayed;
 
 namespace Jasper.Bus.Configuration
 {
+    [Obsolete("Doesn't really make sense to even bother with this when it's so rarely used")]
     public class DelayedJobExpression
     {
         private readonly ServiceBusFeature _feature;

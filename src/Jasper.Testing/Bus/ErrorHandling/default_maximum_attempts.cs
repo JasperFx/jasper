@@ -13,7 +13,7 @@ namespace Jasper.Testing.Bus.ErrorHandling
         [Fact]
         public void can_set_the_global_default()
         {
-            theRegistry.Messaging.Policies.DefaultMaximumAttempts = 3;
+            theRegistry.Send.Policies.DefaultMaximumAttempts = 3;
 
             theHandlers.ChainFor<SimpleMessage>()
                 .MaximumAttempts.ShouldBe(3);
@@ -22,7 +22,7 @@ namespace Jasper.Testing.Bus.ErrorHandling
         [Fact]
         public void explicit_configuration_always_wins()
         {
-            theRegistry.Messaging.Policies.DefaultMaximumAttempts = 3;
+            theRegistry.Send.Policies.DefaultMaximumAttempts = 3;
 
             theHandlers.ChainFor<Message4>().MaximumAttempts.ShouldBe(11);
         }

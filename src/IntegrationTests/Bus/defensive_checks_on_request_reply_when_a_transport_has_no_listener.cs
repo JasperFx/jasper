@@ -14,7 +14,7 @@ namespace IntegrationTests.Bus
             StartTheSender(_ =>
             {
                 // No listener on the lightweight
-                _.Messaging.Send<Message1>().To("tcp://localhost:2222");
+                _.Send.Message<Message1>().To("tcp://localhost:2222");
             });
 
             return Exception<InvalidOperationException>.ShouldBeThrownByAsync(async () =>
@@ -29,7 +29,7 @@ namespace IntegrationTests.Bus
             StartTheSender(_ =>
             {
                 // No listener on the lightweight
-                _.Messaging.Send<Message1>().To("tcp://localhost:2222");
+                _.Send.Message<Message1>().To("tcp://localhost:2222");
             });
 
             return Exception<InvalidOperationException>.ShouldBeThrownByAsync(async () =>

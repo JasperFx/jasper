@@ -26,7 +26,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.Messaging.NoRouteBehavior = NoRouteBehavior.Ignore;
+                _.Advanced.NoMessageRouteBehavior = NoRouteBehavior.Ignore;
             });
 
             await Bus.Send(new MessageWithNoRoutes());

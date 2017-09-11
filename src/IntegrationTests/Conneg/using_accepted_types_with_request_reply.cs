@@ -23,7 +23,7 @@ namespace IntegrationTests.Conneg
             Reply1Writer.WasUsed = false;
 
             var requestorRegistry = new JasperRegistry();
-            requestorRegistry.Messaging.Send<Request1>().To("tcp://localhost:2456/incoming");
+            requestorRegistry.Send.Message<Request1>().To("tcp://localhost:2456/incoming");
             requestorRegistry.Transports.ListenForMessagesFrom("tcp://localhost:1234/replies");
             var requestor = JasperRuntime.For(requestorRegistry);
 

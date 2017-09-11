@@ -25,12 +25,12 @@ namespace Jasper.Testing.Bus
             {
                 _.Services.For<WorkTracker>().Use(theTracker);
 
-                _.Messaging.SendFromAssemblyContaining<Message1>().To("loopback://cascading");
+                _.Send.MessagesFromAssemblyContaining<Message1>().To("loopback://cascading");
 
                 _.Logging.LogBusEventsWith(this);
 
                 _.ErrorHandling.OnException<DivideByZeroException>().Requeue();
-                _.Messaging.Policies.DefaultMaximumAttempts = 3;
+                _.Send.Policies.DefaultMaximumAttempts = 3;
             });
 
 

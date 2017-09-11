@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Jasper.Bus.Transports.Configuration
 {
-    public class BusSettings : ITransportsExpression
+    public class BusSettings : ITransportsExpression, IAdvancedOptions
     {
         private readonly LightweightCache<string, TransportSettings> _transports = new LightweightCache<string, TransportSettings>();
 
@@ -93,7 +93,7 @@ namespace Jasper.Bus.Transports.Configuration
         public bool AllowNonVersionedSerialization { get; set; } = true;
 
         public string MachineName { get; set; } = Environment.MachineName;
-        public NoRouteBehavior NoRouteBehavior { get; set; } = NoRouteBehavior.ThrowOnNoRoutes;
+        public NoRouteBehavior NoMessageRouteBehavior { get; set; } = NoRouteBehavior.ThrowOnNoRoutes;
 
 
         // Catches anything from unknown transports

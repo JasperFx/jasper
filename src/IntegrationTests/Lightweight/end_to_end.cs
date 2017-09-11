@@ -36,11 +36,11 @@ namespace IntegrationTests.Lightweight
             receiver.ErrorHandling.OnException<DivideByZeroException>().Requeue();
             receiver.ErrorHandling.OnException<TimeoutException>().RetryLater(1.Minutes());
 
-            receiver.Messaging.Policies.DefaultMaximumAttempts = 3;
+            receiver.Send.Policies.DefaultMaximumAttempts = 3;
 
             delayedJobs = new FakeDelayedJobProcessor();
 
-            receiver.Messaging.DelayedProcessing.Use(delayedJobs);
+            receiver.Send.DelayedProcessing.Use(delayedJobs);
 
             receiver.Services.For<MessageTracker>().Use(theTracker);
 

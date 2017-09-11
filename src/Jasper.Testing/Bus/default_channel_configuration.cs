@@ -69,7 +69,7 @@ namespace Jasper.Testing.Bus
                 _.Transports.DefaultIs("loopback://incoming");
                 _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
 
-                _.Messaging.Send<DefaultRoutedMessage>().To("tcp://localhost:2444/outgoing");
+                _.Send.Message<DefaultRoutedMessage>().To("tcp://localhost:2444/outgoing");
             }))
             {
                 var router = runtime.Get<IMessageRouter>();

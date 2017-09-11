@@ -40,7 +40,7 @@ namespace Jasper.Testing.Bus.Samples
     {
         public MyApp()
         {
-            Messaging.Policies.Global<ErrorHandlingPolicy>();
+            Send.Policies.Global<ErrorHandlingPolicy>();
         }
     }
     // ENDSAMPLE

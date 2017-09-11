@@ -17,8 +17,8 @@ namespace Jasper.Testing.Bus
 
             with(_ =>
             {
-                _.Messaging.Send<Message1>().To("loopback://one").ModifyWith<FooModifier>().ModifyWith<BarModifier>();
-                _.Messaging.Send<Message2>().To("loopback://two");
+                _.Send.Message<Message1>().To("loopback://one").ModifyWith<FooModifier>().ModifyWith<BarModifier>();
+                _.Send.Message<Message2>().To("loopback://two");
 
             });
 
@@ -69,7 +69,7 @@ namespace Jasper.Testing.Bus
             {
                 envelope.Headers.Add("foo", "yes");
             }
-            
+
         }
     }
 

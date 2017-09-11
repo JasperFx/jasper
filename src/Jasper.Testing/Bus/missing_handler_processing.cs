@@ -22,7 +22,7 @@ namespace Jasper.Testing.Bus
                 r.Services.AddService<IMissingHandler, NoMessageHandler2>();
 
                 // Hack until we get a default queue
-                r.Messaging.Send<MessageWithNoHandler>().To("loopback://incoming");
+                r.Send.Message<MessageWithNoHandler>().To("loopback://incoming");
             });
 
             var msg1 = new MessageWithNoHandler();

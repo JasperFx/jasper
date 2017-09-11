@@ -17,7 +17,7 @@ namespace Jasper.Testing.Bus.Transports.InMemory
         {
             with(_ =>
             {
-                _.Messaging.Send<Message1>().To("loopback://incoming");
+                _.Send.Message<Message1>().To("loopback://incoming");
 
                 _.Services.For<MessageTracker>().Use(theTracker);
 

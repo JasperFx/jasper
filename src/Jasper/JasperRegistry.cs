@@ -39,7 +39,7 @@ namespace Jasper
             Http = Features.For<AspNetCoreFeature>();
 
             Serialization = new SerializationExpression(_bus, this);
-            Messaging = new MessagesExpression(_bus);
+            Send = new SendMessageExpression(_bus);
 
             _applicationServices = new ServiceRegistry();
             ExtensionServices = new ExtensionServiceRegistry();
@@ -82,14 +82,24 @@ namespace Jasper
             set => Http.EnvironmentName = value;
         }
 
+        /// <summary>
+        /// Options to control how Jasper discovers message handler actions
+        /// </summary>
         public HandlerSource Handlers => _bus.Handlers;
 
+
+        /// <summary>
+        /// Register or configure global error handling policies during processing messages
+        /// </summary>
         public IHasErrorHandlers ErrorHandling => _bus.Policies;
 
 
         public AspNetCoreFeature Http { get; }
 
-        public MessagesExpression Messaging { get; }
+        /// <summary>
+        /// Configure static message routing rules
+        /// </summary>
+        public SendMessageExpression Send { get; }
 
         public ITransportsExpression Transports => _bus.Settings;
 
@@ -99,7 +109,7 @@ namespace Jasper
 
         public GenerationConfig Generation { get; }
 
-        public Assembly ApplicationAssembly { get; private set; }
+        public Assembly ApplicationAssembly { get; }
 
         public ServiceRegistry Services { get; private set; }
 
@@ -178,6 +188,12 @@ namespace Jasper
         public ISubscriptions Subscriptions => _bus.Capabilities;
 
         public IPublishing Publishing => _bus.Capabilities;
+
+
+        /// <summary>
+        /// Configure rarely used, advanced options
+        /// </summary>
+        public IAdvancedOptions Advanced => _bus.Settings;
     }
 
     public interface IFeatures : IEnumerable<IFeature>
@@ -185,4 +201,6 @@ namespace Jasper
         void Include<T>() where T : IFeature, new();
         T For<T>() where T : IFeature, new();
     }
+
+
 }
