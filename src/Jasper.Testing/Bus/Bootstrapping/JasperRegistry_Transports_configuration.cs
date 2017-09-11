@@ -62,7 +62,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void make_a_queue_be_single_threaded()
         {
-            theRegistry.Transports.Loopback.Queue("incoming").SingleThreaded();
+            theRegistry.Transports.Loopback.Queue("incoming").Sequential();
 
             theSettings.Loopback.Queues["incoming"].Parallelization.ShouldBe(1);
         }

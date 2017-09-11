@@ -20,7 +20,7 @@ namespace Jasper.Bus.Transports.Configuration
             return this;
         }
 
-        IQueueSettings IQueueSettings.SingleThreaded()
+        IQueueSettings IQueueSettings.Sequential()
         {
             MaximumParallelization = 1;
             return this;

@@ -97,4 +97,102 @@ namespace Jasper.Testing.Samples
         }
     }
     // ENDSAMPLE
+
+    // SAMPLE: LightweightTransportApp
+    public class LightweightTransportApp : JasperRegistry
+    {
+        public LightweightTransportApp()
+        {
+            // Nevermind, just disable it altogether
+            Transports.Durable.Disable();
+
+            // Set up a listener (this is optional)
+            Transports.Lightweight.ListenOnPort(4000);
+
+            // Make it even faster by discarding any message that fails
+            Transports.Lightweight.MaximumSendAttempts(1);
+
+            // Configure the maximum number of threads dedicated to processing
+            // messages being received by queue. 5 is the default
+            Transports.Lightweight.DefaultQueue.MaximumParallelization(5);
+            Transports.Lightweight.Queue("important").MaximumParallelization(10);
+            Transports.Lightweight.Queue("lowpriority").MaximumParallelization(3);
+            Transports.Lightweight.Queue("control").Sequential();
+
+
+            // Or, listen by Uri
+            // This directs Jasper to listen for messages at port 2200
+            // with the lightweight transport
+            Transports.ListenForMessagesFrom("tcp://localhost:2200");
+
+
+            // Registering a subscription to Message1 that should be
+            // delivered to a load balancer Uri at port 2200 and the "important"
+            // queue
+            Subscribe.To<Message1>().At("tcp://loadbalancer:2200/important");
+
+            // Publish the message Message2 to the DNS entry "remoteserver"
+            Publish.Message<Message2>().To("tcp://remoteserver:2201");
+        }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: DurableTransportApp
+    public class DurableTransportApp : JasperRegistry
+    {
+        public DurableTransportApp()
+        {
+            // Nevermind, just disable it altogether
+            Transports.Durable.Disable();
+
+            // Set up a listener (this is optional)
+            Transports.Durable.ListenOnPort(4000);
+
+            // Throw away messages faster because the default is 100
+            // attempts
+            Transports.Durable.MaximumSendAttempts(100);
+
+            // Configure the maximum number of threads dedicated to processing
+            // messages being received by queue. 5 is the default
+            Transports.Durable.DefaultQueue.MaximumParallelization(5);
+            Transports.Durable.Queue("important").MaximumParallelization(10);
+            Transports.Durable.Queue("lowpriority").MaximumParallelization(3);
+            Transports.Durable.Queue("control").Sequential();
+
+
+            // Or, listen by Uri
+            // This directs Jasper to listen for messages at port 2200
+            // with the durable transport
+            Transports.ListenForMessagesFrom("durable://localhost:2200");
+
+
+            // Registering a subscription to Message1 that should be
+            // delivered to a load balancer Uri at port 2200 and the "important"
+            // queue
+            Subscribe.To<Message1>().At("durable://loadbalancer:2200/important");
+
+            // Publish the message Message2 to the DNS entry "remoteserver"
+            Publish.Message<Message2>().To("durable://remoteserver:2201");
+        }
+    }
+    // ENDSAMPLE
+
+
+    // SAMPLE: LoopbackTransportApp
+    public class LoopbackTransportApp : JasperRegistry
+    {
+        public LoopbackTransportApp()
+        {
+            // Configure the maximum number of threads dedicated to processing
+            // messages being received by queue. 5 is the default
+            Transports.Loopback.DefaultQueue.MaximumParallelization(5);
+            Transports.Loopback.Queue("important").MaximumParallelization(10);
+            Transports.Loopback.Queue("lowpriority").MaximumParallelization(3);
+            Transports.Loopback.Queue("control").Sequential();
+
+            // Publish the message Message2 the important queue
+            Publish.Message<Message2>().To("loopback://important");
+        }
+    }
+    // ENDSAMPLE
 }
