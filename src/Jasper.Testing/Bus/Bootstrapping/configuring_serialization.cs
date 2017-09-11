@@ -11,8 +11,8 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public void disallow_non_versioned_serialization()
         {
             new BusSettings().AllowNonVersionedSerialization.ShouldBeTrue();
-            
-            theRegistry.Serialization.DisallowNonVersionedSerialization();
+
+            theRegistry.Advanced.AllowNonVersionedSerialization = false;
 
             theRuntime.Get<BusSettings>().AllowNonVersionedSerialization
                 .ShouldBeFalse();

@@ -31,7 +31,6 @@ namespace Jasper
 
             Http = Features.For<AspNetCoreFeature>();
 
-            Serialization = new SerializationExpression(_bus, this);
             Send = new SendMessageExpression(_bus);
 
             _applicationServices = new ServiceRegistry();
@@ -52,7 +51,9 @@ namespace Jasper
             Settings.Replace(_bus.Settings);
 
             if (JasperEnvironment.Name.IsNotEmpty())
+            {
                 EnvironmentName = JasperEnvironment.Name;
+            }
         }
 
         public string EnvironmentName
@@ -75,8 +76,6 @@ namespace Jasper
         public SendMessageExpression Send { get; }
 
         public ITransportsExpression Transports => _bus.Settings;
-
-        public SerializationExpression Serialization { get; }
 
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 

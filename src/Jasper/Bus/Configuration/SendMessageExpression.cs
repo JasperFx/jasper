@@ -18,7 +18,6 @@ namespace Jasper.Bus.Configuration
             _bus = bus;
         }
 
-        public DelayedJobExpression DelayedProcessing => new DelayedJobExpression(_bus);
 
 
         public MessageTrackExpression Message<T>()

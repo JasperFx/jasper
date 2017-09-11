@@ -40,7 +40,7 @@ namespace IntegrationTests.Lightweight
 
             delayedJobs = new FakeDelayedJobProcessor();
 
-            receiver.Send.DelayedProcessing.Use(delayedJobs);
+            receiver.Services.For<IDelayedJobProcessor>().Use(delayedJobs);
 
             receiver.Services.For<MessageTracker>().Use(theTracker);
 

@@ -10,8 +10,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void should_add_the_delayed_queue_if_using_in_memory_delayed_processor()
         {
-            theRegistry.Send.DelayedProcessing.RunInMemory();
-
             theChannels.HasChannel(LoopbackTransport.Delayed).ShouldBeTrue();
 
         }
