@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Jasper.Testing.Settings;
+﻿using Jasper.Testing.Settings;
 using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Testing.Samples
@@ -14,13 +10,13 @@ namespace Jasper.Testing.Samples
         public SampleApp()
         {
             // SAMPLE: alter-settings
-            Settings.Alter<MySettings>(_ =>
+            Settings.Alter<Jasper.Testing.Settings.MyFakeSettings>(_ =>
             {
                 _.SomeSetting = 5;
             });
 
             // or additionally use IConfiguration
-            Settings.Alter<MySettings>((config, settings) =>
+            Settings.Alter<MyFakeSettings>((config, settings) =>
             {
                 settings.SomeSetting = int.Parse(config["SomeKey"]);
             });
@@ -29,7 +25,7 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
 
             // SAMPLE: replace-settings
-            Settings.Replace(new MySettings
+            Settings.Replace(new MyFakeSettings
             {
                 SomeSetting = 3,
                 OtherSetting = "blue"
@@ -80,7 +76,7 @@ namespace Jasper.Testing.Samples
 
             public MyApplication()
             {
-                Settings.With<MySettings>(_ =>
+                Settings.With<MyFakeSettings>(_ =>
                 {
                     if (_.SomeSetting == 1)
                     {

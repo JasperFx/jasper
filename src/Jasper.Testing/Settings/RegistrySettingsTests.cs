@@ -36,7 +36,7 @@ namespace Jasper.Testing.Settings
             theRegistry.Configuration.AddJsonFile("appsettings.json");
 
 
-            var settings = get<MySettings>();
+            var settings = get<MyFakeSettings>();
             settings.SomeSetting.ShouldBe(1);
         }
 
@@ -61,7 +61,7 @@ namespace Jasper.Testing.Settings
             });
 
 
-            var settings = runtime.Get<MySettings>();
+            var settings = runtime.Get<MyFakeSettings>();
             settings.SomeSetting.ShouldBe(0);
         }
 
@@ -73,14 +73,14 @@ namespace Jasper.Testing.Settings
                 .AddJsonFile("colors.json");
 
             app.Settings.Configure<Colors>();
-            app.Settings.Alter<MySettings>(_ =>
+            app.Settings.Alter<MyFakeSettings>(_ =>
             {
                 _.SomeSetting = 29;
             });
 
             using (var runtime = JasperRuntime.For(app))
             {
-                var mySettings = runtime.Get<MySettings>();
+                var mySettings = runtime.Get<MyFakeSettings>();
                 var colors = runtime.Get<Colors>();
 
                 mySettings.SomeSetting.ShouldBe(29);

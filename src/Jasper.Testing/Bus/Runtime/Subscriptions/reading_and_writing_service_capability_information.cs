@@ -20,8 +20,8 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
                 _.ServiceName = "AppWithSubscriptions";
 
 
-                _.Subscriptions.To<Message1>();
-                _.Subscriptions.To<Message2>();
+                _.Subscribe.To<Message1>();
+                _.Subscribe.To<Message2>();
 
                 _.Publish.Message<Message3>();
                 _.Publish.Message<Message4>();

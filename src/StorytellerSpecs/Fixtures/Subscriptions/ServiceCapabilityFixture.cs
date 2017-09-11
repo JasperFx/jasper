@@ -78,13 +78,13 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         [FormatAs("Subscribes to all handled messages at {destination}")]
         public void SubscribeToAllHandledMessages(Uri destination)
         {
-            _registry.Subscriptions.ToAllMessages().At(destination);
+            _registry.Subscribe.ToAllMessages().At(destination);
         }
 
         [FormatAs("Subscribe to all handled messages that start with 'Message'")]
         public void SubscribeToAllMessagesStartingWithM()
         {
-            _registry.Subscriptions.To(t => t.Name.StartsWith("Message"));
+            _registry.Subscribe.To(t => t.Name.StartsWith("Message"));
         }
 
         [FormatAs("Service Name is {serviceName}")]
@@ -118,7 +118,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         [FormatAs("The default subscription receiver is {uri}")]
         public void DefaultSubscriptionReceiverIs([SelectionList("Channels")]string uri)
         {
-            _registry.Subscriptions.At(uri);
+            _registry.Subscribe.At(uri);
         }
 
 
@@ -126,7 +126,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public void SubscribesTo([SelectionList("MessageTypes")] string messageType)
         {
             var type = messageTypeFor(messageType);
-            _registry.Subscriptions.To(type);
+            _registry.Subscribe.To(type);
         }
 
         [FormatAs("Subscribes to message {messageType} at {receiver}")]
@@ -135,7 +135,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             [SelectionList("Channels")] string receiver)
         {
             var type = messageTypeFor(messageType);
-            _registry.Subscriptions.To(type).At(receiver);
+            _registry.Subscribe.To(type).At(receiver);
 
 
         }

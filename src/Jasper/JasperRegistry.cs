@@ -75,20 +75,27 @@ namespace Jasper
         /// </summary>
         public PublishingExpression Publish { get; }
 
+        /// <summary>
+        /// Configure or disable the built in transports
+        /// </summary>
         public ITransportsExpression Transports => _bus.Settings;
 
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
+        // TODO -- move this to advanced too? Won't be used very often
         public GenerationConfig Generation { get; }
 
+        // TODO -- does this need to be public?
         public Assembly ApplicationAssembly { get; }
 
         public ServiceRegistry Services { get; private set; }
 
         public JasperSettings Settings { get; }
 
+        // TODO -- move this to advanced
         public IFeatures Features => this;
 
+        // TODO -- move this to advanced
         public Logging Logging { get; }
 
         internal ServiceRegistry ExtensionServices { get; }
@@ -100,10 +107,11 @@ namespace Jasper
             set => _bus.Settings.ServiceName = value;
         }
 
-        public ISubscriptions Subscriptions => _bus.Capabilities;
+
+        public ISubscriptions Subscribe => _bus.Capabilities;
 
         /// <summary>
-        ///     Configure rarely used, advanced options
+        /// Configure uncommonly used, advanced options
         /// </summary>
         public IAdvancedOptions Advanced => _bus.Settings;
 

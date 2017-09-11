@@ -7,7 +7,9 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Testing.Bus.Runtime;
+using Jasper.Testing.Bus.Runtime.Routing;
 using Jasper.Testing.Bus.Transports;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +20,22 @@ namespace Jasper.Testing.Bus
 {
     public class using_uri_lookups : IntegrationContext
     {
+        [Fact]
+        public void using_the_config_lookup()
+        {
+            with(_ =>
+            {
+                _.Configuration
+                    .AddInMemoryCollection(new Dictionary<string, string> {{"invoicing", "durable://server2:2345"}});
+
+
+                _.Transports.ListenForMessagesFrom("config://invoicing");
+            });
+
+            Runtime.Get<BusSettings>().Durable.Port.ShouldBe(2345);
+        }
+
+
         [Fact]
         public async Task static_routing_rules_respect_the_uri_lookup()
         {

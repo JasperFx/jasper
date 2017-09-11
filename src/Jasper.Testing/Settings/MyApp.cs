@@ -17,7 +17,7 @@ namespace Jasper.Testing.Settings
             Services.For<IWidget>().Use<Widget>();
             Services.For<IFakeService>().Use<FakeService>();
 
-            Settings.With<MySettings>(_ =>
+            Settings.With<MyFakeSettings>(_ =>
             {
                 if (_.SomeSetting != int.MaxValue)
                 {

@@ -38,7 +38,7 @@ namespace Jasper.Testing.Settings
             theRegistry.Configuration.AddJsonFile("appsettings.json");
 
 
-            var settings = get<MySettings>();
+            var settings = get<MyFakeSettings>();
             settings.SomeSetting.ShouldBe(1);
         }
 
@@ -62,12 +62,12 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_alter_settings()
         {
-            theRegistry.Settings.Alter<MySettings>(s =>
+            theRegistry.Settings.Alter<MyFakeSettings>(s =>
             {
                 s.SomeSetting = 5;
             });
 
-            var settings = get<MySettings>();
+            var settings = get<MyFakeSettings>();
 
             settings.SomeSetting.ShouldBe(5);
         }
@@ -76,13 +76,13 @@ namespace Jasper.Testing.Settings
         public void can_replace_settings()
         {
 
-            theRegistry.Settings.Replace(new MySettings
+            theRegistry.Settings.Replace(new MyFakeSettings
             {
                 OtherSetting = "tacos",
                 SomeSetting = 1000
             });
 
-            var settings = get<MySettings>();
+            var settings = get<MyFakeSettings>();
 
             settings.SomeSetting.ShouldBe(1000);
             settings.OtherSetting.ShouldBe("tacos");
@@ -97,7 +97,7 @@ namespace Jasper.Testing.Settings
 
             theRegistry.Settings.Configure<Colors>();
             var colors = get<Colors>();
-            var settings = get<MySettings>();
+            var settings = get<MyFakeSettings>();
 
             colors.Red.ShouldBe("#ff0000");
             settings.SomeSetting.ShouldBe(1);

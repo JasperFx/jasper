@@ -18,9 +18,9 @@ namespace MyApp
             Publish.Message<Message2>();
             Publish.Message<Message3>();
 
-            Subscriptions.At("tcp://server1:2222");
-            Subscriptions.To<Message4>();
-            Subscriptions.To<Message5>();
+            Subscribe.At("tcp://server1:2222");
+            Subscribe.To<Message4>();
+            Subscribe.To<Message5>();
         }
     }
     // ENDSAMPLE

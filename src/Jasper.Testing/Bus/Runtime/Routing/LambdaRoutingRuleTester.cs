@@ -9,14 +9,14 @@ namespace Jasper.Testing.Bus.Runtime.Routing
         [Fact]
         public void positive_match()
         {
-            var rule = new LambdaRoutingRule("is type",type => type == typeof (BusSettings));
-            ShouldBeBooleanExtensions.ShouldBeTrue(rule.Matches(typeof(BusSettings)));
+            var rule = new LambdaRoutingRule("is type",type => type == typeof (FakeAppSettings));
+            ShouldBeBooleanExtensions.ShouldBeTrue(rule.Matches(typeof(FakeAppSettings)));
         }
 
         [Fact]
         public void negative_match()
         {
-            var rule = new LambdaRoutingRule("test",type => type == typeof(BusSettings));
+            var rule = new LambdaRoutingRule("test",type => type == typeof(FakeAppSettings));
             ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(GetType()));
         }
     }

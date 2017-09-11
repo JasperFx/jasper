@@ -163,7 +163,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
             var type = messageTypeFor(messageType);
 
-            _registry.Subscriptions.To(type).At(uri);
+            _registry.Subscribe.To(type).At(uri);
         }
     }
 
