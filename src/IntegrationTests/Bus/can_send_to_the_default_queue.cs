@@ -19,7 +19,7 @@ namespace IntegrationTests.Bus
 
             StartTheSender(_ =>
             {
-                _.Send.AllMessagesTo("tcp://localhost:2255");
+                _.Publish.AllMessagesTo("tcp://localhost:2255");
             });
 
             var waiter = theTracker.WaitFor<Message1>();
@@ -42,7 +42,7 @@ namespace IntegrationTests.Bus
 
             StartTheSender(_ =>
             {
-                _.Send.AllMessagesTo("tcp://localhost:2266/unknown");
+                _.Publish.AllMessagesTo("tcp://localhost:2266/unknown");
             });
 
             var waiter = theTracker.WaitFor<Message1>();

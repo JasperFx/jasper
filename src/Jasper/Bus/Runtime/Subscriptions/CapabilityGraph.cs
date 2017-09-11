@@ -13,7 +13,7 @@ using StructureMap.Graph.Scanning;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
-    public class CapabilityGraph : ISubscriptions, IPublishing
+    public class CapabilityGraph : ISubscriptions
     {
         private readonly IList<PublishedMessage> _published = new List<PublishedMessage>();
         private readonly IList<SubscriptionRequirement> _requirements = new List<SubscriptionRequirement>();
@@ -158,22 +158,10 @@ namespace Jasper.Bus.Runtime.Subscriptions
             return add(x => x.To(t => true));
         }
 
-        IPublishing IPublishing.Message<T>()
-        {
-            Publish(typeof(T));
-            return this;
-        }
-
-        IPublishing IPublishing.Message(Type messageType)
-        {
-            Publish(messageType);
-            return this;
-        }
-
-        IPublishing IPublishing.MessagesMatching(Func<Type, bool> filter)
+        internal void PublishesMessagesMatching(Func<Type, bool> filter)
         {
             _publishFilters.Add(filter);
-            return this;
         }
+
     }
 }

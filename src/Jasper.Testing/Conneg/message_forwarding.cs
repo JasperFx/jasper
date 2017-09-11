@@ -55,7 +55,7 @@ namespace Jasper.Testing.Conneg
                 _.Services.For<MessageTracker>().Use(tracker);
 
 
-                _.Send.Message<OriginalMessage>().To(channel);
+                _.Publish.Message<OriginalMessage>().To(channel);
                 _.Transports.ListenForMessagesFrom(channel);
             }))
             {

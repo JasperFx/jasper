@@ -17,8 +17,8 @@ namespace Jasper.Testing.Bus
 
             with(_ =>
             {
-                _.Send.Message<Message1>().To("loopback://one").ModifyWith<FooModifier>().ModifyWith<BarModifier>();
-                _.Send.Message<Message2>().To("loopback://two");
+                _.Publish.Message<Message1>().To("loopback://one").ModifyWith<FooModifier>().ModifyWith<BarModifier>();
+                _.Publish.Message<Message2>().To("loopback://two");
 
             });
 

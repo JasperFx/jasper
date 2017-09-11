@@ -9,11 +9,11 @@ using StructureMap.TypeRules;
 
 namespace Jasper.Bus.Configuration
 {
-    public class SendMessageExpression
+    public class PublishingExpression
     {
         private readonly ServiceBusFeature _bus;
 
-        public SendMessageExpression(ServiceBusFeature bus)
+        public PublishingExpression(ServiceBusFeature bus)
         {
             _bus = bus;
         }
@@ -22,12 +22,26 @@ namespace Jasper.Bus.Configuration
 
         public MessageTrackExpression Message<T>()
         {
+            _bus.Capabilities.Publish(typeof(T));
             return new MessageTrackExpression(_bus, new SingleTypeRoutingRule<T>());
+        }
+
+        public MessageTrackExpression Message(Type type)
+        {
+            _bus.Capabilities.Publish(type);
+            return new MessageTrackExpression(_bus, new LambdaRoutingRule(type.FullName, t => t == type));
         }
 
         public MessageTrackExpression MessagesMatching(string description, Func<Type, bool> filter)
         {
+            _bus.Capabilities.PublishesMessagesMatching(filter);
             return new MessageTrackExpression(_bus, new LambdaRoutingRule(description, filter));
+        }
+
+        public MessageTrackExpression MessagesMatching(Func<Type, bool> filter)
+        {
+            _bus.Capabilities.PublishesMessagesMatching(filter);
+            return new MessageTrackExpression(_bus, new LambdaRoutingRule("User supplied filter", filter));
         }
 
         public MessageTrackExpression MessagesFromNamespace(string @namespace)

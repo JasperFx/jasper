@@ -106,7 +106,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             string[] contentTypes)
         {
             var type = messageTypeFor(MessageType);
-            _registry.Publishing.Message(type);
+            _registry.Publish.Message(type);
 
             foreach (var contentType in contentTypes)
             {

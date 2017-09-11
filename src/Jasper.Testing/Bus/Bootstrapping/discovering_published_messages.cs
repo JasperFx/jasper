@@ -9,10 +9,10 @@ namespace Jasper.Testing.Bus.Bootstrapping
     {
         public discovering_published_messages()
         {
-            theRegistry.Publishing.Message(typeof(Message1));
-            theRegistry.Publishing.Message<Message2>();
+            theRegistry.Publish.Message(typeof(Message1));
+            theRegistry.Publish.Message<Message2>();
 
-            theRegistry.Publishing.MessagesMatching(x => x.Name.StartsWith("Conventional"));
+            theRegistry.Publish.MessagesMatching(x => x.Name.StartsWith("Conventional"));
         }
 
         [Fact]

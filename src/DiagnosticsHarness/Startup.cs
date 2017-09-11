@@ -101,8 +101,8 @@ namespace DiagnosticsHarness
              public BusRegistry()
              {
                  var uri = "durable://localhost:2110/servicebus_example";
-                 Send.Message<MiddlewareMessage>().To(uri);
-                 Send.Message<AMessageThatWillError>().To(uri);
+                 Publish.Message<MiddlewareMessage>().To(uri);
+                 Publish.Message<AMessageThatWillError>().To(uri);
 
                  Logging.UseConsoleLogging = true;
                  Logging.LogTransportEventsWith<ConsoleTransportLogger>();

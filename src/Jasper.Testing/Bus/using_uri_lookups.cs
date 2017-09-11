@@ -24,7 +24,7 @@ namespace Jasper.Testing.Bus
             with(_ =>
             {
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Send.Message<Message1>().To("fake://one");
+                _.Publish.Message<Message1>().To("fake://one");
             });
 
             var router = Runtime.Get<IMessageRouter>();
@@ -59,7 +59,7 @@ namespace Jasper.Testing.Bus
             {
                 _.Services.For<MessageTracker>().Use(tracker);
                 _.Services.For<IUriLookup>().Add<FakeUriLookup>();
-                _.Send.Message<Message1>().To("fake://one");
+                _.Publish.Message<Message1>().To("fake://one");
                 _.Transports.ListenForMessagesFrom("fake://one");
             });
 

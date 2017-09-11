@@ -59,7 +59,7 @@ namespace IntegrationTests.DelayedJobs
     {
         public DelayedMessageApp() : base()
         {
-            Send.MessagesFromAssemblyContaining<DelayedMessageApp>()
+            Publish.MessagesFromAssemblyContaining<DelayedMessageApp>()
                 .To("loopback://incoming");
 
             Transports.ListenForMessagesFrom("loopback://incoming");

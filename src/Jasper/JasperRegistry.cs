@@ -31,7 +31,7 @@ namespace Jasper
 
             Http = Features.For<AspNetCoreFeature>();
 
-            Send = new SendMessageExpression(_bus);
+            Publish = new PublishingExpression(_bus);
 
             _applicationServices = new ServiceRegistry();
             ExtensionServices = new ExtensionServiceRegistry();
@@ -71,9 +71,9 @@ namespace Jasper
         public AspNetCoreFeature Http { get; }
 
         /// <summary>
-        ///     Configure static message routing rules
+        /// Configure static message routing rules and message publishing rules
         /// </summary>
-        public SendMessageExpression Send { get; }
+        public PublishingExpression Publish { get; }
 
         public ITransportsExpression Transports => _bus.Settings;
 
@@ -101,9 +101,6 @@ namespace Jasper
         }
 
         public ISubscriptions Subscriptions => _bus.Capabilities;
-
-        public IPublishing Publishing => _bus.Capabilities;
-
 
         /// <summary>
         ///     Configure rarely used, advanced options

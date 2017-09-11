@@ -14,9 +14,9 @@ namespace MyApp
 
             Transports.Lightweight.ListenOnPort(2222);
 
-            Publishing.Message<Message1>();
-            Publishing.Message<Message2>();
-            Publishing.Message<Message3>();
+            Publish.Message<Message1>();
+            Publish.Message<Message2>();
+            Publish.Message<Message3>();
 
             Subscriptions.At("tcp://server1:2222");
             Subscriptions.To<Message4>();

@@ -23,9 +23,9 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
                 _.Subscriptions.To<Message1>();
                 _.Subscriptions.To<Message2>();
 
-                _.Publishing.Message<Message3>();
-                _.Publishing.Message<Message4>();
-                _.Publishing.Message<Message5>();
+                _.Publish.Message<Message3>();
+                _.Publish.Message<Message4>();
+                _.Publish.Message<Message5>();
 
                 _.Settings.Alter<BusSettings>(x => x.ThrowOnValidationErrors = false);
             }))
