@@ -33,10 +33,10 @@ namespace IntegrationTests.Lightweight
 
             var receiver = new JasperRegistry();
             receiver.Transports.ListenForMessagesFrom(theAddress);
-            receiver.ErrorHandling.OnException<DivideByZeroException>().Requeue();
-            receiver.ErrorHandling.OnException<TimeoutException>().RetryLater(1.Minutes());
+            receiver.Handlers.OnException<DivideByZeroException>().Requeue();
+            receiver.Handlers.OnException<TimeoutException>().RetryLater(1.Minutes());
 
-            receiver.Send.Policies.DefaultMaximumAttempts = 3;
+            receiver.Handlers.DefaultMaximumAttempts = 3;
 
             delayedJobs = new FakeDelayedJobProcessor();
 

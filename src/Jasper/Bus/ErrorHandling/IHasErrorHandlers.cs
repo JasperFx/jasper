@@ -13,6 +13,17 @@ namespace Jasper.Bus.ErrorHandling
 
     public static class ErrorHandlingConfigurationExtensions
     {
+        public static void HandleErrorsWith<T>(this IHasErrorHandlers errorHandling) where T : IErrorHandler, new()
+        {
+            errorHandling.HandleErrorsWith(new T());
+        }
+
+        public static void HandleErrorsWith(this IHasErrorHandlers errorHandling, IErrorHandler errorHandler)
+        {
+            errorHandling.ErrorHandlers.Add(errorHandler);
+        }
+
+
         internal static IContinuation DetermineContinuation(this IHasErrorHandlers errorHandling, Envelope envelope, Exception ex)
         {
             foreach (var handler in errorHandling.ErrorHandlers)
@@ -122,5 +133,7 @@ namespace Jasper.Bus.ErrorHandling
                 return this;
             }
         }
+
+
     }
 }

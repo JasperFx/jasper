@@ -18,8 +18,6 @@ namespace Jasper.Bus.Configuration
             _bus = bus;
         }
 
-        public Policies Policies => _bus.Policies;
-
         public DelayedJobExpression DelayedProcessing => new DelayedJobExpression(_bus);
 
 

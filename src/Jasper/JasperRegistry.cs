@@ -1,34 +1,27 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
-using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Http;
-using Jasper.Http.ContentHandling;
 using Jasper.Settings;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using StructureMap.TypeRules;
-using Policies = Jasper.Bus.Configuration.Policies;
 
 namespace Jasper
 {
     public class JasperRegistry : IFeatures
     {
-        private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
         private readonly ServiceRegistry _applicationServices;
         protected readonly ServiceBusFeature _bus;
+        private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
 
         public JasperRegistry()
         {
@@ -59,21 +52,7 @@ namespace Jasper
             Settings.Replace(_bus.Settings);
 
             if (JasperEnvironment.Name.IsNotEmpty())
-            {
                 EnvironmentName = JasperEnvironment.Name;
-            }
-        }
-
-        private void deriveServiceName()
-        {
-            if (GetType() == typeof(JasperRegistry))
-            {
-                ServiceName = ApplicationAssembly?.GetName().Name ?? "JasperService";
-            }
-            else
-            {
-                ServiceName = GetType().Name.Replace("JasperRegistry", "").Replace("Registry", "");
-            }
         }
 
         public string EnvironmentName
@@ -83,21 +62,15 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Options to control how Jasper discovers message handler actions
+        /// Options to control how Jasper discovers message handler actions, error
+        /// handling and other policies on message handling
         /// </summary>
         public HandlerSource Handlers => _bus.Handlers;
-
-
-        /// <summary>
-        /// Register or configure global error handling policies during processing messages
-        /// </summary>
-        public IHasErrorHandlers ErrorHandling => _bus.Policies;
-
 
         public AspNetCoreFeature Http { get; }
 
         /// <summary>
-        /// Configure static message routing rules
+        ///     Configure static message routing rules
         /// </summary>
         public SendMessageExpression Send { get; }
 
@@ -117,6 +90,27 @@ namespace Jasper
 
         public IFeatures Features => this;
 
+        public Logging Logging { get; }
+
+        internal ServiceRegistry ExtensionServices { get; }
+
+
+        public string ServiceName
+        {
+            get => _bus.Settings.ServiceName;
+            set => _bus.Settings.ServiceName = value;
+        }
+
+        public ISubscriptions Subscriptions => _bus.Capabilities;
+
+        public IPublishing Publishing => _bus.Capabilities;
+
+
+        /// <summary>
+        ///     Configure rarely used, advanced options
+        /// </summary>
+        public IAdvancedOptions Advanced => _bus.Settings;
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -130,31 +124,24 @@ namespace Jasper
         void IFeatures.Include<T>()
         {
             if (!_features.ContainsKey(typeof(T)))
-            {
                 _features.Add(typeof(T), new T());
-            }
         }
 
 
         T IFeatures.For<T>()
         {
             if (!_features.ContainsKey(typeof(T)))
-            {
                 _features.Add(typeof(T), new T());
-            }
 
             return _features[typeof(T)].As<T>();
         }
 
-        public Logging Logging { get; }
-
-        internal ServiceRegistry ExtensionServices { get; }
-
-
-        public string ServiceName
+        private void deriveServiceName()
         {
-            get => _bus.Settings.ServiceName;
-            set => _bus.Settings.ServiceName = value;
+            if (GetType() == typeof(JasperRegistry))
+                ServiceName = ApplicationAssembly?.GetName().Name ?? "JasperService";
+            else
+                ServiceName = GetType().Name.Replace("JasperRegistry", "").Replace("Registry", "");
         }
 
         internal void ApplyExtensions(IJasperExtension[] extensions)
@@ -164,9 +151,7 @@ namespace Jasper
 
 
             foreach (var extension in extensions)
-            {
                 extension.Configure(this);
-            }
 
             Services = _applicationServices;
             Settings.ApplyingExtensions = false;
@@ -174,7 +159,7 @@ namespace Jasper
 
         public void Include(IJasperExtension extension)
         {
-            ApplyExtensions(new IJasperExtension[]{extension});
+            ApplyExtensions(new[] {extension});
         }
 
         public void Include<T>(Action<T> configure = null) where T : IJasperExtension, new()
@@ -184,16 +169,6 @@ namespace Jasper
 
             Include(extension);
         }
-
-        public ISubscriptions Subscriptions => _bus.Capabilities;
-
-        public IPublishing Publishing => _bus.Capabilities;
-
-
-        /// <summary>
-        /// Configure rarely used, advanced options
-        /// </summary>
-        public IAdvancedOptions Advanced => _bus.Settings;
     }
 
     public interface IFeatures : IEnumerable<IFeature>
@@ -201,6 +176,4 @@ namespace Jasper
         void Include<T>() where T : IFeature, new();
         T For<T>() where T : IFeature, new();
     }
-
-
 }

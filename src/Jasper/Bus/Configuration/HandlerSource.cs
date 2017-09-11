@@ -5,13 +5,14 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
 
 namespace Jasper.Bus.Configuration
 {
-    public class HandlerSource
+    public class HandlerSource : IHasErrorHandlers
     {
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
@@ -137,5 +138,39 @@ namespace Jasper.Bus.Configuration
         {
             _explicitTypes.Add(type);
         }
+
+        private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
+
+        // TODO -- have a Local option later
+        public void GlobalPolicy<T>() where T : IHandlerPolicy, new()
+        {
+            GlobalPolicy(new T());
+        }
+
+        public void GlobalPolicy(IHandlerPolicy policy)
+        {
+            _globals.Add(policy);
+        }
+
+
+        internal void ApplyPolicies(HandlerGraph graph)
+        {
+            foreach (var policy in _globals)
+            {
+                policy.Apply(graph);
+            }
+
+            graph.ErrorHandlers.AddRange(this.As<IHasErrorHandlers>().ErrorHandlers);
+
+            foreach (var chain in graph.Chains)
+            {
+                chain.MaximumAttempts = DefaultMaximumAttempts;
+            }
+        }
+
+        public int DefaultMaximumAttempts { get; set; } = 1;
+
+
+        IList<IErrorHandler> IHasErrorHandlers.ErrorHandlers { get; } = new List<IErrorHandler>();
     }
 }

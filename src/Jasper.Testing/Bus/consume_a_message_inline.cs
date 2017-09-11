@@ -29,8 +29,8 @@ namespace Jasper.Testing.Bus
 
                 _.Logging.LogBusEventsWith(this);
 
-                _.ErrorHandling.OnException<DivideByZeroException>().Requeue();
-                _.Send.Policies.DefaultMaximumAttempts = 3;
+                _.Handlers.OnException<DivideByZeroException>().Requeue();
+                _.Handlers.DefaultMaximumAttempts = 3;
             });
 
 

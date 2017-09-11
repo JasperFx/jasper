@@ -6,20 +6,14 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Loopback;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
-using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using CapabilityGraph = Jasper.Bus.Runtime.Subscriptions.CapabilityGraph;
-using Policies = Jasper.Bus.Configuration.Policies;
 
 namespace Jasper.Bus
 {
@@ -36,7 +30,6 @@ namespace Jasper.Bus
 
         public BusSettings Settings { get; } = new BusSettings();
 
-        public Policies Policies { get; } = new Policies();
         public bool DelayedJobsRunInMemory { get; set; } = true;
 
         public readonly ServiceRegistry Services = new ServiceBusRegistry();
@@ -94,7 +87,7 @@ namespace Jasper.Bus
             _graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged())));
 
             _graph.Group();
-            Policies.Apply(_graph);
+            Handlers.ApplyPolicies(_graph);
 
             Services.For<HandlerGraph>().Use(_graph);
             Services.For<IChannelGraph>().Use(_channels);
