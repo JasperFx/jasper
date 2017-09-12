@@ -74,38 +74,45 @@ namespace IntegrationTests.Conneg
 
     }
 
-    public class GreenTextWriter : IMediaWriter
+    // SAMPLE: GreenTextWriter
+    public class GreenTextWriter : MediaWriterBase<GreenMessage>
     {
-        public Type DotNetType { get; } = typeof(GreenMessage);
-        public string ContentType { get; } = "text/plain";
-        public byte[] Write(object model)
+        public GreenTextWriter() : base("text/plain")
         {
-            var name = model.As<GreenMessage>().Name;
-            return Encoding.UTF8.GetBytes(name);
         }
 
-        public Task WriteToStream(object model, HttpResponse response)
+        public override byte[] Write(GreenMessage model)
         {
-            throw new NotImplementedException();
+            return Encoding.UTF8.GetBytes(model.Name);
+        }
+
+        public override Task WriteToStream(GreenMessage model, HttpResponse response)
+        {
+            return response.WriteAsync(model.Name);
         }
     }
+    // ENDSAMPLE
 
-    public class BlueTextReader : IMediaReader
+    // SAMPLE: BlueTextReader
+    public class BlueTextReader : MediaReaderBase<BlueMessage>
     {
-        public string MessageType { get; } = typeof(BlueMessage).ToMessageAlias();
-        public Type DotNetType { get; } = typeof(BlueMessage);
-        public string ContentType { get; } = "text/plain";
-        public object ReadFromData(byte[] data)
+        public BlueTextReader() : base("text/plain")
+        {
+        }
+
+        public override BlueMessage ReadData(byte[] data)
         {
             var name = Encoding.UTF8.GetString(data);
             return new BlueMessage {Name = name};
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
+        protected override async Task<BlueMessage> ReadData(Stream stream)
         {
-            throw new NotImplementedException();
+            var name = await stream.ReadAllTextAsync();
+            return new BlueMessage{Name = name};
         }
     }
+    // ENDSAMPLE
 
     public class BlueApp : JasperRegistry
     {

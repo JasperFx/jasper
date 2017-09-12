@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 
 namespace Jasper.Conneg
 {
+    // SAMPLE: NewtonsoftSerializer
     public class NewtonsoftSerializer : ISerializer
     {
         private readonly Newtonsoft.Json.JsonSerializer _serializer;
@@ -86,4 +87,5 @@ namespace Jasper.Conneg
             }
         }
     }
+    // ENDSAMPLE
 }

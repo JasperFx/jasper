@@ -5,6 +5,7 @@ using Jasper.Bus;
 
 namespace Jasper.Conneg
 {
+    // SAMPLE: ISerializer
     public interface ISerializer
     {
         void Serialize(object message, Stream stream);
@@ -17,4 +18,5 @@ namespace Jasper.Conneg
         IMediaWriter[] WritersFor(Type messageType);
         IMediaReader VersionedReaderFor(Type incomingType);
     }
+    // ENDSAMPLE
 }
