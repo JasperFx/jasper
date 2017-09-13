@@ -137,6 +137,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
     }
 
+    // SAMPLE: JasperIgnoreAttribute
     public class NetflixHandler : IMovieSink
     {
         public void Record(IMovieEvent @event)
@@ -153,6 +154,8 @@ namespace Jasper.Testing.Bus.Bootstrapping
         {
         }
 
+        // Only this method will be ignored as
+        // a handler method
         [JasperIgnore]
         public void Handle2(MovieAdded added)
         {
@@ -172,6 +175,9 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
     }
 
+    // All methods on this class will be ignored
+    // as handler methods even though the class
+    // name matches the discovery naming conventions
     [JasperIgnore]
     public class BlockbusterHandler
     {
@@ -179,6 +185,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         {
         }
     }
+    // ENDSAMPLE
 
 
     public class Event1

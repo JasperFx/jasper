@@ -7,6 +7,50 @@ using Marten;
 
 namespace Jasper.Testing.Samples
 {
+
+    // SAMPLE: ValidMessageHandlers
+    public class ValidMessageHandlers
+    {
+        // There's only one argument, so we'll assume that
+        // argument is the message
+        public void Handle(Message1 something)
+        {
+
+        }
+
+        // The parameter named "message" is assumed to be the message type
+        public void Consume(Message1 message, IDocumentSession session)
+        {
+
+        }
+
+        // It's perfectly valid to have multiple handler methods
+        // for a given message type. Each will be called in sequence
+        public void SendEmail(Message1 input, IEmailService emails)
+        {
+
+        }
+
+        public interface IEvent
+        {
+            string CustomerId { get; }
+            Guid Id { get; }
+        }
+
+        // It's also legal to handle a message by an abstract
+        // base class or an implemented interface.
+        public void PostProcessEvent(IEvent @event)
+        {
+
+        }
+    }
+    // ENDSAMPLE
+
+
+
+
+    public interface IEmailService{}
+
     public class MyMessage
     {
 
@@ -113,4 +157,16 @@ namespace Jasper.Testing.Samples
     {
         public Guid Id { get; set; }
     }
+
+
+    // SAMPLE: ExplicitHandlerDiscovery
+    public class ExplicitHandlerDiscovery : JasperRegistry
+    {
+        public ExplicitHandlerDiscovery()
+        {
+            // No automatic discovery of handlers
+            Handlers.DisableConventionalDiscovery();
+        }
+    }
+    // ENDSAMPLE
 }
