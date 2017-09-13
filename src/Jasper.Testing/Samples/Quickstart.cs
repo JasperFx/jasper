@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices.ComTypes;
+﻿using System;
+using System.Runtime.InteropServices.ComTypes;
 using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 
@@ -38,7 +39,7 @@ namespace Jasper.Testing.Samples
     // SAMPLE: QuickStart-InvoiceCreated
     public class InvoiceCreated
     {
-
+        public Guid InvoiceId { get; set; }
     }
 
     public class InvoiceHandler

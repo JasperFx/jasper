@@ -1,0 +1,116 @@
+﻿using System;
+using System.Threading.Tasks;
+using Jasper.Bus.Runtime;
+using Jasper.Testing.Bus.Runtime;
+using Jasper.Testing.Samples.FirstTry;
+using Marten;
+
+namespace Jasper.Testing.Samples
+{
+    public class MyMessage
+    {
+
+    }
+
+    // SAMPLE: simplest-possible-handler
+    public class MyMessageHandler
+    {
+        public void Handle(MyMessage message)
+        {
+            // do stuff with the message
+        }
+    }
+    // ENDSAMPLE
+
+
+    namespace One
+    {
+        // SAMPLE: ExampleHandlerByInstance
+        public class ExampleHandler
+        {
+            public void Handle(Message1 message)
+            {
+                // Do work synchronously
+            }
+
+            public Task Handle(Message2 message)
+            {
+                // Do work asynchronously
+                return Task.CompletedTask;
+            }
+        }
+        // ENDSAMPLE
+    }
+
+    namespace Two
+    {
+        // SAMPLE: ExampleHandlerByStaticMethods
+        public static class ExampleHandler
+        {
+            public static void Handle(Message1 message)
+            {
+                // Do work synchronously
+            }
+
+            public static Task Handle(Message2 message)
+            {
+                // Do work asynchronously
+                return Task.CompletedTask;
+            }
+        }
+        // ENDSAMPLE
+    }
+
+    // SAMPLE: HandlerBuiltByConstructorInjection
+    public class ServiceUsingHandler
+    {
+        private readonly IDocumentSession _session;
+
+        public ServiceUsingHandler(IDocumentSession session)
+        {
+            _session = session;
+        }
+
+        public Task Handle(InvoiceCreated created)
+        {
+            var invoice = new Invoice {Id = created.InvoiceId};
+            _session.Store(invoice);
+
+            return _session.SaveChangesAsync();
+        }
+    }
+    // ENDSAMPLE
+
+    namespace Three
+    {
+        // SAMPLE: HandlerUsingMethodInjection
+        public static class MethodInjectionHandler
+        {
+            public static Task Handle(InvoiceCreated message, IDocumentSession session)
+            {
+                var invoice = new Invoice {Id = message.InvoiceId};
+                session.Store(invoice);
+
+                return session.SaveChangesAsync();
+            }
+        }
+        // ENDSAMPLE
+    }
+
+    // SAMPLE: HandlerUsingEnvelope
+    public class EnvelopeUsingHandler
+    {
+        public void Handle(InvoiceCreated message, Envelope envelope)
+        {
+            var howOldIsThisMessage =
+                DateTime.UtcNow.Subtract(envelope.SentAt);
+        }
+    }
+    // ENDSAMPLE
+
+
+    public class Invoice
+    {
+        public Guid Id { get; set; }
+    }
+}

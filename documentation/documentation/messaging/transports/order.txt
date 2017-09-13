@@ -1,0 +1,4 @@
+lightweight
+durable
+loopback
+http

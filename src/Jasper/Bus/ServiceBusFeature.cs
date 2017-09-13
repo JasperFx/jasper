@@ -60,20 +60,6 @@ namespace Jasper.Bus
             {
                 transport.Describe(writer);
             }
-
-
-//            var incoming = Channels.Where(x => x.Incoming).Distinct().ToArray();
-//            if (incoming.Any())
-//            {
-//                foreach (var node in incoming)
-//                {
-//                    writer.WriteLine($"Listening for messages at {node.Uri}");
-//                }
-//            }
-//            else
-//            {
-//                writer.WriteLine("No incoming message channels configured");
-//            }
         }
 
 
