@@ -71,9 +71,6 @@ The most common exception handling actions are shown below:
 
 <[sample:continuation-actions]>
 
-**TODO -- what do we do to listen to the error queue? Syntactical sugar in the JasperBusRegistry to listen for error reports?**
-
-
 
 ## Raise Other Messages
 

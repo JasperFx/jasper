@@ -48,7 +48,7 @@ At a minimum, you can disable the built in discovery, add additional type filter
 
 ## Subclass or Interface Handlers
 
-FubuMVC will allow you to use handler methods that work against interfaces or abstract types to apply or reuse
+Jasper will allow you to use handler methods that work against interfaces or abstract types to apply or reuse
 generic functionality across messages. Let's say that some subset of your messages implement some kind of
 `IMessage` interface like this one and an implentation of it below:
 
@@ -62,6 +62,6 @@ You can also create a handler for `IMessage` like this one:
 
 <[sample:Handlers-GenericMessageHandler]>
 
-When FubuMVC handles the `MessageOne` message, it first calls all the specific handlers for that message type,
+When Jasper handles the `MessageOne` message, it first calls all the specific handlers for that message type,
 then will call any handlers that handle a more generic message type (interface or abstract class most likely) where 
 the specific type can be cast to the generic type. You can clearly see this behavior by examining the <[linkto:documentation/diagnostics;title=handler chain diagnostics]>.

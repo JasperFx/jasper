@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Security;
 using Baseline;
 using Baseline.Dates;
@@ -57,6 +58,14 @@ namespace Jasper.Testing.Bus.Samples
             Handlers
                 .OnException<SecurityException>()
                 .MoveToErrorQueue();
+
+            // You can also apply an additional filter on the
+            // exception type for finer grained policies
+            Handlers
+                .OnException<SocketException>(ex => ex.Message.Contains("not responding"))
+                .RetryLater(5.Seconds());
+
+
         }
     }
     // ENDSAMPLE
