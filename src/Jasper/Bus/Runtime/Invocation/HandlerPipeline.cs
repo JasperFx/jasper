@@ -188,7 +188,7 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 try
                 {
-                    handler.Handle(envelope);
+                    await handler.Handle(envelope, context);
                 }
                 catch (Exception e)
                 {

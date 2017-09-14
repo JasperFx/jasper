@@ -1,9 +1,13 @@
-﻿using Jasper.Bus.Runtime;
+﻿using System.Threading.Tasks;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus
 {
+    // SAMPLE: IMissingHandler
     public interface IMissingHandler
     {
-        void Handle(Envelope envelope);
+        Task Handle(Envelope envelope, IEnvelopeContext context);
     }
+    // ENDSAMPLE
 }

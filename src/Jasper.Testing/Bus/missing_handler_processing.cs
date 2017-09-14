@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using Shouldly;
 using Xunit;
 
@@ -50,7 +51,7 @@ namespace Jasper.Testing.Bus
 
         public static Task<Envelope> Finished => _source.Task;
 
-        public void Handle(Envelope envelope)
+        public Task Handle(Envelope envelope, IEnvelopeContext context)
         {
             _source.SetResult(envelope);
             Handled.Add(envelope);
@@ -70,7 +71,7 @@ namespace Jasper.Testing.Bus
 
         public static Task<Envelope> Finished => _source.Task;
 
-        public void Handle(Envelope envelope)
+        public Task Handle(Envelope envelope, IEnvelopeContext context)
         {
             _source.SetResult(envelope);
             Handled.Add(envelope);
