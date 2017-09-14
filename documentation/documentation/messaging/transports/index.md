@@ -19,5 +19,10 @@ Jasper comes out of the box with these transports:
 Transports based on [RabbitMQ](https://www.rabbitmq.com/) and/or [Azure Service Bus](https://azure.microsoft.com/en-us/services/service-bus/) are part of the Jasper roadmap.
 
 
+## Disable All Transports
 
+You might very well want to start up a Jasper application with all of the transports disabled. Maybe it's for testing scenarios
+where the necessary transport infrastructure isn't in place or you want a faster bootstrap time. Regardless, it's simply this syntax:
+
+<[sample:TransportsAreDisabled]>
 

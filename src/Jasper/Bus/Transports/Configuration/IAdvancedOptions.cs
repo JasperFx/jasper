@@ -5,5 +5,6 @@
         bool ThrowOnValidationErrors { get; set; }
         bool AllowNonVersionedSerialization { get; set; }
         NoRouteBehavior NoMessageRouteBehavior { get; set; }
+        bool DisableAllTransports { get; set; }
     }
 }
