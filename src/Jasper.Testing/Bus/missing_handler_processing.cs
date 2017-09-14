@@ -55,6 +55,8 @@ namespace Jasper.Testing.Bus
         {
             _source.SetResult(envelope);
             Handled.Add(envelope);
+
+            return Task.CompletedTask;
         }
     }
 
@@ -75,6 +77,8 @@ namespace Jasper.Testing.Bus
         {
             _source.SetResult(envelope);
             Handled.Add(envelope);
+
+            return Task.CompletedTask;
         }
     }
 

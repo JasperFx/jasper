@@ -22,6 +22,7 @@ Application configuration can come from a mix of the built in .Net Core configur
 `JasperRegistry` or a loaded extension. While you make all the declarations in your `JasperRegistry` class, Jasper takes some steps to execute the usage of configuration options at bootstrapping time like so:
 
 1. Build out the .Net Core `IConfigurationRoot` object based on the sources added to `JasperRegistry.Configuration`.
+1. Apply any of the actions registered by `Settings.WithConfig()`
 1. Loads the default data for known `Settings` types
 1. Apply all the `JasperRegistry.Settings.Alter()` or `Replace()` delegates from registered extensions in the order that they were registered
 1. Apply all the `JasperRegistry.Settings.Alter()` or `Replace()` delegates configured in your `JasperRegistry` in the order that they were
@@ -42,6 +43,19 @@ If you need to bind a settings class that does not follow the convention of endi
 If a settings class needs additional information to bind correctly, such as being in a nested sub-section, use the `Configure` method.
 
 <[sample:configure-settings2]>
+
+## Alter the Application with IConfiguration
+
+To actually use the compiled configuration to alter the current `JasperRegistry` that defines
+your application like this simple example that just plucks a value from configuration and applies
+that to the `ServiceName` for the application:
+
+<[sample:UsingConfigApp]>
+
+Just to show that in action, here is the unit test for that behavior:
+
+<[sample:can_customize_based_on_only_configuration]>
+
 
 ## Modify Settings
 

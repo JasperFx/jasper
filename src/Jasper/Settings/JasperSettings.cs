@@ -13,12 +13,13 @@ using StructureMap;
 
 namespace Jasper.Settings
 {
-    public class JasperSettings : ISettingsProvider
+    public class JasperSettings
     {
         private readonly Dictionary<Type, ISettingsBuilder> _settings
             = new Dictionary<Type, ISettingsBuilder>();
 
         private readonly JasperRegistry _parent;
+        private readonly IList<Action<IConfigurationRoot>> _configActions = new List<Action<IConfigurationRoot>>();
 
         public JasperSettings(JasperRegistry parent)
         {
@@ -116,7 +117,12 @@ namespace Jasper.Settings
             forType<T>().With(alteration);
         }
 
-        public T Get<T>() where T : class, new()
+        public void WithConfig(Action<IConfigurationRoot> configuration)
+        {
+            _configActions.Add(configuration);
+        }
+
+        internal T Get<T>() where T : class, new()
         {
             throw new NotImplementedException("Used for testing, just do it end to end now");
         }
@@ -127,9 +133,12 @@ namespace Jasper.Settings
 
             var config = _parent.Configuration.Build();
 
+            foreach (var configAction in _configActions)
+            {
+                configAction(config);
+            }
+
             _parent.Services.ForSingletonOf<IConfigurationRoot>().Use(config);
-            _parent.Services.ForSingletonOf<ISettingsProvider>().Use<SettingsProvider>();
-            _parent.Services.Policies.OnMissingFamily<SettingsPolicy>();
 
             foreach (var settings in _settings.Values)
             {

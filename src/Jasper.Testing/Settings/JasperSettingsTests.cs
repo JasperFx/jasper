@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using Jasper.Bus;
@@ -102,6 +103,36 @@ namespace Jasper.Testing.Settings
             colors.Red.ShouldBe("#ff0000");
             settings.SomeSetting.ShouldBe(1);
         }
+
+
+
+        // SAMPLE: UsingConfigApp
+        public class UsingConfigApp : JasperRegistry
+        {
+            public UsingConfigApp()
+            {
+                // Ignore this please;)
+                Handlers.DisableConventionalDiscovery();
+
+
+                Configuration
+                    .AddInMemoryCollection(new Dictionary<string, string> {{"AppName", "WocketInMyPocket"}});
+
+                Settings.WithConfig(c => ServiceName = c["AppName"]);
+            }
+        }
+        // ENDSAMPLE
+
+        // SAMPLE: can_customize_based_on_only_configuration
+        [Fact]
+        public void can_customize_based_on_only_configuration()
+        {
+            using (var runtime = JasperRuntime.For<UsingConfigApp>())
+            {
+                runtime.ServiceName.ShouldBe("WocketInMyPocket");
+            }
+        }
+        // ENDSAMPLE
 
         [Fact]
         public void can_configure_settings()
