@@ -1,0 +1,3 @@
+static_routing
+subscriptions
+no_routing
