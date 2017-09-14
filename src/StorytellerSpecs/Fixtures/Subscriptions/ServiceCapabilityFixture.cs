@@ -111,7 +111,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             foreach (var contentType in contentTypes)
             {
                 var writer = new StubWriter(type, contentType);
-                _registry.Services.For<IMediaWriter>().Add(writer);
+                _registry.Services.For<IMessageSerializer>().Add(writer);
             }
         }
 
@@ -150,7 +150,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             foreach (var contentType in contentTypes)
             {
                 var reader = new StubReader(type, contentType);
-                _registry.Services.For<IMediaReader>().Add(reader);
+                _registry.Services.For<IMessageDeserializer>().Add(reader);
             }
         }
 

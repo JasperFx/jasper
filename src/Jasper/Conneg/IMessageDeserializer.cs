@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 namespace Jasper.Conneg
 {
     // SAMPLE: IMediaReader
-    public interface IMediaReader
+    public interface IMessageDeserializer
     {
         string MessageType { get; }
         Type DotNetType { get; }
@@ -19,9 +19,9 @@ namespace Jasper.Conneg
     }
     // ENDSAMPLE
 
-    public abstract class MediaReaderBase<T> : IMediaReader
+    public abstract class MessageDeserializerBase<T> : IMessageDeserializer
     {
-        protected MediaReaderBase(string contentType)
+        protected MessageDeserializerBase(string contentType)
         {
             ContentType = contentType;
             MessageType = typeof(T).ToMessageAlias();

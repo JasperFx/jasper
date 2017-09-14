@@ -136,13 +136,13 @@ namespace Jasper.Testing.Samples
     {
         public RegisteringCustomReadersAndWriters()
         {
-            Services.AddService<IMediaWriter, MyCustomWriter>();
-            Services.AddService<IMediaReader, MyCustomReader>();
+            Services.AddService<IMessageSerializer, MyCustomWriter>();
+            Services.AddService<IMessageDeserializer, MyCustomReader>();
         }
     }
     // ENDSAMPLE
 
-    public class MyCustomWriter : IMediaWriter
+    public class MyCustomWriter : IMessageSerializer
     {
         public Type DotNetType { get; }
         public string ContentType { get; }
@@ -158,7 +158,7 @@ namespace Jasper.Testing.Samples
     }
 
 
-    public class MyCustomReader : IMediaReader
+    public class MyCustomReader : IMessageDeserializer
     {
         public string MessageType { get; }
         public Type DotNetType { get; }

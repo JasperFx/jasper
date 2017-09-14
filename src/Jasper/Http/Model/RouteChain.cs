@@ -100,8 +100,8 @@ namespace Jasper.Http.Model
 
         public ModelReader ConnegReader { get; set; }
 
-        public IMediaReader Reader { get; set; }
-        public IMediaWriter Writer { get; set; }
+        public IMessageDeserializer Reader { get; set; }
+        public IMessageSerializer Writer { get; set; }
 
         public string TypeName { get; }
 

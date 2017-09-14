@@ -28,7 +28,7 @@ namespace Jasper.Bus.Runtime.Routing
             Writer = writer[contentType];
         }
 
-        public IMediaWriter Writer { get; internal set; }
+        public IMessageSerializer Writer { get; internal set; }
 
         public string MessageType { get; }
 

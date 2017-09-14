@@ -51,8 +51,8 @@ namespace StorytellerSpecs.Fixtures
         {
             contentTypes.Each(contentType =>
             {
-                var serializer = new FakeSerializer(contentType);
-                _registry.Services.For<ISerializer>().Add(serializer);
+                var serializer = new FakeSerializerFactory(contentType);
+                _registry.Services.For<ISerializerFactory>().Add(serializer);
             });
         }
 
@@ -61,7 +61,7 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
             var writer = new FakeWriter(messageType, ContentType);
-            _registry.Services.For<IMediaWriter>().Add(writer);
+            _registry.Services.For<IMessageSerializer>().Add(writer);
         }
 
         [FormatAs("For message type {MessageType}")]
@@ -128,7 +128,7 @@ namespace StorytellerSpecs.Fixtures
         }
     }
 
-    public class FakeWriter : IMediaWriter
+    public class FakeWriter : IMessageSerializer
     {
         public Type DotNetType { get; }
         public string ContentType { get; }

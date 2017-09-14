@@ -47,7 +47,7 @@ namespace Jasper.Testing.Http.ContentHandling
         public string Value { get; set; }
     }
 
-    public class SpecialReader : IMediaReader
+    public class SpecialReader : IMessageDeserializer
     {
         public string MessageType { get; } = typeof(SpecialInput).ToMessageAlias();
         public Type DotNetType { get; } = typeof(SpecialInput);
@@ -73,7 +73,7 @@ namespace Jasper.Testing.Http.ContentHandling
         }
     }
 
-    public class SpecialWriter : IMediaWriter
+    public class SpecialWriter : IMessageSerializer
     {
         public Type DotNetType { get; } = typeof(SpecialOutput);
         public string ContentType { get; } = "text/special";

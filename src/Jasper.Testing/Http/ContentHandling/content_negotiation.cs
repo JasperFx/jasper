@@ -24,8 +24,8 @@ namespace Jasper.Testing.Http.ContentHandling
             _runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
-                _.Services.For<IMediaReader>().Add<XmlReader<SpecialInput>>();
-                _.Services.For<IMediaWriter>().Add<XmlWriter<SpecialOutput>>();
+                _.Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
+                _.Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
 
             });
 
@@ -147,7 +147,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
 
 
-    public class XmlWriter<T> : IMediaWriter
+    public class XmlWriter<T> : IMessageSerializer
     {
         public string MessageType { get; } = typeof(T).ToMessageAlias();
         public Type DotNetType { get; } = typeof(T);
@@ -168,7 +168,7 @@ namespace Jasper.Testing.Http.ContentHandling
         }
     }
 
-    public class XmlReader<T> : IMediaReader
+    public class XmlReader<T> : IMessageDeserializer
     {
         public string MessageType { get; } = typeof(T).ToMessageAlias();
         public Type DotNetType { get; } = typeof(T);

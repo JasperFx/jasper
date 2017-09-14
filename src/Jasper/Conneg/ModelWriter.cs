@@ -5,17 +5,17 @@ using System.Linq;
 
 namespace Jasper.Conneg
 {
-    public class ModelWriter : IEnumerable<IMediaWriter>
+    public class ModelWriter : IEnumerable<IMessageSerializer>
     {
-        private readonly Dictionary<string, IMediaWriter> _writers
-            = new Dictionary<string, IMediaWriter>();
+        private readonly Dictionary<string, IMessageSerializer> _writers
+            = new Dictionary<string, IMessageSerializer>();
 
-        private readonly ConcurrentDictionary<string, IMediaWriter> _selections
-            = new ConcurrentDictionary<string, IMediaWriter>();
+        private readonly ConcurrentDictionary<string, IMessageSerializer> _selections
+            = new ConcurrentDictionary<string, IMessageSerializer>();
 
         private readonly string _defaultMimeType;
 
-        public ModelWriter(IMediaWriter[] writers)
+        public ModelWriter(IMessageSerializer[] writers)
         {
             _defaultMimeType = writers.FirstOrDefault()?.ContentType;
 
@@ -29,7 +29,7 @@ namespace Jasper.Conneg
 
         public string[] ContentTypes { get; }
 
-        public IMediaWriter this[string contentType] => _writers[contentType];
+        public IMessageSerializer this[string contentType] => _writers[contentType];
 
 
         public bool TryWrite(string accepted, object model, out string contentType, out byte[] data)
@@ -57,12 +57,12 @@ namespace Jasper.Conneg
             }
         }
 
-        public IMediaWriter ChooseWriter(string accepted)
+        public IMessageSerializer ChooseWriter(string accepted)
         {
             return _selections.GetOrAdd(accepted ?? _defaultMimeType, @select);
         }
 
-        private IMediaWriter select(string contentType)
+        private IMessageSerializer select(string contentType)
         {
             if (!_writers.Any()) return null;
 
@@ -88,7 +88,7 @@ namespace Jasper.Conneg
             return null;
         }
 
-        public IEnumerator<IMediaWriter> GetEnumerator()
+        public IEnumerator<IMessageSerializer> GetEnumerator()
         {
             return _writers.Values.GetEnumerator();
         }

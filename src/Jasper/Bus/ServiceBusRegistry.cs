@@ -34,7 +34,7 @@ namespace Jasper.Bus
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
 
-            For<ISerializer>().Add<NewtonsoftSerializer>();
+            For<ISerializerFactory>().Add<NewtonsoftSerializerFactory>();
 
             ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
 

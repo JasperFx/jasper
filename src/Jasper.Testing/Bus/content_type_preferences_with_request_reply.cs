@@ -30,7 +30,7 @@ namespace Jasper.Testing.Bus
         }
     }
 
-    public class Message1TextReader : IMediaReader
+    public class Message1TextReader : IMessageDeserializer
     {
         public string MessageType { get; } = typeof(Message1).ToMessageAlias();
         public Type DotNetType { get; } = typeof(Message1);
@@ -46,7 +46,7 @@ namespace Jasper.Testing.Bus
         }
     }
 
-    public class Message1OddballReader : IMediaReader
+    public class Message1OddballReader : IMessageDeserializer
     {
         public string MessageType { get; } = typeof(Message1).ToMessageAlias();
         public Type DotNetType { get; } = typeof(Message3);

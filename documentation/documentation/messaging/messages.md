@@ -22,7 +22,7 @@ of <a href="https://en.wikipedia.org/wiki/Content_negotiation">content negotiati
 First though, it might help to understand how Jasper reads the message when it receives a new `Envelope`:
 
 1. It first looks at the `message-type` header in the incoming `Envelope`
-1. Using that value, it finds all the available `IMediaReader` strategies that match that message type, and
+1. Using that value, it finds all the available `IMessageSerializer` strategies that match that message type, and
    tries to select one that matches the value of the `content-type` header
 1. Invoke the matching reader to read the raw `byte[]` data into a .Net object
 1. Now that you know the actual .Net type for the message, select the proper message handler and off it goes
@@ -71,25 +71,25 @@ If instead you'd like to enforce versions on all messages being sent or received
 <[sample:NoUnVersionedMessages]>
 
 
-## Media Readers and Writers
+## Message Serializers and Deserializers
 
-You can create custom media readers for a message by providing your own implementation of the `IMediaReader` interface from Jasper:
+You can create custom message deserializers for a message by providing your own implementation of the `IMessageDeserializer` interface from Jasper:
 
 <[sample:IMediaReader]>
 
-The easiest way to do this is to just subclass the base `MediaReaderBase<T>` class as shown below:
+The easiest way to do this is to just subclass the base `MessageDeserializerBase<T>` class as shown below:
 
 <[sample:BlueTextReader]>
 
-Likewise, to provide a custom media writer for a message type, you need to implement the `IMediaWriter` interface shown below:
+Likewise, to provide a custom message serializer for a message type, you need to implement the `IMessageSerializer` interface shown below:
 
 <[sample:IMediaWriter]>
 
-Again, the easiest way to implement this interface is to subclass the `MediaWriterBase<T>` class as shown below:
+Again, the easiest way to implement this interface is to subclass the `MessageSerializerBase<T>` class as shown below:
 
 <[sample:GreenTextWriter]>
 
-`IMediaReader` and `IMediaWriter` classes in the main application assembly are automatically discovered and applied by Jasper. If you need to add custom
+`IMessageDeserializer` and `IMessageSerializer` classes in the main application assembly are automatically discovered and applied by Jasper. If you need to add custom
 reader or writers from another assembly, you just need to add them to the underlying IoC container like so:
 
 <[sample:RegisteringCustomReadersAndWriters]>
@@ -97,12 +97,12 @@ reader or writers from another assembly, you just need to add them to the underl
 
 ## Custom Serializers
 
-To use additional .Net serializers, you just need to create a new implementation of the `Jasper.Conneg.ISerializer` interface and register
+To use additional .Net serializers, you just need to create a new implementation of the `Jasper.Conneg.ISerializerFactory` interface and register
 that into the IoC service container.
 
 <[sample:ISerializer]>
 
-See the [built in Newtonsoft.Json adapter](https://github.com/JasperFx/jasper/blob/master/src/Jasper/Conneg/NewtonsoftSerializer.cs) for an example usage.
+See the [built in Newtonsoft.Json adapter](https://github.com/JasperFx/jasper/blob/master/src/Jasper/Conneg/NewtonsoftSerializerFactory.cs) for an example usage.
 
 
 ## Versioned Message Forwarding
@@ -111,7 +111,7 @@ If you make breaking changes to an incoming message in a later version, you can 
 
 <[sample:PersonCreatedHandler]>
 
-Or you could use a custom `IMediaReader` to read incoming messages from V1 into the new V2 message type, or you can take advantage of message forwarding
+Or you could use a custom `IMessageDeserializer` to read incoming messages from V1 into the new V2 message type, or you can take advantage of message forwarding
 so you only need to handle one message type using the `IForwardsTo<T>` interface as shown below:
 
 <[sample:IForwardsTo<PersonBornV2>]>

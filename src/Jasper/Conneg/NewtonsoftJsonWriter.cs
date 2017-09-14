@@ -8,7 +8,7 @@ namespace Jasper.Conneg
 {
 
     // TODO -- This needs to be a singleton!
-    public class NewtonsoftJsonWriter<T> : IMediaWriter
+    public class NewtonsoftJsonWriter<T> : IMessageSerializer
     {
         // TODO -- apply character pooling here, and buffering
 

@@ -10,11 +10,11 @@ namespace Jasper.Testing.Conneg
     public class NewtonsoftSerializerTests
     {
         private readonly BusSettings theSettings = new BusSettings();
-        private NewtonsoftSerializer theSerializer;
+        private NewtonsoftSerializerFactory theSerializerFactory;
 
         public NewtonsoftSerializerTests()
         {
-            theSerializer = new NewtonsoftSerializer(theSettings);
+            theSerializerFactory = new NewtonsoftSerializerFactory(theSettings);
         }
 
         [Fact]
@@ -22,10 +22,10 @@ namespace Jasper.Testing.Conneg
         {
             theSettings.AllowNonVersionedSerialization = true;
 
-            theSerializer.ReadersFor(typeof(NonVersionedMessage))
+            theSerializerFactory.ReadersFor(typeof(NonVersionedMessage))
                 .Select(x => x.ContentType).ShouldHaveTheSameElementsAs("application/json");
 
-            theSerializer.WritersFor(typeof(NonVersionedMessage))
+            theSerializerFactory.WritersFor(typeof(NonVersionedMessage))
                 .Select(x => x.ContentType).ShouldHaveTheSameElementsAs("application/json");
         }
 
@@ -34,10 +34,10 @@ namespace Jasper.Testing.Conneg
         {
             theSettings.AllowNonVersionedSerialization = true;
 
-            theSerializer.ReadersFor(typeof(VersionedMessage))
+            theSerializerFactory.ReadersFor(typeof(VersionedMessage))
                 .Select(x => x.ContentType).ShouldHaveTheSameElementsAs("application/json", typeof(VersionedMessage).ToContentType("json"));
 
-            theSerializer.WritersFor(typeof(VersionedMessage))
+            theSerializerFactory.WritersFor(typeof(VersionedMessage))
                 .Select(x => x.ContentType).ShouldHaveTheSameElementsAs("application/json", typeof(VersionedMessage).ToContentType("json"));
         }
 
@@ -46,10 +46,10 @@ namespace Jasper.Testing.Conneg
         {
             theSettings.AllowNonVersionedSerialization = false;
 
-            theSerializer.ReadersFor(typeof(NonVersionedMessage))
+            theSerializerFactory.ReadersFor(typeof(NonVersionedMessage))
                 .Select(x => x.ContentType).ShouldHaveTheSameElementsAs(typeof(NonVersionedMessage).ToContentType("json"));
 
-            theSerializer.WritersFor(typeof(NonVersionedMessage))
+            theSerializerFactory.WritersFor(typeof(NonVersionedMessage))
                 .Select(x => x.ContentType).ShouldHaveTheSameElementsAs(typeof(NonVersionedMessage).ToContentType("json"));
         }
 
@@ -58,10 +58,10 @@ namespace Jasper.Testing.Conneg
         {
             theSettings.AllowNonVersionedSerialization = false;
 
-            theSerializer.ReadersFor(typeof(VersionedMessage))
+            theSerializerFactory.ReadersFor(typeof(VersionedMessage))
                 .Select(x => x.ContentType).ShouldHaveTheSameElementsAs(typeof(VersionedMessage).ToContentType("json"));
 
-            theSerializer.WritersFor(typeof(VersionedMessage))
+            theSerializerFactory.WritersFor(typeof(VersionedMessage))
                 .Select(x => x.ContentType).ShouldHaveTheSameElementsAs(typeof(VersionedMessage).ToContentType("json"));
         }
     }

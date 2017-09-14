@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions
 {
-    public class StubReader : IMediaReader
+    public class StubReader : IMessageDeserializer
     {
         public StubReader(Type messageType, string contentType)
         {

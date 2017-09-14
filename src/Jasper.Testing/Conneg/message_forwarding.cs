@@ -34,7 +34,7 @@ namespace Jasper.Testing.Conneg
             {
                 var modelReader = runtime.Get<SerializationGraph>().ReaderFor(typeof(NewMessage));
 
-                var reader = modelReader.OfType<ForwardingMediaReader<NewMessage>>().Single();
+                var reader = modelReader.OfType<ForwardingMessageDeserializer<NewMessage>>().Single();
                 reader.ShouldNotBeNull();
 
                 modelReader.ContentTypes.OrderBy(x => x).ShouldHaveTheSameElementsAs("application/json", typeof(OriginalMessage).ToContentType("json"), typeof(NewMessage).ToContentType("json"));

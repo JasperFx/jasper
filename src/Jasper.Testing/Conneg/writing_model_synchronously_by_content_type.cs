@@ -17,7 +17,7 @@ namespace Jasper.Testing.Conneg
 
         public writing_model_synchronously_by_content_type()
         {
-            theWriter = new ModelWriter(new IMediaWriter[]
+            theWriter = new ModelWriter(new IMessageSerializer[]
             {
                 new FakeWriter("blue"),
                 new FakeWriter("red"),
@@ -91,7 +91,7 @@ namespace Jasper.Testing.Conneg
     }
 
 
-    public class FakeWriter : IMediaWriter
+    public class FakeWriter : IMessageSerializer
     {
         public Type DotNetType { get; }
         public string ContentType { get; }

@@ -17,7 +17,7 @@ namespace Jasper.Testing.Conneg
 
         public reading_model_synchronously_by_content_type()
         {
-            theReader = new ModelReader(new IMediaReader[]
+            theReader = new ModelReader(new IMessageDeserializer[]
             {
                 new FakeReader("blue"),
                 new FakeReader("red"),
@@ -54,7 +54,7 @@ namespace Jasper.Testing.Conneg
 
     }
 
-    public class FakeReader : IMediaReader
+    public class FakeReader : IMessageDeserializer
     {
         public FakeReader(string contentType)
         {

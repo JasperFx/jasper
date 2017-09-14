@@ -18,20 +18,20 @@ namespace Jasper.Conneg
     {
         public static SerializationGraph Basic()
         {
-            return new SerializationGraph(new HandlerGraph(), new Forwarders(), new List<ISerializer>{new NewtonsoftSerializer(new BusSettings())}, new List<IMediaReader>(), new List<IMediaWriter>());
+            return new SerializationGraph(new HandlerGraph(), new Forwarders(), new List<ISerializerFactory>{new NewtonsoftSerializerFactory(new BusSettings())}, new List<IMessageDeserializer>(), new List<IMessageSerializer>());
         }
 
         private readonly HandlerGraph _handlers;
         private readonly Forwarders _forwarders;
-        private readonly Dictionary<string, ISerializer> _serializers = new Dictionary<string, ISerializer>();
+        private readonly Dictionary<string, ISerializerFactory> _serializers = new Dictionary<string, ISerializerFactory>();
 
-        private readonly IList<IMediaReader> _readers = new List<IMediaReader>();
-        private readonly IList<IMediaWriter> _writers = new List<IMediaWriter>();
+        private readonly IList<IMessageDeserializer> _readers = new List<IMessageDeserializer>();
+        private readonly IList<IMessageSerializer> _writers = new List<IMessageSerializer>();
 
         private readonly ConcurrentDictionary<string, ModelReader> _modelReaders = new ConcurrentDictionary<string, ModelReader>();
         private readonly ConcurrentDictionary<Type, ModelWriter> _modelWriters = new ConcurrentDictionary<Type, ModelWriter>();
 
-        public SerializationGraph(HandlerGraph handlers, Forwarders forwarders, IEnumerable<ISerializer> serializers, IEnumerable<IMediaReader> readers, IEnumerable<IMediaWriter> writers)
+        public SerializationGraph(HandlerGraph handlers, Forwarders forwarders, IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
         {
             _handlers = handlers;
             _forwarders = forwarders;
@@ -44,7 +44,7 @@ namespace Jasper.Conneg
             _writers.AddRange(writers);
         }
 
-        public IEnumerable<ISerializer> Serializers => _serializers.Values;
+        public IEnumerable<ISerializerFactory> Serializers => _serializers.Values;
 
         public object Deserialize(Envelope envelope)
         {
@@ -120,7 +120,7 @@ namespace Jasper.Conneg
                 return _serializers.Values.Select(x =>
                 {
                     var inner = x.VersionedReaderFor(incomingType);
-                    return typeof(ForwardingMediaReader<>).CloseAndBuildAs<IMediaReader>(inner, inputType);
+                    return typeof(ForwardingMessageDeserializer<>).CloseAndBuildAs<IMessageDeserializer>(inner, inputType);
                 });
             });
 
@@ -142,26 +142,26 @@ namespace Jasper.Conneg
             return new ModelReader(fromHandlers.Concat(readers).Distinct().ToArray());
         }
 
-        public IMediaReader JsonReaderFor(Type inputType)
+        public IMessageDeserializer JsonReaderFor(Type inputType)
         {
             return _serializers["application/json"]
                 .ReadersFor(inputType)
                 .FirstOrDefault(x => x.ContentType == "application/json");
         }
 
-        public IMediaWriter JsonWriterFor(Type resourceType)
+        public IMessageSerializer JsonWriterFor(Type resourceType)
         {
             return _serializers["application/json"]
                 .WritersFor(resourceType)
                 .FirstOrDefault(x => x.ContentType == "application/json");
         }
 
-        public IMediaWriter[] CustomWritersFor(Type resourceType)
+        public IMessageSerializer[] CustomWritersFor(Type resourceType)
         {
             return _writers.Where(x => x.DotNetType == resourceType).ToArray();
         }
 
-        public IMediaReader[] CustomReadersFor(Type inputType)
+        public IMessageDeserializer[] CustomReadersFor(Type inputType)
         {
             return _readers.Where(x => x.DotNetType == inputType).ToArray();
         }

@@ -83,8 +83,8 @@ namespace Jasper.Bus
                 Services.Scan(_ =>
                 {
                     _.Assembly(registry.ApplicationAssembly);
-                    _.AddAllTypesOf<IMediaReader>();
-                    _.AddAllTypesOf<IMediaWriter>();
+                    _.AddAllTypesOf<IMessageDeserializer>();
+                    _.AddAllTypesOf<IMessageSerializer>();
                 });
             }
 

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 namespace Jasper.Conneg
 {
     // SAMPLE: IMediaWriter
-    public interface IMediaWriter
+    public interface IMessageSerializer
     {
         Type DotNetType { get; }
 
@@ -16,12 +16,12 @@ namespace Jasper.Conneg
     }
     // ENDSAMPLE
 
-    public abstract class MediaWriterBase<T> : IMediaWriter
+    public abstract class MessageSerializerBase<T> : IMessageSerializer
     {
         public string ContentType { get; }
         public Type DotNetType { get; } = typeof(T);
 
-        protected MediaWriterBase(string contentType)
+        protected MessageSerializerBase(string contentType)
         {
             ContentType = contentType;
         }

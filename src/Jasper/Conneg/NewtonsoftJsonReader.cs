@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Jasper.Conneg
 {
-    public class NewtonsoftJsonReader<T> : IMediaReader where T : class
+    public class NewtonsoftJsonReader<T> : IMessageDeserializer where T : class
     {
         private readonly JsonSerializer _serializer;
 

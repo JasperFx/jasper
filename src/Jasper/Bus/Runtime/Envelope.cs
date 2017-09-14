@@ -228,7 +228,7 @@ namespace Jasper.Bus.Runtime
 
         }
 
-        public IMediaWriter Writer { get; set; }
+        public IMessageSerializer Writer { get; set; }
 
         protected bool Equals(Envelope other)
         {

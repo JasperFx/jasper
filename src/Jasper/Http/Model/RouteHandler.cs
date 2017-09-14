@@ -20,17 +20,17 @@ namespace Jasper.Http.Model
             return response.Body.WriteAsync(bytes, 0, bytes.Length);
         }
 
-        public IMediaReader Reader { get; set; }
-        public IMediaWriter Writer { get; set; }
+        public IMessageDeserializer Reader { get; set; }
+        public IMessageSerializer Writer { get; set; }
         public ModelReader ConnegReader { get; set; }
         public ModelWriter ConnegWriter { get; set; }
 
-        public IMediaReader SelectReader(HttpRequest request)
+        public IMessageDeserializer SelectReader(HttpRequest request)
         {
             return ConnegReader[request.ContentType];
         }
 
-        public IMediaWriter SelectWriter(HttpRequest request)
+        public IMessageSerializer SelectWriter(HttpRequest request)
         {
             return ConnegWriter.ChooseWriter(request.Headers["accept"]);
         }

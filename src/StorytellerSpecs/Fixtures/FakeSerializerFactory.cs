@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace StorytellerSpecs.Fixtures
 {
-    public class FakeSerializer : ISerializer, IMediaReader, IMediaWriter
+    public class FakeSerializerFactory : ISerializerFactory, IMessageDeserializer, IMessageSerializer
     {
-        public FakeSerializer(string contentType)
+        public FakeSerializerFactory(string contentType)
         {
             ContentType = contentType;
         }
@@ -26,12 +26,12 @@ namespace StorytellerSpecs.Fixtures
 
         public string MessageType { get; }
 
-        Type IMediaReader.DotNetType
+        Type IMessageDeserializer.DotNetType
         {
             get { throw new NotImplementedException(); }
         }
 
-        Type IMediaWriter.DotNetType
+        Type IMessageSerializer.DotNetType
         {
             get { throw new NotImplementedException(); }
         }
@@ -57,17 +57,17 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        public IMediaReader[] ReadersFor(Type messageType)
+        public IMessageDeserializer[] ReadersFor(Type messageType)
         {
-            return new IMediaReader[0];
+            return new IMessageDeserializer[0];
         }
 
-        public IMediaWriter[] WritersFor(Type messageType)
+        public IMessageSerializer[] WritersFor(Type messageType)
         {
-            return new IMediaWriter[]{new FakeWriter(messageType, ContentType), };
+            return new IMessageSerializer[]{new FakeWriter(messageType, ContentType), };
         }
 
-        public IMediaReader VersionedReaderFor(Type incomingType)
+        public IMessageDeserializer VersionedReaderFor(Type incomingType)
         {
             throw new NotImplementedException();
         }

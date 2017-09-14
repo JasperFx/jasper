@@ -64,7 +64,7 @@ namespace Jasper.Testing.Conneg
 
     public class OverriddenJsonMessage{}
 
-    public class OverrideJsonWriter : IMediaWriter
+    public class OverrideJsonWriter : IMessageSerializer
     {
         public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
         public string ContentType { get; } = "application/json";
@@ -79,7 +79,7 @@ namespace Jasper.Testing.Conneg
         }
     }
 
-    public class OverrideJsonReader : IMediaReader
+    public class OverrideJsonReader : IMessageDeserializer
     {
         public string MessageType { get; } = typeof(OverriddenJsonMessage).ToMessageAlias();
         public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
@@ -95,7 +95,7 @@ namespace Jasper.Testing.Conneg
         }
     }
 
-    public class GreenMessage1Reader : IMediaReader
+    public class GreenMessage1Reader : IMessageDeserializer
     {
         public string MessageType { get; } = typeof(Message1).ToMessageAlias();
         public Type DotNetType { get; } = typeof(Message1);
@@ -112,7 +112,7 @@ namespace Jasper.Testing.Conneg
     }
 
 
-    public class GreenMessage1Writer : IMediaWriter
+    public class GreenMessage1Writer : IMessageSerializer
     {
         public Type DotNetType { get; } = typeof(Message5);
         public string ContentType { get; } = "green";
@@ -127,7 +127,7 @@ namespace Jasper.Testing.Conneg
         }
     }
 
-    public class BlueMessage1Writer : IMediaWriter
+    public class BlueMessage1Writer : IMessageSerializer
     {
         public Type DotNetType { get; } = typeof(Message5);
         public string ContentType { get; } = "blue";

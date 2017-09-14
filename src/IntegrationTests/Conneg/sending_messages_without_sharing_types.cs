@@ -75,7 +75,7 @@ namespace IntegrationTests.Conneg
     }
 
     // SAMPLE: GreenTextWriter
-    public class GreenTextWriter : MediaWriterBase<GreenMessage>
+    public class GreenTextWriter : MessageSerializerBase<GreenMessage>
     {
         public GreenTextWriter() : base("text/plain")
         {
@@ -94,7 +94,7 @@ namespace IntegrationTests.Conneg
     // ENDSAMPLE
 
     // SAMPLE: BlueTextReader
-    public class BlueTextReader : MediaReaderBase<BlueMessage>
+    public class BlueTextReader : MessageDeserializerBase<BlueMessage>
     {
         public BlueTextReader() : base("text/plain")
         {

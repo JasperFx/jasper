@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
-    public class ModelReader : IEnumerable<IMediaReader>
+    public class ModelReader : IEnumerable<IMessageDeserializer>
     {
-        private readonly Dictionary<string, IMediaReader> _readers = new Dictionary<string, IMediaReader>();
+        private readonly Dictionary<string, IMessageDeserializer> _readers = new Dictionary<string, IMessageDeserializer>();
 
-        public ModelReader(IMediaReader[] readers)
+        public ModelReader(IMessageDeserializer[] readers)
         {
             foreach (var reader in readers)
             {
@@ -36,7 +36,7 @@ namespace Jasper.Conneg
 
         public string[] ContentTypes { get; }
 
-        public IMediaReader this[string contentType] =>
+        public IMessageDeserializer this[string contentType] =>
             _readers.ContainsKey(contentType) ? _readers[contentType] : null;
 
         public bool TryRead(string contentType, byte[] data, out object model)
@@ -60,7 +60,7 @@ namespace Jasper.Conneg
         }
 
         public bool HasAnyReaders { get; }
-        public IEnumerator<IMediaReader> GetEnumerator()
+        public IEnumerator<IMessageDeserializer> GetEnumerator()
         {
             return _readers.Values.GetEnumerator();
         }

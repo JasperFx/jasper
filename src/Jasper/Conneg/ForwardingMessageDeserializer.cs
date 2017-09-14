@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
-    public class ForwardingMediaReader<T> : IMediaReader
+    public class ForwardingMessageDeserializer<T> : IMessageDeserializer
     {
-        private readonly IMediaReader _inner;
+        private readonly IMessageDeserializer _inner;
 
-        public ForwardingMediaReader(IMediaReader inner)
+        public ForwardingMessageDeserializer(IMessageDeserializer inner)
         {
             if (!inner.DotNetType.CanBeCastTo<IForwardsTo<T>>())
             {

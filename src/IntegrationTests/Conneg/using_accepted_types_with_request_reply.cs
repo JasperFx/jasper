@@ -68,7 +68,7 @@ namespace IntegrationTests.Conneg
     }
 
 
-    public class Reply1Reader : IMediaReader
+    public class Reply1Reader : IMessageDeserializer
     {
         public string MessageType { get; } = typeof(Reply1).ToMessageAlias();
         public Type DotNetType { get; } = typeof(Reply1);
@@ -92,7 +92,7 @@ namespace IntegrationTests.Conneg
         }
     }
 
-    public class Reply1Writer : IMediaWriter
+    public class Reply1Writer : IMessageSerializer
     {
         public Type DotNetType { get; } = typeof(Reply1);
         public string ContentType { get; } = "text/plain";
