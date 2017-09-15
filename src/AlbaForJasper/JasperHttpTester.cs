@@ -10,22 +10,22 @@ using StructureMap;
 
 namespace AlbaForJasper
 {
-    public class JasperSystem
+    public class JasperHttpTester
     {
-        public static JasperSystem<T> For<T>() where T : JasperRegistry, new()
+        public static JasperHttpTester<T> For<T>() where T : JasperRegistry, new()
         {
-            return new JasperSystem<T>();
+            return new JasperHttpTester<T>();
         }
     }
 
-    public class JasperSystem<T> : SystemUnderTestBase, IDisposable where T : JasperRegistry, new()
+    public class JasperHttpTester<T> : SystemUnderTestBase, IDisposable where T : JasperRegistry, new()
     {
         private JasperRuntime _runtime;
 
-        public JasperSystem()
+        public JasperHttpTester()
         {
             Registry = new T();
-            
+
         }
 
         public T Registry { get; }
