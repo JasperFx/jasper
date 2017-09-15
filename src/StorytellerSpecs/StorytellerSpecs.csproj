@@ -6,7 +6,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>StorytellerSpecs</PackageId>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>1.0.5</RuntimeFrameworkVersion>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -16,7 +16,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Alba" Version="1.2.0" />
-    <PackageReference Include="Storyteller" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-storyteller" Version="1.2.4" />
