@@ -22,9 +22,6 @@
     <PackageReference Include="LightningDB" Version="0.9.9" />
     <PackageReference Include="lmdb.v141" Version="0.9.18" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
-    <PackageReference Include="System.Runtime.Loader" Version="4.0.0" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
