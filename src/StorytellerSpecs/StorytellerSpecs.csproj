@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.LightningDb\Jasper.LightningDb.csproj" />
+    <ProjectReference Include="..\Jasper.Storyteller\Jasper.Storyteller.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@ namespace Jasper.Testing.Http.AlbaSupport
         [Fact]
         public async Task run_simple_scenario_that_uses_custom_services()
         {
-            theSystem = JasperSystem.For<AlbaTargetApp>();
+            theSystem = JasperHttpTester.For<AlbaTargetApp>();
 
             await theSystem.Scenario(_ =>
             {
@@ -38,7 +38,7 @@ namespace Jasper.Testing.Http.AlbaSupport
         [Fact]
         public async Task run_simple_scenario_bootstrapped_by_Startup()
         {
-            theSystem = JasperSystem.For<AlbaTargetApp2>();
+            theSystem = JasperHttpTester.For<AlbaTargetApp2>();
 
             await theSystem.Scenario(_ =>
             {

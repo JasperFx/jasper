@@ -34,6 +34,7 @@ namespace Jasper.Bus.Tracking
             return waiter.Task;
         }
 
+
         public Task<MessageTrack> WaitFor<T>()
         {
             var waiter = new TaskCompletionSource<MessageTrack>();

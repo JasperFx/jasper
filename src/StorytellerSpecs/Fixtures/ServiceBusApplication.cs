@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Baseline.Dates;
 using Jasper;
@@ -8,132 +7,14 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
 using Jasper.Bus.Transports;
 using Jasper.LightningDb;
+using Jasper.Storyteller.Logging;
 using StoryTeller;
-using StoryTeller.Results;
-using StoryTeller.Util;
-using Envelope = Jasper.Bus.Runtime.Envelope;
 
 namespace StorytellerSpecs.Fixtures
 {
-    // TODO -- move this to the new Jasper.Storyteller when it exists
-    public class StorytellerBusLogger : IBusLogger
-    {
-        private readonly ISpecContext _context;
-
-        public StorytellerBusLogger(ISpecContext context)
-        {
-            _context = context;
-        }
-
-        public void Sent(Envelope envelope)
-        {
-            trace($"Sent {envelope}");
-        }
-
-        public void Received(Envelope envelope)
-        {
-            trace($"Received {envelope}");
-        }
-
-        public void ExecutionStarted(Envelope envelope)
-        {
-
-        }
-
-        public void ExecutionFinished(Envelope envelope)
-        {
-
-        }
-
-        public void MessageSucceeded(Envelope envelope)
-        {
-            trace($"Message {envelope} succeeded");
-        }
-
-        public void MessageFailed(Envelope envelope, Exception ex)
-        {
-            trace($"Message {envelope} failed");
-        }
-
-        public void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
-        {
-            _context.Reporting.ReporterFor<BusErrors>().Exceptions.Add(ex);
-        }
-
-        public void NoHandlerFor(Envelope envelope)
-        {
-            trace($"No handler for {envelope}");
-        }
-
-        public void NoRoutesFor(Envelope envelope)
-        {
-            trace($"No routing for {envelope}");
-        }
-
-        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
-        {
-            trace($"Subscription mismatch: {mismatch}");
-        }
-
-        public void Undeliverable(Envelope envelope)
-        {
-            trace($"Envelope {envelope} cannot be delivered");
-        }
-
-        private void trace(string message)
-        {
-            _context.Reporting.ReporterFor<BusActivity>().Messages.Add(message);
-        }
-    }
-
-    public class BusErrors : Report
-    {
-        public readonly IList<Exception> Exceptions = new List<Exception>();
-
-        public string ToHtml()
-        {
-            var div = new HtmlTag("div");
-
-            foreach (var exception in Exceptions)
-            {
-                div.Add("div").AddClasses("alert", "alert-warning").Text(exception.ToString());
-            }
-
-
-            return div.ToString();
-        }
-
-        public string Title { get; } = "Logged Bus Errors";
-        public string ShortTitle { get; } = "Bus Errors";
-        public int Count => Exceptions.Count;
-    }
-
-    public class BusActivity : Report
-    {
-        public readonly IList<string> Messages = new List<string>();
-
-        public string ToHtml()
-        {
-            var ul = new HtmlTag("ul");
-
-            foreach (var message in Messages)
-            {
-                ul.Add("li").Text(message);
-            }
-
-
-            return ul.ToString();
-        }
-
-        public string Title { get; } = "Bus Activity";
-        public string ShortTitle { get; } = "Bus Activity";
-        public int Count => Messages.Count;
-    }
-
     [Hidden]
     public class ServiceBusApplication : BusFixture
     {
