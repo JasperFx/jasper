@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -93,10 +93,8 @@ namespace Jasper.Bus
                 Services.For<IBusLogger>().Add<ConsoleBusLogger>();
             }
 
-            if (DelayedJobsRunInMemory)
-            {
-                Services.ForSingletonOf<IDelayedJobProcessor>().Use<InMemoryDelayedJobProcessor>();
-            }
+            Services.ForSingletonOf<IDelayedJobProcessor>().UseIfNone<InMemoryDelayedJobProcessor>();
+
 
             return Services;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using AlbaForJasper;
 using Jasper;
@@ -89,7 +89,10 @@ namespace IntegrationTests.Storyteller
                 system.AfterEachWasCalled.ShouldBeFalse();
                 using (var context = system.CreateContext())
                 {
-                    context.AfterExecution(SpecContext.ForTesting());
+                    var specContext = SpecContext.ForTesting();
+                    context.BeforeExecution(specContext);
+                    
+                    context.AfterExecution(specContext);
                     system.AfterEachWasCalled.ShouldBeTrue();
                 }
 

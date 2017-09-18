@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -15,26 +15,31 @@ using Jasper.Bus.Runtime.Invocation;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
 using Shouldly;
+using StoryTeller;
 using Xunit;
 
 namespace IntegrationTests.Lightweight
 {
     public class end_to_end : IDisposable
     {
+        private static int port = 2114;
+       
         private readonly JasperRuntime theSender;
-        private readonly Uri theAddress = "tcp://localhost:2114/incoming".ToUri();
+        private readonly Uri theAddress = $"tcp://localhost:{++port}/incoming".ToUri();
         private readonly MessageTracker theTracker = new MessageTracker();
         private readonly JasperRuntime theReceiver;
         private FakeDelayedJobProcessor delayedJobs;
 
         public end_to_end()
         {
+
+
             theSender = JasperRuntime.For(new JasperRegistry());
 
             var receiver = new JasperRegistry();
             receiver.Transports.ListenForMessagesFrom(theAddress);
             receiver.Handlers.OnException<DivideByZeroException>().Requeue();
-            receiver.Handlers.OnException<TimeoutException>().RetryLater(1.Minutes());
+            receiver.Handlers.OnException<TimeoutException>().RetryLater(10.Seconds());
 
             receiver.Handlers.DefaultMaximumAttempts = 3;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,12 +23,12 @@ namespace IntegrationTests.Conneg
             Reply1Writer.WasUsed = false;
 
             var requestorRegistry = new JasperRegistry();
-            requestorRegistry.Publish.Message<Request1>().To("tcp://localhost:2456/incoming");
-            requestorRegistry.Transports.ListenForMessagesFrom("tcp://localhost:1234/replies");
+            requestorRegistry.Publish.Message<Request1>().To("tcp://localhost:2457/incoming");
+            requestorRegistry.Transports.ListenForMessagesFrom("tcp://localhost:1555");
             var requestor = JasperRuntime.For(requestorRegistry);
 
             var replierRegistry = new JasperRegistry();
-            replierRegistry.Transports.ListenForMessagesFrom("tcp://localhost:2456/incoming");
+            replierRegistry.Transports.ListenForMessagesFrom("tcp://localhost:2457/incoming");
             var replier = JasperRuntime.For(replierRegistry);
 
 
