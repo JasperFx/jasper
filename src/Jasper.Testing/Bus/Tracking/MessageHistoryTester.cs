@@ -24,7 +24,7 @@ namespace Jasper.Testing.Bus.Tracking
         [Fact]
         public void knows_when_stuff_is_finished_starting_from_scratch()
         {
-            ShouldBeBooleanExtensions.ShouldBeFalse(watch.IsCompleted);
+            watch.IsCompleted.ShouldBeFalse();
         }
 
         [Fact]
@@ -35,25 +35,25 @@ namespace Jasper.Testing.Bus.Tracking
 
             history.Start(envelope1, "Envelope");
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(watch.IsCompleted);
+            watch.IsCompleted.ShouldBeFalse();
 
             history.Start(envelope2, "Envelope");
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(watch.IsCompleted);
+            watch.IsCompleted.ShouldBeFalse();
 
             history.Complete(envelope1, "Envelope");
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(watch.IsCompleted);
+            watch.IsCompleted.ShouldBeFalse();
 
             history.Complete(envelope2, "Envelope");
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(watch.IsCompleted);
+            watch.IsCompleted.ShouldBeTrue();
 
             var tracks = watch.Result;
 
             foreach (var messageTrack in tracks)
             {
-                ShouldBeBooleanExtensions.ShouldBeTrue(messageTrack.Completed);
+                messageTrack.Completed.ShouldBeTrue();
                 ShouldBeNullExtensions.ShouldNotBeNull(messageTrack.Headers);
                 ShouldBeNullExtensions.ShouldBeNull(messageTrack.ExceptionText);
             }
@@ -68,7 +68,7 @@ namespace Jasper.Testing.Bus.Tracking
             history.Start(envelope1, "Envelope");
             history.Complete(envelope1, "Envelope", ex);
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(watch.IsCompleted);
+            watch.IsCompleted.ShouldBeTrue();
 
             watch.Result.Single().ExceptionText.ShouldBe(ex.ToString());
 

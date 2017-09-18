@@ -14,7 +14,7 @@ namespace Jasper.Testing.Bus
             {
                 Data = new byte[] {1, 2, 3, 4},
                 Callback = Substitute.For<IMessageCallback>(),
-                Headers = new Dictionary<string, string>{{Jasper.Bus.Runtime.Envelope.MessageTypeKey, "Something"}},
+                MessageType = "Something",
                 CorrelationId = Guid.NewGuid().ToString()
             };
         }

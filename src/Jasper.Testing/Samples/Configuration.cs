@@ -41,7 +41,7 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
 
             // SAMPLE: configure-settings
-            Settings.Configure<Colors>();
+            Settings.Require<Colors>();
             // ENDSAMPLE
 
             // SAMPLE: configure-settings2

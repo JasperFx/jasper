@@ -31,16 +31,6 @@ namespace Jasper.Testing.Settings
         }
 
         [Fact]
-        public void can_resolve_registered_types()
-        {
-            theRegistry.Configuration.AddJsonFile("appsettings.json");
-
-
-            var settings = get<MyFakeSettings>();
-            settings.SomeSetting.ShouldBe(1);
-        }
-
-        [Fact]
         public void can_modify_registry()
         {
             var app = new MyApp();
@@ -72,7 +62,7 @@ namespace Jasper.Testing.Settings
             app.Configuration.AddJsonFile("appsettings.json")
                 .AddJsonFile("colors.json");
 
-            app.Settings.Configure<Colors>();
+            app.Settings.Require<Colors>();
             app.Settings.Alter<MyFakeSettings>(_ =>
             {
                 _.SomeSetting = 29;

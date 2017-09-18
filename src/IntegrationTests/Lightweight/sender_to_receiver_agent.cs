@@ -34,7 +34,7 @@ namespace IntegrationTests.Lightweight
         {
             return new Envelope
             {
-                Id = MessageId.GenerateRandom(),
+                EnvelopeVersionId = MessageId.GenerateRandom(),
                 Destination = destination,
                 Data = new byte[]{1,2,3,4,5,6,7},
                 Queue = "outgoing",
@@ -59,7 +59,7 @@ namespace IntegrationTests.Lightweight
 
             await theReceiver.Completed;
 
-            theReceiver.ReceivedMessages.Single().Id.ShouldBe(outgoing.Id);
+            theReceiver.ReceivedMessages.Single().EnvelopeVersionId.ShouldBe(outgoing.EnvelopeVersionId);
         }
 
 

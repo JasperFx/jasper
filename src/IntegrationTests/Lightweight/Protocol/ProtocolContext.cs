@@ -50,7 +50,7 @@ namespace IntegrationTests.Lightweight.Protocol
         {
             return new Envelope
             {
-                Id = MessageId.GenerateRandom(),
+                EnvelopeVersionId = MessageId.GenerateRandom(),
                 Destination = destination,
                 Data = new byte[]{1,2,3,4,5,6,7},
                 Queue = "outgoing",
@@ -84,8 +84,8 @@ namespace IntegrationTests.Lightweight.Protocol
         protected void allTheMessagesWereReceived()
         {
             theReceiver.MessagesReceived.Length.ShouldBe(theMessageBatch.Messages.Count);
-            theReceiver.MessagesReceived.Select(x => x.Id)
-                .ShouldHaveTheSameElementsAs(theMessageBatch.Messages.Select(x => x.Id));
+            theReceiver.MessagesReceived.Select(x => x.EnvelopeVersionId)
+                .ShouldHaveTheSameElementsAs(theMessageBatch.Messages.Select(x => x.EnvelopeVersionId));
         }
 
 

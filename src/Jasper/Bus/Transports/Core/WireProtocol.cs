@@ -13,7 +13,8 @@ namespace Jasper.Bus.Transports.Core
         // else
         public static async Task Send(Stream stream, OutgoingMessageBatch batch, ISenderCallback callback)
         {
-            var messageBytes = batch.Messages.Serialize();
+            var messageBytes = Envelope.Serialize(batch.Messages);
+
             var lengthBytes = BitConverter.GetBytes(messageBytes.Length);
 
 
@@ -54,7 +55,7 @@ namespace Jasper.Bus.Transports.Core
                 if (length == 0) return;
 
                 var bytes = await stream.ReadBytesAsync(length);
-                messages = bytes.ToMessages();
+                messages = Envelope.ReadMany(bytes);
 
 
             }

@@ -39,13 +39,13 @@ namespace IntegrationTests.LightningDb
             var envelope = new Envelope
             {
                 SentAt = DateTime.Today.ToUniversalTime(),
-                Id = MessageId.GenerateRandom(),
+                EnvelopeVersionId = MessageId.GenerateRandom(),
                 Queue = "incoming",
                 SubQueue = "subqueue",
                 Destination = "durable://localhost:2222/outgoing".ToUri(),
-                MaxAttempts = 3,
                 SentAttempts = 2,
-                DeliverBy = DateTime.Today.ToUniversalTime()
+                DeliverBy = DateTime.Today.ToUniversalTime(),
+                ReplyUri = "durable://localhost:2221/replies".ToUri()
             };
 
             envelope.Data = new byte[random.Next(100)];
@@ -53,7 +53,6 @@ namespace IntegrationTests.LightningDb
 
             envelope.Headers.Add("name", "Jeremy");
             envelope.Headers.Add("state", "Texas");
-            envelope.Headers.Add("reply-uri", "durable://localhost:2221/replies");
 
             return envelope;
         }
@@ -65,9 +64,9 @@ namespace IntegrationTests.LightningDb
             thePersistence.Store("one", original);
 
 
-            var loaded = thePersistence.Load("one", original.Id);
+            var loaded = thePersistence.Load("one", original.EnvelopeVersionId);
 
-            loaded.Id.ShouldBe(original.Id);
+            loaded.EnvelopeVersionId.ShouldBe(original.EnvelopeVersionId);
             loaded.Data.ShouldHaveTheSameElementsAs(original.Data);
         }
 
@@ -87,7 +86,7 @@ namespace IntegrationTests.LightningDb
             loaded.Count.ShouldBe(originals.Length);
             foreach (var original in originals)
             {
-                loaded.Any(x => Equals(x.Id, original.Id)).ShouldBeTrue();
+                loaded.Any(x => Equals(x.EnvelopeVersionId, original.EnvelopeVersionId)).ShouldBeTrue();
             }
 
 
@@ -102,8 +101,8 @@ namespace IntegrationTests.LightningDb
             thePersistence.Store("one", original1);
             thePersistence.Store("two", original2);
 
-            thePersistence.LoadAll("one").Single().Id.ShouldBe(original1.Id);
-            thePersistence.LoadAll("two").Single().Id.ShouldBe(original2.Id);
+            thePersistence.LoadAll("one").Single().EnvelopeVersionId.ShouldBe(original1.EnvelopeVersionId);
+            thePersistence.LoadAll("two").Single().EnvelopeVersionId.ShouldBe(original2.EnvelopeVersionId);
         }
 
         [Fact]
@@ -118,7 +117,7 @@ namespace IntegrationTests.LightningDb
             thePersistence.Remove("one", original1);
 
             thePersistence.LoadAll("one").Single()
-                .Id.ShouldBe(original2.Id);
+                .EnvelopeVersionId.ShouldBe(original2.EnvelopeVersionId);
 
         }
 
@@ -150,8 +149,8 @@ namespace IntegrationTests.LightningDb
 
 
             thePersistence.LoadAll("one").Any().ShouldBeFalse();
-            thePersistence.LoadAll("two").Single().Id
-                .ShouldBe(original1.Id);
+            thePersistence.LoadAll("two").Single().EnvelopeVersionId
+                .ShouldBe(original1.EnvelopeVersionId);
 
         }
 
@@ -199,7 +198,7 @@ namespace IntegrationTests.LightningDb
         public void can_replace_an_envelope()
         {
             var original = envelope();
-            var id = original.Id;
+            var id = original.EnvelopeVersionId;
 
             thePersistence.Store("one", original);
 
@@ -207,9 +206,9 @@ namespace IntegrationTests.LightningDb
 
             thePersistence.Replace("one", original);
 
-            original.Id.ShouldNotBe(id);
+            original.EnvelopeVersionId.ShouldNotBe(id);
 
-            thePersistence.Load("one", original.Id)
+            thePersistence.Load("one", original.EnvelopeVersionId)
                 .SentAttempts.ShouldBe(2);
         }
 

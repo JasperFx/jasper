@@ -37,7 +37,7 @@ namespace Jasper.Testing.Samples
             [Fact]
             public void message_alias_is_fullname_by_default()
             {
-                Envelope.ForMessage(new PersonBorn())
+                new Envelope(new PersonBorn())
                     .MessageType.ShouldBe(typeof(PersonBorn).FullName);
             }
             // ENDSAMPLE
@@ -64,7 +64,7 @@ namespace Jasper.Testing.Samples
             [Fact]
             public void message_alias_is_fullname_by_default()
             {
-                Envelope.ForMessage(new PersonBorn())
+                new Envelope(new PersonBorn())
                     .MessageType.ShouldBe("person-born");
             }
             // ENDSAMPLE

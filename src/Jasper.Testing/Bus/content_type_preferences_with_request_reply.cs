@@ -22,11 +22,10 @@ namespace Jasper.Testing.Bus
 
             var envelope = Bus.As<ServiceBus>().EnvelopeForRequestResponse<Message1>(new Message2());
 
-            var accepted = envelope.Accepts.Split(',');
-            accepted.ShouldContain("text/message1");
-            accepted.ShouldContain("text/oddball");
+            envelope.AcceptedContentTypes.ShouldContain("text/message1");
+            envelope.AcceptedContentTypes.ShouldContain("text/oddball");
 
-            accepted.Last().ShouldBe("application/json");
+            envelope.AcceptedContentTypes.Last().ShouldBe("application/json");
         }
     }
 

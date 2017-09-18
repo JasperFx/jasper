@@ -54,10 +54,11 @@ namespace Jasper.Settings
 
 
         /// <summary>
-        ///     Add a class to settings that does not follow the convention of ending with "Settings"
+        /// Just directs Jasper to try to read data for T from the IConfiguration
+        /// and inject this type into the application container
         /// </summary>
-        [Obsolete("Might eliminate or just rename")]
-        public void Configure<T>() where T : class, new()
+        /// <typeparam name="T"></typeparam>
+        public void Require<T>() where T : class, new()
         {
             // Just to register it
             forType<T>();

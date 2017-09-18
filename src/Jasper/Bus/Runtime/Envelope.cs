@@ -9,26 +9,9 @@ using Jasper.Util;
 
 namespace Jasper.Bus.Runtime
 {
-    public class Envelope : HeaderWrapper
+    public partial class Envelope
     {
-        private const string SentAttemptsHeaderKey = "sent-attempts";
-        public static readonly string OriginalIdKey = "original-id";
-        public static readonly string IdKey = "id";
-        public static readonly string ParentIdKey = "parent-id";
-        public static readonly string ContentTypeKey = "content-type";
-        public static readonly string SourceKey = "source";
-        public static readonly string ChannelKey = "channel";
-        public static readonly string ReplyRequestedKey = "reply-requested";
-        public static readonly string ResponseIdKey = "response";
-        public static readonly string DestinationKey = "destination";
-        public static readonly string ReplyUriKey = "reply-uri";
-        public static readonly string ExecutionTimeKey = "time-to-send";
-        public static readonly string ReceivedAtKey = "received-at";
-        public static readonly string AttemptsKey = "attempts";
-        public static readonly string AckRequestedKey = "ack-requested";
-        public static readonly string MessageTypeKey = "message-type";
-        public static readonly string AcceptedContentTypesKey = "accepted-content-types";
-
+        public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
         public byte[] Data;
         private object _message;
@@ -44,34 +27,23 @@ namespace Jasper.Bus.Runtime
             }
         }
 
-        public byte[] Identity() => Id.MessageIdentifier.ToByteArray();
+        public byte[] Identity() => EnvelopeVersionId.MessageIdentifier.ToByteArray();
 
 
-        public int Attempts
-        {
-            get => Headers.GetInt(AttemptsKey);
-            set => Headers.Set(AttemptsKey, value);
-        }
+        public int Attempts { get; set; }
 
-        public Envelope() : this(new Dictionary<string, string>())
+        public Envelope()
         {
         }
 
-        // TODO -- do routing slip tracking later
-
-        public Envelope(IDictionary<string, string> headers)
+        public Envelope(object message)
         {
-            Headers = headers;
-
-            if (CorrelationId.IsEmpty())
-            {
-                CorrelationId = Guid.NewGuid().ToString();
-            }
-
+            Message = message;
         }
 
 
-        public Envelope(byte[] data, IDictionary<string, string> headers, IMessageCallback callback) : this(headers)
+
+        public Envelope(byte[] data, IMessageCallback callback)
         {
             Data = data;
             Callback = callback;
@@ -93,7 +65,7 @@ namespace Jasper.Bus.Runtime
 
             if (MatchesResponse(message))
             {
-                child.Headers[ResponseIdKey] = CorrelationId;
+                child.ResponseId = CorrelationId;
                 child.Destination = ReplyUri;
                 child.AcceptedContentTypes = AcceptedContentTypes;
                 child.ResponseId = CorrelationId;
@@ -136,18 +108,16 @@ namespace Jasper.Bus.Runtime
 
         public Envelope Clone()
         {
-            return new Envelope
-            {
-                Message = Message,
-                Headers = Headers.Clone()
-            };
+            return MemberwiseClone().As<Envelope>();
         }
 
 
         private MessageId _id;
         private string _queue;
+        private DateTime? _deliverBy;
+        private DateTime? _executionTime;
 
-        public MessageId Id
+        public MessageId EnvelopeVersionId
         {
             get => _id ?? (_id = MessageId.GenerateRandom());
             set => _id = value;
@@ -166,67 +136,13 @@ namespace Jasper.Bus.Runtime
 
         public DateTime? DeliverBy
         {
-            get
-            {
-                string headerValue;
-                Headers.TryGetValue(DeliverByHeader, out headerValue);
-                if (headerValue.IsNotEmpty())
-                {
-                    return DateTime.Parse(headerValue);
-                }
-
-                return null;
-            }
-            set
-            {
-                Headers.Set(DeliverByHeader, value.Value.ToString("o"));
-            }
+            get { return _deliverBy; }
+            set { _deliverBy = value?.ToUniversalTime(); }
         }
 
-        public int? MaxAttempts
-        {
-            get
-            {
-                return Headers.ContainsKey(MaxAttemptsHeader)
-                    ? int.Parse(Headers[MaxAttemptsHeader])
-                    : default(int?);
-            }
-            set
-            {
-                Headers.Set(MaxAttemptsHeader, value.ToString());
-            }
-        }
+        public int SentAttempts { get; set; }
 
-        public int SentAttempts
-        {
-            get
-            {
-                if (Headers.ContainsKey(SentAttemptsHeaderKey))
-                {
-                    return int.Parse(Headers[SentAttemptsHeaderKey]);
-                }
-                return 0;
-            }
-            set { Headers[SentAttemptsHeaderKey] = value.ToString(); }
-        }
-
-        public Uri ReceivedAt
-        {
-            get
-            {
-                var uri = Headers.GetUri(Envelope.ReceivedAtKey);
-                if (uri == null) return null;
-
-                if (Queue.IsNotEmpty() && !uri.Segments.Contains(Queue))
-                {
-                    uri = (uri.ToString().TrimEnd('/') + Queue).ToUri();
-                }
-
-                return uri;
-            }
-            set { Headers.Set(Envelope.ReceivedAtKey, value); }
-
-        }
+        public Uri ReceivedAt { get; set; }
 
         public IMessageSerializer Writer { get; set; }
 
@@ -256,17 +172,6 @@ namespace Jasper.Bus.Runtime
 
 
 
-        public static Envelope ForMessage(object message)
-        {
-            // TODO -- this will change
-            return new Envelope(new byte[0], new Dictionary<string, string>(), null)
-            {
-                Message = message
-            };
-        }
-
-        public static string MaxAttemptsHeader = "max-delivery-attempts";
-        public static string DeliverByHeader = "deliver-by";
 
         public void WriteData()
         {
@@ -276,6 +181,46 @@ namespace Jasper.Bus.Runtime
             }
 
             Data = Writer.Write(Message);
+        }
+
+        [Obsolete("Not really used")]
+        public Uri Source { get; set; }
+
+
+        public string MessageType { get; set; }
+
+        public Uri ReplyUri { get; set; }
+
+        public string ContentType { get; set; }
+
+        public string OriginalId { get; set; }
+
+        public string ParentId { get; set; }
+
+        public string ResponseId { get; set; }
+
+        public Uri Destination { get; set; }
+
+        public string[] AcceptedContentTypes { get; set; } = new string[0];
+
+        public string Accepts => AcceptedContentTypes?.FirstOrDefault();
+
+
+        public string CorrelationId { get; set; } = Guid.NewGuid().ToString();
+
+        public string ReplyRequested { get; set; }
+
+        public bool AckRequested { get; set; }
+
+        public DateTime? ExecutionTime
+        {
+            get => _executionTime;
+            set => _executionTime = value?.ToUniversalTime();
+        }
+
+        public bool IsDelayed(DateTime utcNow)
+        {
+            return ExecutionTime.HasValue && ExecutionTime.Value > utcNow;
         }
     }
 

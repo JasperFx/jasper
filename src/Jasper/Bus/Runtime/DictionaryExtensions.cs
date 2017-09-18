@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime
@@ -43,6 +44,16 @@ namespace Jasper.Bus.Runtime
         public static int GetInt(this IDictionary<string, string> dict, string key)
         {
             return dict.ContainsKey(key) ? int.Parse(dict[key]) : 0;
+        }
+
+        public static DateTime? GetNullableDateTime(this IDictionary<string, string> dict, string key)
+        {
+            if (dict.ContainsKey(key))
+            {
+                return XmlConvert.ToDateTime(dict[key], XmlDateTimeSerializationMode.Utc);
+            }
+
+            return null;
         }
     }
 }

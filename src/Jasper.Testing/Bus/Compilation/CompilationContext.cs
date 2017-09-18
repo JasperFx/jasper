@@ -98,7 +98,7 @@ namespace Jasper.Testing.Bus.Compilation
         public async Task<IInvocationContext> Execute<TMessage>(TMessage message)
         {
             var handler = HandlerFor<TMessage>();
-            theEnvelope = Envelope.ForMessage(message);
+            theEnvelope = new Envelope(message);
             var context = new EnvelopeContext(null,theEnvelope, null, new InMemoryDelayedJobProcessor());
 
             await handler.Handle(context);

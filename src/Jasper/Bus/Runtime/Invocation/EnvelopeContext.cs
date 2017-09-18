@@ -91,10 +91,9 @@ namespace Jasper.Bus.Runtime.Invocation
                 ? o.As<ISendMyself>().CreateEnvelope(original)
                 : original.ForResponse(o);
 
-            if (original.AcceptedContentTypes.Any())
-            {
-                cascadingEnvelope.AcceptedContentTypes = original.AcceptedContentTypes;
-            }
+
+            cascadingEnvelope.AcceptedContentTypes = original.AcceptedContentTypes;
+
 
             cascadingEnvelope.Callback = original.Callback;
 

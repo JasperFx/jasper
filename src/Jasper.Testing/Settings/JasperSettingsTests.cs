@@ -37,7 +37,7 @@ namespace Jasper.Testing.Settings
         public void can_read_settings()
         {
             theRegistry.Configuration.AddJsonFile("appsettings.json");
-
+            theRegistry.Settings.Require<MyFakeSettings>();
 
             var settings = get<MyFakeSettings>();
             settings.SomeSetting.ShouldBe(1);
@@ -96,7 +96,8 @@ namespace Jasper.Testing.Settings
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("colors.json");
 
-            theRegistry.Settings.Configure<Colors>();
+            theRegistry.Settings.Require<Colors>();
+            theRegistry.Settings.Require<MyFakeSettings>();
             var colors = get<Colors>();
             var settings = get<MyFakeSettings>();
 

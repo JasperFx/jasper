@@ -169,7 +169,7 @@ namespace Jasper.Testing.Bus.Stubs
             if (headers == null) throw new ArgumentNullException(nameof(headers));
             if (callback == null) throw new ArgumentNullException(nameof(callback));
 
-            var envelope = new Envelope(data, headers, callback)
+            var envelope = new Envelope(data, callback)
             {
                 ReceivedAt = _address
             };
