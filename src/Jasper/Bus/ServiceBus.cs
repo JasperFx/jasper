@@ -86,18 +86,18 @@ namespace Jasper.Bus
             return _sender.EnqueueLocally(message);
         }
 
-        public void DelaySend<T>(T message, DateTime time)
+        public Task DelaySend<T>(T message, DateTime time)
         {
-            _sender.Send(new Envelope
+            return _sender.Send(new Envelope
             {
                 Message = message,
                 ExecutionTime = time.ToUniversalTime()
             });
         }
 
-        public void DelaySend<T>(T message, TimeSpan delay)
+        public Task DelaySend<T>(T message, TimeSpan delay)
         {
-            DelaySend(message, DateTime.UtcNow.Add(delay));
+            return DelaySend(message, DateTime.UtcNow.Add(delay));
         }
 
         public Task SendAndWait<T>(T message)

@@ -26,6 +26,16 @@ namespace Jasper.Testing.Bus
             }
         }
 
+        // SAMPLE: SetDefaultChannel
+        public class SetDefaultChannel : JasperRegistry
+        {
+            public SetDefaultChannel()
+            {
+                Transports.DefaultIs("loopback://default");
+            }
+        }
+        // ENDSAMPLE
+
         [Fact]
         public void override_the_default_channel()
         {

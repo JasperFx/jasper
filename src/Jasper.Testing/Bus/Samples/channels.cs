@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Util;
+using NSubstitute.Routing.Handlers;
 
 namespace Jasper.Testing.Bus.Samples
 {
@@ -51,6 +53,16 @@ namespace Jasper.Testing.Bus.Samples
     {
     }
 
+    // SAMPLE: PingPongHandler
+    public class PingPongHandler
+    {
+        public PongMessage Handle(PingMessage message)
+        {
+            return new PongMessage();
+        }
+    }
+    // ENDSAMPLE
+
     // SAMPLE: ListeningApp
     public class ListeningApp : JasperRegistry
     {
@@ -92,6 +104,36 @@ namespace Jasper.Testing.Bus.Samples
         }
     }
     // ENDSAMPLE
+
+
+    public class PingPong
+    {
+        // SAMPLE: using-request-reply
+        public async Task RequestReply(IServiceBus bus)
+        {
+            var pong = await bus.Request<PongMessage>(new PingMessage());
+            // do something with the pong
+        }
+        // ENDSAMPLE
+
+        // SAMPLE: CustomizedRequestReply
+        public async Task CustomizedRequestReply(IServiceBus bus)
+        {
+            var pong = await bus.Request<PongMessage>(new PingMessage(), new RequestOptions
+            {
+                // Override the destination
+                Destination = new Uri("tcp://someserver:2000"),
+
+                // Override the timeout period for the expected reply
+                Timeout = 20.Seconds()
+            });
+            // do something with the pong
+        }
+        // ENDSAMPLE
+    }
+
+
+
 
     // SAMPLE: StaticRoutingApp
     public class StaticRoutingApp : JasperRegistry

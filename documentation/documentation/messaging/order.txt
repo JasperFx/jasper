@@ -2,6 +2,6 @@ configuration
 transports
 messages
 handling
-sending
+publishing
 routing
 logging

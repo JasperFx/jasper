@@ -95,7 +95,13 @@ namespace Jasper.Testing.Bus.Samples
     }
     // ENDSAMPLE
 
-    public class InvoiceCreated{}
+    public class InvoiceCreated
+    {
+        public DateTime Time { get; set; }
+        public string Purchaser { get; set; }
+        public double Amount { get; set; }
+
+    }
     public class InvoiceApproved{}
 
     // SAMPLE: configuring-error-handling-with-attributes
