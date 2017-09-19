@@ -14,12 +14,12 @@ namespace IntegrationTests.Bus
         {
             StartTheReceiver(_ =>
             {
-                _.Transports.ListenForMessagesFrom("tcp://localhost:2255");
+                _.Transports.ListenForMessagesFrom("tcp://localhost:2258");
             });
 
             StartTheSender(_ =>
             {
-                _.Publish.AllMessagesTo("tcp://localhost:2255");
+                _.Publish.AllMessagesTo("tcp://localhost:2258");
             });
 
             var waiter = theTracker.WaitFor<Message1>();
@@ -37,12 +37,12 @@ namespace IntegrationTests.Bus
         {
             StartTheReceiver(_ =>
             {
-                _.Transports.ListenForMessagesFrom("tcp://localhost:2266");
+                _.Transports.ListenForMessagesFrom("tcp://localhost:2269");
             });
 
             StartTheSender(_ =>
             {
-                _.Publish.AllMessagesTo("tcp://localhost:2266/unknown");
+                _.Publish.AllMessagesTo("tcp://localhost:2269/unknown");
             });
 
             var waiter = theTracker.WaitFor<Message1>();

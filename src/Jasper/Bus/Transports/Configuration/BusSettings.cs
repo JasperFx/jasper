@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -37,10 +38,38 @@ namespace Jasper.Bus.Transports.Configuration
             ListenForMessagesFrom(TransportConstants.RetryUri).MaximumParallelization(5);
             ListenForMessagesFrom(TransportConstants.DelayedUri).MaximumParallelization(5);
             ListenForMessagesFrom(TransportConstants.RepliesUri).MaximumParallelization(5);
+
+            _machineName = Environment.MachineName;
+            ServiceName = "Jasper";
+
         }
 
         // Was ChannelGraph.Name
-        public string ServiceName { get; set; }
+        public string ServiceName
+        {
+            get => _serviceName;
+            set
+            {
+                if (ServiceName.IsEmpty()) throw new ArgumentNullException(nameof(ServiceName));
+
+                _serviceName = value;
+                NodeId = $"{_serviceName}@{_machineName}";
+            }
+        }
+
+        public string MachineName
+        {
+            get => _machineName;
+            set
+            {
+                if (value.IsEmpty()) throw new ArgumentNullException(nameof(MachineName));
+
+                _machineName = value;
+                NodeId = $"{_serviceName}@{_machineName}";
+
+
+            }
+        }
 
         public Uri DefaultChannelAddress
         {
@@ -92,8 +121,10 @@ namespace Jasper.Bus.Transports.Configuration
 
         public bool AllowNonVersionedSerialization { get; set; } = true;
 
-        public string MachineName { get; set; } = Environment.MachineName;
+
+
         public NoRouteBehavior NoMessageRouteBehavior { get; set; } = NoRouteBehavior.ThrowOnNoRoutes;
+        public string NodeId { get; private set; }
 
 
         // Catches anything from unknown transports
@@ -128,6 +159,8 @@ namespace Jasper.Bus.Transports.Configuration
 
         public readonly IList<SubscriberAddress> KnownSubscribers = new List<SubscriberAddress>();
         private Uri _defaultChannelAddress = TransportConstants.RepliesUri;
+        private string _machineName;
+        private string _serviceName = "Jasper";
 
         public SubscriberAddress SendTo(Uri uri)
         {

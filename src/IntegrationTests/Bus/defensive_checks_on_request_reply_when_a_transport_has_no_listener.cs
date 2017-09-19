@@ -29,7 +29,7 @@ namespace IntegrationTests.Bus
             StartTheSender(_ =>
             {
                 // No listener on the lightweight
-                _.Publish.Message<Message1>().To("tcp://localhost:2222");
+                _.Publish.Message<Message1>().To("tcp://localhost:2277");
             });
 
             return Exception<InvalidOperationException>.ShouldBeThrownByAsync(async () =>

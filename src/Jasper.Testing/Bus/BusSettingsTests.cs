@@ -15,6 +15,21 @@ namespace Jasper.Testing.Bus
         private readonly BusSettings theSettings = new BusSettings();
 
         [Fact]
+        public void derive_the_node_id()
+        {
+            theSettings.MachineName = "SomeMachine";
+            theSettings.ServiceName = "MyService";
+
+            theSettings.NodeId.ShouldBe("MyService@SomeMachine");
+
+            theSettings.MachineName = "OtherMachine";
+            theSettings.NodeId.ShouldBe("MyService@OtherMachine");
+
+            theSettings.ServiceName = "OtherService";
+            theSettings.NodeId.ShouldBe("OtherService@OtherMachine");
+        }
+
+        [Fact]
         public void listen_to_loopback()
         {
             var queue = theSettings.ListenForMessagesFrom("loopback://incoming");

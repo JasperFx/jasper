@@ -46,7 +46,7 @@ namespace Jasper.Bus.Runtime
         {
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-
+            envelope.Source = _settings.NodeId;
 
             if (envelope.Destination == null)
             {

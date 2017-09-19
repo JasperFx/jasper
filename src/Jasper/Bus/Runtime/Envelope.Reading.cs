@@ -17,7 +17,7 @@ namespace Jasper.Bus.Runtime
                 switch (key)
                 {
                     case SourceKey:
-                        Source = value.ToUri();
+                        Source = value;
                         break;
 
                     case MessageTypeKey:

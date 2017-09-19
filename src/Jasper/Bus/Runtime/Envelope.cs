@@ -183,8 +183,7 @@ namespace Jasper.Bus.Runtime
             Data = Writer.Write(Message);
         }
 
-        [Obsolete("Not really used")]
-        public Uri Source { get; set; }
+        public string Source { get; set; }
 
 
         public string MessageType { get; set; }

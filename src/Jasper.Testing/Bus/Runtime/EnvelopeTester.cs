@@ -118,7 +118,7 @@ namespace Jasper.Testing.Bus.Runtime
             {
                 CorrelationId = Guid.NewGuid().ToString(),
                 OriginalId = Guid.NewGuid().ToString(),
-                Source = "foo://bar".ToUri()
+                Source = "foo://bar"
             };
 
 

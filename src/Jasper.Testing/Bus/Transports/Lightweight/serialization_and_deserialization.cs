@@ -81,6 +81,13 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
         }
 
         [Fact]
+        public void source()
+        {
+            outgoing.Source = "something";
+            incoming.Source.ShouldBe(outgoing.Source);
+        }
+
+        [Fact]
         public void data_comes_over()
         {
             incoming.Data.ShouldHaveTheSameElementsAs(outgoing.Data);

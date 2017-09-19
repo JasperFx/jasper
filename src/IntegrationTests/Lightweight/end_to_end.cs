@@ -12,6 +12,7 @@ using Jasper.Bus.Delayed;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
 using Shouldly;
@@ -23,7 +24,7 @@ namespace IntegrationTests.Lightweight
     public class end_to_end : IDisposable
     {
         private static int port = 2114;
-       
+
         private readonly JasperRuntime theSender;
         private readonly Uri theAddress = $"tcp://localhost:{++port}/incoming".ToUri();
         private readonly MessageTracker theTracker = new MessageTracker();
@@ -91,6 +92,18 @@ namespace IntegrationTests.Lightweight
             var envelope = await delayedJobs.Envelope();
 
             envelope.Message.ShouldBeOfType<TimeoutsMessage>();
+        }
+
+        [Fact]
+        public async Task tags_the_envelope_with_the_source()
+        {
+            var waiter = theTracker.WaitFor<Message2>();
+
+            await theSender.Bus.Send(theAddress, new Message2());
+
+            var env = await waiter;
+
+            env.Source.ShouldBe(theSender.Get<BusSettings>().NodeId);
         }
     }
 
