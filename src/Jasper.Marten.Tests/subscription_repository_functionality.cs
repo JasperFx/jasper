@@ -8,6 +8,7 @@ using Jasper.Marten.Tests.Setup;
 using Jasper.Testing.Bus;
 using Jasper.Util;
 using Marten;
+using Microsoft.Extensions.Configuration;
 using Shouldly;
 using Xunit;
 
@@ -22,6 +23,22 @@ namespace Jasper.Marten.Tests
             // get the order of precedence right between
             // an extension and the application settings
             Include<MartenBackedSubscriptions>();
+        }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: AppUsingMartenSubscriptions
+    public class AppUsingMartenSubscriptions : JasperRegistry
+    {
+        public AppUsingMartenSubscriptions()
+        {
+            Include<MartenBackedSubscriptions>();
+
+            Settings.Alter<MartenSubscriptionSettings>((config, settings) =>
+            {
+                settings.StoreOptions.Connection(config.GetConnectionString("subscriptions"));
+                settings.StoreOptions.DatabaseSchemaName = "subscriptions";
+            });
         }
     }
     // ENDSAMPLE
