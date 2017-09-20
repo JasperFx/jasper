@@ -3,4 +3,4 @@ discovery
 errorhandling
 cascading
 unknown_messages
-policies
+middleware

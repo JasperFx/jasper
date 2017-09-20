@@ -7,11 +7,15 @@ using StoryTeller;
 
 namespace StorytellerSample
 {
+    // SAMPLE: TeamFixture
     public class TeamFixture : MessagingFixture
     {
         [FormatAs("A new team {team} has joined the league")]
         public Task CreateNewTeam(string team)
         {
+            // This method sends a message to the service bus and waits
+            // until it can detect that the message has been fully processed
+            // on the receiving side or timed out
             return SendMessageAndWaitForCompletion(new TeamAdded {Name = team});
         }
 
@@ -34,4 +38,5 @@ namespace StorytellerSample
             return SendMessageAndWaitForCompletion(new UnhandledMessage());
         }
     }
+    // ENDSAMPLE
 }

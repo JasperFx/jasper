@@ -40,6 +40,8 @@ namespace Jasper.Storyteller
         public readonly CellHandling CellHandling = CellHandling.Basic();
         private Task _warmup;
 
+
+
         public JasperStorytellerHost() : this(Activator.CreateInstance(typeof(T)).As<T>())
         {
         }
