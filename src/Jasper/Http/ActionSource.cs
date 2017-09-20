@@ -42,6 +42,11 @@ namespace Jasper.Http
 
         internal Task<MethodCall[]> FindActions(Assembly applicationAssembly)
         {
+            if (applicationAssembly == null)
+            {
+                return Task.FromResult(new MethodCall[0]);
+            }
+
             var assemblies = Applies.Assemblies.Any() ? Applies.Assemblies : new[] {applicationAssembly};
             return TypeRepository.FindTypes(assemblies, TypeClassification.Concretes, _typeFilters.Matches)
                 .ContinueWith(x => x.Result.SelectMany(actionsFromType).ToArray());

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp1.0</TargetFramework>
-    <AssemblyName>JasperBus.Marten.Tests</AssemblyName>
-    <PackageId>JasperBus.Marten.Tests</PackageId>
+    <AssemblyName>Jasper.Marten.Tests</AssemblyName>
+    <PackageId>Jasper.Marten.Tests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.4;dnxcore50;portable-net451+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
@@ -12,7 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Testing\Jasper.Testing.csproj" />
-    <ProjectReference Include="..\JasperBus.Marten\JasperBus.Marten.csproj" />
+    <ProjectReference Include="..\Jasper.Marten\Jasper.Marten.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
   <ItemGroup>

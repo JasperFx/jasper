@@ -88,7 +88,7 @@ end
 desc "Integration Tests"
 task :integrationtests => [:compile] do
 	sh "dotnet test src/IntegrationTests/IntegrationTests.csproj"
-	sh "dotnet test src/JasperBus.Marten.Tests/JasperBus.Marten.Tests.csproj"
+	sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj"
 
 end
 
@@ -105,7 +105,7 @@ task :pack do
 	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
   sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
   sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
-	sh "dotnet pack src/JasperBus.Marten/JasperBus.Marten.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/JasperBus.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
 end
 
 desc "Pushes the Nuget's to MyGet"
