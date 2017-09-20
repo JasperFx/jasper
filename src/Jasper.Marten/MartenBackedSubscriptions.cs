@@ -1,9 +1,8 @@
-﻿using Jasper;
-using Jasper.Bus.Runtime.Subscriptions;
+﻿using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
-using JasperBus.Marten.Subscriptions;
+using Jasper.Marten.Subscriptions;
 
-namespace JasperBus.Marten
+namespace Jasper.Marten
 {
     public class MartenBackedSubscriptions : IJasperExtension
     {

@@ -3,7 +3,7 @@ using Jasper.Codegen;
 using Jasper.Codegen.Compilation;
 using Marten;
 
-namespace JasperBus.Marten.Codegen
+namespace Jasper.Marten.Codegen
 {
     public class SessionFrame : Frame
     {

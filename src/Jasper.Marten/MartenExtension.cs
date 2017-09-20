@@ -1,12 +1,12 @@
 ﻿using Jasper;
 using Jasper.Configuration;
-using JasperBus.Marten;
-using JasperBus.Marten.Codegen;
+using Jasper.Marten;
+using Jasper.Marten.Codegen;
 using Marten;
 
 [assembly:JasperModule(typeof(MartenExtension))]
 
-namespace JasperBus.Marten
+namespace Jasper.Marten
 {
     public class MartenExtension : IJasperExtension
     {

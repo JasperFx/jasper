@@ -1,7 +1,7 @@
 ﻿using System;
 using Marten;
 
-namespace JasperBus.Marten
+namespace Jasper.Marten.Subscriptions
 {
     public class MartenSubscriptionSettings : IDisposable
     {

@@ -1,11 +1,10 @@
 ﻿using System;
-using Jasper;
 using Jasper.Bus.Model;
 using Marten;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Marten.Tests
+namespace Jasper.Marten.Tests
 {
     public class code_generation : IDisposable
     {

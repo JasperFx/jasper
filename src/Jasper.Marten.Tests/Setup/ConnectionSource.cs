@@ -2,7 +2,7 @@
 using Baseline;
 using Marten;
 
-namespace JasperBus.Marten.Tests.Setup
+namespace Jasper.Marten.Tests.Setup
 {
     public class ConnectionSource : ConnectionFactory
     {

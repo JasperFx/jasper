@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper;
 using Marten;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Marten.Tests
+namespace Jasper.Marten.Tests
 {
     public class transactional_frame_end_to_end
     {

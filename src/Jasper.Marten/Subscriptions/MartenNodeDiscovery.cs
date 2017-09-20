@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Subscriptions;
 using Marten;
 
-namespace JasperBus.Marten.Subscriptions
+namespace Jasper.Marten.Subscriptions
 {
     public class MartenNodeDiscovery : INodeDiscovery
     {

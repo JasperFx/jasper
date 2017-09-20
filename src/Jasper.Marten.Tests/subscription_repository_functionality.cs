@@ -2,18 +2,16 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper;
-using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Marten.Subscriptions;
+using Jasper.Marten.Tests.Setup;
 using Jasper.Testing.Bus;
 using Jasper.Util;
-using JasperBus.Marten.Subscriptions;
-using JasperBus.Marten.Tests.Setup;
 using Marten;
 using Shouldly;
 using Xunit;
 
-namespace JasperBus.Marten.Tests
+namespace Jasper.Marten.Tests
 {
     public class subscription_repository_functionality : IDisposable
     {

@@ -6,7 +6,7 @@ using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Util;
 using Marten;
 
-namespace JasperBus.Marten.Subscriptions
+namespace Jasper.Marten.Subscriptions
 {
     public class MartenSubscriptionRepository : ISubscriptionsRepository
     {

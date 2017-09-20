@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Jasper.Configuration;
-using JasperBus.Marten.Codegen;
+using Jasper.Marten.Codegen;
 
-namespace JasperBus.Marten
+namespace Jasper.Marten
 {
     /// <summary>
     /// Applies Marten unit of work / transactional boundary middleware to the

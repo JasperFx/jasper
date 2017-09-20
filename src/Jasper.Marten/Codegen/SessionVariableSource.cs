@@ -2,7 +2,7 @@
 using Jasper.Codegen;
 using Marten;
 
-namespace JasperBus.Marten.Codegen
+namespace Jasper.Marten.Codegen
 {
     public class SessionVariableSource : IVariableSource
     {
