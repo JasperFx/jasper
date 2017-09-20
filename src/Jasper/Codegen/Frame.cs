@@ -11,6 +11,7 @@ namespace Jasper.Codegen
         protected readonly IList<Frame> dependencies = new List<Frame>();
         internal readonly IList<Variable> creates = new List<Variable>();
         internal readonly IList<Variable> uses = new List<Variable>();
+        private bool _hasResolved;
 
         public bool IsAsync { get; }
         public bool Wraps { get; protected set; } = false;
@@ -32,6 +33,9 @@ namespace Jasper.Codegen
 
         public void ResolveVariables(GeneratedMethod method)
         {
+            // This has to be idempotent
+            if (_hasResolved) return;
+
             var variables = resolveVariables(method);
             if (variables.Any(x => x == null))
             {
@@ -39,6 +43,8 @@ namespace Jasper.Codegen
             }
 
             uses.AddRange(variables);
+
+            _hasResolved = true;
         }
 
         protected internal virtual IEnumerable<Variable> resolveVariables(GeneratedMethod chain)

@@ -76,7 +76,7 @@ namespace Jasper.Codegen
 
             writeDeclaration(writer);
 
-            var args = _methods.SelectMany(x => x.Fields).Distinct().ToArray();
+            var args = Args();
             writeFieldDeclarations(writer, args);
             writeConstructorMethod(writer, args);
 
@@ -88,6 +88,12 @@ namespace Jasper.Codegen
             }
 
             writer.FinishBlock();
+        }
+
+        public InjectedField[] Args()
+        {
+            var args = _methods.SelectMany(x => x.Fields).Distinct().ToArray();
+            return args;
         }
 
         private void writeConstructorMethod(ISourceWriter writer, InjectedField[] args)

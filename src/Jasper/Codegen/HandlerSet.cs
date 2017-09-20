@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Codegen.Compilation;
 using StructureMap;
 
@@ -54,20 +55,26 @@ namespace Jasper.Codegen
         {
             beforeGeneratingCode();
 
+            var classes = chains.Select(x => x.ToClass(generation)).ToArray();
+            var namespaces = classes.SelectMany(x => x.Args()).Select(x => x.ArgType.Namespace).Distinct().ToList();
+            namespaces.Fill(typeof(Task).Namespace);
+
             var writer = new SourceWriter();
 
-            writer.UsingNamespace<Task>();
+            foreach (var ns in namespaces.OrderBy(x => x))
+            {
+                writer.Write($"using {ns};");
+            }
+
             writer.BlankLine();
 
             writer.Namespace(generation.ApplicationNamespace);
 
-            foreach (var chain in chains)
+            foreach (var @class in classes)
             {
-                var @class = chain.ToClass(generation);
-
-                writer.WriteLine($"// START: {chain.TypeName}");
+                writer.WriteLine($"// START: {@class.ClassName}");
                 @class.Write(writer);
-                writer.WriteLine($"// END: {chain.TypeName}");
+                writer.WriteLine($"// END: {@class.ClassName}");
 
                 writer.WriteLine("");
                 writer.WriteLine("");

@@ -35,11 +35,7 @@ namespace Jasper.Codegen
 
         public Frame Creator
         {
-            get
-            {
-                return _frame;
-
-            }
+            get => _frame;
             protected set
             {
                 _frame = value;
@@ -78,6 +74,11 @@ namespace Jasper.Codegen
             Creator.creates.Fill(this);
         }
 
+        public Variable(Type variableType, Frame creator) : this(variableType, DefaultArgName(variableType), creator)
+        {
+
+        }
+
         public override string ToString()
         {
             return $"{nameof(VariableType)}: {VariableType}, {nameof(Usage)}: {Usage}";
@@ -85,7 +86,7 @@ namespace Jasper.Codegen
 
         protected bool Equals(Variable other)
         {
-            return Equals(VariableType, other.VariableType) && string.Equals(Usage, other.Usage);
+            return VariableType == other.VariableType && string.Equals(Usage, other.Usage);
         }
 
         public override bool Equals(object obj)

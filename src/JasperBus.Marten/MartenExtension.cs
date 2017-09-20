@@ -1,6 +1,7 @@
 ﻿using Jasper;
 using Jasper.Configuration;
 using JasperBus.Marten;
+using JasperBus.Marten.Codegen;
 using Marten;
 
 [assembly:JasperModule(typeof(MartenExtension))]
@@ -18,6 +19,8 @@ namespace JasperBus.Marten
             registry.Services.For<IDocumentSession>().Use("Default DocumentSession", c => c.GetInstance<IDocumentStore>().OpenSession());
             registry.Services.For<IQuerySession>().Use("Default QuerySession", c => c.GetInstance<IDocumentStore>().QuerySession());
 
+
+            registry.Generation.Sources.Add(new SessionVariableSource());
         }
     }
 }

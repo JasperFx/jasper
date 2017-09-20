@@ -7,12 +7,14 @@ namespace Jasper.Codegen
 {
     public class DependencyGatherer
     {
+        private readonly GeneratedMethod _generatedMethod;
 
         public readonly LightweightCache<Frame, List<Frame>> Dependencies = new LightweightCache<Frame, List<Frame>>();
         public readonly LightweightCache<Variable, List<Frame>> Variables = new LightweightCache<Variable, List<Frame>>();
 
-        public DependencyGatherer(IList<Frame> frames)
+        public DependencyGatherer(GeneratedMethod generatedMethod, IList<Frame> frames)
         {
+            _generatedMethod = generatedMethod;
             Dependencies.OnMissing = frame => new List<Frame>(findDependencies(frame).Distinct());
             Variables.OnMissing = v => new List<Frame>(findDependencies(v).Distinct());
 
@@ -26,6 +28,8 @@ namespace Jasper.Codegen
 
         private IEnumerable<Frame> findDependencies(Frame frame)
         {
+            frame.ResolveVariables(_generatedMethod);
+
             foreach (var dependency in frame.Dependencies)
             {
                 yield return dependency;

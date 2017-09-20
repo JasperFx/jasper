@@ -18,9 +18,14 @@ namespace Jasper.Codegen
 
         }
 
-        public static string NameInCode(this Type type)
+        public static string FullNameInCode(this Type type)
         {
             return type.FullName.Replace("+", ".");
+        }
+
+        public static string NameInCode(this Type type)
+        {
+            return type.Name.Replace("+", ".");
         }
     }
 }

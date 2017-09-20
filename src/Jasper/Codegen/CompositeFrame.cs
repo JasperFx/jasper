@@ -8,7 +8,7 @@ namespace Jasper.Codegen
     {
         private readonly Frame[] _inner;
 
-        protected CompositeFrame(Frame[] inner) : base(inner.Any(x => x.IsAsync))
+        protected CompositeFrame(params Frame[] inner) : base(inner.Any(x => x.IsAsync))
         {
             _inner = inner;
         }

@@ -28,7 +28,7 @@ namespace Jasper.Diagnostics.Messages
         public string ParentId { get; }
         public MessageTypeModel MessageType { get; }
         public string Description { get; }
-        public Uri Source { get; }
+        public string Source { get; }
         public Uri Destination { get; }
         public object Message { get; }
         public int Attempts { get; }

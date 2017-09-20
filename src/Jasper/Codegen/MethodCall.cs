@@ -201,7 +201,7 @@ namespace Jasper.Codegen
             if (IsLocal) return string.Empty;
 
             var target = Method.IsStatic
-                ? HandlerType.NameInCode()
+                ? HandlerType.FullNameInCode()
                 : Target.Usage;
 
             return target + ".";

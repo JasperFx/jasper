@@ -105,7 +105,7 @@ namespace Jasper.Codegen
             }
 
             // Step 2, calculate dependencies
-            var dependencies = new DependencyGatherer(frames);
+            var dependencies = new DependencyGatherer(this, frames);
             findInjectedFields(dependencies);
 
             // Step 3, gather any missing frames and
