@@ -13,6 +13,19 @@ using Xunit;
 
 namespace Jasper.Marten.Tests
 {
+    // SAMPLE: AppWithMartenBackedSubscriptions
+    public class AppWithMartenBackedSubscriptions : JasperRegistry
+    {
+        public AppWithMartenBackedSubscriptions()
+        {
+            // Use the Include() method so that Jasper can
+            // get the order of precedence right between
+            // an extension and the application settings
+            Include<MartenBackedSubscriptions>();
+        }
+    }
+    // ENDSAMPLE
+
     public class subscription_repository_functionality : IDisposable
     {
         private JasperRuntime _runtime;

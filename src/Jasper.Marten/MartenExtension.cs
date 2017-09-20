@@ -4,6 +4,7 @@ using Jasper.Marten;
 using Jasper.Marten.Codegen;
 using Marten;
 
+// SAMPLE: MartenExtension
 [assembly:JasperModule(typeof(MartenExtension))]
 
 namespace Jasper.Marten
@@ -24,3 +25,4 @@ namespace Jasper.Marten
         }
     }
 }
+// ENDSAMPLE
