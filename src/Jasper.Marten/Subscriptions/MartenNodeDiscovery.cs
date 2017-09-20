@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Marten;
 
-namespace JasperBus.Marten
+namespace JasperBus.Marten.Subscriptions
 {
     public class MartenNodeDiscovery : INodeDiscovery
     {

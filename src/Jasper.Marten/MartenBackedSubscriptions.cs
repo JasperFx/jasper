@@ -1,6 +1,7 @@
 ﻿using Jasper;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
+using JasperBus.Marten.Subscriptions;
 
 namespace JasperBus.Marten
 {

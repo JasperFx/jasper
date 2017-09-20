@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Baseline;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Util;
 using Marten;
-using Marten.Schema.Arguments;
 
-namespace JasperBus.Marten
+namespace JasperBus.Marten.Subscriptions
 {
-
     public class MartenSubscriptionRepository : ISubscriptionsRepository
     {
         private readonly IDocumentStore _documentStore;
@@ -36,9 +31,7 @@ namespace JasperBus.Marten
             using (var session = _documentStore.LightweightSession())
             {
                 foreach (var subscription in subscriptions)
-                {
                     session.Delete(subscription.Id);
-                }
 
                 await session.SaveChangesAsync();
             }

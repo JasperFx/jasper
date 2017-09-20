@@ -7,6 +7,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Testing.Bus;
 using Jasper.Util;
+using JasperBus.Marten.Subscriptions;
 using JasperBus.Marten.Tests.Setup;
 using Marten;
 using Shouldly;
