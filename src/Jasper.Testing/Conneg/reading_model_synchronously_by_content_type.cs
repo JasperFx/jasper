@@ -54,7 +54,7 @@ namespace Jasper.Testing.Conneg
 
     }
 
-    public class FakeReader : IMessageDeserializer
+    internal class FakeReader : IMessageDeserializer
     {
         public FakeReader(string contentType)
         {

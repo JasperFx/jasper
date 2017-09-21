@@ -10,6 +10,8 @@ using Jasper.Bus.Transports;
 using Jasper.Conneg;
 using Jasper.Util;
 using StructureMap.Graph.Scanning;
+using TypeClassification = Jasper.Util.TypeClassification;
+using TypeRepository = Jasper.Util.TypeRepository;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {

@@ -9,7 +9,9 @@ using Jasper.Codegen;
 using Jasper.Http.Routing;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
+using TypeClassification = Jasper.Util.TypeClassification;
 using TypeExtensions = Baseline.TypeExtensions;
+using TypeRepository = Jasper.Util.TypeRepository;
 
 namespace Jasper.Http
 {

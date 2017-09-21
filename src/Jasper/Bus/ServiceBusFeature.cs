@@ -12,6 +12,8 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
+using Jasper.Util;
+using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using CapabilityGraph = Jasper.Bus.Runtime.Subscriptions.CapabilityGraph;
 
@@ -66,6 +68,12 @@ namespace Jasper.Bus
 
         private async Task<Registry> bootstrap(JasperRegistry registry)
         {
+            var readers = TypeRepository.FindTypes(registry.ApplicationAssembly,
+                TypeClassification.Closed | TypeClassification.Concretes, t => t.CanBeCastTo<IMessageDeserializer>());
+
+            var writers = TypeRepository.FindTypes(registry.ApplicationAssembly,
+                TypeClassification.Closed | TypeClassification.Concretes, t => t.CanBeCastTo<IMessageSerializer>());
+
             var calls = await Handlers.FindCalls(registry).ConfigureAwait(false);
 
             _graph = new HandlerGraph();
@@ -78,15 +86,6 @@ namespace Jasper.Bus
             Services.For<HandlerGraph>().Use(_graph);
             Services.For<IChannelGraph>().Use(_channels);
 
-            if (registry.ApplicationAssembly != null)
-            {
-                Services.Scan(_ =>
-                {
-                    _.Assembly(registry.ApplicationAssembly);
-                    _.AddAllTypesOf<IMessageDeserializer>();
-                    _.AddAllTypesOf<IMessageSerializer>();
-                });
-            }
 
             if (registry.Logging.UseConsoleLogging)
             {
@@ -95,6 +94,15 @@ namespace Jasper.Bus
 
             Services.ForSingletonOf<IDelayedJobProcessor>().UseIfNone<InMemoryDelayedJobProcessor>();
 
+            foreach (var type in await readers)
+            {
+                Services.For(typeof(IMessageDeserializer)).Use(type);
+            }
+
+            foreach (var type in await writers)
+            {
+                Services.For(typeof(IMessageSerializer)).Use(type);
+            }
 
             return Services;
         }

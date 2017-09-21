@@ -10,6 +10,8 @@ using Jasper.Codegen;
 using Jasper.Configuration;
 using StructureMap;
 using StructureMap.Graph.Scanning;
+using TypeClassification = Jasper.Util.TypeClassification;
+using TypeRepository = Jasper.Util.TypeRepository;
 
 namespace Jasper.Conneg
 {
