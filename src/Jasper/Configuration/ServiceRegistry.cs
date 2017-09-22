@@ -2,11 +2,67 @@
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
 using StructureMap;
 using StructureMap.Pipeline;
 
 namespace Jasper.Configuration
 {
+    public static class ServiceCollectionExtensions
+    {
+        public static RegistrationExpression<T> For<T>(this IServiceCollection services)
+        {
+            return new RegistrationExpression<T>(services);
+        }
+
+        public static RegistrationExpression<T> ForSingletonOf<T>(this IServiceCollection services)
+        {
+            return new RegistrationExpression<T>(services, ServiceLifetime.Singleton);
+        }
+
+
+        public class RegistrationExpression<T>
+        {
+            private readonly IServiceCollection _services;
+            private readonly ServiceLifetime _lifetime;
+
+            public RegistrationExpression(IServiceCollection services) : this(services, ServiceLifetime.Transient)
+            {
+
+            }
+
+            public RegistrationExpression(IServiceCollection services, ServiceLifetime lifetime)
+            {
+                _services = services;
+                _lifetime = lifetime;
+            }
+
+            public void Use(string ignored, Func<IServiceProvider, T> builder)
+            {
+                Use(builder);
+            }
+
+            public void Use(Func<IServiceProvider, T> builder)
+            {
+                var descriptor = new ServiceDescriptor(typeof(T), s => builder(s), _lifetime);
+                _services.Add(descriptor);
+            }
+
+            public void Use<TConcrete>() where TConcrete : T
+            {
+                var descriptor = new ServiceDescriptor(typeof(T), typeof(TConcrete), _lifetime);
+                _services.Add(descriptor);
+            }
+
+            public void Use(T @object)
+            {
+                var descriptor = new ServiceDescriptor(typeof(T), @object);
+                _services.Add(descriptor);
+            }
+        }
+    }
+
+    [Obsolete("This should go away in the future")]
     public class ServiceRegistry : Registry, IServiceCollection
     {
         /// <summary>
@@ -64,7 +120,7 @@ namespace Jasper.Configuration
         /// <typeparam name="TService"></typeparam>
         /// <typeparam name="TImplementation"></typeparam>
         /// <returns></returns>
-        public Instance AddService<TService, TImplementation>() where TImplementation : TService
+        public Instance AddTransient<TService, TImplementation>() where TImplementation : TService
         {
             return For<TService>().Add<TImplementation>();
         }
@@ -76,7 +132,7 @@ namespace Jasper.Configuration
         /// <typeparam name="TService"></typeparam>
         /// <param name="implementation"></param>
         /// <returns></returns>
-        public Instance AddService<TService>(Type implementationType)
+        public Instance AddTransient<TService>(Type implementationType)
         {
             var instance = new ConfiguredInstance(implementationType);
 
@@ -114,7 +170,7 @@ namespace Jasper.Configuration
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <param name="value"></param>
-        public void AddService<TService>(TService value) where TService : class
+        public void AddTransient<TService>(TService value) where TService : class
         {
             For<TService>().Add(value);
         }
@@ -123,7 +179,7 @@ namespace Jasper.Configuration
         /// Removes any registrations for type T
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void AddService(Type type, Instance instance)
+        public void AddTransient(Type type, Instance instance)
         {
             For(type).Add(instance);
         }

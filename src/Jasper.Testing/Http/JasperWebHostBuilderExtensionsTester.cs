@@ -68,7 +68,7 @@ namespace Jasper.Testing.Http
         {
             Services.For<BootstrappingToken>().Use(new BootstrappingToken(Id));
 
-            Services.AddService<IFakeStore, FakeStore>();
+            Services.AddTransient<IFakeStore, FakeStore>();
             Services.For<IWidget>().Use<Widget>();
             Services.For<IFakeService>().Use<FakeService>();
         }

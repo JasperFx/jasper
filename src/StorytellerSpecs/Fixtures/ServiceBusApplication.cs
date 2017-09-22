@@ -26,11 +26,11 @@ namespace StorytellerSpecs.Fixtures
             _registry = new JasperRegistry();
             _waitForSubscriptions = false;
 
-            _registry.Services.AddService<ITransport, StubTransport>();
+            _registry.Services.AddTransient<ITransport, StubTransport>();
             _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
 
             _registry.Services.ForConcreteType<MessageHistory>().Configure.Singleton();
-            _registry.Services.AddService<IBusLogger, MessageTrackingLogger>();
+            _registry.Services.AddTransient<IBusLogger, MessageTrackingLogger>();
 
             _registry.Services.For<LightningDbSettings>().Use(new LightningDbSettings
             {

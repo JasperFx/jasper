@@ -20,7 +20,7 @@ namespace Jasper.Testing
         {
             var registry = new JasperRegistry();
             registry.Services.For<IFoo>().Use<Foo>();
-            registry.Services.AddService<IFakeStore, FakeStore>();
+            registry.Services.AddTransient<IFakeStore, FakeStore>();
             registry.Services.For<IWidget>().Use<Widget>();
             registry.Services.For<IFakeService>().Use<FakeService>();
 

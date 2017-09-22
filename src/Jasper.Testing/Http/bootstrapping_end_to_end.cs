@@ -30,8 +30,8 @@ namespace Jasper.Testing.Http
 
             registry.Handlers.ExcludeTypes(x => true);
 
-            registry.Services.AddService<IWriterRule, CustomWriterRule>();
-            registry.Services.AddService<IReaderRule, CustomReaderRule>();
+            registry.Services.AddTransient<IWriterRule, CustomWriterRule>();
+            registry.Services.AddTransient<IReaderRule, CustomReaderRule>();
 
             theRuntime = JasperRuntime.For(registry);
         }

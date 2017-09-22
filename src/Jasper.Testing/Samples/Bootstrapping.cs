@@ -87,7 +87,7 @@ namespace Jasper.Testing.Samples
         {
             // Adding services to the underlying container via
             // the ASP.Net Core DI abstractions
-            Services.AddService<ISecurityService, MySecurityService>();
+            Services.AddTransient<ISecurityService, MySecurityService>();
 
             // or via idiomatic StructureMap
             Services.For<ISecurityService>().Use<MySecurityService>();

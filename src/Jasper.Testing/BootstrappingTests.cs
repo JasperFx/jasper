@@ -22,7 +22,7 @@ namespace Jasper.Testing
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Services.AddService<IFakeStore, FakeStore>();
+                _.Services.AddTransient<IFakeStore, FakeStore>();
                 _.Services.For<IWidget>().Use<Widget>();
                 _.Services.For<IFakeService>().Use<FakeService>();
             }))
@@ -42,7 +42,7 @@ namespace Jasper.Testing
 
         public when_bootstrapping_a_runtime_with_multiple_features()
         {
-            theRegistry.Services.AddService<IMainService, MainService>();
+            theRegistry.Services.AddTransient<IMainService, MainService>();
 
             feature1 = theRegistry.Features.For<FakeFeature1>();
             feature1.Services.For<IFeatureService1>().Use<FeatureService1>();
@@ -53,7 +53,7 @@ namespace Jasper.Testing
             feature3 = theRegistry.Features.For<FakeFeature3>();
             feature3.Services.For<IFeatureService3>().Use<FeatureService3>();
 
-            theRegistry.Services.AddService<IFakeStore, FakeStore>();
+            theRegistry.Services.AddTransient<IFakeStore, FakeStore>();
             theRegistry.Services.For<IWidget>().Use<Widget>();
             theRegistry.Services.For<IFakeService>().Use<FakeService>();
 
@@ -127,7 +127,7 @@ namespace Jasper.Testing
             theRegistry.Services.ForSingletonOf<IMainService>()
                 .Use(mainService);
 
-            theRegistry.Services.AddService<IFakeStore, FakeStore>();
+            theRegistry.Services.AddTransient<IFakeStore, FakeStore>();
             theRegistry.Services.For<IWidget>().Use<Widget>();
             theRegistry.Services.For<IFakeService>().Use<FakeService>();
 

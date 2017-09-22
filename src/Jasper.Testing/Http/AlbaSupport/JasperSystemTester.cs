@@ -69,7 +69,7 @@ namespace Jasper.Testing.Http.AlbaSupport
     {
         public AlbaTargetApp()
         {
-            Services.AddService<IFakeStore, FakeStore>();
+            Services.AddTransient<IFakeStore, FakeStore>();
             Services.For<IWidget>().Use<Widget>();
             Services.For<IFakeService>().Use<FakeService>();
 
@@ -95,7 +95,7 @@ namespace Jasper.Testing.Http.AlbaSupport
     {
         public AlbaTargetApp2()
         {
-            Services.AddService<IFakeStore, FakeStore>();
+            Services.AddTransient<IFakeStore, FakeStore>();
             Services.For<IWidget>().Use<Widget>();
             Services.For<IFakeService>().Use<FakeService>();
 

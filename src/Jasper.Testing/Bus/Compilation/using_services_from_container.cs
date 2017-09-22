@@ -13,8 +13,8 @@ namespace Jasper.Testing.Bus.Compilation
         {
             ServiceUsingHandler.Clear();
 
-            services.AddService<IFakeService, FakeService>();
-            services.AddService<IWidget, Widget>();
+            services.AddTransient<IFakeService, FakeService>();
+            services.AddTransient<IWidget, Widget>();
         }
 
         [Fact]

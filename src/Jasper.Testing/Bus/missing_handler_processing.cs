@@ -19,8 +19,8 @@ namespace Jasper.Testing.Bus
 
             with(r =>
             {
-                r.Services.AddService<IMissingHandler, NoMessageHandler1>();
-                r.Services.AddService<IMissingHandler, NoMessageHandler2>();
+                r.Services.AddTransient<IMissingHandler, NoMessageHandler1>();
+                r.Services.AddTransient<IMissingHandler, NoMessageHandler2>();
 
                 // Hack until we get a default queue
                 r.Publish.Message<MessageWithNoHandler>().To("loopback://incoming");

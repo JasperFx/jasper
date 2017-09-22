@@ -18,7 +18,7 @@ namespace Jasper.Testing.Samples
 
 
             // Add service registrations
-            registry.Services.AddTransient<IFoo, Foo>();
+            ServiceCollectionServiceExtensions.AddTransient<IFoo, Foo>(registry.Services);
 
             // Alter settings within the application
             registry.Settings.Alter<BusSettings>(_ =>

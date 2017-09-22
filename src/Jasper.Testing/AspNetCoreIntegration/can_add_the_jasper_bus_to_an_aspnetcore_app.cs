@@ -107,8 +107,8 @@ namespace Jasper.Testing.AspNetCoreIntegration
         public SimpleJasperBusApp()
         {
             Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-            Services.AddService<IFakeService, FakeService>();
-            Services.AddService<IWidget, Widget>();
+            Services.AddTransient<IFakeService, FakeService>();
+            Services.AddTransient<IWidget, Widget>();
         }
     }
 

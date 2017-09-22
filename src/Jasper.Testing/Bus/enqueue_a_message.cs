@@ -21,8 +21,8 @@ namespace Jasper.Testing.Bus
             registry.Handlers.DisableConventionalDiscovery(false);
             registry.Handlers.IncludeType<RecordCallHandler>();
             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-            registry.Services.AddService<IFakeService, FakeService>();
-            registry.Services.AddService<IWidget, Widget>();
+            registry.Services.AddTransient<IFakeService, FakeService>();
+            registry.Services.AddTransient<IWidget, Widget>();
 
             var tracker = new MessageTracker();
             registry.Services.For<MessageTracker>().Use(tracker);

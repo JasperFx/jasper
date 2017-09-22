@@ -13,7 +13,7 @@ namespace Jasper.Testing.Settings
 
         public MyApp()
         {
-            Services.AddService<IFakeStore, FakeStore>();
+            Services.AddTransient<IFakeStore, FakeStore>();
             Services.For<IWidget>().Use<Widget>();
             Services.For<IFakeService>().Use<FakeService>();
 

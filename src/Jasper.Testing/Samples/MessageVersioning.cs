@@ -136,8 +136,8 @@ namespace Jasper.Testing.Samples
     {
         public RegisteringCustomReadersAndWriters()
         {
-            Services.AddService<IMessageSerializer, MyCustomWriter>();
-            Services.AddService<IMessageDeserializer, MyCustomReader>();
+            Services.AddTransient<IMessageSerializer, MyCustomWriter>();
+            Services.AddTransient<IMessageDeserializer, MyCustomReader>();
         }
     }
     // ENDSAMPLE

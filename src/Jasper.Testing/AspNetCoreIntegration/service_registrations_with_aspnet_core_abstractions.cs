@@ -16,8 +16,8 @@ namespace Jasper.Testing.AspNetCoreIntegration
         public void services_registered_by_the_DI_abstraction_are_in_the_container()
         {
             var registry = new JasperRegistry();
-            registry.Services.AddTransient<IService, FooService>();
-            registry.Services.AddService<IFakeStore, FakeStore>();
+            ServiceCollectionServiceExtensions.AddTransient<IService, FooService>(registry.Services);
+            registry.Services.AddTransient<IFakeStore, FakeStore>();
             registry.Services.For<IWidget>().Use<Widget>();
             registry.Services.For<IFakeService>().Use<FakeService>();
 
@@ -34,8 +34,8 @@ namespace Jasper.Testing.AspNetCoreIntegration
         public void adds_the_core_service_provider_abstractions()
         {
             var registry = new JasperRegistry();
-            registry.Services.AddTransient<IService, FooService>();
-            registry.Services.AddService<IFakeStore, FakeStore>();
+            ServiceCollectionServiceExtensions.AddTransient<IService, FooService>(registry.Services);
+            registry.Services.AddTransient<IFakeStore, FakeStore>();
             registry.Services.For<IWidget>().Use<Widget>();
             registry.Services.For<IFakeService>().Use<FakeService>();
 
