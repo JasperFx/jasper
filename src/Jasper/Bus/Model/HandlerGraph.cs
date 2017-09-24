@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using BlueMilk.Codegen;
 using Jasper.Bus.ErrorHandling;
-using Jasper.Codegen;
 using StructureMap;
 
 namespace Jasper.Bus.Model
@@ -64,7 +64,7 @@ namespace Jasper.Bus.Model
                 Group();
             }
 
-            var handlers = CompileAndBuildAll(generation, container);
+            var handlers = CompileAndBuildAll(generation, container.GetInstance);
             foreach (var handler in handlers)
             {
                 _handlers.Add(handler.Chain.MessageType, handler);

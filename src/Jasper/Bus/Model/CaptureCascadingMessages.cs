@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
 
 namespace Jasper.Bus.Model
 {
@@ -22,7 +22,8 @@ namespace Jasper.Bus.Model
             Next?.GenerateCode(method, writer);
         }
 
-        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+
+        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
         {
             _context = chain.FindVariable(typeof(IInvocationContext));
 

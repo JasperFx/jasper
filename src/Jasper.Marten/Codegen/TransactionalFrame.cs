@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Marten;
 
 namespace Jasper.Marten.Codegen
@@ -16,7 +16,7 @@ namespace Jasper.Marten.Codegen
 
         public Variable Session { get; }
 
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
         {
             _store = chain.FindVariable(typeof(IDocumentStore));
             return new[] {_store};

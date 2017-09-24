@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Baseline.Reflection;
-using Jasper.Codegen;
+using BlueMilk.Codegen;
 using Jasper.Http.Model;
 
 namespace Jasper.Http.ContentHandling

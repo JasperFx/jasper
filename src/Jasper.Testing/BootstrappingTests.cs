@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Jasper.Codegen;
+using BlueMilk.Codegen;
 using Jasper.Configuration;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;

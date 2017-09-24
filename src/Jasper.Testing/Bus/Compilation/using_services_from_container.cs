@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using TestMessages;
@@ -20,22 +21,26 @@ namespace Jasper.Testing.Bus.Compilation
         [Fact]
         public async Task take_in_one_service()
         {
+            //throw new Exception(theCode);
+
+
             var message = new Message1();
             await Execute(message);
 
             ServiceUsingHandler.LastMessage1.ShouldBeSameAs(message);
-            ShouldBeNullExtensions.ShouldNotBeNull(ServiceUsingHandler.LastWidget);
+            ServiceUsingHandler.LastWidget.ShouldNotBeNull();
         }
 
         [Fact]
         public async Task take_in_multiple_services()
         {
+
             var message = new Message2();
             await Execute(message);
 
             ServiceUsingHandler.LastMessage2.ShouldBeSameAs(message);
-            ShouldBeNullExtensions.ShouldNotBeNull(ServiceUsingHandler.LastWidget);
-            ShouldBeNullExtensions.ShouldNotBeNull(ServiceUsingHandler.LastService);
+            ServiceUsingHandler.LastWidget.ShouldNotBeNull();
+            ServiceUsingHandler.LastService.ShouldNotBeNull();
         }
     }
 
@@ -44,7 +49,7 @@ namespace Jasper.Testing.Bus.Compilation
         // Leave this here, it's just to prove out the recursive assembly references
         public void Handle(NewUser user)
         {
-            
+
         }
     }
 
@@ -58,11 +63,14 @@ namespace Jasper.Testing.Bus.Compilation
             LastWidget = null;
         }
 
+
         public void Handle(Message1 message, IWidget widget)
         {
             LastWidget = widget;
             LastMessage1 = message;
         }
+
+
 
         public void Handler(Message2 message, IWidget widget, IFakeService service)
         {
@@ -71,6 +79,7 @@ namespace Jasper.Testing.Bus.Compilation
             LastService = service;
 
         }
+
 
         public static IFakeService LastService { get; set; }
 

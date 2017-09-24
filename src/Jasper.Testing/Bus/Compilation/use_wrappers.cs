@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Http;
@@ -97,7 +97,7 @@ namespace Jasper.Testing.Bus.Compilation
             _session = new Variable(typeof(IFakeSession), "session", this);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
         {
             _store = chain.FindVariable(typeof(IFakeStore));
             yield return _store;

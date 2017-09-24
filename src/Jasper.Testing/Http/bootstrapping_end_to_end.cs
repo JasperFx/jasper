@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus;
-using Jasper.Codegen;
 using Jasper.Http;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;

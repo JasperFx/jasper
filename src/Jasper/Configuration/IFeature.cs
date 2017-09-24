@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Jasper.Codegen;
+using BlueMilk.Codegen;
 using StructureMap;
 
 namespace Jasper.Configuration

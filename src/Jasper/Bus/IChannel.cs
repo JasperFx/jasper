@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.Bus
 {

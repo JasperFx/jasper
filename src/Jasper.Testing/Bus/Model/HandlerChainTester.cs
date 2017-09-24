@@ -1,7 +1,7 @@
 ﻿using System.Linq;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus.Model;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
 using Jasper.Configuration;
 using Jasper.Testing.Bus.Runtime;
 using Shouldly;

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using Jasper.Codegen;
-using Jasper.Codegen.StructureMap;
+using BlueMilk.Codegen;
 using Jasper.Testing.Bus.Runtime;
+using Jasper.Util.StructureMap;
 using Shouldly;
 using StructureMap;
 using Xunit;
@@ -25,8 +25,7 @@ namespace Jasper.Testing.Codegen.IoC
         {
             theServices.Matches(typeof(IContainer)).ShouldBeTrue();
 
-            theServices.Create(typeof(IContainer))
-                .ShouldBeSameAs(StructureMapServices.Nested);
+            theServices.Create(typeof(IContainer)).ShouldBeOfType<NestedContainerVariable>();
         }
 
         [Fact]
@@ -72,14 +71,6 @@ namespace Jasper.Testing.Codegen.IoC
                 .VariableType.ShouldBe(typeof(ScopedService));
         }
 
-        [Fact]
-        public void service_variable_exposes_the_nested_container_as_a_parent()
-        {
-            var variable = new ServiceVariable(typeof(ScopedService), StructureMapServices.Nested);
-
-            variable.Dependencies.Single()
-                .ShouldBeSameAs(StructureMapServices.Nested);
-        }
 
         [Fact]
         public void can_handle_closed_generic_types()

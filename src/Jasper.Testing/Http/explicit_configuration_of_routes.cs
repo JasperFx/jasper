@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Http.Model;
 using Shouldly;
@@ -143,7 +143,7 @@ namespace Jasper.Testing.Http
             _session = new Variable(typeof(IFakeSession), "session", this);
         }
 
-        protected override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
         {
             _store = chain.FindVariable(typeof(IFakeStore));
             yield return _store;

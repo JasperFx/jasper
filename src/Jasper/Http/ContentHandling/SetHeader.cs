@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.ContentHandling
@@ -23,7 +23,7 @@ namespace Jasper.Http.ContentHandling
             Next?.GenerateCode(method, writer);
         }
 
-        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
         {
             _response = chain.FindVariable(typeof(HttpResponse));
 

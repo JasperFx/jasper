@@ -37,12 +37,12 @@ namespace IntegrationTests.Bus
         {
             StartTheReceiver(_ =>
             {
-                _.Transports.ListenForMessagesFrom("tcp://localhost:2269");
+                _.Transports.ListenForMessagesFrom("tcp://localhost:2270");
             });
 
             StartTheSender(_ =>
             {
-                _.Publish.AllMessagesTo("tcp://localhost:2269/unknown");
+                _.Publish.AllMessagesTo("tcp://localhost:2270/unknown");
             });
 
             var waiter = theTracker.WaitFor<Message1>();

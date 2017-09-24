@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using BlueMilk.Codegen;
 using Jasper;
-using Jasper.Codegen;
 using Jasper.Configuration;
 using Jasper.Testing.Samples;
 using Microsoft.AspNetCore.Hosting;

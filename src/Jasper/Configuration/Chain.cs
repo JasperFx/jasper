@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Jasper.Codegen;
+using BlueMilk.Codegen;
 
 namespace Jasper.Configuration
 {

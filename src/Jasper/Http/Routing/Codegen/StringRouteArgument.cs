@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 
 namespace Jasper.Http.Routing.Codegen
 {
@@ -30,7 +30,7 @@ namespace Jasper.Http.Routing.Codegen
             Next?.GenerateCode(method, writer);
         }
 
-        protected internal override IEnumerable<Variable> resolveVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
         {
             Segments = chain.FindVariableByName(typeof(string[]), RoutingFrames.Segments);
             yield return Segments;

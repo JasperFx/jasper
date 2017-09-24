@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Http.Routing.Codegen;
 
 namespace Jasper.Http.Model

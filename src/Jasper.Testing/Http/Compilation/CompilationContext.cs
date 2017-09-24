@@ -6,10 +6,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Alba.Stubs;
 using Baseline.Reflection;
-using Jasper.Codegen;
-using Jasper.Codegen.StructureMap;
+using BlueMilk.Codegen;
 using Jasper.Configuration;
 using Jasper.Http.Model;
+using Jasper.Util.StructureMap;
 using Shouldly;
 using StructureMap;
 using Xunit;
@@ -64,7 +64,7 @@ namespace Jasper.Testing.Http.Compilation
 
             _routes = new Lazy<Dictionary<string, RouteHandler>>(() =>
             {
-                var routers = Graph.CompileAndBuildAll(config, _container.Value);
+                var routers = Graph.CompileAndBuildAll(config, _container.Value.GetInstance);
                 var dict = new Dictionary<string, RouteHandler>();
                 foreach (var router in routers)
                 {

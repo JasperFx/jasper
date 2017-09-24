@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Codegen;
+using BlueMilk.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Http.Routing;
@@ -63,7 +63,7 @@ namespace Jasper.Http.Model
 
         public string SourceCode { get; set; }
 
-        public RouteHandler Create(Type[] types, IContainer container)
+        public RouteHandler Create(Type[] types, Func<Type, object> builder)
         {
             var type = types.FirstOrDefault(x => x.Name == TypeName);
             if (type == null)
@@ -71,7 +71,7 @@ namespace Jasper.Http.Model
                 throw new ArgumentOutOfRangeException(nameof(types), $"Could not find a type named '{TypeName}' in this assembly");
             }
 
-            var handler = container.GetInstance(type).As<RouteHandler>();
+            var handler = builder(type).As<RouteHandler>();
 
             handler.Chain = this;
 

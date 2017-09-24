@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Jasper.Codegen;
+using BlueMilk.Codegen;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using StructureMap;
@@ -41,7 +41,7 @@ namespace Jasper.Http.Model
                 rules.Apply(chain);
             }
 
-            var handlers = CompileAndBuildAll(generation, container);
+            var handlers = CompileAndBuildAll(generation, container.GetInstance);
 
             foreach (var handler in handlers)
             {

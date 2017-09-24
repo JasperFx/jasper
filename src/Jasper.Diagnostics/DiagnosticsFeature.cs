@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using BlueMilk.Codegen;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
-using Jasper.Codegen;
 using Jasper.Configuration;
 using StructureMap;
 

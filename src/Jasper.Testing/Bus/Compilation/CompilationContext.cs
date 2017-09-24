@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using BlueMilk.Codegen;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Codegen;
-using Jasper.Codegen.StructureMap;
 using Jasper.Configuration;
+using Jasper.Util.StructureMap;
 using Shouldly;
 using StructureMap;
 using Xunit;
@@ -64,7 +64,7 @@ namespace Jasper.Testing.Bus.Compilation
 
             _handlers = new Lazy<Dictionary<Type, MessageHandler>>(() =>
             {
-                var handlers = Graph.CompileAndBuildAll(config, _container.Value);
+                var handlers = Graph.CompileAndBuildAll(config, _container.Value.GetInstance);
                 var dict = new Dictionary<Type, MessageHandler>();
                 foreach (var handler in handlers)
                 {

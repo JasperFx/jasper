@@ -1,11 +1,11 @@
 ﻿using System.Linq;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
-using Jasper.Codegen;
-using Jasper.Codegen.Compilation;
-using Jasper.Codegen.StructureMap;
 using Jasper.Testing.Bus.Runtime;
+using Jasper.Util.StructureMap;
 using Shouldly;
 using StructureMap;
 using Xunit;

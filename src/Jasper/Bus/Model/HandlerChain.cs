@@ -5,10 +5,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using BlueMilk.Codegen;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Codegen;
 using Jasper.Configuration;
 using StructureMap;
 
@@ -89,7 +89,7 @@ namespace Jasper.Bus.Model
         public int MaximumAttempts { get; set; } = 1;
         public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
 
-        MessageHandler IGenerates<MessageHandler>.Create(Type[] types, IContainer container)
+        MessageHandler IGenerates<MessageHandler>.Create(Type[] types, Func<Type, object> builder)
         {
             var type = types.FirstOrDefault(x => x.Name == TypeName);
             if (type == null)
@@ -97,7 +97,7 @@ namespace Jasper.Bus.Model
                 throw new ArgumentOutOfRangeException(nameof(types), $"Could not find a type named '{TypeName}' in this assembly");
             }
 
-            var handler = container.GetInstance(type).As<MessageHandler>();
+            var handler = builder(type).As<MessageHandler>();
 
             handler.Chain = this;
 
