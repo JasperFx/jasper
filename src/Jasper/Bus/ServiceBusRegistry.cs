@@ -1,4 +1,5 @@
-﻿using Jasper.Bus.Configuration;
+﻿using BlueMilk;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -19,12 +20,11 @@ namespace Jasper.Bus
     {
         internal ServiceBusRegistry()
         {
-            For<ITransport>().Singleton().AddInstances(_ =>
-            {
-                _.Type<LoopbackTransport>();
-                _.Type<LightweightTransport>();
-                _.Type<DurableTransport>();
-            });
+            ForSingletonOf<ITransport>()
+                .Use<LoopbackTransport>()
+                .Use<LightweightTransport>()
+                .Use<DurableTransport>();
+
 
 
             For<IEnvelopeSender>().Use<EnvelopeSender>();
@@ -34,11 +34,11 @@ namespace Jasper.Bus
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
 
-            For<ISerializerFactory>().Add<NewtonsoftSerializerFactory>();
+            For<ISerializerFactory>().Use<NewtonsoftSerializerFactory>();
 
             ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
 
-            For<IUriLookup>().Add<ConfigUriLookup>();
+            For<IUriLookup>().Use<ConfigUriLookup>();
 
             ForSingletonOf<SerializationGraph>().Use<SerializationGraph>();
 

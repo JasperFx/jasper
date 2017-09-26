@@ -3,6 +3,7 @@ using Jasper.Configuration;
 using Jasper.Marten;
 using Jasper.Marten.Codegen;
 using Marten;
+using Microsoft.Extensions.DependencyInjection;
 
 // SAMPLE: MartenExtension
 [assembly:JasperModule(typeof(MartenExtension))]
@@ -15,10 +16,10 @@ namespace Jasper.Marten
         {
             registry.Settings.Require<StoreOptions>();
 
-            registry.Services.ForSingletonOf<IDocumentStore>().Use(x => new DocumentStore(x.GetInstance<StoreOptions>()));
+            registry.Services.AddSingleton<IDocumentStore>(x => new DocumentStore(x.GetService<StoreOptions>()));
 
-            registry.Services.For<IDocumentSession>().Use("Default DocumentSession", c => c.GetInstance<IDocumentStore>().OpenSession());
-            registry.Services.For<IQuerySession>().Use("Default QuerySession", c => c.GetInstance<IDocumentStore>().QuerySession());
+            registry.Services.AddScoped(c => c.GetService<IDocumentStore>().OpenSession());
+            registry.Services.AddScoped(c => c.GetService<IDocumentStore>().QuerySession());
 
 
             registry.Generation.Sources.Add(new SessionVariableSource());

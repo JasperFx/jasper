@@ -9,6 +9,7 @@ using Jasper.Bus.Model;
 using Jasper.Configuration;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
@@ -21,7 +22,7 @@ namespace Jasper.Testing.Bus.Compilation
 
         public use_wrappers()
         {
-            services.For<Http.Tracking>().Use(theTracking);
+            services.AddSingleton(theTracking);
             services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
 
 

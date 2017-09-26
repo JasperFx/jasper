@@ -8,6 +8,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Testing.Bus.Stubs;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Testing.Bus.Bootstrapping
 {
@@ -25,7 +26,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public BootstrappingContext()
         {
             _runtime = new Lazy<JasperRuntime>(() => JasperRuntime.For(theRegistry));
-            theRegistry.Services.For<ITransport>().Singleton().Add<StubTransport>();
+            theRegistry.Services.AddSingleton<ITransport, StubTransport>();
 
             theRegistry.Services.Scan(_ =>
             {

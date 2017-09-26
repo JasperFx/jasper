@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Baseline;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Settings
 {
@@ -88,7 +89,7 @@ namespace Jasper.Settings
                 @using(settings);
             }
 
-            registry.Services.ForSingletonOf<T>().Use(settings);
+            registry.Services.AddSingleton(settings);
         }
 
 

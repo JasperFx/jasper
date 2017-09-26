@@ -45,9 +45,8 @@ namespace DiagnosticsHarness
 
             var runtime = JasperRuntime.For<BusRegistry>(_ =>
             {
-                _.Services.Populate(services);
+                _.Services.AddRange(services);
                 _.Services.ForSingletonOf<IConfigurationRoot>().Use(Configuration);
-                // x.Policies.OnMissingFamily<SettingsPolicy>();
             });
 
             return runtime.Container.GetInstance<IServiceProvider>();

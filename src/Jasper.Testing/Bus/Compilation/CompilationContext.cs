@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
@@ -32,7 +33,12 @@ namespace Jasper.Testing.Bus.Compilation
 
         public CompilationContext()
         {
-            _container = new Lazy<IContainer>(() => new Container(services));
+            _container = new Lazy<IContainer>(() =>
+            {
+                var registry = new Registry();
+                registry.Populate(services);
+                return new Container(registry);
+            });
 
 
             _graph = new Lazy<HandlerGraph>(() =>
@@ -74,6 +80,8 @@ namespace Jasper.Testing.Bus.Compilation
                 return dict;
             });
         }
+
+        public IContainer Container => _container.Value;
 
         public HandlerGraph Graph => _graph.Value;
 

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper.Configuration;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Module1;
 using Shouldly;
 using StructureMap;
@@ -124,8 +126,7 @@ namespace Jasper.Testing
 
         public when_shutting_down_the_runtime()
         {
-            theRegistry.Services.ForSingletonOf<IMainService>()
-                .Use(mainService);
+            theRegistry.Services.AddSingleton<IMainService>(mainService);
 
             theRegistry.Services.AddTransient<IFakeStore, FakeStore>();
             theRegistry.Services.For<IWidget>().Use<Widget>();
@@ -172,10 +173,10 @@ namespace Jasper.Testing
 
         public bool WasDisposed { get; set; }
 
-        public Registry Services { get; } = new Registry();
+        public ServiceRegistry Services { get; } = new ServiceRegistry();
         public JasperRegistry Registry { get; private set; }
 
-        public Task<Registry> Bootstrap(JasperRegistry registry)
+        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry)
         {
             Registry = registry;
             return Task.FromResult(Services);

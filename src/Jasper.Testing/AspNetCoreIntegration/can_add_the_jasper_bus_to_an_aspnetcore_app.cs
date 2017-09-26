@@ -9,6 +9,7 @@ using Jasper.Testing.Http;
 using Jasper.Testing.Samples;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 

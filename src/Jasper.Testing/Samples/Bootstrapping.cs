@@ -1,11 +1,13 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper;
 using Jasper.Configuration;
 using Jasper.Testing.Samples;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
 namespace Jasper.Testing.Samples
@@ -191,7 +193,7 @@ namespace Bootstrapping.Configuration2
             throw new System.NotImplementedException();
         }
 
-        public Task<Registry> Bootstrap(JasperRegistry registry)
+        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry)
         {
             throw new System.NotImplementedException();
         }

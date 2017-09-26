@@ -13,6 +13,7 @@ using Jasper.Testing.Bus.Runtime.Routing;
 using Jasper.Testing.Bus.Transports;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -41,7 +42,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.Services.For<IUriLookup>().Add<FakeUriLookup>();
+                _.Services.For<IUriLookup>().Use<FakeUriLookup>();
                 _.Publish.Message<Message1>().To("fake://one");
             });
 
@@ -57,7 +58,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.Services.For<IUriLookup>().Add<FakeUriLookup>();
+                _.Services.For<IUriLookup>().Use<FakeUriLookup>();
                 _.Transports.ListenForMessagesFrom("fake://one");
             });
 
@@ -75,8 +76,8 @@ namespace Jasper.Testing.Bus
 
             with(_ =>
             {
-                _.Services.For<MessageTracker>().Use(tracker);
-                _.Services.For<IUriLookup>().Add<FakeUriLookup>();
+                _.Services.AddSingleton(tracker);
+                _.Services.For<IUriLookup>().Use<FakeUriLookup>();
                 _.Publish.Message<Message1>().To("fake://one");
                 _.Transports.ListenForMessagesFrom("fake://one");
             });
@@ -97,8 +98,8 @@ namespace Jasper.Testing.Bus
 
             with(_ =>
             {
-                _.Services.For<MessageTracker>().Use(tracker);
-                _.Services.For<IUriLookup>().Add<FakeUriLookup>();
+                _.Services.AddSingleton(tracker);
+                _.Services.For<IUriLookup>().Use<FakeUriLookup>();
                 _.Transports.ListenForMessagesFrom("fake://one");
             });
 

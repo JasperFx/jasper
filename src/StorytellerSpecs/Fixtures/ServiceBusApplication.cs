@@ -11,6 +11,7 @@ using Jasper.Bus.Tracking;
 using Jasper.Bus.Transports;
 using Jasper.LightningDb;
 using Jasper.Storyteller.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
@@ -27,9 +28,9 @@ namespace StorytellerSpecs.Fixtures
             _waitForSubscriptions = false;
 
             _registry.Services.AddTransient<ITransport, StubTransport>();
-            _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
+            _registry.Services.AddSingleton(new MessageTracker());
+            _registry.Services.AddSingleton(new MessageHistory());
 
-            _registry.Services.ForConcreteType<MessageHistory>().Configure.Singleton();
             _registry.Services.AddTransient<IBusLogger, MessageTrackingLogger>();
 
             _registry.Services.For<LightningDbSettings>().Use(new LightningDbSettings

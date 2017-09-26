@@ -9,6 +9,7 @@ using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Testing.Bus.Compilation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using StructureMap.Graph.Scanning;
 using StructureMap.TypeRules;

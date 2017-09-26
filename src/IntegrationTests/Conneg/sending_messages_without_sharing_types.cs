@@ -132,12 +132,6 @@ namespace IntegrationTests.Conneg
         {
             Publish.Message<GreenMessage>().To("tcp://localhost:2555/blue");
             Handlers.DisableConventionalDiscovery();
-
-            Services.For<MessageTracker>().Use("blow up", c =>
-            {
-                throw new Exception("No.");
-                return default(MessageTracker);
-            });
         }
     }
 

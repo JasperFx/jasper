@@ -3,6 +3,7 @@ using System.Linq;
 using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Model;
+using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures.LQ
@@ -39,7 +40,7 @@ namespace StorytellerSpecs.Fixtures.LQ
         public override void SetUp()
         {
             _registry = new JasperRegistry();
-            _registry.Services.ForConcreteType<MessageTracker>().Configure.Singleton();
+            _registry.Services.AddSingleton(new MessageTracker());
         }
 
         public override void TearDown()

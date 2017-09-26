@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -6,12 +7,14 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using BlueMilk.Codegen;
+using BlueMilk.Scanning.Conventions;
 using Jasper.Bus;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
 using Jasper.Util.StructureMap;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using StructureMap.Graph;
 
@@ -30,16 +33,13 @@ namespace Jasper
         private readonly JasperRegistry _registry;
         private bool isDisposing;
 
-        private JasperRuntime(JasperRegistry registry, Registry[] serviceRegistries)
+        private JasperRuntime(JasperRegistry registry, IServiceCollection services)
         {
+            services.AddSingleton(this);
+
             Container = new Container(_ =>
             {
-                _.AddRegistry(registry.ExtensionServices);
-                _.AddRegistry(registry.Services);
-                foreach (var serviceRegistry in serviceRegistries)
-                    _.AddRegistry(serviceRegistry);
-
-                _.For<JasperRuntime>().Use(this);
+                _.Populate(services);
             })
             {
                 DisposalLock = DisposalLock.Ignore
@@ -120,7 +120,6 @@ namespace Jasper
         {
             applyExtensions(registry);
 
-            registry.Services.BakeAspNetCoreServices();
             registry.Settings.Bootstrap();
 
             var features = registry.Features;
@@ -128,7 +127,16 @@ namespace Jasper
             var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry)))
                 .ConfigureAwait(false);
 
-            var runtime = new JasperRuntime(registry, serviceRegistries);
+            var collections = new List<IServiceCollection>();
+            collections.AddRange(serviceRegistries);
+            collections.Add(registry.ExtensionServices);
+            collections.Add(registry.Services);
+
+
+            var services = await collections.ToArray().Combine();
+
+
+            var runtime = new JasperRuntime(registry, services);
 
 
             await Task.WhenAll(features.Select(x => x.Activate(runtime, registry.Generation)))

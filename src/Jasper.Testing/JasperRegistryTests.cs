@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using StructureMap.TypeRules;
 using Xunit;

@@ -1,10 +1,11 @@
 using System.Reflection;
+using BlueMilk;
 using Jasper.Remotes.Messaging;
 using StructureMap;
 
 namespace Jasper.Diagnostics
 {
-    public class DiagnosticServicesRegistry : Registry
+    public class DiagnosticServicesRegistry : ServiceRegistry
     {
         public DiagnosticServicesRegistry()
         {

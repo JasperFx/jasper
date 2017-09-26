@@ -14,7 +14,7 @@ namespace Jasper.LightningDb
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Services.For<IPersistence>().Use<LightningDbPersistence>().Singleton();
+            registry.Services.ForSingletonOf<IPersistence>().Use<LightningDbPersistence>();
         }
     }
 }

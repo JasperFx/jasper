@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
@@ -11,11 +12,11 @@ namespace Jasper.Diagnostics
 {
     public class DiagnosticsFeature : IFeature
     {
-        public readonly Registry Services = new DiagnosticServicesRegistry();
+        public readonly ServiceRegistry Services = new DiagnosticServicesRegistry();
 
         private DiagnosticsServer _server;
 
-        Task<Registry> IFeature.Bootstrap(JasperRegistry registry)
+        Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry)
         {
             registry.Logging.LogBusEventsWith<DiagnosticsBusLogger>();
             return Task.FromResult(Services);

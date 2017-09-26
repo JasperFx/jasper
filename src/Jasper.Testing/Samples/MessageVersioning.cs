@@ -7,6 +7,7 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using Newtonsoft.Json;
 using Shouldly;

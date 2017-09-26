@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Testing.Bus.Runtime;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using TestMessages;
 using Xunit;
@@ -21,9 +22,6 @@ namespace Jasper.Testing.Bus.Compilation
         [Fact]
         public async Task take_in_one_service()
         {
-            //throw new Exception(theCode);
-
-
             var message = new Message1();
             await Execute(message);
 

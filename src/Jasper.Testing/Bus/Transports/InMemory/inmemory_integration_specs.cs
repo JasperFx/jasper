@@ -4,6 +4,7 @@ using Baseline.Dates;
 using Jasper.Bus;
 using Jasper.Bus.Transports.Loopback;
 using Jasper.Testing.Bus.Runtime;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace Jasper.Testing.Bus.Transports.InMemory
             {
                 _.Publish.Message<Message1>().To("loopback://incoming");
 
-                _.Services.For<MessageTracker>().Use(theTracker);
+                _.Services.AddSingleton(theTracker);
 
                 _.Services.Scan(x =>
                 {

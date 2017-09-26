@@ -22,7 +22,7 @@ namespace BlueMilk.Scanning.Conventions
 
         public void ScanTypes(TypeSet types, IServiceCollection services)
         {
-            types.FindTypes(TypeClassification.Concretes).Where(Matches).Each(type =>
+            types.FindTypes(TypeClassification.Concretes | TypeClassification.Closed).Where(Matches).Each(type =>
             {
                 services.AddType(determineLeastSpecificButValidType(_pluginType, type), type);
             });

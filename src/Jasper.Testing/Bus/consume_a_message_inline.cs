@@ -9,6 +9,7 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Testing.Bus.Runtime;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ =>
             {
-                _.Services.For<WorkTracker>().Use(theTracker);
+                _.Services.AddSingleton(theTracker);
 
                 _.Publish.MessagesFromAssemblyContaining<Message1>().To("loopback://cascading");
 

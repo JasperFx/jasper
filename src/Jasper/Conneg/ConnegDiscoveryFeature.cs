@@ -5,10 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper.Bus;
 using Jasper.Configuration;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
+using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
 using TypeClassification = BlueMilk.Scanning.TypeClassification;
 using TypeRepository = BlueMilk.Scanning.TypeRepository;
@@ -40,6 +44,7 @@ namespace Jasper.Conneg
         }
     }
 
+
     public class ConnegDiscoveryFeature : IFeature
     {
         public void Dispose()
@@ -47,13 +52,24 @@ namespace Jasper.Conneg
             // nothing
         }
 
-        public Task<Registry> Bootstrap(JasperRegistry registry)
+        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry)
         {
             var forwarding = new Forwarders();
-            var services = new Registry();
-            services.For<Forwarders>().Use(forwarding);
+            var services = new ServiceRegistry();
+
+            services.AddSingleton(forwarding);
 
             if (registry.ApplicationAssembly == null) return Task.FromResult(services);
+
+
+            services.Scan(_ =>
+            {
+                _.Assembly(registry.ApplicationAssembly);
+                _.AddAllTypesOf<IMessageSerializer>();
+                _.AddAllTypesOf<IMessageDeserializer>();
+            });
+
+            // TODO -- move serializer discovery here
 
             return TypeRepository.FindTypes(registry.ApplicationAssembly,
                     TypeClassification.Closed | TypeClassification.Closed, t => t.Closes(typeof(IForwardsTo<>)))

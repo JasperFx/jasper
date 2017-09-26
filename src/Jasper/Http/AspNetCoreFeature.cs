@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
@@ -31,16 +32,16 @@ namespace Jasper.Http
 
         public readonly RouteGraph Routes = new RouteGraph();
 
-        private readonly Registry _services;
+        private readonly ServiceRegistry _services;
         private IWebHost _host;
 
         public AspNetCoreFeature()
         {
             Actions.IncludeClassesSuffixedWithEndpoint();
 
-            _services = new Registry();
-            _services.For<Router>().Use(Routes.Router);
-            _services.For<IHttpContextAccessor>().Use<HttpContextAccessor>().ContainerScoped();
+            _services = new ServiceRegistry();
+            _services.AddSingleton(Routes.Router);
+            _services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
 
             _inner = new WebHostBuilder();
         }
@@ -59,7 +60,7 @@ namespace Jasper.Http
             _host?.Dispose();
         }
 
-        async Task<Registry> IFeature.Bootstrap(JasperRegistry registry)
+        async Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry)
         {
             var actions = await Actions.FindActions(registry.ApplicationAssembly);
             foreach (var methodCall in actions)
@@ -67,22 +68,12 @@ namespace Jasper.Http
                 Routes.AddRoute(methodCall);
             }
 
-            _services.For<RouteGraph>().Use(Routes);
-            _services.For<IUrlRegistry>().Use(Routes.Router.Urls);
-
-            if (registry.ApplicationAssembly != null)
-            {
-                _services.Scan(_ =>
-                {
-                    _.Assembly(registry.ApplicationAssembly);
-                    _.AddAllTypesOf<IMessageDeserializer>();
-                    _.AddAllTypesOf<IMessageSerializer>();
-                });
-            }
+            _services.AddSingleton(Routes);
+            _services.AddSingleton<IUrlRegistry>(Routes.Router.Urls);
 
             if (!BootstrappedWithinAspNetCore)
             {
-                _services.For<IServer>().Add<NulloServer>().Singleton();
+                _services.ForSingletonOf<IServer>().UseIfNone<NulloServer>();
             }
 
             return _services;

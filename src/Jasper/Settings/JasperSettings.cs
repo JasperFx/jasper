@@ -139,7 +139,8 @@ namespace Jasper.Settings
                 configAction(config);
             }
 
-            _parent.Services.ForSingletonOf<IConfigurationRoot>().Use(config);
+            _parent.Services.AddSingleton<IConfigurationRoot>(config);
+            _parent.Services.AddSingleton<IConfiguration>(config);
 
             foreach (var settings in _settings.Values)
             {

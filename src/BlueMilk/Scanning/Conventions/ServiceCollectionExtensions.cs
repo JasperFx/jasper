@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using BlueMilk.Util;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.Scanning.Conventions
@@ -33,6 +36,31 @@ namespace BlueMilk.Scanning.Conventions
                 .Where(x => x.ServiceType == typeof(T) && x.ImplementationType != null)
                 .Select(x => x.ImplementationType)
                 .ToArray();
+        }
+
+        public static async Task ApplyScannedTypes(this IServiceCollection services)
+        {
+            foreach (var scanner in services.Select(x => x.ImplementationInstance).OfType<AssemblyScanner>().ToArray())
+            {
+                await scanner.ApplyRegistrations(services);
+            }
+        }
+
+        public static async Task<IServiceCollection> Combine(this IServiceCollection[] serviceCollections)
+        {
+            if (!serviceCollections.Any()) return new ServiceCollection();
+
+            foreach (var services in serviceCollections)
+            {
+                await services.ApplyScannedTypes();
+            }
+
+            if (serviceCollections.Length == 1) return serviceCollections[0];
+
+            var response = new ServiceCollection();
+            response.AddRange(serviceCollections.SelectMany(x => x));
+
+            return response;
         }
     }
 }

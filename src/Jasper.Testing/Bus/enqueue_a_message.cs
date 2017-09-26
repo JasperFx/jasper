@@ -6,6 +6,7 @@ using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Bus.Transports;
 using Jasper.Testing.Http;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute.Routing.Handlers;
 using Shouldly;
 using Xunit;
@@ -25,7 +26,7 @@ namespace Jasper.Testing.Bus
             registry.Services.AddTransient<IWidget, Widget>();
 
             var tracker = new MessageTracker();
-            registry.Services.For<MessageTracker>().Use(tracker);
+            registry.Services.AddSingleton(tracker);
 
             using (var runtime = JasperRuntime.For(registry))
             {

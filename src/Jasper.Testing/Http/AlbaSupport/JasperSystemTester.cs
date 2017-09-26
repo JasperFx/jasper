@@ -8,6 +8,7 @@ using Jasper.Testing.Bus.Compilation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
@@ -86,7 +87,7 @@ namespace Jasper.Testing.Http.AlbaSupport
 
 
 
-            Services.For<SomeSettings>().Use(new SomeSettings {Name = "Texas"});
+            Services.AddSingleton(new SomeSettings {Name = "Texas"});
             Http.UseKestrel().UseUrls("http://localhost:5555");
         }
     }
@@ -101,7 +102,7 @@ namespace Jasper.Testing.Http.AlbaSupport
 
             Http.UseStartup<AlbaTargetAppStartup>();
 
-            Services.For<SomeSettings>().Use(new SomeSettings { Name = "Texas" });
+            Services.AddSingleton(new SomeSettings { Name = "Texas" });
             Http.UseKestrel().UseUrls("http://localhost:5555");
         }
     }

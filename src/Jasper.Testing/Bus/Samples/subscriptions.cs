@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Testing.Bus.Samples
 {
@@ -58,7 +59,7 @@ namespace Jasper.Testing.Bus.Samples
         public SubscriptionStorageApp()
         {
             // Plug in subscription storage backed by Marten
-            Services.ReplaceService<ISubscriptionsRepository, MartenSubscriptionRepository>();
+            Services.AddSingleton<ISubscriptionsRepository, MartenSubscriptionRepository>();
         }
     }
     // ENDSAMPLE

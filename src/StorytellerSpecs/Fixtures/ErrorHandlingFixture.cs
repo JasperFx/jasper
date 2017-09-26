@@ -14,6 +14,7 @@ using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Util;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace StorytellerSpecs.Fixtures
 {
@@ -107,8 +108,8 @@ namespace StorytellerSpecs.Fixtures
 
             var registry = new JasperRegistry();
             registry.Transports.ListenForMessagesFrom("stub://1".ToUri());
-            registry.Services.AddTransient<ITransport>(_transport);
-            registry.Services.AddTransient(_tracker);
+            registry.Services.AddSingleton<ITransport>(_transport);
+            registry.Services.AddSingleton(_tracker);
             registry.Publish.Message<ErrorCausingMessage>()
                 .To("stub://1".ToUri());
 

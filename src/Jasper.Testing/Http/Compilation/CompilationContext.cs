@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Alba.Stubs;
 using Baseline.Reflection;
+using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper.Configuration;
 using Jasper.Http.Model;
@@ -32,7 +33,10 @@ namespace Jasper.Testing.Http.Compilation
 
         public CompilationContext()
         {
-            _container = new Lazy<IContainer>(() => new Container(services));
+            var registry = new Registry();
+            registry.Populate(services);
+
+            _container = new Lazy<IContainer>(() => new Container(registry));
 
 
             _graph = new Lazy<RouteGraph>(() =>

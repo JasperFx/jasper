@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Testing.Settings
 {

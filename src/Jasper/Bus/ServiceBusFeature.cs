@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Scanning;
 using Jasper.Bus.Configuration;
@@ -41,7 +42,7 @@ namespace Jasper.Bus
         {
         }
 
-        Task<Registry> IFeature.Bootstrap(JasperRegistry registry)
+        Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry)
         {
             return bootstrap(registry);
         }
@@ -67,14 +68,8 @@ namespace Jasper.Bus
 
 
 
-        private async Task<Registry> bootstrap(JasperRegistry registry)
+        private async Task<ServiceRegistry> bootstrap(JasperRegistry registry)
         {
-            var readers = TypeRepository.FindTypes(registry.ApplicationAssembly,
-                TypeClassification.Closed | TypeClassification.Concretes, t => t.CanBeCastTo<IMessageDeserializer>());
-
-            var writers = TypeRepository.FindTypes(registry.ApplicationAssembly,
-                TypeClassification.Closed | TypeClassification.Concretes, t => t.CanBeCastTo<IMessageSerializer>());
-
             var calls = await Handlers.FindCalls(registry).ConfigureAwait(false);
 
             _graph = new HandlerGraph();
@@ -84,26 +79,16 @@ namespace Jasper.Bus
             _graph.Group();
             Handlers.ApplyPolicies(_graph);
 
-            Services.For<HandlerGraph>().Use(_graph);
-            Services.For<IChannelGraph>().Use(_channels);
+            Services.AddSingleton(_graph);
+            Services.AddSingleton<IChannelGraph>(_channels);
 
 
             if (registry.Logging.UseConsoleLogging)
             {
-                Services.For<IBusLogger>().Add<ConsoleBusLogger>();
+                Services.For<IBusLogger>().Use<ConsoleBusLogger>();
             }
 
             Services.ForSingletonOf<IDelayedJobProcessor>().UseIfNone<InMemoryDelayedJobProcessor>();
-
-            foreach (var type in await readers)
-            {
-                Services.For(typeof(IMessageDeserializer)).Use(type);
-            }
-
-            foreach (var type in await writers)
-            {
-                Services.For(typeof(IMessageSerializer)).Use(type);
-            }
 
             return Services;
         }

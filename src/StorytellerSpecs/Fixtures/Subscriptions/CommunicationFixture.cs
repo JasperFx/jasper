@@ -11,6 +11,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Tracking;
 using Jasper.Util;
+using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 

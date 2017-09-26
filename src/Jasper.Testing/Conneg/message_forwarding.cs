@@ -8,6 +8,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Conneg;
 using Jasper.Testing.Bus.Transports;
 using Jasper.Util;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -53,7 +54,7 @@ namespace Jasper.Testing.Conneg
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Handlers.IncludeType<NewMessageHandler>();
 
-                _.Services.For<MessageTracker>().Use(tracker);
+                _.Services.AddSingleton(tracker);
 
 
                 _.Publish.Message<OriginalMessage>().To(channel);
