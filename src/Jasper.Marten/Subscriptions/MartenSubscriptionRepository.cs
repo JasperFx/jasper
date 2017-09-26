@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlueMilk.Scanning;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Util;
 using Marten;

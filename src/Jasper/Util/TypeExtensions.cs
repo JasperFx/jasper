@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using Baseline;
+using BlueMilk.Util;
 using Jasper.Bus;
 using Jasper.Conneg;
 
@@ -38,7 +38,7 @@ namespace Jasper.Util
             var sb = new StringBuilder();
 
             sb.Append(t.Name.Substring(0, t.Name.LastIndexOf("`", StringComparison.Ordinal)));
-            sb.Append(t.GetGenericArguments().Aggregate("<", (aggregate, type) => aggregate + (aggregate == "<" ? "" : ",") + GetPrettyName(type)));
+            sb.Append(t.GetTypeInfo().GetGenericArguments().Aggregate("<", (aggregate, type) => aggregate + (aggregate == "<" ? "" : ",") + GetPrettyName(type)));
             sb.Append(">");
 
             return sb.ToString();

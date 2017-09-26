@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk.Scanning;
 using Jasper.Bus;
 using Jasper.Conneg;
 using Jasper.Testing.Bus.Runtime;

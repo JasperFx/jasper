@@ -1,5 +1,6 @@
 ﻿using System;
 using Baseline;
+using BlueMilk.Scanning;
 using Jasper.Conneg;
 using Jasper.Util;
 using Newtonsoft.Json;

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk.Scanning;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Marten.Subscriptions;
 using Jasper.Marten.Tests.Setup;

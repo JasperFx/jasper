@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Jasper.Util
+namespace BlueMilk.Scanning
 {
     public class TypeQuery
     {

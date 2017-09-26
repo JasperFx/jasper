@@ -9,8 +9,8 @@ using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
-using TypeClassification = Jasper.Util.TypeClassification;
-using TypeRepository = Jasper.Util.TypeRepository;
+using TypeClassification = BlueMilk.Scanning.TypeClassification;
+using TypeRepository = BlueMilk.Scanning.TypeRepository;
 
 namespace Jasper.Bus.Configuration
 {

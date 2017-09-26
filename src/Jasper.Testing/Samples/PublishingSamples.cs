@@ -2,6 +2,7 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using BlueMilk.Scanning;
 using Jasper.Bus;
 using Jasper.Testing.AspNetCoreIntegration;
 using Jasper.Testing.Bus.Model;

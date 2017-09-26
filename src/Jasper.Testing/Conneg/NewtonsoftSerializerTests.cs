@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using BlueMilk.Scanning;
 using Jasper.Bus;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;

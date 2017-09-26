@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using StructureMap.TypeRules;
+using BlueMilk.Util;
 
-namespace Jasper.Util
+namespace BlueMilk.Scanning
 {
     public class AssemblyScanRecord
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BlueMilk.Scanning;
 using Consul;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;

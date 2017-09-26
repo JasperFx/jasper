@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk.Scanning;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Subscriptions

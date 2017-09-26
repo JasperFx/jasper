@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Baseline;
+using BlueMilk.Scanning;
 using Jasper.Util;
 using Newtonsoft.Json;
 

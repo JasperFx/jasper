@@ -9,9 +9,9 @@ using BlueMilk.Codegen;
 using Jasper.Http.Routing;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
-using TypeClassification = Jasper.Util.TypeClassification;
+using TypeClassification = BlueMilk.Scanning.TypeClassification;
 using TypeExtensions = Baseline.TypeExtensions;
-using TypeRepository = Jasper.Util.TypeRepository;
+using TypeRepository = BlueMilk.Scanning.TypeRepository;
 
 namespace Jasper.Http
 {

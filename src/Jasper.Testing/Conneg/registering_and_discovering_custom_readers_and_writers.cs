@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using BlueMilk.Scanning;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
 using Jasper.Testing.Bus;

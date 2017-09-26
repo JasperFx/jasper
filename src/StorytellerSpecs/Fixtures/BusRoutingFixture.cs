@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk.Scanning;
 using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Routing;

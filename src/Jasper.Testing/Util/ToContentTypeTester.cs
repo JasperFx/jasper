@@ -1,4 +1,5 @@
-﻿using Jasper.Bus;
+﻿using BlueMilk.Scanning;
+using Jasper.Bus;
 using Jasper.Util;
 using Shouldly;
 using Xunit;

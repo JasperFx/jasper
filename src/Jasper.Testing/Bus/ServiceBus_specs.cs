@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BlueMilk.Scanning;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Testing.Bus.Runtime;

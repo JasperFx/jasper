@@ -10,8 +10,8 @@ using Jasper.Bus;
 using Jasper.Configuration;
 using StructureMap;
 using StructureMap.Graph.Scanning;
-using TypeClassification = Jasper.Util.TypeClassification;
-using TypeRepository = Jasper.Util.TypeRepository;
+using TypeClassification = BlueMilk.Scanning.TypeClassification;
+using TypeRepository = BlueMilk.Scanning.TypeRepository;
 
 namespace Jasper.Conneg
 {

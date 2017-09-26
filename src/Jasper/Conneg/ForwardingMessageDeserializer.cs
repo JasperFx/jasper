@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk.Scanning;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 

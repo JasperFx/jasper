@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using BlueMilk.Codegen;
+using BlueMilk.Scanning;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Logging;
