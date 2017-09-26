@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BlueMilk
 {
-    public class ServiceRegistry : ServiceCollection
+    public class ServiceRegistry : List<ServiceDescriptor>, IServiceCollection
     {
         public DescriptorExpression<T> For<T>()
         {
@@ -37,5 +36,6 @@ namespace BlueMilk
         {
             return new DescriptorExpression<T>(this, ServiceLifetime.Singleton);
         }
+
     }
 }
