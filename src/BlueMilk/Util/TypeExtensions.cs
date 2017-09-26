@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace BlueMilk.Util
 {
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         private static readonly IList<Type> _integerTypes = new List<Type>
         {
@@ -27,37 +27,50 @@ namespace BlueMilk.Util
             typeof(ulong?)
         };
 
+        internal static bool HasConstructors(this Type type)
+        {
+            return type.GetTypeInfo().GetConstructors().Any();
+        }
+
+        internal static IEnumerable<Type> AllInterfaces(this Type type)
+        {
+            foreach (var @interface in type.GetTypeInfo().GetInterfaces())
+            {
+                yield return @interface;
+            }
+        }
+
         /// <summary>
         ///     Does a hard cast of the object to T.  *Will* throw InvalidCastException
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="target"></param>
         /// <returns></returns>
-        public static T As<T>(this object target)
+        internal static T As<T>(this object target)
         {
             return (T) target;
         }
 
-        public static bool IsNullableOfT(this Type theType)
+        internal static bool IsNullableOfT(this Type theType)
         {
             if (theType == null) return false;
 
             return theType.GetTypeInfo().IsGenericType && theType.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
-        public static bool IsNullableOf(this Type theType, Type otherType)
+        internal static bool IsNullableOf(this Type theType, Type otherType)
         {
             return theType.IsNullableOfT() && theType.GetTypeInfo().GetGenericArguments()[0] == otherType;
         }
 
-        public static bool IsTypeOrNullableOf<T>(this Type theType)
+        internal static bool IsTypeOrNullableOf<T>(this Type theType)
         {
             var otherType = typeof(T);
             return theType == otherType ||
                    (theType.IsNullableOfT() && theType.GetTypeInfo().GetGenericArguments()[0] == otherType);
         }
 
-        public static bool CanBeCastTo<T>(this Type type)
+        internal static bool CanBeCastTo<T>(this Type type)
         {
             if (type == null) return false;
             var destinationType = typeof(T);
@@ -65,7 +78,7 @@ namespace BlueMilk.Util
             return CanBeCastTo(type, destinationType);
         }
 
-        public static bool CanBeCastTo(this Type type, Type destinationType)
+        internal static bool CanBeCastTo(this Type type, Type destinationType)
         {
             if (type == null) return false;
             if (type == destinationType) return true;
@@ -73,21 +86,21 @@ namespace BlueMilk.Util
             return destinationType.GetTypeInfo().IsAssignableFrom(type);
         }
 
-        public static bool IsInNamespace(this Type type, string nameSpace)
+        internal static bool IsInNamespace(this Type type, string nameSpace)
         {
             if (type == null) return false;
 
             return type.Namespace.StartsWith(nameSpace);
         }
 
-        public static bool IsOpenGeneric(this Type type)
+        internal static bool IsOpenGeneric(this Type type)
         {
             if (type == null) return false;
             var typeInfo = type.GetTypeInfo();
             return typeInfo.IsGenericTypeDefinition || typeInfo.ContainsGenericParameters;
         }
 
-        public static bool IsGenericEnumerable(this Type type)
+        internal static bool IsGenericEnumerable(this Type type)
         {
             if (type == null) return false;
 
@@ -95,14 +108,14 @@ namespace BlueMilk.Util
             return genericArgs.Length == 1 && typeof(IEnumerable<>).MakeGenericType(genericArgs).GetTypeInfo().IsAssignableFrom(type);
         }
 
-        public static bool IsConcreteTypeOf<T>(this Type pluggedType)
+        internal static bool IsConcreteTypeOf<T>(this Type pluggedType)
         {
             if (pluggedType == null) return false;
 
             return pluggedType.IsConcrete() && typeof(T).GetTypeInfo().IsAssignableFrom(pluggedType);
         }
 
-        public static bool ImplementsInterfaceTemplate(this Type pluggedType, Type templateType)
+        internal static bool ImplementsInterfaceTemplate(this Type pluggedType, Type templateType)
         {
             if (!pluggedType.IsConcrete()) return false;
 
@@ -118,12 +131,12 @@ namespace BlueMilk.Util
             return false;
         }
 
-        public static bool IsConcreteWithDefaultCtor(this Type type)
+        internal static bool IsConcreteWithDefaultCtor(this Type type)
         {
             return type.IsConcrete() && type.GetTypeInfo().GetConstructor(new Type[0]) != null;
         }
 
-        public static Type FindInterfaceThatCloses(this Type type, Type openType)
+        internal static Type FindInterfaceThatCloses(this Type type, Type openType)
         {
             if (type == typeof(object)) return null;
 
@@ -150,19 +163,19 @@ namespace BlueMilk.Util
                 : typeInfo.BaseType.FindInterfaceThatCloses(openType);
         }
 
-        public static Type FindParameterTypeTo(this Type type, Type openType)
+        internal static Type FindParameterTypeTo(this Type type, Type openType)
         {
             var interfaceType = type.FindInterfaceThatCloses(openType);
             return interfaceType?.GetTypeInfo().GetGenericArguments().FirstOrDefault();
         }
 
-        public static bool IsNullable(this Type type)
+        internal static bool IsNullable(this Type type)
         {
             var typeInfo = type.GetTypeInfo();
             return typeInfo.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
-        public static bool Closes(this Type type, Type openType)
+        internal static bool Closes(this Type type, Type openType)
         {
             if (type == null) return false;
 
@@ -186,13 +199,13 @@ namespace BlueMilk.Util
             return typeInfo.BaseType?.Closes(openType) ?? false;
         }
 
-        public static Type GetInnerTypeFromNullable(this Type nullableType)
+        internal static Type GetInnerTypeFromNullable(this Type nullableType)
         {
             return nullableType.GetTypeInfo().GetGenericArguments()[0];
         }
 
 
-        public static string GetName(this Type type)
+        internal static string GetName(this Type type)
         {
             var typeInfo = type.GetTypeInfo();
             if (typeInfo.IsGenericType)
@@ -205,7 +218,7 @@ namespace BlueMilk.Util
             return type.Name;
         }
 
-        public static string GetFullName(this Type type)
+        internal static string GetFullName(this Type type)
         {
             var typeInfo = type.GetTypeInfo();
             if (typeInfo.IsGenericType)
@@ -219,24 +232,24 @@ namespace BlueMilk.Util
         }
 
 
-        public static bool IsString(this Type type)
+        internal static bool IsString(this Type type)
         {
             return type == typeof(string);
         }
 
-        public static bool IsPrimitive(this Type type)
+        internal static bool IsPrimitive(this Type type)
         {
             var typeInfo = type.GetTypeInfo();
             return typeInfo.IsPrimitive && !IsString(type) && type != typeof(IntPtr);
         }
 
-        public static bool IsSimple(this Type type)
+        internal static bool IsSimple(this Type type)
         {
             var typeInfo = type.GetTypeInfo();
             return typeInfo.IsPrimitive || IsString(type) || typeInfo.IsEnum;
         }
 
-        public static bool IsConcrete(this Type type)
+        internal static bool IsConcrete(this Type type)
         {
             if (type == null) return false;
 
@@ -245,7 +258,7 @@ namespace BlueMilk.Util
             return !typeInfo.IsAbstract && !typeInfo.IsInterface;
         }
 
-        public static bool IsNotConcrete(this Type type)
+        internal static bool IsNotConcrete(this Type type)
         {
             return !type.IsConcrete();
         }
@@ -255,12 +268,12 @@ namespace BlueMilk.Util
         /// </summary>
         /// <param name="typeToCheck"></param>
         /// <returns></returns>
-        public static bool IsDateTime(this Type typeToCheck)
+        internal static bool IsDateTime(this Type typeToCheck)
         {
             return typeToCheck == typeof(DateTime) || typeToCheck == typeof(DateTime?);
         }
 
-        public static bool IsBoolean(this Type typeToCheck)
+        internal static bool IsBoolean(this Type typeToCheck)
         {
             return typeToCheck == typeof(bool) || typeToCheck == typeof(bool?);
         }
@@ -270,7 +283,7 @@ namespace BlueMilk.Util
         /// </summary>
         /// <param name="type">Type to be pretty printed</param>
         /// <returns></returns>
-        public static string PrettyPrint(this Type type)
+        internal static string PrettyPrint(this Type type)
         {
             return type.PrettyPrint(t => t.Name);
         }
@@ -284,7 +297,7 @@ namespace BlueMilk.Util
         ///     name.
         /// </param>
         /// <returns></returns>
-        public static string PrettyPrint(this Type type, Func<Type, string> selector)
+        internal static string PrettyPrint(this Type type, Func<Type, string> selector)
         {
             var typeName = selector(type) ?? string.Empty;
             var typeInfo = type.GetTypeInfo();
@@ -309,7 +322,7 @@ namespace BlueMilk.Util
         /// </summary>
         /// <param name="type"></param>
         /// <returns>Bool indicating whether the type is numeric</returns>
-        public static bool IsNumeric(this Type type)
+        internal static bool IsNumeric(this Type type)
         {
             return type.IsFloatingPoint() || type.IsIntegerBased();
         }
@@ -321,7 +334,7 @@ namespace BlueMilk.Util
         /// </summary>
         /// <param name="type"></param>
         /// <returns>Bool indicating whether the type is integer based</returns>
-        public static bool IsIntegerBased(this Type type)
+        internal static bool IsIntegerBased(this Type type)
         {
             return _integerTypes.Contains(type);
         }
@@ -332,53 +345,53 @@ namespace BlueMilk.Util
         /// </summary>
         /// <param name="type"></param>
         /// <returns>Bool indicating whether the type is floating point</returns>
-        public static bool IsFloatingPoint(this Type type)
+        internal static bool IsFloatingPoint(this Type type)
         {
             return type == typeof(decimal) || type == typeof(float) || type == typeof(double);
         }
 
 
-        public static T CloseAndBuildAs<T>(this Type openType, params Type[] parameterTypes)
+        internal static T CloseAndBuildAs<T>(this Type openType, params Type[] parameterTypes)
         {
             var closedType = openType.MakeGenericType(parameterTypes);
             return (T) Activator.CreateInstance(closedType);
         }
 
-        public static T CloseAndBuildAs<T>(this Type openType, object ctorArgument, params Type[] parameterTypes)
+        internal static T CloseAndBuildAs<T>(this Type openType, object ctorArgument, params Type[] parameterTypes)
         {
             var closedType = openType.MakeGenericType(parameterTypes);
             return (T) Activator.CreateInstance(closedType, ctorArgument);
         }
 
-        public static T CloseAndBuildAs<T>(this Type openType, object ctorArgument1, object ctorArgument2,
+        internal static T CloseAndBuildAs<T>(this Type openType, object ctorArgument1, object ctorArgument2,
             params Type[] parameterTypes)
         {
             var closedType = openType.MakeGenericType(parameterTypes);
             return (T) Activator.CreateInstance(closedType, ctorArgument1, ctorArgument2);
         }
 
-        public static bool PropertyMatches(this PropertyInfo prop1, PropertyInfo prop2)
+        internal static bool PropertyMatches(this PropertyInfo prop1, PropertyInfo prop2)
         {
             return prop1.DeclaringType == prop2.DeclaringType && prop1.Name == prop2.Name;
         }
 
-        public static T Create<T>(this Type type)
+        internal static T Create<T>(this Type type)
         {
             return (T) type.Create();
         }
 
-        public static object Create(this Type type)
+        internal static object Create(this Type type)
         {
             return Activator.CreateInstance(type);
         }
 
 
-        public static Type DeriveElementType(this Type type)
+        internal static Type DeriveElementType(this Type type)
         {
             return type.GetElementType() ?? type.GetTypeInfo().GetGenericArguments().FirstOrDefault();
         }
 
-        public static Type IsAnEnumerationOf(this Type type)
+        internal static Type IsAnEnumerationOf(this Type type)
         {
             if (!type.Closes(typeof(IEnumerable<>)))
             {
@@ -400,7 +413,7 @@ namespace BlueMilk.Util
         }
 
 
-        public static void ForAttribute<T>(this Type type, Action<T> action) where T : Attribute
+        internal static void ForAttribute<T>(this Type type, Action<T> action) where T : Attribute
         {
             var atts = type.GetTypeInfo().GetCustomAttributes(typeof(T));
             foreach (T att in atts)
@@ -409,7 +422,7 @@ namespace BlueMilk.Util
             }
         }
 
-        public static void ForAttribute<T>(this Type type, Action<T> action, Action elseDo)
+        internal static void ForAttribute<T>(this Type type, Action<T> action, Action elseDo)
             where T : Attribute
         {
             var atts = type.GetTypeInfo().GetCustomAttributes(typeof(T)).ToArray();
@@ -424,14 +437,52 @@ namespace BlueMilk.Util
             }
         }
 
-        public static bool HasAttribute<T>(this Type type) where T : Attribute
+        internal static bool HasAttribute<T>(this Type type) where T : Attribute
         {
             return type.GetTypeInfo().GetCustomAttributes<T>().Any();
         }
 
-        public static T GetAttribute<T>(this Type type) where T : Attribute
+        internal static T GetAttribute<T>(this Type type) where T : Attribute
         {
             return type.GetTypeInfo().GetCustomAttributes<T>().FirstOrDefault();
+        }
+
+        public static Type FindFirstInterfaceThatCloses(this Type TPluggedType, Type templateType)
+        {
+            return TPluggedType.FindInterfacesThatClose(templateType).FirstOrDefault();
+        }
+
+        public static IEnumerable<Type> FindInterfacesThatClose(this Type TPluggedType, Type templateType)
+        {
+            return rawFindInterfacesThatCloses(TPluggedType, templateType).Distinct();
+        }
+
+        private static IEnumerable<Type> rawFindInterfacesThatCloses(Type TPluggedType, Type templateType)
+        {
+            if (!TPluggedType.IsConcrete()) yield break;
+
+            if (templateType.GetTypeInfo().IsInterface)
+            {
+                foreach (
+                    var interfaceType in
+                    TPluggedType.GetTypeInfo().GetInterfaces()
+                        .Where(type => type.GetTypeInfo().IsGenericType && (type.GetGenericTypeDefinition() == templateType)))
+                {
+                    yield return interfaceType;
+                }
+            }
+            else if (TPluggedType.GetTypeInfo().BaseType.GetTypeInfo().IsGenericType &&
+                     (TPluggedType.GetTypeInfo().BaseType.GetGenericTypeDefinition() == templateType))
+            {
+                yield return TPluggedType.GetTypeInfo().BaseType;
+            }
+
+            if (TPluggedType.GetTypeInfo().BaseType == typeof(object)) yield break;
+
+            foreach (var interfaceType in rawFindInterfacesThatCloses(TPluggedType.GetTypeInfo().BaseType, templateType))
+            {
+                yield return interfaceType;
+            }
         }
     }
 }

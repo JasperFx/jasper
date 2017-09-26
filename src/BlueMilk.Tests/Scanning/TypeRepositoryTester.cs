@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Baseline;
 using BlueMilk.Scanning;
 using BlueMilk.Util;
 using Shouldly;

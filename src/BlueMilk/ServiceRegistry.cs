@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk
@@ -37,5 +38,9 @@ namespace BlueMilk
             return new DescriptorExpression<T>(this, ServiceLifetime.Singleton);
         }
 
+        public void AddType(Type serviceType, Type implementationType)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
