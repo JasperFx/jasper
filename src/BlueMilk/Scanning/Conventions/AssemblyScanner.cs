@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using BlueMilk.Util;
+using Microsoft.Extensions.DependencyInjection;
 
 #pragma warning disable 1591
 
@@ -15,6 +16,7 @@ namespace BlueMilk.Scanning.Conventions
         private readonly List<Assembly> _assemblies = new List<Assembly>();
         private readonly CompositeFilter<Type> _filter = new CompositeFilter<Type>();
         private readonly List<AssemblyScanRecord> _records = new List<AssemblyScanRecord>();
+        private Task<TypeSet> _typeFinder;
 
         public int Count => _assemblies.Count;
 
@@ -138,30 +140,25 @@ namespace BlueMilk.Scanning.Conventions
             Conventions.Each(x => writer.WriteLine("* " + x));
         }
 
-        public Task<ServiceRegistry> ScanForTypes()
+        public void Start()
         {
             if (!Conventions.Any())
             {
                 throw new InvalidOperationException($"There are no {nameof(IRegistrationConvention)}'s in this scanning operation. ");
             }
 
-            return TypeRepository.FindTypes(_assemblies, type => _filter.Matches(type)).ContinueWith(t =>
-            {
-                var registry = new ServiceRegistry();
-
-                _records.AddRange(t.Result.Records);
-
-                foreach (var convention in Conventions)
-                {
-                    convention.ScanTypes(t.Result, registry);
-                }
-
-                Conventions.Each(x => x.ScanTypes(t.Result, registry));
-
-                return registry;
-            });
+            _typeFinder = TypeRepository.FindTypes(_assemblies, type => _filter.Matches(type));
         }
 
+        public async Task ApplyRegistrations(IServiceCollection services)
+        {
+            var types = await _typeFinder;
+
+            foreach (var convention in Conventions)
+            {
+                convention.ScanTypes(types, services);
+            }
+        }
 
         public bool Contains(string assemblyName)
         {

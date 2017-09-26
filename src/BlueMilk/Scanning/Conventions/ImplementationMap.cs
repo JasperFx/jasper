@@ -1,11 +1,12 @@
 ﻿using System.Linq;
 using BlueMilk.Util;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.Scanning.Conventions
 {
     public class ImplementationMap : IRegistrationConvention
     {
-        public void ScanTypes(TypeSet types, ServiceRegistry registry)
+        public void ScanTypes(TypeSet types, IServiceCollection services)
         {
             var interfaces = types.FindTypes(TypeClassification.Interfaces);
             var concretes = types.FindTypes(TypeClassification.Concretes).Where(x => TypeExtensions.HasConstructors(x)).ToArray();
@@ -15,7 +16,7 @@ namespace BlueMilk.Scanning.Conventions
                 var implementors = concretes.Where(x => x.CanBeCastTo(@interface)).ToArray();
                 if (implementors.Count() == 1)
                 {
-                    registry.AddType(@interface, implementors.Single());
+                    services.AddType(@interface, implementors.Single());
                 }
             });
         }

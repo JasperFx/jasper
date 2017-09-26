@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BlueMilk.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk
@@ -38,9 +41,24 @@ namespace BlueMilk
             return new DescriptorExpression<T>(this, ServiceLifetime.Singleton);
         }
 
-        public void AddType(Type serviceType, Type implementationType)
+        public void Scan(Action<IAssemblyScanner> scan)
         {
-            throw new NotImplementedException();
+            // TODO -- might push in the application assembly here first
+            var finder = new AssemblyScanner();
+            scan(finder);
+
+            finder.Start();
+
+            var descriptor = ServiceDescriptor.Singleton(finder);
+            Add(descriptor);
+        }
+
+        public async Task ApplyScannedTypes()
+        {
+            foreach (var scanner in this.Select(x => x.ImplementationInstance).OfType<AssemblyScanner>().ToArray())
+            {
+                await scanner.ApplyRegistrations(this);
+            }
         }
     }
 }

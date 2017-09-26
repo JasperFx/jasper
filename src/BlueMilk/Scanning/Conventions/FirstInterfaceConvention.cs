@@ -1,19 +1,20 @@
 using System.Linq;
 using Baseline;
 using BlueMilk.Util;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.Scanning.Conventions
 {
     public class FirstInterfaceConvention : IRegistrationConvention
     {
-        public void ScanTypes(TypeSet types, ServiceRegistry registry)
+        public void ScanTypes(TypeSet types, IServiceCollection services)
         {
             foreach (var type in types.FindTypes(TypeClassification.Concretes).Where(x => x.HasConstructors()))
             {
                 var interfaceType = type.AllInterfaces().FirstOrDefault();
                 if (interfaceType != null)
                 {
-                    registry.AddType(interfaceType, type);
+                    services.AddType(interfaceType, type);
                 }
             }
 

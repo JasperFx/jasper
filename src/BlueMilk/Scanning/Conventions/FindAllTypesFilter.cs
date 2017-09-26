@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using BlueMilk.Util;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.Scanning.Conventions
 {
@@ -19,11 +20,11 @@ namespace BlueMilk.Scanning.Conventions
             return type.CanBeCastTo(_pluginType) && type.HasConstructors();
         }
 
-        public void ScanTypes(TypeSet types, ServiceRegistry registry)
+        public void ScanTypes(TypeSet types, IServiceCollection services)
         {
             types.FindTypes(TypeClassification.Concretes).Where(Matches).Each(type =>
             {
-                registry.AddType(determineLeastSpecificButValidType(_pluginType, type), type);
+                services.AddType(determineLeastSpecificButValidType(_pluginType, type), type);
             });
         }
 

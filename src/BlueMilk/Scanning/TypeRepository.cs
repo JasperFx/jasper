@@ -48,7 +48,7 @@ namespace BlueMilk.Scanning
 
         public static Task<TypeSet> FindTypes(IEnumerable<Assembly> assemblies, Func<Type, bool> filter = null)
         {
-            var tasks = assemblies.Select(x => ForAssembly(x)).ToArray();
+            var tasks = assemblies.Select(ForAssembly).ToArray();
             return Task.Factory.ContinueWhenAll(tasks, assems =>
             {
                 return new TypeSet(assems.Select(x => x.Result).ToArray(), filter);
