@@ -34,7 +34,6 @@ namespace Jasper.Http
         public readonly RouteGraph Routes = new RouteGraph();
 
         private readonly ServiceRegistry _services;
-        private IWebHost _host;
 
         public AspNetCoreFeature()
         {
@@ -47,6 +46,8 @@ namespace Jasper.Http
             _inner = new WebHostBuilder();
         }
 
+        public IWebHost Host { get; private set; }
+
         internal string EnvironmentName
         {
             get => _inner.GetSetting(WebHostDefaults.EnvironmentKey);
@@ -58,7 +59,7 @@ namespace Jasper.Http
 
         public void Dispose()
         {
-            _host?.Dispose();
+            Host?.Dispose();
         }
 
         async Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry)
@@ -114,11 +115,9 @@ namespace Jasper.Http
         {
             _inner.ConfigureServices(services => JasperStartup.Register(runtime.Container, services, Routes.Router));
 
-            _host = _inner.Build();
+            Host = _inner.Build();
 
-            runtime.Container.Inject(_host);
-
-            _host.Start();
+            Host.Start();
         }
 
         IWebHost IWebHostBuilder.Build()

@@ -16,7 +16,7 @@ namespace AlbaForJasper
 
         protected override IWebHost buildHost()
         {
-            return _runtime.Get<IWebHost>();
+            return _runtime.Host;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace AlbaForJasper
 
             Urls = _runtime.Get<JasperUrlLookup>();
 
-            return _runtime.Get<IWebHost>();
+            return _runtime.Host;
         }
 
         public new void Dispose()

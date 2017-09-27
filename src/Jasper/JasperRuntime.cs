@@ -13,6 +13,7 @@ using BlueMilk.Scanning.Conventions;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
+using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
@@ -60,6 +61,8 @@ namespace Jasper
         }
 
         public ImmutableArray<ServiceDescriptor> Services { get; }
+
+        public IWebHost Host => _registry.Features.For<AspNetCoreFeature>().Host;
 
         public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
 
