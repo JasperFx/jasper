@@ -4,13 +4,12 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Baseline.Reflection;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.ServiceLocation;
 using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Http.Routing.Codegen;
-using Jasper.Util.StructureMap;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Shouldly;
 using StructureMap;
 using Xunit;
@@ -58,7 +57,7 @@ namespace Jasper.Testing.Http.Model
                 .Position.ShouldBe(1);
 
             var generationConfig = new GenerationConfig("SomeApp");
-            generationConfig.Sources.Add(new StructureMapServices(new Container()));
+            generationConfig.Sources.Add(new NoArgConcreteCreator());
 
             var @class = chain.ToClass(generationConfig);
 

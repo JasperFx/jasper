@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Threading.Tasks;
 using BlueMilk;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.ServiceLocation;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Configuration;
-using Jasper.Util.StructureMap;
 using Shouldly;
 using StructureMap;
 using Xunit;
@@ -44,8 +44,8 @@ namespace Jasper.Testing.Bus.Compilation
             _graph = new Lazy<HandlerGraph>(() =>
             {
                 config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
-                var container = _container.Value;
-                config.Sources.Add(new StructureMapServices(container));
+                config.Sources.Add(new ContainerServiceVariableSource(services));
+                config.Sources.Add(new NoArgConcreteCreator());
 
                 config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
                 config.Assemblies.Add(GetType().GetTypeInfo().Assembly);

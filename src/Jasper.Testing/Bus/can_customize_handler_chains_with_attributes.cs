@@ -1,11 +1,12 @@
 ﻿using System.Linq;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.ServiceLocation;
 using BlueMilk.Compilation;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Testing.Bus.Runtime;
-using Jasper.Util.StructureMap;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using StructureMap;
 using Xunit;
@@ -20,7 +21,8 @@ namespace Jasper.Testing.Bus
         public can_customize_handler_chains_with_attributes()
         {
             theConfig = new GenerationConfig("Jasper.Testing.Codegen.Generated");
-            theConfig.Sources.Add(new StructureMapServices(new Container()));
+            theConfig.Sources.Add(new ContainerServiceVariableSource(new ServiceCollection()));
+            theConfig.Sources.Add(new NoArgConcreteCreator());
         }
 
         [Fact]
