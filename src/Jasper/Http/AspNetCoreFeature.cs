@@ -92,7 +92,7 @@ namespace Jasper.Http
             {
                 var rules = runtime.Get<ConnegRules>();
 
-                Routes.BuildRoutingTree(rules, generation, runtime.Container);
+                Routes.BuildRoutingTree(rules, generation, runtime);
 
                 if (BootstrappedWithinAspNetCore) return;
 

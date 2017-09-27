@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -36,6 +37,8 @@ namespace Jasper
         {
             services.AddSingleton(this);
 
+            Services = services.ToImmutableArray();
+
             Container = new Container(_ =>
             {
                 _.Populate(services);
@@ -55,6 +58,8 @@ namespace Jasper
             _bus = new Lazy<IServiceBus>(Get<IServiceBus>);
 
         }
+
+        public ImmutableArray<ServiceDescriptor> Services { get; }
 
         public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
 
@@ -113,6 +118,11 @@ namespace Jasper
         public T Get<T>()
         {
             return Container.GetInstance<T>();
+        }
+
+        public object Get(Type type)
+        {
+            return Container.GetInstance(type);
         }
 
 

@@ -13,8 +13,6 @@ namespace Jasper.Marten.Tests
         {
             using (var runtime = JasperRuntime.For<MartenUsingApp>())
             {
-                Console.WriteLine(runtime.Container.WhatDoIHave());
-
                 var doc = new FakeDoc{Id = Guid.NewGuid()};
 
                 using (var session = runtime.Get<IDocumentSession>())

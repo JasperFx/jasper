@@ -32,7 +32,7 @@ namespace Jasper.Http.Model
             _chains.Add(route);
         }
 
-        public void BuildRoutingTree(ConnegRules rules, IGenerationConfig generation, IContainer container)
+        public void BuildRoutingTree(ConnegRules rules, IGenerationConfig generation, JasperRuntime runtime)
         {
             assertNoDuplicateRoutes();
 
@@ -41,7 +41,7 @@ namespace Jasper.Http.Model
                 rules.Apply(chain);
             }
 
-            var handlers = CompileAndBuildAll(generation, container.GetInstance);
+            var handlers = CompileAndBuildAll(generation, runtime.Get);
 
             foreach (var handler in handlers)
             {

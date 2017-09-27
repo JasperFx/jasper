@@ -49,10 +49,7 @@ namespace Jasper.Bus
 
         Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
         {
-            var container = runtime.Container;
-
-
-            _graph.Compile(generation, container);
+            _graph.Compile(generation, runtime);
 
             return runtime.Get<ServiceBusActivator>().Activate(_graph, Capabilities, runtime, _channels);
         }

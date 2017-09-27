@@ -57,14 +57,14 @@ namespace Jasper.Bus.Model
         protected override HandlerChain[] chains => _chains.Values.ToArray();
         public HandlerChain[] Chains => _chains.Values.ToArray();
 
-        internal void Compile(IGenerationConfig generation, IContainer container)
+        internal void Compile(IGenerationConfig generation, JasperRuntime runtime)
         {
             if (!_hasGrouped)
             {
                 Group();
             }
 
-            var handlers = CompileAndBuildAll(generation, container.GetInstance);
+            var handlers = CompileAndBuildAll(generation, runtime.Get);
             foreach (var handler in handlers)
             {
                 _handlers.Add(handler.Chain.MessageType, handler);
