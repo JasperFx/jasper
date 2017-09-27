@@ -24,7 +24,7 @@ namespace BlueMilk.Codegen.ServiceLocation
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            var typeFullName = Service.VariableType.FullName;
+            var typeFullName = Service.VariableType.FullName.Replace("+", ".");
             var declaration = $"var {Service.Usage} = ({typeFullName}){_provider.Usage}.{nameof(IServiceProvider.GetService)}(typeof({typeFullName}))";
 
             if (Service.VariableType.CanBeCastTo<IDisposable>())

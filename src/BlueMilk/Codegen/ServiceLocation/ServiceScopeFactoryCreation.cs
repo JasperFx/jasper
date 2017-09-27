@@ -20,7 +20,7 @@ namespace BlueMilk.Codegen.ServiceLocation
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.UsingBlock($"var {_scope.Usage} = {_factory}.{nameof(IServiceScopeFactory.CreateScope)}()", w =>
+            writer.UsingBlock($"var {_scope.Usage} = {_factory.Usage}.{nameof(IServiceScopeFactory.CreateScope)}()", w =>
             {
                 w.Write($"var {Provider.Usage} = {_scope.Usage}.{nameof(IServiceScope.ServiceProvider)};");
                 Next?.GenerateCode(method, w);

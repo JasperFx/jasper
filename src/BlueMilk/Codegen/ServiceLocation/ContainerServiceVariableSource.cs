@@ -15,7 +15,7 @@ namespace BlueMilk.Codegen.ServiceLocation
 
         public bool Matches(Type type)
         {
-            return type == typeof(IServiceScopeFactory) || _services.Any(x => x.ServiceType == type);
+            return type == typeof(IServiceScopeFactory) || type == typeof(IServiceProvider) || _services.Any(x => x.ServiceType == type);
         }
 
         public Variable Create(Type type)

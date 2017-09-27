@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.ServiceLocation;
 using BlueMilk.Scanning.Conventions;
 using Jasper.Bus;
 using Jasper.Bus.Model;
@@ -46,7 +47,8 @@ namespace Jasper
             };
 
             registry.Generation.Sources.Add(new NowTimeVariableSource());
-            registry.Generation.Sources.Add(new StructureMapServices(Container));
+            registry.Generation.Sources.Add(new ContainerServiceVariableSource(services));
+            registry.Generation.Sources.Add(new NoArgConcreteCreator());
             registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
             registry.Generation.Assemblies.Add(registry.ApplicationAssembly);
 

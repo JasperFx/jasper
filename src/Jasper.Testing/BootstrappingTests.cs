@@ -24,6 +24,7 @@ namespace Jasper.Testing
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
+                _.Handlers.DisableConventionalDiscovery();
                 _.Services.AddTransient<IFakeStore, FakeStore>();
                 _.Services.For<IWidget>().Use<Widget>();
                 _.Services.For<IFakeService>().Use<FakeService>();

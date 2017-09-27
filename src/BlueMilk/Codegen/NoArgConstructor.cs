@@ -29,9 +29,7 @@ namespace BlueMilk.Codegen
 
             if (_output.VariableType.CanBeCastTo<IDisposable>())
             {
-                writer.Write($"BLOCK:using ({creation})");
-                Next?.GenerateCode(method, writer);
-                writer.FinishBlock();
+                writer.UsingBlock(creation, w => Next?.GenerateCode(method, w));
             }
             else
             {
