@@ -6,6 +6,20 @@ using BlueMilk.Util;
 
 namespace BlueMilk.Codegen
 {
+    public abstract class SyncFrame : Frame
+    {
+        protected SyncFrame() : base(false)
+        {
+        }
+    }
+
+    public abstract class AsyncFrame : Frame
+    {
+        protected AsyncFrame() : base(true)
+        {
+        }
+    }
+
     public abstract class Frame
     {
         protected readonly IList<Frame> dependencies = new List<Frame>();
