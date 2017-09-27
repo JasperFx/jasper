@@ -16,16 +16,23 @@ namespace Jasper.Consul.Internal
 {
     public class ConsulSubscriptionRepository : ConsulService, ISubscriptionsRepository
     {
+        private readonly ConsulSettings _settings;
         public const string SUBSCRIPTION_PREFIX = GLOBAL_PREFIX + "subscription/";
 
         public ConsulSubscriptionRepository(ConsulSettings settings, IChannelGraph channels, BusSettings envSettings)
             : base(settings, channels, envSettings)
         {
+            _settings = settings;
         }
 
         public void Dispose()
         {
             // Nothing, ConsulClient is disposed elsewhere
+        }
+
+        public override string ToString()
+        {
+            return $"Consul-backed subscriptions at port " + _settings.Port;
         }
 
         public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)

@@ -38,7 +38,7 @@ namespace Jasper.Testing.Samples
     {
         public static IWebHostBuilder AddSomeMiddleware(this IWebHostBuilder builder)
         {
-            return null;
+            return builder;
         }
     }
 }

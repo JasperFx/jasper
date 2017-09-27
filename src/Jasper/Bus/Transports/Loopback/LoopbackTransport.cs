@@ -34,12 +34,10 @@ namespace Jasper.Bus.Transports.Loopback
         public TransportState State { get; } = TransportState.Enabled;
         public void Describe(TextWriter writer)
         {
-            if (_settings != null)
+            if (_settings == null) return;
+            foreach (var setting in _settings)
             {
-                foreach (var setting in _settings)
-                {
-                    writer.WriteLine($"Processing messages at {setting.Uri}");
-                }
+                writer.WriteLine($"Processing messages at loopback queue '{setting.Name}'");
             }
         }
 

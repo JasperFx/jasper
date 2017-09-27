@@ -35,6 +35,7 @@ namespace Jasper.CommandLine
         public bool IgnoreFailuresFlag { get; set; }
     }
 
+    [Description("List or carry out administration on registered subscriptions")]
     public class SubscriptionsCommand : OaktonCommand<SubscriptionsInput>
     {
         public SubscriptionsCommand()

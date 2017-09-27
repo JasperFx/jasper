@@ -6,4 +6,8 @@
 
     public class PingMessage {}
     public class PongMessage {}
+
+
+    public class UserCreated{}
+    public class UserDeleted{}
 }

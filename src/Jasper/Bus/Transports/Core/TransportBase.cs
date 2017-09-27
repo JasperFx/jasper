@@ -149,12 +149,9 @@ namespace Jasper.Bus.Transports.Core
         public TransportState State => _settings.State;
         public void Describe(TextWriter writer)
         {
-            if (_settings != null)
+            if (_settings?.Port != null)
             {
-                foreach (var setting in _settings)
-                {
-                    writer.WriteLine($"Listening for messages at {setting.Uri}");
-                }
+                writer.WriteLine($"Listening for messages at {_settings.Port} with protocol '{Protocol}'");
             }
         }
 
