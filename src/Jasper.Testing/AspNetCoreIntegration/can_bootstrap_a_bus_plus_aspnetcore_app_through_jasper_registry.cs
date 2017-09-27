@@ -36,13 +36,13 @@ namespace Jasper.Testing.AspNetCoreIntegration
         [Fact]
         public void has_the_bus()
         {
-            theRuntime.Container.GetInstance<IServiceBus>().ShouldNotBeNull();
+            theRuntime.Get<IServiceBus>().ShouldNotBeNull();
         }
 
         [Fact]
         public void captures_registrations_from_configure_registry()
         {
-            theRuntime.Container.GetInstance<IFoo>().ShouldBeOfType<Foo>();
+            theRuntime.Get<IFoo>().ShouldBeOfType<Foo>();
         }
     }
 

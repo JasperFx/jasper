@@ -15,7 +15,7 @@ namespace Jasper.Configuration
             Container = container;
             if (Container.Role == ContainerRole.Root)
             {
-                _runtime = Container.GetInstance<JasperRuntime>();
+                _runtime = container.GetInstance<JasperRuntime>();
             }
         }
 

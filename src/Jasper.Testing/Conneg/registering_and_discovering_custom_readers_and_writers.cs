@@ -21,7 +21,7 @@ namespace Jasper.Testing.Conneg
         {
             withAllDefaults();
 
-            theSerialization = Runtime.Container.GetInstance<SerializationGraph>();
+            theSerialization = Runtime.Get<SerializationGraph>();
         }
 
         [Fact]

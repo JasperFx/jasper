@@ -64,7 +64,7 @@ namespace Jasper.Testing
             Console.WriteLine(theRuntime.Container.WhatDoIHave());
 
             // This value comes from Module1Extension
-            var moduleSettings = theRuntime.Container.GetInstance<ModuleSettings>();
+            var moduleSettings = theRuntime.Get<ModuleSettings>();
             moduleSettings
                 .Count.ShouldBe(100);
         }
@@ -72,7 +72,7 @@ namespace Jasper.Testing
         [Fact]
         public void application_settings_alterations_win()
         {
-            theRuntime.Container.GetInstance<ModuleSettings>()
+            theRuntime.Get<ModuleSettings>()
                 .From.ShouldBe("Application");
         }
     }

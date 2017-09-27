@@ -49,7 +49,7 @@ namespace DiagnosticsHarness
                 _.Services.ForSingletonOf<IConfigurationRoot>().Use(Configuration);
             });
 
-            return runtime.Container.GetInstance<IServiceProvider>();
+            return runtime.Get<IServiceProvider>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

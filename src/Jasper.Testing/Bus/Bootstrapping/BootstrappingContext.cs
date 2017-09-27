@@ -53,6 +53,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
             .OfType<StubTransport>()
             .Single();
 
-        public HandlerGraph theHandlers => _runtime.Value.Container.GetInstance<HandlerGraph>();
+        public HandlerGraph theHandlers => _runtime.Value.Get<HandlerGraph>();
     }
 }

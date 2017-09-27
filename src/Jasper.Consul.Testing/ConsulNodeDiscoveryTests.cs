@@ -32,7 +32,7 @@ namespace Jasper.Consul.Testing
 
             _runtime = JasperRuntime.For(registry);
 
-            theNodeDiscovery = _runtime.Container.GetInstance<INodeDiscovery>().As<ConsulNodeDiscovery>();
+            theNodeDiscovery = _runtime.Get<INodeDiscovery>().As<ConsulNodeDiscovery>();
 
         }
 

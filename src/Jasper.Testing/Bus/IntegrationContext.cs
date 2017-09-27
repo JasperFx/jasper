@@ -10,14 +10,14 @@ namespace Jasper.Testing.Bus
     {
         public JasperRuntime Runtime { get; private set; }
 
-        public IServiceBus Bus => Runtime.Container.GetInstance<IServiceBus>();
+        public IServiceBus Bus => Runtime.Get<IServiceBus>();
 
         public IChannelGraph Channels => Runtime.Get<IChannelGraph>();
 
         protected void withAllDefaults()
         {
             with(new JasperRegistry());
-            Handlers = Runtime.Container.GetInstance<HandlerGraph>();
+            Handlers = Runtime.Get<HandlerGraph>();
         }
 
         protected void with(JasperRegistry registry)
@@ -31,7 +31,7 @@ namespace Jasper.Testing.Bus
             Runtime = JasperRuntime.For(registry);
 
 
-            Handlers = Runtime.Container.GetInstance<HandlerGraph>();
+            Handlers = Runtime.Get<HandlerGraph>();
         }
 
         protected void with(Action<JasperRegistry> configuration)

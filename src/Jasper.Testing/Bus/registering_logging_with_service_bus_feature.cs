@@ -2,6 +2,7 @@
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
+using Jasper.Testing.Bus.Bootstrapping;
 using Shouldly;
 using Xunit;
 
@@ -14,7 +15,7 @@ namespace Jasper.Testing.Bus
         {
             withAllDefaults();
 
-            Bootstrapping.ContainerExtensions.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>(Runtime.Container);
+            Runtime.Container.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]
@@ -22,7 +23,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.UseConsoleLogging = true);
 
-            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>(Runtime.Container);
+            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]
@@ -30,7 +31,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.LogBusEventsWith<ConsoleBusLogger>());
 
-            Bootstrapping.ContainerExtensions.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>(Runtime.Container);
+            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]
@@ -38,8 +39,8 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.LogBusEventsWith(new ConsoleBusLogger()));
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(Runtime.Container.GetAllInstances<IBusLogger>().OfType<ConsoleBusLogger>()
-                    .Any());
+            Runtime.Container.GetAllInstances<IBusLogger>().OfType<ConsoleBusLogger>()
+                .Any().ShouldBeTrue();
         }
     }
 }

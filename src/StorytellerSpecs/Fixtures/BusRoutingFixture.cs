@@ -75,7 +75,7 @@ namespace StorytellerSpecs.Fixtures
                 _runtime = JasperRuntime.For(_registry);
             }
 
-            var router = _runtime.Container.GetInstance<IMessageRouter>();
+            var router = _runtime.Get<IMessageRouter>();
 
             _tracks = await router.Route(messageType);
         }

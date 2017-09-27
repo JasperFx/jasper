@@ -30,7 +30,7 @@ namespace IntegrationTests.DelayedJobs
             var message2 = new DelayedMessage{Id = 2};
             var message3 = new DelayedMessage{Id = 3};
 
-            var bus = theRuntime.Container.GetInstance<IServiceBus>();
+            var bus = theRuntime.Get<IServiceBus>();
 
 
             bus.DelaySend(message1, 2.Hours());

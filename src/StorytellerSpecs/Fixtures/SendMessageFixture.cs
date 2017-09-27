@@ -53,7 +53,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Send message {messageType} named {name}")]
         public void SendMessage([SelectionList("MessageTypes")] string messageType, string name)
         {
-            var history = _runtime.Container.GetInstance<MessageHistory>();
+            var history = _runtime.Get<MessageHistory>();
 
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
@@ -61,7 +61,7 @@ namespace StorytellerSpecs.Fixtures
 
             var waiter = history.Watch(() =>
             {
-                _runtime.Container.GetInstance<IServiceBus>().Send(message).Wait();
+                _runtime.Get<IServiceBus>().Send(message).Wait();
             });
 
             waiter.Wait(5.Seconds());
@@ -73,7 +73,7 @@ namespace StorytellerSpecs.Fixtures
         public void SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
             [SelectionList("Channels")] Uri address)
         {
-            var history = _runtime.Container.GetInstance<MessageHistory>();
+            var history = _runtime.Get<MessageHistory>();
 
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
@@ -89,7 +89,7 @@ namespace StorytellerSpecs.Fixtures
 
         private IServiceBus bus()
         {
-            return _runtime.Container.GetInstance<IServiceBus>();
+            return _runtime.Get<IServiceBus>();
         }
 
         public IGrammar TheMessagesSentShouldBe()
@@ -105,13 +105,13 @@ namespace StorytellerSpecs.Fixtures
 
             return bus().Request<Message2>(message).ContinueWith(t =>
             {
-                _runtime.Container.GetInstance<MessageTracker>().Records.Add(new MessageRecord("Some Service","stub://replies".ToUri(), t.Result));
+                _runtime.Get<MessageTracker>().Records.Add(new MessageRecord("Some Service","stub://replies".ToUri(), t.Result));
             });
         }
 
         private IList<MessageRecord> sent()
         {
-            return _runtime.Container.GetInstance<MessageTracker>().Records;
+            return _runtime.Get<MessageTracker>().Records;
         }
 
         [FormatAs("Send a Message1 named 'Ack' that we expect to succeed and wait for the ack")]
@@ -167,7 +167,7 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _runtime.Container.GetInstance<IEnvelopeSender>();
+            var sender = _runtime.Get<IEnvelopeSender>();
             await sender.Send(envelope);
         }
 
@@ -180,7 +180,7 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _runtime.Container.GetInstance<IEnvelopeSender>();
+            var sender = _runtime.Get<IEnvelopeSender>();
             await sender.Send(envelope);
         }
 

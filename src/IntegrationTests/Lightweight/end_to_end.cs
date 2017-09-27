@@ -87,7 +87,7 @@ namespace IntegrationTests.Lightweight
         [Fact]
         public async Task delayed_processor_mechanics()
         {
-            await theSender.Container.GetInstance<IServiceBus>().Send(theAddress, new TimeoutsMessage());
+            await theSender.Get<IServiceBus>().Send(theAddress, new TimeoutsMessage());
 
             var envelope = await delayedJobs.Envelope();
 

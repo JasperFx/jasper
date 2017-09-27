@@ -44,8 +44,8 @@ namespace StorytellerSpecs.Fixtures
         public override void TearDown()
         {
             var runtime = JasperRuntime.For(_registry);
-            var history = runtime.Container.GetInstance<MessageHistory>();
-            var graph = runtime.Container.GetInstance<HandlerGraph>();
+            var history = runtime.Get<MessageHistory>();
+            var graph = runtime.Get<HandlerGraph>();
 
 
             Context.State.Store(runtime);

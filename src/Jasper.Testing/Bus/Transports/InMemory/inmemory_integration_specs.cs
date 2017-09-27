@@ -41,7 +41,7 @@ namespace Jasper.Testing.Bus.Transports.InMemory
         [Fact]
         public async Task send_a_message_and_get_the_response()
         {
-            var bus = Runtime.Container.GetInstance<IServiceBus>();
+            var bus = Runtime.Get<IServiceBus>();
 
             var task = theTracker.WaitFor<Message1>();
 

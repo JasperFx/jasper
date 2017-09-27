@@ -32,7 +32,7 @@ namespace IntegrationTests.Conneg
 
 
 
-            theTracker.ShouldBeTheSameAs(blueApp.Container.GetInstance<MessageTracker>());
+            theTracker.ShouldBeTheSameAs(blueApp.Get<MessageTracker>());
         }
 
         public void Dispose()

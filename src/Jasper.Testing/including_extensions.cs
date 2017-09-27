@@ -16,7 +16,7 @@ namespace Jasper.Testing
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                runtime.Container.GetInstance<IColorService>()
+                runtime.Get<IColorService>()
                     .ShouldBeOfType<RedService>();
             }
         }
@@ -31,7 +31,7 @@ namespace Jasper.Testing
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                runtime.Container.GetInstance<IColorService>()
+                runtime.Get<IColorService>()
                     .ShouldBeOfType<BlueService>();
             }
         }

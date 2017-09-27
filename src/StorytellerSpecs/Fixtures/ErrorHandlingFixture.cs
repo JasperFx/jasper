@@ -115,11 +115,11 @@ namespace StorytellerSpecs.Fixtures
 
             _runtime = JasperRuntime.For(registry);
 
-            _graph = _runtime.Container.GetInstance<HandlerGraph>();
+            _graph = _runtime.Get<HandlerGraph>();
             _chain = _graph.ChainFor<ErrorCausingMessage>();
 
 
-            _bus = _runtime.Container.GetInstance<IServiceBus>();
+            _bus = _runtime.Get<IServiceBus>();
         }
 
         public override void TearDown()

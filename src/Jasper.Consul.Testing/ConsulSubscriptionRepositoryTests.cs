@@ -37,7 +37,7 @@ namespace Jasper.Consul.Testing
 
             _runtime = JasperRuntime.For(registry);
 
-            theRepository = _runtime.Container.GetInstance<ISubscriptionsRepository>();
+            theRepository = _runtime.Get<ISubscriptionsRepository>();
         }
 
         public void Dispose()

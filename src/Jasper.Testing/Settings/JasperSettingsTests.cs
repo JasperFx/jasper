@@ -30,7 +30,7 @@ namespace Jasper.Testing.Settings
                 _runtime = JasperRuntime.For(theRegistry);
             }
 
-            return _runtime.Container.GetInstance<T>();
+            return _runtime.Get<T>();
         }
 
         [Fact]

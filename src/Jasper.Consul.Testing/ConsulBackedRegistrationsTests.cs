@@ -15,8 +15,8 @@ namespace Jasper.Consul.Testing
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                runtime.Container.GetInstance<INodeDiscovery>().ShouldBeOfType<ConsulNodeDiscovery>();
-                runtime.Container.GetInstance<ISubscriptionsRepository>()
+                runtime.Get<INodeDiscovery>().ShouldBeOfType<ConsulNodeDiscovery>();
+                runtime.Get<ISubscriptionsRepository>()
                     .ShouldBeOfType<ConsulSubscriptionRepository>();
             }
         }

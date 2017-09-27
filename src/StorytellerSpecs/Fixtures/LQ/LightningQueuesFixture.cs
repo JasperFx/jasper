@@ -47,7 +47,7 @@ namespace StorytellerSpecs.Fixtures.LQ
         {
             var runtime = JasperRuntime.For(_registry);
 
-            var graph = runtime.Container.GetInstance<HandlerGraph>();
+            var graph = runtime.Get<HandlerGraph>();
 
             Context.State.Store(runtime);
         }

@@ -69,7 +69,7 @@ namespace Jasper.Marten.Tests
 
 
 
-            theRepository = _runtime.Container.GetInstance<ISubscriptionsRepository>();
+            theRepository = _runtime.Get<ISubscriptionsRepository>();
         }
 
         [Fact]
