@@ -16,17 +16,17 @@ namespace Jasper.Testing.AspNetCoreIntegration
         public void services_registered_by_the_DI_abstraction_are_in_the_container()
         {
             var registry = new JasperRegistry();
-            ServiceCollectionServiceExtensions.AddTransient<IService, FooService>(registry.Services);
+            registry.Services.AddTransient<IService, FooService>();
             registry.Services.AddTransient<IFakeStore, FakeStore>();
             registry.Services.For<IWidget>().Use<Widget>();
             registry.Services.For<IFakeService>().Use<FakeService>();
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                var @default = runtime.Container.Model.For<IService>().Default;
+
+                var @default = runtime.Services.Last(x => x.ServiceType == typeof(IService));
                 @default.ShouldNotBeNull();
-                @default.Lifecycle.ShouldBeOfType<UniquePerRequestLifecycle>();
-                @default.ReturnedType.ShouldBe(typeof(FooService));
+                @default.ImplementationType.ShouldBe(typeof(FooService));
             }
         }
 
@@ -34,15 +34,15 @@ namespace Jasper.Testing.AspNetCoreIntegration
         public void adds_the_core_service_provider_abstractions()
         {
             var registry = new JasperRegistry();
-            ServiceCollectionServiceExtensions.AddTransient<IService, FooService>(registry.Services);
+            registry.Services.AddTransient<IService, FooService>();
             registry.Services.AddTransient<IFakeStore, FakeStore>();
             registry.Services.For<IWidget>().Use<Widget>();
             registry.Services.For<IFakeService>().Use<FakeService>();
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                runtime.Container.Model.HasDefaultImplementationFor<IServiceProvider>();
-                runtime.Container.Model.HasDefaultImplementationFor<IServiceScopeFactory>();
+                runtime.Get<IServiceProvider>().ShouldNotBeNull();
+                runtime.Get<IServiceScopeFactory>().ShouldNotBeNull();
             }
         }
 
@@ -52,56 +52,55 @@ namespace Jasper.Testing.AspNetCoreIntegration
 
     public static class ContainerExtensions
     {
-        public static IContainer DefaultRegistrationIs<T, TConcrete>(this IContainer container) where TConcrete : T
+        public static JasperRuntime DefaultRegistrationIs<T, TConcrete>(this JasperRuntime runtime) where TConcrete : T
         {
-            container.Model.DefaultTypeFor<T>().ShouldBe(typeof(TConcrete));
-            return container;
+            runtime.Get<T>().ShouldBeOfType<TConcrete>();
+            return runtime;
+
         }
 
-        public static IContainer DefaultRegistrationIs(this IContainer container, Type pluginType, Type concreteType)
+        public static JasperRuntime DefaultRegistrationIs(this JasperRuntime runtime, Type pluginType, Type concreteType)
         {
-            container.Model.DefaultTypeFor(pluginType).ShouldBe(concreteType);
+            runtime.Get(pluginType).ShouldBeOfType(concreteType);
 
-            return container;
+            return runtime;
         }
 
-        public static IContainer DefaultRegistrationIs<T>(this IContainer container, T value) where T : class
+        public static JasperRuntime DefaultRegistrationIs<T>(this JasperRuntime runtime, T value) where T : class
         {
-            container.Model.For<T>().Default.Get<T>().ShouldBeTheSameAs(value);
+            runtime.Get<T>().ShouldBeSameAs(value);
 
-            return container;
+            return runtime;
         }
 
-        public static IContainer DefaultSingletonIs(this IContainer container, Type pluginType, Type concreteType)
+        public static JasperRuntime DefaultSingletonIs(this JasperRuntime runtime, Type pluginType, Type concreteType)
         {
-            container.DefaultRegistrationIs(pluginType, concreteType);
-            container.Model.For(pluginType).Default.Lifecycle.ShouldBeOfType<SingletonLifecycle>();
+            var @default = runtime.Services.Last(x => x.ServiceType == pluginType);
+            @default.ImplementationType.ShouldBe(concreteType);
+            @default.Lifetime.ShouldBe(ServiceLifetime.Singleton);
 
-            return container;
+            return runtime;
         }
 
-        public static IContainer DefaultSingletonIs<T, TConcrete>(this IContainer container) where TConcrete : T
+        public static JasperRuntime DefaultSingletonIs<T, TConcrete>(this JasperRuntime container) where TConcrete : T
         {
-            container.DefaultRegistrationIs<T, TConcrete>();
-            container.Model.For<T>().Default.Lifecycle.ShouldBeOfType<SingletonLifecycle>();
-
-            return container;
+            return container.DefaultSingletonIs(typeof(T), typeof(TConcrete));
         }
 
-        public static IContainer ShouldHaveRegistration<T, TConcrete>(this IContainer container)
+        public static JasperRuntime ShouldHaveRegistration<T, TConcrete>(this JasperRuntime runtime)
         {
-            var plugin = container.Model.For<T>();
-            plugin.Instances.Any(x => x.ReturnedType == typeof(TConcrete)).ShouldBeTrue();
+            runtime.Services.Any(x => x.ServiceType == typeof(T) && x.ImplementationType == typeof(TConcrete))
+                .ShouldBeTrue();
 
-            return container;
+            return runtime;
         }
 
-        public static IContainer ShouldNotHaveRegistration<T, TConcrete>(this IContainer container)
+        public static JasperRuntime ShouldNotHaveRegistration<T, TConcrete>(this JasperRuntime runtime)
         {
-            var plugin = container.Model.For<T>();
-            plugin.Instances.Any(x => x.ReturnedType == typeof(TConcrete)).ShouldBeFalse();
+            runtime.Services.Any(x => x.ServiceType == typeof(T) && x.ImplementationType == typeof(TConcrete))
+                .ShouldBeFalse();
 
-            return container;
+            return runtime;
         }
     }
 }

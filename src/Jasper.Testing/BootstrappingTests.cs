@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper.Configuration;
+using Jasper.Testing.AspNetCoreIntegration;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -80,29 +81,17 @@ namespace Jasper.Testing
         }
 
         [Fact]
-        public void the_container_should_be_locked_for_disposal()
-        {
-            theRuntime.Container.DisposalLock.ShouldBe(DisposalLock.Ignore);
-        }
-
-        [Fact]
         public void registrations_from_the_main_registry_are_applied()
         {
-            theRuntime.Container.Model.DefaultTypeFor<IMainService>()
-                .ShouldBe(typeof(MainService));
+            theRuntime.DefaultRegistrationIs<IMainService, MainService>();
         }
 
         [Fact]
         public void should_pick_up_registrations_from_the_features()
         {
-            theRuntime.Container.Model.DefaultTypeFor<IFeatureService1>()
-                .ShouldBe(typeof(FeatureService1));
-
-            theRuntime.Container.Model.DefaultTypeFor<IFeatureService2>()
-                .ShouldBe(typeof(FeatureService2));
-
-            theRuntime.Container.Model.DefaultTypeFor<IFeatureService3>()
-                .ShouldBe(typeof(FeatureService3));
+            theRuntime.DefaultRegistrationIs<IFeatureService1, FeatureService1>();
+            theRuntime.DefaultRegistrationIs<IFeatureService2, FeatureService2>();
+            theRuntime.DefaultRegistrationIs<IFeatureService3, FeatureService3>();
         }
 
         public void Dispose()
@@ -142,14 +131,6 @@ namespace Jasper.Testing
             theRuntime = JasperRuntime.For(theRegistry);
 
             theRuntime.Dispose();
-        }
-
-        [Fact]
-        public void the_container_should_be_disposed()
-        {
-            mainService.WasDisposed.ShouldBeTrue();
-
-            theRuntime.Container.DisposalLock.ShouldBe(DisposalLock.Unlocked);
         }
 
         [Fact]

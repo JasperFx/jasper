@@ -49,7 +49,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
 
         public IChannelGraph theChannels => _runtime.Value.Get<IChannelGraph>();
 
-        public StubTransport theTransport => _runtime.Value.Container.GetAllInstances<ITransport>()
+        public StubTransport theTransport => _runtime.Value.Get<ITransport[]>()
             .OfType<StubTransport>()
             .Single();
 

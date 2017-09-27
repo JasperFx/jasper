@@ -5,7 +5,9 @@ using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
+using Jasper.Testing.AspNetCoreIntegration;
 using Jasper.Testing.Bus.Stubs;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using StructureMap.Pipeline;
 using Xunit;
@@ -17,7 +19,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void transport_is_disposed()
         {
-            var transport = theRuntime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
+            var transport = theRuntime.Get<ITransport[]>().OfType<StubTransport>().Single();
             transport.WasDisposed.ShouldBeFalse();
 
 
@@ -32,34 +34,30 @@ namespace Jasper.Testing.Bus.Bootstrapping
             theRuntime.Capabilities.ShouldNotBeNull();
         }
 
-        [Fact]
-        public void transports_must_be_a_singleton()
-        {
-            theRuntime.Container.Model.For<ITransport>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();
-        }
 
         [Fact]
         public void subscriptions_repository_must_be_a_singleton()
         {
-            theRuntime.Container.Model.For<ISubscriptionsRepository>().Lifecycle.ShouldBeOfType<SingletonLifecycle>();
+            theRuntime.Services.Where(x => x.ServiceType == typeof(ISubscriptionsRepository))
+                .All(x => x.Lifetime == ServiceLifetime.Singleton).ShouldBeTrue();
         }
 
         [Fact]
         public void should_have_the_envelope_sender_registered()
         {
-            theRuntime.Container.DefaultRegistrationIs<IEnvelopeSender, EnvelopeSender>();
+            theRuntime.DefaultRegistrationIs<IEnvelopeSender, EnvelopeSender>();
         }
 
         [Fact]
         public void should_have_the_service_bus_registered()
         {
-            theRuntime.Container.DefaultRegistrationIs<IServiceBus, ServiceBus>();
+            theRuntime.DefaultRegistrationIs<IServiceBus, ServiceBus>();
         }
 
         [Fact]
         public void should_have_the_handler_pipeline_registered()
         {
-            theRuntime.Container.DefaultRegistrationIs<IHandlerPipeline, HandlerPipeline>();
+            theRuntime.DefaultRegistrationIs<IHandlerPipeline, HandlerPipeline>();
         }
     }
 }

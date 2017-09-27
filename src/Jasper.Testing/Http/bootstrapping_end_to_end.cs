@@ -55,7 +55,7 @@ namespace Jasper.Testing.Http
         [Fact]
         public void url_registry_is_registered()
         {
-            theRuntime.Container.Model.HasDefaultImplementationFor<IUrlRegistry>().ShouldBeTrue();
+            theRuntime.Get<IUrlRegistry>().ShouldNotBeNull();
         }
 
         [Fact]

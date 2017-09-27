@@ -2,6 +2,7 @@
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
+using Jasper.Testing.AspNetCoreIntegration;
 using Jasper.Testing.Bus.Bootstrapping;
 using Shouldly;
 using Xunit;
@@ -15,7 +16,7 @@ namespace Jasper.Testing.Bus
         {
             withAllDefaults();
 
-            Runtime.Container.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]
@@ -23,7 +24,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.UseConsoleLogging = true);
 
-            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]
@@ -31,7 +32,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.LogBusEventsWith<ConsoleBusLogger>());
 
-            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]
@@ -39,8 +40,9 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.LogBusEventsWith(new ConsoleBusLogger()));
 
-            Runtime.Container.GetAllInstances<IBusLogger>().OfType<ConsoleBusLogger>()
-                .Any().ShouldBeTrue();
+
+            Runtime.Services
+                .Any(x => x.ServiceType == typeof(IBusLogger) && x.ImplementationInstance is ConsoleBusLogger).ShouldBeTrue();
         }
     }
 }

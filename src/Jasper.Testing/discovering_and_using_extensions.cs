@@ -3,6 +3,7 @@ using System.Linq;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Configuration;
+using Jasper.Testing.AspNetCoreIntegration;
 using Module1;
 using Shouldly;
 using Xunit;
@@ -43,26 +44,21 @@ namespace Jasper.Testing
         [Fact]
         public void can_inject_services_from_the_extension()
         {
-            theRuntime.Container.Model.For<IBusLogger>()
-                .Instances.Any(x => x.ReturnedType == typeof(ModuleBusLogger))
+            theRuntime.Services.Any(x =>
+                    x.ServiceType == typeof(IBusLogger) && x.ImplementationType == typeof(ModuleBusLogger))
                 .ShouldBeTrue();
+
         }
 
         [Fact]
         public void application_service_registrations_win()
         {
-            theRuntime.Container.Model.DefaultTypeFor<IModuleService>()
-                .ShouldBe(typeof(AppsModuleService));
+            theRuntime.DefaultRegistrationIs<IModuleService, AppsModuleService>();
         }
 
         [Fact]
         public void extension_can_alter_settings()
         {
-            var instance = theRuntime.Container.Model.For<ModuleSettings>()
-                .Default;
-
-            Console.WriteLine(theRuntime.Container.WhatDoIHave());
-
             // This value comes from Module1Extension
             var moduleSettings = theRuntime.Get<ModuleSettings>();
             moduleSettings
