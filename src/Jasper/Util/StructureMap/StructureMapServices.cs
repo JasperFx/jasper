@@ -7,6 +7,7 @@ using StructureMap.Pipeline;
 namespace Jasper.Util.StructureMap
 {
 
+    [Obsolete("going away when we pull out StructureMap")]
     public class StructureMapServices : IVariableSource
     {
         public static readonly Variable Root;

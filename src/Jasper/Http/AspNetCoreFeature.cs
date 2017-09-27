@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using BlueMilk;
@@ -70,6 +71,12 @@ namespace Jasper.Http
 
             _services.AddSingleton(Routes);
             _services.AddSingleton<IUrlRegistry>(Routes.Router.Urls);
+
+            // Because the built in DI container is too stupid to just build out concrete types
+            foreach (var type in actions.Select(x => x.HandlerType).Distinct())
+            {
+                _services.AddScoped(type, type);
+            }
 
             if (!BootstrappedWithinAspNetCore)
             {

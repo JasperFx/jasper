@@ -79,6 +79,12 @@ namespace Jasper.Bus
             _graph.Group();
             Handlers.ApplyPolicies(_graph);
 
+            // Because the built in DI container is too stupid to just build out concrete types
+            foreach (var type in _graph.Chains.SelectMany(x => x.Handlers).Select(x => x.HandlerType).Distinct())
+            {
+                Services.AddScoped(type, type);
+            }
+
             Services.AddSingleton(_graph);
             Services.AddSingleton<IChannelGraph>(_channels);
 
