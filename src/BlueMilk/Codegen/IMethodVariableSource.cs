@@ -1,0 +1,15 @@
+﻿using System;
+
+namespace BlueMilk.Codegen
+{
+    /// <summary>
+    /// Models a logical method and how to find candidate variables
+    /// </summary>
+    public interface IMethodVariableSource
+    {
+        Variable FindVariable(Type type);
+        Variable FindVariableByName(Type dependency, string name);
+        bool TryFindVariableByName(Type dependency, string name, out Variable variable);
+        Variable TryFindVariable(Type type);
+    }
+}

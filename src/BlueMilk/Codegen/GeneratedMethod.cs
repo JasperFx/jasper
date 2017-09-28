@@ -15,7 +15,7 @@ namespace BlueMilk.Codegen
         IEnumerable<Argument> Arguments { get; }
     }
 
-    public class GeneratedMethod : IGeneratedMethod
+    public class GeneratedMethod : IGeneratedMethod, IMethodVariableSource
     {
         private readonly Argument[] _arguments;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();

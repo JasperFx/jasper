@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Baseline;
 using BlueMilk.Codegen;
 using BlueMilk.Compilation;
 using BlueMilk.IoC;
@@ -18,18 +20,40 @@ namespace BlueMilk.Tests.IoC
         }
     }
 
+    public class StubMethodVariableSource : IMethodVariableSource
+    {
+        public readonly Dictionary<Type, Variable> Variables = new Dictionary<Type, Variable>();
+
+        public Variable FindVariable(Type type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Variable FindVariableByName(Type dependency, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryFindVariableByName(Type dependency, string name, out Variable variable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Variable TryFindVariable(Type type)
+        {
+            return Variables.ContainsKey(type) ? Variables[type] : null;
+        }
+    }
+
     public class BuildStepPlannerTester
     {
         public readonly ServiceRegistry theServices = new ServiceRegistry();
         private ServiceGraph theGraph;
-        private GeneratedMethod theMethod;
+        private StubMethodVariableSource theMethod = new StubMethodVariableSource();
 
         public BuildStepPlannerTester()
         {
             theGraph = new ServiceGraph(theServices);
-            theMethod = new GeneratedMethod("Go", new Argument[0], new List<Frame>{new CommentFrame()});
-
-
         }
 
         private BuildStepPlanner executePlan<T>()
