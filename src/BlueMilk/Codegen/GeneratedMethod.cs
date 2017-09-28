@@ -162,6 +162,12 @@ namespace BlueMilk.Codegen
             }
 
             var variable = findVariable(type);
+            if (variable == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(type),
+                    $"Jasper doesn't know how to build a variable of type '{type.FullName}'");
+            }
+
             _variables.Add(type, variable);
 
             return variable;
@@ -184,16 +190,7 @@ namespace BlueMilk.Codegen
             }
 
             var source = Sources.Concat(_class.Config.Sources).FirstOrDefault(x => x.Matches(type));
-            if (source != null)
-            {
-                return source.Create(type);
-            }
-
-
-            throw new ArgumentOutOfRangeException(nameof(type),
-                $"Jasper doesn't know how to build a variable of type '{type.FullName}'");
-
-
+            return source?.Create(type);
         }
 
         public Variable FindVariableByName(Type dependency, string name)
@@ -229,9 +226,20 @@ namespace BlueMilk.Codegen
             return false;
         }
 
-        public Variable TryFindVariable(Type variableType)
+        public Variable TryFindVariable(Type type)
         {
-            throw new NotImplementedException();
+            if (_variables.ContainsKey(type))
+            {
+                return _variables[type];
+            }
+
+            var variable = findVariable(type);
+            if (variable != null)
+            {
+                _variables.Add(type, variable);
+            }
+
+            return variable;
         }
     }
 }
