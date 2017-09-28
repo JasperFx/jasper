@@ -95,7 +95,7 @@ namespace BlueMilk.Codegen
 
         public Frame Top { get; private set; }
 
-        private Frame[] compileFrames(IList<Frame> frames)
+        protected Frame[] compileFrames(IList<Frame> frames)
         {
             // Step 1, resolve all the necessary variables
             foreach (var frame in frames)
@@ -119,7 +119,7 @@ namespace BlueMilk.Codegen
 
         public InjectedField[] Fields { get; protected set; } = new InjectedField[0];
 
-        private void findInjectedFields(DependencyGatherer dependencies)
+        internal void findInjectedFields(DependencyGatherer dependencies)
         {
             // Stupid. Can't believe I haven't fixed this in Baseline
             var list = new List<InjectedField>();
@@ -134,7 +134,7 @@ namespace BlueMilk.Codegen
             Fields = list.ToArray();
         }
 
-        private Frame chainFrames(Frame[] frames)
+        protected Frame chainFrames(Frame[] frames)
         {
             // Step 5, put into a chain.
             for (int i = 1; i < frames.Length; i++)
@@ -227,6 +227,11 @@ namespace BlueMilk.Codegen
             }
 
             return false;
+        }
+
+        public Variable TryFindVariable(Type variableType)
+        {
+            throw new NotImplementedException();
         }
     }
 }
