@@ -38,6 +38,14 @@ namespace BlueMilk.IoC
             return ctor.GetParameters().Length == 1 || ctor.GetParameters().All(x => FindDefault(x.ParameterType) != null);
         }
 
+        public bool CouldBuild(Type type)
+        {
+            if (!type.IsConcrete()) return false;
+
+            var ctor = ChooseConstructor(type);
+            return ctor != null && CouldBuild(ctor);
+        }
+
         public ServiceDescriptor FindDefault(Type serviceType)
         {
             // TODO -- fill in by closing a generic -- LATER!!!!
@@ -73,8 +81,10 @@ namespace BlueMilk.IoC
 
         public bool Matches(Type type)
         {
-            return type == typeof(IServiceScopeFactory) || type == typeof(IServiceProvider) || _services.Any(x => x.ServiceType == type);
+            return type == typeof(IServiceScopeFactory) || type == typeof(IServiceProvider) || _services.Any(x => x.ServiceType == type) || CouldBuild(type);
         }
+
+
 
         public Variable Create(Type type)
         {
@@ -87,6 +97,16 @@ namespace BlueMilk.IoC
             {
                 return new ServiceScopeFactoryCreation().Provider;
             }
+
+            if (type.IsConcrete() && _services.All(x => x.ServiceType != type))
+            {
+                var ctor = ChooseConstructor(type);
+                if (ctor != null && ctor.GetParameters().Length == 0)
+                {
+                    return new NoArgCreationVariable(type);
+                }
+            }
+
 
             return new ServiceCreationFrame(type).Service;
         }

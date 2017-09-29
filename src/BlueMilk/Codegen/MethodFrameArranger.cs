@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BlueMilk.Codegen.ServiceLocation;
 using BlueMilk.Util;
 
 namespace BlueMilk.Codegen
@@ -81,8 +82,26 @@ namespace BlueMilk.Codegen
             _method.Fields = list.ToArray();
         }
 
+        private IEnumerable<IVariableSource> allVariableSources()
+        {
+            foreach (var source in _method.Sources)
+            {
+                yield return source;
+            }
+
+            foreach (var source in _class.Rules.Sources)
+            {
+                yield return source;
+            }
+
+            yield return _class.Rules.Services;
+            yield return new NoArgConcreteCreator();
+        }
+
+
         private Variable findVariable(Type type)
         {
+            // TODO -- will have to honor the Variable.CanBeReused flag later
             var argument = _method.Arguments.Concat(_method.DerivedVariables).FirstOrDefault(x => x.VariableType == type);
             if (argument != null)
             {
@@ -95,7 +114,7 @@ namespace BlueMilk.Codegen
                 return created;
             }
 
-            var source = _method.Sources.Concat(_class.Rules.Sources).FirstOrDefault(x => x.Matches(type));
+            var source = allVariableSources().FirstOrDefault(x => x.Matches(type));
             return source?.Create(type);
         }
 
@@ -130,6 +149,8 @@ namespace BlueMilk.Codegen
         {
             variable = null;
 
+            // It's fine here for now that we aren't looking through the services for
+            // variables that could potentially be built by the IoC container
             var sourced = _method.Sources.Where(x => x.Matches(dependency)).Select(x => x.Create(dependency));
             var created = _method.Frames.SelectMany(x => x.Creates);
 

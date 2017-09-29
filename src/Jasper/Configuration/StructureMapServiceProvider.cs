@@ -1,4 +1,5 @@
 using System;
+using Baseline;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 
@@ -28,6 +29,12 @@ namespace Jasper.Configuration
                 // Ideally we'd like to call TryGetInstance here as well,
                 // but StructureMap does't like it for some weird reason.
                 return GetRequiredService(serviceType);
+            }
+
+            // TEMPORARY!!!!
+            if (serviceType.IsConcrete())
+            {
+                return Container.GetInstance(serviceType);
             }
 
             return Container.TryGetInstance(serviceType);

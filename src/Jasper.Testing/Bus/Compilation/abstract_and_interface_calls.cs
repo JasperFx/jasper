@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
@@ -33,12 +34,12 @@ namespace Jasper.Testing.Bus.Compilation
     {
         public void Handle(SpecificMessage message)
         {
-            
+
         }
 
         public void Handle(SpecificMessage2 message2)
         {
-            
+
         }
 
         public void Handle(IMessage message)
@@ -57,21 +58,21 @@ namespace Jasper.Testing.Bus.Compilation
 
     public interface IMessage
     {
-        
+
     }
 
     public class SpecificMessage : IMessage
     {
-        
+
     }
 
     public abstract class BaseMessage : IMessage
     {
-        
+
     }
 
     public class SpecificMessage2 : BaseMessage
     {
-        
+
     }
 }
