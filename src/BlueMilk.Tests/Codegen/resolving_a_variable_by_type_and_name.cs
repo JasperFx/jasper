@@ -2,11 +2,21 @@
 using System.Collections.Generic;
 using BlueMilk.Codegen;
 using BlueMilk.Compilation;
+using Castle.DynamicProxy.Generators;
 using Shouldly;
 using Xunit;
 
 namespace BlueMilk.Tests.Codegen
 {
+    public static class GeneratedMethodExtensions
+    {
+        public static MethodFrameArranger ToArranger(this GeneratedMethod method)
+        {
+            return new MethodFrameArranger(method, new GeneratedClass(new GenerationRules("SomeNamespace"), "SomeClassName"));
+
+        }
+    }
+
     public class resolving_a_variable_by_type_and_name
     {
         [Fact]
@@ -18,10 +28,11 @@ namespace BlueMilk.Tests.Codegen
             var frame1 = new FrameThatBuildsVariable("aaa", typeof(string));
 
             var method = new GeneratedMethod("Something", new Argument[]{arg1, arg2}, new List<Frame>{frame1} );
-            method.FindVariableByName(typeof(string), "foo")
+
+            method.ToArranger().FindVariableByName(typeof(string), "foo")
                 .ShouldBeSameAs(arg1);
 
-            method.FindVariableByName(typeof(string), "bar")
+            method.ToArranger().FindVariableByName(typeof(string), "bar")
                 .ShouldBeSameAs(arg2);
 
         }
@@ -37,10 +48,10 @@ namespace BlueMilk.Tests.Codegen
             var frame2 = new FrameThatBuildsVariable("bbb", typeof(string));
 
             var method = new GeneratedMethod("Something", new Argument[]{arg1, arg2}, new List<Frame>{frame1, frame2} );
-            method.FindVariableByName(typeof(string), "aaa")
+            method.ToArranger().FindVariableByName(typeof(string), "aaa")
                 .ShouldBeSameAs(frame1.Variable);
 
-            method.FindVariableByName(typeof(string), "bbb")
+            method.ToArranger().FindVariableByName(typeof(string), "bbb")
                 .ShouldBeSameAs(frame2.Variable);
         }
 
@@ -60,10 +71,10 @@ namespace BlueMilk.Tests.Codegen
             method.Sources.Add(source1);
             method.Sources.Add(source2);
 
-            method.FindVariableByName(typeof(string), "ccc")
+            method.ToArranger().FindVariableByName(typeof(string), "ccc")
                 .ShouldBeSameAs(source1.Variable);
 
-            method.FindVariableByName(typeof(string), "ddd")
+            method.ToArranger().FindVariableByName(typeof(string), "ddd")
                 .ShouldBeSameAs(source2.Variable);
         }
 
@@ -85,7 +96,7 @@ namespace BlueMilk.Tests.Codegen
 
             Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() =>
             {
-                method.FindVariableByName(typeof(string), "missing");
+                method.ToArranger().FindVariableByName(typeof(string), "missing");
             });
         }
 
@@ -107,7 +118,7 @@ namespace BlueMilk.Tests.Codegen
 
             Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() =>
             {
-                method.FindVariableByName(typeof(int), "ccc");
+                method.ToArranger().FindVariableByName(typeof(int), "ccc");
             });
         }
 

@@ -15,7 +15,7 @@ namespace BlueMilk.Codegen
         IEnumerable<Argument> Arguments { get; }
     }
 
-    public class GeneratedMethod : IGeneratedMethod, IMethodVariables
+    public class GeneratedMethod : IGeneratedMethod
     {
         private readonly Argument[] _arguments;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
@@ -62,28 +62,13 @@ namespace BlueMilk.Codegen
             }
 
             writer.FinishBlock();
-
-
         }
 
+        // THIS SHOULD GO AWAY
         public void ArrangeFrames(GeneratedClass @class)
         {
-
-
-            _class = @class;
-
-            var compiled = compileFrames(Frames);
-
-            if (compiled.All(x => !x.IsAsync))
-            {
-                AsyncMode = AsyncMode.ReturnCompletedTask;
-            }
-            else if (compiled.Count(x => x.IsAsync) == 1 && compiled.Last().IsAsync && compiled.Last().CanReturnTask())
-            {
-                AsyncMode = compiled.Any(x => x.Wraps) ? AsyncMode.AsyncTask : AsyncMode.ReturnFromLastNode;
-            }
-
-            Top = chainFrames(compiled);
+            var compiler = new MethodFrameArranger(this, @class);
+            compiler.Arrange();
         }
 
         public string ToExitStatement()
@@ -93,59 +78,11 @@ namespace BlueMilk.Codegen
             return $"return {typeof(Task).FullName}.{nameof(Task.CompletedTask)};";
         }
 
-        public AsyncMode AsyncMode { get; private set; } = AsyncMode.AsyncTask;
+        public AsyncMode AsyncMode { get; internal set; } = AsyncMode.AsyncTask;
 
         public Frame Top { get; internal set; }
 
-        protected Frame[] compileFrames(IList<Frame> frames)
-        {
-            // Step 1, resolve all the necessary variables
-            foreach (var frame in frames)
-            {
-                frame.ResolveVariables(this);
-            }
-
-            // Step 2, calculate dependencies
-            var dependencies = new DependencyGatherer(this, frames);
-            findInjectedFields(dependencies);
-
-            // Step 3, gather any missing frames and
-            // add to the beginning of the list
-            dependencies.Dependencies.GetAll().SelectMany(x => x).Distinct()
-                .Where(x => !frames.Contains(x))
-                .Each(x => frames.Insert(0, x));
-
-            // Step 4, topological sort in dependency order
-            return frames.TopologicalSort(x => dependencies.Dependencies[x], true).ToArray();
-        }
-
-        public InjectedField[] Fields { get; protected set; } = new InjectedField[0];
-
-        internal void findInjectedFields(DependencyGatherer dependencies)
-        {
-            // Stupid. Can't believe I haven't fixed this in Baseline
-            var list = new List<InjectedField>();
-            dependencies.Variables.Each((key, _) =>
-            {
-                if (key is InjectedField)
-                {
-                    list.Add(key.As<InjectedField>());
-                }
-            });
-
-            Fields = list.ToArray();
-        }
-
-        protected Frame chainFrames(Frame[] frames)
-        {
-            // Step 5, put into a chain.
-            for (int i = 1; i < frames.Length; i++)
-            {
-                frames[i - 1].Next = frames[i];
-            }
-
-            return frames[0];
-        }
+        public InjectedField[] Fields { get; internal set; } = new InjectedField[0];
 
         public IList<Frame> Frames { get; }
 
@@ -154,95 +91,10 @@ namespace BlueMilk.Codegen
         public Visibility Visibility { get; set; } = Visibility.Public;
 
         public readonly IList<Variable> DerivedVariables = new List<Variable>();
-        private GeneratedClass _class;
-
-        public Variable FindVariable(Type type)
-        {
-            if (_variables.ContainsKey(type))
-            {
-                return _variables[type];
-            }
-
-            var variable = findVariable(type);
-            if (variable == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(type),
-                    $"Jasper doesn't know how to build a variable of type '{type.FullName}'");
-            }
-
-            _variables.Add(type, variable);
-
-            return variable;
-        }
 
         public readonly IList<IVariableSource> Sources = new List<IVariableSource>();
 
-        private Variable findVariable(Type type)
-        {
-            var argument = Arguments.Concat(DerivedVariables).FirstOrDefault(x => x.VariableType == type);
-            if (argument != null)
-            {
-                return argument;
-            }
 
-            var created = Frames.SelectMany(x => x.Creates).FirstOrDefault(x => x.VariableType == type);
-            if (created != null)
-            {
-                return created;
-            }
-
-            var source = Sources.Concat(_class.Rules.Sources).FirstOrDefault(x => x.Matches(type));
-            return source?.Create(type);
-        }
-
-        public Variable FindVariableByName(Type dependency, string name)
-        {
-            Variable variable;
-            if (TryFindVariableByName(dependency, name, out variable)) return variable;
-
-            throw new ArgumentOutOfRangeException(nameof(dependency), $"Cannot find a matching variable {dependency.FullName} {name}");
-        }
-
-        public bool TryFindVariableByName(Type dependency, string name, out Variable variable)
-        {
-            variable = null;
-
-            var sourced = Sources.Where(x => x.Matches(dependency)).Select(x => x.Create(dependency));
-            var created = Frames.SelectMany(x => x.Creates);
-
-            var candidate = _variables.Values
-                .Concat(Arguments)
-                .Concat(DerivedVariables)
-                .Concat(created)
-                .Concat(sourced)
-                .Where(x => x != null)
-                .FirstOrDefault(x => x.VariableType == dependency && x.Usage == name);
-
-
-            if (candidate != null)
-            {
-                variable = candidate;
-                return true;
-            }
-
-            return false;
-        }
-
-        public Variable TryFindVariable(Type type)
-        {
-            if (_variables.ContainsKey(type))
-            {
-                return _variables[type];
-            }
-
-            var variable = findVariable(type);
-            if (variable != null)
-            {
-                _variables.Add(type, variable);
-            }
-
-            return variable;
-        }
     }
 }
 
