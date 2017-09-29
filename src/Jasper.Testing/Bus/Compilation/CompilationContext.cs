@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Codegen.ServiceLocation;
+using BlueMilk.IoC;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
@@ -44,7 +45,7 @@ namespace Jasper.Testing.Bus.Compilation
             _graph = new Lazy<HandlerGraph>(() =>
             {
                 rules = new GenerationRules("Jasper.Testing.Codegen.Generated");
-                rules.Sources.Add(new ContainerServiceVariableSource(services));
+                rules.Sources.Add(new ServiceGraph(services));
                 rules.Sources.Add(new NoArgConcreteCreator());
 
                 rules.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);

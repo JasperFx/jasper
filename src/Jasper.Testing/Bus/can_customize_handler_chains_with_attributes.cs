@@ -2,6 +2,7 @@
 using BlueMilk.Codegen;
 using BlueMilk.Codegen.ServiceLocation;
 using BlueMilk.Compilation;
+using BlueMilk.IoC;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
@@ -21,7 +22,7 @@ namespace Jasper.Testing.Bus
         public can_customize_handler_chains_with_attributes()
         {
             theRules = new GenerationRules("Jasper.Testing.Codegen.Generated");
-            theRules.Sources.Add(new ContainerServiceVariableSource(new ServiceCollection()));
+            theRules.Sources.Add(new ServiceGraph(new ServiceCollection()));
             theRules.Sources.Add(new NoArgConcreteCreator());
         }
 

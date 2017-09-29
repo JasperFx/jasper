@@ -49,8 +49,11 @@ namespace Jasper
             };
 
             registry.Generation.Sources.Add(new NowTimeVariableSource());
-            registry.Generation.Sources.Add(new ContainerServiceVariableSource(services));
+
+            // TODO -- think these two will get subsumed into MethodFrameArranger
+            registry.Generation.Sources.Add(registry.Generation.Services);
             registry.Generation.Sources.Add(new NoArgConcreteCreator());
+
             registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
             registry.Generation.Assemblies.Add(registry.ApplicationAssembly);
 

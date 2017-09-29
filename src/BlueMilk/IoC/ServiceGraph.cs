@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BlueMilk.Codegen;
+using BlueMilk.Codegen.ServiceLocation;
 using BlueMilk.Util;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.IoC
 {
-    public class ServiceGraph
+    public class ServiceGraph : IVariableSource
     {
         private readonly IServiceCollection _services;
         private readonly Dictionary<Type, ConstructorInfo> _constructors = new Dictionary<Type, ConstructorInfo>();
@@ -67,6 +69,26 @@ namespace BlueMilk.IoC
         public ServiceDescriptor[] FindAll(Type serviceType)
         {
             return _services.Where(x => x.ServiceType == serviceType).ToArray();
+        }
+
+        public bool Matches(Type type)
+        {
+            return type == typeof(IServiceScopeFactory) || type == typeof(IServiceProvider) || _services.Any(x => x.ServiceType == type);
+        }
+
+        public Variable Create(Type type)
+        {
+            if (type == typeof(IServiceScopeFactory))
+            {
+                return new InjectedField(typeof(IServiceScopeFactory));
+            }
+
+            if (type == typeof(IServiceProvider))
+            {
+                return new ServiceScopeFactoryCreation().Provider;
+            }
+
+            return new ServiceCreationFrame(type).Service;
         }
     }
 }
