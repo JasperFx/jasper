@@ -30,7 +30,7 @@ namespace Jasper.Http.ContentHandling
             Next?.GenerateCode(method, writer);
         }
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             if (_return != null) yield return _return;
 

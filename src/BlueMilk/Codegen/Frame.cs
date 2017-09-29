@@ -45,7 +45,7 @@ namespace BlueMilk.Codegen
 
         public abstract void GenerateCode(GeneratedMethod method, ISourceWriter writer);
 
-        public void ResolveVariables(GeneratedMethod method)
+        public void ResolveVariables(IMethodVariables method)
         {
             // This has to be idempotent
             if (_hasResolved) return;
@@ -61,7 +61,7 @@ namespace BlueMilk.Codegen
             _hasResolved = true;
         }
 
-        public virtual IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public virtual IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             yield break;
         }

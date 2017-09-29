@@ -23,7 +23,7 @@ namespace Jasper.Http.ContentHandling
             Next?.GenerateCode(method, writer);
         }
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             _response = chain.FindVariable(typeof(HttpResponse));
 

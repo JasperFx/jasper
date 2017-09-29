@@ -48,7 +48,7 @@ namespace BlueMilk.Scanning.Conventions
 
         public static async Task<IServiceCollection> Combine(this IServiceCollection[] serviceCollections)
         {
-            if (!serviceCollections.Any()) return new ServiceCollection();
+            if (!serviceCollections.Any()) return new ServiceRegistry();
 
             foreach (var services in serviceCollections)
             {
@@ -57,7 +57,7 @@ namespace BlueMilk.Scanning.Conventions
 
             if (serviceCollections.Length == 1) return serviceCollections[0];
 
-            var response = new ServiceCollection();
+            var response = new ServiceRegistry();
             response.AddRange(serviceCollections.SelectMany(x => x));
 
             return response;

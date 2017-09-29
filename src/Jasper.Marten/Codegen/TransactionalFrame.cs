@@ -16,7 +16,7 @@ namespace Jasper.Marten.Codegen
 
         public Variable Session { get; }
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             _store = chain.FindVariable(typeof(IDocumentStore));
             return new[] {_store};

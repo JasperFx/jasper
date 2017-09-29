@@ -32,7 +32,7 @@ namespace BlueMilk.IoC
             Next?.GenerateCode(method, writer);
         }
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             return _arguments;
         }

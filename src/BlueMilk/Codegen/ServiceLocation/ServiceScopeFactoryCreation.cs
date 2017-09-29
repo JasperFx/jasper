@@ -27,7 +27,7 @@ namespace BlueMilk.Codegen.ServiceLocation
             });
         }
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             _factory = chain.FindVariable(typeof(IServiceScopeFactory));
             yield return _factory;

@@ -5,7 +5,7 @@ namespace BlueMilk.Codegen
     /// <summary>
     /// Models a logical method and how to find candidate variables
     /// </summary>
-    public interface IMethodVariableSource
+    public interface IMethodVariables
     {
         Variable FindVariable(Type type);
         Variable FindVariableByName(Type dependency, string name);

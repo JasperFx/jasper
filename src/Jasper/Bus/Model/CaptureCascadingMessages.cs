@@ -23,7 +23,7 @@ namespace Jasper.Bus.Model
         }
 
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             _context = chain.FindVariable(typeof(IInvocationContext));
 

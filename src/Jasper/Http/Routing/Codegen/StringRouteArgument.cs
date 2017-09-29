@@ -30,7 +30,7 @@ namespace Jasper.Http.Routing.Codegen
             Next?.GenerateCode(method, writer);
         }
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             Segments = chain.FindVariableByName(typeof(string[]), RoutingFrames.Segments);
             yield return Segments;

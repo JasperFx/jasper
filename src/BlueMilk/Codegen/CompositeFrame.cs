@@ -31,7 +31,7 @@ namespace BlueMilk.Codegen
 
         protected abstract void generateCode(GeneratedMethod method, ISourceWriter writer, Frame inner);
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             return _inner.SelectMany(x => x.FindVariables(chain)).Distinct();
         }

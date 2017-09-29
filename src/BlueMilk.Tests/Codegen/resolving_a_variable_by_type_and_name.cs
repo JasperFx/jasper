@@ -152,7 +152,7 @@ namespace BlueMilk.Tests.Codegen
 
         }
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             Resolved = chain.FindVariableByName(_dependency, _name);
             yield return Resolved;

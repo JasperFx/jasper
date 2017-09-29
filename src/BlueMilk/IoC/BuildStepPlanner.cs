@@ -11,12 +11,12 @@ namespace BlueMilk.IoC
     {
         public Type ConcreteType { get; }
         private readonly ServiceGraph _graph;
-        private readonly IMethodVariableSource _method;
+        private readonly IMethodVariables _method;
         private readonly IList<BuildStep> _visited = new List<BuildStep>();
         private readonly IList<BuildStep> _all = new List<BuildStep>();
         private readonly Stack<BuildStep> _chain = new Stack<BuildStep>();
 
-        public BuildStepPlanner(Type concreteType, ServiceGraph graph, IMethodVariableSource method)
+        public BuildStepPlanner(Type concreteType, ServiceGraph graph, IMethodVariables method)
         {
             if (!concreteType.IsConcrete()) throw new ArgumentOutOfRangeException(nameof(concreteType), "Must be a concrete type");
 

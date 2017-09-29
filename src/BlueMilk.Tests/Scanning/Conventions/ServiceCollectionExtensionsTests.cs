@@ -12,7 +12,7 @@ namespace BlueMilk.Tests.Scanning.Conventions
         [Fact]
         public void add_type_on_an_empty_set()
         {
-            var services = new ServiceCollection();
+            var services = new ServiceRegistry();
             services.AddSingleton(this);
 
             services.AddType(typeof(IWidget), typeof(AWidget));
@@ -25,7 +25,7 @@ namespace BlueMilk.Tests.Scanning.Conventions
         [Fact]
         public void add_type_on_new_implementation_type()
         {
-            var services = new ServiceCollection();
+            var services = new ServiceRegistry();
             services.AddSingleton(this);
 
             services.AddType(typeof(IWidget), typeof(AWidget));
@@ -39,7 +39,7 @@ namespace BlueMilk.Tests.Scanning.Conventions
         [Fact]
         public void do_not_add_twice()
         {
-            var services = new ServiceCollection();
+            var services = new ServiceRegistry();
             services.AddSingleton(this);
 
             services.AddType(typeof(IWidget), typeof(AWidget));

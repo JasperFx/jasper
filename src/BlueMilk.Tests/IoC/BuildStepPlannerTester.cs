@@ -20,7 +20,7 @@ namespace BlueMilk.Tests.IoC
         }
     }
 
-    public class StubMethodVariableSource : IMethodVariableSource
+    public class StubMethodVariables : IMethodVariables
     {
         public readonly Dictionary<Type, Variable> Variables = new Dictionary<Type, Variable>();
 
@@ -49,7 +49,7 @@ namespace BlueMilk.Tests.IoC
     {
         public readonly ServiceRegistry theServices = new ServiceRegistry();
         private ServiceGraph theGraph;
-        private StubMethodVariableSource theMethod = new StubMethodVariableSource();
+        private StubMethodVariables theMethod = new StubMethodVariables();
 
         public BuildStepPlannerTester()
         {

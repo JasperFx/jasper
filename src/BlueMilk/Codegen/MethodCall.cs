@@ -54,7 +54,7 @@ namespace BlueMilk.Codegen
         public Variable Target { get; set; }
 
 
-        private Variable findVariable(ParameterInfo param, GeneratedMethod chain)
+        private Variable findVariable(ParameterInfo param, IMethodVariables chain)
         {
             var type = param.ParameterType;
 
@@ -101,7 +101,7 @@ namespace BlueMilk.Codegen
             return true;
         }
 
-        public override IEnumerable<Variable> FindVariables(GeneratedMethod chain)
+        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             var parameters = Method.GetParameters().ToArray();
             for (int i = 0; i < parameters.Length; i++)
