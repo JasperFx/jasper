@@ -9,14 +9,14 @@ namespace BlueMilk.Codegen
 {
     public class GeneratedClass
     {
-        public IGenerationConfig Config { get; }
+        public GenerationConfig Config { get; }
 
         public string ClassName { get; }
         private Type _baseType;
         private readonly IList<Type> _interfaces = new List<Type>();
         private readonly IList<GeneratedMethod> _methods = new List<GeneratedMethod>();
 
-        public GeneratedClass(IGenerationConfig config, string className)
+        public GeneratedClass(GenerationConfig config, string className)
         {
             Config = config;
             ClassName = className;

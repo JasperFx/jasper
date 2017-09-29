@@ -84,7 +84,7 @@ namespace Jasper.Conneg
                 });
         }
 
-        public Task Activate(JasperRuntime runtime, IGenerationConfig generation)
+        public Task Activate(JasperRuntime runtime, GenerationConfig generation)
         {
             return Task.CompletedTask;
         }

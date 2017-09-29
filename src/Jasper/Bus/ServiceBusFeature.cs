@@ -47,7 +47,7 @@ namespace Jasper.Bus
             return bootstrap(registry);
         }
 
-        Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
+        Task IFeature.Activate(JasperRuntime runtime, GenerationConfig generation)
         {
             _graph.Compile(generation, runtime);
 

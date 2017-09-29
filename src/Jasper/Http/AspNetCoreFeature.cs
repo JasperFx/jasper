@@ -87,7 +87,7 @@ namespace Jasper.Http
             return _services;
         }
 
-        Task IFeature.Activate(JasperRuntime runtime, IGenerationConfig generation)
+        Task IFeature.Activate(JasperRuntime runtime, GenerationConfig generation)
         {
             return Task.Factory.StartNew(() =>
             {

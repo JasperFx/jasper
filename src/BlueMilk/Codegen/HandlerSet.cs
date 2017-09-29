@@ -12,15 +12,14 @@ namespace BlueMilk.Codegen
     {
         protected abstract TChain[] chains { get; }
 
-        public THandler[] CompileAndBuildAll(IGenerationConfig generation, Func<Type, object> builder)
+        public THandler[] CompileAndBuildAll(GenerationConfig generation, Func<Type, object> builder)
         {
             var types = CompileAll(generation);
             return chains.Select(x => x.Create(types, builder)).ToArray();
         }
 
-        public Type[] CompileAll(IGenerationConfig generation)
+        public Type[] CompileAll(GenerationConfig generation)
         {
-
             var code = GenerateCode(generation);
 
             var generator = buildGenerator(generation);
@@ -35,7 +34,7 @@ namespace BlueMilk.Codegen
 
         }
 
-        private AssemblyGenerator buildGenerator(IGenerationConfig generation)
+        private AssemblyGenerator buildGenerator(GenerationConfig generation)
         {
             var generator = new AssemblyGenerator();
             generator.ReferenceAssembly(GetType().GetTypeInfo().Assembly);
@@ -49,7 +48,7 @@ namespace BlueMilk.Codegen
             return generator;
         }
 
-        public string GenerateCode(IGenerationConfig generation)
+        public string GenerateCode(GenerationConfig generation)
         {
             beforeGeneratingCode();
 

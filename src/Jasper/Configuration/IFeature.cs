@@ -10,7 +10,7 @@ namespace Jasper.Configuration
     public interface IFeature : IDisposable
     {
         Task<ServiceRegistry> Bootstrap(JasperRegistry registry);
-        Task Activate(JasperRuntime runtime, IGenerationConfig generation);
+        Task Activate(JasperRuntime runtime, GenerationConfig generation);
         void Describe(JasperRuntime runtime, TextWriter writer);
     }
 }

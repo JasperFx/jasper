@@ -116,7 +116,7 @@ namespace Jasper.Http.Model
             return $"{Route.HttpMethod}: {Route.Pattern}";
         }
 
-        public GeneratedClass ToClass(IGenerationConfig config)
+        public GeneratedClass ToClass(GenerationConfig config)
         {
             try
             {

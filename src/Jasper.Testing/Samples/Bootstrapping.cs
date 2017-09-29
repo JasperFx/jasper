@@ -198,7 +198,7 @@ namespace Bootstrapping.Configuration2
             throw new System.NotImplementedException();
         }
 
-        public Task Activate(JasperRuntime runtime, IGenerationConfig generation)
+        public Task Activate(JasperRuntime runtime, GenerationConfig generation)
         {
             throw new System.NotImplementedException();
         }

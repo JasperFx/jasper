@@ -68,6 +68,8 @@ namespace BlueMilk.Codegen
 
         public void ArrangeFrames(GeneratedClass @class)
         {
+
+
             _class = @class;
 
             var compiled = compileFrames(Frames);
@@ -93,7 +95,7 @@ namespace BlueMilk.Codegen
 
         public AsyncMode AsyncMode { get; private set; } = AsyncMode.AsyncTask;
 
-        public Frame Top { get; private set; }
+        public Frame Top { get; internal set; }
 
         protected Frame[] compileFrames(IList<Frame> frames)
         {
