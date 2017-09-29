@@ -16,20 +16,20 @@ namespace Jasper.Testing.Bus
 
     public class can_customize_handler_chains_with_attributes
     {
-        private GenerationConfig theConfig;
+        private GenerationRules theRules;
 
         public can_customize_handler_chains_with_attributes()
         {
-            theConfig = new GenerationConfig("Jasper.Testing.Codegen.Generated");
-            theConfig.Sources.Add(new ContainerServiceVariableSource(new ServiceCollection()));
-            theConfig.Sources.Add(new NoArgConcreteCreator());
+            theRules = new GenerationRules("Jasper.Testing.Codegen.Generated");
+            theRules.Sources.Add(new ContainerServiceVariableSource(new ServiceCollection()));
+            theRules.Sources.Add(new NoArgConcreteCreator());
         }
 
         [Fact]
         public void apply_attribute_on_method()
         {
             var chain = HandlerChain.For<FakeHandler1>(x => x.Handle(null));
-            var model = chain.ToClass(theConfig);
+            var model = chain.ToClass(theRules);
 
             model.Methods.Single().Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
         }
@@ -38,7 +38,7 @@ namespace Jasper.Testing.Bus
         public void apply_attribute_on_class()
         {
             var chain = HandlerChain.For<FakeHandler2>(x => x.Handle(null));
-            var model = chain.ToClass(theConfig);
+            var model = chain.ToClass(theRules);
 
             model.Methods.Single().Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
         }

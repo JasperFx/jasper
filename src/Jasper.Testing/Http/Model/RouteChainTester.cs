@@ -56,7 +56,7 @@ namespace Jasper.Testing.Http.Model
             chain.Route.Arguments.Single().ShouldBeOfType<RouteArgument>()
                 .Position.ShouldBe(1);
 
-            var generationConfig = new GenerationConfig("SomeApp");
+            var generationConfig = new GenerationRules("SomeApp");
             generationConfig.Sources.Add(new NoArgConcreteCreator());
 
             var @class = chain.ToClass(generationConfig);

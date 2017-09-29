@@ -30,7 +30,7 @@ namespace Jasper.Bus
 
         public CapabilityGraph Capabilities = new CapabilityGraph();
 
-        public GenerationConfig Generation { get; } = new GenerationConfig("JasperBus.Generated");
+        public GenerationRules Generation { get; } = new GenerationRules("JasperBus.Generated");
 
         public BusSettings Settings { get; } = new BusSettings();
 
@@ -47,7 +47,7 @@ namespace Jasper.Bus
             return bootstrap(registry);
         }
 
-        Task IFeature.Activate(JasperRuntime runtime, GenerationConfig generation)
+        Task IFeature.Activate(JasperRuntime runtime, GenerationRules generation)
         {
             _graph.Compile(generation, runtime);
 

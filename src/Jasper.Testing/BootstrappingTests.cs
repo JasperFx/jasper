@@ -164,7 +164,7 @@ namespace Jasper.Testing
             return Task.FromResult(Services);
         }
 
-        public Task Activate(JasperRuntime runtime, GenerationConfig generation)
+        public Task Activate(JasperRuntime runtime, GenerationRules generation)
         {
             Runtime = runtime;
             WasActivated = true;

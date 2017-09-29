@@ -4,7 +4,7 @@ namespace BlueMilk.Codegen
 {
     public interface IGenerates<T>
     {
-        GeneratedClass ToClass(GenerationConfig config);
+        GeneratedClass ToClass(GenerationRules rules);
 
         string SourceCode { get; set; }
 

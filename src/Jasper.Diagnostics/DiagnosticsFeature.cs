@@ -22,7 +22,7 @@ namespace Jasper.Diagnostics
             return Task.FromResult(Services);
         }
 
-        Task IFeature.Activate(JasperRuntime runtime, GenerationConfig generation)
+        Task IFeature.Activate(JasperRuntime runtime, GenerationRules generation)
         {
             var settings = runtime.Get<DiagnosticsSettings>();
 

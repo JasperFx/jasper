@@ -12,13 +12,13 @@ namespace BlueMilk.Codegen
     {
         protected abstract TChain[] chains { get; }
 
-        public THandler[] CompileAndBuildAll(GenerationConfig generation, Func<Type, object> builder)
+        public THandler[] CompileAndBuildAll(GenerationRules generation, Func<Type, object> builder)
         {
             var types = CompileAll(generation);
             return chains.Select(x => x.Create(types, builder)).ToArray();
         }
 
-        public Type[] CompileAll(GenerationConfig generation)
+        public Type[] CompileAll(GenerationRules generation)
         {
             var code = GenerateCode(generation);
 
@@ -34,7 +34,7 @@ namespace BlueMilk.Codegen
 
         }
 
-        private AssemblyGenerator buildGenerator(GenerationConfig generation)
+        private AssemblyGenerator buildGenerator(GenerationRules generation)
         {
             var generator = new AssemblyGenerator();
             generator.ReferenceAssembly(GetType().GetTypeInfo().Assembly);
@@ -48,7 +48,7 @@ namespace BlueMilk.Codegen
             return generator;
         }
 
-        public string GenerateCode(GenerationConfig generation)
+        public string GenerateCode(GenerationRules generation)
         {
             beforeGeneratingCode();
 

@@ -116,11 +116,11 @@ namespace Jasper.Http.Model
             return $"{Route.HttpMethod}: {Route.Pattern}";
         }
 
-        public GeneratedClass ToClass(GenerationConfig config)
+        public GeneratedClass ToClass(GenerationRules rules)
         {
             try
             {
-                var @class = new GeneratedClass(config, TypeName)
+                var @class = new GeneratedClass(rules, TypeName)
                 {
                     BaseType = typeof(RouteHandler)
                 };

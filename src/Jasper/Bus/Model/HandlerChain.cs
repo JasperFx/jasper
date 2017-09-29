@@ -116,11 +116,11 @@ namespace Jasper.Bus.Model
             return $"{MessageType.Name} handled by {Handlers.Select(x => $"{x.HandlerType.Name}.{x.Method.Name}()").Join(", ")}";
         }
 
-        public GeneratedClass ToClass(GenerationConfig config)
+        public GeneratedClass ToClass(GenerationRules rules)
         {
             try
             {
-                var @class = new GeneratedClass(config, TypeName)
+                var @class = new GeneratedClass(rules, TypeName)
                 {
                     BaseType = typeof(MessageHandler)
                 };

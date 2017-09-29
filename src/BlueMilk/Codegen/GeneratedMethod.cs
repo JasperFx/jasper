@@ -191,7 +191,7 @@ namespace BlueMilk.Codegen
                 return created;
             }
 
-            var source = Sources.Concat(_class.Config.Sources).FirstOrDefault(x => x.Matches(type));
+            var source = Sources.Concat(_class.Rules.Sources).FirstOrDefault(x => x.Matches(type));
             return source?.Create(type);
         }
 

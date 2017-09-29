@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.Codegen
 {
-    public class GenerationConfig
+    public class GenerationRules
     {
-        public GenerationConfig(string applicationNamespace)
+        public GenerationRules(string applicationNamespace)
         {
             ApplicationNamespace = applicationNamespace;
         }

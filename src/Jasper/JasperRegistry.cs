@@ -44,7 +44,7 @@ namespace Jasper
             deriveServiceName();
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
-            Generation = new GenerationConfig($"{name}.Generated");
+            Generation = new GenerationRules($"{name}.Generated");
 
             Logging = new Logging(this);
             Settings = new JasperSettings(this);
@@ -84,7 +84,7 @@ namespace Jasper
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
         // TODO -- move this to advanced too? Won't be used very often
-        public GenerationConfig Generation { get; }
+        public GenerationRules Generation { get; }
 
         // TODO -- does this need to be public?
         public Assembly ApplicationAssembly { get; }

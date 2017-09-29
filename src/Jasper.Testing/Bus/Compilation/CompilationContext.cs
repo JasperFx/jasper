@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bus.Compilation
         protected Envelope theEnvelope;
 
         protected Lazy<HandlerGraph> _graph;
-        private GenerationConfig config;
+        private GenerationRules rules;
 
         public CompilationContext()
         {
@@ -43,12 +43,12 @@ namespace Jasper.Testing.Bus.Compilation
 
             _graph = new Lazy<HandlerGraph>(() =>
             {
-                config = new GenerationConfig("Jasper.Testing.Codegen.Generated");
-                config.Sources.Add(new ContainerServiceVariableSource(services));
-                config.Sources.Add(new NoArgConcreteCreator());
+                rules = new GenerationRules("Jasper.Testing.Codegen.Generated");
+                rules.Sources.Add(new ContainerServiceVariableSource(services));
+                rules.Sources.Add(new NoArgConcreteCreator());
 
-                config.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
-                config.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+                rules.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
+                rules.Assemblies.Add(GetType().GetTypeInfo().Assembly);
 
 
                 var graph = new HandlerGraph();
@@ -66,11 +66,11 @@ namespace Jasper.Testing.Bus.Compilation
 
 
 
-            _code = new Lazy<string>(() => Graph.GenerateCode(config));
+            _code = new Lazy<string>(() => Graph.GenerateCode(rules));
 
             _handlers = new Lazy<Dictionary<Type, MessageHandler>>(() =>
             {
-                var handlers = Graph.CompileAndBuildAll(config, _container.Value.GetInstance);
+                var handlers = Graph.CompileAndBuildAll(rules, _container.Value.GetInstance);
                 var dict = new Dictionary<Type, MessageHandler>();
                 foreach (var handler in handlers)
                 {

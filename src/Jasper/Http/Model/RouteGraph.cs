@@ -32,7 +32,7 @@ namespace Jasper.Http.Model
             _chains.Add(route);
         }
 
-        public void BuildRoutingTree(ConnegRules rules, GenerationConfig generation, JasperRuntime runtime)
+        public void BuildRoutingTree(ConnegRules rules, GenerationRules generation, JasperRuntime runtime)
         {
             assertNoDuplicateRoutes();
 
