@@ -147,6 +147,7 @@ namespace Jasper
 
 
             var services = await collections.ToArray().Combine();
+            registry.Generation.ReadServices(services);
 
 
             var runtime = new JasperRuntime(registry, services);
