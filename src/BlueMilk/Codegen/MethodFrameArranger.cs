@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using BlueMilk.Codegen.ServiceLocation;
+using BlueMilk.IoC;
 using BlueMilk.Util;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.Codegen
 {
@@ -11,11 +13,14 @@ namespace BlueMilk.Codegen
         private readonly GeneratedMethod _method;
         private readonly GeneratedClass _class;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
+        private readonly SingletonVariableSource _singletons;
 
         public MethodFrameArranger(GeneratedMethod method, GeneratedClass @class)
         {
             _method = method;
             _class = @class;
+
+            _singletons = new SingletonVariableSource(_class.Rules.Services);
         }
 
         public void Arrange()
@@ -94,8 +99,16 @@ namespace BlueMilk.Codegen
                 yield return source;
             }
 
-            yield return _class.Rules.Services;
+            yield return _singletons;
+
+            yield return ServiceProviderVariableSource.Instance;
+
             yield return new NoArgConcreteCreator();
+
+
+
+            yield return _class.Rules.Services;
+
         }
 
 
@@ -188,4 +201,48 @@ namespace BlueMilk.Codegen
             return variable;
         }
     }
+
+    public class SingletonVariableSource : IVariableSource
+    {
+        private readonly ServiceGraph _graph;
+
+        public SingletonVariableSource(ServiceGraph graph)
+        {
+            _graph = graph;
+        }
+
+        public bool Matches(Type type)
+        {
+            if (type == typeof(IServiceScopeFactory)) return true;
+
+            var descriptor = _graph.FindDefault(type);
+            return descriptor?.Lifetime == ServiceLifetime.Singleton;
+        }
+
+        public Variable Create(Type type)
+        {
+            return new InjectedField(type);
+        }
+    }
+
+    public class ServiceProviderVariableSource : IVariableSource
+    {
+        public static readonly ServiceProviderVariableSource Instance = new ServiceProviderVariableSource();
+
+        private ServiceProviderVariableSource()
+        {
+        }
+
+        public bool Matches(Type type)
+        {
+            return type == typeof(IServiceProvider);
+        }
+
+        public Variable Create(Type type)
+        {
+            return new ServiceScopeFactoryCreation().Provider;
+        }
+    }
+
+
 }

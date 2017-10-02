@@ -60,7 +60,7 @@ namespace Jasper.Configuration
                 .Use<StructureMapServiceProvider>();
 
             registry.For<IServiceScopeFactory>()
-                .LifecycleIs(Lifecycles.Container)
+                .LifecycleIs(Lifecycles.Singleton)
                 .Use<StructureMapServiceScopeFactory>();
 
             registry.Register(descriptors);

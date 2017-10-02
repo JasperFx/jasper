@@ -81,33 +81,11 @@ namespace BlueMilk.IoC
 
         public bool Matches(Type type)
         {
-            return type == typeof(IServiceScopeFactory) || type == typeof(IServiceProvider) || _services.Any(x => x.ServiceType == type) || CouldBuild(type);
+            return _services.Any(x => x.ServiceType == type) || CouldBuild(type);
         }
-
-
 
         public Variable Create(Type type)
         {
-            if (type == typeof(IServiceScopeFactory))
-            {
-                return new InjectedField(typeof(IServiceScopeFactory));
-            }
-
-            if (type == typeof(IServiceProvider))
-            {
-                return new ServiceScopeFactoryCreation().Provider;
-            }
-
-            if (type.IsConcrete() && _services.All(x => x.ServiceType != type))
-            {
-                var ctor = ChooseConstructor(type);
-                if (ctor != null && ctor.GetParameters().Length == 0)
-                {
-                    return new NoArgCreationVariable(type);
-                }
-            }
-
-
             return new ServiceCreationFrame(type).Service;
         }
     }
