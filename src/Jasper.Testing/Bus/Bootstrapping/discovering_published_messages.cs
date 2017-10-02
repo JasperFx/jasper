@@ -45,11 +45,13 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
     }
 
+    // SAMPLE: using-[Publish]
     [Publish]
     public class PublishedMessage1
     {
 
     }
+    // ENDSAMPLE
 
     [Publish]
     public class PublishedMessage2

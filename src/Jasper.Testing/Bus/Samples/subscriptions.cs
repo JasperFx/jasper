@@ -28,7 +28,7 @@ namespace Jasper.Testing.Bus.Samples
     // SAMPLE: configuring-subscriptions
     public class LocalApp : JasperRegistry
     {
-        public LocalApp(NodeSettings settings)
+        public LocalApp()
         {
             // Explicitly set the logical descriptive
             // name of this application. The default is
@@ -36,19 +36,21 @@ namespace Jasper.Testing.Bus.Samples
             ServiceName = "MyApplication";
 
             // Incoming messages
-            Transports.ListenForMessagesFrom(settings.Receiving);
+            Transports.ListenForMessagesFrom("tcp://localhost:2333");
 
-//            // Local subscription to only this node
-//            SubscribeLocally()
-//                .ToSource(settings.OtherApp)
-//                .ToMessage<OtherAppMessage1>();
-//
-//            // Global subscription to the all the
-//            // running nodes in this clustered application
-//            SubscribeAt(settings.Receiving)
-//                .ToSource(settings.OtherApp)
-//                .ToMessage<OtherAppMessage2>()
-//                .ToMessage<OtherAppMessage3>();
+            // *Optionally* make the subscriptions to the location of the load
+            // balancer in front of your logical application nodes
+            Subscribe.At("tcp://loadbalancer:2333");
+
+            // Declare subscriptions to specific message types
+            Subscribe
+                .To<OtherAppMessage1>()
+                .To<OtherAppMessage2>()
+                .To<OtherAppMessage3>();
+
+            // Or just quickly say, "send me everything that
+            // I understand how to handle"
+            Subscribe.ToAllMessages();
         }
     }
     // ENDSAMPLE

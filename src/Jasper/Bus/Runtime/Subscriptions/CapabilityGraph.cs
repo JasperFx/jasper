@@ -38,7 +38,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             if (runtime.ApplicationAssembly != null)
             {
                 var publishedTypes = await TypeRepository.FindTypes(runtime.ApplicationAssembly,
-                    TypeClassification.Closed | TypeClassification.Closed, type => _publishFilters.Any(x => x(type)));
+                    TypeClassification.Concretes | TypeClassification.Closed, type => _publishFilters.Any(x => x(type)));
 
                 foreach (var type in publishedTypes)
                 {
