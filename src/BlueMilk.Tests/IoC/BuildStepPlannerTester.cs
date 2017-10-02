@@ -39,7 +39,7 @@ namespace BlueMilk.Tests.IoC
             throw new NotImplementedException();
         }
 
-        public Variable TryFindVariable(Type type)
+        public Variable TryFindVariable(Type type, VariableSource source)
         {
             return Variables.ContainsKey(type) ? Variables[type] : null;
         }
@@ -58,7 +58,7 @@ namespace BlueMilk.Tests.IoC
 
         private BuildStepPlanner executePlan<T>()
         {
-            return new BuildStepPlanner(typeof(T), theGraph, theMethod);
+            return new BuildStepPlanner(typeof(T), typeof(T), theGraph, theMethod);
         }
 
         [Fact]

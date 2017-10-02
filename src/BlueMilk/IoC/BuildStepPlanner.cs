@@ -16,7 +16,7 @@ namespace BlueMilk.IoC
         private readonly IList<BuildStep> _all = new List<BuildStep>();
         private readonly Stack<BuildStep> _chain = new Stack<BuildStep>();
 
-        public BuildStepPlanner(Type concreteType, ServiceGraph graph, IMethodVariables method)
+        public BuildStepPlanner(Type serviceType, Type concreteType, ServiceGraph graph, IMethodVariables method)
         {
             if (!concreteType.IsConcrete()) throw new ArgumentOutOfRangeException(nameof(concreteType), "Must be a concrete type");
 
@@ -32,7 +32,7 @@ namespace BlueMilk.IoC
             }
             else
             {
-                Top = new ConstructorBuildStep(concreteType, concreteType, ServiceLifetime.Scoped, ctor);
+                Top = new ConstructorBuildStep(serviceType, concreteType, ServiceLifetime.Scoped, ctor);
                 Visit(Top);
             }
         }
@@ -84,7 +84,7 @@ namespace BlueMilk.IoC
 
         private BuildStep findStep(Type type)
         {
-            var variable = _method.TryFindVariable(type);
+            var variable = _method.TryFindVariable(type, VariableSource.All);
 
             if (variable != null) return new KnownVariableBuildStep(variable);
 

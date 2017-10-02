@@ -24,12 +24,36 @@ namespace BlueMilk.IoC
 
         public int Number { get; set; }
 
+        public bool IsDisposable => ImplementationType.CanBeCastTo<IDisposable>();
+
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             var arguments = _arguments.Select(x => x.Usage).Join(", ");
             var implementationTypeName = ImplementationType.FullName.Replace("+", ".");
-            writer.Write($"var {Variable.Usage} = new {implementationTypeName}({arguments});");
-            Next?.GenerateCode(method, writer);
+
+            var declaration = $"var {Variable.Usage} = new {implementationTypeName}({arguments})";
+
+            if (IsDisposable)
+            {
+                if (Next is ConstructorFrame && Next.As<ConstructorFrame>().IsDisposable)
+                {
+                    writer.Write("using ({declaration})");
+                    Next?.GenerateCode(method, writer);
+                }
+                else
+                {
+                    writer.UsingBlock(declaration, w => Next?.GenerateCode(method, w));
+                }
+            }
+            else
+            {
+                writer.Write(declaration + ";");
+                Next?.GenerateCode(method, writer);
+            }
+
+
+
+
         }
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)

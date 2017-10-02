@@ -4,7 +4,6 @@ using System.Linq;
 using BlueMilk.Codegen.ServiceLocation;
 using BlueMilk.IoC;
 using BlueMilk.Util;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.Codegen
 {
@@ -25,6 +24,9 @@ namespace BlueMilk.Codegen
 
         public void Arrange()
         {
+            // TODO -- later...
+            //tryToBuildUpHandlerConstruction();
+
             var compiled = compileFrames(_method.Frames);
 
             if (compiled.All(x => !x.IsAsync))
@@ -37,6 +39,46 @@ namespace BlueMilk.Codegen
             }
 
             _method.Top = chainFrames(compiled);
+        }
+
+        private void tryToBuildUpHandlerConstruction()
+        {
+            var handlerTypes = _method.Frames
+                .OfType<MethodCall>()
+                .Select(x => x.HandlerType)
+                .Distinct()
+                .ToArray();
+
+            if (!handlerTypes.Any()) return;
+
+            var sourcedOtherwise = handlerTypes
+                .Where(x => TryFindVariable(x, VariableSource.NotServices) != null)
+                .ToArray();
+
+            var haveToBeBuilt = handlerTypes.Where(x => !sourcedOtherwise.Contains(x)).ToArray();
+
+            if (!haveToBeBuilt.Any()) return;
+
+            var servicePlanners = handlerTypes
+            .Select(type =>
+                {
+                    var @default = _class.Rules.Services.FindDefault(type);
+                    return @default == null ? null : new BuildStepPlanner(type, @default.ImplementationType, _class.Rules.Services, this);
+                })
+            .ToArray();
+
+            // If any are unknown, get out of here
+            if (servicePlanners.Any(x => x == null)) return;
+
+            // If not every single handler can  be reduced, revert to using
+            // services
+            if (!servicePlanners.All(x => x.CanBeReduced)) return;
+
+            // Can reduce to using the build step planner
+            foreach (var planner in servicePlanners)
+            {
+                _variables.Add(planner.Top.ServiceType, planner.Top.Variable);
+            }
         }
 
         protected Frame chainFrames(Frame[] frames)
@@ -87,7 +129,7 @@ namespace BlueMilk.Codegen
             _method.Fields = list.ToArray();
         }
 
-        private IEnumerable<IVariableSource> allVariableSources()
+        private IEnumerable<IVariableSource> allVariableSources(VariableSource variableSource)
         {
             foreach (var source in _method.Sources)
             {
@@ -107,12 +149,15 @@ namespace BlueMilk.Codegen
 
 
 
-            yield return _class.Rules.Services;
+            if (variableSource == VariableSource.All)
+            {
+                yield return _class.Rules.Services;
+            }
 
         }
 
 
-        private Variable findVariable(Type type)
+        private Variable findVariable(Type type, VariableSource variableSource)
         {
             // TODO -- will have to honor the Variable.CanBeReused flag later
             var argument = _method.Arguments.Concat(_method.DerivedVariables).FirstOrDefault(x => x.VariableType == type);
@@ -127,7 +172,7 @@ namespace BlueMilk.Codegen
                 return created;
             }
 
-            var source = allVariableSources().FirstOrDefault(x => x.Matches(type));
+            var source = allVariableSources(variableSource).FirstOrDefault(x => x.Matches(type));
             return source?.Create(type);
         }
 
@@ -146,7 +191,7 @@ namespace BlueMilk.Codegen
                 return _variables[type];
             }
 
-            var variable = findVariable(type);
+            var variable = findVariable(type, VariableSource.All);
             if (variable == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(type),
@@ -185,14 +230,14 @@ namespace BlueMilk.Codegen
             return false;
         }
 
-        public Variable TryFindVariable(Type type)
+        public Variable TryFindVariable(Type type, VariableSource source)
         {
             if (_variables.ContainsKey(type))
             {
                 return _variables[type];
             }
 
-            var variable = findVariable(type);
+            var variable = findVariable(type, source);
             if (variable != null)
             {
                 _variables.Add(type, variable);
@@ -201,48 +246,4 @@ namespace BlueMilk.Codegen
             return variable;
         }
     }
-
-    public class SingletonVariableSource : IVariableSource
-    {
-        private readonly ServiceGraph _graph;
-
-        public SingletonVariableSource(ServiceGraph graph)
-        {
-            _graph = graph;
-        }
-
-        public bool Matches(Type type)
-        {
-            if (type == typeof(IServiceScopeFactory)) return true;
-
-            var descriptor = _graph.FindDefault(type);
-            return descriptor?.Lifetime == ServiceLifetime.Singleton;
-        }
-
-        public Variable Create(Type type)
-        {
-            return new InjectedField(type);
-        }
-    }
-
-    public class ServiceProviderVariableSource : IVariableSource
-    {
-        public static readonly ServiceProviderVariableSource Instance = new ServiceProviderVariableSource();
-
-        private ServiceProviderVariableSource()
-        {
-        }
-
-        public bool Matches(Type type)
-        {
-            return type == typeof(IServiceProvider);
-        }
-
-        public Variable Create(Type type)
-        {
-            return new ServiceScopeFactoryCreation().Provider;
-        }
-    }
-
-
 }
