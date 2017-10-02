@@ -1,5 +1,5 @@
 using System.Reflection;
-using BlueMilk;
+using Jasper.Internals;
 using Jasper.Remotes.Messaging;
 using StructureMap;
 

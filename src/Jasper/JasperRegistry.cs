@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Baseline;
-using BlueMilk;
-using BlueMilk.Codegen;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
@@ -13,6 +11,8 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Http;
+using Jasper.Internals;
+using Jasper.Internals.Codegen;
 using Jasper.Settings;
 using Microsoft.Extensions.Configuration;
 

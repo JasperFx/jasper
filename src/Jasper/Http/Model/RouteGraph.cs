@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using BlueMilk.Codegen;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
+using Jasper.Internals.Codegen;
 using StructureMap;
 
 namespace Jasper.Http.Model

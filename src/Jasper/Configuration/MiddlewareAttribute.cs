@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using BlueMilk.Codegen;
+using Jasper.Internals.Codegen;
 
 namespace Jasper.Configuration
 {

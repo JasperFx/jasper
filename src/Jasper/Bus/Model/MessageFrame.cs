@@ -1,6 +1,6 @@
-﻿using BlueMilk.Codegen;
-using BlueMilk.Compilation;
-using Jasper.Bus.Runtime;
+﻿using Jasper.Bus.Runtime;
+using Jasper.Internals.Codegen;
+using Jasper.Internals.Compilation;
 
 namespace Jasper.Bus.Model
 {

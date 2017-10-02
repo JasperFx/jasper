@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
-using BlueMilk.Scanning;
 using Jasper.Bus.Runtime;
 using Jasper.Util;
 using Shouldly;

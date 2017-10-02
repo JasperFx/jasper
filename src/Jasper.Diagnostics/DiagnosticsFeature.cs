@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using BlueMilk;
-using BlueMilk.Codegen;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Configuration;
+using Jasper.Internals;
+using Jasper.Internals.Codegen;
 using StructureMap;
 
 namespace Jasper.Diagnostics

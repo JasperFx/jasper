@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Baseline;
-using BlueMilk.Scanning;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;

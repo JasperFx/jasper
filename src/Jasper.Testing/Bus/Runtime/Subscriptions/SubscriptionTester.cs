@@ -1,5 +1,4 @@
-﻿using BlueMilk.Scanning;
-using Jasper.Bus.Runtime;
+﻿using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Testing.Util;
 using Jasper.Util;

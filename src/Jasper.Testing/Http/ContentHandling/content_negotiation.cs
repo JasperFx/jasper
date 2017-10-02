@@ -6,7 +6,6 @@ using System.Xml.Serialization;
 using Alba;
 using AlbaForJasper;
 using Baseline;
-using BlueMilk.Scanning;
 using Jasper.Conneg;
 using Jasper.Http.Model;
 using Jasper.Util;

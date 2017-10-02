@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using BlueMilk.Scanning;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Core;
 using Jasper.Conneg;

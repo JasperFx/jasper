@@ -1,16 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using BlueMilk;
-using BlueMilk.Codegen;
 using Jasper.Configuration;
+using Jasper.Internals;
+using Jasper.Internals.Codegen;
 using Jasper.Testing.AspNetCoreIntegration;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Module1;
 using Shouldly;
-using StructureMap;
 using StructureMap.TypeRules;
 using Xunit;
 

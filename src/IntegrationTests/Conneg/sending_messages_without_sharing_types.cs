@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
-using BlueMilk.Scanning;
 using IntegrationTests.Lightweight;
 using Jasper;
 using Jasper.Bus;

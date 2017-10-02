@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using BlueMilk.Scanning;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Conneg;
 using Jasper.Util;

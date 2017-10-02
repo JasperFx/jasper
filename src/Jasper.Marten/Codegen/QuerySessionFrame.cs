@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using BlueMilk.Codegen;
-using BlueMilk.Compilation;
+using Jasper.Internals.Codegen;
+using Jasper.Internals.Compilation;
 using Marten;
 
 namespace Jasper.Marten.Codegen

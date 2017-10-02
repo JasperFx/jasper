@@ -8,9 +8,9 @@ namespace Jasper.Bus.Logging
 {
     public class CompositeLogger : IBusLogger
     {
-        public CompositeLogger(IEnumerable<IBusLogger> loggers)
+        public CompositeLogger(IBusLogger[] loggers)
         {
-            Loggers = loggers.ToArray();
+            Loggers = loggers;
         }
 
         public IBusLogger[] Loggers { get; }

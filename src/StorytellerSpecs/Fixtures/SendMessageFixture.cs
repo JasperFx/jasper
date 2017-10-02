@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
-using BlueMilk.Scanning;
 using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;

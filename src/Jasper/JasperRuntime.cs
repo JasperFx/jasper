@@ -7,17 +7,16 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.ServiceLocation;
-using BlueMilk.Scanning.Conventions;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
 using Jasper.Http;
+using Jasper.Internals.Codegen;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using StructureMap.Graph;
+using ServiceCollectionExtensions = Jasper.Internals.Scanning.Conventions.ServiceCollectionExtensions;
 
 namespace Jasper
 {
@@ -145,7 +144,7 @@ namespace Jasper
             collections.Add(registry.Services);
 
 
-            var services = await collections.ToArray().Combine();
+            var services = await ServiceCollectionExtensions.Combine(collections.ToArray());
             registry.Generation.ReadServices(services);
 
 

@@ -4,7 +4,6 @@ using System.Linq;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Http.Model;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.Http.ContentHandling
 {

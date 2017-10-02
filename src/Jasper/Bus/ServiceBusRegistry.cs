@@ -1,5 +1,4 @@
-﻿using BlueMilk;
-using Jasper.Bus.Configuration;
+﻿using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -13,6 +12,7 @@ using Jasper.Bus.Transports.Lightweight;
 using Jasper.Bus.Transports.Loopback;
 using Jasper.Configuration;
 using Jasper.Conneg;
+using Jasper.Internals;
 
 namespace Jasper.Bus
 {

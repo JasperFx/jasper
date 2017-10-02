@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BlueMilk.Codegen;
-using BlueMilk.Compilation;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Configuration;
+using Jasper.Internals.Codegen;
+using Jasper.Internals.Compilation;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
