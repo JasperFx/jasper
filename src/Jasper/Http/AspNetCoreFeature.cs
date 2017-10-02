@@ -42,6 +42,8 @@ namespace Jasper.Http
             _services = new ServiceRegistry();
             _services.AddSingleton(Routes.Router);
             _services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            _services.AddSingleton<ConnegRules>();
+            _services.AddSingleton<IServer, NulloServer>();
 
             _inner = new WebHostBuilder();
         }

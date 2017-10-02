@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
@@ -31,7 +33,7 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly IChannelGraph _channels;
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(IEnvelopeSender sender, SerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, CompositeLogger logger, IChannelGraph channels, IMissingHandler[] missingHandlers)
+        public HandlerPipeline(IEnvelopeSender sender, SerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, CompositeLogger logger, IChannelGraph channels, IEnumerable<IMissingHandler> missingHandlers)
         {
             _sender = sender;
             _serializer = serializers;
@@ -39,7 +41,7 @@ namespace Jasper.Bus.Runtime.Invocation
             _replies = replies;
             _delayedJobs = delayedJobs;
             _channels = channels;
-            _missingHandlers = missingHandlers;
+            _missingHandlers = missingHandlers.ToArray();
 
             Logger = logger;
         }

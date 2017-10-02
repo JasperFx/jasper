@@ -6,6 +6,16 @@ using BlueMilk.Compilation;
 
 namespace BlueMilk.Codegen
 {
+    public static class ServiceProviderExtensions
+    {
+        public static object Build(this IServiceProvider services, Type type)
+        {
+            var ctor = type.GetTypeInfo().GetConstructors().Single();
+            var inputs = ctor.GetParameters().Select(x => services.GetService(x.ParameterType)).ToArray();
+            return Activator.CreateInstance(type, inputs);
+        }
+    }
+
     public abstract class HandlerSet<TChain, THandler>
         where TChain : IGenerates<THandler>
 

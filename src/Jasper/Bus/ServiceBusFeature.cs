@@ -85,6 +85,8 @@ namespace Jasper.Bus
             Services.AddSingleton(_graph);
             Services.AddSingleton<IChannelGraph>(_channels);
 
+            Services.AddTransient<ServiceBusActivator>();
+
 
             if (registry.Logging.UseConsoleLogging)
             {

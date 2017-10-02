@@ -12,7 +12,7 @@ namespace Jasper.Bus.Configuration
         private readonly IDictionary<string, IUriLookup> _lookups = new Dictionary<string, IUriLookup>();
         private readonly IDictionary<Uri, Uri> _aliases = new Dictionary<Uri, Uri>();
 
-        public UriAliasLookup(IUriLookup[] lookups)
+        public UriAliasLookup(IEnumerable<IUriLookup> lookups)
         {
             foreach (var lookup in lookups)
             {
