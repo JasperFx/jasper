@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using StructureMap.TypeRules;
 
-namespace Jasper
+namespace Jasper.Util
 {
     internal class CallingAssembly
     {

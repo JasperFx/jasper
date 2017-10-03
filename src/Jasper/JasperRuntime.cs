@@ -58,18 +58,35 @@ namespace Jasper
 
         }
 
+        /// <summary>
+        /// The known service registrations to the underlying IoC container
+        /// </summary>
         public ImmutableArray<ServiceDescriptor> Services { get; }
 
+        /// <summary>
+        /// The running IWebHost for this applicastion
+        /// </summary>
         public IWebHost Host => _registry.Features.For<AspNetCoreFeature>().Host;
 
+        /// <summary>
+        /// The main application assembly for the running application
+        /// </summary>
         public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
 
+        /// <summary>
+        /// The underlying StructureMap container
+        /// </summary>
         public IContainer Container { get; }
 
         public bool IsDisposed { get; private set; }
+
+        /// <summary>
+        /// Summary of all the message handling, subscription, and message publishing
+        /// capabilities of the running Jasper application
+        /// </summary>
         public ServiceCapabilities Capabilities { get; internal set; }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             // Because StackOverflowException's are a drag
             if (IsDisposed || isDisposing) return;
@@ -85,16 +102,33 @@ namespace Jasper
             IsDisposed = true;
         }
 
+        /// <summary>
+        /// Creates a Jasper application for the current executing assembly
+        /// using all the default Jasper configurations
+        /// </summary>
+        /// <returns></returns>
         public static JasperRuntime Basic()
         {
             return bootstrap(new JasperRegistry()).GetAwaiter().GetResult();
         }
 
+        /// <summary>
+        /// Builds and initializes a JasperRuntime for the registry
+        /// </summary>
+        /// <param name="registry"></param>
+        /// <returns></returns>
         public static JasperRuntime For(JasperRegistry registry)
         {
             return bootstrap(registry).GetAwaiter().GetResult();
         }
 
+        /// <summary>
+        /// Builds and initializes a JasperRuntime for the JasperRegistry of
+        /// type T
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <typeparam name="T">The type of your JasperRegistry</typeparam>
+        /// <returns></returns>
         public static JasperRuntime For<T>(Action<T> configure = null) where T : JasperRegistry, new()
         {
             var registry = new T();
@@ -103,6 +137,11 @@ namespace Jasper
             return bootstrap(registry).GetAwaiter().GetResult();
         }
 
+        /// <summary>
+        /// Builds and initializes a JasperRuntime for the configured JasperRegistry
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
         public static JasperRuntime For(Action<JasperRegistry> configure)
         {
             var registry = new JasperRegistry();
@@ -121,6 +160,11 @@ namespace Jasper
             return Container.GetInstance<T>();
         }
 
+        /// <summary>
+        /// Shorthand to fetch a service from the application container by type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public object Get(Type type)
         {
             return Container.GetInstance(type);
@@ -173,6 +217,11 @@ namespace Jasper
             registry.ApplyExtensions(extensions);
         }
 
+        /// <summary>
+        /// Writes a textual report about the configured transports and servers
+        /// for this application
+        /// </summary>
+        /// <param name="writer"></param>
         public void Describe(TextWriter writer)
         {
             var hosting = Get<IHostingEnvironment>();
@@ -188,8 +237,14 @@ namespace Jasper
 
         private readonly Lazy<IServiceBus> _bus;
 
+        /// <summary>
+        /// Shortcut to retrieve an instance of the IServiceBus interface for the application
+        /// </summary>
         public IServiceBus Bus => _bus.Value;
 
+        /// <summary>
+        /// The logical name of the application from JasperRegistry.ServiceName
+        /// </summary>
         public string ServiceName => _registry.ServiceName;
     }
 }
