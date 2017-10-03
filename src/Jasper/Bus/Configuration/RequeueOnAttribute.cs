@@ -4,6 +4,10 @@ using Jasper.Bus.Model;
 
 namespace Jasper.Bus.Configuration
 {
+    /// <summary>
+    /// Applies an error handling polity to requeue a message if it
+    /// encounters an exception of the designated type
+    /// </summary>
     public class RequeueOnAttribute : ModifyHandlerChainAttribute
     {
         private readonly Type _exceptionType;

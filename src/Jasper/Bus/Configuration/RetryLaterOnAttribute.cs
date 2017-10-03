@@ -5,6 +5,10 @@ using Jasper.Bus.Model;
 
 namespace Jasper.Bus.Configuration
 {
+    /// <summary>
+    /// Applies an error handling policy to schedule a message to be retried
+    /// in a designated number of seconds after encountering the named exception
+    /// </summary>
     public class RetryLaterOnAttribute : ModifyHandlerChainAttribute
     {
         private readonly Type _exceptionType;

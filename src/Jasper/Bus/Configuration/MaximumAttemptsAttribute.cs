@@ -1,7 +1,12 @@
-﻿using Jasper.Bus.Model;
+﻿using System;
+using Jasper.Bus.Model;
 
 namespace Jasper.Bus.Configuration
 {
+    /// <summary>
+    /// Specify the maximum number of attempts to process a received message
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class MaximumAttemptsAttribute : ModifyHandlerChainAttribute
     {
         private readonly int _attempts;

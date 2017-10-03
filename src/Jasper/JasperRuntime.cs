@@ -86,7 +86,7 @@ namespace Jasper
         /// </summary>
         public ServiceCapabilities Capabilities { get; internal set; }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             // Because StackOverflowException's are a drag
             if (IsDisposed || isDisposing) return;

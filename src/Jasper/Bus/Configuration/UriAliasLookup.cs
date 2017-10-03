@@ -7,6 +7,9 @@ using Jasper.Util;
 
 namespace Jasper.Bus.Configuration
 {
+    /// <summary>
+    /// Internal service used to fetch and resolve Uri aliases
+    /// </summary>
     public class UriAliasLookup
     {
         private readonly IDictionary<string, IUriLookup> _lookups = new Dictionary<string, IUriLookup>();

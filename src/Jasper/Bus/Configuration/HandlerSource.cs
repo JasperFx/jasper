@@ -136,6 +136,10 @@ namespace Jasper.Bus.Configuration
             _explicitTypes.Add(typeof(T));
         }
 
+        /// <summary>
+        /// Include a single handler type
+        /// </summary>
+        /// <param name="type"></param>
         public void IncludeType(Type type)
         {
             _explicitTypes.Add(type);
@@ -144,11 +148,19 @@ namespace Jasper.Bus.Configuration
         private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
 
         // TODO -- have a Local option later
+        /// <summary>
+        /// Applies a handler policy to all known message handlers
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public void GlobalPolicy<T>() where T : IHandlerPolicy, new()
         {
             GlobalPolicy(new T());
         }
 
+        /// <summary>
+        /// Applies a handler policy to all known message handlers
+        /// </summary>
+        /// <param name="policy"></param>
         public void GlobalPolicy(IHandlerPolicy policy)
         {
             _globals.Add(policy);
@@ -170,6 +182,10 @@ namespace Jasper.Bus.Configuration
             }
         }
 
+        /// <summary>
+        /// The default number of attempts to try to process a received message
+        /// if there is no explicit configuration at the chain level. The default is 1
+        /// </summary>
         public int DefaultMaximumAttempts { get; set; } = 1;
 
 
