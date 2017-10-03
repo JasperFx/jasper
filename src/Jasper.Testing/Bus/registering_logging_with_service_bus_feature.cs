@@ -2,8 +2,10 @@
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
+using Jasper.Bus.Runtime;
 using Jasper.Testing.AspNetCoreIntegration;
 using Jasper.Testing.Bus.Bootstrapping;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -45,4 +47,43 @@ namespace Jasper.Testing.Bus
                 .Any(x => x.ServiceType == typeof(IBusLogger) && x.ImplementationInstance is ConsoleBusLogger).ShouldBeTrue();
         }
     }
+
+    // SAMPLE: SampleBusLogger
+    public class SampleBusLogger : BusLoggerBase
+    {
+        public override void Sent(Envelope envelope)
+        {
+            // do something with the information
+        }
+
+        public override void Received(Envelope envelope)
+        {
+            // do something with the information
+        }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: AppWithCustomLogging
+    public class AppWithCustomLogging : JasperRegistry
+    {
+        public AppWithCustomLogging()
+        {
+            // Shorthand
+            Logging.LogBusEventsWith<SampleBusLogger>();
+
+            // Uglier equivalent
+            Services.AddTransient<IBusLogger, SampleBusLogger>();
+        }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: UsingConsoleLoggingApp
+    public class UsingConsoleLoggingApp : JasperRegistry
+    {
+        public UsingConsoleLoggingApp()
+        {
+            Logging.UseConsoleLogging = true;
+        }
+    }
+    // ENDSAMPLE
 }
