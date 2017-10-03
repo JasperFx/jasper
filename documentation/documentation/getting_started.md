@@ -3,7 +3,7 @@
 <div class="alert alert-info"><b>Note!</b> Jasper only targets Netstandard 1.5 and higher at this time.</div>
 
 Jasper is a framework for building server side services in .Net. Jasper can be used as an alternative web framework for .Net, a service bus for messaging, as a "mediator" type
-pipeline within a different framework, or any combination thereof. Jasper can be used as either your main application framework that handles all the configuration and bootstrapping, or as an add on to ASP.Net Core applications. 
+pipeline within a different framework, or any combination thereof. Jasper can be used as either your main application framework that handles all the configuration and bootstrapping, or as an add on to ASP.Net Core applications.
 
 To create a new Jasper application, start by building a new console application:
 
@@ -13,7 +13,7 @@ While this isn't expressly necessary, you probably want to create a new `JasperR
 
 <[sample:MyAppRegistry]>
 
-See <[linkto:documentation/bootstrapping/jasperregistry]> for more information about using the `JasperRegistry` class.
+See <[linkto:documentation/bootstrapping/configuring_jasper]> for more information about using the `JasperRegistry` class.
 
 Now, to bootstrap your application, add this code to the entrypoint of your console application:
 
@@ -35,7 +35,7 @@ Now listening on: http://localhost:3001
 Application started. Press Ctrl+C to shut down.
 ```
 
-See <[linkto:documentation/bootstrapping/jasper]> for more information about idiomatic Jasper bootstrapping.
+See <[linkto:documentation/bootstrapping]> for more information about idiomatic Jasper bootstrapping.
 
 That covers bootstrapping Jasper by itself, but next let's see how you can add Jasper
 to an idiomatic ASP.Net Core application.
@@ -67,4 +67,4 @@ Let's say you're building an invoicing application and your application should h
 
 <[sample:QuickStart-InvoiceCreated]>
 
-See <[linkto:documentation/messaging/handlers]> for more information on message handler actions.
+See <[linkto:documentation/messaging/handling/handlers]> for more information on message handler actions.

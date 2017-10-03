@@ -8,8 +8,8 @@ As an example, here's about the simplest possible handler you could create:
 
 <[sample:simplest-possible-handler]>
 
-Like most frameworks, Jasper follows the [Hollywood Principle](http://wiki.c2.com/?HollywoodPrinciple) where the framework acts as an intermediary 
-between the rest of the world and your application code. When a Jasper application receives a `MyMessage` message through one of its transports, Jasper will call your method and pass in the message that it received. 
+Like most frameworks, Jasper follows the [Hollywood Principle](http://wiki.c2.com/?HollywoodPrinciple) where the framework acts as an intermediary
+between the rest of the world and your application code. When a Jasper application receives a `MyMessage` message through one of its transports, Jasper will call your method and pass in the message that it received.
 
 ## How Jasper Consumes Your Message Handlers
 
@@ -61,14 +61,14 @@ support for method injection in a following section.
 ## Constructor Injection
 
 Jasper can create your message handler objects by using an IoC container (or in the future just use straight up dependency injection
-without any IoC container overhead). In that case, you can happily inject dependencies into your message handler classes through the 
+without any IoC container overhead). In that case, you can happily inject dependencies into your message handler classes through the
 constructor like this example that takes in a dependency on an `IDocumentSession` from [Marten](http://jasperfx.github.io/marten):
 
 <[sample:HandlerBuiltByConstructorInjection]>
 
 See <[linkto:documentation/ioc]> for more information about how Jasper integrates the application's IoC container.
 
-## Method Injection 
+## Method Injection
 
 Similar to ASP.Net MVC Core, Jasper supports the concept of [method injection](https://www.martinfowler.com/articles/injection.html) in handler methods where you can just accept additional
 arguments that will be passed into your method by Jasper when a new message is being handled.
@@ -81,12 +81,12 @@ So, what can be injected as an argument to your message handler?
 
 1. Any service that is registered in your application's IoC container
 1. `Envelope`
-1. The <[linkto:documentation/conventions/datetime;title=current time]>
+1. The current time in UTC if you have a parameter like `DateTime now` or `DateTimeOffset now`
 1. Services or variables that match a registered code generation strategy. See <[linkto:documentation/middleware_and_codegen]> for more information on this mechanism.
 
 ## Cascading Messages from Actions
 
-To have additional messages queued up to be sent out when the current message has been successfully completed, 
+To have additional messages queued up to be sent out when the current message has been successfully completed,
 you can return the outgoing messages from your handler methods with <[linkto:documentation/messaging/handling/cascading]>.
 
 ## Using the Message Envelope
@@ -96,4 +96,4 @@ argument like this:
 
 <[sample:HandlerUsingEnvelope]>
 
-See <[linkto:documentation/messaging/envelope]> for more information on interacting with `Envelope` objects.
+See <[linkto:documentation/messaging/publishing/customizing_envelopes]> for more information on interacting with `Envelope` objects.

@@ -7,6 +7,8 @@ using Xunit;
 
 namespace Jasper.Testing.Bus.Tracking
 {
+
+
     public class MessageHistoryTester
     {
         private readonly MessageHistory history = new MessageHistory();

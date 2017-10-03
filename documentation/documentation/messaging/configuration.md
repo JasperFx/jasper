@@ -34,7 +34,7 @@ Messaging can also take advantage of Jasper's support for <[linkto:documentation
 
 Another way to configure the service bus is to use `Uri` aliasing that allows you to just make the configuration
 with "stand in" `Uri's` that are resolved later to the real value. So far, the only mechanism built into the core
-Jasper framework will pull the real values from the underlying `IConfigurationRoot` for the application. 
+Jasper framework will pull the real values from the underlying `IConfigurationRoot` for the application.
 
 See this example below:
 
@@ -43,7 +43,7 @@ See this example below:
 Behind the scenes, the value for *config://incoming* is interpreted by Jasper as the Uri string stored in configuration with the key "incoming,"
 or in code terms, `IConfigurationRoot.GetValue<string>("incoming")`
 
-There is also an addon Uri lookup that uses Consul. See <[linkto:documentation/extensions/consul/uri_lookup]> for more information.
+There is also an addon Uri lookup that uses Consul. See <[linkto:documentation/extensions/consul]> for more information.
 
 The Uri aliases are respected anywhere where `Uri's` are accepted as arguments in `JasperRegistry` or when explicitly specifying the destination
 of a message being sent through the messaging.

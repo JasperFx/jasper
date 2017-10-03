@@ -3,7 +3,7 @@
 While this topic dives into some of the more general options available in `JasperRegistry`, check out these topics for deeper
 discussions of setting up Jasper applications:
 
-* <[linkto:documentation/bootstrapping/configuration]> for integrating with [Configuration in .Net Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration) and Jasper's [strong-typed configuration](https://jeremydmiller.com/2014/11/07/strong_typed_configuration/) *Settings* model 
+* <[linkto:documentation/bootstrapping/configuration]> for integrating with [Configuration in .Net Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration) and Jasper's [strong-typed configuration](https://jeremydmiller.com/2014/11/07/strong_typed_configuration/) *Settings* model
 * <[linkto:documentation/bootstrapping/aspnetcore]> to make Jasper act as just a citizen in the greater ASP.Net Core ecosystem
 * <[linkto:documentation/http]> for information on configuring ASP.Net Core middleware and customizing Jasper's HTTP service support
 * <[linkto:documentation/messaging]> for setting up messaging receivers, subscriptions, and publishing in your application
@@ -11,7 +11,7 @@ discussions of setting up Jasper applications:
 ## Service Name
 
 By default, Jasper derives a descriptive _ServiceName_ for your application by taking the class name of your `JasperRegistry` and stripping off
-any "JasperRegistry" or "Registry" suffix. For diagnostic purposes and for the <[linkto:documentation/messaging/subscriptions;title=dynamic subscriptions and service discovery]>, you may want to override the service name like so:
+any "JasperRegistry" or "Registry" suffix. For diagnostic purposes and for the <[linkto:documentation/messaging/routing/subscriptions;title=dynamic subscriptions and service discovery]>, you may want to override the service name like so:
 
 <[sample:CustomServiceRegistry]>
 
@@ -47,10 +47,6 @@ The syntax in `JasperRegistry` to apply that extension is shown below:
 <[sample:AppWithExtensions]>
 
 See <[linkto:documentation/extensions]> for more information on building, using, and auto-discovering Jasper extensions.
-
-## Customizing Code Generation
-
-TODO(Use the Marten transactional behavior sample?)
 
 
 

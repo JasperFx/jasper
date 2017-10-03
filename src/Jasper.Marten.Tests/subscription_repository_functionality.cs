@@ -59,6 +59,8 @@ namespace Jasper.Marten.Tests
 
             _runtime = JasperRuntime.For(_ =>
             {
+                _.Handlers.DisableConventionalDiscovery();
+
                 _.Settings.Alter<MartenSubscriptionSettings>(x => x.StoreOptions.Connection(ConnectionSource.ConnectionString));
 
                 _.Include<MartenBackedSubscriptions>();

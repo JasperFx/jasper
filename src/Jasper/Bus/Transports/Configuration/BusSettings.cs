@@ -103,6 +103,11 @@ namespace Jasper.Bus.Transports.Configuration
             DefaultChannelAddress = uri;
         }
 
+        public void ExecuteAllMessagesLocally()
+        {
+            DefaultChannelAddress = "loopback://default".ToUri();
+        }
+
         ITransportExpression ITransportsExpression.Durable => Durable;
 
         ITransportExpression ITransportsExpression.Lightweight => Lightweight;

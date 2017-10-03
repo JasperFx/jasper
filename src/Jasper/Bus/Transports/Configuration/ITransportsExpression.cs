@@ -12,5 +12,6 @@ namespace Jasper.Bus.Transports.Configuration
         IQueueSettings ListenForMessagesFrom(string uriString);
         void DefaultIs(string uriString);
         void DefaultIs(Uri uri);
+        void ExecuteAllMessagesLocally();
     }
 }
