@@ -49,7 +49,11 @@ namespace Jasper.Consul.Testing
         {
             var subscriptions = new Subscription[]
             {
-                new Subscription(typeof(GreenMessage), theDestination),
+                new Subscription(typeof(GreenMessage), theDestination)
+                {
+                    Accept = new string[]{"application/json"},
+
+                },
                 new Subscription(typeof(BlueMessage), theDestination),
                 new Subscription(typeof(RedMessage), theDestination),
                 new Subscription(typeof(OrangeMessage), theDestination),
@@ -62,6 +66,8 @@ namespace Jasper.Consul.Testing
             var publishes = await theRepository.GetSubscribersFor(typeof(GreenMessage));
 
             publishes.Count().ShouldBe(1);
+
+            publishes.Single().Accept.ShouldHaveTheSameElementsAs("application/json");
 
             publishes.Any(x => x.MessageType == typeof(GreenMessage).ToMessageAlias()).ShouldBeTrue();
         }
