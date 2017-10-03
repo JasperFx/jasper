@@ -13,7 +13,7 @@ namespace Jasper.Bus.Configuration
     {
         private readonly ServiceBusFeature _bus;
 
-        public PublishingExpression(ServiceBusFeature bus)
+        internal PublishingExpression(ServiceBusFeature bus)
         {
             _bus = bus;
         }
@@ -69,7 +69,7 @@ namespace Jasper.Bus.Configuration
             private readonly ServiceBusFeature _bus;
             private readonly IRoutingRule _routing;
 
-            public MessageTrackExpression(ServiceBusFeature bus, IRoutingRule routing)
+            internal MessageTrackExpression(ServiceBusFeature bus, IRoutingRule routing)
             {
                 _bus = bus;
                 _routing = routing;

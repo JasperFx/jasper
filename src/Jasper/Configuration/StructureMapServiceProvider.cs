@@ -47,7 +47,7 @@ namespace Jasper.Configuration
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            (_runtime as IDisposable)?.Dispose();
         }
     }
 }

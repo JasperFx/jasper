@@ -23,8 +23,21 @@ namespace Jasper.Bus
         /// <returns></returns>
         Task<TResponse> Request<TResponse>(object request, RequestOptions options = null);
 
+        /// <summary>
+        /// Publish a message to all known subscribers
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         Task Send<T>(T message);
 
+        /// <summary>
+        /// Send a message with explict control overrides to the Envelope
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="customize"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         Task Send<T>(T message, Action<Envelope> customize);
 
         /// <summary>
@@ -43,7 +56,12 @@ namespace Jasper.Bus
         /// </summary>
         Task Invoke<T>(T message);
 
-
+        /// <summary>
+        /// Enqueues the message into the default loopback queue for this application
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         Task Enqueue<T>(T message);
 
         /// <summary>
