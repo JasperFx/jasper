@@ -1,29 +1,56 @@
 ﻿using System;
+using System.Net.Http;
 using Consul;
-using Jasper.Bus.Runtime;
 using Jasper.Util;
 
 namespace Jasper.Consul
 {
+    /// <summary>
+    /// Instructions for how Jasper.Consul builds its ConsulClient
+    /// </summary>
     public class ConsulSettings : IDisposable
     {
         private readonly Lazy<ConsulClient> _client;
 
         public ConsulSettings()
         {
-            _client = new Lazy<ConsulClient>(() => new ConsulClient(configure));
+            Port = 8500;
+
+
+            _client = new Lazy<ConsulClient>(() => new ConsulClient(Configure, ClientOverride, HandlerOverride));
         }
 
-        public int Port { get; set; } = 8500;
+        /// <summary>
+        /// Applies alterations to the HttpClient used to connect to Consul
+        /// </summary>
+        public Action<HttpClient> ClientOverride { get; set; } = x => { };
 
-        private void configure(ConsulClientConfiguration config)
+        /// <summary>
+        /// Configures the HttpClientHandler used to connect to Consul
+        /// </summary>
+        public Action<HttpClientHandler> HandlerOverride { get; set; } = x => { };
+
+        /// <summary>
+        /// Configures the ConsulClientConfiguration for the ConsulClient that
+        /// Jasper.Consul will use to communicate with Consul
+        /// </summary>
+        public Action<ConsulClientConfiguration> Configure { get; set; } = x => { };
+
+        /// <summary>
+        /// Shorthand way of using all the default configuration for ConsulDotNet,
+        /// but overriding just the port number
+        /// </summary>
+        public int Port
         {
-            config.Address = $"http://localhost:{Port}".ToUri();
+            set
+            {
+                Configure = _ => _.Address = $"http://localhost:{value}".ToUri();
+            }
         }
 
         internal ConsulClient Client => _client.Value;
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             if (_client.IsValueCreated)
             {

@@ -21,4 +21,14 @@ namespace Jasper.Consul.Testing
             }
         }
     }
+
+    // SAMPLE: AppUsingConsulBackedSubscriptions
+    public class AppUsingConsulBackedSubscriptions : JasperRegistry
+    {
+        public AppUsingConsulBackedSubscriptions()
+        {
+            Include<ConsulBackedSubscriptions>();
+        }
+    }
+    // ENDSAMPLE
 }

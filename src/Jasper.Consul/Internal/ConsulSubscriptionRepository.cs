@@ -32,7 +32,7 @@ namespace Jasper.Consul.Internal
 
         public override string ToString()
         {
-            return $"Consul-backed subscriptions at port " + _settings.Port;
+            return $"Consul-backed subscriptions";
         }
 
         public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)

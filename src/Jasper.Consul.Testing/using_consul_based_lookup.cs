@@ -54,13 +54,16 @@ namespace IntegrationTests.Consul
         }
     }
 
+    // SAMPLE: Using-Consul-Uri-Lookup
     public class ConsulUsingApp : JasperRegistry
     {
-
         public ConsulUsingApp()
         {
+            // These calls are looking up values from the Key/Value
+            // store in Consul
             Transports.ListenForMessagesFrom("consul://one");
             Transports.ListenForMessagesFrom("consul://two");
         }
     }
+    // ENDSAMPLE
 }
