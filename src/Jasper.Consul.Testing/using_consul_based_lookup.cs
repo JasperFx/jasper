@@ -33,8 +33,8 @@ namespace IntegrationTests.Consul
         private async Task seedData(ConsulUsingApp registry)
         {
             var gateway = new ConsulGateway(new ConsulSettings());
-            await gateway.SetProperty(registry.prop1, "tcp://localhost:2345/queue1");
-            await gateway.SetProperty(registry.prop2, "tcp://localhost:2345/queue2");
+            await gateway.SetProperty("one", "tcp://localhost:2345/queue1");
+            await gateway.SetProperty("two", "tcp://localhost:2345/queue2");
         }
 
         public void Dispose()
@@ -47,20 +47,20 @@ namespace IntegrationTests.Consul
         {
             var channels = theRuntime.Get<IChannelGraph>();
 
-            channels.HasChannel("tcp://localhost:2345/queue1".ToUri()).ShouldBeTrue();
-            channels.HasChannel("tcp://localhost:2345/queue2".ToUri()).ShouldBeTrue();
+
+            var lookups = theRuntime.Get<UriAliasLookup>();
+            lookups.Resolve("consul://one".ToUri()).ShouldBe("tcp://localhost:2345/queue1".ToUri());
+            lookups.Resolve("consul://two".ToUri()).ShouldBe("tcp://localhost:2345/queue2".ToUri());
         }
     }
 
     public class ConsulUsingApp : JasperRegistry
     {
-        public string prop1 = Guid.NewGuid().ToString();
-        public string prop2 = Guid.NewGuid().ToString();
 
         public ConsulUsingApp()
         {
-            Transports.ListenForMessagesFrom("consul://" + prop1);
-            Transports.ListenForMessagesFrom("consul://" + prop2);
+            Transports.ListenForMessagesFrom("consul://one");
+            Transports.ListenForMessagesFrom("consul://two");
         }
     }
 }
