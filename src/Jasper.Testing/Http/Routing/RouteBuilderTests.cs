@@ -1,4 +1,5 @@
 ﻿using Jasper.Http.Routing;
+using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -41,6 +42,14 @@ namespace Jasper.Testing.Http.Routing
             var route = RouteBuilder.Build<SomeEndpoint>(x => x.delete_something(null));
             ShouldBeNullExtensions.ShouldBeNull(route.InputType);
         }
+
+        [Fact]
+        public void support_the_one_in_model()
+        {
+            var route = RouteBuilder.Build<SomeEndpoint>(x => x.put_message1(null));
+            route.InputType.ShouldBe(typeof(Message1));
+
+        }
     }
 
     [JasperIgnore]
@@ -65,6 +74,11 @@ namespace Jasper.Testing.Http.Routing
         public void Named()
         {
             throw new System.NotImplementedException();
+        }
+
+        public void put_message1(Message1 something)
+        {
+
         }
     }
 

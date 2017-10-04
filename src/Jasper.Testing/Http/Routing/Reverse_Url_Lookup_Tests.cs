@@ -212,9 +212,6 @@ namespace Jasper.Testing.Http.Routing
         {
         }
 
-        public void M4(UrlModel model)
-        {
-        }
 
         public string Default(DefaultModel model)
         {
