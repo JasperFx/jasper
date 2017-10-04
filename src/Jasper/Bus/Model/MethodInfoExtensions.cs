@@ -23,9 +23,13 @@ namespace Jasper.Bus.Model
                 return parameters.First().ParameterType;
             }
 
-            var first = parameters.FirstOrDefault(x => x.Name.IsIn("message", "input", "@event"));
+            var matching = parameters.FirstOrDefault(x => x.Name.IsIn("message", "input", "@event", "command"));
 
-            return first?.ParameterType;
+            if (matching != null) return matching.ParameterType;
+
+            return parameters.First().ParameterType.IsInputTypeCandidate()
+                ? parameters.First().ParameterType
+                : null;
         }
     }
 }

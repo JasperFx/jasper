@@ -30,6 +30,20 @@ namespace Jasper.Util
     {
         private static readonly Regex _aliasSanitizer = new Regex("<|>", RegexOptions.Compiled);
 
+        public static bool IsInputTypeCandidate(this Type type)
+        {
+            if (!type.IsConcrete()) return false;
+            if (type.IsSimple()) return false;
+            if (type.IsDateTime()) return false;
+            if (type == typeof(DateTimeOffset)) return false;
+
+            if (type.Name.EndsWith("Settings")) return false;
+
+            if (type.GetTypeInfo().Assembly == typeof(TypeExtensions).GetTypeInfo().Assembly) return false;
+
+            return true;
+        }
+
         public static string GetPrettyName(this Type t)
         {
             if (!t.GetTypeInfo().IsGenericType)

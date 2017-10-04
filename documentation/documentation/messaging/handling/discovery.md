@@ -14,7 +14,10 @@ By default, Jasper is looking for public classes in the main application assembl
 * Type name ends with "Handler"
 * Type name ends with "Consumer"
 
-From the types, FubuMVC looks for any public instance method that either accepts a single parameter that is assumed to be the message type, or **one** parameter with one of these names: *message*, *input*, or *@event*. To make that concrete, here are some valid handler method signatures:
+From the types, FubuMVC looks for any public instance method that either accepts a single parameter that is assumed to be the message type, or **one** parameter with one of these names: *message*, *input*, *command*, or *@event*. In addition, 
+Jasper will also pick the first parameter as the input type regardless of parameter name if it is concrete, not a "simple" type like a string, date, or number, and not a "Settings" type.
+
+To make that concrete, here are some valid handler method signatures:
 
 <[sample:ValidMessageHandlers]>
 

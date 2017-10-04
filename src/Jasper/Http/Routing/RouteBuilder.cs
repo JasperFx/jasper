@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Http.Routing.Codegen;
+using Jasper.Util;
 using TypeExtensions = Jasper.Internals.Util.TypeExtensions;
 
 namespace Jasper.Http.Routing
@@ -130,20 +131,10 @@ namespace Jasper.Http.Routing
                 return first.ParameterType;
             }
 
-            return IsInputTypeCandidate(first.ParameterType) ? first.ParameterType : null;
+            return first.ParameterType.IsInputTypeCandidate() ? first.ParameterType : null;
         }
 
-        public static bool IsInputTypeCandidate(Type type)
-        {
-            if (!type.IsConcrete()) return false;
-            if (type.IsSimple()) return false;
-            if (type.IsDateTime()) return false;
-            if (type == typeof(DateTimeOffset)) return false;
 
-            if (type.Name.EndsWith("Settings")) return false;
-
-            return true;
-        }
     }
 
 

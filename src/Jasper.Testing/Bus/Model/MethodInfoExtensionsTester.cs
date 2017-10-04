@@ -49,6 +49,20 @@ namespace Jasper.Testing.Bus.Model
             ShouldBeNullExtensions.ShouldBeNull(methodFor(x => x.Go5()).MessageType());
         }
 
+        [Fact]
+        public void use_command_as_candidate_name()
+        {
+            methodFor(x => x.Go6(null, null)).MessageType()
+                .ShouldBe(typeof(Message3));
+        }
+
+        [Fact]
+        public void use_first_arg_if_it_is_concrete()
+        {
+            methodFor(x => x.Go7(null, null)).MessageType()
+                .ShouldBe(typeof(Message4));
+        }
+
         public class Target
         {
             public void Go(Message1 message)
@@ -72,6 +86,16 @@ namespace Jasper.Testing.Bus.Model
             }
 
             public void Go5()
+            {
+
+            }
+
+            public void Go6(IService service, Message3 command)
+            {
+
+            }
+
+            public void Go7(Message4 thing, IService service)
             {
 
             }

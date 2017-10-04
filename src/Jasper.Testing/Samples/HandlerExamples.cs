@@ -43,6 +43,14 @@ namespace Jasper.Testing.Samples
         {
 
         }
+
+        // In this case, we assume that the first type is the message type
+        // because it's concrete, not "simple", and isn't suffixed with
+        // "Settings"
+        public void Consume(Message3 weirdName, IEmailService service)
+        {
+
+        }
     }
     // ENDSAMPLE
 
