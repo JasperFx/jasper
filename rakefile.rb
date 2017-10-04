@@ -15,7 +15,7 @@ CI = ENV["CI"].nil? ? false : true
 
 task :ci => [:default, :pack, :appVeyorPush]
 
-task :default => [:test, :storyteller]
+task :default => [:test, :integrationtests]
 
 
 desc "Prepares the working directory for a new build"
