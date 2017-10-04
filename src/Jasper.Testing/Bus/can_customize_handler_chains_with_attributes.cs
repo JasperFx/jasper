@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void apply_attribute_on_method()
         {
-            var chain = HandlerChain.For<FakeHandler1>(x => x.Handle(null));
+            var chain = HandlerChain.For<FakeHandler1>(x => x.Handle(new Message1()));
             var model = chain.ToClass(theRules);
 
             model.Methods.Single().Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
@@ -44,7 +44,16 @@ namespace Jasper.Testing.Bus
             model.Methods.Single().Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
         }
 
+        [Fact]
+        public void apply_attribute_on_message_type()
+        {
+            var chain = HandlerChain.For<FakeHandler1>(x => x.Handle(new ErrorHandledMessage()));
+            var model = chain.ToClass(theRules);
 
+            chain.MaximumAttempts.ShouldBe(5);
+
+            model.Methods.Single().Top.AllFrames().OfType<FakeFrame>().Count().ShouldBe(1);
+        }
     }
 
 
@@ -56,6 +65,18 @@ namespace Jasper.Testing.Bus
         {
 
         }
+
+        public void Handle(ErrorHandledMessage message)
+        {
+
+        }
+    }
+
+    [FakeFrame]
+    [MaximumAttempts(5)]
+    public class ErrorHandledMessage
+    {
+
     }
 
     [FakeFrame]

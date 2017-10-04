@@ -62,6 +62,16 @@ namespace Jasper.Bus.Model
 
             applyAttributesAndConfigureMethods();
 
+            foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyHandlerChainAttribute)).OfType<ModifyHandlerChainAttribute>())
+            {
+                attribute.Modify(this);
+            }
+
+            foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute)).OfType<ModifyChainAttribute>())
+            {
+                attribute.Modify(this);
+            }
+
             var i = 0;
             var cascadingHandlers = Handlers.Where(x => x.ReturnVariable != null)
                 .Select(x => new CaptureCascadingMessages(x.ReturnVariable, ++i));
