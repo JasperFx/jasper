@@ -38,15 +38,24 @@ namespace Jasper.Internals.Scanning
 
         public void Add(Type type)
         {
-            if (type.GetTypeInfo().IsInterface)
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsInterface)
             {
                 Interfaces.Add(type);
             }
-            else if (type.GetTypeInfo().IsAbstract)
+            else if (typeInfo.IsAbstract)
             {
-                Abstracts.Add(type);
+                if (typeInfo.IsSealed)
+                {
+                    // concrete, static type
+                    Concretes.Add(type);
+                }
+                else
+                {
+                    Abstracts.Add(type);
+                }
             }
-            else if (type.GetTypeInfo().IsClass)
+            else if (typeInfo.IsClass)
             {
                 Concretes.Add(type);
             }

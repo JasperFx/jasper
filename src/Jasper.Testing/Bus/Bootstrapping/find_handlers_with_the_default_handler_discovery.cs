@@ -1,7 +1,11 @@
-﻿using System.Threading.Tasks;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
+﻿using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Internals.Scanning;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using Shouldly;
+using StructureMap.TypeRules;
 using Xunit;
 
 namespace Jasper.Testing.Bus.Bootstrapping
@@ -65,6 +69,13 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public void does_not_find_handlers_that_do_not_match_the_type_naming_convention()
         {
             chainFor<MovieAdded>().ShouldNotHaveHandler<MovieWatcher>(x => x.Watch(null));
+        }
+
+        [Fact]
+        public void can_find_handlers_from_static_classes()
+        {
+            chainFor<StaticClassMessage>().Handlers.Single().HandlerType
+                .ShouldBe(typeof(StaticClassHandler));
         }
 
     }
@@ -132,6 +143,16 @@ namespace Jasper.Testing.Bus.Bootstrapping
     public class MovieWatcher
     {
         public void Watch(MovieAdded added)
+        {
+
+        }
+    }
+
+    public class StaticClassMessage{}
+
+    public static class StaticClassHandler
+    {
+        public static void Handle(StaticClassMessage message)
         {
 
         }

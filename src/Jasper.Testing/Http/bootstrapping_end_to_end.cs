@@ -80,6 +80,13 @@ namespace Jasper.Testing.Http
             rules.Writers.First().ShouldBeOfType<CustomWriterRule>();
         }
 
+        [Fact]
+        public void can_discover_endpoints_from_static_types()
+        {
+            theRuntime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(StaticEndpoint))
+                .ShouldBeTrue();
+        }
+
         public void Dispose()
         {
             theRuntime?.Dispose();
@@ -100,6 +107,14 @@ namespace Jasper.Testing.Http
         public bool TryToApply(RouteChain chain)
         {
             return false;
+        }
+    }
+
+    public class StaticEndpoint
+    {
+        public static string get_static_message()
+        {
+            return "hey";
         }
     }
 

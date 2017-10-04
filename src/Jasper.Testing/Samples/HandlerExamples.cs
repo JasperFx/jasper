@@ -113,6 +113,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
     }
 
+    [JasperIgnore]
     // SAMPLE: HandlerBuiltByConstructorInjection
     public class ServiceUsingHandler
     {
@@ -135,6 +136,7 @@ namespace Jasper.Testing.Samples
 
     namespace Three
     {
+        [JasperIgnore]
         // SAMPLE: HandlerUsingMethodInjection
         public static class MethodInjectionHandler
         {
