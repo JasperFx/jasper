@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,7 +10,6 @@ namespace Jasper.Internals.Scanning.Conventions
     {
         internal static IEnumerable<Assembly> FindAssemblies(Action<string> logFailure, bool includeExeFiles)
         {
-
             string path;
             try {
                 path = AppContext.BaseDirectory;
@@ -18,8 +17,6 @@ namespace Jasper.Internals.Scanning.Conventions
             catch (Exception) {
                 path = System.IO.Directory.GetCurrentDirectory();
             }
-
-            Console.WriteLine("The path is: " + path);
 
             return FindAssemblies(path, logFailure, includeExeFiles);
         }

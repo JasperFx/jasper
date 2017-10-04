@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -96,6 +96,7 @@ namespace Jasper.Marten.Tests.Sample
     }
     // ENDSAMPLE
 
+        /*
     public class tests_against_AppUsingMessageTracking
     {
         // SAMPLE: invoke_a_message_with_tracking
@@ -136,7 +137,7 @@ namespace Jasper.Marten.Tests.Sample
         }
         // ENDSAMPLE
     }
-
+    */
 
     public class SampleApp : JasperRegistry
     {

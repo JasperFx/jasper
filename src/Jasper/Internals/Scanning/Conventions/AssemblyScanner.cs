@@ -196,7 +196,7 @@ namespace Jasper.Internals.Scanning.Conventions
         {
             var assemblies = AssemblyFinder.FindAssemblies(assemblyFilter, txt =>
             {
-                Console.WriteLine("StructureMap could not load assembly from file " + txt);
+                Console.WriteLine("Jasper could not load assembly from file " + txt);
             }, includeExeFiles: false);
 
             foreach (var assembly in assemblies)
@@ -206,7 +206,7 @@ namespace Jasper.Internals.Scanning.Conventions
         }
 
         /// <summary>
-        /// Choosing option will direct StructureMap to *also* scan files ending in '*.exe'
+        /// Choosing option will direct Jasper to *also* scan files ending in '*.exe'
         /// </summary>
         /// <param name="scanner"></param>
         /// <param name="assemblyFilter"></param>
@@ -215,7 +215,7 @@ namespace Jasper.Internals.Scanning.Conventions
         {
             var assemblies = AssemblyFinder.FindAssemblies(assemblyFilter, txt =>
             {
-                Console.WriteLine("StructureMap could not load assembly from file " + txt);
+                Console.WriteLine("Jasper could not load assembly from file " + txt);
             }, includeExeFiles: true);
 
             foreach (var assembly in assemblies)
@@ -228,7 +228,7 @@ namespace Jasper.Internals.Scanning.Conventions
         {
             var assemblies = AssemblyFinder.FindAssemblies(path, txt =>
             {
-                Console.WriteLine("StructureMap could not load assembly from file " + txt);
+                Console.WriteLine("Jasper could not load assembly from file " + txt);
             }, includeExeFiles: true);
 
             foreach (var assembly in assemblies)
@@ -241,7 +241,7 @@ namespace Jasper.Internals.Scanning.Conventions
         {
             var assemblies = AssemblyFinder.FindAssemblies(path, txt =>
             {
-                Console.WriteLine("StructureMap could not load assembly from file " + txt);
+                Console.WriteLine("Jasper could not load assembly from file " + txt);
             }, includeExeFiles: false);
 
             foreach (var assembly in assemblies)
@@ -255,7 +255,7 @@ namespace Jasper.Internals.Scanning.Conventions
         {
             var assemblies = AssemblyFinder.FindAssemblies(path, txt =>
             {
-                Console.WriteLine("StructureMap could not load assembly from file " + txt);
+                Console.WriteLine("Jasper could not load assembly from file " + txt);
             }, includeExeFiles: true).Where(assemblyFilter);
 
 
@@ -270,7 +270,7 @@ namespace Jasper.Internals.Scanning.Conventions
         {
             var assemblies = AssemblyFinder.FindAssemblies(path, txt =>
             {
-                Console.WriteLine("StructureMap could not load assembly from file " + txt);
+                Console.WriteLine("Jasper could not load assembly from file " + txt);
             }, includeExeFiles: false).Where(assemblyFilter);
 
 
