@@ -145,14 +145,25 @@ namespace Jasper.Internals.Codegen
                 returnValue = method.AsyncMode == AsyncMode.ReturnFromLastNode ? "return " : "await ";
             }
 
+            var isDisposable = false;
             if (ReturnVariable != null)
             {
                 returnValue = $"var {ReturnVariable.Usage} = {returnValue}";
+                isDisposable = ReturnVariable.VariableType.CanBeCastTo<IDisposable>();
             }
 
-            writer.Write($"{returnValue}{invokeMethod};");
+            if (isDisposable)
+            {
+                writer.UsingBlock($"{returnValue}{invokeMethod}", w => Next?.GenerateCode(method, writer));
+            }
+            else
+            {
+                writer.Write($"{returnValue}{invokeMethod};");
 
-            Next?.GenerateCode(method, writer);
+                Next?.GenerateCode(method, writer);
+            }
+
+
         }
 
         private string invocationCode()
