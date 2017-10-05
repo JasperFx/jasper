@@ -47,19 +47,24 @@ namespace Jasper.WebSockets
             // socket instead of global
 
             // TODO -- pull the contract resolver inside of JsonSerialization
-            var json = JsonSerialization.ToCleanJson(envelope.Message, true, new CamelCasePropertyNamesContractResolver());
+            var json = envelope.Message.ToCleanJson();
 
             if (destination == DefaultUri)
             {
-                var all = _sockets.Values.Where(x => x.State == WebSocketState.Open).ToArray();
-                var tasks = all.Select(x => x.SendMessageAsync(json));
-
-                return Task.WhenAll(tasks);
+                return sendJsonToAll(json);
             }
             else
             {
                 throw new NotSupportedException("WebSocket transport doesn't yet know how to send to a specific socket");
             }
+        }
+
+        private Task sendJsonToAll(string json)
+        {
+            var all = _sockets.Values.Where(x => x.State == WebSocketState.Open).ToArray();
+            var tasks = all.Select(x => x.SendMessageAsync(json));
+
+            return Task.WhenAll(tasks);
         }
 
         public IChannel[] Start(IHandlerPipeline pipeline, BusSettings settings, OutgoingChannels channels)
@@ -163,6 +168,12 @@ namespace Jasper.WebSockets
             var envelope = new Envelope(message) {Callback = new WebSocketCallback(_retries)};
 
             return _pipeline.Invoke(envelope);
+        }
+
+        public Task SendToAll(Envelope envelope)
+        {
+            var json = envelope.Message.ToCleanJson();
+            return sendJsonToAll(json);
         }
     }
 }

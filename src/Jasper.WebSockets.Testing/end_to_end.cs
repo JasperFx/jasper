@@ -33,6 +33,8 @@ namespace Jasper.WebSockets.Testing
             var timeout = new CancellationTokenSource();
             timeout.CancelAfter(60.Seconds());
 
+            JsonSerialization.RegisterType("socket-pong", typeof(SocketPong));
+
             using (var client = new ClientWebSocket())
             {
                 await client.ConnectAsync("ws://127.0.0.1:3010".ToUri(), timeout.Token);

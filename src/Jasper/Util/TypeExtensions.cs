@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Baseline;
 using Jasper.Bus;
 using Jasper.Conneg;
+using Jasper.Remotes.Messaging;
 
 namespace Jasper.Util
 {
@@ -60,9 +61,16 @@ namespace Jasper.Util
 
         public static string ToMessageAlias(this Type type)
         {
+
+
             if (type.HasAttribute<MessageAliasAttribute>())
             {
                 return type.GetAttribute<MessageAliasAttribute>().Alias;
+            }
+
+            if (type.CanBeCastTo<ClientMessage>() && type.IsConcreteWithDefaultCtor())
+            {
+                return Activator.CreateInstance(type).As<ClientMessage>().Type;
             }
 
             if (type.Closes(typeof(IForwardsTo<>)))

@@ -33,7 +33,7 @@ namespace Jasper.WebSockets
 
         public Task Send(Envelope envelope)
         {
-            throw new NotImplementedException();
+            return _transport.SendToAll(envelope);
         }
     }
 }
