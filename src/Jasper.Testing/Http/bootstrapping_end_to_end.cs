@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus;
+using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
@@ -28,7 +29,9 @@ namespace Jasper.Testing.Http
             var registry = new JasperRegistry();
             registry.Http.Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
-            registry.Handlers.ExcludeTypes(x => true);
+            registry.Include<EndpointExtension>();
+
+            registry.Handlers.DisableConventionalDiscovery();
 
             registry.Services.AddTransient<IWriterRule, CustomWriterRule>();
             registry.Services.AddTransient<IReaderRule, CustomReaderRule>();
@@ -87,9 +90,32 @@ namespace Jasper.Testing.Http
                 .ShouldBeTrue();
         }
 
+        [Fact]
+        public void can_import_endpoints_from_extension_includes()
+        {
+            theRuntime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(ExtensionThing))
+                .ShouldBeTrue();
+        }
+
         public void Dispose()
         {
             theRuntime?.Dispose();
+        }
+    }
+
+    public class EndpointExtension : IJasperExtension
+    {
+        public void Configure(JasperRegistry registry)
+        {
+            registry.Http.Actions.IncludeType<ExtensionThing>();
+        }
+    }
+
+    public class ExtensionThing
+    {
+        public string get_hello_from_extension()
+        {
+            return "hello";
         }
     }
 

@@ -21,7 +21,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
 
         public readonly JasperRegistry theRegistry = new JasperRegistry();
 
-        private Lazy<JasperRuntime> _runtime;
+        private readonly Lazy<JasperRuntime> _runtime;
 
         public BootstrappingContext()
         {

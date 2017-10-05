@@ -22,6 +22,7 @@ namespace Jasper.Http
 
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
+        private readonly IList<Type> _explicitTypes = new List<Type>();
 
         public ActionSource()
         {
@@ -42,16 +43,22 @@ namespace Jasper.Http
         }
 
 
-        internal Task<MethodCall[]> FindActions(Assembly applicationAssembly)
+        internal async Task<MethodCall[]> FindActions(Assembly applicationAssembly)
         {
             if (applicationAssembly == null)
             {
-                return Task.FromResult(new MethodCall[0]);
+                return new MethodCall[0];
             }
 
             var assemblies = Applies.Assemblies.Any() ? Applies.Assemblies : new[] {applicationAssembly};
-            return TypeRepository.FindTypes(assemblies, TypeClassification.Concretes, _typeFilters.Matches)
-                .ContinueWith(x => x.Result.SelectMany(actionsFromType).ToArray());
+
+            var discovered =
+                await TypeRepository.FindTypes(assemblies, TypeClassification.Concretes, _typeFilters.Matches);
+
+            return discovered
+                .Concat(_explicitTypes)
+                .Distinct()
+                .SelectMany(actionsFromType).ToArray();
         }
 
         private IEnumerable<MethodCall> actionsFromType(Type type)
@@ -147,6 +154,25 @@ namespace Jasper.Http
         public void ExcludeNonConcreteTypes()
         {
             _typeFilters.Excludes += type => !type.IsConcrete();
+        }
+
+        /// <summary>
+        /// Explicitly add this type as a candidate for HTTP endpoints
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void IncludeType<T>()
+        {
+            IncludeType(typeof(T));
+        }
+
+        /// <summary>
+        /// Explicitly add this type as a candidate for HTTP endpoints
+        /// </summary>
+        /// <param name="type"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void IncludeType(Type type)
+        {
+            _explicitTypes.Fill(type);
         }
     }
 }

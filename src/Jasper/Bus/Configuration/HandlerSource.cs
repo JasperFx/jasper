@@ -57,7 +57,11 @@ namespace Jasper.Bus.Configuration
                 .ConfigureAwait(false);
 
 
-            return types.Where(x => !x.HasAttribute<JasperIgnoreAttribute>()).Concat(_explicitTypes).SelectMany(actionsFromType).ToArray();
+            return types
+                .Where(x => !x.HasAttribute<JasperIgnoreAttribute>())
+                .Concat(_explicitTypes)
+                .Distinct()
+                .SelectMany(actionsFromType).ToArray();
         }
 
         private IEnumerable<HandlerCall> actionsFromType(Type type)
@@ -133,7 +137,7 @@ namespace Jasper.Bus.Configuration
         /// <typeparam name="T"></typeparam>
         public void IncludeType<T>()
         {
-            _explicitTypes.Add(typeof(T));
+            _explicitTypes.Fill(typeof(T));
         }
 
         /// <summary>
@@ -142,7 +146,7 @@ namespace Jasper.Bus.Configuration
         /// <param name="type"></param>
         public void IncludeType(Type type)
         {
-            _explicitTypes.Add(type);
+            _explicitTypes.Fill(type);
         }
 
         private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();

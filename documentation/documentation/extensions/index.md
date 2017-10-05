@@ -32,3 +32,9 @@ When a Jasper application is being bootstrapped, it looks for any assemblies in 
 Marten extension would be discovered at bootstrapping time and the `MartenExtension` would be
 applied to the application. 
 
+## Importing Http Endpoints or Message Handlers
+
+It's perfectly possible to add additional HTTP routes or message handlers in extensions using the explicit `JasperRegistry.Handlers.IncludeType()` or `JasperRegistry.Http.Actions.IncludeType()` methods.
+
+
+
