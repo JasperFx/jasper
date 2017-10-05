@@ -2,6 +2,7 @@
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Baseline.Dates;
 using Jasper.Remotes.Messaging;
 using Jasper.Util;
@@ -27,9 +28,11 @@ namespace Jasper.WebSockets.Testing
             theRuntime.Dispose();
         }
 
+        // THIS TEST WILL NOT WORK ON WINDOWS 7. TRY IT ON OSX
         [Fact]
         public async Task send_and_receive()
         {
+
             var timeout = new CancellationTokenSource();
             timeout.CancelAfter(60.Seconds());
 
