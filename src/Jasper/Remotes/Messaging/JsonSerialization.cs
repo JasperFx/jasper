@@ -12,6 +12,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Jasper.Remotes.Messaging
 {
+    // TODO -- move this to the WebSockets
     public static class JsonSerialization
     {
         private static readonly LightweightCache<string, Type> _messageTypes = new LightweightCache<string, Type>();
@@ -64,15 +65,12 @@ namespace Jasper.Remotes.Messaging
             return writer.ToString();
         }
 
-        public static string ToCleanJson(object o, bool indentedFormatting = false, IContractResolver contractResolver = null)
+        public static string ToCleanJson(this object o, bool indentedFormatting = false, IContractResolver contractResolver = null)
         {
             var serializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.None,  };
             serializer.Converters.Add(new StringEnumConverter());
 
-            if(contractResolver != null)
-            {
-                serializer.ContractResolver = contractResolver;
-            }
+            serializer.ContractResolver = contractResolver ?? new CamelCasePropertyNamesContractResolver();
 
             if (indentedFormatting)
             {

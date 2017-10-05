@@ -105,5 +105,6 @@ namespace Jasper.Bus.Model
         {
             return _chains.ContainsKey(messageType);
         }
+
     }
 }

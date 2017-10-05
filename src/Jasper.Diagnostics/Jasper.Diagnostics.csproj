@@ -21,17 +21,12 @@
     <EmbeddedResource Include="resources\**\*.js;resources\**\*.css;resources\**\*.json" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jasper.WebSockets\Jasper.WebSockets.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="StructureMap.Microsoft.DependencyInjection" Version="1.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="node_modules\abbrev" />

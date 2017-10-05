@@ -1,4 +1,5 @@
 using Jasper.Remotes.Messaging;
+using Jasper.WebSockets;
 using Newtonsoft.Json.Serialization;
 
 namespace Jasper.Diagnostics

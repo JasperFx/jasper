@@ -1,6 +1,7 @@
 using System.Reflection;
 using Jasper.Internals;
 using Jasper.Remotes.Messaging;
+using Jasper.WebSockets;
 using StructureMap;
 
 namespace Jasper.Diagnostics

@@ -4,25 +4,19 @@ using System.Threading.Tasks;
 
 namespace Jasper.Diagnostics
 {
-    public interface ISocketConnection
-    {
-        Task OnConnected(WebSocket socket);
-        Task OnDisconnected(WebSocket socket);
-        Task RecieveAsync(WebSocket socket, string text);
-    }
 
-    public class SocketConnection : ISocketConnection
+    public class SocketConnection
     {
-        private readonly Func<WebSocket, string, Task> _recieved;
+        private readonly Func<WebSocket, string, Task> _received;
         private readonly Func<WebSocket, Task> _onConnected;
         private readonly Func<WebSocket, Task> _onDisconnected;
 
         public SocketConnection(
-            Func<WebSocket, string, Task> recieved,
+            Func<WebSocket, string, Task> received,
             Func<WebSocket, Task> onConnected = null,
             Func<WebSocket, Task> onDisconnected = null)
         {
-            _recieved = recieved;
+            _received = received;
             _onConnected = onConnected ?? (s => Task.CompletedTask);
             _onDisconnected = onDisconnected ?? (s => Task.CompletedTask);
         }
@@ -37,9 +31,9 @@ namespace Jasper.Diagnostics
             return _onDisconnected(socket);
         }
 
-        public Task RecieveAsync(WebSocket socket, string text)
+        public Task ReceiveAsync(WebSocket socket, string text)
         {
-            return _recieved(socket, text);
+            return _received(socket, text);
         }
     }
 }

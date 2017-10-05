@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.WebSockets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -13,7 +14,7 @@ namespace Jasper.Diagnostics
         public static IApplicationBuilder MapWebSocket(
             this IApplicationBuilder app,
             PathString path,
-            ISocketConnection handler,
+            SocketConnection handler,
             ISocketConnectionManager manager)
         {
             return app.Map(path, _app => _app.UseMiddleware<WebSocketManagerMiddleware>(handler, manager));
@@ -23,12 +24,12 @@ namespace Jasper.Diagnostics
     public class WebSocketManagerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ISocketConnection _handler;
+        private readonly SocketConnection _handler;
         private readonly ISocketConnectionManager _manager;
 
         public WebSocketManagerMiddleware(
             RequestDelegate next,
-            ISocketConnection handler,
+            SocketConnection handler,
             ISocketConnectionManager manager)
         {
             _next = next;
@@ -52,7 +53,7 @@ namespace Jasper.Diagnostics
             {
                 if(result.MessageType == WebSocketMessageType.Text)
                 {
-                    await _handler.RecieveAsync(socket, message);
+                    await _handler.ReceiveAsync(socket, message);
                     return;
                 }
                 else if(result.MessageType == WebSocketMessageType.Close)

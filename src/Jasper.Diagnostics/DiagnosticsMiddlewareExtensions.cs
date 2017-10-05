@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders.Embedded;
 using Jasper.Remotes.Messaging;
+using Jasper.WebSockets;
 
 namespace Jasper.Diagnostics
 {
