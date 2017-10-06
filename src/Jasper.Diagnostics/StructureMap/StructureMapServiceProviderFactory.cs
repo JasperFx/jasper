@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 

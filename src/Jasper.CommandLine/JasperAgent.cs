@@ -5,8 +5,19 @@ using Oakton;
 
 namespace Jasper.CommandLine
 {
+    /// <summary>
+    /// Used to quickly turn a Jasper application into a console application
+    /// with administration commands
+    /// </summary>
     public static class JasperAgent
     {
+        /// <summary>
+        /// Bootstrap and run the given JasperRegistry
+        /// </summary>
+        /// <param name="registry"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static int Run(JasperRegistry registry, string[] args = null)
         {
             if (args == null || args.Length == 0)
@@ -38,16 +49,34 @@ namespace Jasper.CommandLine
             });
         }
 
+        /// <summary>
+        /// Bootstrap and run a Jasper application with customizations
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static int Run<T>(Action<T> configure = null) where T : JasperRegistry, new()
         {
             return Run<T>(null, configure);
         }
 
+        /// <summary>
+        /// Bootstrap and run a Jasper application with customizations
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
         public static int Run(Action<JasperRegistry> configure)
         {
             return Run<JasperRegistry>(null, configure);
         }
 
+        /// <summary>
+        /// Bootstrap and run a Jasper application with customizations
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="configure"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static int Run<T>(string[] args, Action<T> configure = null) where T : JasperRegistry, new()
         {
             var registry = new T();
@@ -56,10 +85,25 @@ namespace Jasper.CommandLine
             return Run(registry, args);
         }
 
+        /// <summary>
+        /// Bootstrap and run a Jasper application with customizations
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
         public static int Run(string[] args, Action<JasperRegistry> configure)
         {
             return Run<JasperRegistry>(args, configure);
         }
 
+        /// <summary>
+        /// Bootstrap and run a basic Jasper application for this assemblhy
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static int RunBasic(string[] args)
+        {
+            return Run(new JasperRegistry(), args);
+        }
     }
 }
