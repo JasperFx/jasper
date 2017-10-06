@@ -60,6 +60,24 @@ namespace Jasper.Bus
             {
                 transport.Describe(writer);
             }
+
+            if (runtime.Registry.Logging.Verbose)
+            {
+                writer.WriteLine("Handles messages:");
+
+                var longestMessageName = _graph.Chains.Select(x => x.MessageType.FullName.Length).Max() + 2;
+
+                foreach (var chain in _graph.Chains)
+                {
+                    var messageName = chain.MessageType.FullName.PadLeft(longestMessageName);
+                    var handlers = chain.Handlers.Select(x => x.ToString()).Join(", ");
+
+
+                    writer.WriteLine($"{messageName}: {handlers}");
+                }
+
+                writer.WriteLine();
+            }
         }
 
 

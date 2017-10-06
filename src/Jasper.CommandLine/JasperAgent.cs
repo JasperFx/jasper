@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Jasper;
+using System;
+using System.Linq;
 using System.Reflection;
 using Baseline;
 using Oakton;
+
+[assembly:JasperFeature]
 
 namespace Jasper.CommandLine
 {
@@ -20,9 +24,9 @@ namespace Jasper.CommandLine
         /// <exception cref="ArgumentNullException"></exception>
         public static int Run(JasperRegistry registry, string[] args = null)
         {
-            if (args == null || args.Length == 0)
+            if (args == null || args.Length == 0 || args[0].StartsWith("-"))
             {
-                args = new string[]{"run"};
+                args = new string[]{"run"}.Concat(args).ToArray();
             }
 
 

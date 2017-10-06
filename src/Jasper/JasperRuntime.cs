@@ -31,7 +31,6 @@ namespace Jasper
 
     public class JasperRuntime : IDisposable
     {
-        private readonly JasperRegistry _registry;
         private bool isDisposing;
 
         private JasperRuntime(JasperRegistry registry, IServiceCollection services)
@@ -53,11 +52,13 @@ namespace Jasper
             registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
             registry.Generation.Assemblies.Add(registry.ApplicationAssembly);
 
-            _registry = registry;
+            Registry = registry;
 
             _bus = new Lazy<IServiceBus>(Get<IServiceBus>);
 
         }
+
+        internal JasperRegistry Registry { get; }
 
         /// <summary>
         /// The known service registrations to the underlying IoC container
@@ -67,12 +68,12 @@ namespace Jasper
         /// <summary>
         /// The running IWebHost for this applicastion
         /// </summary>
-        public IWebHost Host => _registry.Features.For<AspNetCoreFeature>().Host;
+        public IWebHost Host => Registry.Features.For<AspNetCoreFeature>().Host;
 
         /// <summary>
         /// The main application assembly for the running application
         /// </summary>
-        public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
+        public Assembly ApplicationAssembly => Registry.ApplicationAssembly;
 
         /// <summary>
         /// The underlying StructureMap container
@@ -101,7 +102,7 @@ namespace Jasper
             Task.WhenAll(hostedServices).GetAwaiter().GetResult();
 
 
-            foreach (var feature in _registry.Features)
+            foreach (var feature in Registry.Features)
             {
                 feature.Dispose();
             }
@@ -240,12 +241,18 @@ namespace Jasper
         /// <param name="writer"></param>
         public void Describe(TextWriter writer)
         {
+            writer.WriteLine($"Running service '{ServiceName}'");
+            if (ApplicationAssembly != null)
+            {
+                writer.WriteLine("Application Assembly: " + ApplicationAssembly.FullName);
+            }
+
             var hosting = Get<IHostingEnvironment>();
             writer.WriteLine($"Hosting environment: {hosting.EnvironmentName}");
             writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
 
 
-            foreach (var feature in _registry.Features)
+            foreach (var feature in Registry.Features)
             {
                 feature.Describe(this, writer);
             }
@@ -261,7 +268,7 @@ namespace Jasper
         /// <summary>
         /// The logical name of the application from JasperRegistry.ServiceName
         /// </summary>
-        public string ServiceName => _registry.ServiceName;
+        public string ServiceName => Registry.ServiceName;
     }
 }
 

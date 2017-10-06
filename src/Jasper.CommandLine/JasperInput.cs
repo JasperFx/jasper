@@ -23,6 +23,7 @@ namespace Jasper.CommandLine
             {
                 Console.WriteLine("Verbose flag is on.");
                 Registry.Logging.UseConsoleLogging = true;
+                Registry.Logging.Verbose = true;
             }
 
             return JasperRuntime.For(Registry);

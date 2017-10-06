@@ -48,12 +48,18 @@ namespace Pinger
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            return Task.Run(() =>
+            int count = 1;
+
+            return Task.Run(async () =>
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     Thread.Sleep(1000);
-                    ConsoleWriter.Write(ConsoleColor.Magenta, "Look at me!!!!!");
+
+                    await _bus.Send(new PingMessage
+                    {
+                        Name = "Message" + count++
+                    });
                 }
             }, stoppingToken);
         }
