@@ -1,17 +1,17 @@
 using System;
-using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Diagnostics.Messages;
+using Jasper.WebSockets;
 
 namespace Jasper.Diagnostics
 {
     public class DiagnosticsBusLogger : IBusLogger
     {
-        private readonly IDiagnosticsClient _client;
+        private readonly IWebSocketSender _client;
 
-        public DiagnosticsBusLogger(IDiagnosticsClient client)
+        public DiagnosticsBusLogger(IWebSocketSender client)
         {
             _client = client;
         }
@@ -54,7 +54,6 @@ namespace Jasper.Diagnostics
 
         public void Undeliverable(Envelope envelope)
         {
-            throw new NotImplementedException();
         }
 
         public void Received(Envelope envelope)

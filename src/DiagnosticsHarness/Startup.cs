@@ -106,7 +106,6 @@ namespace DiagnosticsHarness
                  Logging.UseConsoleLogging = true;
                  Logging.LogTransportEventsWith<ConsoleTransportLogger>();
 
-                 this.AddDiagnostics();
              }
          }
     }

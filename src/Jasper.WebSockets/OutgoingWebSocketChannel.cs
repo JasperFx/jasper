@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
-using Jasper.Remotes.Messaging;
 
 namespace Jasper.WebSockets
 {

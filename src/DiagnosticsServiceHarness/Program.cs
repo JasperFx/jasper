@@ -52,7 +52,6 @@ namespace DiagnosticsServiceHarness
                 _.WebsocketPort = 3300;
             });
 
-            Features.Include<DiagnosticsFeature>();
         }
     }
 

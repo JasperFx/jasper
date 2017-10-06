@@ -2,18 +2,17 @@
 using Jasper;
 using Jasper.Bus.Transports;
 using Jasper.Configuration;
-using Jasper.Remotes.Messaging;
 using Jasper.WebSockets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly:JasperModule(typeof(WebTransportExtension))]
+[assembly:JasperModule(typeof(WebSocketTransportExtension))]
 
 namespace Jasper.WebSockets
 {
 
-    public class WebTransportExtension : IJasperExtension
+    public class WebSocketTransportExtension : IJasperExtension
     {
         public void Configure(JasperRegistry registry)
         {
@@ -26,7 +25,7 @@ namespace Jasper.WebSockets
 
             registry.Services.AddSingleton<WebSocketTransport>();
             registry.Services.AddSingleton<ITransport>(x => x.GetService<WebSocketTransport>());
-
+            registry.Services.AddSingleton<IWebSocketSender, WebSocketSender>();
         }
     }
 }

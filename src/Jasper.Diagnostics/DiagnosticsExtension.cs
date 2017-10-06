@@ -1,0 +1,42 @@
+﻿using System;
+using Jasper;
+using Jasper.Bus.Configuration;
+using Jasper.Configuration;
+using Jasper.Diagnostics;
+using Jasper.Diagnostics.Messages;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
+[assembly:JasperModule(typeof(DiagnosticsExtension))]
+
+namespace Jasper.Diagnostics
+{
+    public class DiagnosticsExtension : IJasperExtension
+    {
+        public void Configure(JasperRegistry registry)
+        {
+            registry.Handlers.IncludeType<DiagnosticsHandler>();
+            registry.Logging.LogBusEventsWith<DiagnosticsBusLogger>();
+
+            registry.Services.AddTransient<IStartupFilter, AddJasperDiagnosticMiddleware>();
+
+            registry.Settings.Require<DiagnosticsSettings>();
+        }
+    }
+
+    public class AddJasperDiagnosticMiddleware : IStartupFilter
+    {
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        {
+            return builder =>
+            {
+                var settings = builder.ApplicationServices.GetService<DiagnosticsSettings>();
+                builder.UseDiagnostics(settings);
+                next(builder);
+            };
+        }
+    }
+}
+
+

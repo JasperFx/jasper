@@ -13,9 +13,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Remotes.Messaging;
 using Jasper.Util;
-using Newtonsoft.Json.Serialization;
 
 namespace Jasper.WebSockets
 {
@@ -46,7 +44,6 @@ namespace Jasper.WebSockets
             // TODO -- be more specific w/ the destination here. May choose to send back to a specific
             // socket instead of global
 
-            // TODO -- pull the contract resolver inside of JsonSerialization
             var json = envelope.Message.ToCleanJson();
 
             if (destination == DefaultUri)
@@ -57,6 +54,12 @@ namespace Jasper.WebSockets
             {
                 throw new NotSupportedException("WebSocket transport doesn't yet know how to send to a specific socket");
             }
+        }
+
+        public Task SendToAll(ClientMessage message)
+        {
+            var json = message.ToCleanJson();
+            return sendJsonToAll(json);
         }
 
         private Task sendJsonToAll(string json)

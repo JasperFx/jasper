@@ -1,13 +1,8 @@
 using System;
 using System.Reflection;
-using System.Threading.Tasks;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders.Embedded;
-using Jasper.Remotes.Messaging;
 using Jasper.WebSockets;
 
 namespace Jasper.Diagnostics
@@ -27,7 +22,7 @@ namespace Jasper.Diagnostics
             this IApplicationBuilder app,
             DiagnosticsSettings options)
         {
-            app.UseWebSockets();
+            app.UseJasperWebSockets();
 
             if(options.Mode == DiagnosticsMode.Production)
             {
@@ -41,28 +36,11 @@ namespace Jasper.Diagnostics
                 });
             }
 
-            var hub = app.ApplicationServices.GetService<IMessagingHub>();
-            var manager = app.ApplicationServices.GetService<ISocketConnectionManager>();
 
-            app.MapWebSocket($"{options.BasePath}/ws",
-                new SocketConnection((socket, text) => {
-                    Console.WriteLine("Socket: {0}", text);
-                    hub.SendJson(text);
-                    return Task.CompletedTask;
-                }),
-                manager);
 
             app.UseMiddleware<DiagnosticsMiddleware>(options);
 
             return app;
-        }
-
-        public static JasperRegistry AddDiagnostics(this JasperRegistry registry)
-        {
-            registry.Logging.LogBusEventsWith<DiagnosticsBusLogger>();
-            registry.Services.IncludeRegistry<DiagnosticServicesRegistry>();
-
-            return registry;
         }
     }
 }

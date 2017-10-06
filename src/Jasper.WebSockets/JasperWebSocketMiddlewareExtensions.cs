@@ -4,7 +4,7 @@ namespace Jasper.WebSockets
 {
     public static class JasperWebSocketMiddlewareExtensions
     {
-        public static IApplicationBuilder AddJasperWebSockets(this IApplicationBuilder app)
+        public static IApplicationBuilder UseJasperWebSockets(this IApplicationBuilder app)
         {
             var transport = app.ApplicationServices.GetService(typeof(WebSocketTransport));
 

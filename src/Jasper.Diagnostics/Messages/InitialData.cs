@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Remotes.Messaging;
 
 namespace Jasper.Diagnostics.Messages
 {

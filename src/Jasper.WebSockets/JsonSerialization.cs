@@ -10,9 +10,9 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace Jasper.Remotes.Messaging
+namespace Jasper.WebSockets
 {
-    // TODO -- move this to the WebSockets
+    // TODO -- this could use some performance optimizations on creating the serializer over and over again
     public static class JsonSerialization
     {
         private static readonly LightweightCache<string, Type> _messageTypes = new LightweightCache<string, Type>();
@@ -44,7 +44,7 @@ namespace Jasper.Remotes.Messaging
                 : null;
         }
 
-        public static string ToJson(object o, bool indentedFormatting = false)
+        public static string ToJson(this object o, bool indentedFormatting = false)
         {
             var serializer = new JsonSerializer
             {
@@ -65,12 +65,12 @@ namespace Jasper.Remotes.Messaging
             return writer.ToString();
         }
 
-        public static string ToCleanJson(this object o, bool indentedFormatting = false, IContractResolver contractResolver = null)
+        public static string ToCleanJson(this object o, bool indentedFormatting = false)
         {
             var serializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.None,  };
             serializer.Converters.Add(new StringEnumConverter());
 
-            serializer.ContractResolver = contractResolver ?? new CamelCasePropertyNamesContractResolver();
+            serializer.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
             if (indentedFormatting)
             {

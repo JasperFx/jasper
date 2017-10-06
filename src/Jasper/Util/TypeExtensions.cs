@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using Baseline;
 using Jasper.Bus;
 using Jasper.Conneg;
-using Jasper.Remotes.Messaging;
 
 namespace Jasper.Util
 {
