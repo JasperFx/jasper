@@ -99,7 +99,10 @@ namespace Jasper.Http
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
-            var addressesFeature = runtime.Get<IWebHost>().ServerFeatures.Get<IServerAddressesFeature>();
+            var webHost = runtime.Container.TryGetInstance<IWebHost>();
+            if (webHost == null) return;
+
+            var addressesFeature = webHost.ServerFeatures.Get<IServerAddressesFeature>();
             var urls = addressesFeature?.Addresses ?? new string[0];
             foreach (var url in urls)
             {

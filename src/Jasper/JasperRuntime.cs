@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
@@ -93,8 +94,17 @@ namespace Jasper
 
             isDisposing = true;
 
+            // TODO -- THIS IS TEMPORARY UNTIL WE DO GH-212
+            var hostedServices = Container.GetAllInstances<IHostedService>()
+                .Select(x => x.StopAsync(CancellationToken.None));
+
+            Task.WhenAll(hostedServices).GetAwaiter().GetResult();
+
+
             foreach (var feature in _registry.Features)
+            {
                 feature.Dispose();
+            }
 
             Container.DisposalLock = DisposalLock.Unlocked;
             Container?.Dispose();
@@ -197,6 +207,12 @@ namespace Jasper
 
             await Task.WhenAll(features.Select(x => x.Activate(runtime, registry.Generation)))
                 .ConfigureAwait(false);
+
+            // TODO -- THIS IS TEMPORARY UNTIL WE DO GH-212
+            var hostedServices = runtime.Container.GetAllInstances<IHostedService>()
+                .Select(x => x.StartAsync(CancellationToken.None));
+
+            await Task.WhenAll(hostedServices);
 
             return runtime;
         }
