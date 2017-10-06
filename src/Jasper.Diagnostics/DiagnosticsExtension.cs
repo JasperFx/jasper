@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Jasper;
 using Jasper.Bus.Configuration;
 using Jasper.Configuration;
@@ -16,12 +17,14 @@ namespace Jasper.Diagnostics
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Handlers.IncludeType<DiagnosticsHandler>();
+            registry.Handlers.IncludeType(typeof(DiagnosticsHandler));
             registry.Logging.LogBusEventsWith<DiagnosticsBusLogger>();
 
             registry.Services.AddTransient<IStartupFilter, AddJasperDiagnosticMiddleware>();
 
             registry.Settings.Require<DiagnosticsSettings>();
+
+            registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
         }
     }
 

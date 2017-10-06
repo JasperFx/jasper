@@ -3,18 +3,11 @@ using Jasper.Bus.Model;
 
 namespace Jasper.Diagnostics.Messages
 {
-    public class DiagnosticsHandler
+    public static class DiagnosticsHandler
     {
-        private readonly HandlerGraph _graph;
-
-        public DiagnosticsHandler(HandlerGraph graph)
+        public static InitialData Receive(RequestInitialData message, HandlerGraph graph)
         {
-            _graph = graph;
-        }
-
-        public InitialData Receive(RequestInitialData message)
-        {
-            var chains = _graph.Chains.OrderBy(c => c.TypeName).Select(ChainModel.For);
+            var chains = graph.Chains.OrderBy(c => c.TypeName).Select(ChainModel.For);
             return new InitialData(chains);
         }
     }

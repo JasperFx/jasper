@@ -39,6 +39,8 @@ namespace Jasper.Diagnostics
 
         public async Task Invoke(HttpContext context)
         {
+
+
             if (context.WebSockets.IsWebSocketRequest ||
              !context.Request.Path.StartsWithSegments(_settings.BasePath))
             {
