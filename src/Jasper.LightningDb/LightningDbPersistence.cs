@@ -160,7 +160,7 @@ namespace Jasper.LightningDb
                 var db = _databaseCache[queueName];
 
                 tx.Delete(db, envelope.Identity());
-                envelope.EnvelopeVersionId = MessageId.GenerateRandom();
+                envelope.EnvelopeVersionId = PersistedMessageId.GenerateRandom();
 
                 tx.Put(db, envelope.Identity(), envelope.Serialize());
 
@@ -182,13 +182,13 @@ namespace Jasper.LightningDb
             }
         }
 
-        public Envelope Load(string name, MessageId id)
+        public Envelope Load(string name, PersistedMessageId id)
         {
             using (var tx = _environment.BeginTransaction())
             {
                 var db = _databaseCache[name];
 
-                // TODO -- get this inside of MessageId itself
+                // TODO -- get this inside of PersistedMessageId itself
 
                 var bytes = tx.Get(db, id.MessageIdentifier.ToByteArray());
                 return Envelope.Read(bytes);
@@ -278,7 +278,7 @@ namespace Jasper.LightningDb
                 foreach (var envelope in batch.Messages.Where(x => x.SentAttempts < maxAttempts))
                 {
                     tx.Delete(db, envelope.Identity());
-                    envelope.EnvelopeVersionId = MessageId.GenerateRandom();
+                    envelope.EnvelopeVersionId = PersistedMessageId.GenerateRandom();
 
                     tx.Put(db, envelope.Identity(), envelope.Serialize());
                 }

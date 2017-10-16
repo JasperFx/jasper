@@ -39,7 +39,7 @@ namespace Jasper.Bus.Runtime
         {
             var msg = new Envelope
             {
-                EnvelopeVersionId = new MessageId
+                EnvelopeVersionId = new PersistedMessageId
                 {
                     SourceInstanceId = new Guid(br.ReadBytes(16)),
                     MessageIdentifier = new Guid(br.ReadBytes(16))

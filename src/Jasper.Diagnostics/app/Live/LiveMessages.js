@@ -21,8 +21,8 @@ function checkIfSelected(mode, selectedMode) {
 
 const LiveMessages = ({ filter, messages, onFilterClick, onSaveClick }) => {
   let list = messages.map(m =>
-    <li key={m.headers.id} className="message-list-item">
-      <Envelope id={m.headers.id} queue="live" saveMessage={onSaveClick}/>
+    <li key={m.correlationId} className="message-list-item">
+      <Envelope id={m.correlationId} queue="live" saveMessage={onSaveClick} />
     </li>)
   return (
     <div>
