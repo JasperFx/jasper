@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -68,7 +68,7 @@ namespace Jasper.Conneg
             // TODO -- move serializer discovery here
 
             return TypeRepository.FindTypes(registry.ApplicationAssembly,
-                    TypeClassification.Closed | TypeClassification.Closed, t => t.Closes(typeof(IForwardsTo<>)))
+                    TypeClassification.Closed, t => t.Closes(typeof(IForwardsTo<>)))
                 .ContinueWith(t =>
                 {
                     foreach (var type in t.Result)

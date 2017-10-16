@@ -21,7 +21,7 @@ namespace Jasper.Bus.Transports.Lightweight
         public static readonly string ProtocolName = "tcp";
 
         public LightweightTransport(CompositeLogger logger, BusSettings settings)
-            : base(ProtocolName, new NulloPersistence(), logger, new SocketSenderProtocal(), settings)
+            : base(ProtocolName, new NulloPersistence(), logger, new SocketSenderProtocol(), settings)
         {
 
 
