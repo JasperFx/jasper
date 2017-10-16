@@ -34,10 +34,10 @@ Envelope.propTypes = {
   saveMessage: PropTypes.func.isRequired
 }
 
-export default connect(
+ const cEnv = connect(
   (state, props) => {
     return {
-      message: state[props.queue].messages.find(m => m.headers.id === props.id)
+      message: state[props.queue].messages.find(m => m.correlationId === props.id)
     }
   },
   (dispatch, props) => {
@@ -51,3 +51,11 @@ export default connect(
     }
   }
 )(Envelope)
+
+cEnv.propTypes = {
+  id: PropTypes.string.isRequired,
+  queue: PropTypes.string.isRequired,
+  saveMessage: PropTypes.func.isRequired
+}
+
+export default cEnv

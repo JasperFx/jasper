@@ -112,14 +112,14 @@ namespace Jasper.Bus.Runtime
         }
 
 
-        private MessageId _id;
+        private PersistedMessageId _id;
         private string _queue;
         private DateTime? _deliverBy;
         private DateTime? _executionTime;
 
-        public MessageId EnvelopeVersionId
+        public PersistedMessageId EnvelopeVersionId
         {
-            get => _id ?? (_id = MessageId.GenerateRandom());
+            get => _id ?? (_id = PersistedMessageId.GenerateRandom());
             set => _id = value;
         }
 
@@ -192,6 +192,9 @@ namespace Jasper.Bus.Runtime
 
         public string ContentType { get; set; }
 
+        /// <summary>
+        ///
+        /// </summary>
         public string OriginalId { get; set; }
 
         public string ParentId { get; set; }

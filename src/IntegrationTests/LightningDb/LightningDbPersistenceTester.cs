@@ -39,7 +39,7 @@ namespace IntegrationTests.LightningDb
             var envelope = new Envelope
             {
                 SentAt = DateTime.Today.ToUniversalTime(),
-                EnvelopeVersionId = MessageId.GenerateRandom(),
+                EnvelopeVersionId = PersistedMessageId.GenerateRandom(),
                 Queue = "incoming",
                 SubQueue = "subqueue",
                 Destination = "durable://localhost:2222/outgoing".ToUri(),

@@ -34,7 +34,7 @@ namespace IntegrationTests.Lightweight
         {
             return new Envelope
             {
-                EnvelopeVersionId = MessageId.GenerateRandom(),
+                EnvelopeVersionId = PersistedMessageId.GenerateRandom(),
                 Destination = destination,
                 Data = new byte[]{1,2,3,4,5,6,7},
                 Queue = "outgoing",

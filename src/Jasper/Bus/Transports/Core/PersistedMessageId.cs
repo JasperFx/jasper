@@ -2,26 +2,26 @@
 
 namespace Jasper.Bus.Transports.Core
 {
-    public class MessageId
+    public class PersistedMessageId
     {
         public Guid SourceInstanceId { get; set; }
         public Guid MessageIdentifier { get; set; }
 
-        public static MessageId GenerateRandom()
+        public static PersistedMessageId GenerateRandom()
         {
-            return new MessageId
+            return new PersistedMessageId
             {
                 SourceInstanceId = Guid.NewGuid(),
                 MessageIdentifier = GenerateGuidComb(),
             };
         }
 
-        public static MessageId Parse(string id)
+        public static PersistedMessageId Parse(string id)
         {
             var parts = id.Split('/');
             var messageId = Guid.Parse(parts[0]);
             var instanceId = Guid.Parse(parts[1]);
-            return new MessageId
+            return new PersistedMessageId
             {
                 MessageIdentifier = messageId,
                 SourceInstanceId = instanceId
@@ -56,7 +56,7 @@ namespace Jasper.Bus.Transports.Core
 
         }
 
-        public bool Equals(MessageId other)
+        public bool Equals(PersistedMessageId other)
     	{
     		if (ReferenceEquals(null, other)) return false;
     		if (ReferenceEquals(this, other)) return true;
@@ -67,8 +67,8 @@ namespace Jasper.Bus.Transports.Core
     	{
     		if (ReferenceEquals(null, obj)) return false;
     		if (ReferenceEquals(this, obj)) return true;
-    		if (obj.GetType() != typeof (MessageId)) return false;
-    		return Equals((MessageId) obj);
+    		if (obj.GetType() != typeof (PersistedMessageId)) return false;
+    		return Equals((PersistedMessageId) obj);
     	}
 
     	public override int GetHashCode()

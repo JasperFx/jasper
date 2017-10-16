@@ -7,7 +7,7 @@
       {
         "taskName": "build",
         "args": [
-            "${workspaceRoot}/src/DiagnosticsHarness/project.json"
+            "${workspaceRoot}/src/DiagnosticsHarness/DiagnosticsHarness.csproj"
         ],
         "isBuildCommand": true,
         "problemMatcher": "$msCompile"
@@ -15,7 +15,7 @@
       {
         "taskName": "restore",
         "args": [
-            "${workspaceRoot}/src/DiagnosticsHarness/project.json"
+            "${workspaceRoot}/src/DiagnosticsHarness/DiagnosticsHarness.csproj"
         ],
         "isBuildCommand": true,
         "problemMatcher": "$msCompile"

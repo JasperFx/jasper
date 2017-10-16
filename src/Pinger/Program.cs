@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Jasper;
 using Jasper.Bus;
 using Jasper.CommandLine;
+using Jasper.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Oakton;
@@ -25,6 +26,8 @@ namespace Pinger
                 _.Publish.Message<PingMessage>().To("tcp://localhost:2601");
 
                 _.Services.AddSingleton<IHostedService, PingSender>();
+
+                _.Settings.Alter<DiagnosticsSettings>(s => s.Mode = DiagnosticsMode.Development);
 
                 _.Http
                     .UseUrls("http://localhost:5000")

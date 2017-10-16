@@ -34,7 +34,7 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
             outgoing = new Envelope
             {
                 SentAt = DateTime.Today.ToUniversalTime(),
-                EnvelopeVersionId = MessageId.GenerateRandom(),
+                EnvelopeVersionId = PersistedMessageId.GenerateRandom(),
                 Queue = "incoming",
                 SubQueue = "subqueue",
                 Data = new byte[]{1, 5, 6, 11, 2, 3},
