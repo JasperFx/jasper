@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,22 +22,23 @@ namespace Jasper.Bus.Transports.Core
 
             await stream.WriteAsync(messageBytes, 0, messageBytes.Length);
 
-            var bytes = await stream.ReadBytesAsync(Constants.ReceivedBuffer.Length).ConfigureAwait(false);
-            if (bytes.SequenceEqual(Constants.ReceivedBuffer))
+            // All four of the possible receive confirmation messages are the same length: 8 characters long encoded in UTF-16.
+            var confirmationBytes = await stream.ReadBytesAsync(Constants.ReceivedBuffer.Length).ConfigureAwait(false);
+            if (confirmationBytes.SequenceEqual(Constants.ReceivedBuffer))
             {
                 callback.Successful(batch);
 
                 await stream.WriteAsync(Constants.AcknowledgedBuffer, 0, Constants.AcknowledgedBuffer.Length);
             }
-            else if (bytes.SequenceEqual(Constants.ProcessingFailureBuffer))
+            else if (confirmationBytes.SequenceEqual(Constants.ProcessingFailureBuffer))
             {
                 callback.ProcessingFailure(batch);
             }
-            else if (bytes.SequenceEqual(Constants.SerializationFailureBuffer))
+            else if (confirmationBytes.SequenceEqual(Constants.SerializationFailureBuffer))
             {
                 callback.SerializationFailure(batch);
             }
-            else if (bytes.SequenceEqual(Constants.QueueDoesNotExistBuffer))
+            else if (confirmationBytes.SequenceEqual(Constants.QueueDoesNotExistBuffer))
             {
                 callback.QueueDoesNotExist(batch);
             }
