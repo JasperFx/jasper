@@ -15,7 +15,7 @@ namespace Jasper.Bus.Transports.Core
         private ActionBlock<OutgoingMessageBatch> _sender;
         private ActionBlock<Envelope[]> _grouper;
 
-        public SendingAgent() : this(new SocketSenderProtocal())
+        public SendingAgent() : this(new SocketSenderProtocol())
         {
         }
 

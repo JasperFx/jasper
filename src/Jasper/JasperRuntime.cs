@@ -108,7 +108,7 @@ namespace Jasper
             }
 
             Container.DisposalLock = DisposalLock.Unlocked;
-            Container?.Dispose();
+            Container.Dispose();
 
             IsDisposed = true;
         }

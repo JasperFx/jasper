@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace Jasper.Internals.Codegen
     }
 
     public abstract class HandlerSet<TChain, THandler>
-        where TChain : IGenerates<THandler>
+        where TChain : class, IGenerates<THandler>
 
     {
         protected abstract TChain[] chains { get; }

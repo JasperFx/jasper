@@ -17,7 +17,7 @@ namespace Jasper.Bus.Transports.Durable
         public static string ProtocolName = "durable";
 
         public DurableTransport(CompositeLogger logger, IPersistence persistence, BusSettings settings)
-            : base(ProtocolName, persistence, logger, new SocketSenderProtocal(), settings)
+            : base(ProtocolName, persistence, logger, new SocketSenderProtocol(), settings)
         {
 
         }
