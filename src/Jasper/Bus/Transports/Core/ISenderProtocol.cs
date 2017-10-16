@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace Jasper.Bus.Transports.Core
         Task SendBatch(ISenderCallback callback, OutgoingMessageBatch batch);
     }
 
-    public class SocketSenderProtocal : ISenderProtocol
+    public class SocketSenderProtocol : ISenderProtocol
     {
         public async Task SendBatch(ISenderCallback callback, OutgoingMessageBatch batch)
         {
