@@ -142,7 +142,7 @@ task :storyteller => [:compile] do
   result_output = File.expand_path "#{RESULTS_DIR}/stresults.htm"
   puts "appveyor AddTest Testing -Framework Storyteller -FileName SomeFile -Outcome Skipped"
   Dir.chdir("src/StorytellerSpecs") do
-    system "dotnet storyteller run -r #{result_output} --framework netcoreapp1.0"
+    system "dotnet run -- run -r #{result_output}"
   end
 end
 
@@ -151,7 +151,7 @@ task :open_st do
   sh "dotnet restore Jasper.sln"
 
 	Dir.chdir("src/StorytellerSpecs") do
-	  system "dotnet storyteller open --framework netcoreapp1.0"
+	  system "dotnet storyteller"
 	end
 end
 
