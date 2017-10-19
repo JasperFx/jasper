@@ -219,3 +219,5 @@ doc-target
 
 src/Jasper.Diagnostics/resources/css/
 src/Jasper.Diagnostics/resources/js/
+
+stresults.htm
