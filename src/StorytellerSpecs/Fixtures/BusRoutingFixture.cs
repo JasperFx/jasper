@@ -24,12 +24,12 @@ namespace StorytellerSpecs.Fixtures
         private JasperRuntime _runtime;
 
         [ExposeAsTable("The subscriptions are")]
-        public void SubscriptionsAre([SelectionList("MessageTypes")]string MessageType, [SelectionList("Channels")] Uri Destination, string Accepts)
+        public void SubscriptionsAre([SelectionList("MessageTypes")]string MessageType, [SelectionList("Channels")] Uri Destination, string[] Accepts)
         {
             var messageType = messageTypeFor(MessageType);
             var subscription = new Subscription(messageType, Destination)
             {
-                Accept = new string[]{"application/json"}
+                Accept = Accepts
             };
 
             _subscriptions.Add(subscription);
