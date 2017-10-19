@@ -43,7 +43,14 @@ namespace Jasper.Bus.Runtime.Subscriptions
             set
             {
                 _accepts.Clear();
-                if (value != null) _accepts.AddRange(value.OrderBy(x => x));
+                if (value != null)
+                {
+                    _accepts.AddRange(value.OrderBy(x => x));
+                }
+                else
+                {
+                    _accepts.Add("application/json");
+                }
             }
 
         }
