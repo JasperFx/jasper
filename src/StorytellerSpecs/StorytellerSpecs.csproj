@@ -18,7 +18,7 @@
     <PackageReference Include="Alba" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-storyteller" Version="1.2.4" />
+    <DotNetCliToolReference Include="dotnet-storyteller" Version="5.0.0-alpha-2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.LightningDb\Jasper.LightningDb.csproj" />
