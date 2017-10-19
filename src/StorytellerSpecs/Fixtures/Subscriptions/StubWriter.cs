@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions
 {
-    public class StubWriter : IMessageSerializer
+    internal class StubWriter : IMessageSerializer
     {
         public StubWriter(Type messageType, string contentType)
         {

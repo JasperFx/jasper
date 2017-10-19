@@ -128,7 +128,7 @@ namespace StorytellerSpecs.Fixtures
         }
     }
 
-    public class FakeWriter : IMessageSerializer
+    internal class FakeWriter : IMessageSerializer
     {
         public Type DotNetType { get; }
         public string ContentType { get; }
