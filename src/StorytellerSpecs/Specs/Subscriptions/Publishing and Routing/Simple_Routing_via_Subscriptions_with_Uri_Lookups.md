@@ -1,15 +1,15 @@
 # Simple Routing via Subscriptions with Uri Lookups
 
 -> id = 4e42cba1-71a8-4985-8e1f-cd415ad5f754
--> lifecycle = Regression
--> max-retries = 0
--> last-updated = 2017-08-23T14:07:22.1808000Z
--> tags =
+-> lifecycle = Acceptance
+-> max-retries = 3
+-> last-updated = 2017-10-19T19:17:09.1407490Z
+-> tags = 
 
 [Communication]
 |> UriAliasesAre
     [table]
-    |Alias        |Actual                          |
+    |Alias        |Actual                       |
     |standin://one|tcp://localhost:2244/incoming|
     |standin://two|tcp://localhost:2255/incoming|
 
