@@ -3,8 +3,8 @@
 -> id = 75de41e9-02d0-41d0-be5f-df8d67f1a765
 -> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-04-05T18:17:44.4439464Z
--> tags =
+-> last-updated = 2017-10-19T18:28:03.1225800Z
+-> tags = 
 
 [SendMessage]
 |> IfTheApplicationIs
@@ -34,9 +34,9 @@
 |> SendMessage messageType=Message2, name=Tamba Hali
 |> TheMessagesSentShouldBe
     [rows]
-    |ReceivedAt                   |MessageType|Name      |
-    |durable://localhost:2201/two  |Message2   |Tamba Hali|
-    |durable://localhost:2201/three|Message3   |Tamba Hali|
-    |durable://localhost:2201/four |Message4   |Tamba Hali|
+    |ReceivedAt              |MessageType|Name      |
+    |durable://localhost:2201|Message2   |Tamba Hali|
+    |durable://localhost:2201|Message3   |Tamba Hali|
+    |durable://localhost:2201|Message4   |Tamba Hali|
 
 ~~~

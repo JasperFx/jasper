@@ -13,6 +13,7 @@ using Jasper.Bus.Transports.Loopback;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Internals;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Bus
 {
@@ -20,9 +21,14 @@ namespace Jasper.Bus
     {
         internal ServiceBusRegistry()
         {
+
             ForSingletonOf<ITransport>()
-                .Use<LoopbackTransport>()
-                .Use<LightweightTransport>()
+                .Use<LoopbackTransport>();
+
+            ForSingletonOf<ITransport>()
+                .Use<LightweightTransport>();
+
+            ForSingletonOf<ITransport>()
                 .Use<DurableTransport>();
 
 

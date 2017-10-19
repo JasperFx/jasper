@@ -30,7 +30,7 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                 |MessageType|Name          |
-    |tcp://localhost:2201/one|Message1   |Jamaal Charles|
-    |tcp://localhost:2201/two|Message2   |Jamaal Charles|
+    |tcp://localhost:2201|Message1   |Jamaal Charles|
+    |tcp://localhost:2201|Message2   |Jamaal Charles|
 
 ~~~

@@ -27,10 +27,12 @@ namespace Jasper.Bus.Transports.Core
             _listener = new TcpListener(new IPEndPoint(IPAddress.Loopback, port));
             _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
-            _socketHandling = new ActionBlock<Socket>(s =>
+            _socketHandling = new ActionBlock<Socket>(async s =>
             {
-                var stream = new NetworkStream(s, true);
-                return WireProtocol.Receive(stream, _callback, _uri);
+                using (var stream = new NetworkStream(s, true))
+                {
+                    await WireProtocol.Receive(stream, _callback, _uri);
+                }
             });
 
             _uri = $"{protocol}://{Environment.MachineName}:{port}/".ToUri();
@@ -55,6 +57,7 @@ namespace Jasper.Bus.Transports.Core
         {
             _socketHandling.Complete();
             _listener.Stop();
+            _listener.Server.Dispose();
         }
     }
 }
