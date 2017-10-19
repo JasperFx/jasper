@@ -39,20 +39,27 @@ namespace Jasper.Http.ContentHandling
 
         public void Apply(RouteChain chain)
         {
-            if (chain.InputType != null)
+            try
             {
-                foreach (var reader in _readers)
+                if (chain.InputType != null)
                 {
-                    if (reader.TryToApply(chain)) break;
+                    foreach (var reader in _readers)
+                    {
+                        if (reader.TryToApply(chain)) break;
+                    }
+                }
+
+                if (chain.ResourceType != null)
+                {
+                    foreach (var writer in _writers)
+                    {
+                        if (writer.TryToApply(chain)) break;
+                    }
                 }
             }
-
-            if (chain.ResourceType != null)
+            catch (Exception e)
             {
-                foreach (var writer in _writers)
-                {
-                    if (writer.TryToApply(chain)) break;
-                }
+                throw new InvalidOperationException($"Error trying to apply conneg rules to {chain}",e);
             }
         }
 

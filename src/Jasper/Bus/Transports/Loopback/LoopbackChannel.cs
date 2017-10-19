@@ -16,6 +16,7 @@ namespace Jasper.Bus.Transports.Loopback
 
         protected override Task send(Envelope envelope)
         {
+            envelope.ReceivedAt = Destination;
             _receiver.Enqueue(envelope);
             return Task.CompletedTask;
         }
