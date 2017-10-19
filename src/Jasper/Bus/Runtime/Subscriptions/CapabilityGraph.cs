@@ -48,20 +48,23 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
 
 
-            var capabilities = await compile(handlers, serialization, channels, transports, lookups);
+            var capabilities = await compile(handlers, serialization, channels, transports, lookups, runtime);
+
+
+            capabilities.ServiceName = runtime.ServiceName;
 
             return capabilities;
         }
 
 
 
-        private async Task<ServiceCapabilities> compile(HandlerGraph handlers, SerializationGraph serialization, IChannelGraph channels, ITransport[] transports, UriAliasLookup lookups)
+        private async Task<ServiceCapabilities> compile(HandlerGraph handlers, SerializationGraph serialization, IChannelGraph channels, ITransport[] transports, UriAliasLookup lookups, JasperRuntime runtime)
         {
             var validTransports = transports.Select(x => x.Protocol).ToArray();
 
             var capabilities = new ServiceCapabilities
             {
-                ServiceName = channels.Name,
+                ServiceName = runtime.ServiceName,
                 Subscriptions = determineSubscriptions(handlers, serialization),
                 Published = determinePublishedMessages(serialization, channels, validTransports)
             };
@@ -69,7 +72,12 @@ namespace Jasper.Bus.Runtime.Subscriptions
             // Hokey.
             foreach (var subscription in capabilities.Subscriptions)
             {
-                subscription.ServiceName = channels.Name;
+                subscription.ServiceName = runtime.ServiceName;
+            }
+
+            foreach (var message in capabilities.Published)
+            {
+                message.ServiceName = runtime.ServiceName;
             }
 
             await capabilities.ApplyLookups(lookups);

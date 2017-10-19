@@ -1,10 +1,10 @@
-﻿# Simplest Possible Happy Path
+# Simplest Possible Happy Path
 
 -> id = 63d1dfc5-e1bc-49fc-8a88-5d556f847c6d
 -> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-06-26T14:32:22.2023050Z
--> tags =
+-> last-updated = 2017-10-19T18:27:36.7701000Z
+-> tags = 
 
 [SendMessage]
 |> IfTheApplicationIs
@@ -30,9 +30,9 @@
 |> SendMessage messageType=Message3, name=Trevor
 |> TheMessagesSentShouldBe
     [rows]
-    |ReceivedAt                   |MessageType|Name  |
-    |durable://localhost:2201/one  |Message1   |Tom   |
-    |durable://localhost:2201/two  |Message2   |Todd  |
-    |durable://localhost:2201/three|Message3   |Trevor|
+    |ReceivedAt              |MessageType|Name  |
+    |durable://localhost:2201|Message1   |Tom   |
+    |durable://localhost:2201|Message2   |Todd  |
+    |durable://localhost:2201|Message3   |Trevor|
 
 ~~~

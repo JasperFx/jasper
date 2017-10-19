@@ -89,7 +89,7 @@ namespace Jasper.Bus.Transports.Loopback
         public void Dispose()
         {
             _cancellation.Cancel();
-            _queues.Dispose();
+            _queues?.Dispose();
         }
 
         public static readonly Uri Delayed = "loopback://delayed".ToUri();
