@@ -5,14 +5,11 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Core;
-using Jasper.Bus.Transports.Lightweight;
-using Jasper.Testing;
 using Jasper.Util;
 using Shouldly;
 
-namespace IntegrationTests.Lightweight.Protocol
+namespace Jasper.Testing.Bus.Lightweight.Protocol
 {
     public abstract class ProtocolContext : IDisposable
     {
@@ -84,8 +81,7 @@ namespace IntegrationTests.Lightweight.Protocol
         protected void allTheMessagesWereReceived()
         {
             theReceiver.MessagesReceived.Length.ShouldBe(theMessageBatch.Messages.Count);
-            theReceiver.MessagesReceived.Select(x => x.EnvelopeVersionId)
-                .ShouldHaveTheSameElementsAs(theMessageBatch.Messages.Select(x => x.EnvelopeVersionId));
+            Testing.SpecificationExtensions.ShouldHaveTheSameElementsAs(theReceiver.MessagesReceived.Select(x => x.EnvelopeVersionId), theMessageBatch.Messages.Select(x => x.EnvelopeVersionId));
         }
 
 

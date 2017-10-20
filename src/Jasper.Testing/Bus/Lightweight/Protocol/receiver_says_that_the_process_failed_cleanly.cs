@@ -1,11 +1,9 @@
 ﻿using Baseline.Dates;
-using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Core;
-using Jasper.Bus.Transports.Lightweight;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.Lightweight.Protocol
+namespace Jasper.Testing.Bus.Lightweight.Protocol
 {
     public class receiver_says_that_the_process_failed_cleanly : ProtocolContext
     {

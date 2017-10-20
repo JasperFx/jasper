@@ -3,7 +3,7 @@ using Baseline.Dates;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.Lightweight.Protocol
+namespace Jasper.Testing.Bus.Lightweight.Protocol
 {
     public class error_in_receiver : ProtocolContext
     {
