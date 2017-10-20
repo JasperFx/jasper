@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using IntegrationTests.Lightweight.Protocol;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Core;
-using Jasper.Bus.Transports.Lightweight;
+using Jasper.Testing.Bus.Lightweight.Protocol;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.Lightweight
+namespace Jasper.Testing.Bus.Lightweight
 {
     public class sender_to_receiver_agent : IDisposable
     {

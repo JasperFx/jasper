@@ -1,6 +1,6 @@
 ﻿using System;
-using IntegrationTests.Lightweight;
 using Jasper;
+using Jasper.Testing.Bus.Lightweight;
 
 namespace IntegrationTests.Bus
 {
