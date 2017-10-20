@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,7 +43,14 @@ namespace StorytellerSpecs.Fixtures
                 .After(c =>
                 {
                     _runtime = c.State.Retrieve<JasperRuntime>();
-                    _runtime.Get<IPersistence>().ClearAllStoredMessages();
+                    try
+                    {
+                        _runtime.Get<IPersistence>().ClearAllStoredMessages();
+                    }
+                    catch (Exception)
+                    {
+                        // too flaky in windows, and this is only for testing
+                    }
                 });
 
 
