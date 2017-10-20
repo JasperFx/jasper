@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus;
-using Jasper.Testing.AspNetCoreIntegration;
-using Jasper.Testing.Bus.Model;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
 
@@ -157,6 +154,9 @@ namespace Jasper.Testing.Samples
             public double Amount { get; set; }
             public string Item { get; set; }
         }
+
+        public class SomeMessage{}
+
     }
 
 

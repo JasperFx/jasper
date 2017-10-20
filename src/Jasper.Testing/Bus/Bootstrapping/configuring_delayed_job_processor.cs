@@ -1,6 +1,5 @@
 ﻿using Jasper.Bus.Delayed;
 using Jasper.Bus.Transports.Loopback;
-using Jasper.Testing.AspNetCoreIntegration;
 using Shouldly;
 using Xunit;
 
@@ -18,7 +17,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void default_is_to_use_in_memory_delayed_processor()
         {
-            theRuntime.DefaultSingletonIs<IDelayedJobProcessor, InMemoryDelayedJobProcessor>();
+            theRuntime.Container.DefaultSingletonIs<IDelayedJobProcessor, InMemoryDelayedJobProcessor>();
         }
     }
 }

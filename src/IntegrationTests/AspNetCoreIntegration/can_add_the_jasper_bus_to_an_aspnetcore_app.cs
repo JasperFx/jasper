@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Bus;
 using Jasper.Configuration;
 using Jasper.Http;
+using Jasper.Testing;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
 using Jasper.Testing.Samples;
@@ -13,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.AspNetCoreIntegration
+namespace IntegrationTests.AspNetCoreIntegration
 {
     public class can_add_the_jasper_bus_to_an_aspnetcore_app : IDisposable
     {
@@ -76,7 +78,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
             using (var client = new HttpClient())
             {
                 var text = await client.GetStringAsync("http://localhost:3003");
-                "Hello from a hybrid Jasper application".ShouldContain(text);
+                SpecificationExtensions.ShouldContain("Hello from a hybrid Jasper application", text);
 
             }
         }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Internals;
 using Jasper.Internals.Codegen;
-using Jasper.Testing.AspNetCoreIntegration;
+using Jasper.Testing.Bus.Bootstrapping;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -81,15 +81,15 @@ namespace Jasper.Testing
         [Fact]
         public void registrations_from_the_main_registry_are_applied()
         {
-            theRuntime.DefaultRegistrationIs<IMainService, MainService>();
+            theRuntime.Container.DefaultRegistrationIs<IMainService, MainService>();
         }
 
         [Fact]
         public void should_pick_up_registrations_from_the_features()
         {
-            theRuntime.DefaultRegistrationIs<IFeatureService1, FeatureService1>();
-            theRuntime.DefaultRegistrationIs<IFeatureService2, FeatureService2>();
-            theRuntime.DefaultRegistrationIs<IFeatureService3, FeatureService3>();
+            theRuntime.Container.DefaultRegistrationIs<IFeatureService1, FeatureService1>();
+            theRuntime.Container.DefaultRegistrationIs<IFeatureService2, FeatureService2>();
+            theRuntime.Container.DefaultRegistrationIs<IFeatureService3, FeatureService3>();
         }
 
         public void Dispose()

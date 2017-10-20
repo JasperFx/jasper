@@ -1,6 +1,5 @@
 ﻿using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
-using Jasper.Testing.AspNetCoreIntegration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +17,7 @@ namespace Jasper.Testing.Samples
 
 
             // Add service registrations
-            ServiceCollectionServiceExtensions.AddTransient<IFoo, Foo>(registry.Services);
+            registry.Services.AddTransient<IFoo, Foo>();
 
             // Alter settings within the application
             registry.Settings.Alter<BusSettings>(_ =>
@@ -41,4 +40,7 @@ namespace Jasper.Testing.Samples
             return builder;
         }
     }
+
+    public interface IFoo{}
+    public class Foo : IFoo{}
 }

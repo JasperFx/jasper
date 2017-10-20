@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
+using Jasper;
+using Jasper.Testing;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using StructureMap;
-using StructureMap.Pipeline;
 using Xunit;
 
-namespace Jasper.Testing.AspNetCoreIntegration
+namespace IntegrationTests.AspNetCoreIntegration
 {
     public class service_registrations_with_aspnet_core_abstractions
     {
@@ -25,7 +25,7 @@ namespace Jasper.Testing.AspNetCoreIntegration
             {
 
                 var @default = runtime.Services.Last(x => x.ServiceType == typeof(IService));
-                @default.ShouldNotBeNull();
+                SpecificationExtensions.ShouldNotBeNull(@default);
                 @default.ImplementationType.ShouldBe(typeof(FooService));
             }
         }
@@ -41,8 +41,8 @@ namespace Jasper.Testing.AspNetCoreIntegration
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                runtime.Get<IServiceProvider>().ShouldNotBeNull();
-                runtime.Get<IServiceScopeFactory>().ShouldNotBeNull();
+                SpecificationExtensions.ShouldNotBeNull(runtime.Get<IServiceProvider>());
+                SpecificationExtensions.ShouldNotBeNull(runtime.Get<IServiceScopeFactory>());
             }
         }
 

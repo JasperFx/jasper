@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Jasper.Testing.AspNetCoreIntegration;
+using Jasper.Testing.Bus.Bootstrapping;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +28,7 @@ namespace Jasper.Testing
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                runtime.DefaultRegistrationIs<IFoo, Foo>();
+                runtime.Container.DefaultRegistrationIs<IFoo, Foo>();
             }
         }
 
