@@ -65,7 +65,7 @@ task :version do
 end
 
 desc 'Compile the code'
-task :compile => [:clean, :version, :npm_install] do
+task :compile => [:clean, :npm_install] do
 	sh "dotnet restore Jasper.sln"
 
   Dir.chdir("src/Jasper.Diagnostics") do
