@@ -67,11 +67,6 @@ end
 desc 'Compile the code'
 task :compile => [:clean, :version, :npm_install] do
 	sh "dotnet restore Jasper.sln"
-	sh "dotnet build src/Jasper.Testing/Jasper.Testing.csproj"
-	
-	
-	# sh "dotnet build src/IntegrationTests/IntegrationTests.csproj"
-
 
   Dir.chdir("src/Jasper.Diagnostics") do
     sh "yarn build:prod"
@@ -90,8 +85,11 @@ end
 desc "Integration Tests"
 task :integrationtests => [:compile] do
     # Too many problems. May move most of this to Storyteller later
-	#sh "dotnet test src/IntegrationTests/IntegrationTests.csproj"
-	sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj"
+  #sh "dotnet test src/IntegrationTests/IntegrationTests.csproj"
+  sh "dotnet test src/Jasper.LightningDb.Testing/Jasper.LightningDb.Testing.csproj"
+  
+  
+  sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj"
 
 end
 
@@ -142,7 +140,7 @@ task :storyteller => [:compile] do
   result_output = File.expand_path "#{RESULTS_DIR}/stresults.htm"
   puts "appveyor AddTest Testing -Framework Storyteller -FileName SomeFile -Outcome Skipped"
   Dir.chdir("src/StorytellerSpecs") do
-    system "dotnet run -- run -r #{result_output}"
+    system "dotnet run -- run -r #{result_output} --tracing appveyor" 
   end
 end
 

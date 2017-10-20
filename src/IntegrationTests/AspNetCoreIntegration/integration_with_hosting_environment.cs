@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Jasper;
 using Jasper.Testing.Http.ContentHandling;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.Extensions.Configuration;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.AspNetCoreIntegration
+namespace IntegrationTests.AspNetCoreIntegration
 {
     public class integration_with_hosting_environment
     {

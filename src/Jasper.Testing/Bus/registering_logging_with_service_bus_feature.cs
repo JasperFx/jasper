@@ -3,7 +3,6 @@ using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
-using Jasper.Testing.AspNetCoreIntegration;
 using Jasper.Testing.Bus.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -18,7 +17,7 @@ namespace Jasper.Testing.Bus
         {
             withAllDefaults();
 
-            Runtime.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.Container.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]
@@ -26,7 +25,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.UseConsoleLogging = true);
 
-            Runtime.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]
@@ -34,7 +33,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.LogBusEventsWith<ConsoleBusLogger>());
 
-            Runtime.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
         }
 
         [Fact]

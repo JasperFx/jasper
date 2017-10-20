@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Jasper.Bus;
 using Jasper.Bus.Logging;
-using Jasper.Configuration;
-using Jasper.Testing.AspNetCoreIntegration;
+using Jasper.Testing.Bus.Bootstrapping;
 using Module1;
 using Shouldly;
 using Xunit;
@@ -53,7 +51,7 @@ namespace Jasper.Testing
         [Fact]
         public void application_service_registrations_win()
         {
-            theRuntime.DefaultRegistrationIs<IModuleService, AppsModuleService>();
+            theRuntime.Container.DefaultRegistrationIs<IModuleService, AppsModuleService>();
         }
 
         [Fact]
