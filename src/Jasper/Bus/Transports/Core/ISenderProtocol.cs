@@ -44,7 +44,7 @@ namespace Jasper.Bus.Transports.Core
 
         private Task connect(TcpClient client, Uri destination)
         {
-            return Dns.GetHostName() == destination.Host
+            return string.Equals(Dns.GetHostName(), destination.Host, StringComparison.OrdinalIgnoreCase)
                    || destination.Host == "localhost"
                    || destination.Host == "127.0.0.1"
 

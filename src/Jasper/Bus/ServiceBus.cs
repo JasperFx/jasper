@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus.Runtime;
@@ -110,7 +110,7 @@ namespace Jasper.Bus
             return GetSendAndWaitTask(message, destination);
         }
 
-        private Task GetSendAndWaitTask<T>(T message, Uri destination = null)
+        private async Task GetSendAndWaitTask<T>(T message, Uri destination = null)
         {
             var envelope = new Envelope
             {
@@ -122,9 +122,9 @@ namespace Jasper.Bus
             var task = _watcher.StartWatch<Acknowledgement>(envelope.CorrelationId, 10.Minutes());
 
 
-            _sender.Send(envelope);
+            await _sender.Send(envelope);
 
-            return task;
+            await task;
         }
 
     }
