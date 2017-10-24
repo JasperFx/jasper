@@ -10,10 +10,10 @@ import {
 } from './sentMessagesReducer'
 
 const SentMessages = ({ messages, saveMessage }) => {
-  const list = messages.map((m,idx) =>{
-    return <li key={m.correlationId} className="message-list-item">
+  const list = messages.map(m =>
+    <li key={m.correlationId} className="message-list-item">
       <Envelope id={m.correlationId} queue="sent" saveMessage={saveMessage} />
-    </li>})
+    </li>)
   return (
     <ul className="message-list">
       {list}
