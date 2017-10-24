@@ -2,7 +2,7 @@
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.Lightweight.Protocol
+namespace Jasper.Testing.Bus.Lightweight.Protocol
 {
     public class super_duper_happy_path : ProtocolContext
     {

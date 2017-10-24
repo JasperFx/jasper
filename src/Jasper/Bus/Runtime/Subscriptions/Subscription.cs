@@ -43,32 +43,41 @@ namespace Jasper.Bus.Runtime.Subscriptions
             set
             {
                 _accepts.Clear();
-                if (value != null) _accepts.AddRange(value);
-            }
-
-        }
-
-        private sealed class DestinationMessageTypeEqualityComparer : IEqualityComparer<Subscription>
-        {
-            public bool Equals(Subscription x, Subscription y)
-            {
-                if (ReferenceEquals(x, y)) return true;
-                if (ReferenceEquals(x, null)) return false;
-                if (ReferenceEquals(y, null)) return false;
-                if (x.GetType() != y.GetType()) return false;
-                return Equals(x.Destination, y.Destination) && string.Equals(x.MessageType, y.MessageType);
-            }
-
-            public int GetHashCode(Subscription obj)
-            {
-                unchecked
+                if (value != null)
                 {
-                    return ((obj.Destination != null ? obj.Destination.GetHashCode() : 0) * 397) ^ (obj.MessageType != null ? obj.MessageType.GetHashCode() : 0);
+                    _accepts.AddRange(value.OrderBy(x => x));
+                }
+                else
+                {
+                    _accepts.Add("application/json");
                 }
             }
+
         }
 
-        public static IEqualityComparer<Subscription> DestinationMessageTypeComparer { get; } = new DestinationMessageTypeEqualityComparer();
+        protected bool Equals(Subscription other)
+        {
+            return Equals(Destination, other.Destination) && string.Equals(MessageType, other.MessageType) && string.Equals(ServiceName, other.ServiceName) && _accepts.SequenceEqual(other._accepts);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Subscription) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Destination != null ? Destination.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (MessageType != null ? MessageType.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ServiceName != null ? ServiceName.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
 
         public override string ToString()
         {

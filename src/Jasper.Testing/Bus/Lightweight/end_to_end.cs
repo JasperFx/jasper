@@ -5,9 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
-using Jasper;
 using Jasper.Bus;
-using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
@@ -16,10 +14,9 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
 using Shouldly;
-using StoryTeller;
 using Xunit;
 
-namespace IntegrationTests.Lightweight
+namespace Jasper.Testing.Bus.Lightweight
 {
     public class end_to_end : IDisposable
     {
@@ -35,14 +32,20 @@ namespace IntegrationTests.Lightweight
         {
 
 
-            theSender = JasperRuntime.For(new JasperRegistry());
+            theSender = JasperRuntime.For(_ =>
+            {
+                _.Handlers.DisableConventionalDiscovery();
+            });
 
             var receiver = new JasperRegistry();
+            receiver.Handlers.DisableConventionalDiscovery();
+
             receiver.Transports.ListenForMessagesFrom(theAddress);
             receiver.Handlers.OnException<DivideByZeroException>().Requeue();
             receiver.Handlers.OnException<TimeoutException>().RetryLater(10.Seconds());
 
             receiver.Handlers.DefaultMaximumAttempts = 3;
+            receiver.Handlers.IncludeType<MessageConsumer>();
 
             delayedJobs = new FakeDelayedJobProcessor();
 

@@ -5,7 +5,6 @@ using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
-using Jasper.Testing.AspNetCoreIntegration;
 using Jasper.Testing.Bus.Stubs;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -45,19 +44,19 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void should_have_the_envelope_sender_registered()
         {
-            theRuntime.DefaultRegistrationIs<IEnvelopeSender, EnvelopeSender>();
+            theRuntime.Container.DefaultRegistrationIs<IEnvelopeSender, EnvelopeSender>();
         }
 
         [Fact]
         public void should_have_the_service_bus_registered()
         {
-            theRuntime.DefaultRegistrationIs<IServiceBus, ServiceBus>();
+            theRuntime.Container.DefaultRegistrationIs<IServiceBus, ServiceBus>();
         }
 
         [Fact]
         public void should_have_the_handler_pipeline_registered()
         {
-            theRuntime.DefaultRegistrationIs<IHandlerPipeline, HandlerPipeline>();
+            theRuntime.Container.DefaultRegistrationIs<IHandlerPipeline, HandlerPipeline>();
         }
     }
 }

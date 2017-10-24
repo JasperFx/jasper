@@ -21,6 +21,22 @@ namespace Jasper.Bus.Tracking
             }
         }
 
+        /// <summary>
+        /// Send a message through the service bus and wait until that message
+        /// and all cascading messages have been successfully processed
+        /// </summary>
+        /// <param name="runtime"></param>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static Task SendMessageAndWait<T>(this JasperRuntime runtime, T message)
+        {
+            runtime.validateMessageTrackerExists();
+
+            var history = runtime.Get<MessageHistory>();
+            return history.WatchAsync(() => runtime.Bus.Send(message));
+        }
+
 
 
         /// <summary>

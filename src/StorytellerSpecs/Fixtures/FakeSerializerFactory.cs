@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace StorytellerSpecs.Fixtures
 {
-    public class FakeSerializerFactory : ISerializerFactory, IMessageDeserializer, IMessageSerializer
+    internal class FakeSerializerFactory : ISerializerFactory, IMessageDeserializer, IMessageSerializer
     {
         public FakeSerializerFactory(string contentType)
         {

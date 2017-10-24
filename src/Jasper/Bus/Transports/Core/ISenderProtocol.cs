@@ -17,19 +17,34 @@ namespace Jasper.Bus.Transports.Core
         {
             using (var client = new TcpClient())
             {
-                await connect(client, batch.Destination)
+                var connection = connect(client, batch.Destination)
                     .TimeoutAfter(5000);
 
-                using (var stream = client.GetStream())
+                await connection;
+
+                if (connection.IsCompleted)
                 {
-                    await WireProtocol.Send(stream, batch, callback).TimeoutAfter(5000);
+                    using (var stream = client.GetStream())
+                    {
+                        var protocolTimeout = WireProtocol.Send(stream, batch, callback).TimeoutAfter(5000);
+                        await protocolTimeout;
+
+                        if (!protocolTimeout.IsCompleted)
+                        {
+                            callback.TimedOut(batch);
+                        }
+                    }
+                }
+                else
+                {
+                    callback.TimedOut(batch);
                 }
             }
         }
 
         private Task connect(TcpClient client, Uri destination)
         {
-            return Dns.GetHostName() == destination.Host
+            return string.Equals(Dns.GetHostName(), destination.Host, StringComparison.OrdinalIgnoreCase)
                    || destination.Host == "localhost"
                    || destination.Host == "127.0.0.1"
 

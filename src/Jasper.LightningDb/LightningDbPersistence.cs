@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,15 +80,22 @@ namespace Jasper.LightningDb
 
         public void ClearAllStorage()
         {
-            var databases = _databaseCache.Values.ToArray();
-            using (var tx = _environment.BeginTransaction())
+            try
             {
-                foreach (var db in databases)
+                var databases = _databaseCache.Values.ToArray();
+                using (var tx = _environment.BeginTransaction())
                 {
-                    tx.TruncateDatabase(db);
-                }
+                    foreach (var db in databases)
+                    {
+                        tx.TruncateDatabase(db);
+                    }
 
-                tx.Commit();
+                    tx.Commit();
+                }
+            }
+            catch (Exception)
+            {
+                // only used in automated testing anyway
             }
         }
 

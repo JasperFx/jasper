@@ -3,7 +3,6 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Durable;
 using Jasper.Bus.Transports.Lightweight;
 using Jasper.Bus.Transports.Loopback;
-using Jasper.Testing.AspNetCoreIntegration;
 using Shouldly;
 using Xunit;
 

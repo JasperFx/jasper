@@ -1,17 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using AlbaForJasper;
-using Jasper;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Storyteller;
-using Jasper.Testing.Bus;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using Shouldly;
 using StoryTeller;
 using Xunit;
 
-namespace IntegrationTests.Storyteller
+namespace Jasper.Testing.Storyteller
 {
     public class JasperSystemTester
     {
@@ -22,8 +18,7 @@ namespace IntegrationTests.Storyteller
             {
                 await system.Warmup();
 
-                system.Runtime.Get<BusSettings>()
-                    .ShouldNotBeNull();
+                ShouldBeNullExtensions.ShouldNotBeNull(system.Runtime.Get<BusSettings>());
             }
         }
 
@@ -91,7 +86,7 @@ namespace IntegrationTests.Storyteller
                 {
                     var specContext = SpecContext.ForTesting();
                     context.BeforeExecution(specContext);
-                    
+
                     context.AfterExecution(specContext);
                     system.AfterEachWasCalled.ShouldBeTrue();
                 }
@@ -108,8 +103,7 @@ namespace IntegrationTests.Storyteller
 
                 using (var context = system.CreateContext())
                 {
-                    context.GetService<BusSettings>()
-                        .ShouldBeTheSameAs(system.Runtime.Get<BusSettings>());
+                    Bus.SpecificationExtensions.ShouldBeTheSameAs(context.GetService<BusSettings>(), system.Runtime.Get<BusSettings>());
                 }
 
             }
@@ -129,7 +123,7 @@ namespace IntegrationTests.Storyteller
 
         protected override void beforeAll()
         {
-            Runtime.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(Runtime);
             BeforeAllWasCalled = true;
         }
 

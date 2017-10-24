@@ -9,7 +9,7 @@
 [SubscriptionDelta]
 |> TheExistingAre
     [Rows]
-    |MessageType|Destination     |Accepts|
+    |MessageType|Destination     |Accept|
     |One        |tcp://server1|json   |
     |Two        |tcp://server2|xml    |
     |Three      |tcp://server3|text   |
@@ -17,7 +17,7 @@
 
 |> TheExpectedAre
     [Rows]
-    |MessageType|Destination     |Accepts|
+    |MessageType|Destination     |Accept|
     |One        |tcp://server1|json   |
     |Two        |tcp://server2|xml    |
     |Four       |tcp://server4|text   |
@@ -25,13 +25,13 @@
 
 |> ToBeCreated
     [rows]
-    |MessageType|Destination     |Accepts|
+    |MessageType|Destination     |Accept|
     |Three      |tcp://server3|xml    |
     |Four       |tcp://server4|text   |
 
 |> ToBeDeleted
     [rows]
-    |MessageType|Destination     |Accepts|
+    |MessageType|Destination     |Accept|
     |Three      |tcp://server3|text   |
     |Four       |tcp://other  |text   |
 

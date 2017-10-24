@@ -2,15 +2,12 @@
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Core;
-using Jasper.LightningDb;
-using Jasper.Testing.Bus;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.LightningDb
+namespace Jasper.LightningDb.Testing
 {
     public class LightningDbPersistenceTester : IDisposable
     {
@@ -67,7 +64,7 @@ namespace IntegrationTests.LightningDb
             var loaded = thePersistence.Load("one", original.EnvelopeVersionId);
 
             loaded.EnvelopeVersionId.ShouldBe(original.EnvelopeVersionId);
-            loaded.Data.ShouldHaveTheSameElementsAs(original.Data);
+            loaded.Data.ShouldBe(original.Data);
         }
 
         [Fact]

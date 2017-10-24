@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,7 +43,14 @@ namespace StorytellerSpecs.Fixtures
                 .After(c =>
                 {
                     _runtime = c.State.Retrieve<JasperRuntime>();
-                    _runtime.Get<IPersistence>().ClearAllStoredMessages();
+                    try
+                    {
+                        _runtime.Get<IPersistence>().ClearAllStoredMessages();
+                    }
+                    catch (Exception)
+                    {
+                        // too flaky in windows, and this is only for testing
+                    }
                 });
 
 
@@ -333,7 +340,7 @@ namespace StorytellerSpecs.Fixtures
     {
         public readonly LightweightCache<Uri, StubChannel> Channels;
         private IHandlerPipeline _pipeline;
-        private Uri _replyUri;
+        private readonly Uri _replyUri;
 
         public StubTransport(string scheme = "stub")
         {
@@ -453,6 +460,8 @@ namespace StorytellerSpecs.Fixtures
             Callbacks.Add(callback);
 
             envelope.Callback = callback;
+
+            envelope.ReceivedAt = Address;
 
             return _pipeline.Invoke(envelope);
 

@@ -10,6 +10,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports;
 using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Internals.Codegen;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using StructureMap.Graph;
+using StructureMap.Pipeline;
 using ServiceCollectionExtensions = Jasper.Internals.Scanning.Conventions.ServiceCollectionExtensions;
 
 namespace Jasper
@@ -27,6 +29,17 @@ namespace Jasper
     public static class JasperEnvironment
     {
         public static string Name { get; set; }
+    }
+
+    internal class TransportsAreSingletons : StructureMap.IInstancePolicy
+    {
+        public void Apply(Type pluginType, Instance instance)
+        {
+            if (pluginType == typeof(ITransport))
+            {
+                instance.SetLifecycleTo(Lifecycles.Singleton);
+            }
+        }
     }
 
     public class JasperRuntime : IDisposable
@@ -42,6 +55,8 @@ namespace Jasper
             Container = new Container(_ =>
             {
                 _.Populate(services);
+                _.For<ITransport>().Singleton();
+                _.Policies.Add<TransportsAreSingletons>();
             })
             {
                 DisposalLock = DisposalLock.Ignore

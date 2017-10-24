@@ -17,6 +17,9 @@ namespace Jasper.Testing.Bus
 
             with(_ =>
             {
+                _.Handlers.DisableConventionalDiscovery();
+                _.Handlers.IncludeType<EnvelopeCatchingHandler>();
+
                 _.Publish.Message<Message1>().To("loopback://one").ModifyWith<FooModifier>().ModifyWith<BarModifier>();
                 _.Publish.Message<Message2>().To("loopback://two");
 

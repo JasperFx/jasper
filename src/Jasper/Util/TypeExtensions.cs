@@ -36,6 +36,7 @@ namespace Jasper.Util
             if (type.IsSimple()) return false;
             if (type.IsDateTime()) return false;
             if (type == typeof(DateTimeOffset)) return false;
+            if (type == typeof(Guid)) return false;
 
             if (type.Name.EndsWith("Settings")) return false;
 
