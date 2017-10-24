@@ -27,7 +27,7 @@ namespace Pinger
 
                 _.Services.AddSingleton<IHostedService, PingSender>();
 
-                _.Settings.Alter<DiagnosticsSettings>(s => s.Mode = DiagnosticsMode.Development);
+                //_.Settings.Alter<DiagnosticsSettings>(s => s.Mode = DiagnosticsMode.Development);
 
                 _.Http
                     .UseUrls("http://localhost:5000")
