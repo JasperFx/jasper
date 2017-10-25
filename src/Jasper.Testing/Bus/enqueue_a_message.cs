@@ -5,6 +5,7 @@ using Jasper.Bus;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Bus.Transports;
+using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute.Routing.Handlers;

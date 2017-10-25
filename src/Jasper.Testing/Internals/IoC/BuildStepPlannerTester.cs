@@ -24,6 +24,8 @@ namespace Jasper.Testing.Internals.IoC
     {
         public readonly Dictionary<Type, Variable> Variables = new Dictionary<Type, Variable>();
 
+        public IList<BuildStep> AllKnownBuildSteps { get; } = new List<BuildStep>();
+
         public Variable FindVariable(Type type)
         {
             throw new NotImplementedException();

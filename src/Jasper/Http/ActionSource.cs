@@ -23,6 +23,7 @@ namespace Jasper.Http
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
         private readonly IList<Type> _explicitTypes = new List<Type>();
+        private bool _disableConventionalDiscovery;
 
         public ActionSource()
         {
@@ -45,9 +46,9 @@ namespace Jasper.Http
 
         internal async Task<MethodCall[]> FindActions(Assembly applicationAssembly)
         {
-            if (applicationAssembly == null)
+            if (applicationAssembly == null || _disableConventionalDiscovery)
             {
-                return new MethodCall[0];
+                return _explicitTypes.SelectMany(actionsFromType).ToArray();
             }
 
             var assemblies = Applies.Assemblies.Any() ? Applies.Assemblies : new[] {applicationAssembly};
@@ -173,6 +174,15 @@ namespace Jasper.Http
         public void IncludeType(Type type)
         {
             _explicitTypes.Fill(type);
+        }
+
+        /// <summary>
+        /// Disables explicit discovery of HTTP endpoints
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public void DisableConventionalDiscovery()
+        {
+            _disableConventionalDiscovery = true;
         }
     }
 }

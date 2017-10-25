@@ -6,8 +6,12 @@ using Xunit;
 namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
-    public class simple_sync_message_handlers : CompilationContext<SyncHandler>
+    public class simple_sync_message_handlers : CompilationContext
     {
+        public simple_sync_message_handlers()
+        {
+            theRegistry.Handlers.IncludeType<SyncHandler>();
+        }
 
         [Fact]
         public async Task execute_the_simplest_possible_chain()

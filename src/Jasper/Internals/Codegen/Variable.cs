@@ -43,7 +43,9 @@ namespace Jasper.Internals.Codegen
             }
         }
         public Type VariableType { get; }
-        public string Usage { get; private set; }
+        public string Usage { get; protected set; }
+
+        public bool CanBeReused { get; protected set; } = true;
 
         /// <summary>
         /// On rare occasions you may need to override the variable name

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Jasper.Internals.IoC;
 
 namespace Jasper.Internals.Codegen
 {
@@ -12,11 +14,7 @@ namespace Jasper.Internals.Codegen
         bool TryFindVariableByName(Type dependency, string name, out Variable variable);
         Variable TryFindVariable(Type type, VariableSource source);
 
-    }
+        IList<BuildStep> AllKnownBuildSteps { get; }
 
-    public enum VariableSource
-    {
-        All,
-        NotServices
     }
 }

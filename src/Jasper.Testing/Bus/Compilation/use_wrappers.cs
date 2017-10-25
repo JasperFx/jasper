@@ -8,6 +8,7 @@ using Jasper.Configuration;
 using Jasper.Internals.Codegen;
 using Jasper.Internals.Compilation;
 using Jasper.Testing.Bus.Runtime;
+using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -16,14 +17,16 @@ using Xunit;
 
 namespace Jasper.Testing.Bus.Compilation
 {
-    public class use_wrappers : CompilationContext<TransactionalHandler>
+    public class use_wrappers : CompilationContext
     {
-        private readonly Http.Tracking theTracking = new Http.Tracking();
+        private readonly FakeStoreTypes.Tracking theTracking = new FakeStoreTypes.Tracking();
 
         public use_wrappers()
         {
-            services.AddSingleton(theTracking);
-            services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+            theRegistry.Handlers.IncludeType<TransactionalHandler>();
+
+            theRegistry.Services.AddSingleton(theTracking);
+            theRegistry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
 
 
         }
@@ -72,46 +75,7 @@ namespace Jasper.Testing.Bus.Compilation
 
 
 
-    public class GenericFakeTransactionAttribute : ModifyChainAttribute
-    {
-        public override void Modify(IChain chain)
-        {
-            chain.Middleware.Add(new FakeTransaction());
-        }
-    }
 
-    public class FakeTransactionAttribute : ModifyHandlerChainAttribute
-    {
-        public override void Modify(HandlerChain chain)
-        {
-            chain.Middleware.Add(new FakeTransaction());
-        }
-    }
-
-    public class FakeTransaction : Frame
-    {
-        private Variable _store;
-        private readonly Variable _session;
-
-        public FakeTransaction() : base(false)
-        {
-            _session = new Variable(typeof(IFakeSession), "session", this);
-        }
-
-        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
-        {
-            _store = chain.FindVariable(typeof(IFakeStore));
-            yield return _store;
-        }
-
-        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-        {
-            writer.Write($"BLOCK:using (var {_session.Usage} = {_store.Usage}.OpenSession())");
-            Next?.GenerateCode(method, writer);
-            writer.Write($"{_session.Usage}.{nameof(IFakeSession.SaveChanges)}();");
-            writer.FinishBlock();
-        }
-    }
 
 
 }

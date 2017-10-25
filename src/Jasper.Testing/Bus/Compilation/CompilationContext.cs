@@ -19,72 +19,31 @@ using Xunit;
 namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
-    public abstract class CompilationContext<T>
+    public abstract class CompilationContext: IDisposable
     {
         private Lazy<IContainer> _container;
-        public readonly ServiceRegistry services = new ServiceRegistry();
 
-        protected Lazy<Dictionary<Type, MessageHandler>> _handlers;
 
-        private readonly Lazy<string> _code;
         protected Envelope theEnvelope;
 
-        protected Lazy<HandlerGraph> _graph;
-        private GenerationRules rules;
+
+        public readonly JasperRegistry theRegistry = new JasperRegistry();
+        private Lazy<JasperRuntime> _runtime;
 
         public CompilationContext()
         {
-            _container = new Lazy<IContainer>(() =>
+            theRegistry.Handlers.DisableConventionalDiscovery();
+            _runtime = new Lazy<JasperRuntime>(() =>
             {
-                var registry = new Registry();
-                registry.Populate(services);
-                return new Container(registry);
-            });
-
-
-            _graph = new Lazy<HandlerGraph>(() =>
-            {
-                rules = new GenerationRules("Jasper.Testing.Codegen.Generated");
-                rules.Sources.Add(new ServiceGraph(services));
-                rules.Sources.Add(new NoArgConcreteCreator());
-
-                rules.Assemblies.Add(typeof(IContainer).GetTypeInfo().Assembly);
-                rules.Assemblies.Add(GetType().GetTypeInfo().Assembly);
-
-
-                var graph = new HandlerGraph();
-
-                var methods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                    .Where(x => x.DeclaringType != typeof(object) && x != null && x.GetParameters().Any() && !x.IsSpecialName);
-
-                foreach (var method in methods)
-                {
-                    graph.Add(new HandlerCall(typeof(T), method));
-                }
-
-                return graph;
-            });
-
-
-
-            _code = new Lazy<string>(() => Graph.GenerateCode(rules));
-
-            _handlers = new Lazy<Dictionary<Type, MessageHandler>>(() =>
-            {
-                var handlers = Graph.CompileAndBuildAll(rules, _container.Value.GetInstance);
-                var dict = new Dictionary<Type, MessageHandler>();
-                foreach (var handler in handlers)
-                {
-                    dict.Add(handler.Chain.MessageType, handler);
-                }
-
-                return dict;
+                return JasperRuntime.For(theRegistry);
             });
         }
 
+
+
         public IContainer Container => _container.Value;
 
-        public HandlerGraph Graph => _graph.Value;
+        public HandlerGraph Graph => _runtime.Value.Get<HandlerGraph>();
 
         [Fact]
         public void can_compile_all()
@@ -92,16 +51,14 @@ namespace Jasper.Testing.Bus.Compilation
             AllHandlersCompileSuccessfully();
         }
 
-        public string theCode => _code.Value;
-
         public void AllHandlersCompileSuccessfully()
         {
-            ShouldBeTestExtensions.ShouldBeGreaterThan(_handlers.Value.Count, 0);
+            Graph.Chains.Length.ShouldBeGreaterThan(0);
         }
 
         public MessageHandler HandlerFor<TMessage>()
         {
-            return _handlers.Value[typeof(TMessage)];
+            return Graph.HandlerFor(typeof(TMessage));
         }
 
         public async Task<IInvocationContext> Execute<TMessage>(TMessage message)
@@ -113,6 +70,14 @@ namespace Jasper.Testing.Bus.Compilation
             await handler.Handle(context);
 
             return context;
+        }
+
+        public void Dispose()
+        {
+            if (_runtime.IsValueCreated)
+            {
+                _runtime.Value.Dispose();
+            }
         }
     }
 }
