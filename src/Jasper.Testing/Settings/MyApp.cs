@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
 

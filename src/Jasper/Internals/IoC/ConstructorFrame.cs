@@ -37,7 +37,7 @@ namespace Jasper.Internals.IoC
             {
                 if (Next is ConstructorFrame && Next.As<ConstructorFrame>().IsDisposable)
                 {
-                    writer.Write("using ({declaration})");
+                    writer.Write($"using ({declaration})");
                     Next?.GenerateCode(method, writer);
                 }
                 else

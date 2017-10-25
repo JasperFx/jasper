@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Bus;
 using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.Configuration;
 using Xunit;

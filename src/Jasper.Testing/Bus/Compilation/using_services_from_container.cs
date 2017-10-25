@@ -9,14 +9,16 @@ using Xunit;
 namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
-    public class using_services_from_container : CompilationContext<ServiceUsingHandler>
+    public class using_services_from_container : CompilationContext
     {
         public using_services_from_container()
         {
             ServiceUsingHandler.Clear();
 
-            services.AddTransient<IFakeService, FakeService>();
-            services.AddTransient<IWidget, Widget>();
+            theRegistry.Handlers.IncludeType<ServiceUsingHandler>();
+
+            theRegistry.Services.AddTransient<IFakeService, FakeService>();
+            theRegistry.Services.AddTransient<IWidget, Widget>();
         }
 
         [Fact]

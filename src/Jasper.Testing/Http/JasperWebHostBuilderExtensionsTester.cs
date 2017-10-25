@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.FakeStoreTypes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
