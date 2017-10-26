@@ -73,6 +73,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LightningDb", "LightningDb"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LightningDb", "LightningDb", "{3BF9DD90-E67F-4CEC-82DB-C5E7338962B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "benchmarks", "src\benchmarks\benchmarks.csproj", "{75E8302C-319C-4878-89EA-5D9EF1CFC91E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -407,6 +409,18 @@ Global
 		{92EEB43A-C8E7-4E15-9C5B-B935ED304DAE}.Release|x64.Build.0 = Release|Any CPU
 		{92EEB43A-C8E7-4E15-9C5B-B935ED304DAE}.Release|x86.ActiveCfg = Release|Any CPU
 		{92EEB43A-C8E7-4E15-9C5B-B935ED304DAE}.Release|x86.Build.0 = Release|Any CPU
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Debug|x64.ActiveCfg = Debug|x64
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Debug|x64.Build.0 = Debug|x64
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Debug|x86.ActiveCfg = Debug|x86
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Debug|x86.Build.0 = Debug|x86
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Release|x64.ActiveCfg = Release|x64
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Release|x64.Build.0 = Release|x64
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Release|x86.ActiveCfg = Release|x86
+		{75E8302C-319C-4878-89EA-5D9EF1CFC91E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

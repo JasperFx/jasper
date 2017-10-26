@@ -222,3 +222,5 @@ src/Jasper.Diagnostics/resources/js/
 
 stresults.htm
 log.txt
+
+BenchmarkDotNet.Artifacts
