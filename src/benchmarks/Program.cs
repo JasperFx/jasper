@@ -14,7 +14,7 @@ namespace benchmarks
         static void Main(string[] args)
         {
 
-            //BenchmarkRunner.Run<InvokeBenchmark>();
+            BenchmarkRunner.Run<InvokeBenchmark>();
             BenchmarkRunner.Run<HttpPipelineBenchmark>();
             //BenchmarkRunner.Run<PingPongBenchmark>();
         }

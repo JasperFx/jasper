@@ -21,10 +21,23 @@ namespace benchmarks
             _runtime.Dispose();
         }
 
+        [Params(1, 10, 25)]
+        public int Parallelization { get; set; }
+
         [Benchmark]
         public Task InvokeMessage()
         {
-            return _runtime.Bus.Invoke(new UserCreated {Name = Guid.NewGuid().ToString()});
+            if (Parallelization == 1) return _runtime.Bus.Invoke(new UserCreated {Name = Guid.NewGuid().ToString()});
+
+            var tasks = new Task[Parallelization];
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                tasks[i] = _runtime.Bus.Invoke(new UserCreated {Name = Guid.NewGuid().ToString()});
+            }
+
+            return Task.WhenAll(tasks);
+
+
         }
     }
 }
