@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus.Model

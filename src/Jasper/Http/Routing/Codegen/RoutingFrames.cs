@@ -17,6 +17,7 @@ namespace Jasper.Http.Routing.Codegen
             {typeof(float), "float"},
             {typeof(short), "short"},
             {typeof(int), "int"},
+            {typeof(double), "double"},
             {typeof(long), "long"},
             {typeof(ushort), "ushort"},
             {typeof(uint), "uint"},
