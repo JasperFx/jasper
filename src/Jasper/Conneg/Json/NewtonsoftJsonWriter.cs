@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Baseline;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.ObjectPool;
@@ -43,18 +44,25 @@ namespace Jasper.Conneg.Json
 
             try
             {
-                using (var textWriter = new StreamWriter(stream))
+                using (var textWriter = new StreamWriter(stream){AutoFlush = true})
                 using (var jsonWriter = new JsonTextWriter(textWriter)
                 {
                     ArrayPool = _jsonCharPool,
                     CloseOutput = false,
+
                     //AutoCompleteOnClose = false // TODO -- put this in if we upgrad Newtonsoft
                 })
                 {
                     serializer.Serialize(jsonWriter, model);
-                    return stream.ToArray();
+                    if (stream.Position < 1024)
+                    {
+                        return bytes.Take((int)stream.Position).ToArray();
+                    }
 
+                    return stream.ToArray();
                 }
+
+
             }
             finally
             {
