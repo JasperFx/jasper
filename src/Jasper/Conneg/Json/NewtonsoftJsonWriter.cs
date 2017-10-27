@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Buffers;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -42,7 +43,7 @@ namespace Jasper.Conneg.Json
 
             try
             {
-                using (var textWriter = new HttpResponseStreamWriter(stream, Encoding.UTF8, 1024, _bytePool, _charPool))
+                using (var textWriter = new StreamWriter(stream))
                 using (var jsonWriter = new JsonTextWriter(textWriter)
                 {
                     ArrayPool = _jsonCharPool,
@@ -52,6 +53,7 @@ namespace Jasper.Conneg.Json
                 {
                     serializer.Serialize(jsonWriter, model);
                     return stream.ToArray();
+
                 }
             }
             finally
