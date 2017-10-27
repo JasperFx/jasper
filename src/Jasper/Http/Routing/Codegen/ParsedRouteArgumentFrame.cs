@@ -7,32 +7,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing.Codegen
 {
-    public class ParsedRouteArgument : Frame
+    public class ParsedRouteArgumentFrame : RouteArgumentFrame
     {
-        public int Position { get; }
-
-
-
-        public ParsedRouteArgument(Type type, string name, int position) : base((bool) true)
+        public ParsedRouteArgumentFrame(Type type, string name, int position) : base(name, position, type)
         {
-            Position = position;
-            Variable = new Variable(type, name);
         }
-
-        public Variable Variable { get; }
-
-        public override IEnumerable<Variable> Creates
-        {
-            get { yield return Variable; }
-        }
-
-        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
-        {
-            Segments = chain.FindVariableByName(typeof(string[]), RoutingFrames.Segments);
-            yield return Segments;
-        }
-
-        public Variable Segments { get; set; }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {

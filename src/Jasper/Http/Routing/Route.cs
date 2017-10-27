@@ -12,6 +12,9 @@ namespace Jasper.Http.Routing
 {
     public class Route
     {
+        public const string RelativePath = "relativePath";
+        public const string PathSegments = "pathSegments";
+
         /// <summary>
         /// This is only for testing purposes
         /// </summary>

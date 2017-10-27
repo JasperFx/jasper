@@ -174,7 +174,7 @@ namespace Jasper.Testing.Http.Routing
             var arg = new RouteArgument("name", 1);
             arg.ArgType = typeof(string);
 
-            var frame = arg.ToParsingFrame().ShouldBeOfType<StringRouteArgument>();
+            var frame = arg.ToParsingFrame().ShouldBeOfType<StringRouteArgumentFrame>();
             ShouldBeNullExtensions.ShouldNotBeNull(frame);
             frame.Position.ShouldBe(1);
             frame.Name.ShouldBe("name");
@@ -185,7 +185,7 @@ namespace Jasper.Testing.Http.Routing
         {
             var arg = new RouteArgument("age", 3) {ArgType = typeof(int)};
 
-            var frame = arg.ToParsingFrame().ShouldBeOfType<ParsedRouteArgument>();
+            var frame = arg.ToParsingFrame().ShouldBeOfType<ParsedRouteArgumentFrame>();
             ShouldBeNullExtensions.ShouldNotBeNull(frame);
             frame.Position.ShouldBe(3);
             frame.Variable.Usage.ShouldBe("age");

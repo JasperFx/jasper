@@ -61,7 +61,7 @@ namespace Jasper.Testing.Http.Model
 
             var @class = chain.ToClass(generationConfig);
 
-            @class.Methods.Single().Frames.OfType<StringRouteArgument>().Single()
+            @class.Methods.Single().Frames.OfType<StringRouteArgumentFrame>().Single()
                 .Name.ShouldBe("name");
 
 

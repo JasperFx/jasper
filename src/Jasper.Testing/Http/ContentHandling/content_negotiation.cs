@@ -17,7 +17,7 @@ namespace Jasper.Testing.Http.ContentHandling
 {
     public class content_negotiation : IDisposable
     {
-        private JasperRuntime _runtime;
+        private readonly JasperRuntime _runtime;
 
         public content_negotiation()
         {

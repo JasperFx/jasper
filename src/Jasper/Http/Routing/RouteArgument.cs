@@ -28,7 +28,7 @@ namespace Jasper.Http.Routing
 
         private Type _argType;
         private MemberInfo _mappedMember;
-        public string Key { get; set; }
+        public string Key { get; private set; }
         public int Position { get; }
         public string CanonicalPath()
         {
@@ -65,7 +65,7 @@ namespace Jasper.Http.Routing
 
         public ParameterInfo MappedParameter
         {
-            get { return _parameter; }
+            get => _parameter;
             set
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
@@ -79,7 +79,7 @@ namespace Jasper.Http.Routing
 
         public MemberInfo MappedMember
         {
-            get { return _mappedMember; }
+            get => _mappedMember;
             set
             {
                 if (value is FieldInfo)
@@ -165,11 +165,11 @@ namespace Jasper.Http.Routing
             if (ArgType == null) throw new InvalidOperationException($"Missing an {nameof(ArgType)} value");
 
 
-            if (ArgType == typeof(string)) return new StringRouteArgument(Key, Position);
+            if (ArgType == typeof(string)) return new StringRouteArgumentFrame(Key, Position);
 
             if (RoutingFrames.CanParse(ArgType))
             {
-                return new ParsedRouteArgument(ArgType, Key, Position);
+                return new ParsedRouteArgumentFrame(ArgType, Key, Position);
             }
 
             throw new InvalidOperationException($"Jasper does not (yet) know how to parse a route argument of type {ArgType.FullName}");

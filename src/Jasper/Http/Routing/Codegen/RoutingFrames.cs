@@ -5,9 +5,9 @@ namespace Jasper.Http.Routing.Codegen
 {
     public static class RoutingFrames
     {
-        public static readonly string Segments = "segments";
+        public const string Segments = "segments";
 
-        public static Dictionary<Type, string> TypeOutputs = new Dictionary<Type, string>
+        public static readonly Dictionary<Type, string> TypeOutputs = new Dictionary<Type, string>
         {
             {typeof(bool), "bool"},
             {typeof(byte), "byte"},
