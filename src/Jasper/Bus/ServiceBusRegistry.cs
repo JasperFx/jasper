@@ -12,8 +12,10 @@ using Jasper.Bus.Transports.Lightweight;
 using Jasper.Bus.Transports.Loopback;
 using Jasper.Configuration;
 using Jasper.Conneg;
+using Jasper.Conneg.Json;
 using Jasper.Internals;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Bus
 {
@@ -31,6 +33,7 @@ namespace Jasper.Bus
             ForSingletonOf<ITransport>()
                 .Use<DurableTransport>();
 
+            ForSingletonOf<ObjectPoolProvider>().Use<DefaultObjectPoolProvider>();
 
 
             For<IEnvelopeSender>().Use<EnvelopeSender>();
@@ -40,13 +43,11 @@ namespace Jasper.Bus
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
 
-            For<ISerializerFactory>().Use<NewtonsoftSerializerFactory>();
-
             ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
 
             For<IUriLookup>().Use<ConfigUriLookup>();
 
-            ForSingletonOf<SerializationGraph>().Use<SerializationGraph>();
+            ForSingletonOf<BusMessageSerializationGraph>().Use<BusMessageSerializationGraph>();
 
             ForSingletonOf<IMessageRouter>().Use<MessageRouter>();
 

@@ -24,7 +24,7 @@ namespace Jasper.Bus
         private readonly UriAliasLookup _lookups;
         private readonly INodeDiscovery _nodes;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, SerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes)
         {
             _settings = settings;
             _pipeline = pipeline;

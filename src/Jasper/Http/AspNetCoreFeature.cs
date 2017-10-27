@@ -97,6 +97,8 @@ namespace Jasper.Http
             });
         }
 
+        public HttpSettings Settings { get; } = new HttpSettings();
+
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
             var webHost = runtime.Container.TryGetInstance<IWebHost>();

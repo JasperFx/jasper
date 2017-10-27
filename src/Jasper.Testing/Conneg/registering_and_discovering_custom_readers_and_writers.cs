@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
+using Jasper.Conneg.Json;
 using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
@@ -20,7 +21,7 @@ namespace Jasper.Testing.Conneg
         {
             withAllDefaults();
 
-            theSerialization = Runtime.Get<SerializationGraph>();
+            theSerialization = Runtime.Get<BusMessageSerializationGraph>();
         }
 
         [Fact]
@@ -42,7 +43,7 @@ namespace Jasper.Testing.Conneg
         {
             // Not overridden, so it should be the default
             theSerialization.WriterFor(typeof(Message1))["application/json"]
-                .ShouldBeOfType<NewtonsoftJsonWriter<Message1>>();
+                .ShouldBeOfType<NewtonsoftJsonWriter>();
 
             // Overridden
             theSerialization.WriterFor(typeof(OverriddenJsonMessage))["application/json"]
@@ -54,7 +55,7 @@ namespace Jasper.Testing.Conneg
         {
             // Not overridden, so it should be the default
             theSerialization.ReaderFor(typeof(Message4).ToMessageAlias())["application/json"]
-                .ShouldBeOfType<NewtonsoftJsonReader<Message4>>();
+                .ShouldBeOfType<NewtonsoftJsonReader>();
 
             // Overridden
             theSerialization.ReaderFor(typeof(OverriddenJsonMessage).ToMessageAlias())["application/json"]

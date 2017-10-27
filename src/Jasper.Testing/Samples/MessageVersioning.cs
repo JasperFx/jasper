@@ -127,7 +127,7 @@ namespace Jasper.Testing.Samples
     {
         public NoUnVersionedMessages()
         {
-            Advanced.AllowNonVersionedSerialization = false;
+            Advanced.MediaSelectionMode = MediaSelectionMode.VersionedOnly;
         }
     }
     // ENDSAMPLE

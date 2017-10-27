@@ -8,14 +8,12 @@ namespace Jasper.Conneg
     // SAMPLE: ISerializer
     public interface ISerializerFactory
     {
-        void Serialize(object message, Stream stream);
-
         object Deserialize(Stream message);
 
         string ContentType { get; }
 
-        IMessageDeserializer[] ReadersFor(Type messageType);
-        IMessageSerializer[] WritersFor(Type messageType);
+        IMessageDeserializer[] ReadersFor(Type messageType, MediaSelectionMode mode);
+        IMessageSerializer[] WritersFor(Type messageType, MediaSelectionMode mode);
         IMessageDeserializer VersionedReaderFor(Type incomingType);
     }
     // ENDSAMPLE

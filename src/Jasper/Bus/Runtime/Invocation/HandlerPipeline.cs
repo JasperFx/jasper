@@ -26,14 +26,14 @@ namespace Jasper.Bus.Runtime.Invocation
     public class HandlerPipeline : IHandlerPipeline
     {
         private readonly IEnvelopeSender _sender;
-        private readonly SerializationGraph _serializer;
+        private readonly BusMessageSerializationGraph _serializer;
         private readonly HandlerGraph _graph;
         private readonly IReplyWatcher _replies;
         private readonly IDelayedJobProcessor _delayedJobs;
         private readonly IChannelGraph _channels;
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(IEnvelopeSender sender, SerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, CompositeLogger logger, IChannelGraph channels, IEnumerable<IMissingHandler> missingHandlers)
+        public HandlerPipeline(IEnvelopeSender sender, BusMessageSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, CompositeLogger logger, IChannelGraph channels, IEnumerable<IMissingHandler> missingHandlers)
         {
             _sender = sender;
             _serializer = serializers;

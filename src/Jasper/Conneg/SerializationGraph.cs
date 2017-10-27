@@ -4,24 +4,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Baseline;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Util;
+using Jasper.Conneg.Json;
+using Microsoft.Extensions.ObjectPool;
+using Newtonsoft.Json;
 
 namespace Jasper.Conneg
 {
-    public class SerializationGraph
+    public abstract class SerializationGraph
     {
-        public static SerializationGraph Basic()
-        {
-            return new SerializationGraph(new HandlerGraph(), new Forwarders(), new List<ISerializerFactory>{new NewtonsoftSerializerFactory(new BusSettings())}, new List<IMessageDeserializer>(), new List<IMessageSerializer>());
-        }
-
-        private readonly HandlerGraph _handlers;
+        private readonly MediaSelectionMode _selectionMode;
         private readonly Forwarders _forwarders;
         private readonly Dictionary<string, ISerializerFactory> _serializers = new Dictionary<string, ISerializerFactory>();
 
@@ -31,13 +24,19 @@ namespace Jasper.Conneg
         private readonly ConcurrentDictionary<string, ModelReader> _modelReaders = new ConcurrentDictionary<string, ModelReader>();
         private readonly ConcurrentDictionary<Type, ModelWriter> _modelWriters = new ConcurrentDictionary<Type, ModelWriter>();
 
-        public SerializationGraph(HandlerGraph handlers, Forwarders forwarders, IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
+        protected SerializationGraph(ObjectPoolProvider pooling, MediaSelectionMode selectionMode, JsonSerializerSettings jsonSettings, Forwarders forwarders, IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
         {
-            _handlers = handlers;
+            _selectionMode = selectionMode;
             _forwarders = forwarders;
             foreach (var serializer in serializers)
             {
                 _serializers.SmartAdd(serializer.ContentType, serializer);
+            }
+
+            if (!_serializers.ContainsKey("application/json"))
+            {
+                var factory = new NewtonsoftSerializerFactory(jsonSettings, pooling);
+                _serializers.SmartAdd("application/json", factory);
             }
 
             _readers.AddRange(readers);
@@ -99,7 +98,7 @@ namespace Jasper.Conneg
 
         private ModelWriter compileWriter(Type messageType)
         {
-            var fromSerializers = _serializers.Values.SelectMany(x => x.WritersFor(messageType));
+            var fromSerializers = _serializers.Values.SelectMany(x => x.WritersFor(messageType, _selectionMode));
             var writers = _writers.Where(x => x.DotNetType == messageType);
 
             return new ModelWriter(fromSerializers.Concat(writers).ToArray());
@@ -113,7 +112,7 @@ namespace Jasper.Conneg
         public ModelReader ReaderFor(Type inputType)
         {
             var readers = _readers.Where(x => x.DotNetType == inputType);
-            var serialized = _serializers.Values.SelectMany(x => x.ReadersFor(inputType));
+            var serialized = _serializers.Values.SelectMany(x => x.ReadersFor(inputType, _selectionMode));
 
             var forwarded = _forwarders.ForwardingTypesTo(inputType).SelectMany(incomingType =>
             {
@@ -131,8 +130,7 @@ namespace Jasper.Conneg
         private ModelReader compileReader(string messageType)
         {
             var readers = _readers.Where(x => x.MessageType == messageType).ToArray();
-            var chainCandidates = _handlers.Chains.Where(x => x.MessageType.ToMessageAlias() == messageType)
-                .Select(x => x.MessageType);
+            var chainCandidates = determineChainCandidates(messageType);
 
             var candidateTypes = readers.Select(x => x.DotNetType).Concat(chainCandidates).Distinct();
 
@@ -142,17 +140,22 @@ namespace Jasper.Conneg
             return new ModelReader(fromHandlers.Concat(readers).Distinct().ToArray());
         }
 
+        protected virtual IEnumerable<Type> determineChainCandidates(string messageType)
+        {
+            yield break;
+        }
+
         public IMessageDeserializer JsonReaderFor(Type inputType)
         {
             return _serializers["application/json"]
-                .ReadersFor(inputType)
+                .ReadersFor(inputType, _selectionMode)
                 .FirstOrDefault(x => x.ContentType == "application/json");
         }
 
         public IMessageSerializer JsonWriterFor(Type resourceType)
         {
             return _serializers["application/json"]
-                .WritersFor(resourceType)
+                .WritersFor(resourceType, _selectionMode)
                 .FirstOrDefault(x => x.ContentType == "application/json");
         }
 

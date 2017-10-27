@@ -13,7 +13,7 @@ namespace Jasper.Http.ContentHandling
         private readonly IList<IWriterRule> _writers = new List<IWriterRule>();
         private readonly IList<IReaderRule> _readers = new List<IReaderRule>();
 
-        public ConnegRules(SerializationGraph serializers, IEnumerable<IReaderRule> readerRules, IEnumerable<IWriterRule> writeRules)
+        public ConnegRules(HttpSerializationGraph serializers, IEnumerable<IReaderRule> readerRules, IEnumerable<IWriterRule> writeRules)
         {
             _serializers = serializers;
 

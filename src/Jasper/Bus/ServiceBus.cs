@@ -16,7 +16,7 @@ namespace Jasper.Bus
         private readonly IHandlerPipeline _pipeline;
         private readonly SerializationGraph _serialization;
 
-        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline, SerializationGraph serialization)
+        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization)
         {
             _sender = sender;
             _watcher = watcher;

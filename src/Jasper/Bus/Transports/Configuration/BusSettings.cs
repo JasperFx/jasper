@@ -9,6 +9,7 @@ using Jasper.Bus.Transports.Core;
 using Jasper.Bus.Transports.Durable;
 using Jasper.Bus.Transports.Lightweight;
 using Jasper.Bus.Transports.Loopback;
+using Jasper.Conneg;
 using Jasper.Util;
 using Newtonsoft.Json;
 
@@ -124,7 +125,7 @@ namespace Jasper.Bus.Transports.Configuration
 
         public bool ThrowOnValidationErrors { get; set; } = true;
 
-        public bool AllowNonVersionedSerialization { get; set; } = true;
+        public MediaSelectionMode MediaSelectionMode { get; set; } = MediaSelectionMode.All;
 
 
 
