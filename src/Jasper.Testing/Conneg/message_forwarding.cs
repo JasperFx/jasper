@@ -4,6 +4,7 @@ using Baseline;
 using Baseline.Dates;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
 using Jasper.Testing.Bus.Transports;
 using Jasper.Util;
@@ -33,7 +34,7 @@ namespace Jasper.Testing.Conneg
                 _.Http.Actions.ExcludeTypes(t => true);
             }))
             {
-                var modelReader = runtime.Get<SerializationGraph>().ReaderFor(typeof(NewMessage));
+                var modelReader = runtime.Get<BusMessageSerializationGraph>().ReaderFor(typeof(NewMessage));
 
                 var reader = modelReader.OfType<ForwardingMessageDeserializer<NewMessage>>().Single();
                 reader.ShouldNotBeNull();

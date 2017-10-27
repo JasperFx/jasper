@@ -57,12 +57,12 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        public IMessageDeserializer[] ReadersFor(Type messageType)
+        public IMessageDeserializer[] ReadersFor(Type messageType, MediaSelectionMode mode)
         {
             return new IMessageDeserializer[0];
         }
 
-        public IMessageSerializer[] WritersFor(Type messageType)
+        public IMessageSerializer[] WritersFor(Type messageType, MediaSelectionMode mode)
         {
             return new IMessageSerializer[]{new FakeWriter(messageType, ContentType), };
         }

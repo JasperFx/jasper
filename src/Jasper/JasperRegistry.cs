@@ -54,6 +54,7 @@ namespace Jasper
             Settings = new JasperSettings(this);
 
             Settings.Replace(_bus.Settings);
+            Settings.Replace(Http.Settings);
 
             if (JasperEnvironment.Name.IsNotEmpty())
             {

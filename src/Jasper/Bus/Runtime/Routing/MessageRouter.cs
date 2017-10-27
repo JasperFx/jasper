@@ -24,7 +24,7 @@ namespace Jasper.Bus.Runtime.Routing
 
         private readonly ConcurrentDictionary<Type, MessageRoute[]> _routes = new ConcurrentDictionary<Type, MessageRoute[]>();
 
-        public MessageRouter(SerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, CompositeLogger logger, UriAliasLookup lookup)
+        public MessageRouter(BusMessageSerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, CompositeLogger logger, UriAliasLookup lookup)
         {
             _serializers = serializers;
             _channels = channels;

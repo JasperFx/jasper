@@ -1,5 +1,6 @@
 ﻿using Jasper.Bus;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Conneg;
 using Shouldly;
 using Xunit;
 
@@ -10,12 +11,12 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void disallow_non_versioned_serialization()
         {
-            new BusSettings().AllowNonVersionedSerialization.ShouldBeTrue();
+            new BusSettings().MediaSelectionMode.ShouldBe(MediaSelectionMode.All);
 
-            theRegistry.Advanced.AllowNonVersionedSerialization = false;
+            theRegistry.Advanced.MediaSelectionMode = MediaSelectionMode.VersionedOnly;
 
-            theRuntime.Get<BusSettings>().AllowNonVersionedSerialization
-                .ShouldBeFalse();
+            theRuntime.Get<BusSettings>().MediaSelectionMode
+                .ShouldBe(MediaSelectionMode.VersionedOnly);
         }
     }
 }

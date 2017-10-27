@@ -17,7 +17,7 @@ namespace Jasper.Testing.Bus.Serializers
         [Fact]
         public void can_try_to_deserialize_an_envelope_with_no_message_type()
         {
-            var serialization = SerializationGraph.Basic();
+            var serialization = BusMessageSerializationGraph.Basic();
 
             var json = JsonConvert.SerializeObject(new Message2(), new JsonSerializerSettings
             {
@@ -38,7 +38,7 @@ namespace Jasper.Testing.Bus.Serializers
         [Fact]
         public void can_try_to_deserialize_an_envelope_with_no_message_type_or_content_type()
         {
-            var serialization = SerializationGraph.Basic();
+            var serialization = BusMessageSerializationGraph.Basic();
 
             var json = JsonConvert.SerializeObject(new Message2(), new JsonSerializerSettings
             {
