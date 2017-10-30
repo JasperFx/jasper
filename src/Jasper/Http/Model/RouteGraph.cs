@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
-using Baseline;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Jasper.Internals.Codegen;
+using Jasper.Internals.Util;
 using StructureMap;
+using GenericEnumerableExtensions = Baseline.GenericEnumerableExtensions;
 
 namespace Jasper.Http.Model
 {
@@ -30,6 +32,13 @@ namespace Jasper.Http.Model
         {
             var route = new RouteChain(methodCall);
             _chains.Add(route);
+        }
+
+        public RouteChain ChainForAction<T>(Expression<Action<T>> expression)
+        {
+            var method = ReflectionHelper.GetMethod(expression);
+
+            return _chains.FirstOrDefault(x => x.Action.HandlerType == typeof(T) && Equals(x.Action.Method, method));
         }
 
         public void BuildRoutingTree(ConnegRules rules, GenerationRules generation, JasperRuntime runtime)
@@ -123,7 +132,7 @@ namespace Jasper.Http.Model
 
     public class DuplicateRoutesException : Exception
     {
-        public DuplicateRoutesException(IEnumerable<RouteChain> chains) : base($"Duplicated route with pattern {chains.First().Route.Name} between {chains.Select(x => $"{x.Action}").Join(", ")}")
+        public DuplicateRoutesException(IEnumerable<RouteChain> chains) : base($"Duplicated route with pattern {chains.First().Route.Name} between {GenericEnumerableExtensions.Join(chains.Select(x => $"{x.Action}"), ", ")}")
         {
         }
     }

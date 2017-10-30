@@ -14,7 +14,6 @@ namespace Jasper.Http.Routing
         }
 
         public string SegmentPath { get; } = "...";
-        public bool IsParameter => true;
 
         public string SegmentFromModel(object model)
         {

@@ -109,6 +109,11 @@ namespace Jasper.Http.Routing
 
             }
 
+            if (method.GetParameters().Any(x => x.IsSpread()))
+            {
+                segments = segments.Concat(new ISegment[] {new Spread(segments.Length)}).ToArray();
+            }
+
             var route = new Route(segments, verb)
             {
                 HandlerType = handlerType,

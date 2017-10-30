@@ -10,6 +10,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing
 {
+    public static class ParameterInfoExtensions
+    {
+        public static bool IsSpread(this ParameterInfo parameter)
+        {
+            if (parameter.Name == Route.RelativePath && parameter.ParameterType == typeof(string)) return true;
+            if (parameter.Name == Route.PathSegments && parameter.ParameterType == typeof(string[])) return true;
+            return false;
+        }
+    }
+
     public class Route
     {
         public const string RelativePath = "relativePath";

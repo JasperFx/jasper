@@ -36,7 +36,6 @@ namespace Jasper.Http.Routing
         }
 
         public string SegmentPath => ":" + Key;
-        public bool IsParameter => true;
         public string SegmentFromModel(object model)
         {
             return WebUtility.UrlEncode(ReadRouteDataFromInput(model));
