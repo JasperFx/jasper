@@ -7,6 +7,7 @@ using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Testing;
 using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
 using Jasper.Testing.Samples;
 using Microsoft.AspNetCore.Builder;

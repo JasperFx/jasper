@@ -13,6 +13,7 @@ namespace Jasper.Internals.Codegen
         private readonly GeneratedClass _class;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
         private readonly SingletonVariableSource _singletons;
+        private readonly ServiceVariableSource _services;
 
         public MethodFrameArranger(GeneratedMethod method, GeneratedClass @class)
         {
@@ -20,13 +21,13 @@ namespace Jasper.Internals.Codegen
             _class = @class;
 
             _singletons = new SingletonVariableSource(_class.Rules.Services);
+            _services = new ServiceVariableSource(this, _class.Rules.Services);
         }
+
+        public IList<BuildStep> AllKnownBuildSteps { get; } = new List<BuildStep>();
 
         public void Arrange()
         {
-            // TODO -- later...
-            //tryToBuildUpHandlerConstruction();
-
             var compiled = compileFrames(_method.Frames);
 
             if (compiled.All(x => !x.IsAsync))
@@ -41,45 +42,6 @@ namespace Jasper.Internals.Codegen
             _method.Top = chainFrames(compiled);
         }
 
-        private void tryToBuildUpHandlerConstruction()
-        {
-            var handlerTypes = _method.Frames
-                .OfType<MethodCall>()
-                .Select(x => x.HandlerType)
-                .Distinct()
-                .ToArray();
-
-            if (!handlerTypes.Any()) return;
-
-            var sourcedOtherwise = handlerTypes
-                .Where(x => TryFindVariable(x, VariableSource.NotServices) != null)
-                .ToArray();
-
-            var haveToBeBuilt = handlerTypes.Where(x => !sourcedOtherwise.Contains(x)).ToArray();
-
-            if (!haveToBeBuilt.Any()) return;
-
-            var servicePlanners = handlerTypes
-            .Select(type =>
-                {
-                    var @default = _class.Rules.Services.FindDefault(type);
-                    return @default == null ? null : new BuildStepPlanner(type, @default.ImplementationType, _class.Rules.Services, this);
-                })
-            .ToArray();
-
-            // If any are unknown, get out of here
-            if (servicePlanners.Any(x => x == null)) return;
-
-            // If not every single handler can  be reduced, revert to using
-            // services
-            if (!servicePlanners.All(x => x.CanBeReduced)) return;
-
-            // Can reduce to using the build step planner
-            foreach (var planner in servicePlanners)
-            {
-                _variables.Add(planner.Top.ServiceType, planner.Top.Variable);
-            }
-        }
 
         protected Frame chainFrames(Frame[] frames)
         {
@@ -98,6 +60,26 @@ namespace Jasper.Internals.Codegen
             foreach (var frame in frames)
             {
                 frame.ResolveVariables(this);
+            }
+
+            // Step 1a;) -- figure out if you can switch to inline service
+            // creation instead of the container.
+            var services = frames.SelectMany(x => x.Uses).OfType<ServiceVariable>().ToArray();
+            if (services.Any() && services.All(x => x.CanBeReduced))
+            {
+                AllKnownBuildSteps.GroupBy(x => x.ServiceType).Where(x => x.Count() > 1).Each(group =>
+                {
+                    var index = 0;
+                    group.Reverse().Each(step =>
+                    {
+                        step.Number = ++index;
+                    });
+                });
+
+                foreach (var service in services)
+                {
+                    service.UseInlinePlan();
+                }
             }
 
             // Step 2, calculate dependencies
@@ -145,13 +127,13 @@ namespace Jasper.Internals.Codegen
 
             yield return ServiceProviderVariableSource.Instance;
 
-            yield return new NoArgConcreteCreator();
+            //yield return new NoArgConcreteCreator();
 
 
 
             if (variableSource == VariableSource.All)
             {
-                yield return _class.Rules.Services;
+                yield return _services;
             }
 
         }
@@ -246,4 +228,4 @@ namespace Jasper.Internals.Codegen
             return variable;
         }
     }
-}
+    }

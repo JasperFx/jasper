@@ -30,8 +30,13 @@ namespace Jasper.Testing.Bus.Compilation
 
 
 
-    public class cascading_messages : CompilationContext<CascadingHandler>
+    public class cascading_messages : CompilationContext
     {
+        public cascading_messages()
+        {
+            theRegistry.Handlers.IncludeType<CascadingHandler>();
+        }
+
         [Fact]
         public async Task handle_a_single_cascading_message()
         {
@@ -54,7 +59,7 @@ namespace Jasper.Testing.Bus.Compilation
 
             outgoing.OfType<Output1>().Single().Id.ShouldBe(input.Id);
         }
-        
+
         [Fact]
         public async Task can_capture_outgoing_from_cascading_messages()
         {

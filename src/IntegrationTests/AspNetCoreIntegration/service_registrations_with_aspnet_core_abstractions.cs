@@ -3,6 +3,7 @@ using System.Linq;
 using Jasper;
 using Jasper.Testing;
 using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

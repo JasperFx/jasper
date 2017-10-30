@@ -8,6 +8,7 @@ using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Conneg;
 using Jasper.Testing;
+using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Lightweight;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;

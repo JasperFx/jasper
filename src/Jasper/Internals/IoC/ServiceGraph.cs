@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Internals.IoC
 {
-    public class ServiceGraph : IVariableSource
+    public class ServiceGraph
     {
         private readonly IServiceCollection _services;
         private readonly Dictionary<Type, ConstructorInfo> _constructors = new Dictionary<Type, ConstructorInfo>();
@@ -79,14 +79,6 @@ namespace Jasper.Internals.IoC
             return _services.Where(x => x.ServiceType == serviceType).ToArray();
         }
 
-        public bool Matches(Type type)
-        {
-            return _services.Any(x => x.ServiceType == type) || CouldBuild(type);
-        }
 
-        public Variable Create(Type type)
-        {
-            return new ServiceCreationFrame(type).Service;
-        }
     }
 }

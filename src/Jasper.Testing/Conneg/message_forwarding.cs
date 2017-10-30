@@ -6,6 +6,7 @@ using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
+using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Transports;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;

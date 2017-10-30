@@ -1,4 +1,5 @@
 ﻿using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.FakeStoreTypes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Testing.Http.ContentHandling

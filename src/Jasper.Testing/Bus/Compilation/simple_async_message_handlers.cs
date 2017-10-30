@@ -8,8 +8,13 @@ using Xunit;
 namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
-    public class simple_async_message_handlers : CompilationContext<AsyncHandler>
+    public class simple_async_message_handlers : CompilationContext
     {
+        public simple_async_message_handlers()
+        {
+            theRegistry.Handlers.IncludeType<AsyncHandler>();
+        }
+
         [Fact]
         public async Task execute_the_simplest_possible_static_chain()
         {
@@ -97,11 +102,11 @@ namespace Jasper.Testing.Bus.Compilation
 
     public class DoubleAction : IDoubleAction
     {
-        
+
     }
 
     public interface IDoubleAction
     {
-        
+
     }
 }

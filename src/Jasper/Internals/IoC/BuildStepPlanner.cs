@@ -13,7 +13,6 @@ namespace Jasper.Internals.IoC
         private readonly ServiceGraph _graph;
         private readonly IMethodVariables _method;
         private readonly IList<BuildStep> _visited = new List<BuildStep>();
-        private readonly IList<BuildStep> _all = new List<BuildStep>();
         private readonly Stack<BuildStep> _chain = new Stack<BuildStep>();
 
         public BuildStepPlanner(Type serviceType, Type concreteType, ServiceGraph graph, IMethodVariables method)
@@ -72,19 +71,32 @@ namespace Jasper.Internals.IoC
 
         public BuildStep FindStep(Type type)
         {
-            var candidate = _all.FirstOrDefault(x => x.ServiceType == type && x.CanBeReused);
-            if (candidate != null) return candidate;
+            try
+            {
+                var candidate = _method.AllKnownBuildSteps.FirstOrDefault(x => x.ServiceType == type && x.CanBeReused);
+                if (candidate != null) return candidate;
 
-            var step = findStep(type);
+                var step = findStep(type);
 
-            _all.Add(step);
+                if (step != null)
+                {
+                    _method.AllKnownBuildSteps.Add(step);
+                }
 
-            return step;
+                return step;
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException($"Could not determine a BuildStep for '{type.FullName}'", e);
+            }
         }
 
         private BuildStep findStep(Type type)
         {
-            var variable = _method.TryFindVariable(type, VariableSource.All);
+            // INSTEAD, let's pull all variable sources
+            // If not a ServiceVariable, use the KnownVariableBuildStep, otherwise use the
+            // parent build step and do NOT visit its dependencies
+            var variable = _method.TryFindVariable(type, VariableSource.NotServices);
 
             if (variable != null) return new KnownVariableBuildStep(variable);
 
@@ -98,7 +110,7 @@ namespace Jasper.Internals.IoC
                 }
             }
 
-            // split on T[], IList<T>, IEnumerable<T>, IReadOnlyList<T>
+            // TODO -- split on T[], IList<T>, IEnumerable<T>, IReadOnlyList<T>
 
             return null;
         }

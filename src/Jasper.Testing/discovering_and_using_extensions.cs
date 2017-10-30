@@ -23,21 +23,7 @@ namespace Jasper.Testing
             theRuntime.Dispose();
         }
 
-        [Fact]
-        public void can_discover_modules_from_assembly_scanning_and_apply_extensions()
-        {
-            Module1.Module1Extension.Registry = null;
 
-            var registry = new JasperRegistry();
-            registry.Handlers.DisableConventionalDiscovery(true);
-
-            using (var runtime = JasperRuntime.For(registry))
-            {
-                runtime.ShouldNotBeNull();
-
-                Module1Extension.Registry.ShouldBe(registry);
-            }
-        }
 
         [Fact]
         public void can_inject_services_from_the_extension()

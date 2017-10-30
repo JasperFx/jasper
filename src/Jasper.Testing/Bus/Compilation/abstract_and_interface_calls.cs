@@ -6,8 +6,13 @@ using Xunit;
 namespace Jasper.Testing.Bus.Compilation
 {
     [Collection("compilation")]
-    public class abstract_and_interface_calls : CompilationContext<HandlerWithMultipleCalls>
+    public class abstract_and_interface_calls : CompilationContext
     {
+        public abstract_and_interface_calls()
+        {
+            theRegistry.Handlers.IncludeType<HandlerWithMultipleCalls>();
+        }
+
         [Fact]
         public async Task can_collate_interfaces()
         {
