@@ -64,7 +64,6 @@ namespace Jasper.Internals.Codegen
             writer.FinishBlock();
         }
 
-        // THIS SHOULD GO AWAY
         public void ArrangeFrames(GeneratedClass @class)
         {
             var compiler = new MethodFrameArranger(this, @class);
