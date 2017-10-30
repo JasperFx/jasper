@@ -31,7 +31,10 @@ namespace Jasper.Testing.Http.Routing
             using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Http.Actions.IncludeType<SpreadHttpActions>();
+
+
                 _.Handlers.DisableConventionalDiscovery();
+
             }))
             {
                 var code = runtime.Get<RouteGraph>()

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Jasper.Http.Routing.Codegen;
+using Jasper.Http.Model;
 using Jasper.Internals.Codegen;
 using Jasper.Internals.Compilation;
 
-namespace Jasper.Http.Model
+namespace Jasper.Http.Routing.Codegen
 {
     public class SegmentsFrame : Frame
     {

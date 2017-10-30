@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using Jasper.Internals.Util;
+using Baseline;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using GenericEnumerableExtensions = Jasper.Internals.Util.GenericEnumerableExtensions;
+using StringExtensions = Jasper.Internals.Util.StringExtensions;
 
 #if !NET46
 
@@ -78,7 +80,7 @@ namespace Jasper.Internals.Compilation
         {
             return HintPaths?
                 .Select(FindFile(assembly))
-                .FirstOrDefault(file => file.IsNotEmpty());
+                .FirstOrDefault(file => StringExtensions.IsNotEmpty(file));
         }
 
         private static Func<string, string> FindFile(Assembly assembly)
@@ -117,13 +119,19 @@ namespace Jasper.Internals.Compilation
                 var result = compilation.Emit(stream);
                 if (!result.Success)
                 {
+                    new FileSystem().WriteStringToFile("code.txt", code);
+
                     var failures = result.Diagnostics.Where(diagnostic =>
                         diagnostic.IsWarningAsError ||
                         diagnostic.Severity == DiagnosticSeverity.Error);
 
 
-                    var message = failures.Select(x => $"{x.Id}: {x.GetMessage()}").Join("\n");
+                    var message = GenericEnumerableExtensions.Join(failures.Select(x => $"{x.Id}: {x.GetMessage()}"), "\n");
+
+
                     throw new InvalidOperationException("Compilation failures!\n\n" + message + "\n\nCode:\n\n" + code);
+
+
                 }
 
                 stream.Seek(0, SeekOrigin.Begin);

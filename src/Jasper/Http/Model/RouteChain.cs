@@ -149,7 +149,9 @@ namespace Jasper.Http.Model
         {
             applyAttributesAndConfigureMethods();
             var list = Middleware.ToList();
-            list.AddRange(Route.Arguments.Select(x => x.ToParsingFrame()));
+
+            list.AddRange(Route.Segments.OfType<IRoutingFrameSource>().Select(x => x.ToParsingFrame(Action)));
+
 
             list.Add(Action);
 

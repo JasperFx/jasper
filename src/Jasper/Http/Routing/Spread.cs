@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jasper.Http.Routing.Codegen;
+using Jasper.Internals.Codegen;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing
 {
-    public class Spread : ISegment
+    public class Spread : ISegment, IRoutingFrameSource
     {
         public int Position { get; }
         public string CanonicalPath()
@@ -55,6 +57,16 @@ namespace Jasper.Http.Routing
         public override string ToString()
         {
             return $"spread:{Position}";
+        }
+
+        public Frame ToParsingFrame(MethodCall action)
+        {
+            var parameter = action.Method.GetParameters().Single(x => x.IsSpread());
+            return parameter.Name == Route.PathSegments
+                ? (Frame) new PathSegmentsFrame(Position)
+                : new RelativePathFrame(Position);
+
+
         }
 
         protected bool Equals(Spread other)

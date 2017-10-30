@@ -12,7 +12,12 @@ using Jasper.Internals.Codegen;
 
 namespace Jasper.Http.Routing
 {
-    public class RouteArgument : ISegment
+    public interface IRoutingFrameSource
+    {
+        Frame ToParsingFrame(MethodCall action);
+    }
+
+    public class RouteArgument : ISegment, IRoutingFrameSource
     {
         public static readonly Conversions Conversions = new Conversions();
 
@@ -159,7 +164,7 @@ namespace Jasper.Http.Routing
             return parameters[Key].ToString();
         }
 
-        public Frame ToParsingFrame()
+        public Frame ToParsingFrame(MethodCall action)
         {
             if (ArgType == null) throw new InvalidOperationException($"Missing an {nameof(ArgType)} value");
 

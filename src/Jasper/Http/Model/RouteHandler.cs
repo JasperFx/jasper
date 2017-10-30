@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Conneg;
 using Microsoft.AspNetCore.Http;
 
@@ -35,5 +37,14 @@ namespace Jasper.Http.Model
             return ConnegWriter.ChooseWriter(request.Headers["accept"]);
         }
 
+        public string ToRelativePath(string[] segments, int starting)
+        {
+            return segments.Skip(starting).Join("/");
+        }
+
+        public string[] ToPathSegments(string[] segments, int starting)
+        {
+            return segments.Skip(starting).ToArray();
+        }
     }
 }

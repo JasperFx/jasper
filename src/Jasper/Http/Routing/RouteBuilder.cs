@@ -109,7 +109,10 @@ namespace Jasper.Http.Routing
 
             }
 
-            if (method.GetParameters().Any(x => x.IsSpread()))
+            var spreads = method.GetParameters().Where(x => x.IsSpread()).ToArray();
+            if (spreads.Length > 1) throw new InvalidOperationException($"An HTTP action method can only take in either '{Route.PathSegments}' or '{Route.RelativePath}', but not both. Error with action {handlerType.FullName}.{method.Name}()");
+
+            if (spreads.Length == 1)
             {
                 segments = segments.Concat(new ISegment[] {new Spread(segments.Length)}).ToArray();
             }
