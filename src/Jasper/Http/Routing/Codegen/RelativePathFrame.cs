@@ -16,6 +16,7 @@ namespace Jasper.Http.Routing.Codegen
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write($"var {Variable.Usage} = {nameof(RouteHandler.ToRelativePath)}({Segments.Usage}, {Position});");
+            Next?.GenerateCode(method, writer);
         }
     }
 }

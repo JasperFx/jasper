@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Alba;
+using AlbaForJasper;
 using Baseline;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
@@ -7,8 +11,27 @@ using Xunit;
 
 namespace Jasper.Testing.Http.Routing
 {
-    public class route_determination_with_spread
+    public class route_determination_with_spread : IDisposable
     {
+        private readonly JasperRuntime _runtime;
+
+        public route_determination_with_spread()
+        {
+            _runtime = JasperRuntime.For(_ =>
+            {
+                _.Http.Actions.IncludeType<SpreadHttpActions>();
+                _.Http.Actions.DisableConventionalDiscovery();
+
+                _.Handlers.DisableConventionalDiscovery();
+
+            });
+        }
+
+        public void Dispose()
+        {
+            _runtime.Dispose();
+        }
+
         [Fact]
         public void route_with_relative_path()
         {
@@ -25,24 +48,37 @@ namespace Jasper.Testing.Http.Routing
             route.Segments.Last().ShouldBeOfType<Spread>();
         }
 
+
         [Fact]
-        public void generate_code_with_spread_smoke_test()
+        public async Task end_to_end_with_relative_path()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            await _runtime.Scenario(_ =>
             {
-                _.Http.Actions.IncludeType<SpreadHttpActions>();
+                _.Get.Url("/folder/a/b/c");
+                _.ContentShouldBe("a/b/c");
+            });
 
-
-                _.Handlers.DisableConventionalDiscovery();
-
-            }))
+            await _runtime.Scenario(_ =>
             {
-                var code = runtime.Get<RouteGraph>()
-                    .ChainForAction<SpreadHttpActions>(x => x.get_file(null))
-                    .SourceCode;
+                _.Get.Url("/folder/a/b/c/123");
+                _.ContentShouldBe("a/b/c/123");
+            });
+        }
 
-                code.ShouldNotBeNull();
-            }
+        [Fact]
+        public async Task end_to_end_with_path_segments()
+        {
+            await _runtime.Scenario(_ =>
+            {
+                _.Get.Url("/file/abc.txt");
+                _.ContentShouldBe("abc.txt");
+            });
+
+            await _runtime.Scenario(_ =>
+            {
+                _.Get.Url("/file/1/2/3/abc.txt");
+                _.ContentShouldBe("1-2-3-abc.txt");
+            });
         }
     }
 

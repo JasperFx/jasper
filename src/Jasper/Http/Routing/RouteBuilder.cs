@@ -75,7 +75,6 @@ namespace Jasper.Http.Routing
             }
 
 
-            // TODO -- eliminate the old Fubu input model routing?
             Type inputType = DetermineInputType(method);
 
             var hasPrimitives = method.GetParameters().Any(x => x.ParameterType == typeof(string) || RoutingFrames.CanParse(x.ParameterType));
@@ -133,6 +132,8 @@ namespace Jasper.Http.Routing
         {
             var first = method.GetParameters().FirstOrDefault();
             if (first == null) return null;
+
+            if (first.IsSpread()) return null;
 
             if (InputTypeNames.Contains(first.Name, StringComparer.OrdinalIgnoreCase))
             {
