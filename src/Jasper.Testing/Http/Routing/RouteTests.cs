@@ -59,6 +59,24 @@ namespace Jasper.Testing.Http.Routing
             action.ShouldThrow<InvalidOperationException>();
         }
 
+        [Fact]
+        public void cannot_have_only_an_argument()
+        {
+            Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
+            {
+                new Route(":arg", "GET");
+            });
+        }
+
+        [Fact]
+        public void cannot_have_a_spread()
+        {
+            Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
+            {
+                new Route("...", "GET");
+            });
+        }
+
 
     }
 

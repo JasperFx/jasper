@@ -76,6 +76,8 @@ namespace Jasper.Http.Routing
                 _segments.Add(segment);
             }
 
+            validateSegments();
+
 
 
             Pattern = string.Join("/", _segments.Select(x => x.SegmentPath));
@@ -85,9 +87,24 @@ namespace Jasper.Http.Routing
             setupArgumentsAndSpread();
         }
 
+        private void validateSegments()
+        {
+            if (_segments.FirstOrDefault() is Spread)
+            {
+                throw new InvalidOperationException($"'{Pattern}' is an invalid route. Cannot use a spread argument as the first segment");
+            }
+
+            if (_segments.FirstOrDefault() is RouteArgument)
+            {
+                throw new InvalidOperationException($"'{Pattern}' is an invalid route. Cannot use a route argument as the first segment");
+            }
+        }
+
         public Route(ISegment[] segments, string httpVerb)
         {
             _segments.AddRange(segments);
+
+            validateSegments();
 
             HttpMethod = httpVerb;
 
@@ -96,6 +113,8 @@ namespace Jasper.Http.Routing
 
             setupArgumentsAndSpread();
         }
+
+
 
         private void setupArgumentsAndSpread()
         {
