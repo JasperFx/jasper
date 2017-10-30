@@ -3,21 +3,14 @@ using System.Linq;
 
 namespace Jasper.Http.Routing
 {
-    public interface INode
-    {
-        string Route { get; }
-        Route SpreadRoute { get; set; }
-        Route Select(string[] segments, int position);
-    }
-
-    public class Node : INode
+    public class Node
     {
         public Node(string route)
         {
             Route = route;
 
-            ParentRoute = string.IsNullOrEmpty(route) 
-                ? null 
+            ParentRoute = string.IsNullOrEmpty(route)
+                ? null
                 : string.Join("/", route.Split('/').Reverse().Skip(1).Reverse().ToArray());
         }
 
@@ -25,15 +18,15 @@ namespace Jasper.Http.Routing
         // could be blank
         public string ParentRoute { get; }
 
-        public INode Parent { get; private set; }
+        public Node Parent { get; private set; }
 
         public string Route { get; }
 
         public Route SpreadRoute { get; set; }
-        public IDictionary<string, Route> NamedLeaves { get; } = new Dictionary<string, Route>(); 
-        public IDictionary<string, INode> NamedNodes { get; } = new Dictionary<string, INode>(); 
+        public IDictionary<string, Route> NamedLeaves { get; } = new Dictionary<string, Route>();
+        public IDictionary<string, Node> NamedNodes { get; } = new Dictionary<string, Node>();
 
-        public IList<INode> ArgNodes { get; } = new List<INode>();
+        public IList<Node> ArgNodes { get; } = new List<Node>();
 
         public Route Select(string[] segments, int position)
         {
@@ -72,10 +65,10 @@ namespace Jasper.Http.Routing
             }
 
 
-            
+
 
             return SpreadRoute;
-            
+
         }
 
         public void AddChild(Node child)
