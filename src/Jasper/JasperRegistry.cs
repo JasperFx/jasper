@@ -19,6 +19,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace Jasper
 {
+
+
     /// <summary>
     /// Completely defines and configures a Jasper application
     /// </summary>
@@ -60,7 +62,14 @@ namespace Jasper
             {
                 EnvironmentName = JasperEnvironment.Name;
             }
+
+            EnvironmentChecks = new EnvironmentCheckExpression(this);
         }
+
+        /// <summary>
+        /// Register environment checks to debug application bootstrapping failures
+        /// </summary>
+        public EnvironmentCheckExpression EnvironmentChecks { get; }
 
         /// <summary>
         /// Gets or sets the ASP.Net Core environment names
@@ -214,6 +223,8 @@ namespace Jasper
             Include(extension);
         }
     }
+
+
 
     public interface IFeatures : IEnumerable<IFeature>
     {

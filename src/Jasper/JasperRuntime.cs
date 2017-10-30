@@ -11,7 +11,9 @@ using Baseline.Reflection;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
+using Jasper.EnvironmentChecks;
 using Jasper.Http;
 using Jasper.Internals.Codegen;
 using Microsoft.AspNetCore.Hosting;
@@ -221,8 +223,18 @@ namespace Jasper
             var runtime = new JasperRuntime(registry, services);
 
 
+
+
             await Task.WhenAll(features.Select(x => x.Activate(runtime, registry.Generation)))
                 .ConfigureAwait(false);
+
+            // Run environment checks
+            var recorder = EnvironmentChecker.ExecuteAll(runtime);
+            if (runtime.Get<BusSettings>().ThrowOnValidationErrors)
+            {
+                recorder.AssertAllSuccessful();
+            }
+
 
             // TODO -- THIS IS TEMPORARY UNTIL WE DO GH-212
             var hostedServices = runtime.Container.GetAllInstances<IHostedService>()

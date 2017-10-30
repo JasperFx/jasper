@@ -13,6 +13,7 @@ using Jasper.Bus.Transports.Loopback;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Conneg.Json;
+using Jasper.EnvironmentChecks;
 using Jasper.Internals;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.ObjectPool;
@@ -54,6 +55,8 @@ namespace Jasper.Bus
             ForSingletonOf<UriAliasLookup>().Use<UriAliasLookup>();
 
             For<IPersistence>().Use<NulloPersistence>();
+
+            For<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
 
 
         }
