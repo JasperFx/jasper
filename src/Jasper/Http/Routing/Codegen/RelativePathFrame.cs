@@ -1,4 +1,5 @@
-﻿using Jasper.Internals.Codegen;
+﻿using Jasper.Bus.Model;
+using Jasper.Internals.Codegen;
 using Jasper.Internals.Compilation;
 
 namespace Jasper.Http.Routing.Codegen
@@ -12,7 +13,7 @@ namespace Jasper.Http.Routing.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            throw new System.NotImplementedException();
+            writer.Write($"var {Variable.Usage} = {nameof(MessageHandler.ToRelativePath)}({Segments.Usage}, {Position});");
         }
     }
 
@@ -24,7 +25,7 @@ namespace Jasper.Http.Routing.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            throw new System.NotImplementedException();
+            writer.Write($"var {Variable.Usage} = {nameof(MessageHandler.ToPathSegments)}({Segments.Usage}, {Position});");
         }
     }
 }
