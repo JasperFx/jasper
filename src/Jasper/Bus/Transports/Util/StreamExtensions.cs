@@ -7,7 +7,7 @@ namespace Jasper.Bus.Transports.Util
 {
     internal static class StreamExtensions
     {
-        internal static async Task<byte[]> ReadBytesAsync(this Stream stream, int length)
+        internal static async Task<byte[]> ReadBytesAsync(this Stream stream, long? length)
         {
             byte[] buffer = new byte[length];
             int totalRead = 0;
