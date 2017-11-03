@@ -9,6 +9,7 @@ using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Tracking;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Stub;
 using Jasper.LightningDb;
 using Jasper.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;

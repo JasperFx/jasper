@@ -1,21 +1,14 @@
 ﻿using Jasper.Bus.Configuration;
-using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Core;
-using Jasper.Bus.Transports.Durable;
-using Jasper.Bus.Transports.Lightweight;
-using Jasper.Bus.Transports.Loopback;
-using Jasper.Configuration;
-using Jasper.Conneg;
-using Jasper.Conneg.Json;
+using Jasper.Bus.Transports.Tcp;
+using Jasper.Bus.Transports.WorkerQueues;
 using Jasper.EnvironmentChecks;
 using Jasper.Internals;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Bus
@@ -24,17 +17,16 @@ namespace Jasper.Bus
     {
         internal ServiceBusRegistry()
         {
-
             ForSingletonOf<ITransport>()
                 .Use<LoopbackTransport>();
 
             ForSingletonOf<ITransport>()
-                .Use<LightweightTransport>();
-
-            ForSingletonOf<ITransport>()
-                .Use<DurableTransport>();
+                .Use<TcpTransport>();
 
             ForSingletonOf<ObjectPoolProvider>().Use<DefaultObjectPoolProvider>();
+
+            ForSingletonOf<ILightweightWorkerQueue>().Use<LightweightWorkerQueue>();
+            ForSingletonOf<IDurableWorkerQueue>().Use<DurableWorkerQueue>();
 
 
             For<IEnvelopeSender>().Use<EnvelopeSender>();
@@ -57,8 +49,6 @@ namespace Jasper.Bus
             For<IPersistence>().Use<NulloPersistence>();
 
             For<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
-
-
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-using Jasper.Bus.Configuration;
+using Jasper.Bus.Transports.Configuration;
 
 namespace Jasper.Bus.Runtime.Subscriptions
 {
@@ -11,12 +10,12 @@ namespace Jasper.Bus.Runtime.Subscriptions
         {
         }
 
-        public TransportNode(IChannelGraph graph, string machineName)
+        public TransportNode(BusSettings settings)
         {
-            ServiceName = graph.Name;
+            ServiceName = settings.ServiceName;
 
-            MachineName = machineName;
-            Id = $"{ServiceName}@{machineName}";
+            MachineName = settings.MachineName;
+            Id = $"{ServiceName}@{MachineName}";
         }
 
         public string ServiceName { get; set; }

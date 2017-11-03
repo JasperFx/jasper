@@ -5,7 +5,9 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Receiving;
+using Jasper.Bus.Transports.Sending;
+using Jasper.Bus.Transports.Tcp;
 using Jasper.Util;
 using Shouldly;
 
@@ -74,7 +76,7 @@ namespace Jasper.Testing.Bus.Lightweight.Protocol
 
                 await client.ConnectAsync(destination.Host, destination.Port);
 
-                await WireProtocol.Send(client.GetStream(), theMessageBatch, theSender);
+                await WireProtocol.Send(client.GetStream(), theMessageBatch, null, theSender);
             }
         }
 

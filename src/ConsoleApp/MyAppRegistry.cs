@@ -1,4 +1,5 @@
 ﻿using Jasper;
+using Jasper.Bus.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using StorytellerSpecs.Fixtures;
 
@@ -12,7 +13,7 @@ namespace MyApp
         {
             Http.UseKestrel().UseUrls("http://localhost:3001");
 
-            Transports.Lightweight.ListenOnPort(2222);
+            Transports.LightweightListenerAt(2222);
 
             Publish.Message<Message1>();
             Publish.Message<Message2>();

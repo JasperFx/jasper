@@ -33,7 +33,7 @@ namespace Jasper.Testing.Bus
                 _.Transports.ListenForMessagesFrom("config://invoicing");
             });
 
-            Runtime.Get<BusSettings>().Durable.Port.ShouldBe(2345);
+            Runtime.Get<BusSettings>().Listeners.Any(x => x.Port == 2345).ShouldBeTrue();
         }
 
 
@@ -54,7 +54,7 @@ namespace Jasper.Testing.Bus
 
 
         [Fact]
-        public void ChannelGraph_is_corrected_by_the_lookups()
+        public void listeners_are_corrected_by_the_lookups()
         {
             with(_ =>
             {
@@ -62,8 +62,8 @@ namespace Jasper.Testing.Bus
                 _.Transports.ListenForMessagesFrom("fake://one");
             });
 
-            Channels.Where(x => x.Uri.Scheme == "loopback").Any(x => x.Uri == "loopback://one".ToUri())
-                .ShouldBeTrue();
+            Runtime.Get<BusSettings>().Listeners.Contains("loopback://one".ToUri());
+
 
 
         }

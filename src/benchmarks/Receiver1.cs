@@ -1,4 +1,5 @@
 ﻿using Jasper;
+using Jasper.Bus.Transports.Configuration;
 
 namespace benchmarks
 {
@@ -12,7 +13,7 @@ namespace benchmarks
                 _.WithDefaultConventions();
             });
 
-            Transports.Lightweight.ListenOnPort(2233);
+            Transports.LightweightListenerAt(2233);
         }
     }
 }

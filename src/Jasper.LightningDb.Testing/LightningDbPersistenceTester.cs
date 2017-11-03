@@ -2,7 +2,7 @@
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Tcp;
 using Jasper.Util;
 using Shouldly;
 using Xunit;

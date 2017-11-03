@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Transports.Core;
-using Jasper.Bus.Transports.Durable;
-using Jasper.Bus.Transports.Lightweight;
-using Jasper.Bus.Transports.Loopback;
 using Jasper.Conneg;
 using Jasper.Util;
 using Newtonsoft.Json;
@@ -17,28 +14,12 @@ namespace Jasper.Bus.Transports.Configuration
 {
     public class BusSettings : ITransportsExpression, IAdvancedOptions
     {
-        private readonly LightweightCache<string, TransportSettings> _transports = new LightweightCache<string, TransportSettings>();
 
         public BusSettings()
         {
-            _transports[LightweightTransport.ProtocolName] = new TransportSettings(LightweightTransport.ProtocolName)
-            {
-                MaximumSendAttempts = 3
-            };
-
-            _transports[DurableTransport.ProtocolName] = new TransportSettings(DurableTransport.ProtocolName)
-            {
-                MaximumSendAttempts = 100
-            };
-
-            _transports[LoopbackTransport.ProtocolName]= new TransportSettings(LoopbackTransport.ProtocolName)
-            {
-                State = TransportState.Enabled
-            };
-
-            ListenForMessagesFrom(TransportConstants.RetryUri).MaximumParallelization(5);
-            ListenForMessagesFrom(TransportConstants.DelayedUri).MaximumParallelization(5);
-            ListenForMessagesFrom(TransportConstants.RepliesUri).MaximumParallelization(5);
+            ListenForMessagesFrom(TransportConstants.RetryUri);
+            ListenForMessagesFrom(TransportConstants.DelayedUri);
+            ListenForMessagesFrom(TransportConstants.RepliesUri);
 
             _machineName = Environment.MachineName;
             ServiceName = "Jasper";
@@ -77,7 +58,7 @@ namespace Jasper.Bus.Transports.Configuration
             get => _defaultChannelAddress;
             set
             {
-                if (value != null && value.Scheme == LoopbackTransport.ProtocolName)
+                if (value != null && value.Scheme == TransportConstants.Loopback)
                 {
                     ListenForMessagesFrom(value);
                 }
@@ -85,14 +66,6 @@ namespace Jasper.Bus.Transports.Configuration
                 _defaultChannelAddress = value;
             }
         }
-
-        public TransportSettings this[string protocolName] => _transports[protocolName];
-
-        public TransportSettings Lightweight => _transports[LightweightTransport.ProtocolName];
-
-        public TransportSettings Durable => _transports[DurableTransport.ProtocolName];
-
-        public TransportSettings Loopback => _transports[LoopbackTransport.ProtocolName];
 
         void ITransportsExpression.DefaultIs(string uriString)
         {
@@ -108,12 +81,6 @@ namespace Jasper.Bus.Transports.Configuration
         {
             DefaultChannelAddress = "loopback://default".ToUri();
         }
-
-        ITransportExpression ITransportsExpression.Durable => Durable;
-
-        ITransportExpression ITransportsExpression.Lightweight => Lightweight;
-
-        ILoopbackTransportExpression ITransportsExpression.Loopback => Loopback;
 
         public bool DisableAllTransports { get; set; }
 
@@ -134,33 +101,12 @@ namespace Jasper.Bus.Transports.Configuration
 
 
         // Catches anything from unknown transports
-        public readonly IList<Listener> Listeners = new List<Listener>();
+        public readonly IList<Uri> Listeners = new List<Uri>();
 
 
-        public IQueueSettings ListenForMessagesFrom(Uri uri)
+        public void ListenForMessagesFrom(Uri uri)
         {
-            if (_transports.Has(uri.Scheme))
-            {
-                var transport = _transports[uri.Scheme];
-                var port = uri.Port;
-                if (port > 0)
-                {
-                    validatePort(uri, transport);
-
-                    transport.Port = port;
-                }
-
-                var queueName = uri.QueueName();
-
-                return transport.Queues[queueName];
-            }
-            else
-            {
-                var listener = Listeners.FirstOrDefault(x => x.Uri == uri) ?? new Listener(uri);
-                Listeners.Fill(listener);
-
-                return listener;
-            }
+            Listeners.Fill(uri.ToCanonicalUri());
         }
 
         public readonly IList<SubscriberAddress> KnownSubscribers = new List<SubscriberAddress>();
@@ -181,31 +127,14 @@ namespace Jasper.Bus.Transports.Configuration
             return SendTo(uriString.ToUri());
         }
 
-        private void validatePort(Uri uri, TransportSettings transport)
+        public void ListenForMessagesFrom(string uriString)
         {
-            if (transport.Port.HasValue && transport.Port.Value != uri.Port)
-            {
-                throw new InvalidOperationException($"Transport '{uri.Scheme}' is already listening on port {transport.Port.Value}");
-            }
-
-
-            var alreadyUsedTransport = _transports
-                .GetAll().FirstOrDefault(x => x.Port.HasValue && x.Port.Value == uri.Port);
-
-            if (alreadyUsedTransport != null && alreadyUsedTransport != transport)
-            {
-                throw new InvalidOperationException($"Port {uri.Port} is already in usage by registered transport '{alreadyUsedTransport.Protocol}'");
-            }
-        }
-
-        public IQueueSettings ListenForMessagesFrom(string uriString)
-        {
-            return ListenForMessagesFrom(uriString.ToUri());
+            ListenForMessagesFrom(uriString.ToUri());
         }
 
         public async Task ApplyLookups(UriAliasLookup lookups)
         {
-            var all = Listeners.Select(x => x.Uri).Concat(KnownSubscribers.Select(x => x.Uri))
+            var all = Listeners.Concat(KnownSubscribers.Select(x => x.Uri))
                 .Distinct().ToArray();
 
             await lookups.ReadAliases(all);
@@ -220,9 +149,25 @@ namespace Jasper.Bus.Transports.Configuration
 
             foreach (var listener in listeners)
             {
-                listener.ReadAlias(lookups);
-                ListenForMessagesFrom(listener.Uri).MaximumParallelization(listener.MaximumParallelization);
+                var uri = lookups.Resolve(listener);
+                ListenForMessagesFrom(uri);
             }
+        }
+
+        public TransportState StateFor(string protocol)
+        {
+            return TransportState.Enabled;
+        }
+
+
+
+        public CancellationToken Cancellation => _cancellation.Token;
+
+        private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+
+        public void StopAll()
+        {
+            _cancellation.Cancel();
         }
     }
 }

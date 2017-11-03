@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Bus.Transports;
 using Jasper.Util;
 
 namespace Jasper.Bus.Configuration
@@ -17,6 +18,11 @@ namespace Jasper.Bus.Configuration
 
         public UriAliasLookup(IEnumerable<IUriLookup> lookups)
         {
+            // The only single reason this exists is to not shatter a bunch
+            // of existing integration tests after we eliminated the separate
+            // durable transport
+            _lookups.Add(TransportConstants.Durable, new DurableUriLookup());
+
             foreach (var lookup in lookups)
             {
                 _lookups.SmartAdd(lookup.Protocol, lookup);
@@ -67,5 +73,16 @@ namespace Jasper.Bus.Configuration
         }
 
 
+    }
+
+    public class DurableUriLookup : IUriLookup
+    {
+        public string Protocol { get; } = TransportConstants.Durable;
+
+        public Task<Uri[]> Lookup(Uri[] originals)
+        {
+            var values = originals.Select(x => x.ToCanonicalTcpUri()).ToArray();
+            return Task.FromResult(values);
+        }
     }
 }

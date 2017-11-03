@@ -1,5 +1,5 @@
 ﻿using Baseline.Dates;
-using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Tcp;
 using Shouldly;
 using Xunit;
 

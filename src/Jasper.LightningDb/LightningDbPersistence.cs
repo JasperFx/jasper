@@ -5,12 +5,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Core;
-using Jasper.Bus.Transports.Durable;
-using Jasper.Bus.Transports.Util;
+using Jasper.Bus.Transports.Tcp;
 using LightningDB;
 
 namespace Jasper.LightningDb

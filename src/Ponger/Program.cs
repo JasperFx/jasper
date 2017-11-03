@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.CommandLine;
 using Oakton;
 using TestMessages;
@@ -14,7 +15,7 @@ namespace Ponger
             {
                 _.Logging.UseConsoleLogging = true;
 
-                _.Transports.Lightweight.ListenOnPort(2601);
+                _.Transports.LightweightListenerAt(2601);
             });
         }
     }

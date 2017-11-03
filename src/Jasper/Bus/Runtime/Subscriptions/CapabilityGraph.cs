@@ -66,7 +66,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
             {
                 ServiceName = runtime.ServiceName,
                 Subscriptions = determineSubscriptions(handlers, serialization),
-                Published = determinePublishedMessages(serialization, channels, validTransports)
+                Published = determinePublishedMessages(serialization, runtime, validTransports)
             };
 
             // Hokey.
@@ -102,11 +102,11 @@ namespace Jasper.Bus.Runtime.Subscriptions
             return capabilities;
         }
 
-        private PublishedMessage[] determinePublishedMessages(SerializationGraph serialization, IChannelGraph channels, string[] validTransports)
+        private PublishedMessage[] determinePublishedMessages(SerializationGraph serialization, JasperRuntime runtime, string[] validTransports)
         {
             foreach (var published in _published)
             {
-                published.ServiceName = channels.Name;
+                published.ServiceName = runtime.ServiceName;
                 var writer = serialization.WriterFor(published.DotNetType);
                 published.ContentTypes = writer.ContentTypes;
                 published.Transports = validTransports;

@@ -3,7 +3,7 @@
 -> id = c553e31b-702b-4c38-991b-4eb2c28f2425
 -> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-10-19T18:28:47.6756860Z
+-> last-updated = 2017-11-03T19:20:27.1093270Z
 -> tags = 
 
 [SendMessage]
@@ -30,9 +30,9 @@
 |> SendMessage messageType=Message3, name=Trevor
 |> TheMessagesSentShouldBe
     [rows]
-    |ReceivedAt              |MessageType|Name  |
-    |durable://localhost:2201|Message1   |Tom   |
-    |durable://localhost:2201|Message2   |Todd  |
-    |durable://localhost:2201|Message3   |Trevor|
+    |ReceivedAt          |MessageType|Name  |
+    |tcp://localhost:2201|Message1   |Tom   |
+    |tcp://localhost:2201|Message2   |Todd  |
+    |tcp://localhost:2201|Message3   |Trevor|
 
 ~~~

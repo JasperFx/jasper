@@ -17,20 +17,14 @@ namespace Jasper.Bus.Runtime
         private readonly IChannelGraph _channels;
         private readonly UriAliasLookup _aliases;
         private readonly BusSettings _settings;
-        private readonly IDictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
 
-        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, UriAliasLookup aliases, BusSettings settings, IEnumerable<ITransport> transports)
+        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, UriAliasLookup aliases, BusSettings settings)
         {
             _router = router;
             _channels = channels;
             _aliases = aliases;
             _settings = settings;
-
-            foreach (var transport in transports)
-            {
-                _transports.SmartAdd(transport.Protocol, transport);
-            }
 
             Logger = logger;
         }
@@ -91,21 +85,12 @@ namespace Jasper.Bus.Runtime
         {
             if (route == null) throw new ArgumentNullException(nameof(route));
 
-            ITransport transport = null;
-            if (_transports.TryGetValue(route.Destination.Scheme, out transport))
+            var channel = _channels.GetOrBuildChannel(route.Destination);
+
+            if (channel != null)
             {
                 var sending = route.CloneForSending(envelope);
-
-                var channel = _channels.TryGetChannel(route.Destination);
-
-                if (channel != null)
-                {
-                    await sendToStaticChannel(callback, sending, channel);
-                }
-                else
-                {
-                    await sendToDynamicChannel(route.Destination, callback, sending, transport);
-                }
+                await sendToStaticChannel(callback, sending, channel);
 
                 Logger.Sent(sending);
 
@@ -117,34 +102,12 @@ namespace Jasper.Bus.Runtime
             }
         }
 
-        private static async Task sendToDynamicChannel(Uri address, IMessageCallback callback, Envelope sending, ITransport transport)
-        {
-            sending.Destination = address;
-            sending.ReplyUri = transport.DefaultReplyUri();
-
-            if (callback == null || !callback.SupportsSend && callback.TransportScheme == sending.Destination.Scheme)
-            {
-                await transport.Send(sending, sending.Destination).ConfigureAwait(false);
-            }
-            else
-            {
-                await callback.Send(sending).ConfigureAwait(false);
-            }
-        }
-
         private static async Task sendToStaticChannel(IMessageCallback callback, Envelope sending, IChannel channel)
         {
             sending.Destination = channel.Destination;
             sending.ReplyUri = channel.ReplyUri;
 
-            if (callback == null || !callback.SupportsSend && callback.TransportScheme == sending.Destination.Scheme)
-            {
-                await channel.Send(sending).ConfigureAwait(false);
-            }
-            else
-            {
-                await callback.Send(sending).ConfigureAwait(false);
-            }
+            await channel.Send(sending).ConfigureAwait(false);
         }
 
     }

@@ -13,6 +13,7 @@ using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Stub;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -103,17 +104,19 @@ namespace StorytellerSpecs.Fixtures
 
         public override void SetUp()
         {
-            _transport = new StubTransport();
+
             _tracker = new AttemptTracker();
 
             var registry = new JasperRegistry();
             registry.Transports.ListenForMessagesFrom("stub://1".ToUri());
-            registry.Services.AddSingleton<ITransport>(_transport);
+            registry.Services.AddSingleton<ITransport, StubTransport>();
             registry.Services.AddSingleton(_tracker);
             registry.Publish.Message<ErrorCausingMessage>()
                 .To("stub://1".ToUri());
 
             _runtime = JasperRuntime.For(registry);
+
+            _transport = _runtime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
 
             _graph = _runtime.Get<HandlerGraph>();
             _chain = _graph.ChainFor<ErrorCausingMessage>();

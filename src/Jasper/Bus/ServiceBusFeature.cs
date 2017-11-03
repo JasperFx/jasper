@@ -22,7 +22,7 @@ namespace Jasper.Bus
 {
     public class ServiceBusFeature : IFeature
     {
-        private readonly OutgoingChannels _channels = new OutgoingChannels();
+        private readonly ChannelGraph _channels = new ChannelGraph();
         private HandlerGraph _graph;
         public HandlerSource Handlers { get; } = new HandlerSource();
 
@@ -56,10 +56,8 @@ namespace Jasper.Bus
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
             var transports = runtime.Get<ITransport[]>();
-            foreach (var transport in transports.Where(x => x.State == TransportState.Enabled))
-            {
-                transport.Describe(writer);
-            }
+
+            // TODO -- talk about what's listening and already known channels
 
             if (runtime.Registry.Logging.Verbose)
             {

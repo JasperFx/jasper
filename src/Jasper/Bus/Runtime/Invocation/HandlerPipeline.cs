@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
-using Jasper.Bus.Transports.Lightweight;
-using Jasper.Bus.Transports.Loopback;
-using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Invocation
 {
@@ -19,7 +15,6 @@ namespace Jasper.Bus.Runtime.Invocation
     {
         Task Invoke(Envelope envelope);
         IBusLogger Logger { get; }
-        Task InvokeNow(object message);
         Task InvokeNow(Envelope envelope);
     }
 
@@ -99,16 +94,6 @@ namespace Jasper.Bus.Runtime.Invocation
             }
         }
 
-        public Task InvokeNow(object message)
-        {
-            var envelope = new Envelope
-            {
-                Message = message,
-                Callback = new LightweightCallback(_channels.DefaultRetryChannel)
-            };
-
-            return InvokeNow(envelope);
-        }
 
         public async Task InvokeNow(Envelope envelope)
         {

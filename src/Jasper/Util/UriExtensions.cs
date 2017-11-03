@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Core;
-using Jasper.Bus.Transports.Loopback;
 
 namespace Jasper.Util
 {
@@ -13,15 +11,28 @@ namespace Jasper.Util
         {
             if (uri == null) return null;
 
-            if (uri.Scheme == LoopbackTransport.ProtocolName)
+            if (uri.Scheme == TransportConstants.Loopback && uri.Host != TransportConstants.Durable)
             {
                 return uri.Host;
             }
 
-            return uri.Segments.Skip(1).LastOrDefault() ?? TransportConstants.Default;
+            var lastSegment = uri.Segments.Skip(1).LastOrDefault();
+            if (lastSegment == TransportConstants.Durable) return TransportConstants.Default;
+
+            return lastSegment ?? TransportConstants.Default;
         }
 
         private static readonly HashSet<string> _locals = new HashSet<string>(new[] { "localhost", "127.0.0.1" }, StringComparer.OrdinalIgnoreCase);
+
+        public static bool IsDurable(this Uri uri)
+        {
+            if (uri.Scheme == TransportConstants.Loopback && uri.Host == TransportConstants.Durable) return true;
+
+            var firstSegment = uri.Segments.Skip(1).FirstOrDefault();
+            if (firstSegment == null) return false;
+
+            return TransportConstants.Durable == firstSegment.TrimEnd('/');
+        }
 
         public static Uri ToMachineUri(this Uri uri)
         {
@@ -31,6 +42,32 @@ namespace Jasper.Util
         public static Uri ToLocalUri(this Uri uri)
         {
             return new UriBuilder(uri) { Host = Environment.MachineName }.Uri;
+        }
+
+        public static Uri ToCanonicalTcpUri(this Uri uri)
+        {
+            if (uri.Scheme != TransportConstants.Durable) throw new ArgumentOutOfRangeException(nameof(uri), "This only applies to Uri's with the scheme 'durable'");
+
+            var queueName = uri.QueueName();
+
+            return queueName == TransportConstants.Default
+                ? $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}".ToUri()
+                : $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}/{queueName}".ToUri();
+        }
+
+        public static Uri ToCanonicalUri(this Uri uri)
+        {
+            switch (uri.Scheme)
+            {
+                case "tcp":
+                    return $"tcp://localhost:{uri.Port}".ToUri();
+
+                case "durable":
+                    return $"tcp://localhost:{uri.Port}/{TransportConstants.Durable}".ToUri();
+
+                default:
+                    return uri;
+            }
         }
     }
 }

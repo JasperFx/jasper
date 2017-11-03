@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus;
-using Jasper.Bus.Transports.Loopback;
+using Jasper.Bus.Transports;
 using Jasper.Testing.Bus.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -33,7 +33,7 @@ namespace Jasper.Testing.Bus.Transports.InMemory
         [Fact]
         public void automatically_sticks_in_replies_queue()
         {
-            Channels.HasChannel(LoopbackTransport.Retries)
+            Channels.HasChannel(TransportConstants.RetryUri)
                 .ShouldBeTrue();
         }
 

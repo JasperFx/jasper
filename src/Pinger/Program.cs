@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.Bus;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.CommandLine;
 using Jasper.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -20,7 +21,7 @@ namespace Pinger
             {
                 _.Logging.UseConsoleLogging = true;
 
-                _.Transports.Lightweight.ListenOnPort(2600);
+                _.Transports.LightweightListenerAt(2600);
 
                 // Using static routing rules to start
                 _.Publish.Message<PingMessage>().To("tcp://localhost:2601");

@@ -3,6 +3,7 @@ using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
+using Jasper.Bus.Transports.Configuration;
 
 namespace Jasper.Testing.Bus
 {
@@ -13,6 +14,8 @@ namespace Jasper.Testing.Bus
         public IServiceBus Bus => Runtime.Get<IServiceBus>();
 
         public IChannelGraph Channels => Runtime.Get<IChannelGraph>();
+
+        public BusSettings BusSettings => Runtime.Get<BusSettings>();
 
         protected void withAllDefaults()
         {

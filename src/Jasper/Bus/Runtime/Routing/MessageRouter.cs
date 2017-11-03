@@ -81,7 +81,7 @@ namespace Jasper.Bus.Runtime.Routing
             var modelWriter = _serializers.WriterFor(messageType);
             var supported = modelWriter.ContentTypes;
 
-            foreach (var channel in _channels.Distinct().Where(x => x.ShouldSendMessage(messageType)))
+            foreach (var channel in _channels.AllKnownChannels().Where(x => x.ShouldSendMessage(messageType)))
             {
                 var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
 

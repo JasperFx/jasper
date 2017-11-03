@@ -19,13 +19,5 @@ namespace Jasper.Bus.Transports
 
 
         Task Requeue(Envelope envelope);
-
-
-        // May only be useful for LMDB backed transports where there's a perf optimization
-        // for moving the data from one database to another in a single transaction
-        Task Send(Envelope envelope);
-        bool SupportsSend { get; }
-
-        string TransportScheme { get; }
     }
 }

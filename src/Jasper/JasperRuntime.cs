@@ -59,6 +59,8 @@ namespace Jasper
                 _.Populate(services);
                 _.For<ITransport>().Singleton();
                 _.Policies.Add<TransportsAreSingletons>();
+
+                _.For<CancellationToken>().Use(c => c.GetInstance<BusSettings>().Cancellation);
             })
             {
                 DisposalLock = DisposalLock.Ignore
@@ -109,6 +111,8 @@ namespace Jasper
         {
             // Because StackOverflowException's are a drag
             if (IsDisposed || isDisposing) return;
+
+            Get<BusSettings>().StopAll();
 
             isDisposing = true;
 

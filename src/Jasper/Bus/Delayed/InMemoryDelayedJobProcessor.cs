@@ -3,10 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports.Loopback;
+using Jasper.Bus.Transports;
 
 namespace Jasper.Bus.Delayed
 {
@@ -16,6 +15,8 @@ namespace Jasper.Bus.Delayed
         {
             return new InMemoryDelayedJobProcessor{_channel = channel};
         }
+
+
 
         private IChannel _channel;
 
@@ -30,7 +31,7 @@ namespace Jasper.Bus.Delayed
 
         public void Start(IHandlerPipeline pipeline, IChannelGraph channels)
         {
-            _channel = channels[LoopbackTransport.Delayed];
+            _channel = channels.GetOrBuildChannel(TransportConstants.DelayedUri);
         }
 
         public async Task PlayAll()

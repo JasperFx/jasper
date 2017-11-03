@@ -11,13 +11,20 @@ namespace Jasper.Bus.Transports.Util
         private readonly Timer _trigger;
         private readonly TransformBlock<T, T> _transformer;
 
-        public BatchingBlock(int milliseconds, ITargetBlock<T[]> processor) : this(milliseconds.Milliseconds(), processor)
+        public BatchingBlock(int milliseconds, ITargetBlock<T[]> processor,
+            CancellationToken cancellation = default(CancellationToken))
+        : this(milliseconds.Milliseconds(), processor, cancellation)
         {
+
         }
 
-        public BatchingBlock(TimeSpan timeSpan, ITargetBlock<T[]> processor)
+        public BatchingBlock(TimeSpan timeSpan, ITargetBlock<T[]> processor, CancellationToken cancellation = default(CancellationToken))
         {
-            _batchBlock = new BatchBlock<T>(25);
+            _batchBlock = new BatchBlock<T>(25, new GroupingDataflowBlockOptions
+            {
+                CancellationToken = cancellation
+            });
+
             _trigger = new Timer(o => _batchBlock.TriggerBatch(), null, Timeout.Infinite, Timeout.Infinite);
 
 
@@ -25,12 +32,17 @@ namespace Jasper.Bus.Transports.Util
             {
                 _trigger.Change(timeSpan, Timeout.InfiniteTimeSpan);
                 return v;
+            }, new ExecutionDataflowBlockOptions
+            {
+                CancellationToken = cancellation
             });
 
             _transformer.LinkTo(_batchBlock);
 
             _batchBlock.LinkTo(processor);
         }
+
+        public int ItemCount => _batchBlock.OutputCount;
 
         public void Post(T item)
         {

@@ -1,23 +1,19 @@
 ﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Invocation;
+using System.Threading;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Bus.Transports.Sending;
 
 namespace Jasper.Bus.Transports
 {
+    // Will become the new ITransport
     public interface ITransport : IDisposable
     {
         string Protocol { get; }
 
-        Task Send(Envelope envelope, Uri destination);
-
-        IChannel[] Start(IHandlerPipeline pipeline, BusSettings settings, OutgoingChannels channels);
+        ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation);
 
         Uri DefaultReplyUri();
 
-        TransportState State { get; }
-        void Describe(TextWriter writer);
+        void StartListening(BusSettings settings);
     }
 }

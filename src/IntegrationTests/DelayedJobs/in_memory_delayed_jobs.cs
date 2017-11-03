@@ -170,5 +170,9 @@ namespace IntegrationTests.DelayedJobs
             theDelayedJobs.Count().ShouldBe(1);
 
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

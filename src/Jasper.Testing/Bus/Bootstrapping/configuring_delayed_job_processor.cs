@@ -1,5 +1,5 @@
 ﻿using Jasper.Bus.Delayed;
-using Jasper.Bus.Transports.Loopback;
+using Jasper.Bus.Transports;
 using Shouldly;
 using Xunit;
 
@@ -10,7 +10,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void should_add_the_delayed_queue_if_using_in_memory_delayed_processor()
         {
-            theChannels.HasChannel(LoopbackTransport.Delayed).ShouldBeTrue();
+            theChannels.HasChannel(TransportConstants.DelayedUri).ShouldBeTrue();
 
         }
 

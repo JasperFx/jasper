@@ -47,7 +47,7 @@ namespace Jasper.Testing.Bus
             {
                 var channels = runtime.Get<IChannelGraph>();
                 channels.DefaultChannel
-                    .ShouldBeTheSameAs(channels["loopback://incoming".ToUri()]);
+                    .ShouldBeTheSameAs(channels.GetOrBuildChannel("loopback://incoming".ToUri()));
             }
         }
 

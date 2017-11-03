@@ -4,7 +4,7 @@ using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus
 {
-    public interface IChannel
+    public interface IChannel : IDisposable
     {
         Uri Uri { get; }
         Uri ReplyUri { get; }

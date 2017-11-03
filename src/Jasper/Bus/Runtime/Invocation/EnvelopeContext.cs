@@ -144,14 +144,7 @@ namespace Jasper.Bus.Runtime.Invocation
         {
             try
             {
-                if (envelope.Callback != null && envelope.Callback.SupportsSend)
-                {
-                    return _sender.Send(envelope, envelope.Callback);
-                }
-                else
-                {
-                    return _sender.Send(envelope);
-                }
+                return _sender.Send(envelope);
             }
             catch (Exception e)
             {

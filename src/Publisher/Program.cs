@@ -1,5 +1,6 @@
 ﻿using Baseline;
 using Jasper;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.CommandLine;
 using Jasper.Consul;
 using TestMessages;
@@ -23,7 +24,7 @@ namespace Publisher
             // using the default Consul configuration
             Include<ConsulBackedSubscriptions>();
 
-            Transports.Lightweight.ListenOnPort(2211);
+            Transports.LightweightListenerAt(2211);
 
             // 100% Optional for diagnostics
             Publish.Message<NewUser>();

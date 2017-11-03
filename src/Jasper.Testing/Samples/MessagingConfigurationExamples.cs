@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Bus.Samples;
 using Jasper.Util;
@@ -28,8 +29,7 @@ namespace Jasper.Testing.Samples
             Subscribe.To(type => type.IsInNamespace("MyMessagingApp.Incoming"));
 
             // Configure the built in transports
-            Transports.Lightweight.ListenOnPort(2233);
-            Transports.Durable.Disable();
+            Transports.LightweightListenerAt(2233);
         }
     }
     // ENDSAMPLE
@@ -43,7 +43,7 @@ namespace Jasper.Testing.Samples
             // Use the simpler, but transport specific syntax
             // to just declare what port the transport should use
             // to listen for incoming messages
-            Transports.Lightweight.ListenOnPort(2233);
+            Transports.LightweightListenerAt(2233);
 
             // or use a Uri to declare both the transport type and port
             Transports.ListenForMessagesFrom("tcp://localhost:2233");
@@ -71,9 +71,7 @@ namespace Jasper.Testing.Samples
 
             Settings.With<MySettings>(_ =>
             {
-                Transports.Lightweight
-                    .ListenOnPort(_.LightweightPort)
-                    .MaximumSendAttempts(_.MaximumSendAttempts);
+                Transports.LightweightListenerAt(_.LightweightPort);
 
                 Transports.ListenForMessagesFrom(_.DefaultListener);
 
@@ -103,22 +101,8 @@ namespace Jasper.Testing.Samples
     {
         public LightweightTransportApp()
         {
-            // Nevermind, just disable it altogether
-            Transports.Durable.Disable();
-
             // Set up a listener (this is optional)
-            Transports.Lightweight.ListenOnPort(4000);
-
-            // Make it even faster by discarding any message that fails
-            Transports.Lightweight.MaximumSendAttempts(1);
-
-            // Configure the maximum number of threads dedicated to processing
-            // messages being received by queue. 5 is the default
-            Transports.Lightweight.DefaultQueue.MaximumParallelization(5);
-            Transports.Lightweight.Queue("important").MaximumParallelization(10);
-            Transports.Lightweight.Queue("lowpriority").MaximumParallelization(3);
-            Transports.Lightweight.Queue("control").Sequential();
-
+            Transports.LightweightListenerAt(4000);
 
             // Or, listen by Uri
             // This directs Jasper to listen for messages at port 2200
@@ -142,22 +126,8 @@ namespace Jasper.Testing.Samples
     {
         public DurableTransportApp()
         {
-            // Nevermind, just disable it altogether
-            Transports.Durable.Disable();
-
             // Set up a listener (this is optional)
-            Transports.Durable.ListenOnPort(4000);
-
-            // Throw away messages faster because the default is 100
-            // attempts
-            Transports.Durable.MaximumSendAttempts(100);
-
-            // Configure the maximum number of threads dedicated to processing
-            // messages being received by queue. 5 is the default
-            Transports.Durable.DefaultQueue.MaximumParallelization(5);
-            Transports.Durable.Queue("important").MaximumParallelization(10);
-            Transports.Durable.Queue("lowpriority").MaximumParallelization(3);
-            Transports.Durable.Queue("control").Sequential();
+            Transports.LightweightListenerAt(4000);
 
 
             // Or, listen by Uri
@@ -183,12 +153,7 @@ namespace Jasper.Testing.Samples
     {
         public LoopbackTransportApp()
         {
-            // Configure the maximum number of threads dedicated to processing
-            // messages being received by queue. 5 is the default
-            Transports.Loopback.DefaultQueue.MaximumParallelization(5);
-            Transports.Loopback.Queue("important").MaximumParallelization(10);
-            Transports.Loopback.Queue("lowpriority").MaximumParallelization(3);
-            Transports.Loopback.Queue("control").Sequential();
+            // TODO -- talk about how to configure worker queues
 
             // Publish the message Message2 the important queue
             Publish.Message<Message2>().To("loopback://important");

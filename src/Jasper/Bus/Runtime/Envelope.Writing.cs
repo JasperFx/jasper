@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Baseline;
-using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Tcp;
 using Jasper.Util;
 
 namespace Jasper.Bus.Runtime

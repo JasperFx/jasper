@@ -24,7 +24,6 @@ namespace Jasper.Consul.Internal
 
         protected ConsulClient client { get; }
 
-        public string ServiceName => _channels.Name;
 
         public string MachineName { get; }
 

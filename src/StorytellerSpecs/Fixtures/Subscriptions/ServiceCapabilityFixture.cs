@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Bus.Transports.Sending;
 using Jasper.Conneg;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -159,10 +161,41 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             foreach (var scheme in schemes)
             {
-                var transport = new StubTransport(scheme);
+                var transport = new FakeTransport(scheme);
                 _registry.Services.For<ITransport>().Add(transport);
             }
         }
 
+    }
+
+    public class FakeTransport : ITransport
+    {
+        public string Protocol { get; }
+
+        public FakeTransport(string protocol)
+        {
+            Protocol = protocol;
+        }
+
+
+        public void Dispose()
+        {
+
+        }
+
+        public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Uri DefaultReplyUri()
+        {
+            return TransportConstants.RepliesUri;
+        }
+
+        public void StartListening(BusSettings settings)
+        {
+
+        }
     }
 }

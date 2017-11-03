@@ -4,6 +4,8 @@ using Baseline.Dates;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.WorkerQueues;
 using Jasper.Conneg;
 using Jasper.Util;
 
@@ -78,7 +80,34 @@ namespace Jasper.Bus
 
         public Task Invoke<T>(T message)
         {
-            return _pipeline.InvokeNow(message);
+            return _pipeline.InvokeNow(new Envelope(message)
+            {
+                Callback = new InvocationCallback(),
+                ReplyUri = TransportConstants.RepliesUri
+            });
+        }
+
+        private class InvocationCallback : IMessageCallback
+        {
+            public Task MarkSuccessful()
+            {
+                return Task.CompletedTask;
+            }
+
+            public Task MarkFailed(Exception ex)
+            {
+                return Task.CompletedTask;
+            }
+
+            public Task MoveToErrors(ErrorReport report)
+            {
+                return Task.CompletedTask;
+            }
+
+            public Task Requeue(Envelope envelope)
+            {
+                return Task.CompletedTask;
+            }
         }
 
         public Task Enqueue<T>(T message)

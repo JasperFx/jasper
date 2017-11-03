@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Tcp;
 using Jasper.Conneg;
 using Jasper.Util;
 
@@ -223,6 +223,17 @@ namespace Jasper.Bus.Runtime
         public bool IsDelayed(DateTime utcNow)
         {
             return ExecutionTime.HasValue && ExecutionTime.Value > utcNow;
+        }
+
+        public void EnsureData()
+        {
+            if (Data != null) return;
+
+            if (_message == null) throw new InvalidOperationException("Cannot ensure data is present when there is no message");
+
+            if (Writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
+
+            Data = Writer.Write(_message);
         }
     }
 
