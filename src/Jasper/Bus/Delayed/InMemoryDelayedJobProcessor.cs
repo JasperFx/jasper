@@ -4,24 +4,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.WorkerQueues;
 
 namespace Jasper.Bus.Delayed
 {
     public class InMemoryDelayedJobProcessor : IDelayedJobProcessor, IDisposable
     {
-        public static InMemoryDelayedJobProcessor ForChannel(IChannel channel)
-        {
-            return new InMemoryDelayedJobProcessor{_channel = channel};
-        }
-
-
-
-        private IChannel _channel;
-
         private readonly ConcurrentCache<string, InMemoryDelayedJob> _outstandingJobs
             = new ConcurrentCache<string, InMemoryDelayedJob>();
+
+        public IWorkerQueue _queue;
 
 
         public void Enqueue(DateTime executionTime, Envelope envelope)
@@ -29,38 +21,30 @@ namespace Jasper.Bus.Delayed
             _outstandingJobs[envelope.Id] = new InMemoryDelayedJob(this, envelope, executionTime);
         }
 
-        public void Start(IHandlerPipeline pipeline, IChannelGraph channels)
+        public void Start(IWorkerQueue workerQueue)
         {
-            _channel = channels.GetOrBuildChannel(TransportConstants.DelayedUri);
+            _queue = workerQueue;
         }
 
         public async Task PlayAll()
         {
             var outstanding = _outstandingJobs.ToArray();
             foreach (var job in outstanding)
-            {
-                await _channel.Send(job.Envelope);
-                job.Cancel();
-            }
+                await job.Enqueue();
         }
 
         public async Task PlayAt(DateTime executionTime)
         {
             var outstanding = _outstandingJobs.Where(x => x.ExecutionTime <= executionTime).ToArray();
             foreach (var job in outstanding)
-            {
-                await _channel.Send(job.Envelope);
-                job.Cancel();
-            }
+                await job.Enqueue();
         }
 
         public Task EmptyAll()
         {
             var outstanding = _outstandingJobs.ToArray();
             foreach (var job in outstanding)
-            {
                 job.Cancel();
-            }
 
             return Task.CompletedTask;
         }
@@ -75,12 +59,25 @@ namespace Jasper.Bus.Delayed
             return _outstandingJobs.ToArray().Select(x => x.ToReport()).ToArray();
         }
 
+        public void Dispose()
+        {
+            var outstanding = _outstandingJobs.ToArray();
+            foreach (var job in outstanding)
+                job.Cancel();
+
+            _outstandingJobs.ClearAll();
+        }
+
+        public static InMemoryDelayedJobProcessor ForQueue(IWorkerQueue queue)
+        {
+            return new InMemoryDelayedJobProcessor {_queue = queue};
+        }
+
         public class InMemoryDelayedJob
         {
-            private readonly InMemoryDelayedJobProcessor _parent;
             private readonly CancellationTokenSource _cancellation;
+            private readonly InMemoryDelayedJobProcessor _parent;
             private Task _task;
-            public DateTime ExecutionTime { get; }
 
             public InMemoryDelayedJob(InMemoryDelayedJobProcessor parent, Envelope envelope, DateTime executionTime)
             {
@@ -94,16 +91,19 @@ namespace Jasper.Bus.Delayed
                 var delayTime = ExecutionTime.Subtract(DateTime.UtcNow);
                 _task = Task.Delay(delayTime, _cancellation.Token).ContinueWith(publish);
                 ReceivedAt = DateTime.UtcNow;
-
             }
 
+            public DateTime ExecutionTime { get; }
+
             public DateTime ReceivedAt { get; }
+
+            public Envelope Envelope { get; }
 
             private Task publish(Task obj)
             {
                 return _cancellation.IsCancellationRequested
                     ? Task.CompletedTask
-                    : _parent._channel.Send(Envelope).ContinueWith(t => Cancel());
+                    : Enqueue();
             }
 
             public void Cancel()
@@ -112,26 +112,23 @@ namespace Jasper.Bus.Delayed
                 _parent._outstandingJobs.Remove(Envelope.Id);
             }
 
-            public Envelope Envelope { get; }
-
             public DelayedJob ToReport()
             {
                 return new DelayedJob(Envelope.Id)
                 {
-                    ExecutionTime = ExecutionTime, From = Envelope.ReceivedAt.ToString(), ReceivedAt = ReceivedAt, MessageType = Envelope.MessageType
+                    ExecutionTime = ExecutionTime,
+                    From = Envelope.ReceivedAt.ToString(),
+                    ReceivedAt = ReceivedAt,
+                    MessageType = Envelope.MessageType
                 };
             }
-        }
 
-        public void Dispose()
-        {
-            var outstanding = _outstandingJobs.ToArray();
-            foreach (var job in outstanding)
+            public async Task Enqueue()
             {
-                job.Cancel();
+                Envelope.Callback = new LightweightCallback(_parent._queue);
+                await _parent._queue.Enqueue(Envelope);
+                Cancel();
             }
-
-            _outstandingJobs.ClearAll();
         }
     }
 }

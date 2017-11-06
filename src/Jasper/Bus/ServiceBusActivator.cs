@@ -10,6 +10,7 @@ using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Bus.Transports.WorkerQueues;
 using Jasper.Conneg;
 using Microsoft.CodeAnalysis;
 
@@ -24,8 +25,9 @@ namespace Jasper.Bus
         private readonly ITransport[] _transports;
         private readonly UriAliasLookup _lookups;
         private readonly INodeDiscovery _nodes;
+        private readonly IWorkerQueue _workerQueue;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes, IWorkerQueue workerQueue)
         {
             _settings = settings;
             _pipeline = pipeline;
@@ -34,6 +36,7 @@ namespace Jasper.Bus
             _transports = transports.ToArray();
             _lookups = lookups;
             _nodes = nodes;
+            _workerQueue = workerQueue;
         }
 
         public async Task Activate(HandlerGraph handlers, CapabilityGraph capabilities, JasperRuntime runtime, ChannelGraph channels)
@@ -50,7 +53,7 @@ namespace Jasper.Bus
 
                 channels.Start(_settings, transports, _lookups);
 
-                _delayedJobs.Start(_pipeline, channels);
+                _delayedJobs.Start(_workerQueue);
 
                 var local = new TransportNode(_settings);
 

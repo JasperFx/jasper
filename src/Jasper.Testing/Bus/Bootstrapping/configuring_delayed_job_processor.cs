@@ -7,12 +7,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
 {
     public class configuring_delayed_job_processor : BootstrappingContext
     {
-        [Fact]
-        public void should_add_the_delayed_queue_if_using_in_memory_delayed_processor()
-        {
-            theChannels.HasChannel(TransportConstants.DelayedUri).ShouldBeTrue();
-
-        }
 
         [Fact]
         public void default_is_to_use_in_memory_delayed_processor()

@@ -8,6 +8,7 @@ using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.WorkerQueues;
 using Jasper.Testing;
 using Jasper.Testing.Bus;
 using Jasper.Util;
@@ -16,29 +17,21 @@ using Xunit;
 
 namespace IntegrationTests.DelayedJobs
 {
-    public class in_memory_delayed_jobs : IChannel
+    public class in_memory_delayed_jobs : IWorkerQueue
     {
         private readonly InMemoryDelayedJobProcessor theDelayedJobs;
         private readonly IList<Envelope> sent = new List<Envelope>();
         private readonly Dictionary<string, TaskCompletionSource<Envelope>>
             _callbacks = new Dictionary<string, TaskCompletionSource<Envelope>>();
 
+        private int _queuedCount;
+
         public in_memory_delayed_jobs()
         {
-            theDelayedJobs = InMemoryDelayedJobProcessor.ForChannel(this);
+            theDelayedJobs = InMemoryDelayedJobProcessor.ForQueue(this);
         }
 
-        public string QueueName()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ShouldSendMessage(Type messageType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Send(Envelope envelope)
+        Task IWorkerQueue.Enqueue(Envelope envelope)
         {
             sent.Add(envelope);
             if (_callbacks.ContainsKey(envelope.Id))
@@ -48,6 +41,16 @@ namespace IntegrationTests.DelayedJobs
 
             return Task.CompletedTask;
         }
+
+        int IWorkerQueue.QueuedCount => 5;
+
+        void IWorkerQueue.AddQueue(string queueName, int parallelization)
+        {
+            // nothing
+        }
+
+
+
 
         public Uri Uri { get; }
         public Uri ReplyUri { get; }

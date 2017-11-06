@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports.WorkerQueues;
 
 namespace Jasper.Bus.Delayed
 {
@@ -19,6 +20,6 @@ namespace Jasper.Bus.Delayed
 
         DelayedJob[] QueuedJobs();
 
-        void Start(IHandlerPipeline pipeline, IChannelGraph channels);
+        void Start(IWorkerQueue workerQueue);
     }
 }
