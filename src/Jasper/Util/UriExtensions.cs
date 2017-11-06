@@ -60,7 +60,9 @@ namespace Jasper.Util
             switch (uri.Scheme)
             {
                 case "tcp":
-                    return $"tcp://localhost:{uri.Port}".ToUri();
+                    return uri.IsDurable()
+                            ? $"tcp://localhost:{uri.Port}/{TransportConstants.Durable}".ToUri()
+                            : $"tcp://localhost:{uri.Port}".ToUri();
 
                 case "durable":
                     return $"tcp://localhost:{uri.Port}/{TransportConstants.Durable}".ToUri();

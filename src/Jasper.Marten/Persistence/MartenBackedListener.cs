@@ -42,6 +42,7 @@ namespace Jasper.Marten
                 foreach (var message in messages)
                 {
                     message.ReceivedAt = uri;
+                    message.Callback = new MartenCallback(message, _queues, _store);
                     await _queues.Enqueue(message);
                 }
 

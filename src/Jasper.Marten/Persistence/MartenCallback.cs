@@ -25,7 +25,7 @@ namespace Jasper.Marten
             // TODO -- later, come back and do retries?
             using (var session = _store.LightweightSession())
             {
-                session.Delete(_envelope.Id);
+                session.Delete(_envelope);
                 return session.SaveChangesAsync();
             }
         }
