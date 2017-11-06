@@ -35,6 +35,10 @@ namespace Jasper.Marten
                     await session.SaveChangesAsync();
                 }
 
+                // TODO -- HERE, maybe see if you're getting back pressure from too many
+                // messages in the queue and shove into the pool of envelopes for anybody to use
+                // Instead of sending them into the worker queue
+
                 foreach (var message in messages)
                 {
                     message.ReceivedAt = uri;
