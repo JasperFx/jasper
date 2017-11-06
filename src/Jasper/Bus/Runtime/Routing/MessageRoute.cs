@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Conneg;
@@ -22,10 +23,11 @@ namespace Jasper.Bus.Runtime.Routing
             ContentType = contentType;
         }
 
-        public MessageRoute(Type messageType, ModelWriter writer, Uri destination, string contentType)
-            : this(messageType, destination, contentType)
+        public MessageRoute(Type messageType, ModelWriter writer, IChannel channel, string contentType)
+            : this(messageType, channel.Uri, contentType)
         {
             Writer = writer[contentType];
+            Channel = channel;
         }
 
         public IMessageSerializer Writer { get; internal set; }
@@ -37,6 +39,23 @@ namespace Jasper.Bus.Runtime.Routing
         public string ContentType { get; }
         public string Publisher { get; set; }
         public string Receiver { get; set; }
+        public IChannel Channel { get; set; }
+
+        public async Task<Envelope> Send(Envelope envelope)
+        {
+            if (Channel == null) throw new InvalidOperationException($"Unrecognized transport scheme '{Destination.Scheme}'");
+
+            var sending = CloneForSending(envelope);
+
+            sending.Destination = Destination;
+            sending.ReplyUri = Channel.ReplyUri;
+
+            await Channel.Send(sending).ConfigureAwait(false);
+
+
+
+            return sending;
+        }
 
 
         public Envelope CloneForSending(Envelope envelope)

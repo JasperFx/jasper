@@ -67,10 +67,12 @@ namespace Jasper.Bus.Runtime.Routing
             var contentType = envelope.ContentType ?? envelope.AcceptedContentTypes.Intersect(modelWriter.ContentTypes).FirstOrDefault()
                               ?? "application/json";
 
+
+            var channel = _channels.GetOrBuildChannel(envelope.Destination);
             return new MessageRoute(
                        messageType,
                        modelWriter,
-                       envelope.Destination,
+                       channel,
                        contentType);
         }
 
@@ -87,7 +89,7 @@ namespace Jasper.Bus.Runtime.Routing
 
                 if (contentType.IsNotEmpty())
                 {
-                    list.Add(new MessageRoute(messageType, modelWriter, channel.Destination, contentType));
+                    list.Add(new MessageRoute(messageType, modelWriter, channel, contentType){});
                 }
             }
 
@@ -103,6 +105,7 @@ namespace Jasper.Bus.Runtime.Routing
                         out PublisherSubscriberMismatch mismatch))
                     {
                         route.Writer = modelWriter[route.ContentType];
+                        route.Channel = _channels.GetOrBuildChannel(route.Destination);
                         list.Add(route);
                     }
                     else
@@ -117,7 +120,7 @@ namespace Jasper.Bus.Runtime.Routing
             {
                 if (_handlers.HandlerFor(messageType) != null && _channels.DefaultChannel != null)
                 {
-                    list.Add(new MessageRoute(messageType, modelWriter, _channels.DefaultChannel.Uri, "application/json"));
+                    list.Add(new MessageRoute(messageType, modelWriter, _channels.DefaultChannel, "application/json"));
                 }
             }
 

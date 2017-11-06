@@ -31,12 +31,7 @@ namespace Jasper.Bus.Runtime
 
         public IBusLogger Logger { get;}
 
-        public Task<string> Send(Envelope envelope)
-        {
-            return Send(envelope, null);
-        }
-
-        public async Task<string> Send(Envelope envelope, IMessageCallback callback)
+        public async Task<string> Send(Envelope envelope)
         {
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
@@ -57,13 +52,13 @@ namespace Jasper.Bus.Runtime
 
                 foreach (var route in routes)
                 {
-                    await sendEnvelope(envelope, route, callback);
+                    await sendEnvelope(envelope, route);
                 }
             }
             else
             {
                 var route = await _router.RouteForDestination(envelope);
-                await sendEnvelope(envelope, route, callback);
+                await sendEnvelope(envelope, route);
             }
 
             return envelope.Id;
@@ -81,34 +76,14 @@ namespace Jasper.Bus.Runtime
             return Send(envelope);
         }
 
-        private async Task<Envelope> sendEnvelope(Envelope envelope, MessageRoute route, IMessageCallback callback)
+        private async Task<Envelope> sendEnvelope(Envelope envelope, MessageRoute route)
         {
             if (route == null) throw new ArgumentNullException(nameof(route));
 
-            var channel = _channels.GetOrBuildChannel(route.Destination);
+            var sending = await route.Send(envelope);
+            Logger.Sent(sending);
 
-            if (channel != null)
-            {
-                var sending = route.CloneForSending(envelope);
-                await sendToStaticChannel(callback, sending, channel);
-
-                Logger.Sent(sending);
-
-                return sending;
-            }
-            else
-            {
-                throw new InvalidOperationException($"Unrecognized transport scheme '{route.Destination.Scheme}'");
-            }
+            return sending;
         }
-
-        private static async Task sendToStaticChannel(IMessageCallback callback, Envelope sending, IChannel channel)
-        {
-            sending.Destination = channel.Destination;
-            sending.ReplyUri = channel.ReplyUri;
-
-            await channel.Send(sending).ConfigureAwait(false);
-        }
-
     }
 }
