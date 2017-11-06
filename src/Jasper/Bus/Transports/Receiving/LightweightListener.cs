@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Tcp;
@@ -19,7 +20,7 @@ namespace Jasper.Bus.Transports.Receiving
             _agent = agent;
         }
 
-        ReceivedStatus IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        async Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
             try
             {
@@ -28,7 +29,7 @@ namespace Jasper.Bus.Transports.Receiving
                     message.ReceivedAt = uri;
 
                     message.Callback = new LightweightCallback(_workerQueue);
-                    _workerQueue.Enqueue(message);
+                    await _workerQueue.Enqueue(message);
                 }
 
                 return ReceivedStatus.Successful;
@@ -40,19 +41,20 @@ namespace Jasper.Bus.Transports.Receiving
             }
         }
 
-        void IReceiverCallback.Acknowledged(Envelope[] messages)
+        Task IReceiverCallback.Acknowledged(Envelope[] messages)
         {
-            // Nothing
+            return Task.CompletedTask;
         }
 
-        void IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
         {
-            // Nothing
+            return Task.CompletedTask;
         }
 
-        void IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
         {
             _logger.LogException(new MessageFailureException(messages, exception));
+            return Task.CompletedTask;
         }
 
         public void Dispose()

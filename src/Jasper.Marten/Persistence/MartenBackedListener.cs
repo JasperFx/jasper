@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Receiving;
@@ -23,20 +24,20 @@ namespace Jasper.Marten
             _logger = logger;
         }
 
-        public ReceivedStatus Received(Uri uri, Envelope[] messages)
+        public async Task<ReceivedStatus> Received(Uri uri, Envelope[] messages)
         {
             try
             {
                 using (var session = _store.LightweightSession())
                 {
                     session.Store(messages);
-                    session.SaveChanges();
+                    await session.SaveChangesAsync();
                 }
 
                 foreach (var message in messages)
                 {
                     message.ReceivedAt = uri;
-                    _queues.Enqueue(message);
+                    await _queues.Enqueue(message);
                 }
 
                 return ReceivedStatus.Successful;
@@ -48,24 +49,24 @@ namespace Jasper.Marten
             }
         }
 
-        public void Acknowledged(Envelope[] messages)
+        public Task Acknowledged(Envelope[] messages)
         {
-            // nothing
+            return Task.CompletedTask;
         }
 
-        public void NotAcknowledged(Envelope[] messages)
+        public async Task NotAcknowledged(Envelope[] messages)
         {
-            // TODO -- this will get changed to async later
             using (var session = _store.LightweightSession())
             {
                 session.Delete(messages);
-                session.SaveChanges();
+                await session.SaveChangesAsync();
             }
         }
 
-        public void Failed(Exception exception, Envelope[] messages)
+        public Task Failed(Exception exception, Envelope[] messages)
         {
             _logger.LogException(new MessageFailureException(messages, exception));
+            return Task.CompletedTask;
         }
 
         public void Dispose()

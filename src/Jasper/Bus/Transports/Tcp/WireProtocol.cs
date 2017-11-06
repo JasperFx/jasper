@@ -102,7 +102,7 @@ namespace Jasper.Bus.Transports.Tcp
 
         private static async Task receive(Stream stream, IReceiverCallback callback, Envelope[] messages, Uri uri)
         {
-            var status = callback.Received(uri, messages);
+            var status = await callback.Received(uri, messages);
             switch (status)
             {
                 case ReceivedStatus.ProcessFailure:

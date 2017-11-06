@@ -96,7 +96,7 @@ namespace Jasper.Testing.Bus.Lightweight.Protocol
         public ReceivedStatus StatusToReturn;
         public bool ThrowErrorOnReceived;
 
-        ReceivedStatus IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
             if (ThrowErrorOnReceived)
             {
@@ -105,27 +105,30 @@ namespace Jasper.Testing.Bus.Lightweight.Protocol
 
             MessagesReceived = messages;
 
-            return StatusToReturn;
+            return Task.FromResult(StatusToReturn);
 
         }
 
         public Envelope[] MessagesReceived { get; set; }
 
-        void IReceiverCallback.Acknowledged(Envelope[] messages)
+        Task IReceiverCallback.Acknowledged(Envelope[] messages)
         {
             WasAcknowledged = true;
+            return Task.CompletedTask;
         }
 
         public bool? WasAcknowledged { get; set; }
 
-        void IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
         {
             WasAcknowledged = false;
+            return Task.CompletedTask;
         }
 
-        void IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
         {
             FailureException = exception;
+            return Task.CompletedTask;
         }
 
         public Exception FailureException { get; set; }
