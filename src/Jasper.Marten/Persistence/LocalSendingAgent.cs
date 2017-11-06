@@ -29,6 +29,9 @@ namespace Jasper.Marten
         public Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.Callback = new MartenCallback(envelope, _queues, _store);
+
+            // TODO -- filter on delayed jobs here!!!
+
             return _queues.Enqueue(envelope);
         }
 

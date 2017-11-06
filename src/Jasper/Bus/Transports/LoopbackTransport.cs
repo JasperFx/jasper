@@ -70,7 +70,17 @@ namespace Jasper.Bus.Transports
             envelope.ReceivedAt = Destination;
             envelope.Callback = new LightweightCallback(_queues);
 
-            return _queues.Enqueue(envelope);
+            if (envelope.IsDelayed(DateTime.UtcNow))
+            {
+                _queues.DelayedJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+                return Task.CompletedTask;
+            }
+            else
+            {
+                return _queues.Enqueue(envelope);
+            }
+
+
         }
 
         public Task StoreAndForward(Envelope envelope)

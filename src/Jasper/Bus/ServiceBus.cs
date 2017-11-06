@@ -108,6 +108,11 @@ namespace Jasper.Bus
             {
                 return Task.CompletedTask;
             }
+
+            public Task MoveToDelayedUntil(DateTime time, Envelope envelope)
+            {
+                return Task.CompletedTask;
+            }
         }
 
         public Task Enqueue<T>(T message)

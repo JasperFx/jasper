@@ -56,5 +56,9 @@ namespace Jasper.Bus.Transports.Stub
             return _channel.EnqueueOutgoing(envelope);
         }
 
+        public Task MoveToDelayedUntil(DateTime time, Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -30,7 +31,11 @@ namespace Jasper.Bus.Transports.WorkerQueues
             AddQueue(TransportConstants.Default, 5);
             AddQueue(TransportConstants.Replies, 5);
             AddQueue(TransportConstants.Retries, 5);
+
+            DelayedJobs = InMemoryDelayedJobProcessor.ForQueue(this);
         }
+
+        public IDelayedJobProcessor DelayedJobs { get; }
 
         public Task Enqueue(Envelope envelope)
         {

@@ -14,11 +14,10 @@ namespace Jasper.Bus.ErrorHandling
 
         public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
-            context.DelayedJobs.Enqueue(utcNow.Add(Delay), envelope);
-            envelope.Callback.MarkSuccessful();
-            return Task.CompletedTask;
+            return envelope.Callback.MoveToDelayedUntil(utcNow, envelope);
         }
 
         public TimeSpan Delay { get; }
     }
 }
+

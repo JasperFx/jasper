@@ -108,7 +108,7 @@ namespace Jasper.Testing.Bus.Compilation
         {
             var handler = HandlerFor<TMessage>();
             theEnvelope = new Envelope(message);
-            var context = new EnvelopeContext(null,theEnvelope, null, new InMemoryDelayedJobProcessor());
+            var context = new EnvelopeContext(null,theEnvelope, null);
 
             await handler.Handle(context);
 

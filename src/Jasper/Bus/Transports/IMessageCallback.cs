@@ -19,5 +19,7 @@ namespace Jasper.Bus.Transports
 
 
         Task Requeue(Envelope envelope);
+
+        Task MoveToDelayedUntil(DateTime time, Envelope envelope);
     }
 }

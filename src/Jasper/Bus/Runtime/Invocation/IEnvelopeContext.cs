@@ -20,7 +20,7 @@ namespace Jasper.Bus.Runtime.Invocation
         Task Retry(Envelope envelope);
 
         IBusLogger Logger { get; }
-        IDelayedJobProcessor DelayedJobs { get; }
+
         Task SendAcknowledgement(Envelope original);
     }
 }

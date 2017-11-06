@@ -49,7 +49,7 @@ namespace IntegrationTests.DelayedJobs
             // nothing
         }
 
-
+        public IDelayedJobProcessor DelayedJobs => theDelayedJobs;
 
 
         public Uri Uri { get; }

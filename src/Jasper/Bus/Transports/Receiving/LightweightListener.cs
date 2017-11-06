@@ -24,12 +24,22 @@ namespace Jasper.Bus.Transports.Receiving
         {
             try
             {
+                var now = DateTime.UtcNow;
+
                 foreach (var message in messages)
                 {
                     message.ReceivedAt = uri;
 
                     message.Callback = new LightweightCallback(_workerQueue);
-                    await _workerQueue.Enqueue(message);
+
+                    if (message.IsDelayed(now))
+                    {
+                        _workerQueue.DelayedJobs.Enqueue(message.ExecutionTime.Value, message);
+                    }
+                    else
+                    {
+                        await _workerQueue.Enqueue(message);
+                    }
                 }
 
                 return ReceivedStatus.Successful;

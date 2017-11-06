@@ -28,6 +28,7 @@ namespace Jasper.Marten
         {
             try
             {
+                // TODO -- need to filter on delayed messages here!
                 using (var session = _store.LightweightSession())
                 {
                     session.Store(messages);

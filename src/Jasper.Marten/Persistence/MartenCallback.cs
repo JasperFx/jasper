@@ -52,5 +52,10 @@ namespace Jasper.Marten
 
             await _queue.Enqueue(envelope);
         }
+
+        public Task MoveToDelayedUntil(DateTime time, Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

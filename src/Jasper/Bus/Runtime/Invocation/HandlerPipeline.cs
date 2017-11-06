@@ -24,18 +24,14 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly BusMessageSerializationGraph _serializer;
         private readonly HandlerGraph _graph;
         private readonly IReplyWatcher _replies;
-        private readonly IDelayedJobProcessor _delayedJobs;
-        private readonly IChannelGraph _channels;
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(IEnvelopeSender sender, BusMessageSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IDelayedJobProcessor delayedJobs, CompositeLogger logger, IChannelGraph channels, IEnumerable<IMissingHandler> missingHandlers)
+        public HandlerPipeline(IEnvelopeSender sender, BusMessageSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, CompositeLogger logger, IEnumerable<IMissingHandler> missingHandlers)
         {
             _sender = sender;
             _serializer = serializers;
             _graph = graph;
             _replies = replies;
-            _delayedJobs = delayedJobs;
-            _channels = channels;
             _missingHandlers = missingHandlers.ToArray();
 
             Logger = logger;
@@ -62,13 +58,9 @@ namespace Jasper.Bus.Runtime.Invocation
 
         private async Task invoke(Envelope envelope, DateTime now)
         {
-            using (var context = new EnvelopeContext(this, envelope, _sender, _delayedJobs))
+            using (var context = new EnvelopeContext(this, envelope, _sender))
             {
-                if (envelope.IsDelayed(now))
-                {
-                    await moveToDelayedMessageQueue(envelope, context);
-                }
-                else if (envelope.ResponseId.IsNotEmpty())
+                if (envelope.ResponseId.IsNotEmpty())
                 {
                     completeRequestWithRequestedResponse(envelope);
                 }
@@ -105,7 +97,7 @@ namespace Jasper.Bus.Runtime.Invocation
                 throw new ArgumentOutOfRangeException(nameof(envelope), $"No known handler for message type {envelope.Message.GetType().FullName}");
             }
 
-            using (var context = new EnvelopeContext(this, envelope, _sender, _delayedJobs))
+            using (var context = new EnvelopeContext(this, envelope, _sender))
             {
                 try
                 {
@@ -202,25 +194,5 @@ namespace Jasper.Bus.Runtime.Invocation
             }
         }
 
-        private async Task moveToDelayedMessageQueue(Envelope envelope, EnvelopeContext context)
-        {
-            try
-            {
-                envelope.Attempts++;
-                _delayedJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
-                await envelope.Callback.MarkSuccessful();
-            }
-            catch (Exception e)
-            {
-                if (envelope.Attempts >= 3)
-                {
-                    await envelope.Callback.MarkFailed(e);
-                    context.Logger.LogException(e, envelope.Id, "Failed to move delayed message to the delayed message queue");
-                }
-
-                var continuation = _graph.DetermineContinuation(envelope, e) ?? new MoveToErrorQueue(e);
-                await continuation.Execute(envelope, context, DateTime.UtcNow);
-            }
-        }
     }
 }
