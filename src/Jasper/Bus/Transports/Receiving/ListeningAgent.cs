@@ -10,6 +10,9 @@ using Jasper.Util;
 namespace Jasper.Bus.Transports.Receiving
 {
 
+    // This is only really used in the automated testing now
+    // to test out the wire protocol. Otherwise, this has been superceded
+    // by SocketListeningAgent
     public class ListeningAgent : IDisposable
     {
         public int Port { get; }

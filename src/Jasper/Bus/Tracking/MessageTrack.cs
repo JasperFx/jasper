@@ -9,7 +9,7 @@ namespace Jasper.Bus.Tracking
     {
         public static string ToKey(Envelope envelope, string activity)
         {
-            return $"{envelope.CorrelationId}/{envelope.Destination}/{activity}";
+            return $"{envelope.Id}/{envelope.Destination}/{activity}";
         }
 
         public string CorrelationId { get; }
@@ -19,7 +19,7 @@ namespace Jasper.Bus.Tracking
 
         public MessageTrack(Envelope envelope, string activity)
         {
-            CorrelationId = envelope.CorrelationId;
+            CorrelationId = envelope.Id;
             Activity = activity;
             MessageType = envelope.Message?.GetType();
 

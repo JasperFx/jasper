@@ -26,7 +26,7 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 await context.SendFailureAcknowledgement(envelope, "Sending cascading message failed: " + ex.Message);
 
-                context.Logger.LogException(ex, envelope.CorrelationId, ex.Message);
+                context.Logger.LogException(ex, envelope.Id, ex.Message);
                 context.Logger.MessageFailed(envelope, ex);
 
                 await envelope.Callback.MoveToErrors(new ErrorReport(envelope, ex));

@@ -65,10 +65,10 @@ namespace Jasper.Bus.Runtime
 
             if (MatchesResponse(message))
             {
-                child.ResponseId = CorrelationId;
+                child.ResponseId = Id;
                 child.Destination = ReplyUri;
                 child.AcceptedContentTypes = AcceptedContentTypes;
-                child.ResponseId = CorrelationId;
+                child.ResponseId = Id;
             }
 
             return child;
@@ -79,14 +79,14 @@ namespace Jasper.Bus.Runtime
             return new Envelope
             {
                 Message = message,
-                OriginalId = OriginalId ?? CorrelationId,
-                ParentId = CorrelationId
+                OriginalId = OriginalId ?? Id,
+                ParentId = Id
             };
         }
 
         public override string ToString()
         {
-            var text = $"Envelope #{CorrelationId}";
+            var text = $"Envelope #{Id}";
             if (Message != null)
             {
                 text += $" ({Message.GetType().Name})";
@@ -208,7 +208,7 @@ namespace Jasper.Bus.Runtime
         public string Accepts => AcceptedContentTypes?.FirstOrDefault();
 
 
-        public string CorrelationId { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public string ReplyRequested { get; set; }
 

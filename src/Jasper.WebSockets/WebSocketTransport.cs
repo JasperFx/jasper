@@ -24,7 +24,7 @@ namespace Jasper.WebSockets
         public static readonly Uri DefaultUri = "ws://default".ToUri();
         private readonly WebSocketCollection _sockets;
 
-        public WebSocketTransport(HandlerGraph handlers, ILightweightWorkerQueue workerQueue)
+        public WebSocketTransport(HandlerGraph handlers, IWorkerQueue workerQueue)
         {
             _handlers = handlers;
             _sockets = new WebSocketCollection(workerQueue);

@@ -25,8 +25,8 @@ namespace Jasper.Bus
 
             ForSingletonOf<ObjectPoolProvider>().Use<DefaultObjectPoolProvider>();
 
-            ForSingletonOf<ILightweightWorkerQueue>().Use<LightweightWorkerQueue>();
-            ForSingletonOf<IDurableWorkerQueue>().Use<DurableWorkerQueue>();
+            ForSingletonOf<IWorkerQueue>().Use<WorkerQueue>();
+
 
 
             For<IEnvelopeSender>().Use<EnvelopeSender>();
@@ -45,6 +45,7 @@ namespace Jasper.Bus
             ForSingletonOf<IMessageRouter>().Use<MessageRouter>();
 
             ForSingletonOf<UriAliasLookup>().Use<UriAliasLookup>();
+
 
             For<IPersistence>().Use<NulloPersistence>();
 

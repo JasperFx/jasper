@@ -9,7 +9,6 @@ using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.WorkerQueues;
 using Jasper.Util;
-using Listener = Jasper.Bus.Transports.Receiving.Listener;
 
 namespace Jasper.Bus.Transports.Tcp
 {
@@ -17,18 +16,15 @@ namespace Jasper.Bus.Transports.Tcp
     {
         private readonly IPersistence _persistence;
         private readonly CompositeLogger _logger;
-        private readonly ILightweightWorkerQueue _lightweightWorkerQueue;
-        private readonly IDurableWorkerQueue _durableWorkerQueue;
-        private readonly IList<Listener> _listeners = new List<Listener>();
+        private readonly IWorkerQueue _workerQueue;
+        private readonly IList<IListener> _listeners = new List<IListener>();
         private Uri _replyUri;
 
-        public TcpTransport(IPersistence persistence, CompositeLogger logger, ILightweightWorkerQueue lightweightWorkerQueue, IDurableWorkerQueue durableWorkerQueue)
+        public TcpTransport(IPersistence persistence, CompositeLogger logger, IWorkerQueue workerQueue)
         {
             _persistence = persistence;
             _logger = logger;
-            _lightweightWorkerQueue = lightweightWorkerQueue;
-            _durableWorkerQueue = durableWorkerQueue;
-
+            _workerQueue = workerQueue;
         }
 
 
@@ -43,7 +39,7 @@ namespace Jasper.Bus.Transports.Tcp
 
             if (uri.IsDurable())
             {
-                agent = new DurableSendingAgent(uri, _persistence, batchedSender, cancellation);
+                agent = _persistence.BuildSendingAgent(uri, batchedSender, cancellation);
             }
             else
             {
@@ -71,9 +67,10 @@ namespace Jasper.Bus.Transports.Tcp
 
             foreach (var uri in incoming)
             {
+                var agent = new SocketListeningAgent(uri.Port, settings.Cancellation);
                 var listener = uri.IsDurable()
-                    ? buildDurableListener(uri, settings)
-                    : buildLightweightListener(uri, settings);
+                    ? _persistence.BuildListener(agent, _workerQueue)
+                    : new LightweightListener( _workerQueue, _logger, agent);
 
                 _listeners.Add(listener);
 
@@ -86,18 +83,6 @@ namespace Jasper.Bus.Transports.Tcp
                 _replyUri = $"{Protocol}://{settings.MachineName}:{port}"
                     .ToUri();
             }
-        }
-
-        private Listener buildDurableListener(Uri uri, BusSettings settings)
-        {
-            var agent = new SocketListeningAgent(uri.Port, settings.Cancellation);
-            return new Listener(_persistence, _durableWorkerQueue, _logger, agent);
-        }
-
-        private Listener buildLightweightListener(Uri uri, BusSettings settings)
-        {
-            var agent = new SocketListeningAgent(uri.Port, settings.Cancellation);
-            return new Listener(new NulloPersistence(), _lightweightWorkerQueue, _logger, agent);
         }
 
         // TODO -- throw a more descriptive exception

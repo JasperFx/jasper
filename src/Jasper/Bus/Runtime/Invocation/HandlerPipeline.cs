@@ -56,7 +56,7 @@ namespace Jasper.Bus.Runtime.Invocation
                 // Gotta get the message out of here because it's something that
                 // could never be handled
                 await envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
-                Logger.LogException(e, envelope.CorrelationId);
+                Logger.LogException(e, envelope.Id);
             }
         }
 
@@ -162,7 +162,7 @@ namespace Jasper.Bus.Runtime.Invocation
             }
             catch (Exception e)
             {
-                Logger.LogException(e, context.Envelope.CorrelationId, "Failure during message processing execution");
+                Logger.LogException(e, context.Envelope.Id, "Failure during message processing execution");
                 return context.DetermineContinuation(e, handler.Chain, _graph);
             }
         }
@@ -198,7 +198,7 @@ namespace Jasper.Bus.Runtime.Invocation
             }
             catch (Exception e)
             {
-                Logger.LogException(e, envelope.CorrelationId, "Failure during reply handling.");
+                Logger.LogException(e, envelope.Id, "Failure during reply handling.");
             }
         }
 
@@ -215,7 +215,7 @@ namespace Jasper.Bus.Runtime.Invocation
                 if (envelope.Attempts >= 3)
                 {
                     await envelope.Callback.MarkFailed(e);
-                    context.Logger.LogException(e, envelope.CorrelationId, "Failed to move delayed message to the delayed message queue");
+                    context.Logger.LogException(e, envelope.Id, "Failed to move delayed message to the delayed message queue");
                 }
 
                 var continuation = _graph.DetermineContinuation(envelope, e) ?? new MoveToErrorQueue(e);

@@ -26,7 +26,7 @@ namespace Jasper.Bus.Delayed
 
         public void Enqueue(DateTime executionTime, Envelope envelope)
         {
-            _outstandingJobs[envelope.CorrelationId] = new InMemoryDelayedJob(this, envelope, executionTime);
+            _outstandingJobs[envelope.Id] = new InMemoryDelayedJob(this, envelope, executionTime);
         }
 
         public void Start(IHandlerPipeline pipeline, IChannelGraph channels)
@@ -109,14 +109,14 @@ namespace Jasper.Bus.Delayed
             public void Cancel()
             {
                 _cancellation.Cancel();
-                _parent._outstandingJobs.Remove(Envelope.CorrelationId);
+                _parent._outstandingJobs.Remove(Envelope.Id);
             }
 
             public Envelope Envelope { get; }
 
             public DelayedJob ToReport()
             {
-                return new DelayedJob(Envelope.CorrelationId)
+                return new DelayedJob(Envelope.Id)
                 {
                     ExecutionTime = ExecutionTime, From = Envelope.ReceivedAt.ToString(), ReceivedAt = ReceivedAt, MessageType = Envelope.MessageType
                 };

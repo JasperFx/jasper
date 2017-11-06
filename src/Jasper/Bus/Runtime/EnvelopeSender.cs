@@ -66,7 +66,7 @@ namespace Jasper.Bus.Runtime
                 await sendEnvelope(envelope, route, callback);
             }
 
-            return envelope.CorrelationId;
+            return envelope.Id;
         }
 
         public Task EnqueueLocally(object message)

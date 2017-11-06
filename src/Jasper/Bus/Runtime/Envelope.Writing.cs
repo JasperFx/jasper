@@ -136,7 +136,7 @@ namespace Jasper.Bus.Runtime
                 writer.WriteProp(ref count, AcceptedContentTypesKey, AcceptedContentTypes.Join(","));
             }
 
-            writer.WriteProp(ref count, IdKey, CorrelationId);
+            writer.WriteProp(ref count, IdKey, Id);
             writer.WriteProp(ref count, ReplyRequestedKey, ReplyRequested);
             writer.WriteProp(ref count, AckRequestedKey, AckRequested);
 

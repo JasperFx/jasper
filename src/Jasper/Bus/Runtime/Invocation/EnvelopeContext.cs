@@ -76,10 +76,10 @@ namespace Jasper.Bus.Runtime.Invocation
         {
             var envelope = new Envelope
             {
-                ParentId = original.CorrelationId,
+                ParentId = original.Id,
                 Destination = original.ReplyUri,
-                ResponseId = original.CorrelationId,
-                Message = new Acknowledgement {CorrelationId = original.CorrelationId}
+                ResponseId = original.Id,
+                Message = new Acknowledgement {CorrelationId = original.Id}
             };
 
             return Send(envelope);
@@ -106,12 +106,12 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 var envelope = new Envelope
                 {
-                    ParentId = original.CorrelationId,
+                    ParentId = original.Id,
                     Destination = original.ReplyUri,
-                    ResponseId = original.CorrelationId,
+                    ResponseId = original.Id,
                     Message = new FailureAcknowledgement()
                     {
-                        CorrelationId = original.CorrelationId,
+                        CorrelationId = original.Id,
                         Message = message
                     },
                     Callback = original.Callback
@@ -149,7 +149,7 @@ namespace Jasper.Bus.Runtime.Invocation
             catch (Exception e)
             {
                 Logger.Undeliverable(envelope);
-                Logger.LogException(e, envelope.CorrelationId, "Failure while trying to send a cascading message");
+                Logger.LogException(e, envelope.Id, "Failure while trying to send a cascading message");
             }
 
             return Task.CompletedTask;

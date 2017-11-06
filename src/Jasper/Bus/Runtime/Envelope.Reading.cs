@@ -53,7 +53,7 @@ namespace Jasper.Bus.Runtime
                         break;
 
                     case IdKey:
-                        CorrelationId = value;
+                        Id = value;
                         break;
 
                     case ReplyRequestedKey:

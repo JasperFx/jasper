@@ -12,14 +12,11 @@ namespace Jasper.Bus.Transports
 {
     public class LoopbackTransport : ITransport
     {
-
-        private readonly ILightweightWorkerQueue _lightweightWorkerQueue;
-        private readonly IDurableWorkerQueue _workerQueue;
         private readonly IPersistence _persistence;
+        private readonly IWorkerQueue _workerQueue;
 
-        public LoopbackTransport(ILightweightWorkerQueue lightweightWorkerQueue, IDurableWorkerQueue workerQueue, IPersistence persistence)
+        public LoopbackTransport(IWorkerQueue workerQueue, IPersistence persistence)
         {
-            _lightweightWorkerQueue = lightweightWorkerQueue;
             _workerQueue = workerQueue;
             _persistence = persistence;
         }
@@ -34,8 +31,8 @@ namespace Jasper.Bus.Transports
         public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
         {
             return uri.IsDurable()
-                ? (ISendingAgent) new DurableSendingAgent(uri, this)
-                : new LoopbackSendingAgent(uri, this);
+                ? _persistence.BuildLocalAgent(uri, _workerQueue)
+                : new LoopbackSendingAgent(uri, _workerQueue);
         }
 
         public Uri DefaultReplyUri()
@@ -48,79 +45,42 @@ namespace Jasper.Bus.Transports
             // Nothing really, since it's just a handoff to the internal worker queues
         }
 
-        private class LoopbackSendingAgent : ISendingAgent
+    }
+
+    public class LoopbackSendingAgent : ISendingAgent
+    {
+        private readonly IWorkerQueue _queues;
+        public Uri Destination { get; }
+        public Uri DefaultReplyUri { get; set; }
+
+        public LoopbackSendingAgent(Uri destination, IWorkerQueue queues)
         {
-            private readonly LoopbackTransport _parent;
-            public Uri Destination { get; }
-            public Uri DefaultReplyUri { get; set; }
-
-            public LoopbackSendingAgent(Uri destination, LoopbackTransport parent)
-            {
-                _parent = parent;
-                Destination = destination;
-            }
-
-            public void Dispose()
-            {
-                // Nothing
-            }
-
-            public Task EnqueueOutgoing(Envelope envelope)
-            {
-                envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
-                envelope.ReceivedAt = Destination;
-                return _parent._lightweightWorkerQueue.Enqueue(envelope);
-            }
-
-            public Task StoreAndForward(Envelope envelope)
-            {
-                return EnqueueOutgoing(envelope);
-            }
-
-            public void Start()
-            {
-                // nothing
-            }
+            _queues = queues;
+            Destination = destination;
         }
 
-        private class DurableSendingAgent : ISendingAgent
+        public void Dispose()
         {
-            private readonly LoopbackTransport _parent;
-            public Uri Destination { get; }
+            // Nothing
+        }
 
-            public DurableSendingAgent(Uri destination, LoopbackTransport parent)
-            {
-                _parent = parent;
-                Destination = destination;
-            }
+        public Task EnqueueOutgoing(Envelope envelope)
+        {
+            envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
+            envelope.ReceivedAt = Destination;
+            envelope.Callback = new LightweightCallback(_queues);
 
-            public void Dispose()
-            {
-                // nothing
-            }
+            return _queues.Enqueue(envelope);
+        }
 
-            public Uri DefaultReplyUri { get; set; }
+        public Task StoreAndForward(Envelope envelope)
+        {
+            return EnqueueOutgoing(envelope);
+        }
 
-            public Task EnqueueOutgoing(Envelope envelope)
-            {
-                envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
-
-                return _parent._workerQueue.Enqueue(envelope);
-            }
-
-            public Task StoreAndForward(Envelope envelope)
-            {
-                // TODO -- go async, and get an overload w/ a single envelope
-                // please.
-                _parent._persistence.StoreInitial(new Envelope[]{envelope});
-
-                return EnqueueOutgoing(envelope);
-            }
-
-            public void Start()
-            {
-                // nothing
-            }
+        public void Start()
+        {
+            // nothing
         }
     }
 }

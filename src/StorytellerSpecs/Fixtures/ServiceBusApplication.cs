@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Linq;
-using Baseline.Dates;
 using Jasper;
-using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
-using Jasper.Bus.Runtime;
 using Jasper.Bus.Tracking;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Stub;
-using Jasper.LightningDb;
-using Jasper.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 
@@ -34,10 +28,6 @@ namespace StorytellerSpecs.Fixtures
 
             _registry.Services.AddTransient<IBusLogger, MessageTrackingLogger>();
 
-            _registry.Services.For<LightningDbSettings>().Use(new LightningDbSettings
-            {
-                MaxDatabases = 20
-            });
 
             _registry.Logging.LogBusEventsWith(new StorytellerBusLogger(Context));
         }
@@ -80,6 +70,5 @@ namespace StorytellerSpecs.Fixtures
         {
             _registry.Transports.ListenForMessagesFrom(channel);
         }
-
     }
 }

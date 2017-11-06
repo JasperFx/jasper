@@ -6,9 +6,9 @@ namespace Jasper.Bus.Transports.WorkerQueues
 {
     public class LightweightCallback : IMessageCallback
     {
-        private readonly WorkerQueue _queue;
+        private readonly IWorkerQueue _queue;
 
-        public LightweightCallback(WorkerQueue queue)
+        public LightweightCallback(IWorkerQueue queue)
         {
             _queue = queue;
         }

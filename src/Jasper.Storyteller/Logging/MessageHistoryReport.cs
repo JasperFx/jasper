@@ -93,7 +93,7 @@ namespace Jasper.Storyteller.Logging
 
         public MessageHistoryReport(EnvelopeRecord[] records)
         {
-            _envelopes = records.GroupBy(x => x.Envelope.CorrelationId)
+            _envelopes = records.GroupBy(x => x.Envelope.Id)
                 .Select(x => new EnvelopeHistory(x.Key, x))
                 .ToArray();
         }

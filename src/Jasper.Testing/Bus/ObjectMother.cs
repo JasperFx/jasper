@@ -15,7 +15,7 @@ namespace Jasper.Testing.Bus
                 Data = new byte[] {1, 2, 3, 4},
                 Callback = Substitute.For<IMessageCallback>(),
                 MessageType = "Something",
-                CorrelationId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString()
             };
         }
     }

@@ -41,9 +41,9 @@ namespace IntegrationTests.DelayedJobs
         public Task Send(Envelope envelope)
         {
             sent.Add(envelope);
-            if (_callbacks.ContainsKey(envelope.CorrelationId))
+            if (_callbacks.ContainsKey(envelope.Id))
             {
-                _callbacks[envelope.CorrelationId].SetResult(envelope);
+                _callbacks[envelope.Id].SetResult(envelope);
             }
 
             return Task.CompletedTask;
@@ -57,7 +57,7 @@ namespace IntegrationTests.DelayedJobs
         private Task<Envelope> waitForReceipt(Envelope envelope)
         {
             var source = new TaskCompletionSource<Envelope>();
-            _callbacks.Add(envelope.CorrelationId, source);
+            _callbacks.Add(envelope.Id, source);
 
             return source.Task;
         }

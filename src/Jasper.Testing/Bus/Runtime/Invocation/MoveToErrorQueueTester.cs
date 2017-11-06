@@ -35,7 +35,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         {
             await theContinuation.Execute(theEnvelope, theContext, DateTime.UtcNow);
 
-            await theContext.Received().SendFailureAcknowledgement(theEnvelope, $"Moved message {theEnvelope.CorrelationId} to the Error Queue.\n{theException}");
+            await theContext.Received().SendFailureAcknowledgement(theEnvelope, $"Moved message {theEnvelope.Id} to the Error Queue.\n{theException}");
         }
     }
 }

@@ -13,13 +13,13 @@ namespace Jasper.Testing.Bus.Runtime
         [Fact]
         public void has_a_correlation_id_by_default()
         {
-            new Envelope().CorrelationId.ShouldNotBeNull();
+            new Envelope().Id.ShouldNotBeNull();
 
-            new Envelope().CorrelationId.ShouldNotBe(new Envelope().CorrelationId);
-            new Envelope().CorrelationId.ShouldNotBe(new Envelope().CorrelationId);
-            new Envelope().CorrelationId.ShouldNotBe(new Envelope().CorrelationId);
-            new Envelope().CorrelationId.ShouldNotBe(new Envelope().CorrelationId);
-            new Envelope().CorrelationId.ShouldNotBe(new Envelope().CorrelationId);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
         }
 
 
@@ -28,7 +28,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                CorrelationId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString()
             };
 
             parent.OriginalId.ShouldBeNull();
@@ -40,7 +40,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                CorrelationId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString()
             };
 
             var childMessage = new Message1();
@@ -49,8 +49,8 @@ namespace Jasper.Testing.Bus.Runtime
 
             child.Message.ShouldBeTheSameAs(childMessage);
 
-            child.OriginalId.ShouldBe(parent.CorrelationId);
-            child.ParentId.ShouldBe(parent.CorrelationId);
+            child.OriginalId.ShouldBe(parent.Id);
+            child.ParentId.ShouldBe(parent.Id);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                CorrelationId = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(),
                 OriginalId = Guid.NewGuid().ToString()
             };
 
@@ -69,7 +69,7 @@ namespace Jasper.Testing.Bus.Runtime
             child.Message.ShouldBeTheSameAs(childMessage);
 
             child.OriginalId.ShouldBe(parent.OriginalId);
-            child.ParentId.ShouldBe(parent.CorrelationId);
+            child.ParentId.ShouldBe(parent.Id);
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                CorrelationId = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(),
                 OriginalId = Guid.NewGuid().ToString(),
                 ReplyUri = "foo://bar".ToUri(),
                 ReplyRequested = typeof(Message1).ToMessageAlias()
@@ -87,7 +87,7 @@ namespace Jasper.Testing.Bus.Runtime
 
             var child = parent.ForResponse(childMessage);
 
-            child.ResponseId.ShouldBe(parent.CorrelationId);
+            child.ResponseId.ShouldBe(parent.Id);
             child.Destination.ShouldBe(parent.ReplyUri);
         }
 
@@ -97,7 +97,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                CorrelationId = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(),
                 OriginalId = Guid.NewGuid().ToString(),
                 ReplyUri = "foo://bar".ToUri(),
                 ReplyRequested = typeof(Message2).Name
@@ -116,7 +116,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                CorrelationId = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(),
                 OriginalId = Guid.NewGuid().ToString(),
                 Source = "foo://bar"
             };

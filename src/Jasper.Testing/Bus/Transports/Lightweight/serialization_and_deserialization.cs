@@ -59,7 +59,7 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
         [Fact]
         public void brings_over_the_correlation_id()
         {
-            incoming.CorrelationId.ShouldBe(outgoing.CorrelationId);
+            incoming.Id.ShouldBe(outgoing.Id);
         }
 
         [Fact]

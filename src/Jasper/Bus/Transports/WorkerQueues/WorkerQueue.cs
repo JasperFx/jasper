@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using Jasper.Internals.Util;
 
 namespace Jasper.Bus.Transports.WorkerQueues
 {
-    public abstract class WorkerQueue : IWorkerQueue
+    public class WorkerQueue : IWorkerQueue
     {
         private readonly CompositeLogger _logger;
         private readonly IHandlerPipeline _pipeline;
@@ -33,6 +34,8 @@ namespace Jasper.Bus.Transports.WorkerQueues
 
         public Task Enqueue(Envelope envelope)
         {
+            if (envelope.Callback == null) throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Callback must be set before enqueuing the envelope");
+
             var receiver = determineReceiver(envelope);
 
             receiver.Post(envelope);
@@ -77,8 +80,6 @@ namespace Jasper.Bus.Transports.WorkerQueues
             {
                 var receiver = new ActionBlock<Envelope>(envelope =>
                 {
-                    var callback = buildCallback(envelope, queueName);
-                    envelope.Callback = callback;
                     envelope.ContentType = envelope.ContentType ?? "application/json";
 
                     return _pipeline.Invoke(envelope);
@@ -88,6 +89,5 @@ namespace Jasper.Bus.Transports.WorkerQueues
             }
         }
 
-        protected abstract IMessageCallback buildCallback(Envelope envelope, string queueName);
     }
 }

@@ -77,7 +77,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
 
             MockFor<IBusLogger>()
                 .Received()
-                .LogException(ex, envelope.CorrelationId, "Failure while trying to send a cascading message");
+                .LogException(ex, envelope.Id, "Failure while trying to send a cascading message");
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             {
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = true,
-                CorrelationId = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid().ToString(),
             };
 
             ClassUnderTest.SendOutgoingMessages(original, new object[0]);
@@ -126,10 +126,10 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
 
             ShouldBeNullExtensions.ShouldNotBeNull(envelope);
 
-            envelope.ResponseId.ShouldBe(original.CorrelationId);
+            envelope.ResponseId.ShouldBe(original.Id);
             envelope.Destination.ShouldBe(original.ReplyUri);
-            envelope.Message.ShouldBe(new Acknowledgement {CorrelationId = original.CorrelationId});
-            envelope.ParentId.ShouldBe(original.CorrelationId);
+            envelope.Message.ShouldBe(new Acknowledgement {CorrelationId = original.Id});
+            envelope.ParentId.ShouldBe(original.Id);
         }
 
         [Fact]
@@ -139,7 +139,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             {
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = false,
-                CorrelationId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString()
             };
 
             ClassUnderTest.SendOutgoingMessages(original, new object[0]);
@@ -156,7 +156,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = false,
                 ReplyRequested = null,
-                CorrelationId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString()
             };
 
             var recordingSender = new RecordingEnvelopeSender();
@@ -180,7 +180,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             {
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = true,
-                CorrelationId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString()
             };
 
             var recordingSender = new RecordingEnvelopeSender();
@@ -206,13 +206,13 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         [Fact]
         public void should_have_The_parent_id_set_to_the_original_id_for_tracking()
         {
-            theSentEnvelope.ParentId.ShouldBe(original.CorrelationId);
+            theSentEnvelope.ParentId.ShouldBe(original.Id);
         }
 
         [Fact]
         public void should_have_The_correlation_id_from_the_original_envelope()
         {
-            theAck.CorrelationId.ShouldBe(original.CorrelationId);
+            theAck.CorrelationId.ShouldBe(original.Id);
         }
 
         [Fact]
@@ -224,7 +224,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         [Fact]
         public void the_response_id_going_back_should_be_the_original_correlation_id()
         {
-            theSentEnvelope.ResponseId.ShouldBe(original.CorrelationId);
+            theSentEnvelope.ResponseId.ShouldBe(original.Id);
         }
     }
 
@@ -243,7 +243,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = false,
                 ReplyRequested = "Message1",
-                CorrelationId = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString()
             };
 
             var recordingSender = new RecordingEnvelopeSender();
@@ -271,7 +271,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         [Fact]
         public void should_have_The_correlation_id_from_the_original_envelope()
         {
-            theAck.CorrelationId.ShouldBe(original.CorrelationId);
+            theAck.CorrelationId.ShouldBe(original.Id);
         }
 
         [Fact]
@@ -283,7 +283,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         [Fact]
         public void the_response_id_going_back_should_be_the_original_correlation_id()
         {
-            theSentEnvelope.ResponseId.ShouldBe(original.CorrelationId);
+            theSentEnvelope.ResponseId.ShouldBe(original.Id);
         }
     }
 
@@ -298,7 +298,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         {
             Sent.Add(envelope);
 
-            return Task.FromResult(envelope.CorrelationId);
+            return Task.FromResult(envelope.Id);
         }
 
         public void SendOutgoingMessages(Envelope original, IEnumerable<object> cascadingMessages)
@@ -314,7 +314,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         public Task<string> Send(Envelope envelope, IMessageCallback callback)
         {
             Sent.Add(envelope);
-            return Task.FromResult(envelope.CorrelationId);
+            return Task.FromResult(envelope.Id);
         }
 
         public Task EnqueueLocally(object message)

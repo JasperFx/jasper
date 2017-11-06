@@ -9,7 +9,7 @@ namespace Jasper.Diagnostics.Messages
         public EnvelopeModel(Envelope envelope, Exception exception = null)
         {
             Headers = envelope.Headers;
-            CorrelationId = envelope.CorrelationId;
+            CorrelationId = envelope.Id;
             ParentId = envelope.ParentId;
             Description = envelope.ToString();
             Source = envelope.Source;

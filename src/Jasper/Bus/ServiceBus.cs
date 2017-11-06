@@ -38,7 +38,7 @@ namespace Jasper.Bus
             }
 
 
-            var watcher = _watcher.StartWatch<TResponse>(envelope.CorrelationId, options.Timeout);
+            var watcher = _watcher.StartWatch<TResponse>(envelope.Id, options.Timeout);
 
             await _sender.Send(envelope);
 
@@ -148,7 +148,7 @@ namespace Jasper.Bus
                 Destination = destination
             };
 
-            var task = _watcher.StartWatch<Acknowledgement>(envelope.CorrelationId, 10.Minutes());
+            var task = _watcher.StartWatch<Acknowledgement>(envelope.Id, 10.Minutes());
 
 
             await _sender.Send(envelope);
