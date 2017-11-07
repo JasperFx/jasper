@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
@@ -14,13 +15,15 @@ namespace Jasper.Marten
         private readonly IDocumentStore _store;
         private readonly ISender _sender;
         private readonly CancellationToken _cancellation;
+        private readonly CompositeLogger _logger;
 
-        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation)
+        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, CompositeLogger logger)
         {
             Destination = destination;
             _store = store;
             _sender = sender;
             _cancellation = cancellation;
+            _logger = logger;
         }
 
         public Uri DefaultReplyUri { get; set; }
@@ -93,6 +96,8 @@ namespace Jasper.Marten
 
         void ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
         {
+            _logger.LogException(exception, message:$"Failed while trying to send messages with {nameof(MartenBackedSendingAgent)}");
+
             processRetry(outgoing);
         }
     }

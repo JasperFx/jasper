@@ -24,7 +24,7 @@ namespace Jasper.Marten
 
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
         {
-            return new MartenBackedSendingAgent(destination, _store, sender, cancellation);
+            return new MartenBackedSendingAgent(destination, _store, sender, cancellation, _logger);
         }
 
         public ISendingAgent BuildLocalAgent(Uri destination, IWorkerQueue queues)
