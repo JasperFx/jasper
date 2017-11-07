@@ -1,4 +1,5 @@
 ﻿using Jasper.Bus.Runtime;
+using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Lightweight;
 using Marten;
 

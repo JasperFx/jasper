@@ -87,16 +87,6 @@ namespace Jasper.Testing.Bus.Lightweight
         }
 
         [Fact]
-        public async Task delayed_processor_mechanics()
-        {
-            await theSender.Get<IServiceBus>().Send(theAddress, new TimeoutsMessage());
-
-            var envelope = await delayedJobs.Envelope();
-
-            envelope.Message.ShouldBeOfType<TimeoutsMessage>();
-        }
-
-        [Fact]
         public async Task tags_the_envelope_with_the_source()
         {
             var waiter = theTracker.WaitFor<Message2>();

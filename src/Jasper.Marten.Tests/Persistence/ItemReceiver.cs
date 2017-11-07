@@ -1,5 +1,6 @@
 ﻿using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Testing.Bus;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +17,7 @@ namespace Jasper.Marten.Tests.Persistence
                 _.Connection(ConnectionSource.ConnectionString);
             });
 
-            Services.AddSingleton<Testing.Bus.Lightweight.MessageTracker>();
+            Services.AddSingleton<MessageTracker>();
 
             Transports.DurableListenerAt(2345);
         }

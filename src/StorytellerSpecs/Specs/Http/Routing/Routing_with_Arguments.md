@@ -1,29 +1,31 @@
 # Routing with Arguments
 
 -> id = eab1ea55-df13-488f-8e16-1490e3abb7f4
--> lifecycle = Regression
+-> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2015-11-30T00:00:00.0000000
+-> last-updated = 2017-11-07T13:22:52.5839760Z
 -> tags = 
 
 [Routing]
 |> RoutesAre
     [table]
-    |> RoutesAre-row Route=EMPTY
-    |> RoutesAre-row Route=colors
-    |> RoutesAre-row Route=colors/:color
-    |> RoutesAre-row Route=colors/all
-    |> RoutesAre-row Route=query/:from/to/:to
-    |> RoutesAre-row Route=:planet
+    |Route             |
+    |EMPTY             |
+    |colors            |
+    |colors/:color     |
+    |colors/all        |
+    |query/:from/to/:to|
+    |:planet           |
 
 |> TheSelectionShouldBe
     [table]
-    |> TheSelectionShouldBe-row Url=EMPTY, Selected=EMPTY, Arguments=NONE
-    |> TheSelectionShouldBe-row Url=colors, Selected=colors, Arguments=NONE
-    |> TheSelectionShouldBe-row Url=colors/all, Selected=colors/all, Arguments=NONE
-    |> TheSelectionShouldBe-row Url=colors/red, Selected=colors/:color, Arguments=color: red
-    |> TheSelectionShouldBe-row Url=colors/green, Selected=colors/:color, Arguments=color: green
-    |> TheSelectionShouldBe-row Url=query/1/to/5, Selected=query/:from/to/:to, Arguments=from: 1; to: 5
-    |> TheSelectionShouldBe-row Url=query/5/to/10, Selected=query/:from/to/:to, Arguments=from: 5; to: 10
+    |Url          |Selected          |Arguments      |
+    |EMPTY        |EMPTY             |NONE           |
+    |colors       |colors            |NONE           |
+    |colors/all   |colors/all        |NONE           |
+    |colors/red   |colors/:color     |color: red     |
+    |colors/green |colors/:color     |color: green   |
+    |query/1/to/5 |query/:from/to/:to|from: 1; to: 5 |
+    |query/5/to/10|query/:from/to/:to|from: 5; to: 10|
 
 ~~~

@@ -1,22 +1,23 @@
 # Leaf Creation and Parsing
 
 -> id = 66819200-37b6-426a-8523-ba59fa9578ff
--> lifecycle = Regression
+-> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2015-12-01T00:00:00.0000000
+-> last-updated = 2017-11-07T13:22:52.5684390Z
 -> tags = 
 
 [Leaf]
 |> CreateLeaf
     [table]
-    |> CreateLeaf-row Route=a/b/c, NodePath=a/b, HasSpread=false, Parameters=NONE
-    |> CreateLeaf-row Route=a/b/:c, NodePath=a/b, HasSpread=false, Parameters=c:2
-    |> CreateLeaf-row Route=a/b/{c}, NodePath=a/b, HasSpread=false, Parameters=c:2
-    |> CreateLeaf-row Route=a/:b/c/:d, NodePath=a/*/c, HasSpread=false, Parameters=b:1; d:3
-    |> CreateLeaf-row Route=a/{b}/c/{d}, NodePath=a/*/c, HasSpread=false, Parameters=b:1; d:3
-    |> CreateLeaf-row Route=..., NodePath=EMPTY, HasSpread=True, Parameters=spread:0
-    |> CreateLeaf-row Route=a/..., NodePath=a, HasSpread=True, Parameters=spread:1
-    |> CreateLeaf-row Route=a/:b/..., NodePath=a, HasSpread=True, Parameters=b:1; spread:2
-    |> CreateLeaf-row Route=a/b/..., NodePath=a/b, HasSpread=True, Parameters=spread:2
+    |Route      |NodePath|HasSpread|Parameters   |
+    |a/b/c      |a/b     |false    |NONE         |
+    |a/b/:c     |a/b     |false    |c:2          |
+    |a/b/{c}    |a/b     |false    |c:2          |
+    |a/:b/c/:d  |a/*/c   |false    |b:1; d:3     |
+    |a/{b}/c/{d}|a/*/c   |false    |b:1; d:3     |
+    |...        |EMPTY   |True     |spread:0     |
+    |a/...      |a       |True     |spread:1     |
+    |a/:b/...   |a       |True     |b:1; spread:2|
+    |a/b/...    |a/b     |True     |spread:2     |
 
 ~~~

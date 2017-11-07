@@ -29,7 +29,6 @@ namespace Jasper.Testing.Bus.ErrorHandling
 
             envelope.Callback.Received().MoveToDelayedUntil(now.AddMinutes(5), envelope);
 
-            await envelope.Callback.Received().MarkSuccessful();
         }
     }
 }

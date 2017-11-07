@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus;
@@ -10,7 +11,8 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Core;
+using Jasper.Bus.Transports.Sending;
+using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.Transports.Util;
 using Microsoft.AspNetCore.Http;
 
@@ -26,19 +28,14 @@ namespace Jasper.Http.Transport
 
         }
 
+
         public void Dispose()
         {
             throw new NotImplementedException();
         }
 
-        // TODO -- what if it really needs to be 'https'?
-        public string Protocol { get; } = "http";
-        public Task Send(Envelope envelope, Uri destination)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IChannel[] Start(IHandlerPipeline pipeline, BusSettings settings, OutgoingChannels channels)
+        public string Protocol { get; }
+        public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
         {
             throw new NotImplementedException();
         }
@@ -48,9 +45,7 @@ namespace Jasper.Http.Transport
             throw new NotImplementedException();
         }
 
-        public TransportState State => _settings.State;
-
-        public void Describe(TextWriter writer)
+        public void StartListening(BusSettings settings)
         {
             throw new NotImplementedException();
         }

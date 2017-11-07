@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus.Runtime;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Lightweight;
 using Marten;
 using Shouldly;
