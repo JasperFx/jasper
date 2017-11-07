@@ -56,5 +56,17 @@ namespace Jasper.Testing.Bus
 
         }
 
+        [Fact]
+        public void enable_and_disable_transport()
+        {
+            theSettings.StateFor("tcp").ShouldBe(TransportState.Enabled);
+
+            theSettings.DisableTransport("tcp");
+            theSettings.StateFor("tcp").ShouldBe(TransportState.Disabled);
+
+            theSettings.EnableTransport("tcp");
+            theSettings.StateFor("tcp").ShouldBe(TransportState.Enabled);
+        }
+
     }
 }

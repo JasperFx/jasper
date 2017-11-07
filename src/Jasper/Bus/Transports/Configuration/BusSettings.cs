@@ -154,9 +154,23 @@ namespace Jasper.Bus.Transports.Configuration
             }
         }
 
+        private readonly IList<string> _disabledTransports = new List<string>();
+
         public TransportState StateFor(string protocol)
         {
-            return TransportState.Enabled;
+            return _disabledTransports.Contains(protocol.ToLower())
+                ? TransportState.Disabled
+                : TransportState.Enabled;
+        }
+
+        public void DisableTransport(string protocol)
+        {
+            _disabledTransports.Fill(protocol.ToLower());
+        }
+
+        public void EnableTransport(string protocol)
+        {
+            _disabledTransports.RemoveAll(x => x == protocol.ToLower());
         }
 
 
