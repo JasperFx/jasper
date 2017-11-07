@@ -10,6 +10,9 @@ namespace Jasper.Marten.Tests.Persistence
     {
         public ItemReceiver()
         {
+            Processing.Worker("items").IsDurable()
+                .HandlesMessage<ItemCreated>();
+
             Include<MartenBackedPersistence>();
 
             Settings.Alter<StoreOptions>(_ =>

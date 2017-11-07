@@ -5,6 +5,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
 using Jasper.Util;
 
@@ -16,13 +17,17 @@ namespace Jasper.Bus
         private readonly IReplyWatcher _watcher;
         private readonly IHandlerPipeline _pipeline;
         private readonly SerializationGraph _serialization;
+        private readonly BusSettings _settings;
+        private readonly IChannelGraph _channels;
 
-        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization)
+        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization, BusSettings settings, IChannelGraph channels)
         {
             _sender = sender;
             _watcher = watcher;
             _pipeline = pipeline;
             _serialization = serialization;
+            _settings = settings;
+            _channels = channels;
         }
 
         public async Task<TResponse> Request<TResponse>(object request, RequestOptions options = null)
@@ -116,7 +121,12 @@ namespace Jasper.Bus
 
         public Task Enqueue<T>(T message)
         {
-            return _sender.EnqueueLocally(message);
+            var isDurable = _settings.Workers.ShouldBeDurable(typeof(T));
+            var uri = isDurable ? $"loopback://durable".ToUri() : $"loopback://".ToUri();
+
+            var channel = _channels.GetOrBuildChannel(uri);
+
+            return channel.Send(new Envelope(message));
         }
 
         public Task DelaySend<T>(T message, DateTime time)

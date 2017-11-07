@@ -38,6 +38,40 @@ namespace Jasper.Marten.Tests.Persistence
         }
 
         [Fact]
+        public async Task enqueue_locally()
+        {
+            var item = new ItemCreated
+            {
+                Name = "Shoe",
+                Id = Guid.NewGuid()
+            };
+
+            var waiter = theTracker.WaitFor<ItemCreated>();
+
+            await theReceiver.Bus.Enqueue(item);
+
+            waiter.Wait(5.Seconds());
+
+            waiter.IsCompleted.ShouldBeTrue();
+
+            using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
+            {
+                var item2 = session.Load<ItemCreated>(item.Id);
+                if (item2 == null)
+                {
+                    Thread.Sleep(500);
+                    item2 = session.Load<ItemCreated>(item.Id);
+                }
+
+
+
+                item2.Name.ShouldBe("Shoe");
+
+                session.Query<Envelope>().Count().ShouldBe(0);
+            }
+        }
+
+        [Fact]
         public async Task send_end_to_end()
         {
             var item = new ItemCreated
