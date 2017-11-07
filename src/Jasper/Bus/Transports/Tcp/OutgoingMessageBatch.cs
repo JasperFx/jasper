@@ -12,7 +12,12 @@ namespace Jasper.Bus.Transports.Tcp
             var messagesList = new List<Envelope>();
             messagesList.AddRange(messages);
             Messages = messagesList;
+
+
+            Data = Envelope.Serialize(Messages);
         }
+
+        public byte[] Data { get; set; }
 
         public Uri Destination { get; }
 

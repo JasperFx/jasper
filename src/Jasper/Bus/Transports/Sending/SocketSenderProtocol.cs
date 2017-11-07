@@ -12,8 +12,7 @@ namespace Jasper.Bus.Transports.Sending
     {
         public async Task SendBatch(ISenderCallback callback, OutgoingMessageBatch batch)
         {
-            var messageBytes = Envelope.Serialize(batch.Messages);
-            if (messageBytes.Length == 0) throw new Exception("No data to be sent");
+            if (batch.Data.Length == 0) throw new Exception("No data to be sent");
 
             using (var client = new TcpClient())
             {
@@ -26,7 +25,7 @@ namespace Jasper.Bus.Transports.Sending
                 {
                     using (var stream = client.GetStream())
                     {
-                        var protocolTimeout = WireProtocol.Send(stream, batch, messageBytes, callback).TimeoutAfter(5000);
+                        var protocolTimeout = WireProtocol.Send(stream, batch, batch.Data, callback).TimeoutAfter(5000);
                         await protocolTimeout;
 
                         if (!protocolTimeout.IsCompleted)
