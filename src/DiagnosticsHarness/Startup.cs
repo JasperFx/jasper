@@ -104,7 +104,6 @@ namespace DiagnosticsHarness
                  Publish.Message<AMessageThatWillError>().To(uri);
 
                  Logging.UseConsoleLogging = true;
-                 Logging.LogTransportEventsWith<ConsoleTransportLogger>();
 
              }
          }
