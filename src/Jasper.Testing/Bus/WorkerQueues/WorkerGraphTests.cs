@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Baseline;
 using Jasper.Bus.Transports;
 using Jasper.Bus.WorkerQueues;
@@ -40,6 +41,16 @@ namespace Jasper.Testing.Bus.WorkerQueues
                 typeof(BooM7),
                 typeof(M8),
             });
+        }
+
+        [Fact]
+        public void has_the_default_queues_regardless()
+        {
+            afterCompilingAgainstTheMessageTypes();
+
+            theWorkers.AllWorkers.Any(x => x.Name == TransportConstants.Default).ShouldBeTrue();
+            theWorkers.AllWorkers.Any(x => x.Name == TransportConstants.Retries).ShouldBeTrue();
+            theWorkers.AllWorkers.Any(x => x.Name == TransportConstants.Replies).ShouldBeTrue();
         }
 
 

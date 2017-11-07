@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
 using Jasper.Util;
 using Newtonsoft.Json;
@@ -131,6 +132,9 @@ namespace Jasper.Bus.Transports.Configuration
         {
             ListenForMessagesFrom(uriString.ToUri());
         }
+
+        public WorkersGraph Workers { get; } = new WorkersGraph();
+
 
         public async Task ApplyLookups(UriAliasLookup lookups)
         {

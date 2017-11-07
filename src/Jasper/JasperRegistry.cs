@@ -8,6 +8,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Http;
@@ -65,6 +66,8 @@ namespace Jasper
 
             EnvironmentChecks = new EnvironmentCheckExpression(this);
         }
+
+        public IWorkersExpression Processing => _bus.Settings.Workers;
 
         /// <summary>
         /// Register environment checks to debug application bootstrapping failures

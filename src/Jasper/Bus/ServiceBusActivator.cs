@@ -50,6 +50,8 @@ namespace Jasper.Bus
             var transports = _transports.Where(x => _settings.StateFor(x.Protocol) != TransportState.Disabled)
                 .ToArray();
 
+            _settings.Workers.Compile(handlers.Chains.Select(x => x.MessageType));
+
 
             if (!_settings.DisableAllTransports)
             {

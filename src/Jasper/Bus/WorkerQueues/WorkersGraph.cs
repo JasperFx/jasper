@@ -20,6 +20,12 @@ namespace Jasper.Bus.WorkerQueues
         private readonly Dictionary<Type, bool> _durableAssignmentsByType = new Dictionary<Type, bool>();
 
 
+        public WorkersGraph()
+        {
+            _workers[TransportConstants.Default].Parallelization = 5;
+            _workers[TransportConstants.Replies].Parallelization = 5;
+            _workers[TransportConstants.Retries].Parallelization = 5;
+        }
 
         public WorkerSettings[] AllWorkers => _workers.ToArray();
 

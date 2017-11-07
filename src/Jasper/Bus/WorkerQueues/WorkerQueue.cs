@@ -9,6 +9,7 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Internals.Util;
 
 namespace Jasper.Bus.WorkerQueues
@@ -17,21 +18,23 @@ namespace Jasper.Bus.WorkerQueues
     {
         private readonly CompositeLogger _logger;
         private readonly IHandlerPipeline _pipeline;
+        private readonly BusSettings _settings;
         private readonly CancellationToken _cancellationToken;
         private readonly Dictionary<string, ActionBlock<Envelope>> _receivers
             = new Dictionary<string, ActionBlock<Envelope>>();
 
 
-        public WorkerQueue(CompositeLogger logger, IHandlerPipeline pipeline, CancellationToken cancellationToken)
+        public WorkerQueue(CompositeLogger logger, IHandlerPipeline pipeline, BusSettings settings, CancellationToken cancellationToken)
         {
             _logger = logger;
             _pipeline = pipeline;
+            _settings = settings;
             _cancellationToken = cancellationToken;
 
-            // TODO -- should this be configurable?
-            AddQueue(TransportConstants.Default, 5);
-            AddQueue(TransportConstants.Replies, 5);
-            AddQueue(TransportConstants.Retries, 5);
+            foreach (var worker in _settings.Workers.AllWorkers)
+            {
+                AddQueue(worker.Name, worker.Parallelization);
+            }
 
             DelayedJobs = InMemoryDelayedJobProcessor.ForQueue(this);
         }
@@ -51,16 +54,11 @@ namespace Jasper.Bus.WorkerQueues
 
         private ActionBlock<Envelope> determineReceiver(Envelope envelope)
         {
-            // TODO -- will do fancier routing later
-
-            if (envelope.Queue.IsEmpty())
-            {
-                return _receivers[TransportConstants.Default];
-            }
+            var queueName = envelope.Queue ?? _settings.Workers.WorkerFor(envelope.MessageType);
 
 
-            var receiver = _receivers.ContainsKey(envelope.Queue)
-                ? _receivers[envelope.Queue]
+            var receiver = _receivers.ContainsKey(queueName)
+                ? _receivers[queueName]
                 : _receivers[TransportConstants.Default];
 
             return receiver;
