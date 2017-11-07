@@ -29,7 +29,8 @@ namespace Jasper.Bus.Transports.Receiving
             Port = port;
             _callback = callback;
             _cancellationToken = cancellationToken;
-            _listener = new TcpListener(new IPEndPoint(IPAddress.Loopback, port));
+
+            _listener = new TcpListener(new IPEndPoint(IPAddress.Any, port));
             _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             _socketHandling = new ActionBlock<Socket>(async s =>
