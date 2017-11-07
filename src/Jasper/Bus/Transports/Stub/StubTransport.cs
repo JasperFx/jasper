@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Baseline;
@@ -54,6 +55,11 @@ namespace Jasper.Bus.Transports.Stub
             {
                 Channels.FillDefault(uri);
             }
+        }
+
+        public void Describe(TextWriter writer)
+        {
+            writer.WriteLine("'Stub' transport is active");
         }
 
         public StubMessageCallback LastCallback()

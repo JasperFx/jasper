@@ -24,6 +24,8 @@ namespace Jasper.Marten
             _logger = logger;
         }
 
+        public Uri Address => _agent.Address;
+
         public async Task<ReceivedStatus> Received(Uri uri, Envelope[] messages)
         {
             try

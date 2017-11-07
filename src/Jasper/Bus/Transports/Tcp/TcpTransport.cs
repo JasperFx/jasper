@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Baseline;
@@ -82,6 +83,14 @@ namespace Jasper.Bus.Transports.Tcp
                 var port = incoming.First().Port;
                 _replyUri = $"{Protocol}://{settings.MachineName}:{port}"
                     .ToUri();
+            }
+        }
+
+        public void Describe(TextWriter writer)
+        {
+            foreach (var listener in _listeners)
+            {
+                writer.WriteLine($"Listening at {listener.Address}");
             }
         }
 

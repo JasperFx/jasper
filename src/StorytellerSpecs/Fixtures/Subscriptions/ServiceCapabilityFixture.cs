@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Jasper;
 using Jasper.Bus;
@@ -196,6 +197,10 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public void StartListening(BusSettings settings)
         {
 
+        }
+
+        public void Describe(TextWriter writer)
+        {
         }
     }
 }

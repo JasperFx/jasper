@@ -20,6 +20,8 @@ namespace Jasper.Bus.Transports.Receiving
             _agent = agent;
         }
 
+        public Uri Address => _agent.Address;
+
         async Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
             try

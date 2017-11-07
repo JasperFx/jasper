@@ -62,6 +62,11 @@ namespace Jasper.WebSockets
             }
         }
 
+        public void Describe(TextWriter writer)
+        {
+            writer.WriteLine("WebSocket transport is active");
+        }
+
         public Task Accept(WebSocket socket)
         {
             return _sockets.Accept(socket);

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -26,8 +28,9 @@ namespace Jasper.Bus
         private readonly UriAliasLookup _lookups;
         private readonly INodeDiscovery _nodes;
         private readonly IWorkerQueue _workerQueue;
+        private readonly CompositeLogger _logger;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes, IWorkerQueue workerQueue)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes, IWorkerQueue workerQueue, CompositeLogger logger)
         {
             _settings = settings;
             _pipeline = pipeline;
@@ -37,6 +40,7 @@ namespace Jasper.Bus
             _lookups = lookups;
             _nodes = nodes;
             _workerQueue = workerQueue;
+            _logger = logger;
         }
 
         public async Task Activate(HandlerGraph handlers, CapabilityGraph capabilities, JasperRuntime runtime, ChannelGraph channels)
@@ -55,9 +59,18 @@ namespace Jasper.Bus
 
                 _delayedJobs.Start(_workerQueue);
 
-                var local = new TransportNode(_settings);
 
-                await _nodes.Register(local);
+
+                try
+                {
+                    var local = new TransportNode(_settings);
+
+                    await _nodes.Register(local);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogException(e, message:"Failure when trying to register the node with " + _nodes);
+                }
 
             }
 

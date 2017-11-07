@@ -49,6 +49,11 @@ namespace Jasper.Http.Transport
         {
             throw new NotImplementedException();
         }
+
+        public void Describe(TextWriter writer)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class TransportEndpoint

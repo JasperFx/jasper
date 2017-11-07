@@ -55,9 +55,18 @@ namespace Jasper.Bus
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
-            var transports = runtime.Get<ITransport[]>();
+            var transports = runtime.Get<ITransport[]>().Where(x => Settings.StateFor(x.Protocol) == TransportState.Enabled);
 
-            // TODO -- talk about what's listening and already known channels
+            foreach (var transport in transports)
+            {
+                transport.Describe(writer);
+            }
+
+            writer.WriteLine();
+            foreach (var channel in _channels.AllKnownChannels())
+            {
+                writer.WriteLine($"Active sending agent to {channel.Uri}");
+            }
 
             if (runtime.Registry.Logging.Verbose)
             {

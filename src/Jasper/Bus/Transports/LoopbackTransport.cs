@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,10 @@ namespace Jasper.Bus.Transports
             // Nothing really, since it's just a handoff to the internal worker queues
         }
 
+        public void Describe(TextWriter writer)
+        {
+            writer.WriteLine("Listening for loopback messages");
+        }
     }
 
     public class LoopbackSendingAgent : ISendingAgent
