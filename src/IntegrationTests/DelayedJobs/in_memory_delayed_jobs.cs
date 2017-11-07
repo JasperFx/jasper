@@ -8,7 +8,7 @@ using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Testing;
 using Jasper.Testing.Bus;
 using Jasper.Util;

@@ -8,7 +8,7 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Util;
 
 namespace Jasper.Bus.Transports.Tcp

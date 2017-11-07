@@ -9,7 +9,7 @@ using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
 using Shouldly;

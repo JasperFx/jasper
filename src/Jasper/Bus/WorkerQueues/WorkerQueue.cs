@@ -8,9 +8,10 @@ using Jasper.Bus.Delayed;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Transports;
 using Jasper.Internals.Util;
 
-namespace Jasper.Bus.Transports.WorkerQueues
+namespace Jasper.Bus.WorkerQueues
 {
     public class WorkerQueue : IWorkerQueue
     {

@@ -2,7 +2,7 @@
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 
-namespace Jasper.Bus.Transports.WorkerQueues
+namespace Jasper.Bus.WorkerQueues
 {
     public interface IWorkerQueue
     {

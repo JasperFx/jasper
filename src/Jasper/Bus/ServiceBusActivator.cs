@@ -12,7 +12,7 @@ using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
 using Microsoft.CodeAnalysis;
 

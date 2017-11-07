@@ -5,7 +5,6 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.WorkerQueues;
 using Jasper.Conneg;
 using Jasper.Util;
 

@@ -6,7 +6,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 using Marten;
 
 namespace Jasper.Marten

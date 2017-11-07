@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 
-namespace Jasper.Bus.Transports.WorkerQueues
+namespace Jasper.Bus.WorkerQueues
 {
     public class LightweightCallback : IMessageCallback
     {

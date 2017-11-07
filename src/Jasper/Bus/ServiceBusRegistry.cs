@@ -6,7 +6,7 @@ using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Tcp;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 using Jasper.EnvironmentChecks;
 using Jasper.Internals;
 using Microsoft.Extensions.ObjectPool;

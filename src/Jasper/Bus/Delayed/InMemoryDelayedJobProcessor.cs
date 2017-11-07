@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 
 namespace Jasper.Bus.Delayed
 {

@@ -3,7 +3,7 @@ using System.Threading;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 
 namespace Jasper.Bus.Transports
 {

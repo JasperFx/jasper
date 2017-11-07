@@ -13,7 +13,6 @@ namespace Jasper.Bus.Transports.Configuration
         /// <summary>
         /// Directs Jasper to set up an incoming listener for the given Uri
         /// </summary>
-        /// <param name="uriString"></param>
         void ListenForMessagesFrom(string uriString);
 
         /// <summary>

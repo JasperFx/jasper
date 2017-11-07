@@ -13,7 +13,7 @@ using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.Transports.WorkerQueues;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Util;
 
 namespace Jasper.WebSockets
