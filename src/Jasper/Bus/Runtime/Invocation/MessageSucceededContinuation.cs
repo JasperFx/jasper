@@ -18,7 +18,7 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 await context.SendAllQueuedOutgoingMessages();
 
-                await envelope.Callback.MarkSuccessful();
+                await envelope.Callback.MarkComplete();
 
                 context.Logger.MessageSucceeded(envelope);
             }
@@ -29,7 +29,7 @@ namespace Jasper.Bus.Runtime.Invocation
                 context.Logger.LogException(ex, envelope.Id, ex.Message);
                 context.Logger.MessageFailed(envelope, ex);
 
-                await envelope.Callback.MoveToErrors(new ErrorReport(envelope, ex));
+                await envelope.Callback.MoveToErrors(envelope, ex);
             }
         }
 

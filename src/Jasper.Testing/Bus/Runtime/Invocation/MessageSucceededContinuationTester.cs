@@ -24,7 +24,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         [Fact]
         public void should_mark_the_message_as_successful()
         {
-            theEnvelope.Callback.Received().MarkSuccessful();
+            theEnvelope.Callback.Received().MarkComplete();
         }
 
         [Fact]
@@ -54,15 +54,13 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         [Fact]
         public void should_move_the_envelope_to_the_error_queue()
         {
-            theEnvelope.Callback.Received().MoveToErrors(new ErrorReport(theEnvelope, theException));
+            theEnvelope.Callback.Received().MoveToErrors(theEnvelope, theException);
         }
 
         [Fact]
         public void should_log_the_exception()
         {
-            var expected = new ErrorReport(theEnvelope, theException);
-
-            theEnvelope.Callback.Received().MoveToErrors(expected);
+            theEnvelope.Callback.Received().MoveToErrors(theEnvelope, theException);
         }
 
         [Fact]

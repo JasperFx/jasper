@@ -8,7 +8,6 @@ namespace Jasper.Bus.Transports.Stub
     public class StubMessageCallback : IMessageCallback
     {
         private readonly StubChannel _channel;
-        public readonly IList<ErrorReport> Errors = new List<ErrorReport>();
         public readonly IList<Envelope> Sent = new List<Envelope>();
 
         public StubMessageCallback(StubChannel channel)
@@ -28,23 +27,15 @@ namespace Jasper.Bus.Transports.Stub
 
         public bool Requeued { get; set; }
 
-        public Task MarkSuccessful()
+        public Task MarkComplete()
         {
             MarkedSucessful = true;
             return Task.CompletedTask;
         }
 
-        public Task MarkFailed(Exception ex)
-        {
-            MarkedFailed = true;
-            Exception = ex;
-            return Task.CompletedTask;
-        }
-
-        public Task MoveToErrors(ErrorReport report)
+        public Task MoveToErrors(Envelope envelope, Exception exception)
         {
             WasMovedToErrors = true;
-            Errors.Add(report);
             return Task.CompletedTask;
         }
 

@@ -27,7 +27,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
         {
             await theContinuation.Execute(theEnvelope, theContext, DateTime.UtcNow);
 
-            await theEnvelope.Callback.Received().MoveToErrors(new ErrorReport(theEnvelope, theException));
+            await theEnvelope.Callback.Received().MoveToErrors(theEnvelope, theException);
         }
 
         [Fact]

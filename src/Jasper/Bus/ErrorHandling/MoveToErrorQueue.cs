@@ -21,8 +21,7 @@ namespace Jasper.Bus.ErrorHandling
             context.Logger.MessageFailed(envelope, Exception);
             context.Logger.LogException(Exception, envelope.Id);
 
-            var report = new ErrorReport(envelope, Exception);
-            return envelope.Callback.MoveToErrors(report);
+            return envelope.Callback.MoveToErrors(envelope, Exception);
         }
     }
 }

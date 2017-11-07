@@ -51,7 +51,7 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 // Gotta get the message out of here because it's something that
                 // could never be handled
-                await envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
+                await envelope.Callback.MoveToErrors(envelope, e);
                 Logger.LogException(e, envelope.Id);
             }
         }
@@ -73,7 +73,7 @@ namespace Jasper.Bus.Runtime.Invocation
                     catch (Exception e)
                     {
                         Logger.MessageFailed(envelope, e);
-                        await envelope.Callback.MoveToErrors(new ErrorReport(envelope, e));
+                        await envelope.Callback.MoveToErrors(envelope, e);
                         return;
                     }
                     finally

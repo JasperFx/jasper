@@ -14,17 +14,12 @@ namespace Jasper.Bus.WorkerQueues
             _queue = queue;
         }
 
-        public Task MarkSuccessful()
+        public Task MarkComplete()
         {
             return Task.CompletedTask;
         }
 
-        public Task MarkFailed(Exception ex)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task MoveToErrors(ErrorReport report)
+        public Task MoveToErrors(Envelope envelope, Exception exception)
         {
             return Task.CompletedTask;
         }

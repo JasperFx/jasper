@@ -20,7 +20,7 @@ namespace Jasper.Marten
             _store = store;
         }
 
-        public Task MarkSuccessful()
+        public Task MarkComplete()
         {
             // TODO -- later, come back and do retries?
             using (var session = _store.LightweightSession())
@@ -30,16 +30,10 @@ namespace Jasper.Marten
             }
         }
 
-        public Task MarkFailed(Exception ex)
-        {
-            // Little goofy, not 100% sure that MarkFailed() survives
-            return MarkSuccessful();
-        }
-
-        public Task MoveToErrors(ErrorReport report)
+        public Task MoveToErrors(Envelope envelope, Exception exception)
         {
             // TODO -- let's actually do a dead letter queue inside of Marten
-            return MarkSuccessful();
+            return MarkComplete();
         }
 
         public async Task Requeue(Envelope envelope)
