@@ -48,7 +48,7 @@ namespace Jasper.Bus.Runtime.Routing
             var sending = CloneForSending(envelope);
 
             sending.Destination = Destination;
-            sending.ReplyUri = Channel.ReplyUri;
+            sending.ReplyUri = Channel.LocalReplyUri;
 
             await Channel.Send(sending).ConfigureAwait(false);
 

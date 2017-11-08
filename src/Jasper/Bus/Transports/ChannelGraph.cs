@@ -47,7 +47,7 @@ namespace Jasper.Bus.Transports
                 var transport = _transports[subscriberAddress.Uri.Scheme];
                 var agent = transport.BuildSendingAgent(subscriberAddress.Uri, _settings.Cancellation);
 
-                var channel = new Channel(subscriberAddress, transport.LocalReplyUri(), agent);
+                var channel = new Channel(subscriberAddress, transport.LocalReplyUri, agent);
 
                 _channels[subscriberAddress.Uri] = new Lazy<IChannel>(() => channel);
             }
@@ -73,7 +73,7 @@ namespace Jasper.Bus.Transports
 
             var transport = _transports[uri.Scheme];
             var agent = transport.BuildSendingAgent(uri, _settings.Cancellation);
-            return new Channel(agent, transport.LocalReplyUri());
+            return new Channel(agent, transport.LocalReplyUri);
         }
 
         public IChannel DefaultChannel { get; private set; }

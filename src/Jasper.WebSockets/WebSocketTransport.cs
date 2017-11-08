@@ -49,9 +49,9 @@ namespace Jasper.WebSockets
             return new WebSocketSendingAgent(_sockets);
         }
 
-        Uri ITransport.LocalReplyUri()
+        Uri ITransport.LocalReplyUri
         {
-            return DefaultUri;
+            get { return DefaultUri; }
         }
 
         public void StartListening(BusSettings settings)

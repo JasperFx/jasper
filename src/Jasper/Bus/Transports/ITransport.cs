@@ -12,7 +12,7 @@ namespace Jasper.Bus.Transports
 
         ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation);
 
-        Uri LocalReplyUri();
+        Uri LocalReplyUri { get; }
 
         void StartListening(BusSettings settings);
 

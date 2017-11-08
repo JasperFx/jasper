@@ -7,15 +7,7 @@ namespace Jasper.Bus
     public interface IChannel : IDisposable
     {
         Uri Uri { get; }
-        Uri ReplyUri { get; }
-
-        [Obsolete("Can we get rid of this?")]
-        Uri Destination { get; }
-
-        Uri Alias { get; }
-
-        [Obsolete("Don't think this will be necessary")]
-        string QueueName();
+        Uri LocalReplyUri { get; }
 
         bool ShouldSendMessage(Type messageType);
 

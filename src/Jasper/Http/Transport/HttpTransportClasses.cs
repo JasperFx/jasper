@@ -40,9 +40,9 @@ namespace Jasper.Http.Transport
             throw new NotImplementedException();
         }
 
-        public Uri LocalReplyUri()
+        public Uri LocalReplyUri
         {
-            throw new NotImplementedException();
+            get { throw new NotImplementedException(); }
         }
 
         public void StartListening(BusSettings settings)

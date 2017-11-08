@@ -189,9 +189,9 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             throw new NotImplementedException();
         }
 
-        public Uri LocalReplyUri()
+        public Uri LocalReplyUri
         {
-            return TransportConstants.RepliesUri;
+            get { return TransportConstants.RepliesUri; }
         }
 
         public void StartListening(BusSettings settings)

@@ -43,9 +43,9 @@ namespace Jasper.Bus.Transports.Stub
             return Channels[uri];
         }
 
-        public Uri LocalReplyUri()
+        public Uri LocalReplyUri
         {
-            return _replyUri;
+            get { return _replyUri; }
         }
 
         public void StartListening(BusSettings settings)

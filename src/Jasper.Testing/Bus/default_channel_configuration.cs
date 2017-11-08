@@ -22,7 +22,7 @@ namespace Jasper.Testing.Bus
             {
 
                 var channels = runtime.Get<IChannelGraph>();
-                channels.DefaultChannel.Destination.ShouldBe("loopback://replies".ToUri());
+                channels.DefaultChannel.Uri.ShouldBe("loopback://replies".ToUri());
             }
         }
 
