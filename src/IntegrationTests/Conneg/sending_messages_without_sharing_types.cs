@@ -10,6 +10,7 @@ using Jasper.Conneg;
 using Jasper.Testing;
 using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Lightweight;
+using Jasper.Testing.Internals;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Shouldly;

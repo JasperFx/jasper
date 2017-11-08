@@ -61,12 +61,6 @@ namespace Jasper.Testing.Bus
             anObject.ShouldBe(null);
         }
 
-        public static object ShouldBeTheSameAs(this object actual, object expected)
-        {
-            ReferenceEquals(actual, expected).ShouldBe(true);
-            return expected;
-        }
-
         public static object ShouldNotBeTheSameAs(this object actual, object expected)
         {
             ReferenceEquals(actual, expected).ShouldBe(false);

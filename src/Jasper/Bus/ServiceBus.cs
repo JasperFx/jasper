@@ -49,6 +49,17 @@ namespace Jasper.Bus
             return await watcher;
         }
 
+        public Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null)
+        {
+            var envelope = EnvelopeForRequestResponse<TResponse>(message);
+            envelope.ReplyUri = _channels.SystemReplyUri ?? envelope.ReplyUri;
+
+            customization?.Invoke(envelope);
+
+            return _sender.Send(envelope);
+        }
+
+
         public Envelope EnvelopeForRequestResponse<TResponse>(object request)
         {
             var messageType = typeof(TResponse).ToMessageAlias();
@@ -58,7 +69,8 @@ namespace Jasper.Bus
             {
                 Message = request,
                 ReplyRequested = messageType,
-                AcceptedContentTypes = reader.ContentTypes
+                AcceptedContentTypes = reader.ContentTypes,
+                RequiresLocalReply = true
 
             };
             return envelope;

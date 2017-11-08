@@ -69,12 +69,6 @@ namespace Jasper.Testing.Internals
             anObject.ShouldNotBe(null);
         }
 
-        public static object ShouldBeTheSameAs(this object actual, object expected)
-        {
-            ReferenceEquals(actual, expected).ShouldBeTrue();
-            return expected;
-        }
-
         public static T IsType<T>(this object actual)
         {
             actual.ShouldBeOfType(typeof(T));

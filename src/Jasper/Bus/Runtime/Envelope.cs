@@ -188,6 +188,8 @@ namespace Jasper.Bus.Runtime
 
         public string MessageType { get; set; }
 
+        internal bool RequiresLocalReply { get; set; }
+
         public Uri ReplyUri { get; set; }
 
         public string ContentType { get; set; }

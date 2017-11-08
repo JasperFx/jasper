@@ -80,6 +80,12 @@ namespace Jasper.Bus.Runtime
         {
             if (route == null) throw new ArgumentNullException(nameof(route));
 
+
+            if (!envelope.RequiresLocalReply)
+            {
+                envelope.ReplyUri = envelope.ReplyUri ?? _channels.SystemReplyUri;
+            }
+
             var sending = await route.Send(envelope);
             Logger.Sent(sending);
 

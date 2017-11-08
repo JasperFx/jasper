@@ -103,7 +103,7 @@ namespace Jasper.Testing.Storyteller
 
                 using (var context = system.CreateContext())
                 {
-                    Bus.SpecificationExtensions.ShouldBeTheSameAs(context.GetService<BusSettings>(), system.Runtime.Get<BusSettings>());
+                    context.GetService<BusSettings>().ShouldBeTheSameAs(system.Runtime.Get<BusSettings>());
                 }
 
             }

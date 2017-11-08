@@ -98,5 +98,15 @@ namespace Jasper.Bus
         /// <param name="message"></param>
         /// <returns></returns>
         Task SendAndWait<T>(Uri destination, T message);
+
+        /// <summary>
+        /// Send a message with the expectation of a response sent back to the global subscription
+        /// Uri of the logical service.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="customization"></param>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <returns></returns>
+        Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null);
     }
 }
