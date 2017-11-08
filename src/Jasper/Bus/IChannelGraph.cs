@@ -15,5 +15,7 @@ namespace Jasper.Bus
         bool HasChannel(Uri uri);
 
         IChannel[] AllKnownChannels();
+
+        Uri SystemReplyUri { get; }
     }
 }

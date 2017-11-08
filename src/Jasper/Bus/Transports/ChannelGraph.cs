@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
 
 namespace Jasper.Bus.Transports
@@ -16,7 +17,7 @@ namespace Jasper.Bus.Transports
         private UriAliasLookup _lookups;
 
 
-        public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups)
+        public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups, CapabilityGraph capabilities)
         {
             _lookups = lookups;
             _settings = settings;
@@ -55,6 +56,17 @@ namespace Jasper.Bus.Transports
 
 
             GetOrBuildChannel(TransportConstants.RetryUri);
+
+            SystemReplyUri =
+                capabilities.DefaultReceiverLocation
+                ?? tryGetReplyUri("http")
+                ?? tryGetReplyUri("tcp")
+                ?? _transports.Values.FirstOrDefault(x => x.LocalReplyUri != null)?.LocalReplyUri;
+        }
+
+        private Uri tryGetReplyUri(string protocol)
+        {
+            return _transports.ContainsKey(protocol) ? _transports[protocol].LocalReplyUri : null;
         }
 
         public string[] ValidTransports => _transports.Keys.ToArray();
@@ -110,6 +122,8 @@ namespace Jasper.Bus.Transports
         {
             return _channels.Values.Select(x => x.Value).ToArray();
         }
+
+        public Uri SystemReplyUri { get; private set; }
 
         private void assertNoUnknownTransportsInListeners(BusSettings settings)
         {
