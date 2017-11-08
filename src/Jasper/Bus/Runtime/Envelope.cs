@@ -57,7 +57,7 @@ namespace Jasper.Bus.Runtime
         }
 
 
-        public virtual Envelope ForResponse(object message)
+        public Envelope ForResponse(object message)
         {
             var child = ForSend(message);
 
@@ -136,8 +136,8 @@ namespace Jasper.Bus.Runtime
 
         public DateTime? DeliverBy
         {
-            get { return _deliverBy; }
-            set { _deliverBy = value?.ToUniversalTime(); }
+            get => _deliverBy;
+            set => _deliverBy = value?.ToUniversalTime();
         }
 
         public int SentAttempts { get; set; }
@@ -192,9 +192,6 @@ namespace Jasper.Bus.Runtime
 
         public string ContentType { get; set; }
 
-        /// <summary>
-        ///
-        /// </summary>
         public string OriginalId { get; set; }
 
         public string ParentId { get; set; }

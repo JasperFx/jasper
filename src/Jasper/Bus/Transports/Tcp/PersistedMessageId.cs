@@ -2,7 +2,7 @@
 
 namespace Jasper.Bus.Transports.Tcp
 {
-    [Obsolete("Kill this off. Was only for the LMDB support")]
+    // Strictly for backward compatibility to FubuMVC 3. Ugh.
     public class PersistedMessageId
     {
         public Guid SourceInstanceId { get; set; }
