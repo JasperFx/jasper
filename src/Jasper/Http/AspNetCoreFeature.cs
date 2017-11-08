@@ -46,6 +46,8 @@ namespace Jasper.Http
             _services.AddSingleton<ConnegRules>();
             _services.AddSingleton<IServer, NulloServer>();
 
+            _services.AddSingleton<IWebHost>(x => x.GetService<JasperRuntime>().Host);
+
             _inner = new WebHostBuilder();
         }
 

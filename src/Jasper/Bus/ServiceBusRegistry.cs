@@ -8,6 +8,7 @@ using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
 using Jasper.EnvironmentChecks;
+using Jasper.Http.Transport;
 using Jasper.Internals;
 using Microsoft.Extensions.ObjectPool;
 
@@ -22,6 +23,9 @@ namespace Jasper.Bus
 
             ForSingletonOf<ITransport>()
                 .Use<TcpTransport>();
+
+            ForSingletonOf<ITransport>()
+                .Use<HttpTransport>();
 
             ForSingletonOf<ObjectPoolProvider>().Use<DefaultObjectPoolProvider>();
 

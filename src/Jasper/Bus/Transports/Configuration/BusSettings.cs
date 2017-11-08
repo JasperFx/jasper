@@ -192,15 +192,34 @@ namespace Jasper.Bus.Transports.Configuration
         }
 
         public HttpTransportSettings Http { get; } = new HttpTransportSettings();
+
+        IHttpTransportConfiguration ITransportsExpression.Http => Http;
     }
 
-    public class HttpTransportSettings
+    public interface IHttpTransportConfiguration
+    {
+        IHttpTransportConfiguration Enable(bool enabled);
+        IHttpTransportConfiguration RelativeUrl(string url);
+    }
+
+    public class HttpTransportSettings : IHttpTransportConfiguration
     {
         public TimeSpan ConnectionTimeout { get; set; } = 10.Seconds();
         public string RelativeUrl { get; set; } = "messages";
 
-        public Uri LocalReplyUri { get; set; }
 
         public bool EnableMessageTransport { get; set; } = false;
+
+        IHttpTransportConfiguration IHttpTransportConfiguration.Enable(bool enabled)
+        {
+            EnableMessageTransport = enabled;
+            return this;
+        }
+
+        IHttpTransportConfiguration IHttpTransportConfiguration.RelativeUrl(string url)
+        {
+            RelativeUrl = url;
+            return this;
+        }
     }
 }

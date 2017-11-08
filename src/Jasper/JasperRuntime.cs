@@ -227,7 +227,7 @@ namespace Jasper
             var runtime = new JasperRuntime(registry, services);
 
 
-
+            runtime.HttpAddresses = registry.Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
 
             await Task.WhenAll(features.Select(x => x.Activate(runtime, registry.Generation)))
                 .ConfigureAwait(false);
@@ -248,6 +248,8 @@ namespace Jasper
 
             return runtime;
         }
+
+        public string HttpAddresses { get; internal set; }
 
         private static void applyExtensions(JasperRegistry registry)
         {

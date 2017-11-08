@@ -43,7 +43,7 @@ namespace IntegrationTests.Bus
         protected void StartTheReceiver(Action<JasperRegistry> configure)
         {
             configure(receiverRegistry);
-            theSender = JasperRuntime.For(receiverRegistry);
+            theReceiver = JasperRuntime.For(receiverRegistry);
         }
 
         protected void RestartTheReceiver()
