@@ -46,6 +46,7 @@ namespace Jasper.Http.Routing
 
         public static Route Build(string pattern, Type handlerType, MethodInfo method)
         {
+
             pattern = pattern.Replace("___", "-").Replace("__", "_@");
 
             var parts = pattern.Split('_')

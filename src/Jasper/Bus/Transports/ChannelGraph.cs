@@ -22,10 +22,7 @@ namespace Jasper.Bus.Transports
             _lookups = lookups;
             _settings = settings;
 
-            transports.Where(x => settings.StateFor(x.Protocol) != TransportState.Disabled)
-                .Each(t => _transports.Add(t.Protocol, t));
-
-
+            organizeTransports(settings, transports);
 
 
             if (settings.DefaultChannelAddress != null)
@@ -43,15 +40,7 @@ namespace Jasper.Bus.Transports
                 transport.StartListening(settings);
             }
 
-            foreach (var subscriberAddress in settings.KnownSubscribers)
-            {
-                var transport = _transports[subscriberAddress.Uri.Scheme];
-                var agent = transport.BuildSendingAgent(subscriberAddress.Uri, _settings.Cancellation);
-
-                var channel = new Channel(subscriberAddress, transport.LocalReplyUri, agent);
-
-                _channels[subscriberAddress.Uri] = new Lazy<IChannel>(() => channel);
-            }
+            buildInitialSendingAgents(settings);
 
 
 
@@ -62,6 +51,31 @@ namespace Jasper.Bus.Transports
                 ?? tryGetReplyUri("http")
                 ?? tryGetReplyUri("tcp")
                 ?? _transports.Values.FirstOrDefault(x => x.LocalReplyUri != null)?.LocalReplyUri;
+        }
+
+        private void buildInitialSendingAgents(BusSettings settings)
+        {
+            foreach (var subscriberAddress in settings.KnownSubscribers)
+            {
+                var transport = _transports[subscriberAddress.Uri.Scheme];
+                var agent = transport.BuildSendingAgent(subscriberAddress.Uri, _settings.Cancellation);
+
+                var channel = new Channel(subscriberAddress, transport.LocalReplyUri, agent);
+
+                _channels[subscriberAddress.Uri] = new Lazy<IChannel>(() => channel);
+            }
+        }
+
+        private void organizeTransports(BusSettings settings, ITransport[] transports)
+        {
+            transports.Where(x => settings.StateFor(x.Protocol) != TransportState.Disabled)
+                .Each(t => _transports.Add(t.Protocol, t));
+
+            // Super duper hokey
+            if (_transports.ContainsKey("http") && !_transports.ContainsKey("https"))
+            {
+                _transports["https"] = _transports["http"];
+            }
         }
 
         private Uri tryGetReplyUri(string protocol)

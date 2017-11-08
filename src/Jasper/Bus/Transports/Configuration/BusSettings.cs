@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
@@ -26,6 +27,8 @@ namespace Jasper.Bus.Transports.Configuration
             ServiceName = "Jasper";
 
         }
+
+
 
         // Was ChannelGraph.Name
         public string ServiceName
@@ -187,5 +190,17 @@ namespace Jasper.Bus.Transports.Configuration
         {
             _cancellation.Cancel();
         }
+
+        public HttpTransportSettings Http { get; } = new HttpTransportSettings();
+    }
+
+    public class HttpTransportSettings
+    {
+        public TimeSpan ConnectionTimeout { get; set; } = 10.Seconds();
+        public string RelativeUrl { get; set; } = "messages";
+
+        public Uri LocalReplyUri { get; set; }
+
+        public bool EnableMessageTransport { get; set; } = false;
     }
 }

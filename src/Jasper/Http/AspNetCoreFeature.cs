@@ -9,6 +9,7 @@ using Jasper.Conneg;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
+using Jasper.Http.Transport;
 using Jasper.Internals;
 using Jasper.Internals.Codegen;
 using Microsoft.AspNetCore.Builder;
@@ -70,6 +71,19 @@ namespace Jasper.Http
             foreach (var methodCall in actions)
             {
                 Routes.AddRoute(methodCall);
+            }
+
+            var httpTransportSettings = registry.BusSettings.Http;
+            if (httpTransportSettings.EnableMessageTransport)
+            {
+                Routes.AddRoute<TransportEndpoint>(x => x.put__messages(null, null, null),
+                    httpTransportSettings.RelativeUrl);
+
+
+                Routes.AddRoute<TransportEndpoint>(x => x.put__messages_durable(null, null, null),
+                    httpTransportSettings.RelativeUrl.AppendUrl("durable"));
+
+
             }
 
             _services.AddSingleton(Routes);

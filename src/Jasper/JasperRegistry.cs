@@ -67,6 +67,8 @@ namespace Jasper
             EnvironmentChecks = new EnvironmentCheckExpression(this);
         }
 
+        internal BusSettings BusSettings => _bus.Settings;
+
         public IWorkersExpression Processing => _bus.Settings.Workers;
 
         /// <summary>

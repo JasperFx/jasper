@@ -22,16 +22,24 @@ namespace Jasper.Http.Model
 
         protected override RouteChain[] chains => _chains.ToArray();
 
-        public void AddRoute(Type handlerType, MethodInfo method)
+        public RouteChain AddRoute(Type handlerType, MethodInfo method, string url = null)
         {
             var methodCall = new MethodCall(handlerType, method);
-            AddRoute(methodCall);
+            return AddRoute(methodCall, url);
         }
 
-        public void AddRoute(MethodCall methodCall)
+        public RouteChain AddRoute<T>(Expression<Action<T>> expression, string url = null)
         {
-            var route = new RouteChain(methodCall);
+            var method = ReflectionHelper.GetMethod(expression);
+            return AddRoute(typeof(T), method, url);
+        }
+
+        public RouteChain AddRoute(MethodCall methodCall, string url = null)
+        {
+            var route = url.IsNotEmpty() ? new RouteChain(methodCall, url) : new RouteChain(methodCall);
             _chains.Add(route);
+
+            return route;
         }
 
         public RouteChain ChainForAction<T>(Expression<Action<T>> expression)

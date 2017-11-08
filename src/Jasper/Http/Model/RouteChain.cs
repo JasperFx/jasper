@@ -44,12 +44,20 @@ namespace Jasper.Http.Model
             return new RouteChain(call);
         }
 
-
-
         public RouteChain(MethodCall action)
         {
             Action = action;
             Route = RouteBuilder.Build(action.HandlerType, action.Method);
+            TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}_{action.Method.Name}";
+
+            InputType = RouteBuilder.DetermineInputType(action.Method);
+            ResourceType = action.ReturnVariable?.VariableType;
+        }
+
+        public RouteChain(MethodCall action, string url)
+        {
+            Action = action;
+            Route = RouteBuilder.Build(url, action.HandlerType, action.Method);
             TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}_{action.Method.Name}";
 
             InputType = RouteBuilder.DetermineInputType(action.Method);
