@@ -189,7 +189,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             throw new NotImplementedException();
         }
 
-        public Uri DefaultReplyUri()
+        public Uri LocalReplyUri()
         {
             return TransportConstants.RepliesUri;
         }

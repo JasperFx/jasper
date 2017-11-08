@@ -49,7 +49,7 @@ namespace Jasper.WebSockets
             return new WebSocketSendingAgent(_sockets);
         }
 
-        Uri ITransport.DefaultReplyUri()
+        Uri ITransport.LocalReplyUri()
         {
             return DefaultUri;
         }

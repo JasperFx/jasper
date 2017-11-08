@@ -36,7 +36,7 @@ namespace Jasper.Bus.Transports
                 : new LoopbackSendingAgent(uri, _workerQueue);
         }
 
-        public Uri DefaultReplyUri()
+        public Uri LocalReplyUri()
         {
             return TransportConstants.RetryUri;
         }

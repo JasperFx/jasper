@@ -53,7 +53,7 @@ namespace Jasper.Bus.Transports.Tcp
             return agent;
         }
 
-        public Uri DefaultReplyUri()
+        public Uri LocalReplyUri()
         {
             return _replyUri;
         }

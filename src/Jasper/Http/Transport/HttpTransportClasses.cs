@@ -40,7 +40,7 @@ namespace Jasper.Http.Transport
             throw new NotImplementedException();
         }
 
-        public Uri DefaultReplyUri()
+        public Uri LocalReplyUri()
         {
             throw new NotImplementedException();
         }

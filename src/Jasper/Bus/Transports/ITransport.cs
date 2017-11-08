@@ -6,14 +6,13 @@ using Jasper.Bus.Transports.Sending;
 
 namespace Jasper.Bus.Transports
 {
-    // Will become the new ITransport
     public interface ITransport : IDisposable
     {
         string Protocol { get; }
 
         ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation);
 
-        Uri DefaultReplyUri();
+        Uri LocalReplyUri();
 
         void StartListening(BusSettings settings);
 

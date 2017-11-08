@@ -43,7 +43,7 @@ namespace Jasper.Bus.Transports.Stub
             return Channels[uri];
         }
 
-        public Uri DefaultReplyUri()
+        public Uri LocalReplyUri()
         {
             return _replyUri;
         }
