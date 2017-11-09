@@ -50,6 +50,14 @@ namespace Jasper.Bus.Transports.Stub
             return EnqueueOutgoing(envelope);
         }
 
+        public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
+        {
+            foreach (var envelope in envelopes)
+            {
+                await EnqueueOutgoing(envelope);
+            }
+        }
+
         public void Start()
         {
 

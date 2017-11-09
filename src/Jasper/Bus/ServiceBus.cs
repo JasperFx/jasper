@@ -11,7 +11,7 @@ using Jasper.Util;
 
 namespace Jasper.Bus
 {
-    public class ServiceBus : IServiceBus
+    public partial class ServiceBus : IServiceBus
     {
         private readonly IEnvelopeSender _sender;
         private readonly IReplyWatcher _watcher;
@@ -103,37 +103,16 @@ namespace Jasper.Bus
             });
         }
 
-        private class InvocationCallback : IMessageCallback
-        {
-            public Task MarkComplete()
-            {
-                return Task.CompletedTask;
-            }
-
-            public Task MoveToErrors(Envelope envelope, Exception exception)
-            {
-                return Task.CompletedTask;
-            }
-
-            public Task Requeue(Envelope envelope)
-            {
-                return Task.CompletedTask;
-            }
-
-            public Task MoveToDelayedUntil(DateTime time, Envelope envelope)
-            {
-                return Task.CompletedTask;
-            }
-        }
-
         public Task Enqueue<T>(T message)
         {
             var isDurable = _settings.Workers.ShouldBeDurable(typeof(T));
-            var uri = isDurable ? $"loopback://durable".ToUri() : $"loopback://".ToUri();
+            var uri = isDurable ? TransportConstants.DurableLoopbackUri : TransportConstants.LoopbackUri;
 
             var channel = _channels.GetOrBuildChannel(uri);
 
-            return channel.Send(new Envelope(message));
+
+            var envelope = new Envelope(message);
+            return channel.Send(envelope);
         }
 
         public Task DelaySend<T>(T message, DateTime time)

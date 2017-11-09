@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Sending;
@@ -44,6 +45,11 @@ namespace Jasper.Marten
             }
 
             await EnqueueOutgoing(envelope);
+        }
+
+        public Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
+        {
+            throw new NotImplementedException();
         }
 
         public void Start()

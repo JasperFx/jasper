@@ -38,7 +38,7 @@ namespace Jasper.Http.Transport
         // TODO -- there's duplication here w/ the TcpTransport. Maybe a chance to simplify
         public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
         {
-            var batchedSender = new BatchedSender(uri, new SocketSenderProtocol(), cancellation);
+            var batchedSender = new BatchedSender(uri, new HttpSenderProtocol(_settings), cancellation);
 
             ISendingAgent agent;
 
@@ -62,10 +62,13 @@ namespace Jasper.Http.Transport
 
         public void StartListening(BusSettings settings)
         {
-            var candidate = _runtime.HttpAddresses.Split(';').Select(x => x.ToUri()).FirstOrDefault(x => x.Host == "localhost" || x.Host == "127.0.0.1")?.ToMachineUri();
-            if (candidate != null)
+            if (_runtime.HttpAddresses.IsNotEmpty())
             {
-                LocalReplyUri = candidate.ToString().TrimEnd('/').AppendUrl(settings.Http.RelativeUrl).ToUri();
+                var candidate = _runtime.HttpAddresses.Split(';').Select(x => x.ToUri()).FirstOrDefault(x => x.Host == "localhost" || x.Host == "127.0.0.1")?.ToMachineUri();
+                if (candidate != null)
+                {
+                    LocalReplyUri = candidate.ToString().TrimEnd('/').AppendUrl(settings.Http.RelativeUrl).ToUri();
+                }
             }
 
         }

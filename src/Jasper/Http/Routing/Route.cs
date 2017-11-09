@@ -170,7 +170,7 @@ namespace Jasper.Http.Routing
         public bool HasSpread => _spread != null;
 
         public string Name { get; set; }
-        public string HttpMethod { get; }
+        public string HttpMethod { get; internal set; }
 
         public string NodePath
         {

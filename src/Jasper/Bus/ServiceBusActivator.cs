@@ -14,6 +14,7 @@ using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
+using Jasper.Http.Transport;
 using Microsoft.CodeAnalysis;
 
 namespace Jasper.Bus
@@ -29,8 +30,9 @@ namespace Jasper.Bus
         private readonly INodeDiscovery _nodes;
         private readonly IWorkerQueue _workerQueue;
         private readonly CompositeLogger _logger;
+        private readonly IPersistence _persistence;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes, IWorkerQueue workerQueue, CompositeLogger logger)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes, IWorkerQueue workerQueue, CompositeLogger logger, IPersistence persistence)
         {
             _settings = settings;
             _pipeline = pipeline;
@@ -41,9 +43,10 @@ namespace Jasper.Bus
             _nodes = nodes;
             _workerQueue = workerQueue;
             _logger = logger;
+            _persistence = persistence;
         }
 
-        public async Task Activate(HandlerGraph handlers, CapabilityGraph capabilities, JasperRuntime runtime, ChannelGraph channels)
+        public async Task Activate(HandlerGraph handlers, CapabilityGraph capabilities, JasperRuntime runtime, ChannelGraph channels, LocalWorkerSender localWorker)
         {
             var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime, _transports, _lookups);
 
@@ -52,12 +55,14 @@ namespace Jasper.Bus
 
             _settings.Workers.Compile(handlers.Chains.Select(x => x.MessageType));
 
+            localWorker.Start(_persistence, _workerQueue);
 
             if (!_settings.DisableAllTransports)
             {
                 await _settings.ApplyLookups(_lookups);
 
                 channels.Start(_settings, transports, _lookups, capabilities);
+
 
                 _delayedJobs.Start(_workerQueue);
 

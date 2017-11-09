@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -88,6 +89,14 @@ namespace Jasper.Bus.Transports
         public Task StoreAndForward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
+        }
+
+        public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
+        {
+            foreach (var envelope in envelopes)
+            {
+                await EnqueueOutgoing(envelope);
+            }
         }
 
         public void Start()

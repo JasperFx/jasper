@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Sending;
@@ -31,6 +33,14 @@ namespace Jasper.WebSockets
         public Task StoreAndForward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
+        }
+
+        public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
+        {
+            foreach (var envelope in envelopes)
+            {
+                await EnqueueOutgoing(envelope);
+            }
         }
 
         public void Start()

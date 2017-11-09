@@ -79,11 +79,11 @@ namespace Jasper.Http
             if (httpTransportSettings.EnableMessageTransport)
             {
                 Routes.AddRoute<TransportEndpoint>(x => x.put__messages(null, null, null),
-                    httpTransportSettings.RelativeUrl);
+                    httpTransportSettings.RelativeUrl).Route.HttpMethod = "PUT";
 
 
                 Routes.AddRoute<TransportEndpoint>(x => x.put__messages_durable(null, null, null),
-                    httpTransportSettings.RelativeUrl.AppendUrl("durable"));
+                    httpTransportSettings.RelativeUrl.AppendUrl("durable")).Route.HttpMethod = "PUT";
 
 
             }

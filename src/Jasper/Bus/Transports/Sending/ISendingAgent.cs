@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 
@@ -16,6 +17,8 @@ namespace Jasper.Bus.Transports.Sending
         // This would be called by the EnvelopeSender if invoked
         // indirectly
         Task StoreAndForward(Envelope envelope);
+
+        Task StoreAndForwardMany(IEnumerable<Envelope> envelopes);
 
         void Start();
     }

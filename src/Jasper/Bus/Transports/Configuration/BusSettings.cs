@@ -200,6 +200,7 @@ namespace Jasper.Bus.Transports.Configuration
     {
         IHttpTransportConfiguration Enable(bool enabled);
         IHttpTransportConfiguration RelativeUrl(string url);
+        IHttpTransportConfiguration ConnectionTimeout(TimeSpan span);
     }
 
     public class HttpTransportSettings : IHttpTransportConfiguration
@@ -219,6 +220,12 @@ namespace Jasper.Bus.Transports.Configuration
         IHttpTransportConfiguration IHttpTransportConfiguration.RelativeUrl(string url)
         {
             RelativeUrl = url;
+            return this;
+        }
+
+        IHttpTransportConfiguration IHttpTransportConfiguration.ConnectionTimeout(TimeSpan span)
+        {
+            ConnectionTimeout = span;
             return this;
         }
     }

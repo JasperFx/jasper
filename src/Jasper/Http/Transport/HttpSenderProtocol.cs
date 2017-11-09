@@ -14,33 +14,32 @@ namespace Jasper.Http.Transport
         private readonly HttpClient _client;
         private readonly BusSettings _settings;
 
-        public HttpSenderProtocol(BusSettings busSettings, HttpTransportSettings settings)
+        public HttpSenderProtocol(BusSettings settings)
         {
             _client = new HttpClient
             {
-                Timeout = settings.ConnectionTimeout
+                Timeout = settings.Http.ConnectionTimeout
             };
 
-            _settings = busSettings;
+            _settings = settings;
         }
 
         public async Task SendBatch(ISenderCallback callback, OutgoingMessageBatch batch)
         {
-            // TODO -- optimize the reading here to reduce allocations
-            var bytes = Envelope.Serialize(batch.Messages);
+            var bytes = batch.Data;
 
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Put,
                 RequestUri = batch.Destination,
-                Content = new ByteArrayContent(bytes),
+
 
             };
 
-            request.Headers.Add("content-length", bytes.Length.ToString());
+            //request.Headers.Add("content-length", bytes.Length.ToString());
             request.Headers.Add(TransportEndpoint.EnvelopeSenderHeader, _settings.ServiceName);
 
-
+            request.Content = new ByteArrayContent(bytes);
 
             // TODO -- security here?
 

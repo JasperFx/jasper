@@ -6,7 +6,9 @@ using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Bus;
+using Jasper.Bus.Runtime;
 using Jasper.Conneg;
+using Jasper.Testing.Bus;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -52,11 +54,11 @@ namespace IntegrationTests.Conneg
 
     public class RequestReplyHandler
     {
-        public Reply1 Handle(Request1 request)
+        public Reply1 Handle(Request1 request, Envelope envelope)
         {
             return new Reply1
             {
-                Sum = request.One + request.Two
+                Sum = request.One + request.Two,
             };
         }
     }

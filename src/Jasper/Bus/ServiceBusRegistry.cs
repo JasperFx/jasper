@@ -1,4 +1,5 @@
 ﻿using Jasper.Bus.Configuration;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Routing;
@@ -31,11 +32,11 @@ namespace Jasper.Bus
 
             ForSingletonOf<IWorkerQueue>().Use<WorkerQueue>();
 
-
-
             For<IEnvelopeSender>().Use<EnvelopeSender>();
-            For<IServiceBus>().Use<ServiceBus>();
+            ForSingletonOf<IServiceBus>().Use<ServiceBus>();
             For<IHandlerPipeline>().Use<HandlerPipeline>();
+
+            ForSingletonOf<CompositeLogger>().Use<CompositeLogger>();
 
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();

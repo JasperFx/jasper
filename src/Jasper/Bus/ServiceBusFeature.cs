@@ -11,6 +11,7 @@ using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.Conneg;
+using Jasper.Http.Transport;
 using Jasper.Internals;
 using Jasper.Internals.Codegen;
 using Jasper.Util;
@@ -23,11 +24,13 @@ namespace Jasper.Bus
     public class ServiceBusFeature : IFeature
     {
         private readonly ChannelGraph _channels = new ChannelGraph();
+        private readonly LocalWorkerSender _localWorker = new LocalWorkerSender();
+
         private HandlerGraph _graph;
         public HandlerSource Handlers { get; } = new HandlerSource();
 
 
-        public CapabilityGraph Capabilities = new CapabilityGraph();
+        public readonly CapabilityGraph Capabilities = new CapabilityGraph();
 
         public GenerationRules Generation { get; } = new GenerationRules("JasperBus.Generated");
 
@@ -50,7 +53,7 @@ namespace Jasper.Bus
         {
             _graph.Compile(generation, runtime);
 
-            return runtime.Get<ServiceBusActivator>().Activate(_graph, Capabilities, runtime, _channels);
+            return runtime.Get<ServiceBusActivator>().Activate(_graph, Capabilities, runtime, _channels, _localWorker);
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
@@ -102,6 +105,7 @@ namespace Jasper.Bus
 
             Services.AddSingleton(_graph);
             Services.AddSingleton<IChannelGraph>(_channels);
+            Services.AddSingleton<ILocalWorkerSender>(_localWorker);
 
             Services.AddTransient<ServiceBusActivator>();
 

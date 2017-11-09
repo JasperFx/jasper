@@ -13,7 +13,7 @@ namespace Jasper.Http.Transport
         public const string EnvelopeSenderHeader = "x-jasper-envelope-sender";
 
         // TODO -- may want to eventually have the URL be configurable
-        public async Task<int> put__messages(HttpRequest request, IServiceBus bus, CompositeLogger logger)
+        public async Task<int> put__messages(HttpRequest request, ILocalWorkerSender workers, CompositeLogger logger)
         {
             try
             {
@@ -21,10 +21,7 @@ namespace Jasper.Http.Transport
                 var bytes = await request.Body.ReadBytesAsync(request.ContentLength);
                 var envelopes = Envelope.ReadMany(bytes);
 
-                foreach (var envelope in envelopes)
-                {
-                    await bus.Enqueue(envelope);
-                }
+                await workers.EnqueueLightweight(envelopes);
 
                 return 200;
             }
@@ -37,7 +34,7 @@ namespace Jasper.Http.Transport
             }
         }
 
-        public async Task<int> put__messages_durable(HttpRequest request, IServiceBus bus, CompositeLogger logger)
+        public async Task<int> put__messages_durable(HttpRequest request, ILocalWorkerSender workers, CompositeLogger logger)
         {
             try
             {
@@ -45,12 +42,7 @@ namespace Jasper.Http.Transport
                 var bytes = await request.Body.ReadBytesAsync(request.ContentLength);
                 var envelopes = Envelope.ReadMany(bytes);
 
-
-
-                foreach (var envelope in envelopes)
-                {
-                    await bus.Enqueue(envelope);
-                }
+                await workers.EnqueueDurably(envelopes);
 
                 return 200;
             }

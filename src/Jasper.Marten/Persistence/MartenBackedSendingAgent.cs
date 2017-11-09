@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Bus.Logging;
@@ -48,6 +50,25 @@ namespace Jasper.Marten
             }
 
             await EnqueueOutgoing(envelope);
+        }
+
+        public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
+        {
+            foreach (var envelope in envelopes)
+            {
+                envelope.EnsureData();
+            }
+
+            using (var session = _store.LightweightSession())
+            {
+                session.Store(envelopes.ToArray());
+                await session.SaveChangesAsync(_cancellation);
+            }
+
+            foreach (var envelope in envelopes)
+            {
+                await EnqueueOutgoing(envelope);
+            }
         }
 
         public void Start()

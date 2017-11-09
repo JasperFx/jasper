@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Tcp;
@@ -28,6 +29,14 @@ namespace Jasper.Bus.Transports.Sending
         {
             // Same thing here
             return EnqueueOutgoing(envelope);
+        }
+
+        public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
+        {
+            foreach (var envelope in envelopes)
+            {
+                await EnqueueOutgoing(envelope);
+            }
         }
 
         public void Start()
