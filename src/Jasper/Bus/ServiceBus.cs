@@ -145,7 +145,8 @@ namespace Jasper.Bus
             {
                 Message = message,
                 AckRequested = true,
-                Destination = destination
+                Destination = destination,
+                RequiresLocalReply = true
             };
 
             var task = _watcher.StartWatch<Acknowledgement>(envelope.Id, 10.Minutes());

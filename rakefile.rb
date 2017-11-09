@@ -84,10 +84,10 @@ end
 
 desc "Integration Tests"
 task :integrationtests => [:compile] do
-    # Too many problems. May move most of this to Storyteller later
-  #sh "dotnet test src/IntegrationTests/IntegrationTests.csproj"
-  sh "dotnet test src/Jasper.LightningDb.Testing/Jasper.LightningDb.Testing.csproj"
-  
+  Dir.chdir("src/IntegrationTests") do
+    sh "dotnet xunit"
+  end
+
   # one test is unreliable. Grr.
   #sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj"
 
@@ -140,7 +140,7 @@ task :storyteller => [:compile] do
   result_output = File.expand_path "#{RESULTS_DIR}/stresults.htm"
   puts "appveyor AddTest Testing -Framework Storyteller -FileName SomeFile -Outcome Skipped"
   Dir.chdir("src/StorytellerSpecs") do
-    system "dotnet run -- run -r #{result_output} --tracing appveyor" 
+    system "dotnet run -- run -r #{result_output} --tracing appveyor"
   end
 end
 

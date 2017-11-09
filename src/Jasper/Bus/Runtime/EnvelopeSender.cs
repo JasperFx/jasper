@@ -50,6 +50,18 @@ namespace Jasper.Bus.Runtime
                     }
                 }
 
+                if (envelope.RequiresLocalReply)
+                {
+                    var missing = routes.Where(x => x.Channel.LocalReplyUri == null).ToArray();
+
+                    // TODO -- should you try to use either an HTTP or TCP listener if one exists?
+                    if (missing.Any())
+                    {
+                        throw new InvalidOperationException($"There is no known local reply Uri for outgoing destinations {missing.Select(x => x.ToString()).Join(", ")}");
+                    }
+
+                }
+
                 foreach (var route in routes)
                 {
                     await sendEnvelope(envelope, route);
