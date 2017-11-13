@@ -32,7 +32,7 @@ namespace Jasper.Bus
         private readonly CompositeLogger _logger;
         private readonly IPersistence _persistence;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, INodeDiscovery nodes, IWorkerQueue workerQueue, CompositeLogger logger, IPersistence persistence)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, IWorkerQueue workerQueue, CompositeLogger logger, IPersistence persistence)
         {
             _settings = settings;
             _pipeline = pipeline;
@@ -40,7 +40,6 @@ namespace Jasper.Bus
             _serialization = serialization;
             _transports = transports.ToArray();
             _lookups = lookups;
-            _nodes = nodes;
             _workerQueue = workerQueue;
             _logger = logger;
             _persistence = persistence;
@@ -65,20 +64,6 @@ namespace Jasper.Bus
 
 
                 _delayedJobs.Start(_workerQueue);
-
-
-
-                try
-                {
-                    var local = new TransportNode(_settings);
-
-                    await _nodes.Register(local);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogException(e, message:"Failure when trying to register the node with " + _nodes);
-                }
-
             }
 
             runtime.Capabilities = await capabilityCompilation;

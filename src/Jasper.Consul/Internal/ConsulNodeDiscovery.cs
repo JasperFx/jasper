@@ -19,7 +19,7 @@ namespace Jasper.Consul.Internal
         }
 
 
-        public Task Register(TransportNode local)
+        public Task Register(ServiceNode local)
         {
             LocalNode = local;
 
@@ -31,12 +31,12 @@ namespace Jasper.Consul.Internal
             });
         }
 
-        public async Task<TransportNode[]> FindPeers()
+        public async Task<ServiceNode[]> FindPeers()
         {
             var nodes = await client.KV.List(TRANSPORTNODE_PREFIX);
-            return nodes.Response?.Select(kv => deserialize<TransportNode>(kv.Value)).ToArray() ?? new TransportNode[0];
+            return nodes.Response?.Select(kv => deserialize<ServiceNode>(kv.Value)).ToArray() ?? new ServiceNode[0];
         }
 
-        public TransportNode LocalNode { get; set; }
+        public ServiceNode LocalNode { get; set; }
     }
 }

@@ -117,12 +117,7 @@ namespace Jasper.Http
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
-            var webHost = runtime.Container.TryGetInstance<IWebHost>();
-            if (webHost == null) return;
-
-            var addressesFeature = webHost.ServerFeatures.Get<IServerAddressesFeature>();
-            var urls = addressesFeature?.Addresses ?? new string[0];
-            foreach (var url in urls)
+            foreach (var url in runtime.HttpAddresses)
             {
                 writer.WriteLine($"Now listening on: {url}");
             }

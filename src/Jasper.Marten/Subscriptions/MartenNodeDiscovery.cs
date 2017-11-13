@@ -9,14 +9,14 @@ namespace Jasper.Marten.Subscriptions
     {
         private readonly IDocumentStore _documentStore;
 
-        public TransportNode LocalNode { get; private set; }
+        public ServiceNode LocalNode { get; private set; }
 
         public MartenNodeDiscovery(MartenSubscriptionSettings settings)
         {
             _documentStore = settings.Store;
         }
 
-        public async Task Register(TransportNode local)
+        public async Task Register(ServiceNode local)
         {
             LocalNode = local;
             using (var session = _documentStore.LightweightSession())
@@ -26,11 +26,11 @@ namespace Jasper.Marten.Subscriptions
             }
         }
 
-        public async Task<TransportNode[]> FindPeers()
+        public async Task<ServiceNode[]> FindPeers()
         {
             using (var session = _documentStore.LightweightSession())
             {
-                var peers = await session.Query<TransportNode>()
+                var peers = await session.Query<ServiceNode>()
                     .Where(x => x.ServiceName == LocalNode.ServiceName)
                     .ToListAsync();
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Bus;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
@@ -16,7 +17,9 @@ using Jasper.Configuration;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
 using Jasper.Internals.Codegen;
+using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using StructureMap.Graph;
@@ -240,13 +243,38 @@ namespace Jasper
             }
 
 
+
             // TODO -- THIS IS TEMPORARY UNTIL WE DO GH-212
             var hostedServices = runtime.Container.GetAllInstances<IHostedService>()
                 .Select(x => x.StartAsync(CancellationToken.None));
 
             await Task.WhenAll(hostedServices);
 
+            await registerRunningNode(runtime);
+
             return runtime;
+        }
+
+        private static async Task registerRunningNode(JasperRuntime runtime)
+        {
+            // TODO -- get a helper for this, it's ugly
+            var settings = runtime.Get<BusSettings>();
+            var nodes = runtime.Get<INodeDiscovery>();
+
+            try
+            {
+
+                var local = new ServiceNode(settings);
+                local.HttpEndpoints = runtime.HttpAddresses?.Split(';').Select(x => x.ToUri().ToMachineUri()).Distinct().ToArray();
+
+                runtime.Node = local;
+
+                await nodes.Register(local);
+            }
+            catch (Exception e)
+            {
+                runtime.Get<CompositeLogger>().LogException(e, message: "Failure when trying to register the node with " + nodes);
+            }
         }
 
         public string HttpAddresses { get; internal set; }
@@ -302,6 +330,12 @@ namespace Jasper
         /// The logical name of the application from JasperRegistry.ServiceName
         /// </summary>
         public string ServiceName => Registry.ServiceName;
+
+        /// <summary>
+        /// Information about the running service node as published to service discovery
+        /// </summary>
+        public IServiceNode Node { get; internal set; }
+
     }
 }
 

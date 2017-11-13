@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.Internals;
 using Jasper.Internals.Codegen;
@@ -33,6 +34,7 @@ namespace Jasper.Testing
                 runtime.ApplicationAssembly.ShouldBe(GetType().GetAssembly());
             }
         }
+
     }
 
     public class when_bootstrapping_a_runtime_with_multiple_features : IDisposable

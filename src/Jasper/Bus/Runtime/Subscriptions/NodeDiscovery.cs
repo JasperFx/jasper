@@ -8,9 +8,9 @@ namespace Jasper.Bus.Runtime.Subscriptions
 {
     public interface INodeDiscovery
     {
-        Task Register(TransportNode local);
-        Task<TransportNode[]> FindPeers();
-        TransportNode LocalNode { get; }
+        Task Register(ServiceNode local);
+        Task<ServiceNode[]> FindPeers();
+        ServiceNode LocalNode { get; }
     }
 
     public class InMemoryNodeDiscovery : INodeDiscovery
@@ -22,17 +22,17 @@ namespace Jasper.Bus.Runtime.Subscriptions
             _machineName = envSettings.MachineName;
         }
 
-        public Task Register(TransportNode local)
+        public Task Register(ServiceNode local)
         {
             LocalNode = local;
             return Task.CompletedTask;
         }
 
-        public Task<TransportNode[]> FindPeers()
+        public Task<ServiceNode[]> FindPeers()
         {
-            return Task.FromResult(new TransportNode[0]);
+            return Task.FromResult(new ServiceNode[0]);
         }
 
-        public TransportNode LocalNode { get; private set; }
+        public ServiceNode LocalNode { get; private set; }
     }
 }
