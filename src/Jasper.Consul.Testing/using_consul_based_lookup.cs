@@ -13,6 +13,7 @@ using Xunit;
 
 namespace IntegrationTests.Consul
 {
+    [Collection("Consul")]
     public class using_consul_based_lookup : IDisposable
     {
 

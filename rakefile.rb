@@ -89,6 +89,8 @@ task :integrationtests => [:compile] do
     sh "dotnet xunit"
   end
 
+  sh "dotnet test src/Jasper.Consul.Testing/Jasper.Consul.Testing.csproj"
+
   # one test is unreliable. Grr.
   #sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj"
 

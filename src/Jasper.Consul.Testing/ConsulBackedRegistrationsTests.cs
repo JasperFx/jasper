@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Jasper.Consul.Testing
 {
+    [Collection("Consul")]
     public class ConsulBackedRegistrationsTests
     {
         [Fact]

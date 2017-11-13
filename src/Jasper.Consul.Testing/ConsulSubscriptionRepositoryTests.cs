@@ -14,6 +14,7 @@ using Xunit;
 
 namespace Jasper.Consul.Testing
 {
+    [Collection("Consul")]
     public class ConsulSubscriptionRepositoryTests : IDisposable
     {
         private Uri theDestination = "something://localhost:3333/here".ToUri();

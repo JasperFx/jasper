@@ -11,6 +11,7 @@ using Xunit;
 
 namespace Jasper.Consul.Testing
 {
+    [Collection("Consul")]
     public class ConsulNodeDiscoveryTests : IDisposable
     {
         private readonly JasperRuntime _runtime;
