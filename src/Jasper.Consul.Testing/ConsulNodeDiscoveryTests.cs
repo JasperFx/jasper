@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Baseline;
 using Consul;
@@ -39,7 +40,7 @@ namespace Jasper.Consul.Testing
 
         public void Dispose()
         {
-            _runtime.Dispose();
+            _runtime?.Dispose();
         }
 
         [Fact]
@@ -50,6 +51,25 @@ namespace Jasper.Consul.Testing
             var peers = await theNodeDiscovery.FindPeers();
 
             peers.Single().ServiceName.ShouldBe("ConsulTestApp");
+
+            using (var settings = new ConsulSettings())
+            {
+                var nodes = await settings.Client.KV.List(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX);
+                nodes.Response.Length.ShouldBe(1);
+            }
+        }
+
+        [Fact]
+        public async Task successfully_unregister_on_shutdown()
+        {
+            _runtime.Dispose();
+
+            using (var settings = new ConsulSettings())
+            {
+                var nodes = await settings.Client.KV.List(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX);
+                nodes.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+                nodes.Response.ShouldBeNull();
+            }
         }
     }
 }

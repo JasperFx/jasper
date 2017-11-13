@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Subscriptions;
 using Marten;
@@ -10,6 +11,14 @@ namespace Jasper.Marten.Subscriptions
         private readonly IDocumentStore _documentStore;
 
         public ServiceNode LocalNode { get; private set; }
+        public async Task UnregisterLocalNode()
+        {
+            using (var session = _documentStore.LightweightSession())
+            {
+                session.Delete(LocalNode);
+                await session.SaveChangesAsync();
+            }
+        }
 
         public MartenNodeDiscovery(MartenSubscriptionSettings settings)
         {

@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using Baseline.Reflection;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
@@ -114,6 +115,17 @@ namespace Jasper
         {
             // Because StackOverflowException's are a drag
             if (IsDisposed || isDisposing) return;
+
+            try
+            {
+                Get<INodeDiscovery>().UnregisterLocalNode().Wait(3.Seconds());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Unable to un-register the running node");
+                Console.WriteLine(e.ToString());
+                Get<CompositeLogger>().LogException(e);
+            }
 
             Get<BusSettings>().StopAll();
 

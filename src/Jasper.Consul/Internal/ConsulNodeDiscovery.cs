@@ -23,9 +23,9 @@ namespace Jasper.Consul.Internal
         {
             LocalNode = local;
 
-            var consulKey = $"{TRANSPORTNODE_PREFIX}{LocalNode.ServiceName}/{MachineName}";
+            var consulKey = toConsulKey();
 
-            return client.KV.Put(new KVPair(TRANSPORTNODE_PREFIX + "/")
+            return client.KV.Put(new KVPair(consulKey)
             {
                 Value = serialize(LocalNode)
             });
@@ -38,5 +38,15 @@ namespace Jasper.Consul.Internal
         }
 
         public ServiceNode LocalNode { get; set; }
+
+        public Task UnregisterLocalNode()
+        {
+            return client.KV.Delete(toConsulKey());
+        }
+
+        private string toConsulKey()
+        {
+            return $"{TRANSPORTNODE_PREFIX}{LocalNode.ServiceName}/{LocalNode.MachineName}";
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace IntegrationTests
 
             theServiceNode.ServiceName.ShouldBe("ImportantService");
             theServiceNode.MachineName.ShouldBe(Environment.MachineName);
-            theServiceNode.NodeId.ShouldBe($"ImportantService@{Environment.MachineName}");
+            theServiceNode.Id.ShouldBe($"ImportantService@{Environment.MachineName}");
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace IntegrationTests
 
             theServiceNode.ServiceName.ShouldBe("ImportantService");
             theServiceNode.MachineName.ShouldBe("BigBox");
-            theServiceNode.NodeId.ShouldBe("ImportantService@BigBox");
+            theServiceNode.Id.ShouldBe("ImportantService@BigBox");
         }
 
         [Fact]

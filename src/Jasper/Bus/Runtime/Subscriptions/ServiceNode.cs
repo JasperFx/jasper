@@ -8,7 +8,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
     public interface IServiceNode
     {
         string ServiceName { get; }
-        string NodeId { get; }
+        string Id { get; }
         string MachineName { get; }
         Uri[] HttpEndpoints { get; }
         string MessagesUrl { get;  }
@@ -22,12 +22,14 @@ namespace Jasper.Bus.Runtime.Subscriptions
         {
         }
 
+
+
         public ServiceNode(BusSettings settings)
         {
             ServiceName = settings.ServiceName;
 
             MachineName = settings.MachineName;
-            NodeId = $"{ServiceName}@{MachineName}";
+            Id = $"{ServiceName}@{MachineName}";
 
             MessagesUrl = settings.Http.RelativeUrl;
 
@@ -38,7 +40,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
         }
 
         public string ServiceName { get; set; }
-        public string NodeId { get; set; }
+        public string Id { get; set; }
 
         public string MachineName { get; set; }
 
@@ -50,7 +52,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public override string ToString()
         {
-            return $"Id: {NodeId}, MachineName: {MachineName}, NodeName: {ServiceName}";
+            return $"Id: {Id}, MachineName: {MachineName}, NodeName: {ServiceName}";
         }
     }
 }

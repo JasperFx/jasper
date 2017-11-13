@@ -48,7 +48,7 @@ namespace Jasper.Consul
             }
         }
 
-        internal ConsulClient Client => _client.Value;
+        public ConsulClient Client => _client.Value;
 
         void IDisposable.Dispose()
         {
