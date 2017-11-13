@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Baseline;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Util;
 
@@ -53,6 +54,16 @@ namespace Jasper.Bus.Runtime.Subscriptions
         public override string ToString()
         {
             return $"Id: {Id}, MachineName: {MachineName}, NodeName: {ServiceName}";
+        }
+
+        public Uri DetermineLocalUri()
+        {
+            if (HttpEndpoints.Any())
+            {
+                return HttpEndpoints.First().ToString().AppendUrl(MessagesUrl).ToUri();
+            }
+
+            return TcpEndpoints.FirstOrDefault();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Bus;
@@ -85,6 +86,21 @@ namespace Jasper.CommandLine
             return true;
         }
 
+
+
+        public async Task FanOutSubscriptionChangedMessage(IServiceBus bus, INodeDiscovery discovery)
+        {
+            var peers = await discovery.FindPeers();
+
+            foreach (var node in peers)
+            {
+                var destination = node.DetermineLocalUri();
+                if (destination != null)
+                {
+                    await bus.Send(destination, new SubscriptionsChanged());
+                }
+            }
+        }
 
         private void validate(JasperRuntime runtime, SubscriptionsInput input)
         {
