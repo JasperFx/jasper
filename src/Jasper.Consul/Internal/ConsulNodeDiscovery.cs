@@ -33,7 +33,7 @@ namespace Jasper.Consul.Internal
 
         public async Task<ServiceNode[]> FindPeers()
         {
-            var nodes = await client.KV.List(TRANSPORTNODE_PREFIX);
+            var nodes = await client.KV.List(TRANSPORTNODE_PREFIX + LocalNode.ServiceName);
             return nodes.Response?.Select(kv => deserialize<ServiceNode>(kv.Value)).ToArray() ?? new ServiceNode[0];
         }
 

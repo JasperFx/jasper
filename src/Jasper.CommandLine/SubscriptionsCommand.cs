@@ -7,6 +7,7 @@ using Baseline.Dates;
 using Jasper.Bus;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -16,7 +17,8 @@ namespace Jasper.CommandLine
         list,
         export,
         publish,
-        validate
+        validate,
+        remove
     }
 
     public class SubscriptionsInput : JasperInput
@@ -73,11 +75,16 @@ namespace Jasper.CommandLine
                     case SubscriptionsAction.validate:
                         validate(runtime, input);
                         break;
+
+                    case SubscriptionsAction.remove:
+                        remove(runtime, input);
+                        break;
                 }
             }
 
             return true;
         }
+
 
         private void validate(JasperRuntime runtime, SubscriptionsInput input)
         {
@@ -143,6 +150,18 @@ namespace Jasper.CommandLine
             }
         }
 
+
+        private void remove(JasperRuntime runtime, SubscriptionsInput input)
+        {
+            var repository = runtime.Get<ISubscriptionsRepository>();
+
+            Console.WriteLine($"Removing all subscriptions for service {runtime.ServiceName} to {repository}");
+
+            repository.ReplaceSubscriptions(runtime.ServiceName, new Subscription[0])
+                .Wait(1.Minutes());
+
+            ConsoleWriter.Write(ConsoleColor.Green, "Success!");
+        }
 
         private void publish(JasperRuntime runtime)
         {
