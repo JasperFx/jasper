@@ -10,6 +10,15 @@ namespace Jasper.Marten.Subscriptions
     {
         private readonly IDocumentStore _documentStore;
 
+        public async Task<ServiceNode[]> FindAllKnown()
+        {
+            using (var session = _documentStore.QuerySession())
+            {
+                var nodes = await session.Query<ServiceNode>().ToListAsync();
+                return nodes.ToArray();
+            }
+        }
+
         public ServiceNode LocalNode { get; private set; }
         public async Task UnregisterLocalNode()
         {

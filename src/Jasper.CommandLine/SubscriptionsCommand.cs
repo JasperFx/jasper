@@ -176,6 +176,8 @@ namespace Jasper.CommandLine
             repository.ReplaceSubscriptions(runtime.ServiceName, new Subscription[0])
                 .Wait(1.Minutes());
 
+            sendSubscriptionUpdates(runtime);
+
             ConsoleWriter.Write(ConsoleColor.Green, "Success!");
         }
 
@@ -188,7 +190,16 @@ namespace Jasper.CommandLine
             repository.ReplaceSubscriptions(runtime.ServiceName, runtime.Capabilities.Subscriptions)
                 .Wait(1.Minutes());
 
+            sendSubscriptionUpdates(runtime);
+
             ConsoleWriter.Write(ConsoleColor.Green, "Success!");
+        }
+
+        private static void sendSubscriptionUpdates(JasperRuntime runtime)
+        {
+            Console.WriteLine("Publishing a subscription-changed notification to all known nodes");
+            var notifier = runtime.Get<SubscriptionChangeNotifier>();
+            notifier.FanOutSubscriptionChangedMessage().Wait(1.Minutes());
         }
 
         private void export(JasperRuntime runtime, SubscriptionsInput input)
@@ -206,6 +217,32 @@ namespace Jasper.CommandLine
         {
             var json = runtime.Capabilities.ToJson();
             Console.WriteLine(json);
+        }
+    }
+
+    public class SubscriptionChangeNotifier
+    {
+        private readonly IServiceBus _bus;
+        private readonly INodeDiscovery _nodes;
+
+        public SubscriptionChangeNotifier(IServiceBus bus, INodeDiscovery nodes)
+        {
+            _bus = bus;
+            _nodes = nodes;
+        }
+
+        public async Task FanOutSubscriptionChangedMessage()
+        {
+            var peers = await _nodes.FindAllKnown()
+
+            foreach (var node in peers)
+            {
+                var destination = node.DetermineLocalUri();
+                if (destination != null)
+                {
+                    await _bus.Send(destination, new SubscriptionsChanged());
+                }
+            }
         }
     }
 }

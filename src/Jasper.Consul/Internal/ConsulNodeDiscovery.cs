@@ -37,6 +37,12 @@ namespace Jasper.Consul.Internal
             return nodes.Response?.Select(kv => deserialize<ServiceNode>(kv.Value)).ToArray() ?? new ServiceNode[0];
         }
 
+        public async Task<ServiceNode[]> FindAllKnown()
+        {
+            var nodes = await client.KV.List(TRANSPORTNODE_PREFIX);
+            return nodes.Response?.Select(kv => deserialize<ServiceNode>(kv.Value)).ToArray() ?? new ServiceNode[0];
+        }
+
         public ServiceNode LocalNode { get; set; }
 
         public Task UnregisterLocalNode()

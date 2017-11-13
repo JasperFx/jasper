@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten.Subscriptions;
@@ -55,6 +56,46 @@ namespace Jasper.Marten.Tests
         public void Dispose()
         {
             _runtime?.Dispose();
+        }
+
+        [Fact]
+        public async Task find_all_nodes()
+        {
+            var node1 = new ServiceNode
+            {
+                Id = "a1",
+                ServiceName = "a"
+            };
+
+            var node2 = new ServiceNode
+            {
+                Id = "a2",
+                ServiceName = "a"
+            };
+
+            var node3 = new ServiceNode
+            {
+                Id = "b1",
+                ServiceName = "b"
+            };
+
+            var node4 = new ServiceNode
+            {
+                Id = "c1",
+                ServiceName = "c"
+            };
+
+            using (var session = _runtime.Get<IDocumentStore>().LightweightSession())
+            {
+                session.Store(node1, node2, node3, node4);
+                await session.SaveChangesAsync();
+            }
+
+            var nodeDiscovery = _runtime.Get<INodeDiscovery>();
+            var all = await nodeDiscovery.FindAllKnown();
+
+            // 4 + the node for the currently running app
+            all.Length.ShouldBe(5);
         }
 
         [Fact]
