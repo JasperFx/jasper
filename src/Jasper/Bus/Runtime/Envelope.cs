@@ -207,7 +207,7 @@ namespace Jasper.Bus.Runtime
         public string Accepts => AcceptedContentTypes?.FirstOrDefault();
 
 
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = CombGuidIdGeneration.NewGuid().ToString();
 
         public string ReplyRequested { get; set; }
 
