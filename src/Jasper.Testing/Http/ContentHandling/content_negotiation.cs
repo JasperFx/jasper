@@ -29,8 +29,6 @@ namespace Jasper.Testing.Http.ContentHandling
 
             });
 
-            var sourceCode = _runtime.Get<RouteGraph>().First(x => x.InputType == typeof(SpecialInput)).SourceCode;
-            Console.WriteLine(sourceCode);
         }
 
         public void Dispose()

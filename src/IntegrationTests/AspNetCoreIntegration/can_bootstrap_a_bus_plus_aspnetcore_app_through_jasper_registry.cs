@@ -50,7 +50,7 @@ namespace IntegrationTests.AspNetCoreIntegration
     {
         public void Handle(SomeMessage message)
         {
-            Console.WriteLine("Got a SomeMessage");
+
         }
     }
 

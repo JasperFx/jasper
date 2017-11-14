@@ -40,6 +40,7 @@ namespace IntegrationTests.AspNetCoreIntegration
 
         }
 
+        // ReSharper disable once UnusedMember.Global
         public void sample()
         {
             // SAMPLE: ordering-middleware-with-jasper

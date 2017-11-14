@@ -24,7 +24,6 @@ namespace IntegrationTests.DelayedJobs
         private readonly Dictionary<string, TaskCompletionSource<Envelope>>
             _callbacks = new Dictionary<string, TaskCompletionSource<Envelope>>();
 
-        private int _queuedCount;
 
         public in_memory_delayed_jobs()
         {
