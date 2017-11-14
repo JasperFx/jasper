@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -233,7 +233,7 @@ namespace Jasper.CommandLine
 
         public async Task FanOutSubscriptionChangedMessage()
         {
-            var peers = await _nodes.FindAllKnown()
+            var peers = await _nodes.FindAllKnown();
 
             foreach (var node in peers)
             {
