@@ -21,6 +21,6 @@
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Marten" Version="2.3.2" />
+    <PackageReference Include="Marten" Version="2.4.0" />
   </ItemGroup>
 </Project>
