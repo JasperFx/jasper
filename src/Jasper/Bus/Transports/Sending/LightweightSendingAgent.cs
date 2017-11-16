@@ -23,7 +23,7 @@ namespace Jasper.Bus.Transports.Sending
             _logger = logger;
             Destination = destination;
 
-            _retries = new LightweightRetryAgent(_sender, settings.LightweightRetry);
+            _retries = new LightweightRetryAgent(_sender, settings.Retries);
         }
 
         public Uri Destination { get; }

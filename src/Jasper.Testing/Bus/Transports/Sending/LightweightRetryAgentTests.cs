@@ -255,7 +255,7 @@ namespace Jasper.Testing.Bus.Transports.Sending
     public abstract class LightweightRetryAgentContext : IDisposable
     {
         protected readonly ISender theSender = Substitute.For<ISender>();
-        protected readonly LightweightRetrySettings theSettings = new LightweightRetrySettings();
+        protected readonly RetrySettings theSettings = new RetrySettings();
         protected LightweightRetryAgent theRetryAgent;
 
         protected Envelope expiredEnvelope()

@@ -14,9 +14,9 @@ namespace Jasper.Bus.Transports.Sending
 
         private int _failureCount = 0;
         private Pinger _pinger;
-        private readonly LightweightRetrySettings _settings;
+        private readonly RetrySettings _settings;
 
-        public LightweightRetryAgent(ISender sender, LightweightRetrySettings settings)
+        public LightweightRetryAgent(ISender sender, RetrySettings settings)
         {
             _sender = sender;
             _settings = settings;
