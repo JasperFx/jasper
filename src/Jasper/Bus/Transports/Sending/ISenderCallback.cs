@@ -11,6 +11,7 @@ namespace Jasper.Bus.Transports.Sending
         void QueueDoesNotExist(OutgoingMessageBatch outgoing);
         void ProcessingFailure(OutgoingMessageBatch outgoing);
         void ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception);
+        void SenderIsLatched(OutgoingMessageBatch outgoing);
 
     }
 }

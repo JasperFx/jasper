@@ -140,6 +140,16 @@ namespace Jasper.Bus.Runtime
             set => _deliverBy = value?.ToUniversalTime();
         }
 
+        /// <summary>
+        /// Set the DeliverBy property to have this message thrown away
+        /// if it cannot be sent before the alotted time
+        /// </summary>
+        /// <param name="span"></param>
+        public void DeliverWithin(TimeSpan span)
+        {
+            DeliverBy = DateTime.UtcNow.Add(span);
+        }
+
         public int SentAttempts { get; set; }
 
         public Uri ReceivedAt { get; set; }
@@ -233,6 +243,25 @@ namespace Jasper.Bus.Runtime
             if (Writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
 
             Data = Writer.Write(_message);
+        }
+
+        public bool IsPing()
+        {
+            return MessageType == TransportConstants.PingMessageType;
+        }
+
+        public static Envelope ForPing()
+        {
+            return new Envelope
+            {
+                MessageType = TransportConstants.PingMessageType,
+                Data = new byte[]{1,2,3,4}
+            };
+        }
+
+        public bool IsExpired()
+        {
+            return DeliverBy.HasValue && DeliverBy <= DateTime.UtcNow;
         }
     }
 

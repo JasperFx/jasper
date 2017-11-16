@@ -13,6 +13,10 @@ namespace Jasper.Bus.Transports.Tcp
             messagesList.AddRange(messages);
             Messages = messagesList;
 
+            foreach (var message in messages)
+            {
+                message.Destination = destination;
+            }
 
             Data = Envelope.Serialize(Messages);
         }
@@ -27,5 +31,18 @@ namespace Jasper.Bus.Transports.Tcp
         {
             return $"Outgoing batch to {Destination} with {Messages.Count} messages";
         }
+
+        public static OutgoingMessageBatch ForPing(Uri destination)
+        {
+            var envelope = Envelope.ForPing();
+            envelope.Destination = destination;
+
+            return new OutgoingMessageBatch(destination, new[]{envelope})
+            {
+                IsPing = true
+            };
+        }
+
+        public bool IsPing { get; private set; }
     }
 }

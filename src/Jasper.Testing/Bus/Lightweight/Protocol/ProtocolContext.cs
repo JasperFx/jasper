@@ -174,6 +174,11 @@ namespace Jasper.Testing.Bus.Lightweight.Protocol
             throw new NotImplementedException();
         }
 
+        public void SenderIsLatched(OutgoingMessageBatch outgoing)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool ProcessingFailed { get; set; }
     }
 }

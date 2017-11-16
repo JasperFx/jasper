@@ -45,6 +45,8 @@ namespace Jasper.Bus.WorkerQueues
         {
             if (envelope.Callback == null) throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Callback must be set before enqueuing the envelope");
 
+            if (envelope.IsPing()) return Task.CompletedTask;
+
             var receiver = determineReceiver(envelope);
 
             receiver.Post(envelope);

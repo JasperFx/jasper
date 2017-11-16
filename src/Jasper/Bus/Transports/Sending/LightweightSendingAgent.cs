@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
+using Baseline.Dates;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Tcp;
 
 namespace Jasper.Bus.Transports.Sending
@@ -9,11 +14,16 @@ namespace Jasper.Bus.Transports.Sending
     public class LightweightSendingAgent : ISendingAgent, ISenderCallback
     {
         private readonly ISender _sender;
+        private readonly CompositeLogger _logger;
+        private readonly LightweightRetryAgent _retries;
 
-        public LightweightSendingAgent(Uri destination, ISender sender)
+        public LightweightSendingAgent(Uri destination, ISender sender, CompositeLogger logger, BusSettings settings)
         {
             _sender = sender;
+            _logger = logger;
             Destination = destination;
+
+            _retries = new LightweightRetryAgent(_sender, settings.LightweightRetry);
         }
 
         public Uri Destination { get; }
@@ -46,17 +56,18 @@ namespace Jasper.Bus.Transports.Sending
 
         public void Successful(OutgoingMessageBatch outgoing)
         {
-            // Nothing
+            _retries.MarkSuccess();
         }
 
         public void TimedOut(OutgoingMessageBatch outgoing)
         {
-            // Retry a time or two?
+            _retries.MarkFailed(outgoing);
         }
 
         public void SerializationFailure(OutgoingMessageBatch outgoing)
         {
-            // log?
+            // Can't really happen now, but what the heck.
+            _logger.LogException(new Exception("Serialization failure with outgoing envelopes " + outgoing.Messages.Select(x => x.ToString()).Join(", ")));
         }
 
         public void QueueDoesNotExist(OutgoingMessageBatch outgoing)
@@ -66,12 +77,19 @@ namespace Jasper.Bus.Transports.Sending
 
         public void ProcessingFailure(OutgoingMessageBatch outgoing)
         {
-            // log?
+            _retries.MarkFailed(outgoing);
         }
 
         public void ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
         {
-            // log, maybe retry?
+            _logger.LogException(exception, $"Failure trying to send a message batch to {outgoing.Destination}");
+            _retries.MarkFailed(outgoing);
+
+        }
+
+        public void SenderIsLatched(OutgoingMessageBatch outgoing)
+        {
+            _retries.MarkFailed(outgoing);
         }
 
         public void Dispose()

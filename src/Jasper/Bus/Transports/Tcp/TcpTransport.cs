@@ -18,13 +18,15 @@ namespace Jasper.Bus.Transports.Tcp
         private readonly IPersistence _persistence;
         private readonly CompositeLogger _logger;
         private readonly IWorkerQueue _workerQueue;
+        private readonly BusSettings _settings;
         private readonly IList<IListener> _listeners = new List<IListener>();
 
-        public TcpTransport(IPersistence persistence, CompositeLogger logger, IWorkerQueue workerQueue)
+        public TcpTransport(IPersistence persistence, CompositeLogger logger, IWorkerQueue workerQueue, BusSettings settings)
         {
             _persistence = persistence;
             _logger = logger;
             _workerQueue = workerQueue;
+            _settings = settings;
         }
 
 
@@ -43,7 +45,7 @@ namespace Jasper.Bus.Transports.Tcp
             }
             else
             {
-                agent = new LightweightSendingAgent(uri, batchedSender);
+                agent = new LightweightSendingAgent(uri, batchedSender, _logger, _settings);
             }
 
             agent.DefaultReplyUri = LocalReplyUri;

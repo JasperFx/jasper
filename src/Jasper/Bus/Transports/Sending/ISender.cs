@@ -12,5 +12,16 @@ namespace Jasper.Bus.Transports.Sending
         Uri Destination { get; }
 
         int QueuedCount { get; }
+
+        bool Latched { get; }
+
+        void Latch();
+        void Unlatch();
+
+        /// <summary>
+        /// Simply try to reach the endpoint to verify it can receive
+        /// </summary>
+        /// <returns></returns>
+        Task Ping();
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Baseline;
 using Baseline.Dates;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
@@ -19,12 +20,14 @@ namespace Jasper.Http.Transport
         private readonly BusSettings _settings;
         private readonly JasperRuntime _runtime;
         private readonly IPersistence _persistence;
+        private readonly CompositeLogger _logger;
 
-        public HttpTransport(BusSettings settings, JasperRuntime runtime, IPersistence persistence)
+        public HttpTransport(BusSettings settings, JasperRuntime runtime, IPersistence persistence, CompositeLogger logger)
         {
             _settings = settings;
             _runtime = runtime;
             _persistence = persistence;
+            _logger = logger;
         }
 
 
@@ -48,7 +51,7 @@ namespace Jasper.Http.Transport
             }
             else
             {
-                agent = new LightweightSendingAgent(uri, batchedSender);
+                agent = new LightweightSendingAgent(uri, batchedSender, _logger, _settings);
             }
 
             agent.DefaultReplyUri = LocalReplyUri;

@@ -32,7 +32,7 @@ namespace Jasper.Bus.Transports.Sending
         {
             _callback = callback;
 
-            _sender = new ActionBlock<OutgoingMessageBatch>(sendBatch, new ExecutionDataflowBlockOptions
+            _sender = new ActionBlock<OutgoingMessageBatch>(SendBatch, new ExecutionDataflowBlockOptions
             {
                 MaxDegreeOfParallelism = 1,
                 CancellationToken = _cancellation
@@ -57,7 +57,12 @@ namespace Jasper.Bus.Transports.Sending
 
 
             _batchWriting = new TransformBlock<Envelope[], OutgoingMessageBatch>(
-                envelopes => new OutgoingMessageBatch(Destination, envelopes));
+                envelopes =>
+                {
+                    var batch = new OutgoingMessageBatch(Destination, envelopes);
+                    _queued += batch.Messages.Count;
+                    return batch;
+                });
 
             _batchWriting.LinkTo(_sender);
 
@@ -68,19 +73,44 @@ namespace Jasper.Bus.Transports.Sending
 
         public int QueuedCount => _queued + _batching.ItemCount;
 
-        private async Task sendBatch(OutgoingMessageBatch batch)
+        public bool Latched { get; private set; }
+        public void Latch()
         {
-            _queued += batch.Messages.Count;
+            Latched = true;
+        }
 
+        public void Unlatch()
+        {
+            Latched = false;
+        }
+
+        public Task Ping()
+        {
+            var batch = OutgoingMessageBatch.ForPing(Destination);
+            return _protocol.SendBatch(_callback,batch);
+        }
+
+        public async Task SendBatch(OutgoingMessageBatch batch)
+        {
+            if (_cancellation.IsCancellationRequested) return;
 
             try
             {
-                await _protocol.SendBatch(_callback, batch);
+                if (Latched)
+                {
+                    _callback.SenderIsLatched(batch);
+                }
+                else
+                {
+                    await _protocol.SendBatch(_callback, batch);
+                }
+
             }
             catch (Exception e)
             {
                 batchSendFailed(batch, e);
             }
+
             finally
             {
                 _queued -= batch.Messages.Count;

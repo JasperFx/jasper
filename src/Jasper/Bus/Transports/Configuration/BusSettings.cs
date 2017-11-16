@@ -194,6 +194,9 @@ namespace Jasper.Bus.Transports.Configuration
         public HttpTransportSettings Http { get; } = new HttpTransportSettings();
 
         IHttpTransportConfiguration ITransportsExpression.Http => Http;
+
+
+        public LightweightRetrySettings LightweightRetry { get; } = new LightweightRetrySettings();
     }
 
     public interface IHttpTransportConfiguration
@@ -228,5 +231,12 @@ namespace Jasper.Bus.Transports.Configuration
             ConnectionTimeout = span;
             return this;
         }
+    }
+
+    public class LightweightRetrySettings
+    {
+        public TimeSpan Cooldown { get; set; } = 1.Seconds();
+        public int FailuresBeforeCircuitBreaks { get; set; } = 3;
+        public int MaximumEnvelopeRetryStorage { get; set; } = 100;
     }
 }

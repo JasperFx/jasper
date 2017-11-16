@@ -19,5 +19,7 @@ namespace Jasper.Bus.Transports
 
         public static readonly Uri DurableLoopbackUri = $"loopback://durable".ToUri();
         public static readonly Uri LoopbackUri = $"loopback://".ToUri();
+
+        public static readonly string PingMessageType = "jasper-ping";
     }
 }

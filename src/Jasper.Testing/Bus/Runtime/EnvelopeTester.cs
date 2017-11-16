@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Baseline.Dates;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
@@ -10,6 +12,25 @@ namespace Jasper.Testing.Bus.Runtime
 {
     public class EnvelopeTester
     {
+        [Fact]
+        public void is_expired()
+        {
+            var envelope = new Envelope
+            {
+                DeliverBy = null
+            };
+
+            envelope.IsExpired().ShouldBeFalse();
+
+            envelope.DeliverBy = DateTime.UtcNow.AddSeconds(-1);
+            envelope.IsExpired().ShouldBeTrue();
+
+            envelope.DeliverBy = DateTime.UtcNow.AddHours(1);
+
+            envelope.IsExpired().ShouldBeFalse();
+        }
+
+
         [Fact]
         public void has_a_correlation_id_by_default()
         {
@@ -22,6 +43,27 @@ namespace Jasper.Testing.Bus.Runtime
             new Envelope().Id.ShouldNotBe(new Envelope().Id);
         }
 
+        [Fact]
+        public void envelope_for_ping()
+        {
+            var envelope = Envelope.ForPing();
+            envelope.MessageType.ShouldBe(TransportConstants.PingMessageType);
+            envelope.Data.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void set_deliver_by_threshold()
+        {
+            var envelope = new Envelope();
+
+            envelope.DeliverWithin(5.Minutes());
+
+            envelope.DeliverBy.ShouldNotBeNull();
+
+            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTime.UtcNow.AddMinutes(5).AddSeconds(-5));
+            envelope.DeliverBy.Value.ShouldBeLessThan(DateTime.UtcNow.AddMinutes(5).AddSeconds(5));
+            envelope.DeliverBy.Value.Kind.ShouldBe(DateTimeKind.Utc);
+        }
 
         [Fact]
         public void default_values_for_original_and_parent_id_are_null()

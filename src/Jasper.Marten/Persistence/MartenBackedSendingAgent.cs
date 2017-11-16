@@ -121,5 +121,10 @@ namespace Jasper.Marten
 
             processRetry(outgoing);
         }
+
+        void ISenderCallback.SenderIsLatched(OutgoingMessageBatch outgoing)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
