@@ -38,6 +38,7 @@ namespace Jasper.Marten.Persistence
 
         public async Task Requeue(Envelope envelope)
         {
+
             using (var session = _store.LightweightSession())
             {
                 session.Patch<Envelope>(envelope.Id).Set(x => x.Attempts, envelope.Attempts);
@@ -49,6 +50,7 @@ namespace Jasper.Marten.Persistence
 
         public Task MoveToDelayedUntil(DateTime time, Envelope envelope)
         {
+            // TODO -- do this one.
             throw new NotImplementedException();
         }
     }

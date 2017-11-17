@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
@@ -9,6 +7,7 @@ using Marten;
 
 namespace Jasper.Marten.Persistence.Resiliency
 {
+    // TODO -- THIS HAS NOT BEEN TESTED YET
     public class RecoverIncomingMessages : IMessagingAction
     {
         public static readonly int IncomingMessageLockId = "recover-incoming-messages".GetHashCode();
@@ -35,15 +34,17 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             // Have it loop until either a time limit has been reached or a certain
             // queue count has been reached
-            // TODO -- how many do you pull in here?
+            // TODO -- how many do you pull in here? Is it configurable? Do you take into account the
+            // depth of the worker queue?
 
-            // TODO -- make this a compiled query
-            var incoming = await session.Query<Envelope>()
-                .Where(x => x.OwnerId == TransportConstants.AnyNode && x.Status == TransportConstants.Incoming)
-                .Take(100) // TODO -- should this be configurable?
-                .ToListAsync();
 
-            await _marker.MarkIncomingOwnedByThisNode(session, incoming.ToArray());
+            // It's a List behind the covers, but to get R# to shut up, I did the ToArray()
+            var incoming = (await session.QueryAsync(new FindAtLargeEnvelopes
+            {
+                Status = TransportConstants.Incoming
+            })).ToArray();
+
+            await _marker.MarkIncomingOwnedByThisNode(session, incoming);
 
             await session.SaveChangesAsync();
 
@@ -52,6 +53,10 @@ namespace Jasper.Marten.Persistence.Resiliency
                 envelope.OwnerId = _settings.UniqueNodeId;
                 await _workers.Enqueue(envelope);
             }
+
+            // TODO -- determine if it should schedule another incoming recovery batch immediately
         }
+
+
     }
 }

@@ -30,6 +30,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly RecoverOutgoingMessages _outgoingMessages;
         private Timer _scheduledJobTimer;
         private Timer _nodeReassignmentTimer;
+        private ReassignFromDormantNodes _nodeReassignment;
 
         public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeLogger logger, StoreOptions storeOptions)
         {
@@ -50,7 +51,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             _incomingMessages = new RecoverIncomingMessages(_workers, _settings, marker, this);
             _outgoingMessages = new RecoverOutgoingMessages(_channels, _settings, marker, this);
 
-
+            _nodeReassignment = new ReassignFromDormantNodes(_storeOptions);
         }
 
         public void RescheduleOutgoingRecovery()
@@ -122,10 +123,10 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             }, _settings, 5.Seconds(), 5.Seconds());
 
-            // TODO -- make the polling configurable
+            // TODO -- make the polling configurable. This needs to be on a slower loop
             _nodeReassignmentTimer = new Timer(s =>
             {
-                _worker.Post(_scheduledJobs);
+                _worker.Post(_nodeReassignment);
 
 
             }, _settings, 1.Minutes(), 1.Minutes());
