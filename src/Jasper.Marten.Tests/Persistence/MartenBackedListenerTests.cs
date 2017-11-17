@@ -35,7 +35,11 @@ namespace Jasper.Marten.Tests.Persistence
 
         public MartenBackedListenerTests()
         {
-            theStore = DocumentStore.For(ConnectionSource.ConnectionString);
+            theStore = DocumentStore.For(_ =>
+            {
+                _.Connection(ConnectionSource.ConnectionString);
+                _.Schema.For<Envelope>().Duplicate(x => x.ExecutionTime);
+            });
 
             theStore.Advanced.Clean.CompletelyRemoveAll();
 

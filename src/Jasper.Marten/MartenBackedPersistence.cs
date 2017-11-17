@@ -1,6 +1,8 @@
-﻿using Jasper.Bus.Transports;
+﻿using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using Jasper.Configuration;
 using Jasper.Marten.Persistence;
+using Marten;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Marten
@@ -13,6 +15,10 @@ namespace Jasper.Marten
         public void Configure(JasperRegistry registry)
         {
             registry.Services.AddSingleton<IPersistence, MartenBackedMessagePersistence>();
+            registry.Settings.Alter<StoreOptions>(options =>
+            {
+                options.Schema.For<Envelope>().Duplicate(x => x.ExecutionTime);
+            });
         }
     }
 }

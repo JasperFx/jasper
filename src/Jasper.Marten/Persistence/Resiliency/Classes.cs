@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Marten;
@@ -147,48 +144,6 @@ namespace Jasper.Marten.Persistence.Resiliency
         {
             // think this needs to be a sproc w/ a cursor. Boo.
             throw new NotImplementedException();
-        }
-    }
-
-    public class RunScheduledJobs : IMessagingAction
-    {
-        private readonly IWorkerQueue _workers;
-        private readonly IDocumentStore _store;
-        private readonly BusSettings _settings;
-        public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
-
-        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, BusSettings settings)
-        {
-            _workers = workers;
-            _store = store;
-            _settings = settings;
-        }
-
-        public async Task Execute(IDocumentSession session)
-        {
-            if (!await session.TryGetGlobalTxLock(ScheduledJobLockId))
-            {
-                return;
-            }
-
-            // Use a compiled query here
-            var readyToExecute = await session.Query<Envelope>()
-                .Where(x => x.Status == TransportConstants.Scheduled && x.ExecutionTime <= DateTime.UtcNow).ToListAsync();
-
-            var identities = readyToExecute.Select(x => x.Id).ToArray();
-
-            // TODO -- Go down to straight SQL later.
-            session.Patch<Envelope>(x => x.Id.IsOneOf(identities)).Set(x => x.Status, TransportConstants.Incoming);
-            session.Patch<Envelope>(x => x.Id.IsOneOf(identities)).Set(x => x.OwnerId, _settings.UniqueNodeId);
-
-            await session.SaveChangesAsync();
-
-            foreach (var envelope in readyToExecute)
-            {
-                envelope.Callback = new MartenCallback(envelope, _workers, _store);
-
-                await _workers.Enqueue(envelope);
-            }
         }
     }
 }
