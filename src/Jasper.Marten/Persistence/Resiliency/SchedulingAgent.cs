@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Baseline.Dates;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Transports.Configuration;
@@ -13,29 +15,60 @@ using NpgsqlTypes;
 
 namespace Jasper.Marten.Persistence.Resiliency
 {
-    // This will be a singleton
-    public class SchedulingAgent
+    public class SchedulingAgent : IHostedService, IDisposable, ISchedulingAgent
     {
         private readonly IChannelGraph _channels;
         private readonly IWorkerQueue _workers;
         private readonly IDocumentStore _store;
         private readonly BusSettings _settings;
         private readonly CompositeLogger _logger;
+        private readonly StoreOptions _storeOptions;
         private readonly ActionBlock<IMessagingAction> _worker;
         private NpgsqlConnection _connection;
+        private readonly RunScheduledJobs _scheduledJobs;
+        private readonly RecoverIncomingMessages _incomingMessages;
+        private readonly RecoverOutgoingMessages _outgoingMessages;
+        private Timer _scheduledJobTimer;
+        private Timer _nodeReassignmentTimer;
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeLogger logger)
+        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeLogger logger, StoreOptions storeOptions)
         {
             _channels = channels;
             _workers = workers;
             _store = store;
             _settings = settings;
             _logger = logger;
+            _storeOptions = storeOptions;
 
             _worker = new ActionBlock<IMessagingAction>(processAction, new ExecutionDataflowBlockOptions
             {
                 MaxDegreeOfParallelism = 1
             });
+
+            var marker = new OwnershipMarker(_settings, _storeOptions);
+            _scheduledJobs = new RunScheduledJobs(_workers, _store, marker);
+            _incomingMessages = new RecoverIncomingMessages(_workers, _settings, marker, this);
+            _outgoingMessages = new RecoverOutgoingMessages(_channels, _settings, marker, this);
+
+
+        }
+
+        public void RescheduleOutgoingRecovery()
+        {
+            _worker.Post(_outgoingMessages);
+        }
+
+        public void RescheduleIncomingRecovery()
+        {
+            _worker.Post(_incomingMessages);
+        }
+
+
+        public void Dispose()
+        {
+            _connection?.Dispose();
+            _scheduledJobTimer?.Dispose();
+            _nodeReassignmentTimer?.Dispose();
         }
 
         private async Task processAction(IMessagingAction action)
@@ -53,10 +86,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             {
                 await action.Execute(session);
 
-                if (!tx.IsCompleted)
-                {
-                    await tx.RollbackAsync();
-                }
+
             }
             catch (Exception e)
             {
@@ -64,11 +94,17 @@ namespace Jasper.Marten.Persistence.Resiliency
             }
             finally
             {
+                // TODO -- what if this blows up? Try to restart the connection again?
+                if (!tx.IsCompleted)
+                {
+                    await tx.RollbackAsync();
+                }
+
                 session.Dispose();
             }
         }
 
-        public async Task Start()
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             _connection = _store.Tenancy.Default.CreateConnection();
 
@@ -76,9 +112,26 @@ namespace Jasper.Marten.Persistence.Resiliency
             await _connection.OpenAsync(_settings.Cancellation);
 
             await retrieveLockForThisNode();
+
+            // TODO -- make the polling configurable
+            _scheduledJobTimer = new Timer(s =>
+            {
+                _worker.Post(_scheduledJobs);
+                _worker.Post(_incomingMessages);
+                _worker.Post(_outgoingMessages);
+
+            }, _settings, 5.Seconds(), 5.Seconds());
+
+            // TODO -- make the polling configurable
+            _nodeReassignmentTimer = new Timer(s =>
+            {
+                _worker.Post(_scheduledJobs);
+
+
+            }, _settings, 1.Minutes(), 1.Minutes());
         }
 
-        public async Task Stop()
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
             _worker.Complete();
 
