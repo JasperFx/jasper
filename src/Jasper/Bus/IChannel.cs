@@ -11,7 +11,11 @@ namespace Jasper.Bus
 
         bool ShouldSendMessage(Type messageType);
 
+        // Rename this to FullSend?
         Task Send(Envelope envelope);
+
+        // Resend(Envelope envelope)? Skip straight to agent?
+
     }
 
 }

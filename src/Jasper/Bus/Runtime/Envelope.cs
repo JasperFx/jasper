@@ -229,6 +229,10 @@ namespace Jasper.Bus.Runtime
             set => _executionTime = value?.ToUniversalTime();
         }
 
+        public string Status { get; set; }
+
+        public int OwnerId { get; set; } = 0;
+
         public bool IsDelayed(DateTime utcNow)
         {
             return ExecutionTime.HasValue && ExecutionTime.Value > utcNow;

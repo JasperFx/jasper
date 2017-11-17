@@ -26,9 +26,10 @@ namespace Jasper.Bus.Transports.Configuration
             _machineName = Environment.MachineName;
             ServiceName = "Jasper";
 
+            UniqueNodeId = Guid.NewGuid().ToString().GetHashCode();
         }
 
-
+        public int UniqueNodeId { get; }
 
         // Was ChannelGraph.Name
         public string ServiceName
