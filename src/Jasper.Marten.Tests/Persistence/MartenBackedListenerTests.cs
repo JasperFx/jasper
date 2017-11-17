@@ -128,6 +128,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             persisted.Status.ShouldBe(TransportConstants.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
+            persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
         }
@@ -140,6 +141,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             persisted.Status.ShouldBe(TransportConstants.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
+            persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
         }
@@ -152,6 +154,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             persisted.Status.ShouldBe(TransportConstants.Scheduled);
             persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
+            persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasNotEnqueued(envelope);
         }
