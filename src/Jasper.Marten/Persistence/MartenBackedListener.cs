@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
 using Marten;
 
-namespace Jasper.Marten
+namespace Jasper.Marten.Persistence
 {
     public class MartenBackedListener : IListener
     {
@@ -15,22 +18,51 @@ namespace Jasper.Marten
         private readonly IWorkerQueue _queues;
         private readonly IDocumentStore _store;
         private readonly CompositeLogger _logger;
+        private readonly BusSettings _settings;
 
-        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeLogger logger)
+        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeLogger logger, BusSettings settings)
         {
             _agent = agent;
             _queues = queues;
             _store = store;
             _logger = logger;
+            _settings = settings;
         }
 
         public Uri Address => _agent.Address;
 
         public async Task<ReceivedStatus> Received(Uri uri, Envelope[] messages)
         {
+            var now = DateTime.UtcNow;
+
+            return await ProcessReceivedMessages(now, uri, messages);
+        }
+
+        // Separated for testing here.
+        public async Task<ReceivedStatus> ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] messages)
+        {
             try
             {
-                // TODO -- need to filter on delayed messages here!
+                foreach (var message in messages)
+                {
+                    message.ReceivedAt = uri;
+
+                    if (message.IsDelayed(now))
+                    {
+                        message.Status = TransportConstants.Scheduled;
+                        message.OwnerId = TransportConstants.AnyNode;
+                    }
+                    else
+                    {
+                        message.Status = TransportConstants.Scheduled;
+                        message.OwnerId = _settings.UniqueNodeId;
+                    }
+
+                    message.Status = message.IsDelayed(now)
+                        ? TransportConstants.Scheduled
+                        : TransportConstants.Incoming;
+                }
+
                 using (var session = _store.LightweightSession())
                 {
                     session.Store(messages);
@@ -41,9 +73,8 @@ namespace Jasper.Marten
                 // messages in the queue and shove into the pool of envelopes for anybody to use
                 // Instead of sending them into the worker queue
 
-                foreach (var message in messages)
+                foreach (var message in messages.Where(x => x.Status == TransportConstants.Incoming))
                 {
-                    message.ReceivedAt = uri;
                     message.Callback = new MartenCallback(message, _queues, _store);
                     await _queues.Enqueue(message);
                 }

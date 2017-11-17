@@ -5,7 +5,7 @@ using Jasper.Bus.Transports;
 using Jasper.Bus.WorkerQueues;
 using Marten;
 
-namespace Jasper.Marten
+namespace Jasper.Marten.Persistence
 {
     public class MartenCallback : IMessageCallback
     {

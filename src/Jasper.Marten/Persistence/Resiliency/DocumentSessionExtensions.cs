@@ -6,7 +6,7 @@ using Marten.Util;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace Jasper.Marten.Resiliency
+namespace Jasper.Marten.Persistence.Resiliency
 {
     public static class DocumentSessionExtensions
     {

@@ -168,5 +168,10 @@ namespace Jasper.Bus.Logging
                 }
             }
         }
+
+        public static CompositeLogger Empty()
+        {
+            return new CompositeLogger(new IBusLogger[0]);
+        }
     }
 }

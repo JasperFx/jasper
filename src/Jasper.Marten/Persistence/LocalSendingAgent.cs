@@ -6,7 +6,7 @@ using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.WorkerQueues;
 using Marten;
 
-namespace Jasper.Marten
+namespace Jasper.Marten.Persistence
 {
     public class LocalSendingAgent : ISendingAgent
     {

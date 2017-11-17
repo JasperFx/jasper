@@ -9,7 +9,7 @@ using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
 using Marten;
 
-namespace Jasper.Marten
+namespace Jasper.Marten.Persistence
 {
     public class MartenBackedSendingAgent : ISendingAgent, ISenderCallback
     {

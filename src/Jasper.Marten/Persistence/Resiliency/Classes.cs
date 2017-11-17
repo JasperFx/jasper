@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Baseline.Dates;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Marten;
@@ -14,7 +14,7 @@ using Marten.Util;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace Jasper.Marten.Resiliency
+namespace Jasper.Marten.Persistence.Resiliency
 {
     public interface IMessagingAction
     {
@@ -173,12 +173,12 @@ namespace Jasper.Marten.Resiliency
 
             // Use a compiled query here
             var readyToExecute = await session.Query<Envelope>()
-                .Where(x => x.Status == "Scheduled" && x.ExecutionTime <= DateTime.UtcNow).ToListAsync();
+                .Where(x => x.Status == TransportConstants.Scheduled && x.ExecutionTime <= DateTime.UtcNow).ToListAsync();
 
             var identities = readyToExecute.Select(x => x.Id).ToArray();
 
-            // Go down to straight SQL later.
-            session.Patch<Envelope>(x => x.Id.IsOneOf(identities)).Set(x => x.Status, "incoming");
+            // TODO -- Go down to straight SQL later.
+            session.Patch<Envelope>(x => x.Id.IsOneOf(identities)).Set(x => x.Status, TransportConstants.Incoming);
             session.Patch<Envelope>(x => x.Id.IsOneOf(identities)).Set(x => x.OwnerId, _settings.UniqueNodeId);
 
             await session.SaveChangesAsync();
@@ -189,8 +189,6 @@ namespace Jasper.Marten.Resiliency
 
                 await _workers.Enqueue(envelope);
             }
-
-            await session.ReleaseGlobalLock(ScheduledJobLockId);
         }
     }
 }
