@@ -14,13 +14,13 @@ using Xunit;
 
 namespace Jasper.Marten.Tests.Persistence.Resiliency
 {
-    public class run_scheduled_job_specs : MartenBackedListenerTests
+    public class run_scheduled_job_specs : MartenBackedListenerContext
     {
         private RunScheduledJobs theScheduledJob;
 
         public run_scheduled_job_specs()
         {
-            theScheduledJob = new RunScheduledJobs(theWorkerQueue, theStore, theSettings, new StoreOptions());
+            theScheduledJob = new RunScheduledJobs(theWorkerQueue, theStore, new OwnershipMarker(theSettings, new StoreOptions()));
         }
 
         protected async Task<IReadOnlyList<Envelope>> afterExecutingAt(DateTime time)

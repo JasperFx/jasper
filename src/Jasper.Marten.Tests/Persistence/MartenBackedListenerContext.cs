@@ -21,8 +21,49 @@ using Xunit;
 namespace Jasper.Marten.Tests.Persistence
 {
 
+    public class MartenBackedListenerTests : MartenBackedListenerContext
+    {
+        [Fact]
+        public async Task handling_a_single_not_scheduled_envelope()
+        {
+            var envelope = notScheduledEnvelope();
+            var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-    public class MartenBackedListenerTests : IDisposable
+            persisted.Status.ShouldBe(TransportConstants.Incoming);
+            persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
+            persisted.ReceivedAt.ShouldBe(theUri);
+
+            assertEnvelopeWasEnqueued(envelope);
+        }
+
+        [Fact]
+        public async Task handling_a_single_scheduled_but_expired_envelope()
+        {
+            var envelope = scheduledButExpiredEnvelope();
+            var persisted = (await afterReceivingTheEnvelopes()).Single();
+
+            persisted.Status.ShouldBe(TransportConstants.Incoming);
+            persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
+            persisted.ReceivedAt.ShouldBe(theUri);
+
+            assertEnvelopeWasEnqueued(envelope);
+        }
+
+        [Fact]
+        public async Task handling_a_single_scheduled_envelope()
+        {
+            var envelope = scheduledEnvelope();
+            var persisted = (await afterReceivingTheEnvelopes()).Single();
+
+            persisted.Status.ShouldBe(TransportConstants.Scheduled);
+            persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
+            persisted.ReceivedAt.ShouldBe(theUri);
+
+            assertEnvelopeWasNotEnqueued(envelope);
+        }
+    }
+
+    public class MartenBackedListenerContext : IDisposable
     {
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected readonly DocumentStore theStore;
@@ -33,7 +74,7 @@ namespace Jasper.Marten.Tests.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
 
 
-        public MartenBackedListenerTests()
+        public MartenBackedListenerContext()
         {
             theStore = DocumentStore.For(_ =>
             {
@@ -124,43 +165,6 @@ namespace Jasper.Marten.Tests.Persistence
         }
 
 
-        [Fact]
-        public async Task handling_a_single_not_scheduled_envelope()
-        {
-            var envelope = notScheduledEnvelope();
-            var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(TransportConstants.Incoming);
-            persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
-            persisted.ReceivedAt.ShouldBe(theUri);
-
-            assertEnvelopeWasEnqueued(envelope);
-        }
-
-        [Fact]
-        public async Task handling_a_single_scheduled_but_expired_envelope()
-        {
-            var envelope = scheduledButExpiredEnvelope();
-            var persisted = (await afterReceivingTheEnvelopes()).Single();
-
-            persisted.Status.ShouldBe(TransportConstants.Incoming);
-            persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
-            persisted.ReceivedAt.ShouldBe(theUri);
-
-            assertEnvelopeWasEnqueued(envelope);
-        }
-
-        [Fact]
-        public async Task handling_a_single_scheduled_envelope()
-        {
-            var envelope = scheduledEnvelope();
-            var persisted = (await afterReceivingTheEnvelopes()).Single();
-
-            persisted.Status.ShouldBe(TransportConstants.Scheduled);
-            persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
-            persisted.ReceivedAt.ShouldBe(theUri);
-
-            assertEnvelopeWasNotEnqueued(envelope);
-        }
     }
 }

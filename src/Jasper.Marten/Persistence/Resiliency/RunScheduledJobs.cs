@@ -5,12 +5,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Marten;
 using Marten.Linq;
-using Marten.Util;
-using NpgsqlTypes;
 
 namespace Jasper.Marten.Persistence.Resiliency
 {
@@ -19,18 +16,14 @@ namespace Jasper.Marten.Persistence.Resiliency
 
         private readonly IWorkerQueue _workers;
         private readonly IDocumentStore _store;
-        private readonly BusSettings _settings;
+        private readonly OwnershipMarker _marker;
         public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
-        private readonly string _markIncomingSql;
 
-        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, BusSettings settings, StoreOptions storeConfiguration)
+        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, OwnershipMarker marker)
         {
             _workers = workers;
             _store = store;
-            _settings = settings;
-
-            var dbObjectName = storeConfiguration.Storage.MappingFor(typeof(Envelope)).Table;
-            _markIncomingSql = $"update {dbObjectName} set data = data || '{{\"{nameof(Envelope.Status)}\": \"{TransportConstants.Incoming}\", \"{nameof(Envelope.OwnerId)}\": \"{settings.UniqueNodeId}\"}}' where id = ANY(:idlist)";
+            _marker = marker;
         }
 
         public async Task Execute(IDocumentSession session)
@@ -49,15 +42,12 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             var readyToExecute = (await session.QueryAsync(new FindScheduledJobsReadyToGo(utcNow))).ToArray();
 
-            var identities = readyToExecute.Select(x => x.Id).ToArray();
-
-            if (!identities.Any())
-            {
-                return new Envelope[0];
-            }
+            if (!readyToExecute.Any()) return readyToExecute;
 
 
-            await markAsIncomingOwnedByThisNode(session, identities);
+            await _marker.MarkIncomingOwnedByThisNode(session, readyToExecute);
+
+            await session.SaveChangesAsync();
 
 
             foreach (var envelope in readyToExecute)
@@ -68,16 +58,6 @@ namespace Jasper.Marten.Persistence.Resiliency
             }
 
             return readyToExecute;
-        }
-
-        private async Task markAsIncomingOwnedByThisNode(IDocumentSession session, string[] identities)
-        {
-            await session.Connection.CreateCommand()
-                .Sql(_markIncomingSql)
-                .With("idlist", identities, NpgsqlDbType.Array | NpgsqlDbType.Varchar)
-                .ExecuteNonQueryAsync();
-
-            await session.SaveChangesAsync();
         }
     }
 
