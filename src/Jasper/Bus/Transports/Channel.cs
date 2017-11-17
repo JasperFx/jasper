@@ -45,6 +45,13 @@ namespace Jasper.Bus.Transports
             return _agent.StoreAndForward(envelope);
         }
 
+        public Task QuickSend(Envelope envelope)
+        {
+            return _agent.EnqueueOutgoing(envelope);
+        }
+
+        public bool Latched => _agent.Latched;
+
         public void Dispose()
         {
             _agent?.Dispose();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
@@ -66,6 +67,8 @@ namespace Jasper.Bus.Transports
         {
             // Nothing
         }
+
+        public bool Latched { get; } = false;
 
         public Task EnqueueOutgoing(Envelope envelope)
         {

@@ -14,7 +14,16 @@ namespace Jasper.Bus
         // Rename this to FullSend?
         Task Send(Envelope envelope);
 
-        // Resend(Envelope envelope)? Skip straight to agent?
+
+        /// <summary>
+        /// Bypasses serialization, modifiers, and persistence. Mostly used
+        /// by the outgoing "recovery" agents
+        /// </summary>
+        /// <param name="envelope"></param>
+        /// <returns></returns>
+        Task QuickSend(Envelope envelope);
+
+        bool Latched { get; }
 
     }
 

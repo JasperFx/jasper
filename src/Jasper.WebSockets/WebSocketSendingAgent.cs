@@ -24,6 +24,7 @@ namespace Jasper.WebSockets
         public Uri Destination { get; } = WebSocketTransport.DefaultUri;
         public Uri DefaultReplyUri { get; set; }
 
+        public bool Latched { get; } = false;
         public Task EnqueueOutgoing(Envelope envelope)
         {
             var json = envelope.Message.ToCleanJson();

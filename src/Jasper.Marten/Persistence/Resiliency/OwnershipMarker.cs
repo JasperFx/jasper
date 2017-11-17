@@ -23,7 +23,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             _markAtLargeSql = $"update {dbObjectName} set data = data || '{{\"{nameof(Envelope.Status)}\": \"{TransportConstants.Outgoing}\", \"{nameof(Envelope.OwnerId)}\": \"{TransportConstants.AnyNode}\"}}' where id = ANY(:idlist)";
 
 
-            _reassignDormant = $@"update {dbObjectName} set data = data "
+            //_reassignDormant = $@"update {dbObjectName} set data = data ";
         }
 
         public Task MarkIncomingOwnedByThisNode(IDocumentSession session, params Envelope[] envelopes)

@@ -25,6 +25,8 @@ namespace Jasper.Bus.Transports.Stub
 
         }
 
+        public bool Latched { get; } = false;
+
         public Uri Destination { get; }
         public Uri DefaultReplyUri { get; set; }
 

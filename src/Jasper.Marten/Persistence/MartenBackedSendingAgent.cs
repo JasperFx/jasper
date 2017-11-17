@@ -28,6 +28,8 @@ namespace Jasper.Marten.Persistence
             _logger = logger;
         }
 
+        public bool Latched => _sender.Latched;
+
         public Uri DefaultReplyUri { get; set; }
 
         public Task EnqueueOutgoing(Envelope envelope)

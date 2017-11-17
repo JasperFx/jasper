@@ -29,6 +29,8 @@ namespace Jasper.Bus.Transports.Sending
         public Uri Destination { get; }
         public Uri DefaultReplyUri { get; set; }
 
+        public bool Latched => _sender.Latched;
+
         public Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;

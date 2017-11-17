@@ -27,6 +27,9 @@ namespace Jasper.Marten.Persistence
         }
 
         public Uri DefaultReplyUri { get; set; }
+
+        public bool Latched => false;
+
         public Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.Callback = new MartenCallback(envelope, _queues, _store);

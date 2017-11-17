@@ -8,7 +8,6 @@ namespace Jasper.Marten.Persistence.Resiliency
     {
         public ReassignFromDormantNodes(StoreOptions options)
         {
-";
         }
 
         public Task Execute(IDocumentSession session)
