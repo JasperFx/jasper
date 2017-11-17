@@ -13,11 +13,6 @@ using NpgsqlTypes;
 
 namespace Jasper.Marten.Persistence.Resiliency
 {
-    public interface IMessagingAction
-    {
-        Task Execute(IDocumentSession session);
-    }
-
     // This will be a singleton
     public class SchedulingAgent
     {
@@ -111,39 +106,5 @@ namespace Jasper.Marten.Persistence.Resiliency
                 .ExecuteNonQueryAsync(_settings.Cancellation);
         }
 
-    }
-
-    public class RecoverIncomingMessages : IMessagingAction
-    {
-        public Task Execute(IDocumentSession session)
-        {
-            // try to get the "jasper-incoming" lock
-            // if so, pull 100 messages. Assign all to this node
-            // put in worker queues
-
-            throw new NotImplementedException();
-        }
-    }
-
-    public class RecoverOutgoingMessages : IMessagingAction
-    {
-        public Task Execute(IDocumentSession session)
-        {
-            // try to get the "jasper-outgoing" lock
-            // if so, pull 100 messages. Assign all to this node
-            // put in sender agents
-            // will need an IChannel.QuickSend()
-
-            throw new NotImplementedException();
-        }
-    }
-
-    public class ReassignFromDormantNodes : IMessagingAction
-    {
-        public Task Execute(IDocumentSession session)
-        {
-            // think this needs to be a sproc w/ a cursor. Boo.
-            throw new NotImplementedException();
-        }
     }
 }
