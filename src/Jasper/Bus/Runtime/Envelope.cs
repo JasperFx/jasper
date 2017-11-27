@@ -6,6 +6,7 @@ using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Conneg;
 using Jasper.Util;
+using Newtonsoft.Json;
 
 namespace Jasper.Bus.Runtime
 {
@@ -49,6 +50,7 @@ namespace Jasper.Bus.Runtime
             Callback = callback;
         }
 
+        [JsonIgnore]
         public IMessageCallback Callback { get; set; }
 
         public bool MatchesResponse(object message)

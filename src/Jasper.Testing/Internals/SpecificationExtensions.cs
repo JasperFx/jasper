@@ -59,16 +59,6 @@ namespace Jasper.Testing.Internals
         }
 
 
-        public static void ShouldBeNull(this object anObject)
-        {
-            anObject.ShouldBe(null);
-        }
-
-        public static void ShouldNotBeNull(this object anObject)
-        {
-            anObject.ShouldNotBe(null);
-        }
-
         public static T IsType<T>(this object actual)
         {
             actual.ShouldBeOfType(typeof(T));

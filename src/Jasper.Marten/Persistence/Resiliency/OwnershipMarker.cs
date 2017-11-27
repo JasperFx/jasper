@@ -40,6 +40,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             return execute(session, _markAtLargeSql, envelopes);
         }
 
+
         private Task execute(IDocumentSession session, string sql, Envelope[] envelopes)
         {
             var identities = envelopes.Select(x => x.Id).ToArray();

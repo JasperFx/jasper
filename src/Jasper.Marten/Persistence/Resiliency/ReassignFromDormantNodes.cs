@@ -25,7 +25,7 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             // TODO -- find all nodes reflected in Envelope.OwnerId where you
             // can get an advisory lock, which tells us that that node is down. Reassign all to AnyNode
-=
+
             // think this needs to be a sproc w/ a cursor. Boo.
             throw new NotImplementedException();
         }

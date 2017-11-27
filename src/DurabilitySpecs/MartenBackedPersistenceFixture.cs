@@ -106,6 +106,8 @@ namespace DurabilitySpecs
                         {
                             return;
                         }
+
+                        await Task.Delay(100);
                     }
                 }
                 finally

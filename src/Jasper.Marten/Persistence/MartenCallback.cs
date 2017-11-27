@@ -20,38 +20,57 @@ namespace Jasper.Marten.Persistence
             _store = store;
         }
 
-        public Task MarkComplete()
+        public async Task MarkComplete()
         {
             // TODO -- later, come back and do retries?
             using (var session = _store.LightweightSession())
             {
                 session.Delete(_envelope);
-                return session.SaveChangesAsync();
+                await session.SaveChangesAsync();
             }
         }
 
-        public Task MoveToErrors(Envelope envelope, Exception exception)
+        public async Task MoveToErrors(Envelope envelope, Exception exception)
         {
-            // TODO -- let's actually do a dead letter queue inside of Marten
-            return MarkComplete();
+            // TODO -- later, come back and do retries?
+            using (var session = _store.LightweightSession())
+            {
+                session.Delete(_envelope);
+
+                var report = new ErrorReport(envelope, exception);
+                session.Store(report);
+
+                await session.SaveChangesAsync();
+            }
+
+            // TODO -- make this configurable about whether or not it saves off error reports
+
         }
 
         public async Task Requeue(Envelope envelope)
-        {8
-
+        {
+            // TODO -- Optimize by incrementing instead w/ sql
             using (var session = _store.LightweightSession())
             {
-                session.Patch<Envelope>(envelope.Id).Set(x => x.Attempts, envelope.Attempts);
+                envelope.Attempts++;
+                session.Store(envelope);
+
                 await session.SaveChangesAsync();
             }
 
             await _queue.Enqueue(envelope);
         }
 
-        public Task MoveToDelayedUntil(DateTime time, Envelope envelope)
+        public async Task MoveToDelayedUntil(DateTime time, Envelope envelope)
         {
-            // TODO -- do this one.
-            throw new NotImplementedException();
+            envelope.ExecutionTime = time;
+            envelope.Status = TransportConstants.Scheduled;
+
+            using (var session = _store.LightweightSession())
+            {
+                session.Store(envelope);
+                await session.SaveChangesAsync();
+            }
         }
     }
 }
