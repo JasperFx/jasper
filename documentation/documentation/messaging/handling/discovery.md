@@ -1,7 +1,7 @@
 <!--title:Message Handler Discovery-->
 
 Jasper has built in mechanisms for automatically finding message handler methods in your application
-or the ability to explicitly add handler types. The conventional discovery can can
+or the ability to explicitly add handler types. The conventional discovery can
 be disabled or customized as well.
 
 ## Default Conventional Discovery

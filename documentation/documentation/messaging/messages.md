@@ -1,7 +1,7 @@
 <!--title:Reading, Writing, and Versioning Messages-->
 
-Jasper ultimately needs to be able to dehydrate any published message to a `byte[]` array, then ship that information along with the related header
-metadata to the receiving application that will ultimately hydrate that `byte[]` array back to a .Net object. Out of the box, Jasper comes with support for using [Newtonsoft.Json](https://www.newtonsoft.com/json) to serialize and deserialize objects for
+Jasper ultimately needs to be able to dehydrate any published message to a `byte[]` then ship that information along with the related header
+metadata to the receiving application that will ultimately hydrate that `byte[]` back to a .Net object. Out of the box, Jasper comes with support for using [Newtonsoft.Json](https://www.newtonsoft.com/json) to serialize and deserialize objects for
 transport across the wire. The easiest, and likely starting point, for using Jasper for messaging is to use a shared DTO (Data Transfer Object) library that
 exposes the shared message types that can easily be serialized and deserialized from and to Json.
 
@@ -102,7 +102,7 @@ that into the IoC service container.
 
 <[sample:ISerializer]>
 
-See the [built in Newtonsoft.Json adapter](https://github.com/JasperFx/jasper/blob/master/src/Jasper/Conneg/NewtonsoftSerializerFactory.cs) for an example usage.
+See the [built in Newtonsoft.Json adapter](https://github.com/JasperFx/jasper/blob/master/src/Jasper/Conneg/Json/NewtonsoftSerializerFactory.cs) for an example usage.
 
 
 ## Versioned Message Forwarding

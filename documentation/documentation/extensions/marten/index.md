@@ -16,7 +16,7 @@ arguments or method parameters in message or HTTP handlers:
 
 Likewise, all of these service will be registered in the underlying IoC container for the application.
 
-If you need to customize an `IDocumentSession` for something like transaction levels or automatic dirty checking, we recommend that you just take in `IDocumentStore` and create teh session in the application code.
+If you need to customize an `IDocumentSession` for something like transaction levels or automatic dirty checking, we recommend that you just take in `IDocumentStore` and create the session in the application code.
 
 As an example:
 

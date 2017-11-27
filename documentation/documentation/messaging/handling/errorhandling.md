@@ -85,7 +85,7 @@ message(s) to send out. Use this capability if you want to notify senders when a
 ## Custom Error Handlers
 
 If the built in recipes don't cover your exception handling needs, all isn't lost. You can bypass
-the helpers and write your own class that implements the `IErrorPolicy` interface shown below:
+the helpers and write your own class that implements the `IErrorHandler` interface shown below:
 
 <[sample:IErrorHandler]>
 

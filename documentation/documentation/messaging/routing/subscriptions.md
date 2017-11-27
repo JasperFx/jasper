@@ -25,7 +25,7 @@ of the `ISubscriptionsRepository` interface that you can plug into the applicati
 
 <[sample:SubscriptionStorageOverride]>
 
-You can see a [sample implementation for Marten here](https://github.com/JasperFx/jasper/blob/master/src/JasperBus.Marten/MartenSubscriptionRepository.cs).
+You can see a [sample implementation for Marten here](https://github.com/JasperFx/jasper/blob/master/src/Jasper.Marten/Subscriptions/MartenSubscriptionRepository.cs).
 
 As of today, the Jasper community has working subscription storage based on <[linkto:documentation/extensions/consul;title=Consul]> and
 <[linkto:documentation/extensions/marten/subscriptions;title=Marten]> on top of a Postgresql database. 
@@ -103,13 +103,13 @@ and report and validate against the entire known ecosystem. Assuming that every 
 In the sample above, we're writing the whole *messaging graph* of matched routes and potential problems to a file named
 `subscription-report.json`.
 
-Do note that this command will fail at the command line if it detects any problems unless you also use the `--ignore-failures` flag. Definitel use this flag if you are only using this command for informational purposes or you aren't being strict about
+Do note that this command will fail at the command line if it detects any problems unless you also use the `--ignore-failures` flag. Definitely use this flag if you are only using this command for informational purposes or you aren't being strict about
 marking published messages.
 
 This command compares publisher and subscription capabilities based on supported transports and message representations. This report can detect:
 
 * Valid message routes for each permutation of message type, subscriber, and publisher 
-* Messages referenced in subscriptions that have no known known publisher
+* Messages referenced in subscriptions that have no known publisher
 * Messages that are marked as published but not subscribed to by any known application
 * Mismatched subscriptions based on publisher and subscriber capabilities. This will catch any issue with
   having no compatible message representations or matching transports
