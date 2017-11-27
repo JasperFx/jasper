@@ -33,8 +33,6 @@ namespace Jasper.Bus.Transports
             return _address.ShouldSendMessage(messageType);
         }
 
-        // TODO -- will need another mechanism here to just enqueue outgoing
-
         public Task Send(Envelope envelope)
         {
             foreach (var modifier in _address.Modifiers)

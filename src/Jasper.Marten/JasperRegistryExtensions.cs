@@ -1,4 +1,5 @@
-﻿using Jasper.Settings;
+﻿using System;
+using Jasper.Settings;
 using Marten;
 
 namespace Jasper.Marten
@@ -13,6 +14,16 @@ namespace Jasper.Marten
         public static void MartenConnectionStringIs(this JasperRegistry registry, string connectionString)
         {
             registry.Settings.MartenConnectionStringIs(connectionString);
+        }
+
+        public static void ConfigureMarten(this JasperRegistry registry, Action<StoreOptions> configuration)
+        {
+            registry.Settings.ConfigureMarten(configuration);
+        }
+
+        public static void ConfigureMarten(this JasperSettings settings, Action<StoreOptions> configuration)
+        {
+            settings.Alter(configuration);
         }
     }
 }
