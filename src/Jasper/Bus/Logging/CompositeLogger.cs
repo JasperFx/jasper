@@ -169,6 +169,20 @@ namespace Jasper.Bus.Logging
             }
         }
 
+        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+            foreach (var sink in Loggers)
+            {
+                try
+                {
+                    sink.MovedToErrorQueue(envelope, ex);
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
         public static CompositeLogger Empty()
         {
             return new CompositeLogger(new IBusLogger[0]);

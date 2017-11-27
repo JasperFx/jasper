@@ -23,6 +23,12 @@ namespace Jasper.Marten.Persistence
             using (var session = _store.LightweightSession())
             {
                 _marker.MarkOwnedByAnyNode(session, batch.Messages.ToArray());
+
+                foreach (var envelope in batch.Messages.Where(x => x.IsExpired()))
+                {
+                    session.Delete(envelope);
+                }
+
                 session.SaveChanges();
             }
         }

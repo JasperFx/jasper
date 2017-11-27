@@ -43,6 +43,8 @@ namespace Jasper.Marten.Persistence.Resiliency
                 Status = TransportConstants.Outgoing
             })).ToArray();
 
+            // TODO -- filter out ones that are expired
+
 
             // TODO -- do you throw away messages that cannot be matched to an outgoing channel?
             // I say we make an "unknown channel" here that can just collect the message

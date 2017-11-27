@@ -73,5 +73,10 @@ namespace Jasper.Bus.Logging
         {
             ConsoleWriter.Write(ConsoleColor.Red, $"Could not deliver {envelope}");
         }
+
+        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+            ConsoleWriter.Write(ConsoleColor.Yellow, $"Envelope {envelope} was moved to the error queue with exception:");
+        }
     }
 }

@@ -11,6 +11,11 @@ namespace Jasper.Bus.Logging
 
         }
 
+        public virtual void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+            MessageFailed(envelope, ex);
+        }
+
         public virtual void Received(Envelope envelope)
         {
         }
@@ -29,6 +34,7 @@ namespace Jasper.Bus.Logging
 
         public virtual void MessageFailed(Envelope envelope, Exception ex)
         {
+            LogException(ex);
         }
 
         public virtual void LogException(Exception ex, string correlationId = null, string message = null)

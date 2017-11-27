@@ -35,6 +35,11 @@ namespace Module1
 
     public class ModuleBusLogger : IBusLogger
     {
+        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+
+        }
+
         public void Sent(Envelope envelope)
         {
         }

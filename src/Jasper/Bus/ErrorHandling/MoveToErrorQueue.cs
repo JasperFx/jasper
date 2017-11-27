@@ -14,14 +14,14 @@ namespace Jasper.Bus.ErrorHandling
 
         public Exception Exception { get; }
 
-        public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
+        public async Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
             context.SendFailureAcknowledgement(envelope, $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
 
-            context.Logger.MessageFailed(envelope, Exception);
-            context.Logger.LogException(Exception, envelope.Id);
+            await envelope.Callback.MoveToErrors(envelope, Exception);
 
-            return envelope.Callback.MoveToErrors(envelope, Exception);
+            context.Logger.MovedToErrorQueue(envelope, Exception);
+
         }
     }
 }

@@ -71,6 +71,11 @@ namespace StorytellerSpecs
             trace($"Envelope {envelope} cannot be delivered");
         }
 
+        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+
+        }
+
         private void trace(string message)
         {
             _context.Reporting.ReporterFor<BusActivity>().Messages.Add(message);

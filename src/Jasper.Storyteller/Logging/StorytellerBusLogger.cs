@@ -102,5 +102,11 @@ namespace Jasper.Storyteller.Logging
         {
             trace(envelope, "Could not be delivered");
         }
+
+        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+            trace(envelope, "Was moved to the error queue");
+            _errors.Exceptions.Add(ex);
+        }
     }
 }

@@ -12,7 +12,7 @@ using Marten;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
-namespace DurabilitySpecs
+namespace DurabilitySpecs.Fixtures.Marten
 {
     public class MartenBackedPersistenceFixture : Fixture
     {

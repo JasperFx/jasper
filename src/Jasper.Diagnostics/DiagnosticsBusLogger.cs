@@ -56,6 +56,11 @@ namespace Jasper.Diagnostics
         {
         }
 
+        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+
+        }
+
         public void Received(Envelope envelope)
         {
         }

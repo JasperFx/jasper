@@ -78,6 +78,12 @@ namespace Jasper.Bus.Logging
         /// </summary>
         /// <param name="envelope"></param>
         void Undeliverable(Envelope envelope);
+
+        /// <summary>
+        /// Called when Jasper moves an envelope into the dead letter queue
+        /// </summary>
+        /// <param name="envelope"></param>
+        void MovedToErrorQueue(Envelope envelope, Exception ex);
     }
     // ENDSAMPLE
 }

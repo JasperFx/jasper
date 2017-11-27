@@ -147,6 +147,11 @@ namespace Jasper.Testing.Bus
         {
 
         }
+
+        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+
+        }
     }
 
     public class WorkTracker

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.Sending;
+using Jasper.Internals.Util;
 
 namespace Jasper.Bus.Transports.Stub
 {
@@ -20,12 +21,14 @@ namespace Jasper.Bus.Transports.Stub
             Destination = destination;
         }
 
+        public readonly IList<Envelope> Sent = new List<Envelope>();
+
         public void Dispose()
         {
 
         }
 
-        public bool Latched { get; } = false;
+        public bool Latched { get; set; } = false;
 
         public Uri Destination { get; }
         public Uri DefaultReplyUri { get; set; }
@@ -39,6 +42,14 @@ namespace Jasper.Bus.Transports.Stub
             Callbacks.Add(callback);
 
             _stubTransport.Callbacks.Add(callback);
+
+            Sent.Add(envelope);
+
+            // For half stubbed out testing
+            if (envelope.MessageType.IsEmpty() || envelope.Data == null)
+            {
+                return Task.CompletedTask;
+            }
 
             envelope.Callback = callback;
 

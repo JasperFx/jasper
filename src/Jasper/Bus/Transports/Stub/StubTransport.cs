@@ -14,13 +14,12 @@ namespace Jasper.Bus.Transports.Stub
     {
         public readonly LightweightCache<Uri, StubChannel> Channels;
         private readonly IHandlerPipeline _pipeline;
-        private Uri _replyUri;
 
         public StubTransport(IHandlerPipeline pipeline)
 
         {
             _pipeline = pipeline;
-            _replyUri = new Uri($"stub://replies");
+            LocalReplyUri = new Uri($"stub://replies");
 
             Channels =
                 new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, pipeline, this));
@@ -43,10 +42,7 @@ namespace Jasper.Bus.Transports.Stub
             return Channels[uri];
         }
 
-        public Uri LocalReplyUri
-        {
-            get { return _replyUri; }
-        }
+        public Uri LocalReplyUri { get; }
 
         public void StartListening(BusSettings settings)
         {
