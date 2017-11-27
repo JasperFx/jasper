@@ -61,17 +61,17 @@ namespace Jasper.Bus
             return _sender.Send(envelope);
         }
 
-        public Task Schedule<T>(T message, DateTime executionTime)
+        public Task<string> Schedule<T>(T message, DateTime executionTime)
         {
             var envelope = new Envelope(message)
             {
                 ExecutionTime = executionTime
             };
 
-            return _persistence.ScheduleMessage(envelope);
+            return _persistence.ScheduleMessage(envelope).ContinueWith(_ => envelope.Id);
         }
 
-        public Task Schedule<T>(T message, TimeSpan delay)
+        public Task<string> Schedule<T>(T message, TimeSpan delay)
         {
             return Schedule(message, DateTime.UtcNow.Add(delay));
         }

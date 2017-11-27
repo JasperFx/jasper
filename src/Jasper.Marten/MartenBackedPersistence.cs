@@ -2,6 +2,7 @@
 using Jasper.Bus.Transports;
 using Jasper.Configuration;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.Resiliency;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,8 @@ namespace Jasper.Marten
             {
                 options.Schema.For<Envelope>().Duplicate(x => x.ExecutionTime);
             });
+
+            registry.Services.AddSingleton<IHostedService, SchedulingAgent>();
         }
     }
 }

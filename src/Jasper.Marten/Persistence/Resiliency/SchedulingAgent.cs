@@ -30,7 +30,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly RecoverOutgoingMessages _outgoingMessages;
         private Timer _scheduledJobTimer;
         private Timer _nodeReassignmentTimer;
-        private ReassignFromDormantNodes _nodeReassignment;
+        private readonly ReassignFromDormantNodes _nodeReassignment;
 
         public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeLogger logger, StoreOptions storeOptions)
         {
@@ -141,7 +141,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             await _connection.CreateCommand().Sql("SELECT pg_advisory_unlock(:id)")
                 .Sql("SELECT pg_advisory_lock(:id)")
                 .With("id", _settings.UniqueNodeId, NpgsqlDbType.Integer)
-                .ExecuteNonQueryAsync(_settings.Cancellation);
+                .ExecuteNonQueryAsync(CancellationToken.None);
 
             _connection.Close();
             _connection.Dispose();
