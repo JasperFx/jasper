@@ -17,17 +17,20 @@ namespace Jasper.Marten.Persistence
     {
         private readonly CancellationToken _cancellation;
         private readonly IDocumentStore _store;
+        private readonly BusSettings _settings;
 
         public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, CompositeLogger logger, BusSettings settings, OwnershipMarker marker)
             : base(destination, sender, logger, settings, new MartenBackedRetryAgent(store, sender, settings.Retries, marker))
         {
             _cancellation = cancellation;
             _store = store;
+            _settings = settings;
         }
 
         public override Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.EnsureData();
+            envelope.OwnerId = _settings.UniqueNodeId;
 
             envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
 
