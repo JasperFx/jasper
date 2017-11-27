@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Sending;
@@ -21,7 +22,7 @@ namespace Jasper.Testing.Bus.Transports.Sending
 
         public BatchedSenderTests()
         {
-            theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token);
+            theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token, CompositeLogger.Empty());
             theSender.Start(theSenderCallback);
 
             theBatch = new OutgoingMessageBatch(theSender.Destination, new Envelope[]

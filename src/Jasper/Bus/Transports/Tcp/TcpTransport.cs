@@ -35,7 +35,7 @@ namespace Jasper.Bus.Transports.Tcp
 
         public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
         {
-            var batchedSender = new BatchedSender(uri, new SocketSenderProtocol(), cancellation);
+            var batchedSender = new BatchedSender(uri, new SocketSenderProtocol(), cancellation, _logger);
 
             ISendingAgent agent;
 

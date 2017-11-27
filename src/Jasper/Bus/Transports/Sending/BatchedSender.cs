@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.Transports.Util;
@@ -14,6 +15,7 @@ namespace Jasper.Bus.Transports.Sending
 
         private readonly ISenderProtocol _protocol;
         private readonly CancellationToken _cancellation;
+        private readonly CompositeLogger _logger;
         private ISenderCallback _callback;
         private ActionBlock<OutgoingMessageBatch> _sender;
         private BatchingBlock<Envelope> _batching;
@@ -21,11 +23,12 @@ namespace Jasper.Bus.Transports.Sending
         private ActionBlock<Envelope> _serializing;
         private TransformBlock<Envelope[], OutgoingMessageBatch> _batchWriting;
 
-        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation)
+        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation, CompositeLogger logger)
         {
             Destination = destination;
             _protocol = protocol;
             _cancellation = cancellation;
+            _logger = logger;
         }
 
         public void Start(ISenderCallback callback)
@@ -47,7 +50,7 @@ namespace Jasper.Bus.Transports.Sending
                 }
                 catch (Exception ex)
                 {
-                    // TODO -- GOTSTA LOG THIS AND MAYBE RECOVER THE ENVELOPE
+                    _logger.LogException(ex, $"Error while trying to serialize envelope {e}");
                 }
             },
             new ExecutionDataflowBlockOptions
