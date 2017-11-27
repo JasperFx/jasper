@@ -3,6 +3,7 @@ using Jasper.Bus.Transports.Tcp;
 
 namespace Jasper.Bus.Transports.Sending
 {
+    // TODO -- make this be async all the way down
     public interface ISenderCallback
     {
         void Successful(OutgoingMessageBatch outgoing);

@@ -7,6 +7,7 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.WorkerQueues;
+using Jasper.Marten.Persistence.Resiliency;
 using Marten;
 
 namespace Jasper.Marten.Persistence
@@ -16,17 +17,19 @@ namespace Jasper.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly CompositeLogger _logger;
         private readonly BusSettings _settings;
+        private readonly OwnershipMarker _marker;
 
-        public MartenBackedMessagePersistence(IDocumentStore store, CompositeLogger logger, BusSettings settings)
+        public MartenBackedMessagePersistence(IDocumentStore store, CompositeLogger logger, BusSettings settings, OwnershipMarker marker)
         {
             _store = store;
             _logger = logger;
             _settings = settings;
+            _marker = marker;
         }
 
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
         {
-            return new MartenBackedSendingAgent(destination, _store, sender, cancellation, _logger);
+            return new MartenBackedSendingAgent(destination, _store, sender, cancellation, _logger, _settings, _marker);
         }
 
         public ISendingAgent BuildLocalAgent(Uri destination, IWorkerQueue queues)

@@ -5,34 +5,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
+using Jasper.Marten.Persistence.Resiliency;
 using Marten;
 
 namespace Jasper.Marten.Persistence
 {
-    public class MartenBackedSendingAgent : ISendingAgent, ISenderCallback
+    public class MartenBackedSendingAgent : SendingAgent
     {
-        public Uri Destination { get; }
-        private readonly IDocumentStore _store;
-        private readonly ISender _sender;
         private readonly CancellationToken _cancellation;
-        private readonly CompositeLogger _logger;
+        private readonly IDocumentStore _store;
 
-        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, CompositeLogger logger)
+        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, CompositeLogger logger, BusSettings settings, OwnershipMarker marker)
+            : base(destination, sender, logger, settings, new MartenBackedRetryAgent(store, sender, settings.Retries, marker))
         {
-            Destination = destination;
-            _store = store;
-            _sender = sender;
             _cancellation = cancellation;
-            _logger = logger;
+            _store = store;
         }
 
-        public bool Latched => _sender.Latched;
-
-        public Uri DefaultReplyUri { get; set; }
-
-        public Task EnqueueOutgoing(Envelope envelope)
+        public override Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.EnsureData();
 
@@ -41,7 +34,7 @@ namespace Jasper.Marten.Persistence
             return _sender.Enqueue(envelope);
         }
 
-        public async Task StoreAndForward(Envelope envelope)
+        public override async Task StoreAndForward(Envelope envelope)
         {
             envelope.EnsureData();
 
@@ -54,7 +47,7 @@ namespace Jasper.Marten.Persistence
             await EnqueueOutgoing(envelope);
         }
 
-        public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
+        public override async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
         {
             foreach (var envelope in envelopes)
             {
@@ -73,60 +66,18 @@ namespace Jasper.Marten.Persistence
             }
         }
 
-        public void Start()
+        public override void Successful(OutgoingMessageBatch outgoing)
         {
-            _sender.Start(this);
-        }
-
-        public void Successful(OutgoingMessageBatch outgoing)
-        {
+            // TODO -- retries?
             using (var session = _store.LightweightSession())
             {
-                session.Delete(outgoing.Messages);
+                foreach (var message in outgoing.Messages)
+                {
+                    session.Delete(message);
+                }
+
                 session.SaveChanges();
             }
-        }
-
-        public void Dispose()
-        {
-            _sender?.Dispose();
-        }
-
-        void ISenderCallback.TimedOut(OutgoingMessageBatch outgoing)
-        {
-            processRetry(outgoing);
-        }
-
-        private void processRetry(OutgoingMessageBatch outgoing)
-        {
-            // TODO -- so, um, do something here.
-        }
-
-        void ISenderCallback.SerializationFailure(OutgoingMessageBatch outgoing)
-        {
-            processRetry(outgoing);
-        }
-
-        void ISenderCallback.QueueDoesNotExist(OutgoingMessageBatch outgoing)
-        {
-            processRetry(outgoing);
-        }
-
-        void ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing)
-        {
-            processRetry(outgoing);
-        }
-
-        void ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
-        {
-            _logger.LogException(exception, message:$"Failed while trying to send messages with {nameof(MartenBackedSendingAgent)}");
-
-            processRetry(outgoing);
-        }
-
-        void ISenderCallback.SenderIsLatched(OutgoingMessageBatch outgoing)
-        {
-            throw new NotImplementedException();
         }
     }
 }
