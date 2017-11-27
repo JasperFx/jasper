@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Http.Transport;
@@ -18,7 +19,7 @@ namespace IntegrationTests.Bus
         public async Task ping_sad_path_with_tcp()
         {
             var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
-                CancellationToken.None, TODO);
+                CancellationToken.None, CompositeLogger.Empty());
 
             await Jasper.Testing.Exception<InvalidOperationException>.ShouldBeThrownByAsync(async () =>
             {
@@ -35,7 +36,7 @@ namespace IntegrationTests.Bus
             }))
             {
                 var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
-                    CancellationToken.None, TODO);
+                    CancellationToken.None, CompositeLogger.Empty());
 
                 await sender.Ping();
             }
@@ -44,7 +45,7 @@ namespace IntegrationTests.Bus
         [Fact]
         public async Task ping_sad_path_with_http_protocol()
         {
-            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, TODO);
+            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, CompositeLogger.Empty());
 
 
 
@@ -57,7 +58,7 @@ namespace IntegrationTests.Bus
         [Fact]
         public async Task ping_happy_path_with_http_protocol()
         {
-            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, TODO);
+            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, CompositeLogger.Empty());
 
 
             using (var runtime = JasperRuntime.For(_ =>

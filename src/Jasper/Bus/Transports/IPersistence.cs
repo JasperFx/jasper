@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.WorkerQueues;
@@ -12,5 +14,7 @@ namespace Jasper.Bus.Transports
         ISendingAgent BuildLocalAgent(Uri destination, IWorkerQueue queues);
         IListener BuildListener(IListeningAgent agent, IWorkerQueue queues);
         void ClearAllStoredMessages();
+
+        Task ScheduleMessage(Envelope envelope);
     }
 }

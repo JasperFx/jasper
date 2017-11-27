@@ -108,5 +108,24 @@ namespace Jasper.Bus
         /// <typeparam name="TResponse"></typeparam>
         /// <returns></returns>
         Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null);
+
+
+        /// <summary>
+        /// Schedule a message to be processed in this application at a specified time
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="executionTime"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task Schedule<T>(T message, DateTime executionTime);
+
+        /// <summary>
+        /// Schedule a message to be processed in this application at a specified time with a delay
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="delay"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task Schedule<T>(T message, TimeSpan delay);
     }
 }

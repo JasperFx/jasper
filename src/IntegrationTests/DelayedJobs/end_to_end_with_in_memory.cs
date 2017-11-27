@@ -24,19 +24,41 @@ namespace IntegrationTests.DelayedJobs
         }
 
         [Fact]
+        public void run_scheduled_job_locally()
+        {
+            var message1 = new DelayedMessage{Id = 1};
+            var message2 = new DelayedMessage{Id = 2};
+            var message3 = new DelayedMessage{Id = 3};
+
+
+            theRuntime.Bus.Schedule(message1, 2.Hours());
+            theRuntime.Bus.Schedule(message2, 5.Seconds());
+
+            theRuntime.Bus.Schedule(message3, 2.Hours());
+
+
+
+
+            DelayedMessageHandler.ReceivedMessages.Count.ShouldBe(0);
+
+            DelayedMessageHandler.Received.Wait(10.Seconds());
+
+            DelayedMessageHandler.ReceivedMessages.Single()
+                .Id.ShouldBe(2);
+        }
+
+        [Fact]
         public void send_in_a_delayed_message()
         {
             var message1 = new DelayedMessage{Id = 1};
             var message2 = new DelayedMessage{Id = 2};
             var message3 = new DelayedMessage{Id = 3};
 
-            var bus = theRuntime.Get<IServiceBus>();
 
+            theRuntime.Bus.DelaySend(message1, 2.Hours());
+            theRuntime.Bus.DelaySend(message2, 5.Seconds());
 
-            bus.DelaySend(message1, 2.Hours());
-            bus.DelaySend(message2, 5.Seconds());
-
-            bus.DelaySend(message3, 2.Hours());
+            theRuntime.Bus.DelaySend(message3, 2.Hours());
 
 
 

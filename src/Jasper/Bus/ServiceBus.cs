@@ -19,8 +19,9 @@ namespace Jasper.Bus
         private readonly SerializationGraph _serialization;
         private readonly BusSettings _settings;
         private readonly IChannelGraph _channels;
+        private readonly IPersistence _persistence;
 
-        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization, BusSettings settings, IChannelGraph channels)
+        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization, BusSettings settings, IChannelGraph channels, IPersistence persistence)
         {
             _sender = sender;
             _watcher = watcher;
@@ -28,6 +29,7 @@ namespace Jasper.Bus
             _serialization = serialization;
             _settings = settings;
             _channels = channels;
+            _persistence = persistence;
         }
 
         public async Task<TResponse> Request<TResponse>(object request, RequestOptions options = null)
@@ -57,6 +59,21 @@ namespace Jasper.Bus
             customization?.Invoke(envelope);
 
             return _sender.Send(envelope);
+        }
+
+        public Task Schedule<T>(T message, DateTime executionTime)
+        {
+            var envelope = new Envelope(message)
+            {
+                ExecutionTime = executionTime
+            };
+
+            return _persistence.ScheduleMessage(envelope);
+        }
+
+        public Task Schedule<T>(T message, TimeSpan delay)
+        {
+            return Schedule(message, DateTime.UtcNow.Add(delay));
         }
 
 

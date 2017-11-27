@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
@@ -45,6 +46,22 @@ namespace Jasper.Marten.Persistence
         public void ClearAllStoredMessages()
         {
             _store.Advanced.Clean.DeleteDocumentsFor(typeof(Envelope));
+        }
+
+        public async Task ScheduleMessage(Envelope envelope)
+        {
+            if (!envelope.ExecutionTime.HasValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
+            }
+
+            envelope.Status = TransportConstants.Scheduled;
+            envelope.OwnerId = TransportConstants.AnyNode;
+            using (var session = _store.LightweightSession())
+            {
+                session.Store(envelope);
+                await session.SaveChangesAsync();
+            }
         }
     }
 }
