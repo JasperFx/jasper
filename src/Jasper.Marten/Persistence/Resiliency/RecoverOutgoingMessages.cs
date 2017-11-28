@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Marten;
@@ -41,7 +43,11 @@ namespace Jasper.Marten.Persistence.Resiliency
             var outgoing = (await session.QueryAsync(new FindAtLargeEnvelopes
             {
                 Status = TransportConstants.Outgoing
-            })).ToArray();
+            })).ToList();
+
+            // Delete any envelope that is expired by its DeliveryBy value
+            filterExpired(session, outgoing);
+
 
             // TODO -- filter out ones that are expired
 
@@ -68,6 +74,16 @@ namespace Jasper.Marten.Persistence.Resiliency
             await session.SaveChangesAsync();
 
             // TODO -- determine if it should schedule another outgoing recovery batch immediately
+        }
+
+        private static void filterExpired(IDocumentSession session, List<Envelope> outgoing)
+        {
+            foreach (var expired in outgoing.Where(x => x.IsExpired()))
+            {
+                session.Delete(expired);
+            }
+
+            outgoing.RemoveAll(x => x.IsExpired());
         }
     }
 }

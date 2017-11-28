@@ -56,6 +56,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _nodeLockers.Clear();
 
             _workers = new RecordingWorkerQueue();
+            _schedulerAgent = new RecordingSchedulingAgent();
 
             _runtime = JasperRuntime.For(_ =>
             {
@@ -63,6 +64,8 @@ namespace DurabilitySpecs.Fixtures.Marten
                 _.Services.AddSingleton<ITransport, StubTransport>();
 
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
+                _.Services.AddSingleton<ISchedulingAgent>(_schedulerAgent);
+
             });
 
             theStore = _runtime.Get<IDocumentStore>();
@@ -174,6 +177,7 @@ namespace DurabilitySpecs.Fixtures.Marten
         }
 
         private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
+        private RecordingSchedulingAgent _schedulerAgent;
 
         [FormatAs("Node {node} is active")]
         public void NodeIsActive([SelectionList("owners")]string node)
@@ -184,7 +188,11 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         private async Task runAction<T>() where T : IMessagingAction
         {
-            theStore.BulkInsert(_envelopes.ToArray());
+            using (var session = theStore.LightweightSession())
+            {
+                session.Store(_envelopes.ToArray());
+                await session.SaveChangesAsync();
+            }
 
             var action = _runtime.Get<T>();
             using (var session = theStore.LightweightSession())
@@ -240,6 +248,19 @@ namespace DurabilitySpecs.Fixtures.Marten
         public Uri Destination { get; set; }
     }
 
+    public class RecordingSchedulingAgent : ISchedulingAgent
+    {
+        public void RescheduleOutgoingRecovery()
+        {
+
+        }
+
+        public void RescheduleIncomingRecovery()
+        {
+
+        }
+    }
+
     public class RecordingWorkerQueue : IWorkerQueue
     {
         public readonly IList<Envelope> Enqueued = new List<Envelope>();
@@ -250,12 +271,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             return Task.CompletedTask;
         }
 
-        public int QueuedCount
-        {
-            get
-            {
-                return 5; }
-        }
+        public int QueuedCount => 5;
 
         public void AddQueue(string queueName, int parallelization)
         {
