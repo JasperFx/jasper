@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
@@ -55,6 +56,7 @@ namespace Jasper.Marten.Persistence
             foreach (var envelope in envelopes)
             {
                 envelope.EnsureData();
+                envelope.Status = TransportConstants.Outgoing;
             }
 
             using (var session = _store.LightweightSession())

@@ -40,11 +40,14 @@ namespace Jasper.Bus.Transports
                 modifier.Modify(envelope);
             }
 
+            envelope.Status = TransportConstants.Outgoing;
+
             return _agent.StoreAndForward(envelope);
         }
 
         public Task QuickSend(Envelope envelope)
         {
+            envelope.Status = TransportConstants.Outgoing;
             return _agent.EnqueueOutgoing(envelope);
         }
 

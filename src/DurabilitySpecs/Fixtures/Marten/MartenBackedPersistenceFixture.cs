@@ -4,13 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+using DurabilitySpecs.Fixtures.Marten.App;
 using Jasper;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Marten;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Util;
 using Marten;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -26,7 +25,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             = new LightweightCache<string, JasperRuntime>(name => JasperRuntime.For<ReceiverApp>());
 
         private readonly LightweightCache<string, JasperRuntime> _senders
-            = new LightweightCache<string, JasperRuntime>(name => JasperRuntime.For<ReceiverApp>());
+            = new LightweightCache<string, JasperRuntime>(name => JasperRuntime.For<SenderApp>());
 
         public MartenBackedPersistenceFixture()
         {
@@ -98,6 +97,15 @@ namespace DurabilitySpecs.Fixtures.Marten
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
                 await runtime.Bus.Send(msg);
+            }
+        }
+
+        [FormatAs("The persisted document count in the receiver should be {count}")]
+        public int ReceivedMessageCount()
+        {
+            using (var session = _receiverStore.LightweightSession())
+            {
+                return session.Query<TraceDoc>().Count();
             }
         }
 
@@ -173,54 +181,4 @@ namespace DurabilitySpecs.Fixtures.Marten
 
 
     // TODO -- need to have SocketSenderProtocol injected
-
-    public class ReceiverApp : JasperRegistry
-    {
-        public readonly static Uri Listener = "tcp://localhost:2555/durable".ToUri();
-
-        public ReceiverApp()
-        {
-            Handlers.IncludeType<TraceHandler>();
-
-            Settings.ConfigureMarten(_ =>
-            {
-                _.Connection(ConnectionSource.ConnectionString);
-                _.DatabaseSchemaName = "receiver";
-            });
-        }
-    }
-
-    public class SenderApp : JasperRegistry
-    {
-        public SenderApp()
-        {
-            Publish.Message<TraceDoc>().To(ReceiverApp.Listener);
-
-            Settings.ConfigureMarten(_ =>
-            {
-                _.Connection(ConnectionSource.ConnectionString);
-                _.DatabaseSchemaName = "sender";
-            });
-        }
-    }
-
-    public class TraceHandler
-    {
-        [MartenTransaction, JasperIgnore]
-        public void Handle(TraceMessage message, IDocumentSession session)
-        {
-            session.Store(new TraceDoc{Name = message.Name});
-        }
-    }
-
-    public class TraceMessage
-    {
-        public string Name { get; set; }
-    }
-
-    public class TraceDoc
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public string Name { get; set; }
-    }
 }
