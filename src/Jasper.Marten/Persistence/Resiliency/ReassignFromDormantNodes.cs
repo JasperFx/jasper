@@ -10,10 +10,12 @@ namespace Jasper.Marten.Persistence.Resiliency
 {
     public class ReassignFromDormantNodes : IMessagingAction
     {
+        private readonly OwnershipMarker _marker;
         public readonly int ReassignmentLockId = "jasper-reassign-envelopes".GetHashCode();
 
-        public ReassignFromDormantNodes(StoreOptions options)
+        public ReassignFromDormantNodes(OwnershipMarker marker)
         {
+            _marker = marker;
         }
 
         public async Task Execute(IDocumentSession session)
@@ -23,11 +25,7 @@ namespace Jasper.Marten.Persistence.Resiliency
                 return;
             }
 
-            // TODO -- find all nodes reflected in Envelope.OwnerId where you
-            // can get an advisory lock, which tells us that that node is down. Reassign all to AnyNode
-
-            // think this needs to be a sproc w/ a cursor. Boo.
-            throw new NotImplementedException();
+            await _marker.ReassignEnvelopesFromDormantNodes(session);
         }
     }
 }

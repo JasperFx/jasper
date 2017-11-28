@@ -7,7 +7,6 @@ using Marten;
 
 namespace Jasper.Marten.Persistence.Resiliency
 {
-    // TODO -- THIS HAS NOT BEEN TESTED YET
     public class RecoverIncomingMessages : IMessagingAction
     {
         public static readonly int IncomingMessageLockId = "recover-incoming-messages".GetHashCode();

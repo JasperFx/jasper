@@ -66,6 +66,14 @@ namespace DurabilitySpecs.Fixtures.Marten
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
                 _.Services.AddSingleton<ISchedulingAgent>(_schedulerAgent);
 
+                _.Include<MartenBackedPersistence>();
+
+                _.Settings.Alter<BusSettings>(x =>
+                {
+                    x.FirstNodeReassignmentExecution = 30.Minutes();
+                    x.FirstScheduledJobExecution = 30.Minutes();
+                });
+
             });
 
             theStore = _runtime.Get<IDocumentStore>();

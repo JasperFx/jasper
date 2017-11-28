@@ -198,6 +198,12 @@ namespace Jasper.Bus.Transports.Configuration
 
 
         public RetrySettings Retries { get; } = new RetrySettings();
+
+
+        public TimeSpan FirstScheduledJobExecution { get; set; } = 0.Seconds();
+        public TimeSpan ScheduledJobPollingTime { get; set; } = 5.Seconds();
+        public TimeSpan NodeReassignmentPollingTime { get; set; } = 1.Minutes();
+        public TimeSpan FirstNodeReassignmentExecution{ get; set; } = 0.Seconds();
     }
 
     public interface IHttpTransportConfiguration
