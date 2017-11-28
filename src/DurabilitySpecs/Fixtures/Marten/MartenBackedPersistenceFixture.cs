@@ -2,9 +2,12 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
+using Baseline.Dates;
 using Jasper;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Util;
@@ -19,6 +22,12 @@ namespace DurabilitySpecs.Fixtures.Marten
         private DocumentStore _receiverStore;
         private DocumentStore _sendingStore;
 
+        private readonly LightweightCache<string, JasperRuntime> _receivers
+            = new LightweightCache<string, JasperRuntime>(name => JasperRuntime.For<ReceiverApp>());
+
+        private readonly LightweightCache<string, JasperRuntime> _senders
+            = new LightweightCache<string, JasperRuntime>(name => JasperRuntime.For<ReceiverApp>());
+
         public MartenBackedPersistenceFixture()
         {
             Title = "Marten-Backed Durable Messaging";
@@ -26,6 +35,9 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public override void SetUp()
         {
+            _receivers.ClearAll();
+            _senders.ClearAll();
+
             _receiverStore = DocumentStore.For(_ =>
             {
                 _.Connection(ConnectionSource.ConnectionString);
@@ -45,6 +57,14 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public override void TearDown()
         {
+            _receivers.Each(x => x.SafeDispose());
+            _receivers.ClearAll();
+
+            _senders.Each(x => x.SafeDispose());
+            _senders.ClearAll();
+
+
+
             _receiverStore.Dispose();
             _receiverStore = null;
             _sendingStore.Dispose();
@@ -54,37 +74,33 @@ namespace DurabilitySpecs.Fixtures.Marten
         [FormatAs("Start receiver node {name}")]
         public void StartReceiver(string name)
         {
-
+            _receivers.FillDefault(name);
         }
 
         [FormatAs("Start sender node {name}")]
         public void StartSender([Default("Sender1")]string name)
         {
-
+            _senders.FillDefault(name);
         }
 
         [ExposeAsTable("Send Messages")]
-        public void SendFrom([Header("Sending Node"), Default("Sender1")]string sender, [Header("Message Name")]string name)
+        public Task SendFrom([Header("Sending Node"), Default("Sender1")]string sender, [Header("Message Name")]string name)
         {
-
+            return _senders[sender].Bus.Send(new TraceMessage {Name = name});
         }
 
         [FormatAs("Send {count} messages from {sender}")]
-        public void SendMessages([Default("Sender1")]string sender, int count)
+        public async Task SendMessages([Default("Sender1")]string sender, int count)
         {
+            var runtime = _senders[sender];
+
             for (int i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
-                throw new NotImplementedException();
+                await runtime.Bus.Send(msg);
             }
         }
 
-        /*
-         * TODO's
-         * 1. Some way of waiting until
-         *
-         *
-         */
 
         [FormatAs("Wait for {count} messages to be processed by the receivers")]
         public async Task WaitForMessagesToBeProcessed(int count)
@@ -140,13 +156,15 @@ namespace DurabilitySpecs.Fixtures.Marten
         [FormatAs("Receiver node {name} stops")]
         public void StopReceiver(string name)
         {
-
+            _receivers[name].Dispose();
+            _receivers.Remove(name);
         }
 
         [FormatAs("Sender node {name} stops")]
         public void StopSender(string name)
         {
-
+            _senders[name].Dispose();
+            _senders.Remove(name);
         }
 
 
