@@ -2,81 +2,100 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
+using Baseline.Dates;
 using Jasper;
+using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Stub;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Marten;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Marten;
+using Marten.Util;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
 namespace DurabilitySpecs.Fixtures.Marten
 {
-    public class RecoverOutgoingMessagesFixture : Fixture
+    public class MessageRecoveryFixture : Fixture
     {
         private readonly IList<Envelope> _envelopes = new List<Envelope>();
         private int _currentNodeId;
 
         private JasperRuntime _runtime;
         private IDocumentStore theStore;
+        private RecordingWorkerQueue _workers;
 
-        public RecoverOutgoingMessagesFixture()
+        private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
+
+        public MessageRecoveryFixture()
         {
-            Title = "Marten-backed outgoing message recovery";
+            Title = "Marten-backed Message Recovery";
+
+            _owners["Any Node"] = TransportConstants.AnyNode;
+            _owners["Other Node"] = -13234;
+            _owners["Third Node"] = -13334;
+            _owners["Fourth Node"] = -13335;
 
             Lists["channels"].AddValues("stub://one", "stub://two", "stub://three");
             Lists["status"].AddValues(TransportConstants.Incoming, TransportConstants.Outgoing,
                 TransportConstants.Scheduled);
 
-            Lists["owners"].AddValues("This Node", "Other Node", "Any Node");
+            Lists["owners"].AddValues("This Node", "Other Node", "Any Node", "Third Node");
         }
 
         public override void SetUp()
         {
             _envelopes.Clear();
+            _nodeLockers.Clear();
+
+            _workers = new RecordingWorkerQueue();
 
             _runtime = JasperRuntime.For(_ =>
             {
                 _.MartenConnectionStringIs(ConnectionSource.ConnectionString);
                 _.Services.AddSingleton<ITransport, StubTransport>();
+
+                _.Services.AddSingleton<IWorkerQueue>(_workers);
             });
 
             theStore = _runtime.Get<IDocumentStore>();
             theStore.Advanced.Clean.DeleteAllDocuments();
 
             _currentNodeId = _runtime.Get<BusSettings>().UniqueNodeId;
+
+            _owners["This Node"] = _currentNodeId;
         }
 
         public override void TearDown()
         {
             _runtime.Dispose();
+
+            foreach (var locker in _nodeLockers)
+            {
+                locker.SafeDispose();
+            }
+
+            _nodeLockers.Clear();
         }
 
         [ExposeAsTable("The persisted envelopes are")]
         public void EnvelopesAre(
+            [Default("NULL")]string Note,
             string Id,
-            [SelectionList("channels")] Uri Destination,
+            [SelectionList("channels"), Default("stub://one")] Uri Destination,
             [Default("NULL")] DateTime? ExecutionTime,
             [Default("TODAY+1")] DateTime DeliverBy,
             [SelectionList("status")] string Status,
             [SelectionList("owners")] string Owner)
         {
-            var ownerId = TransportConstants.AnyNode;
-            switch (Owner)
-            {
-                case "Other Node":
-                    ownerId = -14123453;
-                    break;
-
-                case "This Node":
-                    ownerId = _currentNodeId;
-                    break;
-            }
+            var ownerId = _owners[Owner];
 
             var envelope = new Envelope
             {
@@ -97,17 +116,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             getStubTransport().Channels[channel].Latched = true;
         }
 
-        [FormatAs("After executing the outgoing message recovery")]
-        public async Task AfterExecutingTheOutgoingMessageRecovery()
-        {
-            theStore.BulkInsert(_envelopes.ToArray());
 
-            var outgoing = _runtime.Get<RecoverOutgoingMessages>();
-            using (var session = theStore.LightweightSession())
-            {
-                await outgoing.Execute(session);
-            }
-        }
 
         private IList<OutgoingMessageAction> outgoingMessages()
         {
@@ -152,9 +161,76 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public IGrammar ThePersistedEnvelopesOwnedByAnyNodeAre()
         {
-            return VerifySetOf(() => persistedEnvelopes(_currentNodeId))
-                .Titled("The persisted not owned by the current node are")
+            return VerifySetOf(() => persistedEnvelopes(TransportConstants.AnyNode))
+                .Titled("The persisted envelopes owned by 'any' node should be")
                 .MatchOn(x => x.Id);
+        }
+
+        public IGrammar TheProcessedEnvelopesShouldBe()
+        {
+            return VerifySetOf(() => _workers.Enqueued)
+                .Titled("The envelopes enqueued to the worker queues should be")
+                .MatchOn(x => x.Id);
+        }
+
+        private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
+
+        [FormatAs("Node {node} is active")]
+        public void NodeIsActive([SelectionList("owners")]string node)
+        {
+            var ownerId = _owners[node];
+            _nodeLockers.Add(new NodeLocker(ownerId));
+        }
+
+        private async Task runAction<T>() where T : IMessagingAction
+        {
+            theStore.BulkInsert(_envelopes.ToArray());
+
+            var action = _runtime.Get<T>();
+            using (var session = theStore.LightweightSession())
+            {
+                await action.Execute(session);
+            }
+        }
+
+        [FormatAs("After reassigning envelopes from dormant nodes")]
+        public Task AfterReassigningFromDormantNodes()
+        {
+            return runAction<ReassignFromDormantNodes>();
+        }
+
+        [FormatAs("After recovering incoming messages")]
+        public Task AfterRecoveringIncomingMessages()
+        {
+            return runAction<RecoverIncomingMessages>();
+        }
+
+        [FormatAs("After executing the outgoing message recovery")]
+        public Task AfterExecutingTheOutgoingMessageRecovery()
+        {
+            return runAction<RecoverOutgoingMessages>();
+        }
+
+    }
+
+    public class NodeLocker : IDisposable
+    {
+        private readonly NpgsqlConnection _conn;
+        private readonly NpgsqlTransaction _tx;
+
+        public NodeLocker(int nodeId)
+        {
+            _conn = new NpgsqlConnection(ConnectionSource.ConnectionString);
+            _conn.Open();
+            _tx = _conn.BeginTransaction();
+
+            _conn.TryGetGlobalTxLock(nodeId).Wait(3.Seconds());
+        }
+
+        public void Dispose()
+        {
+            _tx.Rollback();
+            _conn?.Dispose();
         }
     }
 
@@ -162,5 +238,30 @@ namespace DurabilitySpecs.Fixtures.Marten
     {
         public string Id { get; set; }
         public Uri Destination { get; set; }
+    }
+
+    public class RecordingWorkerQueue : IWorkerQueue
+    {
+        public readonly IList<Envelope> Enqueued = new List<Envelope>();
+
+        public Task Enqueue(Envelope envelope)
+        {
+            Enqueued.Add(envelope);
+            return Task.CompletedTask;
+        }
+
+        public int QueuedCount
+        {
+            get
+            {
+                return 5; }
+        }
+
+        public void AddQueue(string queueName, int parallelization)
+        {
+
+        }
+
+        public IDelayedJobProcessor DelayedJobs { get;} = new InMemoryDelayedJobProcessor();
     }
 }
