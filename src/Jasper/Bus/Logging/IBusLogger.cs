@@ -73,13 +73,6 @@ namespace Jasper.Bus.Logging
         void SubscriptionMismatch(PublisherSubscriberMismatch mismatch);
 
         /// <summary>
-        /// Called when Jasper has determined that an outgoing message cannot
-        /// be sent for any reason
-        /// </summary>
-        /// <param name="envelope"></param>
-        void Undeliverable(Envelope envelope);
-
-        /// <summary>
         /// Called when Jasper moves an envelope into the dead letter queue
         /// </summary>
         /// <param name="envelope"></param>

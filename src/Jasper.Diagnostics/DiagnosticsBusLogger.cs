@@ -7,6 +7,7 @@ using Jasper.WebSockets;
 
 namespace Jasper.Diagnostics
 {
+    // TODO -- turn this into a subclass of BusLoggerBase after Preston's diagnostics changes get in
     public class DiagnosticsBusLogger : IBusLogger
     {
         private readonly IWebSocketSender _client;
@@ -50,10 +51,6 @@ namespace Jasper.Diagnostics
         public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
         {
 
-        }
-
-        public void Undeliverable(Envelope envelope)
-        {
         }
 
         public void MovedToErrorQueue(Envelope envelope, Exception ex)

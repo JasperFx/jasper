@@ -55,8 +55,5 @@ namespace Jasper.Bus.Logging
 
         }
 
-        public virtual void Undeliverable(Envelope envelope)
-        {
-        }
     }
 }

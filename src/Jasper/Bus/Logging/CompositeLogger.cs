@@ -155,20 +155,6 @@ namespace Jasper.Bus.Logging
             }
         }
 
-        public void Undeliverable(Envelope envelope)
-        {
-            foreach (var sink in Loggers)
-            {
-                try
-                {
-                    sink.Undeliverable(envelope);
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-
         public void MovedToErrorQueue(Envelope envelope, Exception ex)
         {
             foreach (var sink in Loggers)

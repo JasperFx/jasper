@@ -146,7 +146,6 @@ namespace Jasper.Bus.Runtime.Invocation
             }
             catch (Exception e)
             {
-                Logger.Undeliverable(envelope);
                 Logger.LogException(e, envelope.Id, "Failure while trying to send a cascading message");
             }
 

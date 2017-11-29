@@ -12,7 +12,7 @@ using Envelope = Jasper.Bus.Runtime.Envelope;
 
 namespace Jasper.Storyteller.Logging
 {
-    public class StorytellerBusLogger : IBusLogger
+    public class StorytellerBusLogger : BusLoggerBase
     {
         private ISpecContext _context;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
@@ -48,62 +48,57 @@ namespace Jasper.Storyteller.Logging
             _records.Add(new EnvelopeRecord(envelope, _context.Timings.Duration, message, ServiceName));
         }
 
-        public void Sent(Envelope envelope)
+        public override void Sent(Envelope envelope)
         {
             trace(envelope, "Sent");
         }
 
-        public void Received(Envelope envelope)
+        public override void Received(Envelope envelope)
         {
             trace(envelope, "Received");
         }
 
-        public void ExecutionStarted(Envelope envelope)
+        public override void ExecutionStarted(Envelope envelope)
         {
             trace(envelope, "Execution Started");
         }
 
-        public void ExecutionFinished(Envelope envelope)
+        public override void ExecutionFinished(Envelope envelope)
         {
             trace(envelope, "Execution Finished");
         }
 
-        public void MessageSucceeded(Envelope envelope)
+        public override void MessageSucceeded(Envelope envelope)
         {
             trace(envelope, "Message Succeeded");
         }
 
-        public void MessageFailed(Envelope envelope, Exception ex)
+        public override void MessageFailed(Envelope envelope, Exception ex)
         {
             trace(envelope, "Message Failed", ex);
         }
 
-        public void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
+        public override void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
         {
             _errors.Exceptions.Add(ex);
         }
 
-        public void NoHandlerFor(Envelope envelope)
+        public override void NoHandlerFor(Envelope envelope)
         {
             trace(envelope, "No known message handler");
         }
 
-        public void NoRoutesFor(Envelope envelope)
+        public override void NoRoutesFor(Envelope envelope)
         {
             trace(envelope, "No message routes");
         }
 
-        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        public override void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
         {
             _mismatches.Add(mismatch);
         }
 
-        public void Undeliverable(Envelope envelope)
-        {
-            trace(envelope, "Could not be delivered");
-        }
-
-        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        public override void MovedToErrorQueue(Envelope envelope, Exception ex)
         {
             trace(envelope, "Was moved to the error queue");
             _errors.Exceptions.Add(ex);
