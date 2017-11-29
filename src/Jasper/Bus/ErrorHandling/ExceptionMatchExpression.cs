@@ -30,6 +30,5 @@ namespace Jasper.Bus.ErrorHandling
             return Matching(t => t is T, "Exception type is " + typeof (T).FullName);
         }
 
-        // TODO -- more options?  By namespace/assembly ????
     }
 }

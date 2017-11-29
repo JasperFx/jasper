@@ -141,7 +141,6 @@ namespace Jasper.Internals.Codegen
 
         private Variable findVariable(Type type, VariableSource variableSource)
         {
-            // TODO -- will have to honor the Variable.CanBeReused flag later
             var argument = _method.Arguments.Concat(_method.DerivedVariables).FirstOrDefault(x => x.VariableType == type);
             if (argument != null)
             {

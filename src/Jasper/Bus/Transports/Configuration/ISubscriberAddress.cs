@@ -4,8 +4,6 @@ namespace Jasper.Bus.Transports.Configuration
 {
     public interface ISubscriberAddress
     {
-        // TODO -- allow users to specify the outgoing batch size here
-
         /// <summary>
         /// Add an IEnvelopeModifier that will apply to only this channel
         /// </summary>

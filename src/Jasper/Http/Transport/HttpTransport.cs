@@ -38,7 +38,6 @@ namespace Jasper.Http.Transport
 
         public string Protocol { get; } = "http";
 
-        // TODO -- there's duplication here w/ the TcpTransport. Maybe a chance to simplify
         public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
         {
             var batchedSender = new BatchedSender(uri, new HttpSenderProtocol(_settings), cancellation, _logger);

@@ -9,6 +9,7 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.WorkerQueues;
+using Jasper.Internals.Util;
 using Jasper.Util;
 
 namespace Jasper.Bus.Transports.Tcp
@@ -92,13 +93,13 @@ namespace Jasper.Bus.Transports.Tcp
             }
         }
 
-        // TODO -- throw a more descriptive exception
         private static void assertNoDuplicatePorts(Uri[] incoming)
         {
             var duplicatePorts = incoming.GroupBy(x => x.Port).Where(x => x.Count() > 1).ToArray();
             if (duplicatePorts.Any())
             {
-                throw new Exception("You need a better exception here about duplicate ports");
+                var portString = string.Join(", ", duplicatePorts.Select(x => x.ToString()));
+                throw new Exception("Multiple TCP listeners configured for ports " + portString);
             }
         }
 

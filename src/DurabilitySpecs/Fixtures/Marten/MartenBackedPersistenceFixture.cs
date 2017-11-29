@@ -269,5 +269,4 @@ namespace DurabilitySpecs.Fixtures.Marten
     }
 
 
-    // TODO -- need to have SocketSenderProtocol injected
 }

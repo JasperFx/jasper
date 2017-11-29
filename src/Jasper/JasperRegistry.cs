@@ -115,7 +115,6 @@ namespace Jasper
         // TODO -- move this to advanced too? Won't be used very often
         public GenerationRules Generation { get; }
 
-        // TODO -- does this need to be public?
         public Assembly ApplicationAssembly { get; }
 
         /// <summary>
@@ -132,7 +131,6 @@ namespace Jasper
         // TODO -- move this to advanced
         public IFeatures Features => this;
 
-        // TODO -- move this to advanced
         /// <summary>
         /// Use to configure or customize Jasper event logging
         /// </summary>

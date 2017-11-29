@@ -36,7 +36,6 @@ namespace Jasper.CommandLine
             return buildExecutor(registry).Execute(args);
         }
 
-        // TODO -- later, add extensibility into this thing
         private static CommandExecutor buildExecutor(JasperRegistry registry)
         {
             return CommandExecutor.For(factory =>

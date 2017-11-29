@@ -65,8 +65,6 @@ namespace Jasper.Conneg
                 _.AddAllTypesOf<IMessageDeserializer>();
             });
 
-            // TODO -- move serializer discovery here
-
             return TypeRepository.FindTypes(registry.ApplicationAssembly,
                     TypeClassification.Closed, t => t.Closes(typeof(IForwardsTo<>)))
                 .ContinueWith(t =>

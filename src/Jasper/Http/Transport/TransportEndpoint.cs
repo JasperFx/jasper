@@ -12,7 +12,6 @@ namespace Jasper.Http.Transport
     {
         public const string EnvelopeSenderHeader = "x-jasper-envelope-sender";
 
-        // TODO -- may want to eventually have the URL be configurable
         public async Task<int> put__messages(HttpRequest request, ILocalWorkerSender workers, CompositeLogger logger)
         {
             try

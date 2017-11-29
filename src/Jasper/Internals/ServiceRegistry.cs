@@ -75,7 +75,6 @@ namespace Jasper.Internals
 
         public void Scan(Action<IAssemblyScanner> scan)
         {
-            // TODO -- might push in the application assembly here first
             var finder = new AssemblyScanner();
             scan(finder);
 
