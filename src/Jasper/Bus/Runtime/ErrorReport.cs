@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
+using System.Reflection;
 using Baseline;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
@@ -35,8 +36,11 @@ namespace Jasper.Bus.Runtime
             MessageType = envelope.MessageType;
             Source = envelope.Source;
             Id = envelope.Id;
+            ContentType = envelope.ContentType;
 
         }
+
+        public string ContentType { get; set; }
 
         public string Id { get; set; }
 
