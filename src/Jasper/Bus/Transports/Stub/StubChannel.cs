@@ -45,11 +45,6 @@ namespace Jasper.Bus.Transports.Stub
 
             Sent.Add(envelope);
 
-            // For half stubbed out testing
-            if (envelope.MessageType.IsEmpty() || envelope.Data == null)
-            {
-                return Task.CompletedTask;
-            }
 
             envelope.Callback = callback;
 
