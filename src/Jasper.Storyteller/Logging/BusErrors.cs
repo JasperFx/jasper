@@ -14,7 +14,7 @@ namespace Jasper.Storyteller.Logging
         {
             var div = new HtmlTag("div");
 
-            foreach (var exception in Exceptions.ToArray())
+            foreach (var exception in Exceptions.Where(x => x != null).ToArray())
             {
                 div.Add("pre").Style("margin", "10px").Text(exception.ToString());
             }

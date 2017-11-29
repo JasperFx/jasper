@@ -1,4 +1,6 @@
-﻿using Jasper;
+﻿using Baseline.Dates;
+using Jasper;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten;
 using Jasper.Marten.Tests.Setup;
 
@@ -19,6 +21,12 @@ namespace DurabilitySpecs.Fixtures.Marten.App
             Include<MartenBackedPersistence>();
 
             Logging.UseConsoleLogging = true;
+
+            Settings.Alter<BusSettings>(_ =>
+            {
+                _.ScheduledJobPollingTime = 500.Milliseconds();
+                _.FirstScheduledJobExecution = 0.Seconds();
+            });
         }
     }
 }

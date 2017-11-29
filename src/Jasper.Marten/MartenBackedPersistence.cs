@@ -20,7 +20,6 @@ namespace Jasper.Marten
             registry.Settings.Alter<StoreOptions>(options =>
             {
                 options.Schema.For<Envelope>()
-                    .Duplicate(x => x.ExecutionTime)
                     .Duplicate(x => x.Status)
                     .Duplicate(x => x.OwnerId);
             });
