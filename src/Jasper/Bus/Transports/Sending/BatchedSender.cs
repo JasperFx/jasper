@@ -15,7 +15,7 @@ namespace Jasper.Bus.Transports.Sending
 
         private readonly ISenderProtocol _protocol;
         private readonly CancellationToken _cancellation;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeTransportLogger _logger;
         private ISenderCallback _callback;
         private ActionBlock<OutgoingMessageBatch> _sender;
         private BatchingBlock<Envelope> _batching;
@@ -23,7 +23,7 @@ namespace Jasper.Bus.Transports.Sending
         private ActionBlock<Envelope> _serializing;
         private TransformBlock<Envelope[], OutgoingMessageBatch> _batchWriting;
 
-        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation, CompositeLogger logger)
+        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation, CompositeTransportLogger logger)
         {
             Destination = destination;
             _protocol = protocol;
@@ -79,11 +79,13 @@ namespace Jasper.Bus.Transports.Sending
         public bool Latched { get; private set; }
         public void Latch()
         {
+            _logger.CircuitBroken(Destination);
             Latched = true;
         }
 
         public void Unlatch()
         {
+            _logger.CircuitResumed(Destination);
             Latched = false;
         }
 
@@ -106,6 +108,7 @@ namespace Jasper.Bus.Transports.Sending
                 else
                 {
                     await _protocol.SendBatch(_callback, batch);
+                    _logger.OutgoingBatchSucceeded(batch);
                 }
 
             }

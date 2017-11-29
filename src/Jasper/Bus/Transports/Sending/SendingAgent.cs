@@ -13,10 +13,10 @@ namespace Jasper.Bus.Transports.Sending
     public abstract class SendingAgent : ISendingAgent, ISenderCallback
     {
         protected readonly ISender _sender;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeTransportLogger _logger;
         protected readonly RetryAgent _retries;
 
-        protected SendingAgent(Uri destination, ISender sender, CompositeLogger logger, BusSettings settings, RetryAgent retries)
+        protected SendingAgent(Uri destination, ISender sender, CompositeTransportLogger logger, BusSettings settings, RetryAgent retries)
         {
             _sender = sender;
             _logger = logger;
@@ -42,10 +42,12 @@ namespace Jasper.Bus.Transports.Sending
         public void TimedOut(OutgoingMessageBatch outgoing)
         {
             _retries.MarkFailed(outgoing);
+            _logger.OutgoingBatchFailed(outgoing);
         }
 
         public void SerializationFailure(OutgoingMessageBatch outgoing)
         {
+            _logger.OutgoingBatchFailed(outgoing);
             // Can't really happen now, but what the heck.
             _logger.LogException(new Exception("Serialization failure with outgoing envelopes " + outgoing.Messages.Select(x => x.ToString()).Join(", ")));
         }
@@ -58,6 +60,7 @@ namespace Jasper.Bus.Transports.Sending
 
         public void ProcessingFailure(OutgoingMessageBatch outgoing)
         {
+            _logger.OutgoingBatchFailed(outgoing);
             _retries.MarkFailed(outgoing);
         }
 
@@ -65,6 +68,7 @@ namespace Jasper.Bus.Transports.Sending
         {
             _logger.LogException(exception, $"Failure trying to send a message batch to {outgoing.Destination}");
             _retries.MarkFailed(outgoing);
+            _logger.OutgoingBatchFailed(outgoing, exception);
 
         }
 

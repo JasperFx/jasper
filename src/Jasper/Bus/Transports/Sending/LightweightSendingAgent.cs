@@ -11,7 +11,7 @@ namespace Jasper.Bus.Transports.Sending
 {
     public class LightweightSendingAgent : SendingAgent
     {
-        public LightweightSendingAgent(Uri destination, ISender sender, CompositeLogger logger, BusSettings settings)
+        public LightweightSendingAgent(Uri destination, ISender sender, CompositeTransportLogger logger, BusSettings settings)
         : base(destination, sender, logger, settings, new LightweightRetryAgent(sender, settings.Retries))
         {
 

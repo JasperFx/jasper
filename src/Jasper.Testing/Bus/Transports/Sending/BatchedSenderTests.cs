@@ -22,7 +22,7 @@ namespace Jasper.Testing.Bus.Transports.Sending
 
         public BatchedSenderTests()
         {
-            theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token, CompositeLogger.Empty());
+            theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token, CompositeTransportLogger.Empty());
             theSender.Start(theSenderCallback);
 
             theBatch = new OutgoingMessageBatch(theSender.Destination, new Envelope[]

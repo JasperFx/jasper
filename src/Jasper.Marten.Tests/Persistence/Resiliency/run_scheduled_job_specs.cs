@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Marten.Persistence.Resiliency;
@@ -20,7 +21,7 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
 
         public run_scheduled_job_specs()
         {
-            theScheduledJob = new RunScheduledJobs(theWorkerQueue, theStore, new OwnershipMarker(theSettings, new StoreOptions()));
+            theScheduledJob = new RunScheduledJobs(theWorkerQueue, theStore, new OwnershipMarker(theSettings, new StoreOptions()), CompositeTransportLogger.Empty());
         }
 
         protected async Task<IReadOnlyList<Envelope>> afterExecutingAt(DateTime time)

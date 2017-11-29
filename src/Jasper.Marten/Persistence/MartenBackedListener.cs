@@ -17,10 +17,10 @@ namespace Jasper.Marten.Persistence
         private readonly IListeningAgent _agent;
         private readonly IWorkerQueue _queues;
         private readonly IDocumentStore _store;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeTransportLogger _logger;
         private readonly BusSettings _settings;
 
-        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeLogger logger, BusSettings settings)
+        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeTransportLogger logger, BusSettings settings)
         {
             _agent = agent;
             _queues = queues;
@@ -78,6 +78,8 @@ namespace Jasper.Marten.Persistence
                     message.Callback = new MartenCallback(message, _queues, _store);
                     await _queues.Enqueue(message);
                 }
+
+                _logger.IncomingBatchReceived(messages);
 
                 return ReceivedStatus.Successful;
             }

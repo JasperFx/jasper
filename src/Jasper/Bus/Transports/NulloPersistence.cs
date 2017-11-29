@@ -12,11 +12,11 @@ namespace Jasper.Bus.Transports
 {
     public class NulloPersistence : IPersistence
     {
-        private readonly CompositeLogger _logger;
+        private readonly CompositeTransportLogger _logger;
         private readonly BusSettings _settings;
         private readonly IWorkerQueue _workers;
 
-        public NulloPersistence(CompositeLogger logger, BusSettings settings, IWorkerQueue workers)
+        public NulloPersistence(CompositeTransportLogger logger, BusSettings settings, IWorkerQueue workers)
         {
             _logger = logger;
             _settings = settings;

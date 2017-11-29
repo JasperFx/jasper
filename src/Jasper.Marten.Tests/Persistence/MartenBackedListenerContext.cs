@@ -92,7 +92,7 @@ namespace Jasper.Marten.Tests.Persistence
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
                 theStore,
-                CompositeLogger.Empty(), theSettings);
+                CompositeTransportLogger.Empty(), theSettings);
         }
 
         public void Dispose()

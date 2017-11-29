@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
@@ -15,15 +16,16 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IChannelGraph _channels;
         private readonly OwnershipMarker _marker;
         private readonly ISchedulingAgent _schedulingAgent;
+        private readonly CompositeTransportLogger _logger;
         private readonly BusSettings _settings;
 
-        public RecoverOutgoingMessages(IChannelGraph channels, BusSettings settings, OwnershipMarker marker,
-            ISchedulingAgent schedulingAgent)
+        public RecoverOutgoingMessages(IChannelGraph channels, BusSettings settings, OwnershipMarker marker, ISchedulingAgent schedulingAgent, CompositeTransportLogger logger)
         {
             _channels = channels;
             _settings = settings;
             _marker = marker;
             _schedulingAgent = schedulingAgent;
+            _logger = logger;
         }
 
         public async Task Execute(IDocumentSession session)
@@ -44,14 +46,30 @@ namespace Jasper.Marten.Persistence.Resiliency
                 Status = TransportConstants.Outgoing
             })).ToList();
 
+            if (!outgoing.Any()) return;
+
             // Delete any envelope that is expired by its DeliveryBy value
             filterExpired(session, outgoing);
 
+            if (outgoing.Any())
+            {
+                await sendOutgoing(session, outgoing);
+            }
+            else
+            {
+                // Just commit the expired message delivery
+                await session.SaveChangesAsync();
+            }
 
-            // TODO -- filter out ones that are expired
 
 
-            // TODO -- do you throw away messages that cannot be matched to an outgoing channel?
+
+            // TODO -- determine if it should schedule another outgoing recovery batch immediately
+        }
+
+        private async Task sendOutgoing(IDocumentSession session, List<Envelope> outgoing)
+        {
+// TODO -- do you throw away messages that cannot be matched to an outgoing channel?
             // I say we make an "unknown channel" here that can just collect the message
             // and put it into some kind of Undeliverable status
 
@@ -65,19 +83,24 @@ namespace Jasper.Marten.Persistence.Resiliency
             var all = groups.SelectMany(x => x.Envelopes).ToArray();
             await _marker.MarkOutgoingOwnedByThisNode(session, all);
 
-            foreach (var group in groups)
-            foreach (var envelope in group.Envelopes)
-                await group.Channel.QuickSend(envelope);
-
 
             await session.SaveChangesAsync();
 
-            // TODO -- determine if it should schedule another outgoing recovery batch immediately
+            _logger.RecoveredOutgoing(all);
+
+            // TODO -- do a compensating action here to reverse
+
+            foreach (var group in groups)
+            foreach (var envelope in @group.Envelopes)
+                await @group.Channel.QuickSend(envelope);
         }
 
-        private static void filterExpired(IDocumentSession session, List<Envelope> outgoing)
+        private void filterExpired(IDocumentSession session, List<Envelope> outgoing)
         {
-            foreach (var expired in outgoing.Where(x => x.IsExpired()))
+            var expiredMessages = outgoing.Where(x => x.IsExpired()).ToArray();
+            _logger.DiscardedExpired(expiredMessages);
+
+            foreach (var expired in expiredMessages)
             {
                 session.Delete(expired);
             }

@@ -16,11 +16,11 @@ namespace Jasper.Marten.Persistence
     public class MartenBackedMessagePersistence : IPersistence
     {
         private readonly IDocumentStore _store;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeTransportLogger _logger;
         private readonly BusSettings _settings;
         private readonly OwnershipMarker _marker;
 
-        public MartenBackedMessagePersistence(IDocumentStore store, CompositeLogger logger, BusSettings settings, OwnershipMarker marker)
+        public MartenBackedMessagePersistence(IDocumentStore store, CompositeTransportLogger logger, BusSettings settings, OwnershipMarker marker)
         {
             _store = store;
             _logger = logger;

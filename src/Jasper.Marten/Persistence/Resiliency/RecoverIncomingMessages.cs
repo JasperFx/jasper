@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
@@ -14,13 +15,15 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly BusSettings _settings;
         private readonly OwnershipMarker _marker;
         private readonly ISchedulingAgent _schedulingAgent;
+        private readonly CompositeTransportLogger _logger;
 
-        public RecoverIncomingMessages(IWorkerQueue workers, BusSettings settings, OwnershipMarker marker, ISchedulingAgent schedulingAgent)
+        public RecoverIncomingMessages(IWorkerQueue workers, BusSettings settings, OwnershipMarker marker, ISchedulingAgent schedulingAgent, CompositeTransportLogger logger)
         {
             _workers = workers;
             _settings = settings;
             _marker = marker;
             _schedulingAgent = schedulingAgent;
+            _logger = logger;
         }
 
         public async Task Execute(IDocumentSession session)
@@ -43,9 +46,13 @@ namespace Jasper.Marten.Persistence.Resiliency
                 Status = TransportConstants.Incoming
             })).ToArray();
 
+            if (!incoming.Any()) return;
+
             await _marker.MarkIncomingOwnedByThisNode(session, incoming);
 
             await session.SaveChangesAsync();
+
+            _logger.RecoveredIncoming(incoming);
 
             foreach (var envelope in incoming)
             {

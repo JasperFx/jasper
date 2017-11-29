@@ -10,10 +10,10 @@ namespace Jasper.Bus.Transports.Receiving
     public class LightweightListener : IListener
     {
         private readonly IWorkerQueue _workerQueue;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeTransportLogger _logger;
         private readonly IListeningAgent _agent;
 
-        public LightweightListener(IWorkerQueue workerQueue, CompositeLogger logger, IListeningAgent agent)
+        public LightweightListener(IWorkerQueue workerQueue, CompositeTransportLogger logger, IListeningAgent agent)
         {
             _workerQueue = workerQueue;
             _logger = logger;
@@ -43,6 +43,8 @@ namespace Jasper.Bus.Transports.Receiving
                         await _workerQueue.Enqueue(message);
                     }
                 }
+
+                _logger.IncomingBatchReceived(messages);
 
                 return ReceivedStatus.Successful;
             }

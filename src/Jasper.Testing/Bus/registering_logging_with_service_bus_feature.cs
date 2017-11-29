@@ -29,11 +29,27 @@ namespace Jasper.Testing.Bus
         }
 
         [Fact]
+        public void using_console_logging_transports()
+        {
+            with(_ => _.Logging.UseConsoleLogging = true);
+
+            Runtime.Container.ShouldHaveRegistration<ITransportLogger, ConsoleTransportLogger>();
+        }
+
+        [Fact]
         public void explicitly_add_logger()
         {
             with(_ => _.Logging.LogBusEventsWith<ConsoleBusLogger>());
 
             Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+        }
+
+        [Fact]
+        public void explicitly_add_logger_transport()
+        {
+            with(_ => _.Logging.LogTransportEventsWith<ConsoleTransportLogger>());
+
+            Runtime.Container.ShouldHaveRegistration<ITransportLogger, ConsoleTransportLogger>();
         }
 
         [Fact]
@@ -44,6 +60,16 @@ namespace Jasper.Testing.Bus
 
             Runtime.Services
                 .Any(x => x.ServiceType == typeof(IBusLogger) && x.ImplementationInstance is ConsoleBusLogger).ShouldBeTrue();
+        }
+
+        [Fact]
+        public void explicitly_add_logger_2_transport()
+        {
+            with(_ => _.Logging.LogTransportEventsWith(new ConsoleTransportLogger()));
+
+
+            Runtime.Services
+                .Any(x => x.ServiceType == typeof(ITransportLogger) && x.ImplementationInstance is ConsoleTransportLogger).ShouldBeTrue();
         }
     }
 

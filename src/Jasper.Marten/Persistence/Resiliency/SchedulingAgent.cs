@@ -21,7 +21,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IWorkerQueue _workers;
         private readonly IDocumentStore _store;
         private readonly BusSettings _settings;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeTransportLogger _logger;
         private readonly StoreOptions _storeOptions;
         private readonly ActionBlock<IMessagingAction> _worker;
         private NpgsqlConnection _connection;
@@ -32,7 +32,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private Timer _nodeReassignmentTimer;
         private readonly ReassignFromDormantNodes _nodeReassignment;
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeLogger logger, StoreOptions storeOptions)
+        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeTransportLogger logger, StoreOptions storeOptions)
         {
             _channels = channels;
             _workers = workers;
@@ -47,9 +47,9 @@ namespace Jasper.Marten.Persistence.Resiliency
             });
 
             var marker = new OwnershipMarker(_settings, _storeOptions);
-            _scheduledJobs = new RunScheduledJobs(_workers, _store, marker);
-            _incomingMessages = new RecoverIncomingMessages(_workers, _settings, marker, this);
-            _outgoingMessages = new RecoverOutgoingMessages(_channels, _settings, marker, this);
+            _scheduledJobs = new RunScheduledJobs(_workers, _store, marker, logger);
+            _incomingMessages = new RecoverIncomingMessages(_workers, _settings, marker, this, _logger);
+            _outgoingMessages = new RecoverOutgoingMessages(_channels, _settings, marker, this, _logger);
 
             _nodeReassignment = new ReassignFromDormantNodes(marker);
         }

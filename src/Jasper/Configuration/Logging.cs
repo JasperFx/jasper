@@ -1,4 +1,6 @@
-﻿namespace Jasper.Configuration
+﻿using Jasper.Bus.Logging;
+
+namespace Jasper.Configuration
 {
     public class Logging
     {
@@ -15,5 +17,6 @@
         public bool UseConsoleLogging { get; set; } = false;
 
         public bool Verbose { get; set; }
+
     }
 }

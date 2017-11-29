@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.WorkerQueues;
@@ -17,13 +18,15 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IWorkerQueue _workers;
         private readonly IDocumentStore _store;
         private readonly OwnershipMarker _marker;
+        private readonly CompositeTransportLogger _logger;
         public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
 
-        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, OwnershipMarker marker)
+        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, OwnershipMarker marker, CompositeTransportLogger logger)
         {
             _workers = workers;
             _store = store;
             _marker = marker;
+            _logger = logger;
         }
 
         public async Task Execute(IDocumentSession session)
@@ -49,6 +52,7 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             await session.SaveChangesAsync();
 
+            _logger.ScheduledJobsQueuedForExecution(readyToExecute);
 
             foreach (var envelope in readyToExecute)
             {

@@ -19,7 +19,7 @@ namespace IntegrationTests.Bus
         public async Task ping_sad_path_with_tcp()
         {
             var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
-                CancellationToken.None, CompositeLogger.Empty());
+                CancellationToken.None, CompositeTransportLogger.Empty());
 
             await Jasper.Testing.Exception<InvalidOperationException>.ShouldBeThrownByAsync(async () =>
             {
@@ -36,7 +36,7 @@ namespace IntegrationTests.Bus
             }))
             {
                 var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
-                    CancellationToken.None, CompositeLogger.Empty());
+                    CancellationToken.None, CompositeTransportLogger.Empty());
 
                 await sender.Ping();
             }
@@ -45,7 +45,7 @@ namespace IntegrationTests.Bus
         [Fact]
         public async Task ping_sad_path_with_http_protocol()
         {
-            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, CompositeLogger.Empty());
+            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, CompositeTransportLogger.Empty());
 
 
 
@@ -58,7 +58,7 @@ namespace IntegrationTests.Bus
         [Fact]
         public async Task ping_happy_path_with_http_protocol()
         {
-            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, CompositeLogger.Empty());
+            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, CompositeTransportLogger.Empty());
 
 
             using (var runtime = JasperRuntime.For(_ =>

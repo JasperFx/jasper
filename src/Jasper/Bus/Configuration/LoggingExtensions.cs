@@ -26,5 +26,25 @@ namespace Jasper.Bus.Configuration
             logging.Parent.Services.AddSingleton<IBusLogger>(logger);
         }
 
+        /// <summary>
+        /// Add a custom ITransportLogger to the system
+        /// </summary>
+        /// <param name="logging"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void LogTransportEventsWith<T>(this Jasper.Configuration.Logging logging) where T : class, ITransportLogger
+        {
+            logging.Parent.Services.AddTransient<ITransportLogger, T>();
+        }
+
+        /// <summary>
+        /// Add a custom ITransportLogger to the system
+        /// </summary>
+        /// <param name="logging"></param>
+        /// <param name="logger"></param>
+        public static void LogTransportEventsWith(this Jasper.Configuration.Logging logging, ITransportLogger logger)
+        {
+            logging.Parent.Services.AddSingleton<ITransportLogger>(logger);
+        }
+
     }
 }

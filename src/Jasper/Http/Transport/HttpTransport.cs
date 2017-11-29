@@ -20,9 +20,9 @@ namespace Jasper.Http.Transport
         private readonly BusSettings _settings;
         private readonly JasperRuntime _runtime;
         private readonly IPersistence _persistence;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeTransportLogger _logger;
 
-        public HttpTransport(BusSettings settings, JasperRuntime runtime, IPersistence persistence, CompositeLogger logger)
+        public HttpTransport(BusSettings settings, JasperRuntime runtime, IPersistence persistence, CompositeTransportLogger logger)
         {
             _settings = settings;
             _runtime = runtime;
