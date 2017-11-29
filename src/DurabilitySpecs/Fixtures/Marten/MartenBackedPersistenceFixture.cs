@@ -6,10 +6,12 @@ using Baseline;
 using Baseline.Dates;
 using DurabilitySpecs.Fixtures.Marten.App;
 using Jasper;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Storyteller.Logging;
 using Marten;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -21,11 +23,12 @@ namespace DurabilitySpecs.Fixtures.Marten
         private DocumentStore _receiverStore;
         private DocumentStore _sendingStore;
 
-        private readonly LightweightCache<string, JasperRuntime> _receivers
-            = new LightweightCache<string, JasperRuntime>(name => JasperRuntime.For<ReceiverApp>());
+        private LightweightCache<string, JasperRuntime> _receivers;
 
-        private readonly LightweightCache<string, JasperRuntime> _senders
-            = new LightweightCache<string, JasperRuntime>(name => JasperRuntime.For<SenderApp>());
+        private LightweightCache<string, JasperRuntime> _senders;
+
+        private StorytellerBusLogger _busLogger;
+        private StorytellerTransportLogger _transportLogger;
 
         public MartenBackedPersistenceFixture()
         {
@@ -34,24 +37,60 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public override void SetUp()
         {
-            _receivers.ClearAll();
-            _senders.ClearAll();
+            _busLogger = new StorytellerBusLogger();
+            _transportLogger = new StorytellerTransportLogger();
+
+            _busLogger.Start(Context);
+            _transportLogger.Start(Context, _busLogger.Errors);
 
             _receiverStore = DocumentStore.For(_ =>
             {
+                _.PLV8Enabled = false;
                 _.Connection(ConnectionSource.ConnectionString);
                 _.DatabaseSchemaName = "receiver";
+                _.Schema.For<Envelope>()
+                    .Duplicate(x => x.ExecutionTime)
+                    .Duplicate(x => x.Status)
+                    .Duplicate(x => x.OwnerId);
             });
 
-            _receiverStore.Advanced.Clean.DeleteAllDocuments();
+            _receiverStore.Advanced.Clean.CompletelyRemoveAll();
+            _receiverStore.Schema.ApplyAllConfiguredChangesToDatabase();
 
             _sendingStore = DocumentStore.For(_ =>
             {
+                _.PLV8Enabled = false;
                 _.Connection(ConnectionSource.ConnectionString);
                 _.DatabaseSchemaName = "sender";
+
+                _.Schema.For<Envelope>()
+                    .Duplicate(x => x.ExecutionTime)
+                    .Duplicate(x => x.Status)
+                    .Duplicate(x => x.OwnerId);
             });
 
-            _sendingStore.Advanced.Clean.DeleteAllDocuments();
+            _sendingStore.Advanced.Clean.CompletelyRemoveAll();
+            _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
+
+            _receivers = new LightweightCache<string, JasperRuntime>(key =>
+            {
+                var registry = new ReceiverApp();
+                registry.Logging.LogBusEventsWith(_busLogger);
+                registry.Logging.LogTransportEventsWith(_transportLogger);
+
+                return JasperRuntime.For(registry);
+            });
+
+            _senders = new LightweightCache<string, JasperRuntime>(key =>
+            {
+                var registry = new SenderApp();
+                registry.Logging.LogBusEventsWith(_busLogger);
+                registry.Logging.LogTransportEventsWith(_transportLogger);
+
+                return JasperRuntime.For(registry);
+            });
+
+
         }
 
         public override void TearDown()
@@ -62,7 +101,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _senders.Each(x => x.SafeDispose());
             _senders.ClearAll();
 
-
+            _busLogger.BuildReports().Each(x => Context.Reporting.Log(x));
 
             _receiverStore.Dispose();
             _receiverStore = null;

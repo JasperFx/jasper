@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
@@ -20,16 +22,25 @@ namespace Jasper.Marten.Persistence
 
         public override void EnqueueForRetry(OutgoingMessageBatch batch)
         {
-            using (var session = _store.LightweightSession())
+            try
             {
-                _marker.MarkOwnedByAnyNode(session, batch.Messages.ToArray());
-
-                foreach (var envelope in batch.Messages.Where(x => x.IsExpired()))
+                using (var session = _store.LightweightSession())
                 {
-                    session.Delete(envelope);
-                }
+                    _marker.MarkOwnedByAnyNode(session, batch.Messages.ToArray());
 
-                session.SaveChanges();
+                    foreach (var envelope in batch.Messages.Where(x => x.IsExpired()))
+                    {
+                        session.Delete(envelope);
+                    }
+
+                    session.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                // TODO -- FAR BETTER STRATEGY HERE!
+                Thread.Sleep(100);
+                EnqueueForRetry(batch);
             }
         }
 

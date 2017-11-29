@@ -17,20 +17,21 @@ namespace Jasper.Storyteller.Logging
         private ISpecContext _context;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
         private readonly List<PublisherSubscriberMismatch> _mismatches = new List<PublisherSubscriberMismatch>();
-        private BusErrors _errors;
 
         public void Start(ISpecContext context)
         {
             _records.Clear();
-            _errors = new BusErrors();
+            Errors = new BusErrors();
             _mismatches.Clear();
 
             _context = context;
         }
 
+        public BusErrors Errors { get; private set; }
+
         public Report[] BuildReports()
         {
-            return new Report[]{_errors, new MessageHistoryReport(_records.ToArray())};
+            return new Report[]{Errors, new MessageHistoryReport(_records.ToArray())};
         }
 
         public string ServiceName { get; set; } = "Jasper";
@@ -80,7 +81,7 @@ namespace Jasper.Storyteller.Logging
 
         public override void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
         {
-            _errors.Exceptions.Add(ex);
+            Errors.Exceptions.Add(ex);
         }
 
         public override void NoHandlerFor(Envelope envelope)
@@ -101,7 +102,7 @@ namespace Jasper.Storyteller.Logging
         public override void MovedToErrorQueue(Envelope envelope, Exception ex)
         {
             trace(envelope, "Was moved to the error queue");
-            _errors.Exceptions.Add(ex);
+            Errors.Exceptions.Add(ex);
         }
     }
 }

@@ -19,6 +19,13 @@ namespace Jasper.Bus.Transports.Sending
 
         public void MarkFailed(OutgoingMessageBatch batch)
         {
+            // If it's already latched, just enqueue again
+            if (_sender.Latched)
+            {
+                EnqueueForRetry(batch);
+                return;
+            }
+
             _failureCount++;
 
             if (_failureCount >= _settings.FailuresBeforeCircuitBreaks)

@@ -3,7 +3,7 @@
 -> id = ee2f1d5a-3c77-4ea6-8f1f-8d788efc017e
 -> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2017-11-28T19:23:23.5222220Z
+-> last-updated = 2017-11-29T14:33:53.6110560Z
 -> tags = 
 
 [MartenBackedPersistence]
@@ -16,4 +16,5 @@
 |> WaitForMessagesToBeProcessed count=100
 |> PersistedIncomingCount count=0
 |> PersistedOutgoingCount count=0
+|> ReceivedMessageCount count=100
 ~~~

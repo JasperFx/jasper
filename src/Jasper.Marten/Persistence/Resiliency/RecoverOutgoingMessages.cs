@@ -78,6 +78,11 @@ namespace Jasper.Marten.Persistence.Resiliency
                 .Select(x => new {Channel = _channels.GetOrBuildChannel(x.Key), Envelopes = x.ToArray()})
                 .Where(x => !x.Channel.Latched).ToArray();
 
+            if (!groups.Any())
+            {
+                return;
+            }
+
             // Doing it this way results in fewer network round trips to the DB
             // vs looping through the groups
             var all = groups.SelectMany(x => x.Envelopes).ToArray();

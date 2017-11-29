@@ -156,7 +156,7 @@ namespace Jasper.Bus.Runtime
 
         public Uri ReceivedAt { get; set; }
 
-        public IMessageSerializer Writer { get; set; }
+        internal IMessageSerializer Writer { get; set; }
 
         protected bool Equals(Envelope other)
         {

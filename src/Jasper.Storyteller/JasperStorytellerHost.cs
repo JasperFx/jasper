@@ -35,6 +35,8 @@ namespace Jasper.Storyteller
         public readonly MessageHistory MessageHistory = new MessageHistory();
 
         private readonly StorytellerBusLogger _busLogger = new StorytellerBusLogger();
+        private readonly StorytellerTransportLogger _transportLogger = new StorytellerTransportLogger();
+
         private JasperRuntime _runtime;
 
         public readonly CellHandling CellHandling = CellHandling.Basic();
@@ -53,6 +55,7 @@ namespace Jasper.Storyteller
             Registry.Services.AddSingleton(MessageHistory);
             Registry.Logging.LogBusEventsWith<MessageTrackingLogger>();
             Registry.Services.Add(new ServiceDescriptor(typeof(IBusLogger), _busLogger));
+            Registry.Services.Add(new ServiceDescriptor(typeof(ITransportLogger), _transportLogger));
         }
 
         public T Registry { get; }
@@ -143,6 +146,7 @@ namespace Jasper.Storyteller
             public void BeforeExecution(ISpecContext context)
             {
                 _parent._busLogger.Start(context);
+                _parent._transportLogger.Start(context, _parent._busLogger.Errors);
             }
 
             public void AfterExecution(ISpecContext context)
