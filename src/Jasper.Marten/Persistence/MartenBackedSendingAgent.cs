@@ -11,6 +11,7 @@ using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Marten.Persistence.Resiliency;
 using Marten;
+using Microsoft.CodeAnalysis.VisualBasic;
 
 namespace Jasper.Marten.Persistence
 {
@@ -71,7 +72,7 @@ namespace Jasper.Marten.Persistence
             }
         }
 
-        public override void Successful(OutgoingMessageBatch outgoing)
+        public override async Task Successful(OutgoingMessageBatch outgoing)
         {
             // TODO -- retries?
             using (var session = _store.LightweightSession())
@@ -81,7 +82,7 @@ namespace Jasper.Marten.Persistence
                     session.Delete(message);
                 }
 
-                session.SaveChanges();
+                await session.SaveChangesAsync(_cancellation);
             }
         }
     }

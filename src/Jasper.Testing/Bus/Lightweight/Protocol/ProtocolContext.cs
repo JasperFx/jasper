@@ -136,45 +136,50 @@ namespace Jasper.Testing.Bus.Lightweight.Protocol
 
     public class StubSenderCallback : ISenderCallback
     {
-        public void Successful(OutgoingMessageBatch outgoing)
+        public Task Successful(OutgoingMessageBatch outgoing)
         {
             Succeeded = true;
+            return Task.CompletedTask;
         }
 
         public bool Succeeded { get; set; }
 
-        void ISenderCallback.TimedOut(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.TimedOut(OutgoingMessageBatch outgoing)
         {
             TimedOut = true;
+            return Task.CompletedTask;
         }
 
         public bool TimedOut { get; set; }
 
-        void ISenderCallback.SerializationFailure(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.SerializationFailure(OutgoingMessageBatch outgoing)
         {
             SerializationFailed = true;
+            return Task.CompletedTask;
         }
 
         public bool SerializationFailed { get; set; }
 
-        void ISenderCallback.QueueDoesNotExist(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.QueueDoesNotExist(OutgoingMessageBatch outgoing)
         {
             QueueDoesNotExist = true;
+            return Task.CompletedTask;
         }
 
         public bool QueueDoesNotExist { get; set; }
 
-        void ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing)
         {
             ProcessingFailed = true;
+            return Task.CompletedTask;
         }
 
-        public void ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
+        public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
         {
             throw new NotImplementedException();
         }
 
-        public void SenderIsLatched(OutgoingMessageBatch outgoing)
+        public Task SenderIsLatched(OutgoingMessageBatch outgoing)
         {
             throw new NotImplementedException();
         }

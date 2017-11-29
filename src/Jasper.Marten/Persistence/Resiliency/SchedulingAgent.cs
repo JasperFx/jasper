@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -102,6 +103,24 @@ namespace Jasper.Marten.Persistence.Resiliency
                 }
 
                 session.Dispose();
+            }
+
+            if (_connection.State != ConnectionState.Open)
+            {
+                try
+                {
+                    _connection.Close();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogException(e);
+                }
+
+                _connection = _store.Tenancy.Default.CreateConnection();
+
+
+                await _connection.OpenAsync(_settings.Cancellation);
+
             }
         }
 

@@ -31,18 +31,18 @@ namespace Jasper.Bus.Transports.Sending
 
                         if (!protocolTimeout.IsCompleted)
                         {
-                            callback.TimedOut(batch);
+                            await callback.TimedOut(batch);
                         }
 
                         if (protocolTimeout.IsFaulted)
                         {
-                            callback.ProcessingFailure(batch, protocolTimeout.Exception);
+                            await callback.ProcessingFailure(batch, protocolTimeout.Exception);
                         }
                     }
                 }
                 else
                 {
-                    callback.TimedOut(batch);
+                    await callback.TimedOut(batch);
                 }
             }
         }

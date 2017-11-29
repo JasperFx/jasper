@@ -37,9 +37,9 @@ namespace Jasper.Bus.Transports.Sending
             }
         }
 
-        public override void Successful(OutgoingMessageBatch outgoing)
+        public override Task Successful(OutgoingMessageBatch outgoing)
         {
-            _retries.MarkSuccess();
+            return _retries.MarkSuccess();
         }
     }
 }

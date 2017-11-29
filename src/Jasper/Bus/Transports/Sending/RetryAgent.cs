@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Tcp;
 
@@ -17,13 +18,12 @@ namespace Jasper.Bus.Transports.Sending
             _settings = settings;
         }
 
-        public void MarkFailed(OutgoingMessageBatch batch)
+        public async Task MarkFailed(OutgoingMessageBatch batch)
         {
             // If it's already latched, just enqueue again
             if (_sender.Latched)
             {
-                EnqueueForRetry(batch);
-                return;
+                await EnqueueForRetry(batch);
             }
 
             _failureCount++;
@@ -31,24 +31,23 @@ namespace Jasper.Bus.Transports.Sending
             if (_failureCount >= _settings.FailuresBeforeCircuitBreaks)
             {
                 _sender.Latch();
-                EnqueueForRetry(batch);
+                await EnqueueForRetry(batch);
                 _pinger = new Pinger(_sender, _settings.Cooldown, restartSending);
-
-
             }
             else
             {
                 foreach (var envelope in batch.Messages)
                 {
-                    // Not worried about the await here
+#pragma warning disable 4014
                     _sender.Enqueue(envelope);
+#pragma warning restore 4014
                 }
             }
 
 
         }
 
-        public abstract void EnqueueForRetry(OutgoingMessageBatch batch);
+        public abstract Task EnqueueForRetry(OutgoingMessageBatch batch);
 
         private void restartSending()
         {
@@ -62,12 +61,14 @@ namespace Jasper.Bus.Transports.Sending
 
         protected abstract void afterRestarting();
 
-        public void MarkSuccess()
+        public Task MarkSuccess()
         {
             _failureCount = 0;
             _sender.Unlatch();
             _pinger?.Dispose();
             _pinger = null;
+
+            return Task.CompletedTask;
         }
 
         public void Dispose()

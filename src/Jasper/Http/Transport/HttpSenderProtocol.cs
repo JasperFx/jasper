@@ -58,7 +58,7 @@ namespace Jasper.Http.Transport
             {
                 if (!e.CancellationToken.IsCancellationRequested)
                 {
-                    callback.TimedOut(batch);
+                    await callback.TimedOut(batch);
                 }
                 else
                 {

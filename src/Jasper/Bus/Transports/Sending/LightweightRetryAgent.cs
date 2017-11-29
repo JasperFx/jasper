@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Configuration;
@@ -13,7 +14,7 @@ namespace Jasper.Bus.Transports.Sending
         {
         }
 
-        public override void EnqueueForRetry(OutgoingMessageBatch batch)
+        public override Task EnqueueForRetry(OutgoingMessageBatch batch)
         {
             Queued.AddRange(batch.Messages);
             Queued.RemoveAll(e => e.IsExpired());
@@ -23,6 +24,8 @@ namespace Jasper.Bus.Transports.Sending
                 var toRemove = Queued.Count - _settings.MaximumEnvelopeRetryStorage;
                 Queued = Queued.Skip(toRemove).ToList();
             }
+
+            return Task.CompletedTask;
         }
 
         protected override void afterRestarting()

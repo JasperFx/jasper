@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
@@ -20,27 +21,27 @@ namespace Jasper.Marten.Persistence
             _marker = marker;
         }
 
-        public override void EnqueueForRetry(OutgoingMessageBatch batch)
+        public override async Task EnqueueForRetry(OutgoingMessageBatch batch)
         {
             try
             {
                 using (var session = _store.LightweightSession())
                 {
-                    _marker.MarkOwnedByAnyNode(session, batch.Messages.ToArray());
+                    await _marker.MarkOwnedByAnyNode(session, batch.Messages.ToArray());
 
                     foreach (var envelope in batch.Messages.Where(x => x.IsExpired()))
                     {
                         session.Delete(envelope);
                     }
 
-                    session.SaveChanges();
+                    await session.SaveChangesAsync();
                 }
             }
             catch (Exception e)
             {
                 // TODO -- FAR BETTER STRATEGY HERE!
                 Thread.Sleep(100);
-                EnqueueForRetry(batch);
+                await EnqueueForRetry(batch);
             }
         }
 

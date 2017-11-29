@@ -48,21 +48,21 @@ namespace Jasper.Bus.Transports.Tcp
             var confirmationBytes = await stream.ReadBytesAsync(ReceivedBuffer.Length).ConfigureAwait(false);
             if (confirmationBytes.SequenceEqual(ReceivedBuffer))
             {
-                callback.Successful(batch);
+                await callback.Successful(batch);
 
                 await stream.WriteAsync(AcknowledgedBuffer, 0, AcknowledgedBuffer.Length);
             }
             else if (confirmationBytes.SequenceEqual(ProcessingFailureBuffer))
             {
-                callback.ProcessingFailure(batch);
+                await callback.ProcessingFailure(batch);
             }
             else if (confirmationBytes.SequenceEqual(SerializationFailureBuffer))
             {
-                callback.SerializationFailure(batch);
+                await callback.SerializationFailure(batch);
             }
             else if (confirmationBytes.SequenceEqual(QueueDoesNotExistBuffer))
             {
-                callback.QueueDoesNotExist(batch);
+                await callback.QueueDoesNotExist(batch);
             }
         }
 

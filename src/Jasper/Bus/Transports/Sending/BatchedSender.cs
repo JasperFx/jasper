@@ -103,7 +103,7 @@ namespace Jasper.Bus.Transports.Sending
             {
                 if (Latched)
                 {
-                    _callback.SenderIsLatched(batch);
+                    await _callback.SenderIsLatched(batch);
                 }
                 else
                 {

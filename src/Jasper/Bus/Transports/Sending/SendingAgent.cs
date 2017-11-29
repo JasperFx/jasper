@@ -37,44 +37,47 @@ namespace Jasper.Bus.Transports.Sending
             _sender.Start(this);
         }
 
-        public abstract void Successful(OutgoingMessageBatch outgoing);
+        public abstract Task Successful(OutgoingMessageBatch outgoing);
 
-        public void TimedOut(OutgoingMessageBatch outgoing)
+        public Task TimedOut(OutgoingMessageBatch outgoing)
         {
-            _retries.MarkFailed(outgoing);
             _logger.OutgoingBatchFailed(outgoing);
+            return _retries.MarkFailed(outgoing);
         }
 
-        public void SerializationFailure(OutgoingMessageBatch outgoing)
+        public Task SerializationFailure(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing);
             // Can't really happen now, but what the heck.
             _logger.LogException(new Exception("Serialization failure with outgoing envelopes " + outgoing.Messages.Select(x => x.ToString()).Join(", ")));
+
+            return Task.CompletedTask;
         }
 
-        public void QueueDoesNotExist(OutgoingMessageBatch outgoing)
+        public Task QueueDoesNotExist(OutgoingMessageBatch outgoing)
         {
             // TODO -- May have to deal w/ this just because of compatibility w/ FubuMVC 3. Boo.
             // Doesn't really happen in Jasper
+
+            return Task.CompletedTask;
         }
 
-        public void ProcessingFailure(OutgoingMessageBatch outgoing)
+        public Task ProcessingFailure(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing);
-            _retries.MarkFailed(outgoing);
+            return _retries.MarkFailed(outgoing);
         }
 
-        public void ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
+        public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
         {
             _logger.LogException(exception, $"Failure trying to send a message batch to {outgoing.Destination}");
-            _retries.MarkFailed(outgoing);
             _logger.OutgoingBatchFailed(outgoing, exception);
-
+            return _retries.MarkFailed(outgoing);
         }
 
-        public void SenderIsLatched(OutgoingMessageBatch outgoing)
+        public Task SenderIsLatched(OutgoingMessageBatch outgoing)
         {
-            _retries.MarkFailed(outgoing);
+            return _retries.MarkFailed(outgoing);
         }
 
         public void Dispose()
