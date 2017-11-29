@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using DurabilitySpecs.Fixtures.Marten.App;
 using Jasper;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
@@ -29,6 +31,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         private StorytellerBusLogger _busLogger;
         private StorytellerTransportLogger _transportLogger;
+        private SenderLatchDetected _senderWatcher;
 
         public MartenBackedPersistenceFixture()
         {
@@ -42,6 +45,8 @@ namespace DurabilitySpecs.Fixtures.Marten
 
             _busLogger.Start(Context);
             _transportLogger.Start(Context, _busLogger.Errors);
+
+            _senderWatcher = new SenderLatchDetected();
 
             _receiverStore = DocumentStore.For(_ =>
             {
@@ -67,6 +72,8 @@ namespace DurabilitySpecs.Fixtures.Marten
                     .Duplicate(x => x.ExecutionTime)
                     .Duplicate(x => x.Status)
                     .Duplicate(x => x.OwnerId);
+
+
             });
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
@@ -86,6 +93,8 @@ namespace DurabilitySpecs.Fixtures.Marten
                 var registry = new SenderApp();
                 registry.Logging.LogBusEventsWith(_busLogger);
                 registry.Logging.LogTransportEventsWith(_transportLogger);
+
+                registry.Logging.LogTransportEventsWith(_senderWatcher);
 
                 return JasperRuntime.For(registry);
             });
@@ -118,6 +127,7 @@ namespace DurabilitySpecs.Fixtures.Marten
         [FormatAs("Start sender node {name}")]
         public void StartSender([Default("Sender1")]string name)
         {
+            _senderWatcher.Reset();
             _senders.FillDefault(name);
         }
 
@@ -148,6 +158,17 @@ namespace DurabilitySpecs.Fixtures.Marten
             }
         }
 
+        [FormatAs("Wait up to 30 seconds for the sending agent to the receiver to be unlatched")]
+        public void WaitForSenderToBeUnlatched()
+        {
+            _senderWatcher.Received.Wait(30.Seconds());
+
+            if (!_senderWatcher.Received.Result)
+            {
+                throw new StorytellerCriticalException("Sending agent was not unlatched");
+            }
+        }
+
 
         [FormatAs("Wait for {count} messages to be processed by the receivers")]
         public async Task WaitForMessagesToBeProcessed(int count)
@@ -159,7 +180,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
                 try
                 {
-                    while (stopwatch.ElapsedMilliseconds < 5000)
+                    while (stopwatch.Elapsed < 10.Seconds())
                     {
                         var actual = await session.Query<TraceDoc>().CountAsync();
                         var envelopeCount = await session.Query<Envelope>()
@@ -217,6 +238,34 @@ namespace DurabilitySpecs.Fixtures.Marten
 
     }
 
+
+    public class SenderLatchDetected : TransportLoggerBase
+    {
+        public TaskCompletionSource<bool> Waiter = new TaskCompletionSource<bool>();
+
+        public Task<bool> Received => Waiter.Task;
+
+        public override void CircuitResumed(Uri destination)
+        {
+            if (destination == ReceiverApp.Listener)
+            {
+                Waiter.TrySetResult(true);
+            }
+        }
+
+        public override void CircuitBroken(Uri destination)
+        {
+            if (destination == ReceiverApp.Listener)
+            {
+                Reset();
+            }
+        }
+
+        public void Reset()
+        {
+            Waiter = new TaskCompletionSource<bool>();
+        }
+    }
 
 
     // TODO -- need to have SocketSenderProtocol injected

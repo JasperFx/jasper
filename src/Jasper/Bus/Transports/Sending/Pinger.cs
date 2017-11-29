@@ -30,7 +30,6 @@ namespace Jasper.Bus.Transports.Sending
                 try
                 {
                     await _sender.Ping();
-                    _sender.Unlatch();
 
                     _callback();
                     return;

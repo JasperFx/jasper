@@ -23,6 +23,8 @@ namespace DurabilitySpecs.Fixtures.Marten.App
             Include<MartenBackedPersistence>();
 
             Logging.UseConsoleLogging = true;
+
+            Transports.ListenForMessagesFrom(Listener);
         }
     }
 }

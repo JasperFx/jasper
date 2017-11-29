@@ -91,7 +91,7 @@ namespace Jasper.Storyteller.Logging
         {
             var div = new HtmlTag("ol");
 
-            foreach (var htmlTag in _tags)
+            foreach (var htmlTag in _tags.ToArray())
             {
                 div.Append(htmlTag);
             }

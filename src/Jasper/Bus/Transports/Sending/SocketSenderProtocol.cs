@@ -25,12 +25,18 @@ namespace Jasper.Bus.Transports.Sending
                 {
                     using (var stream = client.GetStream())
                     {
-                        var protocolTimeout = WireProtocol.Send(stream, batch, batch.Data, callback).TimeoutAfter(5000);
-                        await protocolTimeout;
+                        var protocolTimeout = WireProtocol.Send(stream, batch, batch.Data, callback);
+                        //var protocolTimeout = .TimeoutAfter(5000);
+                        await protocolTimeout.ConfigureAwait(false);
 
                         if (!protocolTimeout.IsCompleted)
                         {
                             callback.TimedOut(batch);
+                        }
+
+                        if (protocolTimeout.IsFaulted)
+                        {
+                            callback.ProcessingFailure(batch, protocolTimeout.Exception);
                         }
                     }
                 }
