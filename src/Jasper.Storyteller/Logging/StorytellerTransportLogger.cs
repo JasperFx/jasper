@@ -80,6 +80,14 @@ namespace Jasper.Storyteller.Logging
         {
             _errors.Exceptions.Add(ex);
         }
+
+        public void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes)
+        {
+            foreach (var envelope in envelopes)
+            {
+                _report.Trace($"Discarded {envelope} with an unknown transport");
+            }
+        }
     }
 
     public class TransportLoggingReport : Report

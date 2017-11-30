@@ -56,5 +56,11 @@ namespace Jasper.Bus.Logging
         /// <param name="message"></param>
         void LogException(Exception ex, string correlationId = null, string message = "Exception detected:");
 
+        /// <summary>
+        /// Logged when the outgoing message recovery finds envelopes with a Destination
+        /// that cannot be resolved to a known transport in the system
+        /// </summary>
+        /// <param name="envelopes"></param>
+        void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes);
     }
 }

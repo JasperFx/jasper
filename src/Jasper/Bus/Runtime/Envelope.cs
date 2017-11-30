@@ -214,6 +214,11 @@ namespace Jasper.Bus.Runtime
 
         public Uri Destination { get; set; }
 
+        /// <summary>
+        /// Read-only string representation of the destination Uri (for persistence)
+        /// </summary>
+        public string Address => Destination.ToString();
+
         public string[] AcceptedContentTypes { get; set; } = new string[0];
 
         public string Accepts => AcceptedContentTypes?.FirstOrDefault();

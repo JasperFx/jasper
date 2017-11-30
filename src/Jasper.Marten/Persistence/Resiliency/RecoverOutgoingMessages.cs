@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
@@ -33,27 +35,18 @@ namespace Jasper.Marten.Persistence.Resiliency
             if (!await session.TryGetGlobalTxLock(OutgoingMessageLockId))
                 return;
 
-
-            // Have it loop until either a time limit has been reached or a certain
-            // queue count has been reached
-            // TODO -- how many do you pull in here? Is it configurable?
-
-            // TODO -- take advantage of channels that are latched to filter
-
-            // It's a List behind the covers, but to get R# to shut up, I did the ToArray()
-            var outgoing = (await session.QueryAsync(new FindAtLargeEnvelopes
-            {
-                Status = TransportConstants.Outgoing
-            })).ToList();
+            var outgoing = await findPersistedOutgoingEnvelopes(session);
 
             if (!outgoing.Any()) return;
 
-            // Delete any envelope that is expired by its DeliveryBy value
-            filterExpired(session, outgoing);
+            bool wasMaxedOut = outgoing.Count == _settings.Retries.RecoveryBatchSize;
 
-            if (outgoing.Any())
+            // Delete any envelope that is expired by its DeliveryBy value
+            var filtered = filterExpired(session, outgoing);
+
+            if (filtered.Any())
             {
-                await sendOutgoing(session, outgoing);
+                await sendOutgoing(session, filtered);
             }
             else
             {
@@ -61,46 +54,81 @@ namespace Jasper.Marten.Persistence.Resiliency
                 await session.SaveChangesAsync();
             }
 
-
-
-
-            // TODO -- determine if it should schedule another outgoing recovery batch immediately
+            if (wasMaxedOut)
+            {
+                _schedulingAgent.RescheduleOutgoingRecovery();
+            }
         }
 
-        private async Task sendOutgoing(IDocumentSession session, List<Envelope> outgoing)
+        private async Task<List<Envelope>> findPersistedOutgoingEnvelopes(IDocumentSession session)
         {
-// TODO -- do you throw away messages that cannot be matched to an outgoing channel?
-            // I say we make an "unknown channel" here that can just collect the message
-            // and put it into some kind of Undeliverable status
+            var latchedSenders = _channels.AllKnownChannels().Where(x => x.Latched).Select(x => x.Uri.ToString())
+                .ToArray();
 
-            var groups = outgoing
-                .GroupBy(x => x.Destination)
-                .Select(x => new {Channel = _channels.GetOrBuildChannel(x.Key), Envelopes = x.ToArray()})
-                .Where(x => !x.Channel.Latched).ToArray();
-
-            if (!groups.Any())
+            if (latchedSenders.Any())
             {
-                return;
+                return (await session.QueryAsync(new FindOutgoingEnvelopes()
+                {
+                    PageSize = _settings.Retries.RecoveryBatchSize,
+                    Latched = latchedSenders
+                })).ToList();
             }
 
-            // Doing it this way results in fewer network round trips to the DB
-            // vs looping through the groups
-            var all = groups.SelectMany(x => x.Envelopes).ToArray();
-            await _marker.MarkOutgoingOwnedByThisNode(session, all);
+            // It's a List behind the covers, but to get R# to shut up, I did the ToArray()
+            return (await session.QueryAsync(new FindAtLargeEnvelopes
+            {
+                Status = TransportConstants.Outgoing,
+                PageSize = _settings.Retries.RecoveryBatchSize
+            })).ToList();
+        }
+
+        private async Task sendOutgoing(IDocumentSession session, Envelope[] outgoing)
+        {
+            await _marker.MarkOutgoingOwnedByThisNode(session, outgoing);
 
 
             await session.SaveChangesAsync();
 
-            _logger.RecoveredOutgoing(all);
+            _logger.RecoveredOutgoing(outgoing);
 
-            // TODO -- do a compensating action here to reverse
+            var groups = outgoing.GroupBy(x => x.Destination);
+            foreach (var @group in groups)
+            {
+                try
+                {
+                    var channel = _channels.GetOrBuildChannel(@group.Key);
 
-            foreach (var group in groups)
-            foreach (var envelope in @group.Envelopes)
-                await @group.Channel.QuickSend(envelope);
+                    if (channel.Latched)
+                    {
+                        // TODO -- may need to be retried
+                        await _marker.MarkOwnedByAnyNode(session, @group.ToArray());
+                        await session.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        foreach (var envelope in @group)
+                        {
+#pragma warning disable 4014
+                            channel.QuickSend(envelope);
+#pragma warning restore 4014
+                        }
+                    }
+                }
+                catch (UnknownTransportException e)
+                {
+                    _logger.DiscardedUnknownTransport(@group);
+
+                    // TODO -- may need to be retried
+                    var ids = @group.Select(x => x.Id).ToArray();
+                    session.DeleteWhere<Envelope>(x => x.Id.IsOneOf(ids));
+                    await session.SaveChangesAsync();
+
+                }
+            }
+
         }
 
-        private void filterExpired(IDocumentSession session, List<Envelope> outgoing)
+        private Envelope[] filterExpired(IDocumentSession session, List<Envelope> outgoing)
         {
             var expiredMessages = outgoing.Where(x => x.IsExpired()).ToArray();
             _logger.DiscardedExpired(expiredMessages);
@@ -110,7 +138,7 @@ namespace Jasper.Marten.Persistence.Resiliency
                 session.Delete(expired);
             }
 
-            outgoing.RemoveAll(x => x.IsExpired());
+            return outgoing.Where(x => !x.IsExpired()).ToArray();
         }
     }
 }

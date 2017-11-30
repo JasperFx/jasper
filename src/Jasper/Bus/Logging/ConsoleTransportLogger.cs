@@ -75,5 +75,13 @@ namespace Jasper.Bus.Logging
             ConsoleWriter.Write(ConsoleColor.Yellow, ex.ToString());
             Console.WriteLine();
         }
+
+        public void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes)
+        {
+            foreach (var envelope in envelopes)
+            {
+                ConsoleWriter.Write(ConsoleColor.Yellow, $"Discarded {envelope} with unknown transport");
+            }
+        }
     }
 }

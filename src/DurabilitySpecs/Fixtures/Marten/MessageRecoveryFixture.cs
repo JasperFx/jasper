@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
+using Jasper.Bus;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
@@ -124,7 +125,12 @@ namespace DurabilitySpecs.Fixtures.Marten
         [FormatAs("Channel {channel} is unavailable and latched for sending")]
         public void ChannelIsLatched(Uri channel)
         {
+
+
             getStubTransport().Channels[channel].Latched = true;
+
+            // Gotta do this so that the query on latched channels works correctly
+            _runtime.Get<IChannelGraph>().GetOrBuildChannel(channel);
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Tcp;
 
@@ -167,6 +168,21 @@ namespace Jasper.Bus.Logging
         public static CompositeTransportLogger Empty()
         {
             return new CompositeTransportLogger(new ITransportLogger[0]);
+        }
+
+        public void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes)
+        {
+            foreach (var logger in Loggers)
+            {
+                try
+                {
+                    logger.DiscardedUnknownTransport(envelopes);
+                }
+                catch (Exception)
+                {
+
+                }
+            }
         }
     }
 }

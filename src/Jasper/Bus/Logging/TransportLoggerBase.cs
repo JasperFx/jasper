@@ -49,5 +49,9 @@ namespace Jasper.Bus.Logging
         {
 
         }
+
+        public virtual void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes)
+        {
+        }
     }
 }
