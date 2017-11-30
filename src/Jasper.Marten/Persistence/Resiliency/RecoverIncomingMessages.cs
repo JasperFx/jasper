@@ -54,7 +54,7 @@ namespace Jasper.Marten.Persistence.Resiliency
                 await _workers.Enqueue(envelope);
             }
 
-            if (incoming.Length == _settings.Retries.RecoveryBatchSize)
+            if (incoming.Length == _settings.Retries.RecoveryBatchSize && _workers.QueuedCount < _settings.MaximumLocalEnqueuedBackPressureThreshold)
             {
                 _schedulingAgent.RescheduleIncomingRecovery();
             }

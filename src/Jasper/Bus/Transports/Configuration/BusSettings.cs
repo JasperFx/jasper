@@ -204,6 +204,15 @@ namespace Jasper.Bus.Transports.Configuration
         public TimeSpan ScheduledJobPollingTime { get; set; } = 5.Seconds();
         public TimeSpan NodeReassignmentPollingTime { get; set; } = 1.Minutes();
         public TimeSpan FirstNodeReassignmentExecution{ get; set; } = 0.Seconds();
+
+
+        /// <summary>
+        /// Used to govern the incoming and outgoing message recovery process by making slowing down
+        /// the recovery process when the local worker queues have this many enqueued
+        /// messages
+        /// </summary>
+        public int MaximumLocalEnqueuedBackPressureThreshold { get; set; } = 2000;
+
     }
 
     public interface IHttpTransportConfiguration
@@ -247,5 +256,8 @@ namespace Jasper.Bus.Transports.Configuration
         public int MaximumEnvelopeRetryStorage { get; set; } = 100;
 
         public int RecoveryBatchSize { get; set; } = 100;
+
+
+
     }
 }
