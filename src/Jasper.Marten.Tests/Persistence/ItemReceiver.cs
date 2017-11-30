@@ -18,11 +18,14 @@ namespace Jasper.Marten.Tests.Persistence
             Settings.Alter<StoreOptions>(_ =>
             {
                 _.Connection(ConnectionSource.ConnectionString);
+                _.DatabaseSchemaName = "receiver";
             });
 
             Services.AddSingleton<MessageTracker>();
 
             Transports.DurableListenerAt(2345);
+
+
         }
     }
 }

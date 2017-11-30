@@ -21,14 +21,12 @@ namespace Jasper.Marten.Tests.Persistence
 
         public end_to_end_with_persistence()
         {
-            using (var store = DocumentStore.For(ConnectionSource.ConnectionString))
-            {
-                store.Advanced.Clean.CompletelyRemoveAll();
-            }
-
             theSender = JasperRuntime.For<ItemSender>();
             theReceiver = JasperRuntime.For<ItemReceiver>();
             theTracker = theReceiver.Get<MessageTracker>();
+
+            theSender.Get<IDocumentStore>().Advanced.Clean.DeleteAllDocuments();
+            theReceiver.Get<IDocumentStore>().Advanced.Clean.DeleteAllDocuments();
         }
 
         public void Dispose()

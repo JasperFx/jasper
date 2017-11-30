@@ -75,6 +75,10 @@ namespace Jasper.Marten.Persistence.Resiliency
 
         private async Task processAction(IMessagingAction action)
         {
+            await tryRestartConnection();
+
+            if (_connection == null) return;
+
             var tx = _connection.BeginTransaction();
 
             var session = _store.OpenSession(new SessionOptions
@@ -96,7 +100,6 @@ namespace Jasper.Marten.Persistence.Resiliency
             }
             finally
             {
-                // TODO -- what if this blows up? Try to restart the connection again?
                 if (!tx.IsCompleted)
                 {
                     await tx.RollbackAsync();
@@ -105,23 +108,44 @@ namespace Jasper.Marten.Persistence.Resiliency
                 session.Dispose();
             }
 
-            if (_connection.State != ConnectionState.Open)
+            await tryRestartConnection();
+        }
+
+        private async Task tryRestartConnection()
+        {
+            if (_connection?.State == ConnectionState.Open) return;
+
+            if (_connection != null)
             {
                 try
                 {
                     _connection.Close();
+                    _connection.Dispose();
+                    _connection = null;
                 }
                 catch (Exception e)
                 {
                     _logger.LogException(e);
                 }
+            }
+
 
                 _connection = _store.Tenancy.Default.CreateConnection();
 
-
+            try
+            {
                 await _connection.OpenAsync(_settings.Cancellation);
 
+                await retrieveLockForThisNode();
             }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+
+                _connection.Dispose();
+                _connection = null;
+            }
+
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

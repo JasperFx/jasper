@@ -13,6 +13,7 @@ namespace Jasper.Marten.Tests.Persistence
             Settings.Alter<StoreOptions>(_ =>
             {
                 _.Connection(ConnectionSource.ConnectionString);
+                _.DatabaseSchemaName = "sender";
             });
         }
     }
