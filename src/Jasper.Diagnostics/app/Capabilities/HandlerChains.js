@@ -65,7 +65,7 @@ HandlerChains.propTypes = {
 export default connect(
   (state) => {
     return {
-      chains: state.handlerChains.chains
+      chains: state.capabilities.chains
     }
   },
   (dispatch) => {

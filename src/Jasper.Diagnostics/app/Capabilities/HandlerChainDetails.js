@@ -9,6 +9,7 @@ import AwesomeIcon from '../Components/AwesomeIcon'
 import Row from '../Components/Row'
 import Col from '../Components/Col'
 import RecentMessages from '../Live/RecentMessages'
+import {RECV} from "../Live/messagesReducer"
 
 const HandlerChainDetails = ({ chain, goBack }) => {
   const back = ev => {
@@ -34,7 +35,7 @@ const HandlerChainDetails = ({ chain, goBack }) => {
         <Col column={4}>
           <Card>
             <h2 className="header-title">Recent Messages</h2>
-            <RecentMessages typeName={chain.messageType.fullName}/>
+            <RecentMessages typeName={chain.messageType.fullName} direction={RECV}/>
           </Card>
         </Col>
       </Row>
@@ -49,7 +50,7 @@ HandlerChainDetails.propTypes = {
 
 export default connect((state, props) => {
     return {
-      chain: state.handlerChains.chains.find(e => e.generatedTypeName === props.match.params.id)
+      chain: state.capabilities.chains.find(e => e.generatedTypeName === props.match.params.id)
     }
   },
   (dispatch, props)=> {

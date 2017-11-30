@@ -103,7 +103,8 @@ namespace Jasper.WebSockets
             var envelope = new Envelope(message)
             {
                 ReplyUri = WebSocketTransport.DefaultUri,
-                ReceivedAt = WebSocketTransport.DefaultUri
+                ReceivedAt = WebSocketTransport.DefaultUri,
+                Callback = new LightweightCallback(_queue)
             };
 
             return _queue.Enqueue(envelope);

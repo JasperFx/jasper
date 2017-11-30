@@ -117,6 +117,11 @@ namespace StorytellerSpecs.Fixtures
             return Task.FromResult(subscriptions);
         }
 
+        public Task<Subscription[]> GetSubscriptions()
+        {
+            return Task.FromResult(_subscriptions.ToArray());
+        }
+
         public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
         {
             throw new NotImplementedException();

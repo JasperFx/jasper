@@ -16,11 +16,12 @@ import AwesomeIcon from './Components/AwesomeIcon'
 import TitleBar from './TitleBar'
 import TopNav from './TopNav'
 import TopNavItem from './TopNavItem'
-import HandlerChains from './HandlerChains/index'
-import HandlerChainDetails from './HandlerChains/HandlerChainDetails'
+import Capabilities from './Capabilities/index'
+import HandlerChainDetails from './Capabilities/HandlerChainDetails'
 import Live from './Live/index'
 import EnvelopeDetails from './Live/EnvelopeDetails'
 import './App.css'
+import Subscriptions from './Subscriptions/'
 
 const Routes = ({ alert }) => {
   return (
@@ -28,15 +29,17 @@ const Routes = ({ alert }) => {
       {alert}
       <TitleBar/>
       <TopNav>
-        <TopNavItem to="/" exact><AwesomeIcon icon="share-alt"/> Handler Chains</TopNavItem>
+        <TopNavItem to="/" exact><AwesomeIcon icon="share-alt"/> Capabilities</TopNavItem>
         <TopNavItem to="/live"><AwesomeIcon icon="envelope"/> Live Messages</TopNavItem>
+        <TopNavItem to="/subscriptions"><AwesomeIcon icon="exchange"/> Subscriptions</TopNavItem>
       </TopNav>
       <Container>
         <Row>
           <Col column={12}>
-            <Route exact path="/" component={HandlerChains}/>
+            <Route exact path="/" component={Capabilities}/>
+            <Route path="/subscriptions" component={Subscriptions} />
             <Route path="/live" component={Live}/>
-            <Route path="/envelope/:queue/:id" component={EnvelopeDetails}/>
+            <Route path="/envelope/:direction/:id" component={EnvelopeDetails}/>
             <Route path="/handler-chain/:id" component={HandlerChainDetails}/>
           </Col>
         </Row>

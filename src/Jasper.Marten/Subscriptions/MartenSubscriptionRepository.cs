@@ -49,6 +49,17 @@ namespace Jasper.Marten.Subscriptions
             }
         }
 
+        public async Task<Subscription[]> GetSubscriptions()
+        {
+            using (var query = _documentStore.QuerySession())
+            {
+                var docs = await query.Query<Subscription>()
+                    .ToListAsync();
+
+                return docs.ToArray();
+            }
+        }
+
         public async Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
         {
             using (var session = _documentStore.OpenSession())

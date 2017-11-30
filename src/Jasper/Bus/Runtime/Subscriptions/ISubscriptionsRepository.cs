@@ -10,6 +10,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
         Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions);
 
         Task<Subscription[]> GetSubscribersFor(Type messageType);
+        Task<Subscription[]> GetSubscriptions();
         Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions);
     }
 

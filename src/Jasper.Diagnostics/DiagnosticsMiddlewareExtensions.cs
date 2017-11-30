@@ -24,19 +24,14 @@ namespace Jasper.Diagnostics
         {
             app.UseJasperWebSockets();
 
-            if(options.Mode == DiagnosticsMode.Production)
+            var assembly = typeof(DiagnosticsMiddleware).GetTypeInfo().Assembly;
+            var provider = new EmbeddedFileProvider(assembly, $"{assembly.GetName().Name}.resources");
+
+            app.UseStaticFiles(new StaticFileOptions()
             {
-                var assembly = typeof(DiagnosticsMiddleware).GetTypeInfo().Assembly;
-                var provider = new EmbeddedFileProvider(assembly, $"{assembly.GetName().Name}.resources");
-
-                app.UseStaticFiles(new StaticFileOptions()
-                {
-                    FileProvider = provider,
-                    RequestPath = new PathString($"{options.BasePath}{DiagnosticsMiddleware.Resource_Root}")
-                });
-            }
-
-
+                FileProvider = provider,
+                RequestPath = options.BasePath
+            });
 
             app.UseMiddleware<DiagnosticsMiddleware>(options);
 

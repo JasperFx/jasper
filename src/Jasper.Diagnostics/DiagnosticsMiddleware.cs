@@ -9,23 +9,14 @@ namespace Jasper.Diagnostics
     public class DiagnosticsSettings
     {
         public string PageTitle { get; set; } = "Jasper Diagnostics";
-        public string Mode { get; set; } = DiagnosticsMode.Production;
         public PathString BasePath { get; set; } = "/_diag";
         public int WebsocketPort { get; set; } = 5000;
         public Func<HttpContext, bool> AuthorizeWith { get; set; } = context => true;
     }
 
-    public class DiagnosticsMode
-    {
-        public static readonly string Development = "Development";
-        public static readonly string Production = "Production";
-    }
 
     public class DiagnosticsMiddleware
     {
-        public const string Resource_Root = "/_res";
-        public const string Bundle_Name = "bundle.js";
-
         private readonly RequestDelegate _next;
         private readonly DiagnosticsSettings _settings;
         private readonly WebpackAssetCache _assets;
@@ -57,7 +48,7 @@ namespace Jasper.Diagnostics
             await buildLandingPage(context);
         }
 
-        private async Task buildLandingPage(HttpContext context)
+        private Task buildLandingPage(HttpContext context)
         {
             var document = new HtmlDocument { Title = _settings.PageTitle };
 
@@ -66,11 +57,7 @@ namespace Jasper.Diagnostics
             document.Head.Append(new CssTag("https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism-okaidia.min.css"));
             document.Head.Append(new CssTag("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"));
 
-            if(_settings.Mode == DiagnosticsMode.Production)
-            {
-                document.Head.Append(cssTags());
-            }
-
+            document.Head.Append(cssTags());
             document.Body.Append(new HtmlTag("div").Attr("id", "root"));
 
             var websocketUri = $"ws://localhost:{_settings.WebsocketPort}{pathFor(_settings.BasePath, "ws")}";
@@ -83,16 +70,8 @@ namespace Jasper.Diagnostics
 
             document.Body.Append(new ScriptTag($"https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.js"));
 
-            if(_settings.Mode == DiagnosticsMode.Production)
-            {
-                document.Body.Append(scriptTags());
-            }
-            else
-            {
-                document.Body.Append(new ScriptTag($"/{Bundle_Name}"));
-            }
-
-            await context.WriteHtml(document);
+            document.Body.Append(scriptTags());
+            return context.WriteHtml(document);
         }
 
         private CssTag[] cssTags()
@@ -112,7 +91,7 @@ namespace Jasper.Diagnostics
 
         private string resourcePathFor(params string[] urls)
         {
-            return _settings.BasePath.CombineUrl(new [] {Resource_Root}.Concat(urls).ToArray());
+            return _settings.BasePath.CombineUrl(urls);
         }
     }
 }

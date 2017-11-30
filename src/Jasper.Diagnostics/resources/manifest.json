@@ -1,4 +1,6 @@
 {
-  "bundle.css": "css/bundle.68c73db8b1da1d0acda7.css",
-  "bundle.js": "js/bundle.68c73db8b1da1d0acda7.js"
+  "main.css": "main.css",
+  "main.css.map": "main.css.map",
+  "main.js": "index.js",
+  "main.js.map": "index.js.map"
 }

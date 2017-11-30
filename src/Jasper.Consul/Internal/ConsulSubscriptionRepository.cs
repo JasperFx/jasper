@@ -63,6 +63,12 @@ namespace Jasper.Consul.Internal
             return subs.Response?.Select(kv => deserialize<Subscription>(kv.Value)).ToArray() ?? new Subscription[0];
         }
 
+        public async Task<Subscription[]> GetSubscriptions()
+        {
+            var subs = await AllSubscriptions();
+            return subs.ToArray();
+        }
+
         public async Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
         {
             var existing = await AllSubscriptions();

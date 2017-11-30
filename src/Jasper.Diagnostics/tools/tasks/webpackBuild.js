@@ -6,7 +6,7 @@ import { log } from 'simple-make/lib/logUtils'
 import Deferred from 'simple-make/lib/Deferred'
 import { rm } from 'shelljs'
 
-import { PROD_OUTPUT_PATH, WEB_APP_DIR, WEB_APP_ENV } from '../constants'
+import { OUTPUT_PATH, WEB_APP_DIR, WEB_APP_ENV } from '../constants'
 
 import webpackConfig from '../../webpack.config'
 
@@ -16,8 +16,8 @@ export default function webpackBuild() {
   log(`NODE_ENV=${process.env.NODE_ENV}`)
   log(`ASPNETCORE_ENVIRONMENT=${WEB_APP_ENV}`)
 
-  log(`Cleaning output directory: ${PROD_OUTPUT_PATH}`)
-  rm('-rf', PROD_OUTPUT_PATH)
+  log(`Cleaning output directory: ${OUTPUT_PATH}`)
+  rm('-rf', OUTPUT_PATH)
 
   if(process.env.NODE_ENV === undefined) {
     deferred.reject('NODE_ENV is undefined')
