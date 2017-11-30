@@ -33,17 +33,11 @@ namespace Jasper.Marten.Persistence.Resiliency
                 return;
             }
 
-
-            // Have it loop until either a time limit has been reached or a certain
-            // queue count has been reached
-            // TODO -- how many do you pull in here? Is it configurable? Do you take into account the
-            // depth of the worker queue?
-
-
             // It's a List behind the covers, but to get R# to shut up, I did the ToArray()
             var incoming = (await session.QueryAsync(new FindAtLargeEnvelopes
             {
-                Status = TransportConstants.Incoming
+                Status = TransportConstants.Incoming,
+                PageSize = _settings.Retries.RecoveryBatchSize
             })).ToArray();
 
             if (!incoming.Any()) return;
@@ -60,7 +54,10 @@ namespace Jasper.Marten.Persistence.Resiliency
                 await _workers.Enqueue(envelope);
             }
 
-            // TODO -- determine if it should schedule another incoming recovery batch immediately
+            if (incoming.Length == _settings.Retries.RecoveryBatchSize)
+            {
+                _schedulingAgent.RescheduleIncomingRecovery();
+            }
         }
 
 
