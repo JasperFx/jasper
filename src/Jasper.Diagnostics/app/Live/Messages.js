@@ -12,17 +12,18 @@ import StatusIndicator from '../Components/StatusIndicator'
 import {
   setMessageFilter,
   toggleSavedMessage,
-  getVisibleMessages
-} from './liveMessagesReducer'
+  getVisibleMessages,
+  getMessageFilter,
+  RECV,
+  SENT
+} from './messagesReducer'
 
-function checkIfSelected(mode, selectedMode) {
-  return mode === selectedMode
-}
+const checkIfSelected = (mode, selectedMode) => mode === selectedMode
 
-const LiveMessages = ({ filter, messages, onFilterClick, onSaveClick }) => {
+const Messages = ({ filter, messages, onFilterClick, onSaveClick, direction }) => {
   let list = messages.map(m =>
     <li key={m.correlationId} className="message-list-item">
-      <Envelope id={m.correlationId} queue="live" saveMessage={onSaveClick} />
+      <Envelope id={m.correlationId} direction={direction} saveMessage={onSaveClick} />
     </li>)
   return (
     <div>
@@ -55,28 +56,36 @@ const LiveMessages = ({ filter, messages, onFilterClick, onSaveClick }) => {
   )
 }
 
-LiveMessages.propTypes = {
-  filter: PropTypes.oneOf(['all', 'successful', 'failed', 'saved']),
+Messages.propTypes = {
+  filter: PropTypes.oneOf(['all', 'successful', 'failed', 'saved']).isRequired,
   messages: PropTypes.array.isRequired,
   onFilterClick: PropTypes.func.isRequired,
-  onSaveClick: PropTypes.func.isRequired
+  onSaveClick: PropTypes.func.isRequired,
+  direction: PropTypes.oneOf([SENT,  RECV])
 }
 
-export default connect(
-  (state) => {
+const ExportedMessages = connect(
+  (state, props) => {
+    // const messages = props.direction === SENT ? state.messages.sentMessages : state.messages.recvMessages;
     return {
-      filter: state.live.filter,
-      messages: getVisibleMessages(state.live, state.live.filter)
+      filter: getMessageFilter(state.messages,  props.direction),
+      messages: getVisibleMessages(state.messages, props.direction)
     }
   },
-  (dispatch) => {
+  (dispatch, props) => {
     return {
       onFilterClick: (filter) => {
-        return dispatch(setMessageFilter(filter))
+        return dispatch(setMessageFilter(filter, props.direction))
       },
       onSaveClick: (message) => {
-        return dispatch(toggleSavedMessage(message))
+        return dispatch(toggleSavedMessage(message, props.direction))
       }
     }
   }
-)(LiveMessages)
+)(Messages)
+
+ExportedMessages.propTypes = {
+  direction: PropTypes.oneOf([SENT,  RECV])
+}
+
+export default ExportedMessages

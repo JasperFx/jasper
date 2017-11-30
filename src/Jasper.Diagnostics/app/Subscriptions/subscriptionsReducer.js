@@ -1,12 +1,12 @@
 const initialState = {
-  chains: []
+  subscriptions: []
 }
 
 export default (state = initialState, action = {}) => {
   switch(action.type) {
-    case 'initial-data':
+    case 'diagnostic-data':
       return {
-        chains: action.chains
+        subscriptions: action.storedSubscriptions
       }
     default: return state
   }

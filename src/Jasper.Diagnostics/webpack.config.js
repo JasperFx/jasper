@@ -15,16 +15,16 @@ import ManifestPlugin from 'webpack-manifest-plugin'
 import {
   ENV,
   DEV_PORT,
-  PROD_OUTPUT_PATH,
-  PROD_OUTPUT_FILENAME,
+  OUTPUT_PATH,
+  JS_OUTPUT_FILENAME,
   CSS_OUTPUT_FILENAME,
   WEB_APP_ENTRY_POINT,
   WEB_APP_DIR,
   WEBPACK_DEV_PORT
 } from './tools/constants'
 
-const cssLoader = (include) => {
-  return (context) => ({
+const cssLoader = include => {
+  return context => ({
     module: {
       loaders: [
         {
@@ -33,16 +33,18 @@ const cssLoader = (include) => {
         }
       ]
     },
-    plugins: [
-      new ExtractTextPlugin(CSS_OUTPUT_FILENAME)
-    ]
+    plugins: [new ExtractTextPlugin(CSS_OUTPUT_FILENAME)]
   })
 }
 
 export default createConfig([
-  babel({
-    exclude: /node_modules/
+  entryPoint(path.join(__dirname, WEB_APP_ENTRY_POINT)),
+  setOutput({
+    path: path.join(__dirname, WEB_APP_DIR, OUTPUT_PATH),
+    publicPath: '/_diag/',
+    filename: JS_OUTPUT_FILENAME
   }),
+  cssLoader(),
   addPlugins([
     // This helps ensure the builds are consistent if source hasn't changed:
     new webpack.optimize.OccurenceOrderPlugin(),
@@ -50,17 +52,16 @@ export default createConfig([
       'process.env': {
         NODE_ENV: JSON.stringify(ENV)
       }
-    })
-  ]),
-  env('development', [
-    entryPoint(path.join(__dirname, WEB_APP_ENTRY_POINT)),
-    setOutput({
-      path: '/',
-      publicPath: '/'
     }),
+    new ManifestPlugin()
+  ]),
+  babel({
+    exclude: /node_modules/
+  }),
+  env('development', [
     devServer([
       `webpack-dev-server/client?http://localhost:${WEBPACK_DEV_PORT}`,
-      'webpack/hot/only-dev-server',
+      'webpack/hot/only-dev-server'
     ]),
     devServer.proxy({
       '*': { target: `http://localhost:${DEV_PORT}` }
@@ -68,18 +69,9 @@ export default createConfig([
     devServer.reactHot({
       exclude: /node_modules/
     }),
-    sourceMaps(),
+    sourceMaps()
   ]),
   env('production', [
-    entryPoint({
-      bundle: path.join(__dirname, WEB_APP_ENTRY_POINT)
-    }),
-    setOutput({
-      path: path.join(__dirname, WEB_APP_DIR, PROD_OUTPUT_PATH),
-      publicPath: '/',
-      filename: PROD_OUTPUT_FILENAME
-    }),
-    cssLoader(),
     addPlugins([
       // Try to dedupe duplicated modules, if any:
       new webpack.optimize.DedupePlugin(),
@@ -96,8 +88,7 @@ export default createConfig([
           comments: false,
           screw_ie8: true
         }
-      }),
-      new ManifestPlugin()
+      })
     ])
   ])
 ])

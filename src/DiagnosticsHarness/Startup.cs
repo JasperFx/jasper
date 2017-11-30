@@ -9,10 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Jasper;
 using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Logging;
 using Jasper.Diagnostics;
-using StructureMap;
 
 namespace DiagnosticsHarness
 {
@@ -61,7 +58,6 @@ namespace DiagnosticsHarness
 
             app.UseDiagnostics(_ =>
             {
-               _.Mode = DiagnosticsMode.Development;
 //                _.AuthorizeWith = context => context.User.HasClaim("admin", "true");
             });
 

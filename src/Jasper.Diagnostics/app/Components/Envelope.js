@@ -6,14 +6,17 @@ import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
 import Star from './Star'
 import StatusIndicator from './StatusIndicator'
+import {SENT, RECV} from "../Live/messagesReducer"
 
-function Envelope({ id, queue, message, onClick, onNavigate }) {
+function Envelope({ id, direction, message, onClick, onNavigate }) {
   const star = ev => {
     ev.stopPropagation()
     onClick(message)
   }
+  if (!message)
+    return <div onClick={() => onNavigate(id, direction)} className="clickable">Message no longer available!</div>
   return (
-    <div onClick={() => onNavigate(id, queue)} className="clickable">
+    <div onClick={() => onNavigate(id, direction)} className="clickable">
       <StatusIndicator success={!message.hasError}/>
       <Star selected={message.saved === true} className="clickable" onClick={star}/>
       {message.description}
@@ -23,12 +26,12 @@ function Envelope({ id, queue, message, onClick, onNavigate }) {
 
 Envelope.propTypes = {
   id: PropTypes.string.isRequired,
-  queue: PropTypes.string.isRequired,
+  direction: PropTypes.oneOf([SENT, RECV]).isRequired,
   message: PropTypes.shape({
     description: PropTypes.string.isRequired,
     saved: PropTypes.bool.isRequired,
     hasError: PropTypes.bool.isRequired
-  }),
+  }).isRequired,
   onClick: PropTypes.func,
   onNavigate: PropTypes.func.isRequired,
   saveMessage: PropTypes.func.isRequired
@@ -37,16 +40,16 @@ Envelope.propTypes = {
  const cEnv = connect(
   (state, props) => {
     return {
-      message: state[props.queue].messages.find(m => m.correlationId === props.id)
+      message: state.messages[props.direction + "Messages"].find(m => m.correlationId === props.id)
     }
   },
   (dispatch, props) => {
     return {
       onClick: message => {
-        return dispatch(props.saveMessage(message))
+        return dispatch(props.saveMessage(message, props.direction))
       },
-      onNavigate: (id, queue) => {
-        return dispatch(push(`/envelope/${queue}/${id}`))
+      onNavigate: (id, direction) => {
+        return dispatch(push(`/envelope/${direction}/${id}`))
       }
     }
   }
@@ -54,7 +57,7 @@ Envelope.propTypes = {
 
 cEnv.propTypes = {
   id: PropTypes.string.isRequired,
-  queue: PropTypes.string.isRequired,
+  direction: PropTypes.oneOf([SENT,RECV]).isRequired,
   saveMessage: PropTypes.func.isRequired
 }
 

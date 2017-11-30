@@ -10,6 +10,7 @@ import Col from '../Components/Col'
 import StatusIndicator from '../Components/StatusIndicator'
 import AwesomeIcon from '../Components/AwesomeIcon'
 import './EnvelopeDetails.css'
+import ItemDetail from '../Components/ItemDetail'
 
 const NoMessage = () => {
   return (
@@ -46,17 +47,6 @@ EnvelopeError.propTypes = {
   stackTrace: PropTypes.string.isRequired
 }
 
-const ItemDetail = ({label, value}) => {
-  return (
-    <div><span className="item-label">{label}:</span> {value}</div>
-  )
-}
-
-ItemDetail.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.string
-}
-
 const EnvelopeDetails = ({ message, goBack }) => {
 
   if (message == null) {
@@ -68,6 +58,11 @@ const EnvelopeDetails = ({ message, goBack }) => {
     ev.preventDefault()
     goBack()
   }
+
+  //creating a version of the message that removes the 'extra' parameters that are added to the message for convience.
+  const displayMessage = {...message};
+  delete displayMessage.saved
+  delete displayMessage.hasError
   return (
     <div>
       <Row>
@@ -78,19 +73,13 @@ const EnvelopeDetails = ({ message, goBack }) => {
       <Row>
         <Col column={6}>
           <Card>
-            <h2 className="header-title">Envelope Details <StatusIndicator success={!message.hasError}/></h2>
+            <h2 className="header-title">Message Summary <StatusIndicator success={!message.hasError}/></h2>
             <ItemDetail label="CorrelationId" value={message.correlationId}/>
-            <ItemDetail label="Type" value={message.messageType.fullName}/>
+            <ItemDetail label="Type" value={message.messageType.name}/>
             <ItemDetail label="Destination" value={message.headers.destination}/>
             <ItemDetail label="Received At" value={message.headers['received-at']}/>
             <ItemDetail label="Reply Uri" value={message.headers['reply-uri']}/>
             <ItemDetail label="Attempts" value={message.headers.attempts}/>
-          </Card>
-        </Col>
-        <Col column={6}>
-          <Card>
-            <h2 className="header-title">Raw Headers</h2>
-            <Code className="language-json">{JSON.stringify(message.headers, null, ' ')}</Code>
           </Card>
         </Col>
       </Row>
@@ -98,7 +87,7 @@ const EnvelopeDetails = ({ message, goBack }) => {
         <Col column={12}>
           <Card>
             <h2 className="header-title">Message Details</h2>
-            <Code>{JSON.stringify(message.message, null, ' ')}</Code>
+            <Code>{JSON.stringify(displayMessage, null, ' ')}</Code>
           </Card>
         </Col>
       </Row>
@@ -117,7 +106,7 @@ EnvelopeDetails.propTypes = {
 export default connect(
   (state, props)=> {
     return {
-      message: state[props.match.params.queue].messages.find(m => m.correlationId === props.match.params.id)
+      message: state.messages[props.match.params.direction + "Messages"].find(m => m.correlationId === props.match.params.id)
     }
   },
   (dispatch, props)=> {

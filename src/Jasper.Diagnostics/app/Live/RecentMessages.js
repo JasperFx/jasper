@@ -4,15 +4,13 @@ import {
 } from 'react'
 import { connect } from 'react-redux'
 import Envelope from '../Components/Envelope'
-import {
-  toggleSavedMessage
-} from './liveMessagesReducer'
+import { toggleSavedMessage, RECV, SENT } from './messagesReducer'
 import './RecentMessages.css'
 
-const RecentMessages = ({ messages, saveMessage }) => {
+const RecentMessages = ({ messages, saveMessage, direction }) => {
   const list = messages.map((m, idx) =>
     <li key={idx} className="message-list-item">
-      <Envelope id={m.correlationId} queue="live" saveMessage={saveMessage}/>
+      <Envelope id={m.correlationId} direction={direction} saveMessage={saveMessage}/>
     </li>)
   return (
     <ul className="message-list">
@@ -23,19 +21,21 @@ const RecentMessages = ({ messages, saveMessage }) => {
 
 RecentMessages.propTypes = {
   messages: PropTypes.array.isRequired,
-  saveMessage: PropTypes.func.isRequired
+  saveMessage: PropTypes.func.isRequired,
+  direction: PropTypes.oneOf([SENT,RECV]).isRequired
 }
 
 export default connect(
   (state, props) => {
     return {
-      messages: state.live.messages.filter(m => m.messageType.fullName === props.typeName)
+      messages: state.messages[props.direction + "Messages"].filter(m => m.messageType.fullName === props.typeName)
     }
   },
-  (dispatch) => {
+  (dispatch, props) => {
     return {
       saveMessage: (m) => {
-        return dispatch(toggleSavedMessage(m))
+        //i don't know if was coming or going so search both to set it as saved
+        return dispatch(toggleSavedMessage(m, props.direction))
       }
     }
   }

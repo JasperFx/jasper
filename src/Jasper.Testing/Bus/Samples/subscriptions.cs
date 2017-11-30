@@ -88,6 +88,11 @@ namespace Jasper.Testing.Bus.Samples
             throw new NotSupportedException();
         }
 
+        public Task<Subscription[]> GetSubscriptions()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
         {
             throw new NotSupportedException();

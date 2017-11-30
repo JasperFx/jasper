@@ -2,9 +2,9 @@ import changeCase from 'change-case'
 
 export const DEV_PORT = 5000
 export const WEBPACK_DEV_PORT = 3000
-export const PROD_OUTPUT_PATH = './resources/'
-export const PROD_OUTPUT_FILENAME = 'js/[name].[chunkhash].js'
-export const CSS_OUTPUT_FILENAME = 'css/[name].[chunkhash].css'
+export const OUTPUT_PATH = './resources/'
+export const JS_OUTPUT_FILENAME = 'index.js'
+export const CSS_OUTPUT_FILENAME = 'main.css'
 export const WEB_APP_ENTRY_POINT = './app/index.js'
 export const WEB_APP_DIR = './'
 export const HARNESS_DIR = '../DiagnosticsHarness'
