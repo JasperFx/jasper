@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
 
@@ -48,6 +49,13 @@ namespace Jasper.Bus.Transports.Util
         {
             _transformer.Post(item);
         }
+
+        public void Complete()
+        {
+            _transformer.Complete();
+        }
+
+        public Task Completion => _transformer.Completion;
 
 
         public void Dispose()

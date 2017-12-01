@@ -36,7 +36,7 @@ namespace Jasper.Conneg
 
         public IReadOnlyList<Type> ForwardingTypesTo(Type handledType)
         {
-            return _forwarders[handledType];
+            return _forwarders.Has(handledType) ? _forwarders[handledType] : new List<Type>();
         }
     }
 

@@ -18,19 +18,22 @@ namespace Jasper.Bus.Transports.Sending
             _settings = settings;
         }
 
+        public Uri Destination => _sender.Destination;
+
         public async Task MarkFailed(OutgoingMessageBatch batch)
         {
             // If it's already latched, just enqueue again
             if (_sender.Latched)
             {
                 await EnqueueForRetry(batch);
+                return;
             }
 
             _failureCount++;
 
             if (_failureCount >= _settings.FailuresBeforeCircuitBreaks)
             {
-                _sender.Latch();
+                await _sender.LatchAndDrain();
                 await EnqueueForRetry(batch);
                 _pinger = new Pinger(_sender, _settings.Cooldown, restartSending);
             }
@@ -56,10 +59,10 @@ namespace Jasper.Bus.Transports.Sending
 
             _sender.Unlatch();
 
-            afterRestarting();
+            afterRestarting(_sender);
         }
 
-        protected abstract void afterRestarting();
+        protected abstract void afterRestarting(ISender sender);
 
         public Task MarkSuccess()
         {

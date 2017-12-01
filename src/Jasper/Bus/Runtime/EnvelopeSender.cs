@@ -39,33 +39,7 @@ namespace Jasper.Bus.Runtime
 
             if (envelope.Destination == null)
             {
-                var routes = await _router.Route(envelope.Message.GetType());
-                if (!routes.Any())
-                {
-                    Logger.NoRoutesFor(envelope);
-
-                    if (_settings.NoMessageRouteBehavior == NoRouteBehavior.ThrowOnNoRoutes)
-                    {
-                        throw new NoRoutesException(envelope);
-                    }
-                }
-
-                if (envelope.RequiresLocalReply)
-                {
-                    var missing = routes.Where(x => x.Channel.LocalReplyUri == null).ToArray();
-
-                    // TODO -- should you try to use either an HTTP or TCP listener if one exists?
-                    if (missing.Any())
-                    {
-                        throw new InvalidOperationException($"There is no known local reply Uri for outgoing destinations {missing.Select(x => x.ToString()).Join(", ")}");
-                    }
-
-                }
-
-                foreach (var route in routes)
-                {
-                    await sendEnvelope(envelope, route);
-                }
+                await applyRoutingRules(envelope);
             }
             else
             {
@@ -74,6 +48,37 @@ namespace Jasper.Bus.Runtime
             }
 
             return envelope.Id;
+        }
+
+        private async Task applyRoutingRules(Envelope envelope)
+        {
+            var routes = await _router.Route(envelope.Message.GetType());
+            if (!routes.Any())
+            {
+                Logger.NoRoutesFor(envelope);
+
+                if (_settings.NoMessageRouteBehavior == NoRouteBehavior.ThrowOnNoRoutes)
+                {
+                    throw new NoRoutesException(envelope);
+                }
+            }
+
+            if (envelope.RequiresLocalReply)
+            {
+                var missing = routes.Where(x => x.Channel.LocalReplyUri == null).ToArray();
+
+                // TODO -- should you try to use either an HTTP or TCP listener if one exists?
+                if (missing.Any())
+                {
+                    throw new InvalidOperationException(
+                        $"There is no known local reply Uri for outgoing destinations {missing.Select(x => x.ToString()).Join(", ")}");
+                }
+            }
+
+            foreach (var route in routes)
+            {
+                await sendEnvelope(envelope, route);
+            }
         }
 
         public Task EnqueueLocally(object message)

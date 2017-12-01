@@ -17,6 +17,14 @@ namespace Jasper.Bus.Logging
 
         public void IncomingBatchReceived(IEnumerable<Envelope> envelopes)
         {
+            if (!envelopes.Any()) return;
+
+            if (envelopes.First().IsPing())
+            {
+                Console.WriteLine("Received a Ping message");
+                return;
+            }
+
             Console.WriteLine($"Successfully received {envelopes.Count()} messages");
         }
 

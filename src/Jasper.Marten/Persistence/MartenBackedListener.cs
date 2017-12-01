@@ -63,9 +63,11 @@ namespace Jasper.Marten.Persistence
                         : TransportConstants.Incoming;
                 }
 
-                // TODO -- GOTTA HARDEN THIS?
-
-                _store.BulkInsert(messages);
+                using (var session = _store.LightweightSession())
+                {
+                    session.Store(messages);
+                    await session.SaveChangesAsync();
+                }
 
                 // TODO -- HERE, maybe see if you're getting back pressure from too many
                 // messages in the queue and shove into the pool of envelopes for anybody to use

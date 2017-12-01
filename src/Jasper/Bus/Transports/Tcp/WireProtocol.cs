@@ -102,6 +102,19 @@ namespace Jasper.Bus.Transports.Tcp
 
         private static async Task receive(Stream stream, IReceiverCallback callback, Envelope[] messages, Uri uri)
         {
+            // Just a ping
+            if (messages.Any() && messages.First().IsPing())
+            {
+                await stream.SendBuffer(ReceivedBuffer);
+
+                // We aren't gonna use this in this case
+                var ack = await stream.ReadExpectedBuffer(AcknowledgedBuffer);
+
+                return;
+            }
+
+
+
             var status = await callback.Received(uri, messages);
             switch (status)
             {

@@ -31,17 +31,21 @@ namespace Jasper.Marten.Persistence
 
         public override Task EnqueueOutgoing(Envelope envelope)
         {
-            envelope.EnsureData();
-            envelope.OwnerId = _settings.UniqueNodeId;
-
-            envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
+            setDefaults(envelope);
 
             return _sender.Enqueue(envelope);
         }
 
-        public override async Task StoreAndForward(Envelope envelope)
+        private void setDefaults(Envelope envelope)
         {
             envelope.EnsureData();
+            envelope.OwnerId = _settings.UniqueNodeId;
+            envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
+        }
+
+        public override async Task StoreAndForward(Envelope envelope)
+        {
+            setDefaults(envelope);
 
             using (var session = _store.LightweightSession())
             {
@@ -56,8 +60,7 @@ namespace Jasper.Marten.Persistence
         {
             foreach (var envelope in envelopes)
             {
-                envelope.EnsureData();
-                envelope.Status = TransportConstants.Outgoing;
+                setDefaults(envelope);
             }
 
             using (var session = _store.LightweightSession())
@@ -68,7 +71,7 @@ namespace Jasper.Marten.Persistence
 
             foreach (var envelope in envelopes)
             {
-                await EnqueueOutgoing(envelope);
+                await _sender.Enqueue(envelope);
             }
         }
 

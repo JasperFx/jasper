@@ -59,7 +59,7 @@ namespace Jasper.Testing.Bus.Transports.Sending
         [Fact]
         public async Task do_not_call_send_batch_if_latched()
         {
-            theSender.Latch();
+            theSender.LatchAndDrain();
 
             await theSender.SendBatch(theBatch);
 

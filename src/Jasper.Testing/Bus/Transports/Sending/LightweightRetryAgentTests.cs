@@ -43,7 +43,7 @@ namespace Jasper.Testing.Bus.Transports.Sending
         [Fact]
         public void should_never_latch()
         {
-            theSender.DidNotReceive().Latch();
+            theSender.DidNotReceive().LatchAndDrain();
         }
 
         [Fact]
@@ -197,7 +197,7 @@ namespace Jasper.Testing.Bus.Transports.Sending
         [Fact]
         public void should_latch_the_sender()
         {
-            theSender.Received().Latch();
+            theSender.Received().LatchAndDrain();
         }
 
         [Fact]
@@ -227,7 +227,7 @@ namespace Jasper.Testing.Bus.Transports.Sending
         [Fact]
         public void should_not_have_latched_the_sender()
         {
-            theSender.DidNotReceive().Latch();
+            theSender.DidNotReceive().LatchAndDrain();
         }
 
         [Fact]

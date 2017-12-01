@@ -28,7 +28,7 @@ namespace Jasper.Bus.Transports.Sending
             return Task.CompletedTask;
         }
 
-        protected override void afterRestarting()
+        protected override void afterRestarting(ISender sender)
         {
             var toRetry = Queued.Where(x => !x.IsExpired()).ToArray();
             Queued.Clear();

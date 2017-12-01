@@ -8,6 +8,7 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Util;
 using Marten;
 
 namespace Jasper.Marten.Persistence.Resiliency
@@ -35,24 +36,19 @@ namespace Jasper.Marten.Persistence.Resiliency
             if (!await session.TryGetGlobalTxLock(OutgoingMessageLockId))
                 return;
 
-            var outgoing = await findPersistedOutgoingEnvelopes(session);
 
-            if (!outgoing.Any()) return;
+            // TODO -- turn this into a compiled query if it's usable
+            var destinations = await session.Query<Envelope>().Where(x =>
+                    x.Status == TransportConstants.Outgoing && x.OwnerId == TransportConstants.AnyNode)
+                .Select(x => x.Address).Distinct().ToListAsync();
 
-            bool wasMaxedOut = outgoing.Count == _settings.Retries.RecoveryBatchSize;
-
-            // Delete any envelope that is expired by its DeliveryBy value
-            var filtered = filterExpired(session, outgoing);
-
-            if (filtered.Any())
+            var count = 0;
+            foreach (var destination in destinations.Select(x => x.ToUri()))
             {
-                await sendOutgoing(session, filtered);
+                count += await recoverFrom(destination, session);
             }
-            else
-            {
-                // Just commit the expired message delivery
-                await session.SaveChangesAsync();
-            }
+
+            var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
 
             if (wasMaxedOut)
             {
@@ -60,75 +56,55 @@ namespace Jasper.Marten.Persistence.Resiliency
             }
         }
 
-        private async Task<List<Envelope>> findPersistedOutgoingEnvelopes(IDocumentSession session)
+        private async Task<int> recoverFrom(Uri destination, IDocumentSession session)
         {
-            var latchedSenders = _channels.AllKnownChannels().Where(x => x.Latched).Select(x => x.Uri.ToString())
-                .ToArray();
-
-            if (latchedSenders.Any())
+            try
             {
-                return (await session.QueryAsync(new FindOutgoingEnvelopes()
+                var channel = _channels.GetOrBuildChannel(destination);
+
+                if (channel.Latched) return 0;
+
+                var outgoing = (await session.QueryAsync(new FindOutgoingEnvelopesByDestination
                 {
                     PageSize = _settings.Retries.RecoveryBatchSize,
-                    Latched = latchedSenders
-                })).ToList();
-            }
+                    Address = destination.ToString()
+                }));
 
-            // It's a List behind the covers, but to get R# to shut up, I did the ToArray()
-            return (await session.QueryAsync(new FindAtLargeEnvelopes
+                var filtered = filterExpired(session, outgoing);
+
+                // Might easily try to do this in the time between starting
+                // and having the data fetched. Was able to make that happen in
+                // (contrived) testing
+                if (channel.Latched || !filtered.Any()) return 0;
+
+                await _marker.MarkOutgoingOwnedByThisNode(session, filtered);
+
+                await session.SaveChangesAsync();
+
+                _logger.RecoveredOutgoing(filtered);
+
+                // TODO -- will need a compensating action here if any of this fails
+                foreach (var envelope in filtered)
+                {
+                    await channel.QuickSend(envelope);
+                }
+
+                return outgoing.Count();
+
+            }
+            catch (UnknownTransportException e)
             {
-                Status = TransportConstants.Outgoing,
-                PageSize = _settings.Retries.RecoveryBatchSize
-            })).ToList();
+                _logger.LogException(e, message:$"Could not resolve a channel for {destination}");
+
+                session.DeleteWhere<Envelope>(x => x.Status == TransportConstants.Outgoing && x.Address == destination.ToString() && x.OwnerId == TransportConstants.AnyNode);
+                await session.SaveChangesAsync();
+
+                return 0;
+            }
         }
 
-        private async Task sendOutgoing(IDocumentSession session, Envelope[] outgoing)
-        {
-            await _marker.MarkOutgoingOwnedByThisNode(session, outgoing);
 
-
-            await session.SaveChangesAsync();
-
-            _logger.RecoveredOutgoing(outgoing);
-
-            var groups = outgoing.GroupBy(x => x.Destination);
-            foreach (var @group in groups)
-            {
-                try
-                {
-                    var channel = _channels.GetOrBuildChannel(@group.Key);
-
-                    if (channel.Latched)
-                    {
-                        // TODO -- may need to be retried
-                        await _marker.MarkOwnedByAnyNode(session, @group.ToArray());
-                        await session.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        foreach (var envelope in @group)
-                        {
-#pragma warning disable 4014
-                            channel.QuickSend(envelope);
-#pragma warning restore 4014
-                        }
-                    }
-                }
-                catch (UnknownTransportException e)
-                {
-                    _logger.DiscardedUnknownTransport(@group);
-
-                    // TODO -- may need to be retried
-                    var ids = @group.Select(x => x.Id).ToArray();
-                    session.DeleteWhere<Envelope>(x => x.Id.IsOneOf(ids));
-                    await session.SaveChangesAsync();
-
-                }
-            }
-
-        }
-
-        private Envelope[] filterExpired(IDocumentSession session, List<Envelope> outgoing)
+        private Envelope[] filterExpired(IDocumentSession session, IEnumerable<Envelope> outgoing)
         {
             var expiredMessages = outgoing.Where(x => x.IsExpired()).ToArray();
             _logger.DiscardedExpired(expiredMessages);

@@ -24,7 +24,7 @@ namespace DurabilitySpecs.Fixtures.Marten.App
 
             Settings.Alter<BusSettings>(_ =>
             {
-                _.ScheduledJobPollingTime = 500.Milliseconds();
+                _.ScheduledJobPollingTime = 1.Seconds();
                 _.FirstScheduledJobExecution = 0.Seconds();
             });
         }

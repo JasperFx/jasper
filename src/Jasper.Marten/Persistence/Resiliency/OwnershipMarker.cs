@@ -10,6 +10,7 @@ using NpgsqlTypes;
 
 namespace Jasper.Marten.Persistence.Resiliency
 {
+    // TODO -- use Marten operations instead of direct SQL calls here to batch up commands
     public class OwnershipMarker
     {
         private readonly string _reassignDormantNodeSql;

@@ -59,7 +59,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             });
 
             _receiverStore.Advanced.Clean.CompletelyRemoveAll();
-            _receiverStore.Schema.ApplyAllConfiguredChangesToDatabase();
+
 
             _sendingStore = DocumentStore.For(_ =>
             {
@@ -76,7 +76,6 @@ namespace DurabilitySpecs.Fixtures.Marten
             });
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
-            _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
 
             _receivers = new LightweightCache<string, JasperRuntime>(key =>
             {
@@ -103,10 +102,10 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public override void TearDown()
         {
-            _receivers.Each(x => x.SafeDispose());
+            _receivers.Each(x => x.Dispose());
             _receivers.ClearAll();
 
-            _senders.Each(x => x.SafeDispose());
+            _senders.Each(x => x.Dispose());
             _senders.ClearAll();
 
             _busLogger.BuildReports().Each(x => Context.Reporting.Log(x));
@@ -137,14 +136,14 @@ namespace DurabilitySpecs.Fixtures.Marten
         }
 
         [FormatAs("Send {count} messages from {sender}")]
-        public async Task SendMessages([Default("Sender1")]string sender, int count)
+        public void SendMessages([Default("Sender1")]string sender, int count)
         {
             var runtime = _senders[sender];
 
             for (int i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
-                await runtime.Bus.Send(msg);
+                runtime.Bus.Send(msg);
             }
         }
 
@@ -157,47 +156,27 @@ namespace DurabilitySpecs.Fixtures.Marten
             }
         }
 
-        [FormatAs("Wait up to 30 seconds for the sending agent to the receiver to be unlatched")]
-        public void WaitForSenderToBeUnlatched()
-        {
-            return;
-
-            _senderWatcher.Received.Wait(30.Seconds());
-
-            if (!_senderWatcher.Received.Result)
-            {
-                throw new StorytellerCriticalException("Sending agent was not unlatched");
-            }
-        }
-
 
         [FormatAs("Wait for {count} messages to be processed by the receivers")]
-        public async Task WaitForMessagesToBeProcessed(int count)
+        public void WaitForMessagesToBeProcessed(int count)
         {
             using (var session = _receiverStore.QuerySession())
             {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                try
+                for (int i = 0; i < 200; i++)
                 {
-                    while (stopwatch.Elapsed < 45.Seconds())
+                    var actual = session.Query<TraceDoc>().Count();
+                    var envelopeCount = session
+                        .Query<Envelope>().Count(x => x.Status == TransportConstants.Incoming);
+
+
+                    Trace.WriteLine($"waitForMessages: {actual} actual & {envelopeCount} incoming envelopes");
+
+                    if (actual == count && envelopeCount == 0)
                     {
-                        var actual = await session.Query<TraceDoc>().CountAsync();
-                        var envelopeCount = await session.Query<Envelope>()
-                            .Where(x => x.Status == TransportConstants.Incoming).CountAsync();
-
-                        if (actual == count && envelopeCount == 0)
-                        {
-                            return;
-                        }
-
-                        await Task.Delay(100);
+                        return;
                     }
-                }
-                finally
-                {
-                    stopwatch.Stop();
+
+                    Thread.Sleep(250);
                 }
             }
 

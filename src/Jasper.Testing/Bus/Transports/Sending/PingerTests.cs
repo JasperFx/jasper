@@ -61,9 +61,10 @@ namespace Jasper.Testing.Bus.Transports.Sending
 
         public bool Latched { get; private set; }
 
-        public void Latch()
+        public Task LatchAndDrain()
         {
             Latched = false;
+            return Task.CompletedTask;
         }
 
         public void Unlatch()

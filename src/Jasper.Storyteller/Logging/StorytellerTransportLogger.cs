@@ -32,6 +32,14 @@ namespace Jasper.Storyteller.Logging
 
         public void IncomingBatchReceived(IEnumerable<Envelope> envelopes)
         {
+            if (!envelopes.Any()) return;
+
+            if (envelopes.First().IsPing())
+            {
+                _report.Trace("Received a Ping message");
+                return;
+            }
+
             _report.Trace($"Successfully received {envelopes.Count()} messages");
         }
 

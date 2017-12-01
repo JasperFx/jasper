@@ -15,7 +15,7 @@ namespace Jasper.Bus.Transports.Sending
 
         bool Latched { get; }
 
-        void Latch();
+        Task LatchAndDrain();
         void Unlatch();
 
         /// <summary>

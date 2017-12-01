@@ -77,15 +77,31 @@ namespace Jasper.Bus.Transports.Sending
         public int QueuedCount => _queued + _batching.ItemCount;
 
         public bool Latched { get; private set; }
-        public void Latch()
+        public async Task LatchAndDrain()
         {
-            _logger.CircuitBroken(Destination);
             Latched = true;
+
+            _sender.Complete();
+            _serializing.Complete();
+            _batchWriting.Complete();
+            _batching.Complete();
+
+
+            _logger.CircuitBroken(Destination);
+
+
+            await _sender.Completion;
+            await _serializing.Completion;
+            await _batchWriting.Completion;
+            await _batching.Completion;
+
         }
 
         public void Unlatch()
         {
             _logger.CircuitResumed(Destination);
+
+            Start(_callback);
             Latched = false;
         }
 
