@@ -3,6 +3,7 @@ using Jasper;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten;
 using Jasper.Marten.Tests.Setup;
+using Marten;
 
 namespace DurabilitySpecs.Fixtures.Marten.App
 {

@@ -26,6 +26,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             }
 
             await _marker.ReassignEnvelopesFromDormantNodes(session);
+            await session.SaveChangesAsync();
         }
     }
 }

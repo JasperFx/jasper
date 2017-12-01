@@ -56,9 +56,13 @@ namespace DurabilitySpecs.Fixtures.Marten
                 _.Schema.For<Envelope>()
                     .Duplicate(x => x.Status)
                     .Duplicate(x => x.OwnerId);
+
+
+                _.Schema.For<TraceDoc>();
             });
 
             _receiverStore.Advanced.Clean.CompletelyRemoveAll();
+            _receiverStore.Schema.ApplyAllConfiguredChangesToDatabase();
 
 
             _sendingStore = DocumentStore.For(_ =>
@@ -76,6 +80,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             });
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
+            _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
 
             _receivers = new LightweightCache<string, JasperRuntime>(key =>
             {
@@ -136,14 +141,14 @@ namespace DurabilitySpecs.Fixtures.Marten
         }
 
         [FormatAs("Send {count} messages from {sender}")]
-        public void SendMessages([Default("Sender1")]string sender, int count)
+        public async Task SendMessages([Default("Sender1")]string sender, int count)
         {
             var runtime = _senders[sender];
 
             for (int i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
-                runtime.Bus.Send(msg);
+                await runtime.Bus.Send(msg);
             }
         }
 

@@ -3,6 +3,7 @@ using Jasper;
 using Jasper.Marten;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Util;
+using Marten;
 
 namespace DurabilitySpecs.Fixtures.Marten.App
 {
@@ -18,6 +19,7 @@ namespace DurabilitySpecs.Fixtures.Marten.App
             {
                 _.Connection(ConnectionSource.ConnectionString);
                 _.DatabaseSchemaName = "receiver";
+
             });
 
             Include<MartenBackedPersistence>();
