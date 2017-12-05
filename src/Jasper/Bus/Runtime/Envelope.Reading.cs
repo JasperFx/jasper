@@ -92,7 +92,7 @@ namespace Jasper.Bus.Runtime
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException($"Error trying to read data for {key} = '{value}'");
+                throw new InvalidOperationException($"Error trying to read data for {key} = '{value}'", e);
             }
         }
     }

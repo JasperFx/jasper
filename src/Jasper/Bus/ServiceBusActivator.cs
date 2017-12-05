@@ -27,7 +27,6 @@ namespace Jasper.Bus
         private readonly SerializationGraph _serialization;
         private readonly ITransport[] _transports;
         private readonly UriAliasLookup _lookups;
-        private readonly INodeDiscovery _nodes;
         private readonly IWorkerQueue _workerQueue;
         private readonly CompositeLogger _logger;
         private readonly IPersistence _persistence;

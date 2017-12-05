@@ -133,8 +133,8 @@ namespace Jasper.Bus.Runtime
 
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
-        [Obsolete("This is purely for backwards compatibility in wire format")]
-        public string SubQueue { get; set; }
+        // This is purely for backwards compatibility in wire format
+        private string SubQueue { get; set; }
 
         public DateTime? DeliverBy
         {

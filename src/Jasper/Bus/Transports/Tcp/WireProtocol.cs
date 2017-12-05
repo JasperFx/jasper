@@ -84,7 +84,7 @@ namespace Jasper.Bus.Transports.Tcp
             }
             catch (Exception e)
             {
-                callback.Failed(e, messages);
+                await callback.Failed(e, messages);
                 await stream.SendBuffer(SerializationFailureBuffer);
                 return;
             }
@@ -95,7 +95,7 @@ namespace Jasper.Bus.Transports.Tcp
             }
             catch(Exception ex)
             {
-                callback.Failed(ex, messages);
+                await callback.Failed(ex, messages);
                 await stream.SendBuffer(ProcessingFailureBuffer);
             }
         }
@@ -134,11 +134,11 @@ namespace Jasper.Bus.Transports.Tcp
 
                     if (ack)
                     {
-                        callback.Acknowledged(messages);
+                        await callback.Acknowledged(messages);
                     }
                     else
                     {
-                        callback.NotAcknowledged(messages);
+                        await callback.NotAcknowledged(messages);
                     }
                     break;
             }

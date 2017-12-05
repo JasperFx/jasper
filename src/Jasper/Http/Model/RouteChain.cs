@@ -17,8 +17,6 @@ namespace Jasper.Http.Model
     public class RouteChain : Chain<RouteChain, ModifyRouteAttribute>,IGenerates<RouteHandler>
     {
         public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
-        private Type _readerType;
-        private Type _writerType;
 
         public static RouteChain For<T>(Expression<Action<T>> expression)
         {

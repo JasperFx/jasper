@@ -79,14 +79,16 @@ namespace Jasper.Http
             var httpTransportSettings = registry.BusSettings.Http;
             if (httpTransportSettings.EnableMessageTransport)
             {
+#pragma warning disable 4014
                 Routes.AddRoute<TransportEndpoint>(x => x.put__messages(null, null, null),
+
                     httpTransportSettings.RelativeUrl).Route.HttpMethod = "PUT";
 
 
                 Routes.AddRoute<TransportEndpoint>(x => x.put__messages_durable(null, null, null),
                     httpTransportSettings.RelativeUrl.AppendUrl("durable")).Route.HttpMethod = "PUT";
 
-
+#pragma warning restore 4014
             }
 
             _services.AddSingleton(Routes);

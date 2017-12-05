@@ -16,7 +16,7 @@ namespace Jasper.Bus.ErrorHandling
 
         public async Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
-            context.SendFailureAcknowledgement(envelope, $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
+            await context.SendFailureAcknowledgement(envelope, $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
 
             await envelope.Callback.MoveToErrors(envelope, Exception);
 

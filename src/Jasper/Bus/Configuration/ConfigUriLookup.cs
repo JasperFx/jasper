@@ -41,7 +41,7 @@ namespace Jasper.Bus.Configuration
                 }
                 catch (Exception e)
                 {
-                    throw new InvalidOperationException($"Could not parse '{uriString}' from configuration item {key} into a Uri");
+                    throw new InvalidOperationException($"Could not parse '{uriString}' from configuration item {key} into a Uri", e);
                 }
             }
 

@@ -5,7 +5,7 @@ namespace Jasper.Internals.IoC
 {
     public class KnownVariableBuildStep : BuildStep
     {
-        public Variable Variable { get; }
+        public new Variable Variable { get; }
 
         public KnownVariableBuildStep(Variable variable) : base(variable.VariableType, true, false)
         {
