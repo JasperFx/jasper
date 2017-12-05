@@ -32,8 +32,6 @@ namespace StorytellerSpecs.Fixtures.Routing
 
             Selected = leaf.Pattern;
 
-            leaf.SetValues(env, RouteTree.ToSegments(Url));
-
             Arguments = new ArgumentExpectation(env);
         }
 

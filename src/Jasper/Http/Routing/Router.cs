@@ -67,10 +67,6 @@ namespace Jasper.Http.Routing
 
                 context.SetSegments(segments);
 
-
-                // TODO -- going to eliminate this.
-                route.SetValues(context, segments);
-
                 try
                 {
                     await route.Handler.Handle(context);

@@ -123,7 +123,6 @@ namespace Jasper
             catch (Exception e)
             {
                 Console.WriteLine($"Unable to un-register the running node");
-                Console.WriteLine(e.ToString());
                 Get<CompositeLogger>().LogException(e);
             }
 

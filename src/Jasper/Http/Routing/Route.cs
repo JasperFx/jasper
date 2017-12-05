@@ -192,23 +192,6 @@ namespace Jasper.Http.Routing
         public IEnumerable<ISegment> Parameters => _segments.Where(x => !(x is Segment)).ToArray();
         public RouteHandler Handler { get; set; }
 
-        [Obsolete("Don't wanna use this in real life")]
-        public void SetValues(HttpContext context, string[] segments)
-        {
-            if (HasParameters)
-            {
-                var routeData = new Dictionary<string, object>();
-                _arguments.Value.Each(x => x.SetValues(routeData, segments));
-
-                context.SetRouteData(routeData);
-            }
-
-            if (HasSpread)
-            {
-                _spread.SetValues(context, segments);
-            }
-        }
-
 
         public IDictionary<string, string> ToParameters(object input)
         {

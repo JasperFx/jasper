@@ -119,14 +119,6 @@ namespace Jasper.Testing.Http.Routing
             route.Name.ShouldBe("PUT:folder/folder2/:name");
         }
 
-        [Fact]
-        public void parameters_still_work()
-        {
-            var context = StubHttpContext.Empty();
 
-            route.SetValues(context, new string[] { "folder", "folder2", "somebody" });
-
-            context.GetRouteData("name").ShouldBe("somebody");
-        }
     }
 }

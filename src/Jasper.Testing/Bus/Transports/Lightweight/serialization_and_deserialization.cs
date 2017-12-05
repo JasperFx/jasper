@@ -36,7 +36,6 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
                 SentAt = DateTime.Today.ToUniversalTime(),
                 EnvelopeVersionId = PersistedMessageId.GenerateRandom(),
                 Queue = "incoming",
-                SubQueue = "subqueue",
                 Data = new byte[]{1, 5, 6, 11, 2, 3},
                 Destination = "durable://localhost:2222/incoming".ToUri(),
                 SentAttempts = 2,
@@ -66,12 +65,6 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
         public void queue()
         {
             incoming.Queue.ShouldBe(outgoing.Queue);
-        }
-
-        [Fact]
-        public void subqueue()
-        {
-            incoming.SubQueue.ShouldBe(outgoing.SubQueue);
         }
 
         [Fact]
