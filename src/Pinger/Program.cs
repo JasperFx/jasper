@@ -8,6 +8,7 @@ using Jasper.CommandLine;
 using Jasper.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Oakton;
 using TestMessages;
 

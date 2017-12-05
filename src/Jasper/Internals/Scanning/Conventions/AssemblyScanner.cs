@@ -5,7 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Internals.Util;
+using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
+using TypeExtensions = StructureMap.TypeRules.TypeExtensions;
 
 #pragma warning disable 1591
 
@@ -175,7 +177,7 @@ namespace Jasper.Internals.Scanning.Conventions
 
         public void TheCallingAssembly()
         {
-            var callingAssembly = findTheCallingAssembly();
+            var callingAssembly = CallingAssembly.Find();
 
             if (callingAssembly != null)
             {
@@ -280,33 +282,6 @@ namespace Jasper.Internals.Scanning.Conventions
             }
         }
 
-
-        private static Assembly findTheCallingAssembly()
-        {
-            string trace = Environment.StackTrace;
-
-            var parts = trace.Split('\n');
-            var candidate = parts[4].Trim().Substring(3);
-
-            Assembly assembly = null;
-            var names = candidate.Split('.');
-            for (var i = names.Length - 2; i > 0; i--) {
-                var possibility = string.Join(".", names.Take(i).ToArray());
-
-                try
-                {
-
-                    assembly = System.Reflection.Assembly.Load(new AssemblyName(possibility));
-                    break;
-                }
-                catch (Exception e)
-                {
-                  // Nothing
-                }
-            }
-
-            return assembly;
-        }
     }
 }
 

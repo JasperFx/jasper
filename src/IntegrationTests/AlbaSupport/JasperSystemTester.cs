@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Alba;
-using AlbaForJasper;
 using Baseline;
 using Jasper;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
+using JasperHttpTesting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

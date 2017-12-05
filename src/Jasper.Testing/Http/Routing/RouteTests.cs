@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Alba.Stubs;
 using Jasper.Http.Routing;
+using JasperHttpTesting.Stubs;
 using Shouldly;
 using Xunit;
 

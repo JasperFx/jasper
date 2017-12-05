@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Alba;
 using Jasper;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Http;
-using StructureMap;
 
-namespace AlbaForJasper
+namespace JasperHttpTesting
 {
     public class JasperHttpTester
     {

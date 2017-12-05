@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http.Features;
 
 namespace Jasper.Http
@@ -16,5 +18,15 @@ namespace Jasper.Http
         }
 
         public IFeatureCollection Features { get; } = new FeatureCollection();
+
+        public Task StartAsync<TContext>(IHttpApplication<TContext> application, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

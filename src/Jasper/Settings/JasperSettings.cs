@@ -1,25 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Baseline;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
-using StructureMap;
 
 namespace Jasper.Settings
 {
     public class JasperSettings
     {
-        private readonly Dictionary<Type, ISettingsBuilder> _settings
-            = new Dictionary<Type, ISettingsBuilder>();
+        private readonly IList<Action<IConfigurationRoot>> _configActions = new List<Action<IConfigurationRoot>>();
 
         private readonly JasperRegistry _parent;
-        private readonly IList<Action<IConfigurationRoot>> _configActions = new List<Action<IConfigurationRoot>>();
+
+        private readonly Dictionary<Type, ISettingsBuilder> _settings
+            = new Dictionary<Type, ISettingsBuilder>();
 
         public JasperSettings(JasperRegistry parent)
         {
@@ -33,12 +28,10 @@ namespace Jasper.Settings
         {
             if (_settings.ContainsKey(typeof(T)))
             {
-                var builder =  _settings[typeof(T)].As<SettingsBuilder<T>>();
+                var builder = _settings[typeof(T)].As<SettingsBuilder<T>>();
 
                 if (source != null)
-                {
                     builder.Replace(source);
-                }
 
                 return builder;
             }
@@ -52,10 +45,9 @@ namespace Jasper.Settings
         }
 
 
-
         /// <summary>
-        /// Just directs Jasper to try to read data for T from the IConfiguration
-        /// and inject this type into the application container
+        ///     Just directs Jasper to try to read data for T from the IConfiguration
+        ///     and inject this type into the application container
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public void Require<T>() where T : class, new()
@@ -69,7 +61,7 @@ namespace Jasper.Settings
         /// </summary>
         public void Configure<T>(Func<IConfiguration, IConfiguration> config) where T : class, new()
         {
-            forType<T>(root => config(root).Get<T>());
+            forType(root => config(root).Get<T>());
         }
 
         /// <summary>
@@ -79,13 +71,9 @@ namespace Jasper.Settings
         {
             var builder = forType<T>();
             if (ApplyingExtensions)
-            {
                 builder.PackageAlter((_, x) => alteration(x));
-            }
             else
-            {
                 builder.Alter((_, x) => alteration(x));
-            }
         }
 
 
@@ -93,13 +81,9 @@ namespace Jasper.Settings
         {
             var builder = forType<T>();
             if (ApplyingExtensions)
-            {
                 builder.PackageAlter(alteration);
-            }
             else
-            {
                 builder.Alter(alteration);
-            }
         }
 
         /// <summary>
@@ -135,17 +119,13 @@ namespace Jasper.Settings
             var config = _parent.Configuration.Build();
 
             foreach (var configAction in _configActions)
-            {
                 configAction(config);
-            }
 
-            _parent.Services.AddSingleton<IConfigurationRoot>(config);
+            _parent.Services.AddSingleton(config);
             _parent.Services.AddSingleton<IConfiguration>(config);
 
             foreach (var settings in _settings.Values)
-            {
                 settings.Apply(config, _parent);
-            }
         }
 
 
@@ -153,7 +133,5 @@ namespace Jasper.Settings
         {
             Configure<T>(c => c.GetSection(sectionName));
         }
-
-
     }
 }

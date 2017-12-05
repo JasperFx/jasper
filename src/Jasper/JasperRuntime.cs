@@ -131,12 +131,6 @@ namespace Jasper
 
             isDisposing = true;
 
-            // TODO -- THIS IS TEMPORARY UNTIL WE DO GH-212
-            var hostedServices = Container.GetAllInstances<IHostedService>()
-                .Select(x => x.StopAsync(CancellationToken.None));
-
-            Task.WhenAll(hostedServices).GetAwaiter().GetResult();
-
 
             foreach (var feature in Registry.Features)
             {
@@ -241,6 +235,7 @@ namespace Jasper
 
             var runtime = new JasperRuntime(registry, services);
 
+            registry.Http.As<IWebHostBuilder>().UseSetting(WebHostDefaults.ApplicationKey, registry.ServiceName);
 
             runtime.HttpAddresses = registry.Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
 
@@ -253,14 +248,6 @@ namespace Jasper
             {
                 recorder.AssertAllSuccessful();
             }
-
-
-
-            // TODO -- THIS IS TEMPORARY UNTIL WE DO GH-212
-            var hostedServices = runtime.Container.GetAllInstances<IHostedService>()
-                .Select(x => x.StartAsync(CancellationToken.None));
-
-            await Task.WhenAll(hostedServices);
 
             await registerRunningNode(runtime);
 

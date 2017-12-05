@@ -2,11 +2,11 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using AlbaForJasper;
 using Baseline;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using Jasper;
+using JasperHttpTesting;
 
 namespace benchmarks
 {

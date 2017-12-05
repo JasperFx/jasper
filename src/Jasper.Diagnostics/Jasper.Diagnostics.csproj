@@ -3,14 +3,13 @@
     <Description>Diagnostics for Jasper Service Bus</Description>
     <VersionPrefix>0.2.0-alpha</VersionPrefix>
     <Authors>Joe McBride;Jeremy D. Miller</Authors>
-    <TargetFramework>netstandard1.5</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.Diagnostics</AssemblyName>
     <PackageId>Jasper.Diagnostics</PackageId>
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
     <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>

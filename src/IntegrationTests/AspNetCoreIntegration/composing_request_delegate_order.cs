@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Alba;
-using AlbaForJasper;
 using Jasper;
 using Jasper.Http;
+using JasperHttpTesting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

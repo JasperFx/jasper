@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StructureMap;
@@ -137,19 +138,9 @@ namespace Jasper.Http
             throw new NotSupportedException("Jasper needs to do the web host building within its bootstrapping");
         }
 
-        IWebHostBuilder IWebHostBuilder.UseLoggerFactory(ILoggerFactory loggerFactory)
-        {
-            return _inner.UseLoggerFactory(loggerFactory);
-        }
-
         IWebHostBuilder IWebHostBuilder.ConfigureServices(Action<IServiceCollection> configureServices)
         {
             return _inner.ConfigureServices(configureServices);
-        }
-
-        IWebHostBuilder IWebHostBuilder.ConfigureLogging(Action<ILoggerFactory> configureLogging)
-        {
-            return _inner.ConfigureLogging(configureLogging);
         }
 
         IWebHostBuilder IWebHostBuilder.UseSetting(string key, string value)
@@ -160,6 +151,16 @@ namespace Jasper.Http
         string IWebHostBuilder.GetSetting(string key)
         {
             return _inner.GetSetting(key);
+        }
+
+        public IWebHostBuilder ConfigureAppConfiguration(Action<WebHostBuilderContext, IConfigurationBuilder> configureDelegate)
+        {
+            return _inner.ConfigureAppConfiguration(configureDelegate);
+        }
+
+        public IWebHostBuilder ConfigureServices(Action<WebHostBuilderContext, IServiceCollection> configureServices)
+        {
+            return _inner.ConfigureServices(configureServices);
         }
     }
 

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Alba;
 using Jasper.Http;
+using JasperHttpTesting;
 using Xunit;
 
 namespace Jasper.Testing.Http.ContentHandling

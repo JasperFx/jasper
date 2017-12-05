@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Alba;
-using AlbaForJasper;
 using Baseline;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
+using JasperHttpTesting;
 using Shouldly;
 using Xunit;
 

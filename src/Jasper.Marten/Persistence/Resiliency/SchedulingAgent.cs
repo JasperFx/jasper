@@ -11,6 +11,7 @@ using Jasper.Bus.WorkerQueues;
 using Marten;
 using Marten.Services;
 using Marten.Util;
+using Microsoft.Extensions.Hosting;
 using Npgsql;
 using NpgsqlTypes;
 

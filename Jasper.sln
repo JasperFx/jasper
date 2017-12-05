@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
@@ -18,8 +18,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosticsHarnessMessages", "src\DiagnosticsHarnessMessages\DiagnosticsHarnessMessages.csproj", "{B0788E02-309A-4FC8-BB46-A22536D572E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.Diagnostics", "src\Jasper.Diagnostics\Jasper.Diagnostics.csproj", "{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbaForJasper", "src\AlbaForJasper\AlbaForJasper.csproj", "{AA224B46-2625-44F0-8A7F-C1022D4A444C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "src\IntegrationTests\IntegrationTests.csproj", "{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}"
 EndProject
@@ -76,6 +74,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.SqlServer.Tests", "src\Jasper.SqlServer.Tests\Jasper.SqlServer.Tests.csproj", "{B37690EE-8503-436E-8B9A-DDC5939441B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DurabilitySpecs", "src\DurabilitySpecs\DurabilitySpecs.csproj", "{0AEE1633-1497-4D47-B297-E40CADDE47F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JasperHttpTesting", "src\JasperHttpTesting\JasperHttpTesting.csproj", "{4F357F5B-C5FF-45D0-A572-734D260B2D49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -183,18 +183,6 @@ Global
 		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Release|x64.Build.0 = Release|Any CPU
 		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Release|x86.ActiveCfg = Release|Any CPU
 		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Release|x86.Build.0 = Release|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Debug|x64.Build.0 = Debug|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Debug|x86.Build.0 = Debug|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Release|x64.ActiveCfg = Release|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Release|x64.Build.0 = Release|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Release|x86.ActiveCfg = Release|Any CPU
-		{AA224B46-2625-44F0-8A7F-C1022D4A444C}.Release|x86.Build.0 = Release|Any CPU
 		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -435,6 +423,18 @@ Global
 		{0AEE1633-1497-4D47-B297-E40CADDE47F1}.Release|x64.Build.0 = Release|x64
 		{0AEE1633-1497-4D47-B297-E40CADDE47F1}.Release|x86.ActiveCfg = Release|x86
 		{0AEE1633-1497-4D47-B297-E40CADDE47F1}.Release|x86.Build.0 = Release|x86
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Debug|x64.ActiveCfg = Debug|x64
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Debug|x64.Build.0 = Debug|x64
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Debug|x86.ActiveCfg = Debug|x86
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Debug|x86.Build.0 = Debug|x86
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Release|x64.ActiveCfg = Release|x64
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Release|x64.Build.0 = Release|x64
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Release|x86.ActiveCfg = Release|x86
+		{4F357F5B-C5FF-45D0-A572-734D260B2D49}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

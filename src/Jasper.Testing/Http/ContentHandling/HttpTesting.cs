@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
-using Alba;
-using AlbaForJasper;
+using JasperHttpTesting;
 
 namespace Jasper.Testing.Http.ContentHandling
 {

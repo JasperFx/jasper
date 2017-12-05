@@ -1,30 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper
 {
-    // All of this is copied from ASP.Net Core 2.0 and will be deleted in favor
-    // of their abstractions when we do GH-202
-
-    /// <summary>
-    /// Defines methods for objects that are managed by the host.
-    /// </summary>
-    [Obsolete("Just a heads up, this will be replaced w/ the official MS version of the interface soon-ish")]
-    public interface IHostedService
-    {
-        /// <summary>
-        /// Triggered when the application host is ready to start the service.
-        /// </summary>
-        /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>
-        Task StartAsync(CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Triggered when the application host is performing a graceful shutdown.
-        /// </summary>
-        /// <param name="cancellationToken">Indicates that the shutdown process should no longer be graceful.</param>
-        Task StopAsync(CancellationToken cancellationToken);
-    }
 
     /// <summary>
     /// Base class for implementing a long running <see cref="IHostedService"/>.

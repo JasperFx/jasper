@@ -16,7 +16,6 @@ namespace Jasper.Bus.Transports
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
         private UriAliasLookup _lookups;
 
-
         public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups, CapabilityGraph capabilities)
         {
             _lookups = lookups;

@@ -1,8 +1,7 @@
-﻿using Alba;
-using Jasper;
+﻿using Jasper;
 using Microsoft.AspNetCore.Hosting;
 
-namespace AlbaForJasper
+namespace JasperHttpTesting
 {
     public class JasperAlbaUsage : SystemUnderTestBase
     {
