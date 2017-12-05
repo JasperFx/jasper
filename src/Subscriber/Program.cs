@@ -1,12 +1,38 @@
 ﻿using System;
+using Jasper;
+using Jasper.CommandLine;
+using TestMessages;
 
 namespace Subscriber
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            return JasperAgent.Run<SubscriberApp>();
+        }
+    }
+
+    public class SubscriberApp : JasperRegistry
+    {
+        public SubscriberApp()
+        {
+            Subscribe.At("http://loadbalancer/messages");
+            Subscribe.ToAllMessages();
+        }
+    }
+
+
+    public class NewUserHandler
+    {
+        public void Handle(NewUser newGuy)
+        {
+
+        }
+
+        public void Handle(DeleteUser deleted)
+        {
+
         }
     }
 }

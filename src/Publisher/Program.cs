@@ -9,9 +9,9 @@ namespace Publisher
 {
     internal class Program
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            JasperAgent.Run<PublisherApp>(args);
+            return JasperAgent.Run<PublisherApp>(args);
         }
     }
 
