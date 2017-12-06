@@ -57,7 +57,7 @@ namespace Jasper.Marten.Persistence
                     Queued = all.Take(_settings.MaximumEnvelopeRetryStorage).ToList();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Put these back
 
