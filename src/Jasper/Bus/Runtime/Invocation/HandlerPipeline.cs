@@ -8,6 +8,7 @@ using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Util;
 
 namespace Jasper.Bus.Runtime.Invocation
 {
@@ -108,7 +109,7 @@ namespace Jasper.Bus.Runtime.Invocation
                 }
                 catch (Exception e)
                 {
-                    Logger.LogException(e, $"Invocation of {envelope} failed!");
+                    Logger.LogException(e, message:$"Invocation of {envelope} failed!");
                     throw;
                 }
             }

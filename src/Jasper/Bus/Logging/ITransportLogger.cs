@@ -54,7 +54,7 @@ namespace Jasper.Bus.Logging
         /// <param name="ex"></param>
         /// <param name="correlationId"></param>
         /// <param name="message"></param>
-        void LogException(Exception ex, string correlationId = null, string message = "Exception detected:");
+        void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:");
 
         /// <summary>
         /// Logged when the outgoing message recovery finds envelopes with a Destination

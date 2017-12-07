@@ -21,8 +21,8 @@ namespace IntegrationTests.DelayedJobs
     {
         private readonly InMemoryDelayedJobProcessor theDelayedJobs;
         private readonly IList<Envelope> sent = new List<Envelope>();
-        private readonly Dictionary<string, TaskCompletionSource<Envelope>>
-            _callbacks = new Dictionary<string, TaskCompletionSource<Envelope>>();
+        private readonly Dictionary<Guid, TaskCompletionSource<Envelope>>
+            _callbacks = new Dictionary<Guid, TaskCompletionSource<Envelope>>();
 
 
         public in_memory_delayed_jobs()

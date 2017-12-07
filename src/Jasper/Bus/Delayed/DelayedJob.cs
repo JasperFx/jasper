@@ -5,12 +5,12 @@ namespace Jasper.Bus.Delayed
 {
     public class DelayedJob
     {
-        public DelayedJob(string envelopeId)
+        public DelayedJob(Guid envelopeId)
         {
             EnvelopeId = envelopeId;
         }
 
-        public string EnvelopeId { get; }
+        public Guid EnvelopeId { get; }
 
         public DateTime ReceivedAt { get; set; }
         public DateTime ExecutionTime { get; set; }

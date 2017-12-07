@@ -94,7 +94,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             }
             catch (UnknownTransportException e)
             {
-                _logger.LogException(e, message:$"Could not resolve a channel for {destination}");
+                _logger.LogException(e, message: $"Could not resolve a channel for {destination}");
 
                 session.DeleteWhere<Envelope>(x => x.Status == TransportConstants.Outgoing && x.Address == destination.ToString() && x.OwnerId == TransportConstants.AnyNode);
                 await session.SaveChangesAsync();

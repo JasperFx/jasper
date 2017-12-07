@@ -33,15 +33,24 @@ namespace Jasper.Bus.Runtime
                         break;
 
                     case OriginalIdKey:
-                        OriginalId = value;
+                        if (Guid.TryParse(value, out Guid originalId))
+                        {
+                            OriginalId = originalId;
+                        }
                         break;
 
                     case ParentIdKey:
-                        ParentId = value;
+                        if (Guid.TryParse(value, out Guid parentId))
+                        {
+                            ParentId = parentId;
+                        }
                         break;
 
                     case ResponseIdKey:
-                        ResponseId = value;
+                        if (Guid.TryParse(value, out Guid responseId))
+                        {
+                            ResponseId = responseId;
+                        }
                         break;
 
                     case DestinationKey:
@@ -53,7 +62,10 @@ namespace Jasper.Bus.Runtime
                         break;
 
                     case IdKey:
-                        Id = value;
+                        if (Guid.TryParse(value, out Guid id))
+                        {
+                            Id = id;
+                        }
                         break;
 
                     case ReplyRequestedKey:

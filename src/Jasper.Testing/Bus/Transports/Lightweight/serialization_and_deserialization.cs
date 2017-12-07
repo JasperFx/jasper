@@ -151,21 +151,21 @@ namespace Jasper.Testing.Bus.Transports.Lightweight
         [Fact]
         public void original_id()
         {
-            outgoing.OriginalId = Guid.NewGuid().ToString();
+            outgoing.OriginalId = Guid.NewGuid();
             incoming.OriginalId.ShouldBe(outgoing.OriginalId);
         }
 
         [Fact]
         public void parent_id()
         {
-            outgoing.ParentId = Guid.NewGuid().ToString();
+            outgoing.ParentId = Guid.NewGuid();
             incoming.ParentId.ShouldBe(outgoing.ParentId);
         }
 
         [Fact]
         public void response_id()
         {
-            outgoing.ResponseId = Guid.NewGuid().ToString();
+            outgoing.ResponseId = Guid.NewGuid();
             incoming.ResponseId.ShouldBe(outgoing.ResponseId);
         }
 

@@ -70,7 +70,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                Id = Guid.NewGuid().ToString()
+
             };
 
             parent.OriginalId.ShouldBeNull();
@@ -82,7 +82,6 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                Id = Guid.NewGuid().ToString()
             };
 
             var childMessage = new Message1();
@@ -100,8 +99,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                Id = Guid.NewGuid().ToString(),
-                OriginalId = Guid.NewGuid().ToString()
+                OriginalId = Guid.NewGuid()
             };
 
             var childMessage = new Message1();
@@ -119,8 +117,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                Id = Guid.NewGuid().ToString(),
-                OriginalId = Guid.NewGuid().ToString(),
+                OriginalId = Guid.NewGuid(),
                 ReplyUri = "foo://bar".ToUri(),
                 ReplyRequested = typeof(Message1).ToMessageAlias()
             };
@@ -139,8 +136,7 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                Id = Guid.NewGuid().ToString(),
-                OriginalId = Guid.NewGuid().ToString(),
+                OriginalId = Guid.NewGuid(),
                 ReplyUri = "foo://bar".ToUri(),
                 ReplyRequested = typeof(Message2).Name
             };
@@ -158,8 +154,8 @@ namespace Jasper.Testing.Bus.Runtime
         {
             var parent = new Envelope
             {
-                Id = Guid.NewGuid().ToString(),
-                OriginalId = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
+                OriginalId = Guid.NewGuid(),
                 Source = "foo://bar"
             };
 

@@ -79,7 +79,7 @@ namespace Jasper.Storyteller.Logging
             trace(envelope, "Message Failed", ex);
         }
 
-        public override void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
+        public override void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             Errors.Exceptions.Add(ex);
         }

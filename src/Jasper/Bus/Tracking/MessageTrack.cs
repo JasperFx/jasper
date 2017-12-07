@@ -12,7 +12,7 @@ namespace Jasper.Bus.Tracking
             return $"{envelope.Id}/{envelope.Destination}/{activity}";
         }
 
-        public string CorrelationId { get; }
+        public Guid CorrelationId { get; }
         public string Activity { get; }
         public DateTime Recorded { get; } = DateTime.UtcNow;
         public Type MessageType { get; }

@@ -25,7 +25,7 @@ namespace Jasper.Diagnostics
         {
         }
 
-        public void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
+        public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
         }
 

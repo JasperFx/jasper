@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using StoryTeller.Model;
@@ -9,9 +10,9 @@ namespace Jasper.Storyteller.Logging
 {
     public class EnvelopeHistory
     {
-        public string CorrelationId { get; }
+        public Guid CorrelationId { get; }
 
-        public EnvelopeHistory(string correlationId, IEnumerable<EnvelopeRecord> records)
+        public EnvelopeHistory(Guid correlationId, IEnumerable<EnvelopeRecord> records)
         {
             CorrelationId = correlationId;
             Records = records.OrderBy(x => x.Time).ToArray();
@@ -117,7 +118,7 @@ namespace Jasper.Storyteller.Logging
                 table.AddBodyRow(row =>
                 {
                     row.Cell(history.Time.ToString()).Style("text-align", "right");
-                    row.Cell(history.CorrelationId);
+                    row.Cell(history.CorrelationId.ToString());
                     row.Cell(history.MessageType);
                     row.Add("td/a").Text("details").Attr("href", "#message-" + history.CorrelationId);
                 });

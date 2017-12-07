@@ -46,7 +46,7 @@ namespace StorytellerSpecs
             trace($"Message {envelope} failed");
         }
 
-        public void LogException(Exception ex, string correlationId = null, string message = "Exception detected:")
+        public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             _context.Reporting.ReporterFor<BusErrors>().Exceptions.Add(ex);
         }

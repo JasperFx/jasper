@@ -31,7 +31,7 @@ namespace Jasper.Bus.Runtime
 
         public IBusLogger Logger { get;}
 
-        public async Task<string> Send(Envelope envelope)
+        public async Task<Guid> Send(Envelope envelope)
         {
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 

@@ -124,7 +124,7 @@ namespace Jasper.Testing.Bus
             Exceptions.Add(ex);
         }
 
-        void IBusLogger.LogException(Exception ex, string correlationId, string message)
+        void IBusLogger.LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             Exceptions.Add(ex);
         }

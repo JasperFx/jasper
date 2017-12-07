@@ -70,7 +70,7 @@ namespace Jasper.Bus.Transports.Sending
 
         public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
         {
-            _logger.LogException(exception, $"Failure trying to send a message batch to {outgoing.Destination}");
+            _logger.LogException(exception, message:$"Failure trying to send a message batch to {outgoing.Destination}");
             _logger.OutgoingBatchFailed(outgoing, exception);
             return _retries.MarkFailed(outgoing);
         }

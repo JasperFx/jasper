@@ -24,8 +24,8 @@ namespace Jasper.Diagnostics.Messages
 
         public IDictionary<string, string> Headers { get; }
 
-        public string CorrelationId { get; }
-        public string ParentId { get; }
+        public Guid CorrelationId { get; }
+        public Guid ParentId { get; }
         public MessageTypeModel MessageType { get; }
         public string Description { get; }
         public string Source { get; }

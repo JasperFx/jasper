@@ -10,8 +10,8 @@ namespace Jasper.Bus.Delayed
 {
     public class InMemoryDelayedJobProcessor : IDelayedJobProcessor, IDisposable
     {
-        private readonly ConcurrentCache<string, InMemoryDelayedJob> _outstandingJobs
-            = new ConcurrentCache<string, InMemoryDelayedJob>();
+        private readonly ConcurrentCache<Guid, InMemoryDelayedJob> _outstandingJobs
+            = new ConcurrentCache<Guid, InMemoryDelayedJob>();
 
         public IWorkerQueue _queue;
 

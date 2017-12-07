@@ -37,7 +37,7 @@ namespace Jasper.Bus.Logging
             LogException(ex);
         }
 
-        public virtual void LogException(Exception ex, string correlationId = null, string message = null)
+        public virtual void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
         }
 

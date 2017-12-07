@@ -193,6 +193,19 @@ namespace Jasper.Bus.Runtime
 
         }
 
+        public static void WriteProp(this BinaryWriter writer, ref int count, string key, Guid value)
+        {
+            if (value != Guid.Empty)
+            {
+                writer.Write(key);
+                writer.Write(value.ToString());
+
+                count++;
+            }
+
+
+        }
+
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, bool value)
         {
             if (value)

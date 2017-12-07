@@ -81,7 +81,7 @@ namespace Jasper.Bus.Runtime
             return new Envelope
             {
                 Message = message,
-                OriginalId = OriginalId ?? Id,
+                OriginalId = OriginalId.IsEmpty() ? Id : OriginalId,
                 ParentId = Id
             };
         }
@@ -206,11 +206,11 @@ namespace Jasper.Bus.Runtime
 
         public string ContentType { get; set; }
 
-        public string OriginalId { get; set; }
+        public Guid OriginalId { get; set; }
 
-        public string ParentId { get; set; }
+        public Guid ParentId { get; set; }
 
-        public string ResponseId { get; set; }
+        public Guid ResponseId { get; set; }
 
         public Uri Destination { get; set; }
 
@@ -224,7 +224,7 @@ namespace Jasper.Bus.Runtime
         public string Accepts => AcceptedContentTypes?.FirstOrDefault();
 
 
-        public string Id { get; set; } = CombGuidIdGeneration.NewGuid().ToString();
+        public Guid Id { get; set; } = CombGuidIdGeneration.NewGuid();
 
         public string ReplyRequested { get; set; }
 
@@ -236,8 +236,10 @@ namespace Jasper.Bus.Runtime
             set => _executionTime = value?.ToUniversalTime();
         }
 
+        [Obsolete("Eliminate w/ GH-264")]
         public string Status { get; set; }
 
+        [Obsolete("Eliminate w/ GH-264")]
         public int OwnerId { get; set; } = 0;
 
         public bool IsDelayed(DateTime utcNow)

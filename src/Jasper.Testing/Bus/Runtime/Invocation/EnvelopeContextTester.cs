@@ -116,7 +116,6 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             {
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = true,
-                Id = Guid.NewGuid().ToString(),
             };
 
             ClassUnderTest.SendOutgoingMessages(original, new object[0]);
@@ -139,7 +138,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             {
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = false,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             ClassUnderTest.SendOutgoingMessages(original, new object[0]);
@@ -156,7 +155,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = false,
                 ReplyRequested = null,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             var recordingSender = new RecordingEnvelopeSender();
@@ -180,7 +179,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             {
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = true,
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             var recordingSender = new RecordingEnvelopeSender();
@@ -243,7 +242,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
                 ReplyUri = "foo://bar".ToUri(),
                 AckRequested = false,
                 ReplyRequested = "Message1",
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid()
             };
 
             var recordingSender = new RecordingEnvelopeSender();
@@ -294,7 +293,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
 
 
 
-        public Task<string> Send(Envelope envelope)
+        public Task<Guid> Send(Envelope envelope)
         {
             Sent.Add(envelope);
 
@@ -311,7 +310,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             FailureAcknowledgementMessage = message;
         }
 
-        public Task<string> Send(Envelope envelope, IMessageCallback callback)
+        public Task<Guid> Send(Envelope envelope, IMessageCallback callback)
         {
             Sent.Add(envelope);
             return Task.FromResult(envelope.Id);

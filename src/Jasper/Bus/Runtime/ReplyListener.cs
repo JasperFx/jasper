@@ -7,10 +7,10 @@ namespace Jasper.Bus.Runtime
     {
         private readonly ReplyWatcher _watcher;
         private readonly TaskCompletionSource<T> _completion;
-        private readonly string _originalId;
+        private readonly Guid _originalId;
         private Task _timeout;
 
-        public ReplyListener(ReplyWatcher watcher, string originalId, TimeSpan timeout)
+        public ReplyListener(ReplyWatcher watcher, Guid originalId, TimeSpan timeout)
         {
             _watcher = watcher;
             _completion = new TaskCompletionSource<T>();

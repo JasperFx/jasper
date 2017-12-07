@@ -99,7 +99,7 @@ namespace Jasper.Bus.Logging
             }
         }
 
-        public void LogException(Exception ex, string correlationId = null, string message = null)
+        public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             foreach (var sink in Loggers)
             {

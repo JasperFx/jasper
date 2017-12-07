@@ -6,8 +6,8 @@ namespace Jasper.Bus.Runtime
     public interface IReplyWatcher
     {
         void Handle(Envelope envelope);
-        void Remove(string id);
-        Task<T> StartWatch<T>(string id, TimeSpan timeout);
+        void Remove(Guid id);
+        Task<T> StartWatch<T>(Guid id, TimeSpan timeout);
         int Count { get; }
     }
 }

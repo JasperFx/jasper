@@ -2,13 +2,14 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Util;
 
 namespace Jasper.Bus.Runtime
 {
     public class ReplyWatcher : IReplyWatcher
     {
-        private readonly ConcurrentDictionary<string, IReplyListener> _listeners
-            = new ConcurrentDictionary<string, IReplyListener>();
+        private readonly ConcurrentDictionary<Guid, IReplyListener> _listeners
+            = new ConcurrentDictionary<Guid, IReplyListener>();
 
         public void Handle(Envelope envelope)
         {
@@ -20,13 +21,13 @@ namespace Jasper.Bus.Runtime
             }
         }
 
-        public void Remove(string id)
+        public void Remove(Guid id)
         {
             IReplyListener listener;
             _listeners.TryRemove(id, out listener);
         }
 
-        public Task<T> StartWatch<T>(string id, TimeSpan timeout)
+        public Task<T> StartWatch<T>(Guid id, TimeSpan timeout)
         {
             var listener = new ReplyListener<T>(this, id, timeout);
             _listeners[id] = listener;

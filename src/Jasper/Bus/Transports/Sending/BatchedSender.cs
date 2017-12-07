@@ -50,7 +50,7 @@ namespace Jasper.Bus.Transports.Sending
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogException(ex, $"Error while trying to serialize envelope {e}");
+                    _logger.LogException(ex, message:$"Error while trying to serialize envelope {e}");
                 }
             },
             new ExecutionDataflowBlockOptions

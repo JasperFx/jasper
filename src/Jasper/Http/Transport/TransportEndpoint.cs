@@ -27,7 +27,7 @@ namespace Jasper.Http.Transport
             catch (Exception e)
             {
                 var message = $"Error receiving envelopes from {request.Headers["x-jasper-envelope-sender"]}";
-                logger.LogException(e, message:message);
+                logger.LogException(e, message: message);
 
                 return 500;
             }
@@ -48,7 +48,7 @@ namespace Jasper.Http.Transport
             catch (Exception e)
             {
                 var message = $"Error receiving envelopes from {request.Headers["x-jasper-envelope-sender"]}";
-                logger.LogException(e, message:message);
+                logger.LogException(e, message: message);
 
                 return 500;
             }

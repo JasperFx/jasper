@@ -15,7 +15,7 @@ namespace IntegrationTests.Conneg
         {
             var watcher = new ReplyWatcher();
 
-            return Exception<TimeoutException>.ShouldBeThrownBy(() => watcher.StartWatch<Message1>(Guid.NewGuid().ToString(), 1.Seconds()));
+            return Exception<TimeoutException>.ShouldBeThrownBy(() => watcher.StartWatch<Message1>(Guid.NewGuid(), 1.Seconds()));
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿namespace Jasper.Bus.Runtime
+﻿using System;
+
+namespace Jasper.Bus.Runtime
 {
     public class FailureAcknowledgement
     {
-        public string CorrelationId { get; set; }
+        public Guid CorrelationId { get; set; }
         public string Message { get; set; }
 
         protected bool Equals(FailureAcknowledgement other)

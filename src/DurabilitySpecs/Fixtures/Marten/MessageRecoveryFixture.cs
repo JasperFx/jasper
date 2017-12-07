@@ -111,7 +111,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
             var envelope = new Envelope
             {
-                Id = Id,
+                //Id = Id, --- TODO -- handle this one some how
                 ExecutionTime = ExecutionTime,
                 Status = Status,
                 OwnerId = ownerId,
@@ -258,7 +258,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
     public class OutgoingMessageAction
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public Uri Destination { get; set; }
     }
 
