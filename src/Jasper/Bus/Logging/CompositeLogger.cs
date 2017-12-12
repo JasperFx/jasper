@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -101,6 +102,15 @@ namespace Jasper.Bus.Logging
 
         public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
+            try
+            {
+                ex = ex.Demystify();
+            }
+            catch (Exception)
+            {
+
+            }
+
             foreach (var sink in Loggers)
             {
                 try
@@ -157,6 +167,15 @@ namespace Jasper.Bus.Logging
 
         public void MovedToErrorQueue(Envelope envelope, Exception ex)
         {
+            try
+            {
+                ex = ex.Demystify();
+            }
+            catch (Exception)
+            {
+
+            }
+
             foreach (var sink in Loggers)
             {
                 try
