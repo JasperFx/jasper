@@ -8,6 +8,5 @@ namespace Jasper.Bus.Runtime
     public interface IEnvelopeSender
     {
         Task<Guid> Send(Envelope envelope);
-        Task EnqueueLocally(object message);
     }
 }

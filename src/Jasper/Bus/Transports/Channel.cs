@@ -7,7 +7,8 @@ using Jasper.Util;
 
 namespace Jasper.Bus.Transports
 {
-    // For *now*, saying that there'll always be a static channel for every outgoing destination. Not a huge problem I believe
+    // For *now*, saying that there'll always be a static channel for every
+    // outgoing destination. Not a huge problem I believe
     public class Channel : IChannel
     {
         private readonly SubscriberAddress _address;
@@ -35,6 +36,11 @@ namespace Jasper.Bus.Transports
 
         public Task Send(Envelope envelope)
         {
+            if (envelope.RequiresLocalReply && LocalReplyUri == null)
+            {
+                throw new InvalidOperationException($"There is no known local reply Uri for channel {_address}, but one is required for this operation");
+            }
+
             foreach (var modifier in _address.Modifiers)
             {
                 modifier.Modify(envelope);

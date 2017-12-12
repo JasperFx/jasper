@@ -11,6 +11,7 @@ using Jasper.Bus.Transports.Configuration;
 
 namespace Jasper.Bus.Runtime
 {
+
     public class EnvelopeSender : IEnvelopeSender
     {
         private readonly IMessageRouter _router;
@@ -19,7 +20,8 @@ namespace Jasper.Bus.Runtime
         private readonly BusSettings _settings;
 
 
-        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, UriAliasLookup aliases, BusSettings settings)
+        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels,
+            UriAliasLookup aliases, BusSettings settings)
         {
             _router = router;
             _channels = channels;
@@ -63,35 +65,12 @@ namespace Jasper.Bus.Runtime
                 }
             }
 
-            if (envelope.RequiresLocalReply)
-            {
-                var missing = routes.Where(x => x.Channel.LocalReplyUri == null).ToArray();
-
-                // TODO -- should you try to use either an HTTP or TCP listener if one exists?
-                if (missing.Any())
-                {
-                    throw new InvalidOperationException(
-                        $"There is no known local reply Uri for outgoing destinations {missing.Select(x => x.ToString()).Join(", ")}");
-                }
-            }
-
             foreach (var route in routes)
             {
                 await sendEnvelope(envelope, route);
             }
         }
 
-        public Task EnqueueLocally(object message)
-        {
-            var channel = _channels.DefaultChannel;
-            var envelope = new Envelope
-            {
-                Message = message,
-                Destination = channel.Uri
-            };
-
-            return Send(envelope);
-        }
 
         private async Task<Envelope> sendEnvelope(Envelope envelope, MessageRoute route)
         {
