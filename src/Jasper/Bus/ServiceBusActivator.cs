@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
@@ -23,7 +23,7 @@ namespace Jasper.Bus
     {
         private readonly BusSettings _settings;
         private readonly IHandlerPipeline _pipeline;
-        private readonly IDelayedJobProcessor _delayedJobs;
+        private readonly IScheduledJobProcessor scheduledJobs;
         private readonly SerializationGraph _serialization;
         private readonly ITransport[] _transports;
         private readonly UriAliasLookup _lookups;
@@ -31,11 +31,11 @@ namespace Jasper.Bus
         private readonly CompositeLogger _logger;
         private readonly IPersistence _persistence;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IDelayedJobProcessor delayedJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, IWorkerQueue workerQueue, CompositeLogger logger, IPersistence persistence)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IScheduledJobProcessor scheduledJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, IWorkerQueue workerQueue, CompositeLogger logger, IPersistence persistence)
         {
             _settings = settings;
             _pipeline = pipeline;
-            _delayedJobs = delayedJobs;
+            this.scheduledJobs = scheduledJobs;
             _serialization = serialization;
             _transports = transports.ToArray();
             _lookups = lookups;
@@ -62,7 +62,7 @@ namespace Jasper.Bus
                 channels.Start(_settings, transports, _lookups, capabilities, _logger);
 
 
-                _delayedJobs.Start(_workerQueue);
+                scheduledJobs.Start(_workerQueue);
             }
 
             runtime.Capabilities = await capabilityCompilation;

@@ -52,7 +52,7 @@ namespace Jasper.Testing.Bus
                             x.Conditions.Single() is ExceptionTypeMatch<DivideByZeroException>)
                 .SelectMany(x => x.Sources)
                 .OfType<ContinuationSource>().Select(x => x.Continuation)
-                .OfType<DelayedRetryContinuation>()
+                .OfType<ScheduledRetryContinuation>()
                 .Single();
 
             continuation.Delay.ShouldBe(5.Seconds());

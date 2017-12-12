@@ -75,7 +75,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: send-delayed-message
-        public async Task SendDelayedMessage(IServiceBus bus, Guid invoiceId)
+        public async Task SendScheduledMessage(IServiceBus bus, Guid invoiceId)
         {
             var message = new ValidateInvoiceIsNotLate
             {
@@ -84,10 +84,10 @@ namespace Jasper.Testing.Samples
 
             // Schedule the message to be processed in a certain amount
             // of time
-            await bus.DelaySend(message, 30.Days());
+            await bus.ScheduleSend(message, 30.Days());
 
             // Schedule the message to be processed at a certain time
-            await bus.DelaySend(message, DateTime.UtcNow.AddDays(30));
+            await bus.ScheduleSend(message, DateTime.UtcNow.AddDays(30));
         }
         // ENDSAMPLE
 

@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
@@ -35,8 +35,6 @@ namespace Jasper.Bus
         public GenerationRules Generation { get; } = new GenerationRules("JasperBus.Generated");
 
         public BusSettings Settings { get; } = new BusSettings();
-
-        public bool DelayedJobsRunInMemory { get; set; } = true;
 
         public readonly ServiceRegistry Services = new ServiceBusRegistry();
 
@@ -116,7 +114,7 @@ namespace Jasper.Bus
                 Services.For<ITransportLogger>().Use<ConsoleTransportLogger>();
             }
 
-            Services.ForSingletonOf<IDelayedJobProcessor>().UseIfNone<InMemoryDelayedJobProcessor>();
+            Services.ForSingletonOf<IScheduledJobProcessor>().UseIfNone<InMemoryScheduledJobProcessor>();
 
             return Services;
         }

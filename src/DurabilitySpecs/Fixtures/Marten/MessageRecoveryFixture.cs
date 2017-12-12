@@ -7,9 +7,9 @@ using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Bus;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Serializers;
+using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Stub;
@@ -331,6 +331,6 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         }
 
-        public IDelayedJobProcessor DelayedJobs { get;} = new InMemoryDelayedJobProcessor();
+        public IScheduledJobProcessor ScheduledJobs { get;} = new InMemoryScheduledJobProcessor();
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 
-namespace Jasper.Bus.Delayed
+namespace Jasper.Bus.Scheduled
 {
-    public class DelayedJob
+    public class ScheduledJob
     {
-        public DelayedJob(Guid envelopeId)
+        public ScheduledJob(Guid envelopeId)
         {
             EnvelopeId = envelopeId;
         }

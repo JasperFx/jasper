@@ -185,7 +185,7 @@ namespace Jasper.Testing.Bus.Samples
         {
             if (ex.Message.Contains("timed out"))
             {
-                return new DelayedRetryContinuation(3.Seconds());
+                return new ScheduledRetryContinuation(3.Seconds());
             }
 
             // If the handler doesn't apply to the exception,

@@ -24,7 +24,7 @@ namespace Jasper.Bus
                 return Task.CompletedTask;
             }
 
-            public Task MoveToDelayedUntil(DateTimeOffset time, Envelope envelope)
+            public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
             {
                 return Task.CompletedTask;
             }

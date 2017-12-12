@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Internals.Util;
@@ -36,10 +36,10 @@ namespace Jasper.Bus.WorkerQueues
                 AddQueue(worker.Name, worker.Parallelization);
             }
 
-            DelayedJobs = InMemoryDelayedJobProcessor.ForQueue(this);
+            ScheduledJobs = InMemoryScheduledJobProcessor.ForQueue(this);
         }
 
-        public IDelayedJobProcessor DelayedJobs { get; }
+        public IScheduledJobProcessor ScheduledJobs { get; }
 
         public Task Enqueue(Envelope envelope)
         {

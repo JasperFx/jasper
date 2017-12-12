@@ -107,7 +107,7 @@ namespace Jasper.Bus.ErrorHandling
 
             public ThenContinueExpression RetryLater(TimeSpan delay)
             {
-                return ContinueWith(new DelayedRetryContinuation(delay));
+                return ContinueWith(new ScheduledRetryContinuation(delay));
             }
 
             public ThenContinueExpression ContinueWith(IContinuation continuation)

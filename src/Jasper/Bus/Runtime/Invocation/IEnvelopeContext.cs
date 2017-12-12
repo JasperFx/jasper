@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.Logging;
 
 namespace Jasper.Bus.Runtime.Invocation

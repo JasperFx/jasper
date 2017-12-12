@@ -1,12 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.WorkerQueues;
 
-namespace Jasper.Bus.Delayed
+namespace Jasper.Bus.Scheduled
 {
-    public interface IDelayedJobProcessor
+    public interface IScheduledJobProcessor
     {
         void Enqueue(DateTimeOffset executionTime, Envelope envelope);
 
@@ -18,7 +17,7 @@ namespace Jasper.Bus.Delayed
 
         int Count();
 
-        DelayedJob[] QueuedJobs();
+        ScheduledJob[] QueuedJobs();
 
         void Start(IWorkerQueue workerQueue);
     }

@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Testing.Bus.Runtime;
@@ -25,7 +25,7 @@ namespace Jasper.Testing.Bus.Lightweight
         private readonly Uri theAddress = $"tcp://localhost:{++port}/incoming".ToUri();
         private readonly MessageTracker theTracker = new MessageTracker();
         private readonly JasperRuntime theReceiver;
-        private FakeDelayedJobProcessor delayedJobs;
+        private FakeScheduledJobProcessor scheduledJobs;
 
         public end_to_end()
         {
@@ -46,9 +46,9 @@ namespace Jasper.Testing.Bus.Lightweight
             receiver.Handlers.DefaultMaximumAttempts = 3;
             receiver.Handlers.IncludeType<MessageConsumer>();
 
-            delayedJobs = new FakeDelayedJobProcessor();
+            scheduledJobs = new FakeScheduledJobProcessor();
 
-            receiver.Services.For<IDelayedJobProcessor>().Use(delayedJobs);
+            receiver.Services.For<IScheduledJobProcessor>().Use(scheduledJobs);
 
             receiver.Services.For<MessageTracker>().Use(theTracker);
 
@@ -105,7 +105,7 @@ namespace Jasper.Testing.Bus.Lightweight
 
     }
 
-    public class FakeDelayedJobProcessor : IDelayedJobProcessor
+    public class FakeScheduledJobProcessor : IScheduledJobProcessor
     {
         private readonly TaskCompletionSource<Envelope> _envelope = new TaskCompletionSource<Envelope>();
 
@@ -140,7 +140,7 @@ namespace Jasper.Testing.Bus.Lightweight
             throw new NotImplementedException();
         }
 
-        public DelayedJob[] QueuedJobs()
+        public ScheduledJob[] QueuedJobs()
         {
             throw new NotImplementedException();
         }

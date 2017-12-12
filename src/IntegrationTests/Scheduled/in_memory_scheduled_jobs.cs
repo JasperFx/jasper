@@ -3,31 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Baseline.Dates;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Scheduled;
 using Jasper.Bus.WorkerQueues;
-using Jasper.Testing;
 using Jasper.Testing.Bus;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests.DelayedJobs
+namespace IntegrationTests.Scheduled
 {
-    public class in_memory_delayed_jobs : IWorkerQueue
+    public class in_memory_scheduled_jobs : IWorkerQueue
     {
-        private readonly InMemoryDelayedJobProcessor theDelayedJobs;
+        private readonly InMemoryScheduledJobProcessor theScheduledJobs;
         private readonly IList<Envelope> sent = new List<Envelope>();
         private readonly Dictionary<Guid, TaskCompletionSource<Envelope>>
             _callbacks = new Dictionary<Guid, TaskCompletionSource<Envelope>>();
 
 
-        public in_memory_delayed_jobs()
+        public in_memory_scheduled_jobs()
         {
-            theDelayedJobs = InMemoryDelayedJobProcessor.ForQueue(this);
+            theScheduledJobs = InMemoryScheduledJobProcessor.ForQueue(this);
         }
 
         Task IWorkerQueue.Enqueue(Envelope envelope)
@@ -48,7 +44,7 @@ namespace IntegrationTests.DelayedJobs
             // nothing
         }
 
-        public IDelayedJobProcessor DelayedJobs => theDelayedJobs;
+        public IScheduledJobProcessor ScheduledJobs => theScheduledJobs;
 
 
         public Uri Uri { get; }
@@ -70,15 +66,15 @@ namespace IntegrationTests.DelayedJobs
             var envelope = ObjectMother.Envelope();
             var waiter = waitForReceipt(envelope);
 
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), envelope);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), envelope);
 
-            theDelayedJobs.Count().ShouldBe(1);
+            theScheduledJobs.Count().ShouldBe(1);
 
             await waiter;
 
             sent.ShouldContain(envelope);
 
-            theDelayedJobs.Count().ShouldBe(0);
+            theScheduledJobs.Count().ShouldBe(0);
         }
 
         [Fact]
@@ -92,9 +88,9 @@ namespace IntegrationTests.DelayedJobs
             var waiter2 = waitForReceipt(env2);
             var waiter3 = waitForReceipt(env3);
 
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddHours(1), env1);
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddSeconds(5), env2);
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddHours(1), env3);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddHours(1), env1);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddSeconds(5), env2);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddHours(1), env3);
 
             await waiter2;
 
@@ -110,15 +106,15 @@ namespace IntegrationTests.DelayedJobs
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
 
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddMinutes(1), env1);
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddMinutes(1), env2);
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddMinutes(1), env3);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddMinutes(1), env1);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddMinutes(1), env2);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddMinutes(1), env3);
 
-            theDelayedJobs.Count().ShouldBe(3);
+            theScheduledJobs.Count().ShouldBe(3);
 
-            await theDelayedJobs.PlayAll();
+            await theScheduledJobs.PlayAll();
 
-            theDelayedJobs.Count().ShouldBe(0);
+            theScheduledJobs.Count().ShouldBe(0);
             sent.Count.ShouldBe(3);
             sent.ShouldContain(env1);
             sent.ShouldContain(env2);
@@ -134,15 +130,15 @@ namespace IntegrationTests.DelayedJobs
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
 
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), env1);
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), env2);
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), env3);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), env1);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), env2);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), env3);
 
-            theDelayedJobs.Count().ShouldBe(3);
+            theScheduledJobs.Count().ShouldBe(3);
 
-            theDelayedJobs.EmptyAll();
+            theScheduledJobs.EmptyAll();
 
-            theDelayedJobs.Count().ShouldBe(0);
+            theScheduledJobs.Count().ShouldBe(0);
 
 
             Thread.Sleep(2000);
@@ -158,18 +154,18 @@ namespace IntegrationTests.DelayedJobs
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
 
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddHours(1), env1);
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddHours(2), env2);
-            theDelayedJobs.Enqueue(DateTime.UtcNow.AddHours(3), env3);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddHours(1), env1);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddHours(2), env2);
+            theScheduledJobs.Enqueue(DateTime.UtcNow.AddHours(3), env3);
 
-            await theDelayedJobs.PlayAt(DateTime.UtcNow.AddMinutes(150));
+            await theScheduledJobs.PlayAt(DateTime.UtcNow.AddMinutes(150));
 
             sent.Count.ShouldBe(2);
             sent.ShouldContain(env1);
             sent.ShouldContain(env2);
             sent.ShouldNotContain(env3);
 
-            theDelayedJobs.Count().ShouldBe(1);
+            theScheduledJobs.Count().ShouldBe(1);
 
         }
 

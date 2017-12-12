@@ -141,7 +141,7 @@ namespace Jasper.Marten.Tests.Persistence
         {
             var time = DateTime.Today.ToUniversalTime().AddDays(1);
 
-            await theCallback.MoveToDelayedUntil(time, theEnvelope);
+            await theCallback.MoveToScheduledUntil(time, theEnvelope);
 
             theRetries.Scheduled.WaitOne(1.Seconds());
 

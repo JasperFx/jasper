@@ -6,19 +6,19 @@ using Baseline;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.WorkerQueues;
 
-namespace Jasper.Bus.Delayed
+namespace Jasper.Bus.Scheduled
 {
-    public class InMemoryDelayedJobProcessor : IDelayedJobProcessor, IDisposable
+    public class InMemoryScheduledJobProcessor : IScheduledJobProcessor, IDisposable
     {
-        private readonly ConcurrentCache<Guid, InMemoryDelayedJob> _outstandingJobs
-            = new ConcurrentCache<Guid, InMemoryDelayedJob>();
+        private readonly ConcurrentCache<Guid, InMemoryScheduledJob> _outstandingJobs
+            = new ConcurrentCache<Guid, InMemoryScheduledJob>();
 
         public IWorkerQueue _queue;
 
 
         public void Enqueue(DateTimeOffset executionTime, Envelope envelope)
         {
-            _outstandingJobs[envelope.Id] = new InMemoryDelayedJob(this, envelope, executionTime);
+            _outstandingJobs[envelope.Id] = new InMemoryScheduledJob(this, envelope, executionTime);
         }
 
         public void Start(IWorkerQueue workerQueue)
@@ -54,7 +54,7 @@ namespace Jasper.Bus.Delayed
             return _outstandingJobs.Count;
         }
 
-        public DelayedJob[] QueuedJobs()
+        public ScheduledJob[] QueuedJobs()
         {
             return _outstandingJobs.ToArray().Select(x => x.ToReport()).ToArray();
         }
@@ -68,18 +68,18 @@ namespace Jasper.Bus.Delayed
             _outstandingJobs.ClearAll();
         }
 
-        public static InMemoryDelayedJobProcessor ForQueue(IWorkerQueue queue)
+        public static InMemoryScheduledJobProcessor ForQueue(IWorkerQueue queue)
         {
-            return new InMemoryDelayedJobProcessor {_queue = queue};
+            return new InMemoryScheduledJobProcessor {_queue = queue};
         }
 
-        public class InMemoryDelayedJob
+        public class InMemoryScheduledJob
         {
             private readonly CancellationTokenSource _cancellation;
-            private readonly InMemoryDelayedJobProcessor _parent;
+            private readonly InMemoryScheduledJobProcessor _parent;
             private Task _task;
 
-            public InMemoryDelayedJob(InMemoryDelayedJobProcessor parent, Envelope envelope, DateTimeOffset executionTime)
+            public InMemoryScheduledJob(InMemoryScheduledJobProcessor parent, Envelope envelope, DateTimeOffset executionTime)
             {
                 _parent = parent;
                 ExecutionTime = executionTime.ToUniversalTime();
@@ -112,9 +112,9 @@ namespace Jasper.Bus.Delayed
                 _parent._outstandingJobs.Remove(Envelope.Id);
             }
 
-            public DelayedJob ToReport()
+            public ScheduledJob ToReport()
             {
-                return new DelayedJob(Envelope.Id)
+                return new ScheduledJob(Envelope.Id)
                 {
                     ExecutionTime = ExecutionTime,
                     From = Envelope.ReceivedAt.ToString(),

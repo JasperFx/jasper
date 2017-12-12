@@ -37,7 +37,7 @@ namespace Jasper.Bus.Transports
 
             if (envelope.IsDelayed(DateTime.UtcNow))
             {
-                _queues.DelayedJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+                _queues.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
                 return Task.CompletedTask;
             }
             else

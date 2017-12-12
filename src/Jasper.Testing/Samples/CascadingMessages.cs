@@ -98,18 +98,18 @@ namespace Jasper.Testing.Samples.CascadingMessages
     // ENDSAMPLE
 
     // SAMPLE: DelayedResponseHandler
-    public class DelayedResponseHandler
+    public class ScheduledResponseHandler
     {
-        public DelayedResponse Consume(DirectionRequest request)
+        public ScheduledResponse Consume(DirectionRequest request)
         {
             // Process GoWest in 5 minutes from now
-            return new DelayedResponse(new GoWest(), TimeSpan.FromMinutes(5));
+            return new ScheduledResponse(new GoWest(), TimeSpan.FromMinutes(5));
         }
 
-        public DelayedResponse Consume(MyMessage message)
+        public ScheduledResponse Consume(MyMessage message)
         {
             // Process GoEast at 8 PM local time
-            return new DelayedResponse(new GoEast(), DateTime.Today.AddHours(20));
+            return new ScheduledResponse(new GoEast(), DateTime.Today.AddHours(20));
         }
     }
     // ENDSAMPLE
@@ -123,7 +123,7 @@ namespace Jasper.Testing.Samples.CascadingMessages
             yield return new GoNorth();
 
             // Go West in an hour
-            yield return new DelayedResponse(new GoWest(), TimeSpan.FromHours(1));
+            yield return new ScheduledResponse(new GoWest(), TimeSpan.FromHours(1));
         }
     }
     // ENDSAMPLE

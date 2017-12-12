@@ -50,7 +50,7 @@ namespace Jasper.Bus.Transports
                 throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
             }
 
-            _workers.DelayedJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+            _workers.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
             return Task.CompletedTask;
         }
 

@@ -5,16 +5,16 @@ using Jasper.Bus.Runtime.Invocation;
 
 namespace Jasper.Bus.ErrorHandling
 {
-    public class DelayedRetryContinuation : IContinuation
+    public class ScheduledRetryContinuation : IContinuation
     {
-        public DelayedRetryContinuation(TimeSpan delay)
+        public ScheduledRetryContinuation(TimeSpan delay)
         {
             Delay = delay;
         }
 
         public Task Execute(Envelope envelope, IEnvelopeContext context, DateTime utcNow)
         {
-            return envelope.Callback.MoveToDelayedUntil(utcNow.Add(Delay), envelope);
+            return envelope.Callback.MoveToScheduledUntil(utcNow.Add(Delay), envelope);
         }
 
         public TimeSpan Delay { get; }

@@ -256,7 +256,7 @@ namespace Jasper.Bus
             return Send(TransportConstants.DurableLoopbackUri, message);
         }
 
-        public Task DelaySend<T>(T message, DateTime time)
+        public Task ScheduleSend<T>(T message, DateTime time)
         {
             return Send(new Envelope
             {
@@ -265,9 +265,9 @@ namespace Jasper.Bus
             });
         }
 
-        public Task DelaySend<T>(T message, TimeSpan delay)
+        public Task ScheduleSend<T>(T message, TimeSpan delay)
         {
-            return DelaySend(message, DateTime.UtcNow.Add(delay));
+            return ScheduleSend(message, DateTime.UtcNow.Add(delay));
         }
 
         public Task SendAndWait<T>(T message)

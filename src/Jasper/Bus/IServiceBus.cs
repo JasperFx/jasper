@@ -109,7 +109,7 @@ namespace Jasper.Bus
         /// <param name="message"></param>
         /// <param name="time"></param>
         /// <typeparam name="T"></typeparam>
-        Task DelaySend<T>(T message, DateTime time);
+        Task ScheduleSend<T>(T message, DateTime time);
 
         /// <summary>
         /// Send a message that should be executed after the given delay
@@ -117,7 +117,7 @@ namespace Jasper.Bus
         /// <param name="message"></param>
         /// <param name="delay"></param>
         /// <typeparam name="T"></typeparam>
-        Task DelaySend<T>(T message, TimeSpan delay);
+        Task ScheduleSend<T>(T message, TimeSpan delay);
 
         /// <summary>
         /// Send a message and await an acknowledgement that the

@@ -70,7 +70,7 @@ namespace Jasper.Marten.Persistence
             await _queue.Enqueue(envelope);
         }
 
-        public Task MoveToDelayedUntil(DateTimeOffset time, Envelope envelope)
+        public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
         {
             envelope.ExecutionTime = time;
             envelope.Status = TransportConstants.Scheduled;
@@ -80,7 +80,7 @@ namespace Jasper.Marten.Persistence
             return Task.CompletedTask;
         }
 
-        private async Task moveToDelayed(DateTimeOffset time, Envelope envelope)
+        private async Task moveToScheduled(DateTimeOffset time, Envelope envelope)
         {
             envelope.Attempts++;
             envelope.ExecutionTime = time;

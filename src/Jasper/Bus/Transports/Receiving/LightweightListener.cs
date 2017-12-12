@@ -36,7 +36,7 @@ namespace Jasper.Bus.Transports.Receiving
 
                     if (message.IsDelayed(now))
                     {
-                        _workerQueue.DelayedJobs.Enqueue(message.ExecutionTime.Value, message);
+                        _workerQueue.ScheduledJobs.Enqueue(message.ExecutionTime.Value, message);
                     }
                     else
                     {

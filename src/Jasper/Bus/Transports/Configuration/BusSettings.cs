@@ -20,7 +20,7 @@ namespace Jasper.Bus.Transports.Configuration
         public BusSettings()
         {
             ListenForMessagesFrom(TransportConstants.RetryUri);
-            ListenForMessagesFrom(TransportConstants.DelayedUri);
+            ListenForMessagesFrom(TransportConstants.ScheduledUri);
             ListenForMessagesFrom(TransportConstants.RepliesUri);
 
             _machineName = Environment.MachineName;

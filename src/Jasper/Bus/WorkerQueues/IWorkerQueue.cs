@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Scheduled;
 
 namespace Jasper.Bus.WorkerQueues
 {
@@ -10,6 +10,6 @@ namespace Jasper.Bus.WorkerQueues
         int QueuedCount { get; }
         void AddQueue(string queueName, int parallelization);
 
-        IDelayedJobProcessor DelayedJobs { get; }
+        IScheduledJobProcessor ScheduledJobs { get; }
     }
 }
