@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
@@ -11,20 +12,24 @@ namespace Jasper.Bus.Transports
     // outgoing destination. Not a huge problem I believe
     public class Channel : IChannel
     {
+        private readonly CompositeLogger _logger;
         private readonly SubscriberAddress _address;
         private readonly ISendingAgent _agent;
         public Uri Uri => _address.Uri;
         public Uri LocalReplyUri { get; }
 
-        public Channel(SubscriberAddress address, Uri replyUri, ISendingAgent agent)
+        public Channel(CompositeLogger logger, SubscriberAddress address, Uri replyUri, ISendingAgent agent)
         {
             LocalReplyUri = replyUri;
+            _logger = logger;
             _address = address;
             _agent = agent;
+
+
         }
 
-        public Channel(ISendingAgent agent, Uri replyUri)
-            : this(new SubscriberAddress(agent.Destination), replyUri, agent)
+        public Channel(CompositeLogger logger, ISendingAgent agent, Uri replyUri)
+            : this(logger, new SubscriberAddress(agent.Destination), replyUri, agent)
         {
 
         }
@@ -34,27 +39,35 @@ namespace Jasper.Bus.Transports
             return _address.ShouldSendMessage(messageType);
         }
 
-        public Task Send(Envelope envelope)
+        public async Task Send(Envelope envelope)
         {
             if (envelope.RequiresLocalReply && LocalReplyUri == null)
             {
                 throw new InvalidOperationException($"There is no known local reply Uri for channel {_address}, but one is required for this operation");
             }
 
+            ApplyModifications(envelope);
+
+            envelope.Status = TransportConstants.Outgoing;
+
+            await _agent.StoreAndForward(envelope);
+
+            _logger.Sent(envelope);
+        }
+
+        public void ApplyModifications(Envelope envelope)
+        {
             foreach (var modifier in _address.Modifiers)
             {
                 modifier.Modify(envelope);
             }
-
-            envelope.Status = TransportConstants.Outgoing;
-
-            return _agent.StoreAndForward(envelope);
         }
 
-        public Task QuickSend(Envelope envelope)
+        public async Task QuickSend(Envelope envelope)
         {
             envelope.Status = TransportConstants.Outgoing;
-            return _agent.EnqueueOutgoing(envelope);
+            await _agent.EnqueueOutgoing(envelope);
+            _logger.Sent(envelope);
         }
 
         public bool Latched => _agent.Latched;

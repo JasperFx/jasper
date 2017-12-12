@@ -9,6 +9,7 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
 
 namespace Jasper.Bus.Runtime.Routing
@@ -21,10 +22,11 @@ namespace Jasper.Bus.Runtime.Routing
         private readonly HandlerGraph _handlers;
         private readonly CompositeLogger _logger;
         private readonly UriAliasLookup _lookup;
+        private readonly BusSettings _settings;
 
         private readonly ConcurrentDictionary<Type, MessageRoute[]> _routes = new ConcurrentDictionary<Type, MessageRoute[]>();
 
-        public MessageRouter(BusMessageSerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, CompositeLogger logger, UriAliasLookup lookup)
+        public MessageRouter(BusMessageSerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, CompositeLogger logger, UriAliasLookup lookup, BusSettings settings)
         {
             _serializers = serializers;
             _channels = channels;
@@ -32,6 +34,7 @@ namespace Jasper.Bus.Runtime.Routing
             _handlers = handlers;
             _logger = logger;
             _lookup = lookup;
+            _settings = settings;
         }
 
         public void ClearAll()
@@ -74,6 +77,51 @@ namespace Jasper.Bus.Runtime.Routing
                        modelWriter,
                        channel,
                        contentType);
+        }
+
+        public async Task<Envelope[]> Route(Envelope envelope)
+        {
+            var envelopes = await route(envelope);
+            foreach (var outgoing in envelopes)
+            {
+                outgoing.Source = _settings.NodeId;
+
+                // TODO -- watch this
+                if (!envelope.RequiresLocalReply)
+                {
+                    envelope.ReplyUri = envelope.ReplyUri ?? _channels.SystemReplyUri;
+                }
+
+            }
+
+            return envelopes;
+
+        }
+
+        private async Task<Envelope[]> route(Envelope envelope)
+        {
+            if (envelope.Destination == null)
+            {
+                var routes = await compileRoutes(envelope.Message.GetType());
+
+                var outgoing = routes.Select(x => x.CloneForSending(envelope)).ToArray();
+
+                // A hack.
+                if (outgoing.Length == 1)
+                {
+                    outgoing[0].Id = envelope.Id;
+                }
+
+                return outgoing;
+            }
+
+            var route = await RouteForDestination(envelope);
+
+
+            var toBeSent = route.CloneForSending(envelope);
+            toBeSent.Id = envelope.Id;
+
+            return new Envelope[]{toBeSent};
         }
 
         private async Task<List<MessageRoute>> compileRoutes(Type messageType)

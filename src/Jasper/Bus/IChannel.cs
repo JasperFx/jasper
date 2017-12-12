@@ -25,6 +25,7 @@ namespace Jasper.Bus
 
         bool Latched { get; }
 
+        void ApplyModifications(Envelope envelope);
     }
 
 }

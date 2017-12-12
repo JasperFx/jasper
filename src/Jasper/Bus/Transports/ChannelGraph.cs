@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Bus.Configuration;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
 
@@ -15,11 +16,13 @@ namespace Jasper.Bus.Transports
         private readonly ConcurrentDictionary<Uri, Lazy<IChannel>> _channels = new ConcurrentDictionary<Uri, Lazy<IChannel>>();
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
         private UriAliasLookup _lookups;
+        private CompositeLogger _logger;
 
-        public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups, CapabilityGraph capabilities)
+        public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups, CapabilityGraph capabilities, CompositeLogger logger)
         {
             _lookups = lookups;
             _settings = settings;
+            _logger = logger;
 
             organizeTransports(settings, transports);
 
@@ -59,7 +62,7 @@ namespace Jasper.Bus.Transports
                 var transport = _transports[subscriberAddress.Uri.Scheme];
                 var agent = transport.BuildSendingAgent(subscriberAddress.Uri, _settings.Cancellation);
 
-                var channel = new Channel(subscriberAddress, transport.LocalReplyUri, agent);
+                var channel = new Channel(_logger, subscriberAddress, transport.LocalReplyUri, agent);
 
                 _channels[subscriberAddress.Uri] = new Lazy<IChannel>(() => channel);
             }
@@ -98,7 +101,7 @@ namespace Jasper.Bus.Transports
 
             var transport = _transports[uri.Scheme];
             var agent = transport.BuildSendingAgent(uri, _settings.Cancellation);
-            return new Channel(agent, transport.LocalReplyUri);
+            return new Channel(_logger, agent, transport.LocalReplyUri);
         }
 
         public IChannel DefaultChannel { get; private set; }

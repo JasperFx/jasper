@@ -59,7 +59,7 @@ namespace Jasper.Bus
             {
                 await _settings.ApplyLookups(_lookups);
 
-                channels.Start(_settings, transports, _lookups, capabilities);
+                channels.Start(_settings, transports, _lookups, capabilities, _logger);
 
 
                 _delayedJobs.Start(_workerQueue);

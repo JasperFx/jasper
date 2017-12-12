@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
+using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Conneg;
@@ -240,6 +242,8 @@ namespace Jasper.Bus.Runtime
 
         public int OwnerId { get; set; } = 0;
 
+        internal MessageRoute Route { get; set; }
+
         public bool IsDelayed(DateTime utcNow)
         {
             return ExecutionTime.HasValue && ExecutionTime.Value > utcNow;
@@ -273,6 +277,44 @@ namespace Jasper.Bus.Runtime
         public bool IsExpired()
         {
             return DeliverBy.HasValue && DeliverBy <= DateTime.UtcNow;
+        }
+
+        private bool _enqueued = false;
+
+        public Task Send()
+        {
+            if (_enqueued)
+            {
+                throw new InvalidOperationException("This envelope has already been enqueued");
+            }
+
+            if (Route == null)
+            {
+                throw new InvalidOperationException("This envelope has not been routed");
+            }
+
+            _enqueued = true;
+
+
+
+            return Route.Channel.Send(this);
+        }
+
+        public Task QuickSend()
+        {
+            if (_enqueued)
+            {
+                throw new InvalidOperationException("This envelope has already been enqueued");
+            }
+
+            if (Route == null)
+            {
+                throw new InvalidOperationException("This envelope has not been routed");
+            }
+
+            _enqueued = true;
+
+            return Route.Channel.QuickSend(this);
         }
     }
 

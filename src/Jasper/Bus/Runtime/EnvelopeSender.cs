@@ -16,16 +16,13 @@ namespace Jasper.Bus.Runtime
     {
         private readonly IMessageRouter _router;
         private readonly IChannelGraph _channels;
-        private readonly UriAliasLookup _aliases;
         private readonly BusSettings _settings;
 
 
-        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels,
-            UriAliasLookup aliases, BusSettings settings)
+        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, BusSettings settings)
         {
             _router = router;
             _channels = channels;
-            _aliases = aliases;
             _settings = settings;
 
             Logger = logger;
@@ -37,25 +34,9 @@ namespace Jasper.Bus.Runtime
         {
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            envelope.Source = _settings.NodeId;
+            var outgoing = await _router.Route(envelope);
 
-            if (envelope.Destination == null)
-            {
-                await applyRoutingRules(envelope);
-            }
-            else
-            {
-                var route = await _router.RouteForDestination(envelope);
-                await sendEnvelope(envelope, route);
-            }
-
-            return envelope.Id;
-        }
-
-        private async Task applyRoutingRules(Envelope envelope)
-        {
-            var routes = await _router.Route(envelope.Message.GetType());
-            if (!routes.Any())
+            if (!outgoing.Any())
             {
                 Logger.NoRoutesFor(envelope);
 
@@ -65,27 +46,12 @@ namespace Jasper.Bus.Runtime
                 }
             }
 
-            foreach (var route in routes)
+            foreach (var outgoingEnvelope in outgoing)
             {
-                await sendEnvelope(envelope, route);
-            }
-        }
-
-
-        private async Task<Envelope> sendEnvelope(Envelope envelope, MessageRoute route)
-        {
-            if (route == null) throw new ArgumentNullException(nameof(route));
-
-
-            if (!envelope.RequiresLocalReply)
-            {
-                envelope.ReplyUri = envelope.ReplyUri ?? _channels.SystemReplyUri;
+                await outgoingEnvelope.Send();
             }
 
-            var sending = await route.Send(envelope);
-            Logger.Sent(sending);
-
-            return sending;
+            return envelope.Id;
         }
     }
 }

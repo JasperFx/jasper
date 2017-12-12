@@ -41,22 +41,6 @@ namespace Jasper.Bus.Runtime.Routing
         public string Receiver { get; set; }
         public IChannel Channel { get; set; }
 
-        public async Task<Envelope> Send(Envelope envelope)
-        {
-            if (Channel == null) throw new InvalidOperationException($"Unrecognized transport scheme '{Destination.Scheme}'");
-
-            var sending = CloneForSending(envelope);
-
-            sending.Destination = Destination;
-            sending.ReplyUri = sending.ReplyUri ?? Channel.LocalReplyUri;
-
-            await Channel.Send(sending).ConfigureAwait(false);
-
-
-
-            return sending;
-        }
-
 
         public Envelope CloneForSending(Envelope envelope)
         {
@@ -66,11 +50,21 @@ namespace Jasper.Bus.Runtime.Routing
             }
 
             var sending = envelope.Clone();
+            sending.Id = CombGuidIdGeneration.NewGuid();
+            sending.OriginalId = envelope.Id;
+
+            if (envelope.RequiresLocalReply)
+            {
+                sending.ReplyUri = envelope.ReplyUri ?? Channel.LocalReplyUri;
+            }
+
+            Channel.ApplyModifications(sending);
 
             sending.ContentType = envelope.ContentType ?? ContentType;
 
             sending.Writer = Writer;
             sending.Destination = Destination;
+            sending.Route = this;
 
             return sending;
         }
