@@ -71,7 +71,6 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             MockFor<IEnvelopeSender>().Send(envelope).Throws(ex);
             MockFor<IHandlerPipeline>().Logger.Returns(MockFor<IBusLogger>());
 
-
             await ClassUnderTest.Send(envelope);
 
 
@@ -162,7 +161,7 @@ namespace Jasper.Testing.Bus.Runtime.Invocation
             new EnvelopeContext(null, original, recordingSender)
                 .SendFailureAcknowledgement(original, "you stink");
 
-            ShouldBeBooleanExtensions.ShouldBeFalse(recordingSender.Outgoing.Any());
+            recordingSender.Outgoing.Any().ShouldBeFalse();
         }
     }
 

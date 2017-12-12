@@ -158,7 +158,7 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _runtime.Get<IEnvelopeSender>();
+            var sender = _runtime.Get<IServiceBus>();
             await sender.Send(envelope);
         }
 
@@ -171,7 +171,7 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _runtime.Get<IEnvelopeSender>();
+            var sender = _runtime.Get<IServiceBus>();
             await sender.Send(envelope);
         }
 

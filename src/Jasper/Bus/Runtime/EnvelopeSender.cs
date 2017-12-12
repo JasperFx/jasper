@@ -15,14 +15,12 @@ namespace Jasper.Bus.Runtime
     public class EnvelopeSender : IEnvelopeSender
     {
         private readonly IMessageRouter _router;
-        private readonly IChannelGraph _channels;
         private readonly BusSettings _settings;
 
 
-        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, IChannelGraph channels, BusSettings settings)
+        public EnvelopeSender(CompositeLogger logger, IMessageRouter router, BusSettings settings)
         {
             _router = router;
-            _channels = channels;
             _settings = settings;
 
             Logger = logger;
