@@ -32,9 +32,8 @@ namespace Jasper.Bus
 
             ForSingletonOf<IWorkerQueue>().Use<WorkerQueue>();
 
-            For<IEnvelopeSender>().Use<EnvelopeSender>();
-            ForSingletonOf<IServiceBus>().Use<ServiceBus>();
-            For<IHandlerPipeline>().Use<HandlerPipeline>();
+            For<IServiceBus>().Use<ServiceBus>();
+            ForSingletonOf<IHandlerPipeline>().Use<HandlerPipeline>();
 
             ForSingletonOf<CompositeLogger>().Use<CompositeLogger>();
             ForSingletonOf<CompositeTransportLogger>().Use<CompositeTransportLogger>();

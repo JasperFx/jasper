@@ -1,37 +1,65 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
 using Jasper.Util;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Bus
 {
     public partial class ServiceBus : IServiceBus
     {
-        private readonly IEnvelopeSender _sender;
+        private readonly IMessageRouter _router;
         private readonly IReplyWatcher _watcher;
         private readonly IHandlerPipeline _pipeline;
         private readonly SerializationGraph _serialization;
         private readonly BusSettings _settings;
         private readonly IChannelGraph _channels;
         private readonly IPersistence _persistence;
+        private readonly CompositeLogger _logger;
 
-        public ServiceBus(IEnvelopeSender sender, IReplyWatcher watcher, IHandlerPipeline pipeline,
-            BusMessageSerializationGraph serialization, BusSettings settings,
-            IChannelGraph channels, IPersistence persistence)
+        public ServiceBus(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization, BusSettings settings, IChannelGraph channels, IPersistence persistence, CompositeLogger logger)
         {
-            _sender = sender;
+            _router = router;
             _watcher = watcher;
             _pipeline = pipeline;
             _serialization = serialization;
             _settings = settings;
             _channels = channels;
             _persistence = persistence;
+            _logger = logger;
+        }
+
+        public async Task<Guid> Send(Envelope envelope)
+        {
+            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
+
+            var outgoing = await _router.Route(envelope);
+
+            if (!outgoing.Any())
+            {
+                _logger.NoRoutesFor(envelope);
+
+                if (_settings.NoMessageRouteBehavior == NoRouteBehavior.ThrowOnNoRoutes)
+                {
+                    throw new NoRoutesException(envelope);
+                }
+            }
+
+            foreach (var outgoingEnvelope in outgoing)
+            {
+                await outgoingEnvelope.Send();
+            }
+
+            return envelope.Id;
         }
 
         public async Task<TResponse> Request<TResponse>(object request, TimeSpan timeout = default(TimeSpan),
@@ -44,7 +72,7 @@ namespace Jasper.Bus
 
             var watcher = _watcher.StartWatch<TResponse>(envelope.Id, timeout);
 
-            await _sender.Send(envelope);
+            await Send(envelope);
 
             return await watcher;
         }
@@ -56,7 +84,7 @@ namespace Jasper.Bus
 
             customization?.Invoke(envelope);
 
-            return _sender.Send(envelope);
+            return Send(envelope);
         }
 
         public Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime)
@@ -93,7 +121,7 @@ namespace Jasper.Bus
 
         public Task Send<T>(T message)
         {
-            return _sender.Send(new Envelope {Message = message});
+            return Send(new Envelope {Message = message});
         }
 
         public Task Send<T>(T message, Action<Envelope> customize)
@@ -101,12 +129,12 @@ namespace Jasper.Bus
             var envelope = new Envelope {Message = message};
             customize(envelope);
 
-            return _sender.Send(envelope);
+            return Send(envelope);
         }
 
         public Task Send<T>(Uri destination, T message)
         {
-            return _sender.Send(new Envelope { Message = message, Destination = destination});
+            return Send(new Envelope { Message = message, Destination = destination});
         }
 
         public Task Invoke<T>(T message)
@@ -132,7 +160,7 @@ namespace Jasper.Bus
 
         public Task DelaySend<T>(T message, DateTime time)
         {
-            return _sender.Send(new Envelope
+            return Send(new Envelope
             {
                 Message = message,
                 ExecutionTime = time.ToUniversalTime()
@@ -167,10 +195,34 @@ namespace Jasper.Bus
             var task = _watcher.StartWatch<Acknowledgement>(envelope.Id, 10.Minutes());
 
 
-            await _sender.Send(envelope);
+            await Send(envelope);
 
             await task;
         }
 
+        public Task Publish<T>(T message)
+        {
+            var envelope = new Envelope(message);
+            return Publish(envelope);
+        }
+
+        public Task Publish<T>(T message, Action<Envelope> customize)
+        {
+            var envelope = new Envelope(message);
+            customize(envelope);
+            return Publish(envelope);
+        }
+
+        public async Task Publish(Envelope envelope)
+        {
+            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
+
+            var outgoing = await _router.Route(envelope);
+
+            foreach (var outgoingEnvelope in outgoing)
+            {
+                await outgoingEnvelope.Send();
+            }
+        }
     }
 }

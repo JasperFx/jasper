@@ -15,28 +15,28 @@ namespace Jasper.Bus.Runtime.Invocation
     public interface IHandlerPipeline
     {
         Task Invoke(Envelope envelope);
-        IBusLogger Logger { get; }
         Task InvokeNow(Envelope envelope);
     }
 
     public class HandlerPipeline : IHandlerPipeline
     {
-        private readonly IEnvelopeSender _sender;
         private readonly BusMessageSerializationGraph _serializer;
         private readonly HandlerGraph _graph;
         private readonly IReplyWatcher _replies;
+        private readonly Lazy<IServiceBus> _bus;
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(IEnvelopeSender sender, BusMessageSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, CompositeLogger logger, IEnumerable<IMissingHandler> missingHandlers)
+        public HandlerPipeline(BusMessageSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, CompositeLogger logger, IEnumerable<IMissingHandler> missingHandlers, Lazy<IServiceBus> bus)
         {
-            _sender = sender;
             _serializer = serializers;
             _graph = graph;
             _replies = replies;
+            _bus = bus;
             _missingHandlers = missingHandlers.ToArray();
 
             Logger = logger;
         }
+
 
         public IBusLogger Logger { get; }
 
@@ -59,7 +59,7 @@ namespace Jasper.Bus.Runtime.Invocation
 
         private async Task invoke(Envelope envelope, DateTime now)
         {
-            using (var context = new EnvelopeContext(this, envelope, _sender))
+            using (var context = new EnvelopeContext(this, envelope, _bus.Value))
             {
                 if (envelope.ResponseId.IsNotEmpty())
                 {
@@ -98,7 +98,7 @@ namespace Jasper.Bus.Runtime.Invocation
                 throw new ArgumentOutOfRangeException(nameof(envelope), $"No known handler for message type {envelope.Message.GetType().FullName}");
             }
 
-            using (var context = new EnvelopeContext(this, envelope, _sender))
+            using (var context = new EnvelopeContext(this, envelope, _bus.Value))
             {
                 try
                 {

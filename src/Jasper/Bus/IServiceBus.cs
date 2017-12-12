@@ -5,13 +5,6 @@ using Jasper.Bus.Runtime;
 
 namespace Jasper.Bus
 {
-    [Obsolete("Eliminate this in favor of just editing the Envelope directly")]
-    public class RequestOptions
-    {
-        public TimeSpan Timeout = 10.Minutes();
-        public Uri Destination = null;
-    }
-
     public interface IServiceBus
     {
         /// <summary>
@@ -25,7 +18,7 @@ namespace Jasper.Bus
         Task<TResponse> Request<TResponse>(object request, TimeSpan timeout = default(TimeSpan),  Action<Envelope> configure = null);
 
         /// <summary>
-        /// Publish a message to all known subscribers
+        /// Publish a message to all known subscribers. Will throw an exception if there are no known subscribers
         /// </summary>
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
@@ -33,13 +26,39 @@ namespace Jasper.Bus
         Task Send<T>(T message);
 
         /// <summary>
-        /// Send a message with explict control overrides to the Envelope
+        /// Send a message with explict control overrides to the Envelope. Will throw an exception if there are no known subscribers
         /// </summary>
         /// <param name="message"></param>
         /// <param name="customize"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         Task Send<T>(T message, Action<Envelope> customize);
+
+        /// <summary>
+        /// Publish a message to all known subscribers. Ignores the message if there are no known subscribers
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task Publish(Envelope envelope);
+
+        /// <summary>
+        /// Publish a message to all known subscribers. Ignores the message if there are no known subscribers
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task Publish<T>(T message);
+
+        /// <summary>
+        /// Send a message with explict control overrides to the Envelope. Ignores the message if there are no known subscribers
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="customize"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task Publish<T>(T message, Action<Envelope> customize);
+
 
         /// <summary>
         /// Send to a specific destination rather than running the routing rules

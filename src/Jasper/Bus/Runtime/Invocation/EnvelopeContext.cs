@@ -13,15 +13,15 @@ namespace Jasper.Bus.Runtime.Invocation
     public class EnvelopeContext : IEnvelopeContext
     {
         private readonly HandlerPipeline _pipeline;
-        private readonly IEnvelopeSender _sender;
+        private readonly IServiceBus _sender;
         private readonly List<object> _outgoing = new List<object>();
         private readonly List<object> _inline = new List<object>();
 
-        public EnvelopeContext(HandlerPipeline pipeline, Envelope envelope, IEnvelopeSender sender)
+        public EnvelopeContext(HandlerPipeline pipeline, Envelope envelope, IServiceBus sender)
         {
             Envelope = envelope;
             _pipeline = pipeline;
-            _sender = sender;
+            _sender = sender ?? throw new ArgumentNullException();
         }
 
         public IBusLogger Logger => _pipeline.Logger;
@@ -142,7 +142,7 @@ namespace Jasper.Bus.Runtime.Invocation
         {
             try
             {
-                return _sender.Send(envelope);
+                return _sender.Publish(envelope);
             }
             catch (Exception e)
             {
