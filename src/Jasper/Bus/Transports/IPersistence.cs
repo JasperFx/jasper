@@ -16,5 +16,7 @@ namespace Jasper.Bus.Transports
         void ClearAllStoredMessages();
 
         Task ScheduleMessage(Envelope envelope);
+
+        Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
     }
 }

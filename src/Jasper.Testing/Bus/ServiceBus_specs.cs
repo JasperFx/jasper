@@ -64,7 +64,7 @@ namespace Jasper.Testing.Bus
             MockFor<IReplyWatcher>()
                 .ReturnsForAll(original);
 
-            theTask = ClassUnderTest.Request<Message2>(theRequest, new RequestOptions{Destination = destination});
+            theTask = ClassUnderTest.Request<Message2>(theRequest, configure:e => e.Destination = destination);
 
             theEnvelope = theSender.Sent.Single();
         }

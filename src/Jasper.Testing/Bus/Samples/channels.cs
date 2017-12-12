@@ -119,14 +119,17 @@ namespace Jasper.Testing.Bus.Samples
         // SAMPLE: CustomizedRequestReply
         public async Task CustomizedRequestReply(IServiceBus bus)
         {
-            var pong = await bus.Request<PongMessage>(new PingMessage(), new RequestOptions
-            {
-                // Override the destination
-                Destination = new Uri("tcp://someserver:2000"),
+            var pong = await bus.Request<PongMessage>(
+                new PingMessage(),
 
                 // Override the timeout period for the expected reply
-                Timeout = 20.Seconds()
-            });
+                20.Seconds(),
+
+                // Override the destination where the request is to be sent
+                e => e.Destination = new Uri("tcp://someserver:2000")
+            );
+
+
             // do something with the pong
         }
         // ENDSAMPLE

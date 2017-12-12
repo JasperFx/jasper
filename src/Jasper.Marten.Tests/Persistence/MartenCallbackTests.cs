@@ -105,6 +105,22 @@ namespace Jasper.Marten.Tests.Persistence
 
                 report.ExceptionMessage.ShouldBe("Boom!");
             }
+
+
+        }
+
+        [Fact]
+        public async Task can_reload_the_error_report()
+        {
+            await theCallback.MoveToErrors(theEnvelope, new Exception("Boom!"));
+
+            theRetries.ErrorReportLogged.WaitOne(500);
+
+            var persistence = theRuntime.Get<MartenBackedMessagePersistence>();
+
+            var report = await persistence.LoadDeadLetterEnvelope(theEnvelope.Id);
+
+            report.ExceptionMessage.ShouldBe("Boom!");
         }
 
         [Fact]

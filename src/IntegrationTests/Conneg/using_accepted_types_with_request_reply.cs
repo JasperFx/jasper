@@ -37,7 +37,7 @@ namespace IntegrationTests.Conneg
             try
             {
                 var reply = await requestor.Get<IServiceBus>()
-                    .Request<Reply1>(new Request1 {One = 3, Two = 4}, new RequestOptions{Timeout = 60.Seconds()});
+                    .Request<Reply1>(new Request1 {One = 3, Two = 4}, 60.Seconds());
 
                 reply.Sum.ShouldBe(7);
 

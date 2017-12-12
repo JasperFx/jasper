@@ -53,5 +53,10 @@ namespace Jasper.Bus.Transports
             _workers.DelayedJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
             return Task.CompletedTask;
         }
+
+        public Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
+        {
+            return Task.FromResult<ErrorReport>(null);
+        }
     }
 }
