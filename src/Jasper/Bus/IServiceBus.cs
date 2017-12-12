@@ -19,9 +19,10 @@ namespace Jasper.Bus
         /// </summary>
         /// <typeparam name="TResponse"></typeparam>
         /// <param name="request"></param>
-        /// <param name="options">Override the timeout and destination</param>
+        /// <param name="timeout"></param>
+        /// <param name="configure"></param>
         /// <returns></returns>
-        Task<TResponse> Request<TResponse>(object request, RequestOptions options = null);
+        Task<TResponse> Request<TResponse>(object request, TimeSpan timeout = default(TimeSpan),  Action<Envelope> configure = null);
 
         /// <summary>
         /// Publish a message to all known subscribers

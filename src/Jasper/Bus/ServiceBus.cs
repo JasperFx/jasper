@@ -32,19 +32,14 @@ namespace Jasper.Bus
             _persistence = persistence;
         }
 
-        public async Task<TResponse> Request<TResponse>(object request, RequestOptions options = null)
+        public async Task<TResponse> Request<TResponse>(object request, TimeSpan timeout = default(TimeSpan), Action<Envelope> configure = null)
         {
-            options = options ?? new RequestOptions();
-
             var envelope = EnvelopeForRequestResponse<TResponse>(request);
+            configure?.Invoke(envelope);
 
-            if (options.Destination != null)
-            {
-                envelope.Destination = options.Destination;
-            }
+            timeout = timeout == default(TimeSpan) ? 10.Seconds() : timeout;
 
-
-            var watcher = _watcher.StartWatch<TResponse>(envelope.Id, options.Timeout);
+            var watcher = _watcher.StartWatch<TResponse>(envelope.Id, timeout);
 
             await _sender.Send(envelope);
 
