@@ -8,7 +8,7 @@ namespace Jasper.Bus.Delayed
 {
     public interface IDelayedJobProcessor
     {
-        void Enqueue(DateTime executionTime, Envelope envelope);
+        void Enqueue(DateTimeOffset executionTime, Envelope envelope);
 
         Task PlayAll();
 

@@ -15,6 +15,8 @@ namespace Jasper.Marten.Tests.Persistence
                 _.Connection(ConnectionSource.ConnectionString);
                 _.DatabaseSchemaName = "sender";
             });
+
+
         }
     }
 }

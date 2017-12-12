@@ -34,7 +34,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private Timer _nodeReassignmentTimer;
         private readonly ReassignFromDormantNodes _nodeReassignment;
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeTransportLogger logger, StoreOptions storeOptions)
+        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeTransportLogger logger, StoreOptions storeOptions, MartenRetries retries)
         {
             _channels = channels;
             _workers = workers;
@@ -48,12 +48,12 @@ namespace Jasper.Marten.Persistence.Resiliency
                 MaxDegreeOfParallelism = 1
             });
 
-            var marker = new OwnershipMarker(_settings, _storeOptions);
-            _scheduledJobs = new RunScheduledJobs(_workers, _store, marker, logger);
+            var marker = new EnvelopeTables(_settings, _storeOptions);
+            _scheduledJobs = new RunScheduledJobs(_workers, _store, marker, logger, retries);
             _incomingMessages = new RecoverIncomingMessages(_workers, _settings, marker, this, _logger);
             _outgoingMessages = new RecoverOutgoingMessages(_channels, _settings, marker, this, _logger);
 
-            _nodeReassignment = new ReassignFromDormantNodes(marker);
+            _nodeReassignment = new ReassignFromDormantNodes(marker, settings);
         }
 
         public void RescheduleOutgoingRecovery()

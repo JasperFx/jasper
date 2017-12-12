@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus.Runtime;
+using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Lightweight;
@@ -25,8 +26,15 @@ namespace Jasper.Marten.Tests.Persistence
             theReceiver = JasperRuntime.For<ItemReceiver>();
             theTracker = theReceiver.Get<MessageTracker>();
 
-            theSender.Get<IDocumentStore>().Advanced.Clean.DeleteAllDocuments();
-            theReceiver.Get<IDocumentStore>().Advanced.Clean.DeleteAllDocuments();
+            var senderStore = theSender.Get<IDocumentStore>();
+            senderStore.Advanced.Clean.CompletelyRemoveAll();
+            senderStore.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
+
+            var receiverStore = theReceiver.Get<IDocumentStore>();
+            receiverStore.Advanced.Clean.CompletelyRemoveAll();
+            receiverStore.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
+
+
         }
 
         public void Dispose()
@@ -65,7 +73,8 @@ namespace Jasper.Marten.Tests.Persistence
 
                 item2.Name.ShouldBe("Shoe");
 
-                session.Query<Envelope>().Count().ShouldBe(0);
+                session.AllIncomingEnvelopes().Any().ShouldBeFalse();
+
             }
         }
 
@@ -99,7 +108,7 @@ namespace Jasper.Marten.Tests.Persistence
 
                 item2.Name.ShouldBe("Hat");
 
-                session.Query<Envelope>().Count().ShouldBe(0);
+                session.AllIncomingEnvelopes().Any().ShouldBeFalse();
             }
         }
     }

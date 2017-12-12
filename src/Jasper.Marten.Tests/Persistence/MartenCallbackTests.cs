@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Baseline.Dates;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
+using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Testing.Bus;
 using Marten;
@@ -20,22 +25,42 @@ namespace Jasper.Marten.Tests.Persistence
         private IDocumentStore theStore;
         private Envelope theEnvelope;
         private MartenCallback theCallback;
+        private MartenRetries theRetries;
 
         public MartenCallbackTests()
         {
             theRuntime = JasperRuntime.For(_ =>
             {
                 _.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+
+                _.ConfigureMarten(x =>
+                {
+                    x.Storage.Add<PostgresqlEnvelopeStorage>();
+                    x.PLV8Enabled = false;
+                });
             });
 
             theStore = theRuntime.Get<IDocumentStore>();
 
+            theStore.Advanced.Clean.CompletelyRemoveAll();
+            theStore.Schema.ApplyAllConfiguredChangesToDatabase();
+
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Status = TransportConstants.Incoming;
 
-            theStore.BulkInsert(new Envelope[]{theEnvelope});
+            var marker = new EnvelopeTables(new BusSettings(), new StoreOptions());
 
-            theCallback = new MartenCallback(theEnvelope, Substitute.For<IWorkerQueue>(), theStore);
+            using (var session = theStore.OpenSession())
+            {
+                session.StoreIncoming(marker, theEnvelope);
+                session.SaveChanges();
+            }
+
+
+            var logger = CompositeTransportLogger.Empty();
+            theRetries = new MartenRetries(theStore, marker, logger, new BusSettings());
+
+            theCallback = new MartenCallback(theEnvelope, Substitute.For<IWorkerQueue>(), theStore, marker, theRetries, logger);
         }
 
         public void Dispose()
@@ -48,9 +73,14 @@ namespace Jasper.Marten.Tests.Persistence
         {
             await theCallback.MarkComplete();
 
+            theRetries.IncomingDeleted.WaitOne(500);
+
             using (var session = theStore.QuerySession())
             {
-                SpecificationExtensions.ShouldBeNull((await session.LoadAsync<Envelope>(theEnvelope.Id)));
+                var persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
+
+
+                persisted.ShouldBeNull();
             }
 
 
@@ -61,9 +91,14 @@ namespace Jasper.Marten.Tests.Persistence
         {
             await theCallback.MoveToErrors(theEnvelope, new Exception("Boom!"));
 
+            theRetries.ErrorReportLogged.WaitOne(500);
+
             using (var session = theStore.QuerySession())
             {
-                (await session.LoadAsync<Envelope>(theEnvelope.Id)).ShouldBeNull();
+                var persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
+
+
+                persisted.ShouldBeNull();
 
 
                 var report = await session.LoadAsync<ErrorReport>(theEnvelope.Id);
@@ -79,7 +114,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             using (var session = theStore.QuerySession())
             {
-                var persisted = await session.LoadAsync<Envelope>(theEnvelope.Id);
+                var persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
 
                 persisted.Attempts.ShouldBe(1);
             }
@@ -92,9 +127,11 @@ namespace Jasper.Marten.Tests.Persistence
 
             await theCallback.MoveToDelayedUntil(time, theEnvelope);
 
+            theRetries.Scheduled.WaitOne(1.Seconds());
+
             using (var session = theStore.QuerySession())
             {
-                var persisted = await session.LoadAsync<Envelope>(theEnvelope.Id);
+                var persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
                 persisted.Status.ShouldBe(TransportConstants.Scheduled);
                 persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
                 persisted.ExecutionTime.ShouldBe(time);

@@ -12,9 +12,11 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Storyteller.Logging;
 using Marten;
+using Marten.Util;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -53,9 +55,7 @@ namespace DurabilitySpecs.Fixtures.Marten
                 _.PLV8Enabled = false;
                 _.Connection(ConnectionSource.ConnectionString);
                 _.DatabaseSchemaName = "receiver";
-                _.Schema.For<Envelope>()
-                    .Duplicate(x => x.Status)
-                    .Duplicate(x => x.OwnerId);
+                _.Storage.Add<PostgresqlEnvelopeStorage>();
 
 
                 _.Schema.For<TraceDoc>();
@@ -71,11 +71,7 @@ namespace DurabilitySpecs.Fixtures.Marten
                 _.Connection(ConnectionSource.ConnectionString);
                 _.DatabaseSchemaName = "sender";
 
-                _.Schema.For<Envelope>()
-                    .Duplicate(x => x.ExecutionTime)
-                    .Duplicate(x => x.Status)
-                    .Duplicate(x => x.OwnerId);
-
+                _.Storage.Add<PostgresqlEnvelopeStorage>();
 
             });
 
@@ -170,8 +166,7 @@ namespace DurabilitySpecs.Fixtures.Marten
                 for (int i = 0; i < 200; i++)
                 {
                     var actual = session.Query<TraceDoc>().Count();
-                    var envelopeCount = session
-                        .Query<Envelope>().Count(x => x.Status == TransportConstants.Incoming);
+                    var envelopeCount = PersistedIncomingCount();
 
 
                     Trace.WriteLine($"waitForMessages: {actual} actual & {envelopeCount} incoming envelopes");
@@ -189,20 +184,28 @@ namespace DurabilitySpecs.Fixtures.Marten
         }
 
         [FormatAs("There should be {count} persisted, incoming messages in the receiver storage")]
-        public int PersistedIncomingCount()
+        public long PersistedIncomingCount()
         {
-            using (var session = _receiverStore.QuerySession())
+            using (var conn = _receiverStore.Tenancy.Default.CreateConnection())
             {
-                return session.Query<Envelope>().Count(x => x.Status == TransportConstants.Incoming);
+                conn.Open();
+
+                return (long) conn.CreateCommand(
+                        $"select count(*) from receiver.{PostgresqlEnvelopeStorage.IncomingTableName}")
+                    .ExecuteScalar();
             }
         }
 
         [FormatAs("There should be {count} persisted, outgoing messages in the sender storage")]
-        public int PersistedOutgoingCount()
+        public long PersistedOutgoingCount()
         {
-            using (var session = _sendingStore.QuerySession())
+            using (var conn = _sendingStore.Tenancy.Default.CreateConnection())
             {
-                return session.Query<Envelope>().Count(x => x.Status == TransportConstants.Outgoing);
+                conn.Open();
+
+                return (long) conn.CreateCommand(
+                        $"select count(*) from sender.{PostgresqlEnvelopeStorage.OutgoingTableName}")
+                    .ExecuteScalar();
             }
         }
 

@@ -8,6 +8,7 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
+using Jasper.Marten.Persistence.Resiliency;
 using Marten;
 
 namespace Jasper.Marten.Persistence
@@ -19,14 +20,18 @@ namespace Jasper.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly CompositeTransportLogger _logger;
         private readonly BusSettings _settings;
+        private readonly EnvelopeTables _marker;
+        private readonly MartenRetries _retries;
 
-        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeTransportLogger logger, BusSettings settings)
+        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeTransportLogger logger, BusSettings settings, EnvelopeTables marker, MartenRetries retries)
         {
             _agent = agent;
             _queues = queues;
             _store = store;
             _logger = logger;
             _settings = settings;
+            _marker = marker;
+            _retries = retries;
         }
 
         public Uri Address => _agent.Address;
@@ -65,17 +70,13 @@ namespace Jasper.Marten.Persistence
 
                 using (var session = _store.LightweightSession())
                 {
-                    session.Store(messages);
+                    session.StoreIncoming(_marker, messages);
                     await session.SaveChangesAsync();
                 }
 
-                // TODO -- HERE, maybe see if you're getting back pressure from too many
-                // messages in the queue and shove into the pool of envelopes for anybody to use
-                // Instead of sending them into the worker queue
-
                 foreach (var message in messages.Where(x => x.Status == TransportConstants.Incoming))
                 {
-                    message.Callback = new MartenCallback(message, _queues, _store);
+                    message.Callback = new MartenCallback(message, _queues, _store, _marker, _retries, _logger);
                     await _queues.Enqueue(message);
                 }
 

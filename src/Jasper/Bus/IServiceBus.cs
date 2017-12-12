@@ -117,7 +117,7 @@ namespace Jasper.Bus
         /// <param name="executionTime"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<Guid> Schedule<T>(T message, DateTime executionTime);
+        Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime);
 
         /// <summary>
         /// Schedule a message to be processed in this application at a specified time with a delay

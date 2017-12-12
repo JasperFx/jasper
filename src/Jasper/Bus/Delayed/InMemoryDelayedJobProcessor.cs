@@ -16,7 +16,7 @@ namespace Jasper.Bus.Delayed
         public IWorkerQueue _queue;
 
 
-        public void Enqueue(DateTime executionTime, Envelope envelope)
+        public void Enqueue(DateTimeOffset executionTime, Envelope envelope)
         {
             _outstandingJobs[envelope.Id] = new InMemoryDelayedJob(this, envelope, executionTime);
         }
@@ -79,7 +79,7 @@ namespace Jasper.Bus.Delayed
             private readonly InMemoryDelayedJobProcessor _parent;
             private Task _task;
 
-            public InMemoryDelayedJob(InMemoryDelayedJobProcessor parent, Envelope envelope, DateTime executionTime)
+            public InMemoryDelayedJob(InMemoryDelayedJobProcessor parent, Envelope envelope, DateTimeOffset executionTime)
             {
                 _parent = parent;
                 ExecutionTime = executionTime.ToUniversalTime();
@@ -93,7 +93,7 @@ namespace Jasper.Bus.Delayed
                 ReceivedAt = DateTime.UtcNow;
             }
 
-            public DateTime ExecutionTime { get; }
+            public DateTimeOffset ExecutionTime { get; }
 
             public DateTime ReceivedAt { get; }
 

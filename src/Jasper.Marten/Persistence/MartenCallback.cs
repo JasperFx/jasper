@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.WorkerQueues;
+using Jasper.Marten.Persistence.Resiliency;
 using Marten;
+using Marten.Events;
+using Marten.Util;
+using NpgsqlTypes;
 
 namespace Jasper.Marten.Persistence
 {
@@ -12,65 +18,75 @@ namespace Jasper.Marten.Persistence
         private readonly Envelope _envelope;
         private readonly IWorkerQueue _queue;
         private readonly IDocumentStore _store;
+        private readonly EnvelopeTables _marker;
+        private readonly MartenRetries _retries;
+        private readonly ITransportLogger _logger;
 
-        public MartenCallback(Envelope envelope, IWorkerQueue queue, IDocumentStore store)
+        public MartenCallback(Envelope envelope, IWorkerQueue queue, IDocumentStore store, EnvelopeTables marker, MartenRetries retries, ITransportLogger logger)
         {
             _envelope = envelope;
             _queue = queue;
             _store = store;
+            _marker = marker;
+            _retries = retries;
+            _logger = logger;
         }
 
-        public async Task MarkComplete()
+        public Task MarkComplete()
         {
-            // TODO -- later, come back and do retries?
-            using (var session = _store.LightweightSession())
-            {
-                session.Delete(_envelope);
-                await session.SaveChangesAsync();
-            }
+            _retries.DeleteIncoming(_envelope);
+
+            return Task.CompletedTask;
         }
 
-        public async Task MoveToErrors(Envelope envelope, Exception exception)
+        public Task MoveToErrors(Envelope envelope, Exception exception)
         {
-            // TODO -- later, come back and do retries?
-            using (var session = _store.LightweightSession())
-            {
-                session.Delete(_envelope);
-
-                var report = new ErrorReport(envelope, exception);
-                session.Store(report);
-
-                await session.SaveChangesAsync();
-            }
-
-            // TODO -- make this configurable about whether or not it saves off error reports
-
+            _retries.LogErrorReport(new ErrorReport(envelope, exception));
+            return Task.CompletedTask;
         }
 
         public async Task Requeue(Envelope envelope)
         {
-            // TODO -- Optimize by incrementing instead w/ sql
-            using (var session = _store.LightweightSession())
-            {
-                envelope.Attempts++;
-                session.Store(envelope);
+            envelope.Attempts++;
 
-                await session.SaveChangesAsync();
+            try
+            {
+                using (var conn = _store.Tenancy.Default.CreateConnection())
+                {
+                    await conn.OpenAsync();
+
+                    await conn.CreateCommand($"update {_marker.Incoming} set attempts = :attempts where id = :id")
+                        .With("attempts", envelope.Attempts, NpgsqlDbType.Integer)
+                        .With("id", envelope.Id, NpgsqlDbType.Uuid)
+                        .ExecuteNonQueryAsync();
+                }
+            }
+            catch (Exception e)
+            {
+                // Not going to worry about a failure here
+
             }
 
             await _queue.Enqueue(envelope);
         }
 
-        public async Task MoveToDelayedUntil(DateTime time, Envelope envelope)
+        public Task MoveToDelayedUntil(DateTimeOffset time, Envelope envelope)
         {
             envelope.ExecutionTime = time;
             envelope.Status = TransportConstants.Scheduled;
+            _retries.ScheduleExecution(envelope);
 
-            using (var session = _store.LightweightSession())
-            {
-                session.Store(envelope);
-                await session.SaveChangesAsync();
-            }
+
+            return Task.CompletedTask;
+        }
+
+        private async Task moveToDelayed(DateTimeOffset time, Envelope envelope)
+        {
+            envelope.Attempts++;
+            envelope.ExecutionTime = time;
+            envelope.Status = TransportConstants.Scheduled;
+
+            _retries.ScheduleExecution(envelope);
         }
     }
 }

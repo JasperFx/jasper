@@ -114,7 +114,7 @@ namespace Jasper.Testing.Bus.Lightweight
             return _envelope.Task;
         }
 
-        public void Enqueue(DateTime executionTime, Envelope envelope)
+        public void Enqueue(DateTimeOffset executionTime, Envelope envelope)
         {
             envelope.ExecutionTime = executionTime;
             _envelope.SetResult(envelope);

@@ -11,7 +11,7 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
 {
     public class advisory_lock_usage
     {
-        [Fact]
+        //[Fact] -- too slow
         public async Task tx_session_locks()
         {
             using (var conn1 = new NpgsqlConnection(ConnectionSource.ConnectionString))
@@ -52,7 +52,7 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
 
         }
 
-        [Fact]
+        //[Fact] - too slow
         public async Task global_session_locks()
         {
             using (var conn1 = new NpgsqlConnection(ConnectionSource.ConnectionString))

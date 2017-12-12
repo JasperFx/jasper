@@ -7,6 +7,7 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Tcp;
+using Jasper.Util;
 
 namespace Jasper.Bus.Transports.Sending
 {
@@ -56,8 +57,7 @@ namespace Jasper.Bus.Transports.Sending
 
         public Task QueueDoesNotExist(OutgoingMessageBatch outgoing)
         {
-            // TODO -- May have to deal w/ this just because of compatibility w/ FubuMVC 3. Boo.
-            // Doesn't really happen in Jasper
+            _logger.OutgoingBatchFailed(outgoing, new QueueDoesNotExistException(outgoing));
 
             return Task.CompletedTask;
         }
@@ -83,6 +83,14 @@ namespace Jasper.Bus.Transports.Sending
         public void Dispose()
         {
             _sender?.Dispose();
+        }
+    }
+
+    public class QueueDoesNotExistException : Exception
+    {
+        public QueueDoesNotExistException(OutgoingMessageBatch outgoing) : base($"Queue '{outgoing.Destination.QueueName()}' does not exist at {outgoing.Destination}")
+        {
+
         }
     }
 }

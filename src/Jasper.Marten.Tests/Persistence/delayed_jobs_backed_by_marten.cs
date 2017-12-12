@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
 using Marten;
 using Shouldly;
@@ -22,6 +23,10 @@ namespace Jasper.Marten.Tests.Persistence
             theRuntime = JasperRuntime.For<DelayedMessageApp>();
 
             theRuntime.Get<IDocumentStore>().Advanced.Clean.DeleteAllDocuments();
+            theRuntime.Get<IDocumentStore>().Tenancy.Default.EnsureStorageExists(typeof(Envelope));
+            theRuntime.Get<MartenBackedMessagePersistence>().ClearAllStoredMessages();
+
+
         }
 
         public void Dispose()
@@ -38,14 +43,15 @@ namespace Jasper.Marten.Tests.Persistence
 
 
             await theRuntime.Bus.Schedule(message1, 2.Hours());
+
             var id = await theRuntime.Bus.Schedule(message2, 5.Seconds());
 
             await theRuntime.Bus.Schedule(message3, 2.Hours());
 
-
-
-
             DelayedMessageHandler.ReceivedMessages.Count.ShouldBe(0);
+
+
+
 
             DelayedMessageHandler.Received.Wait(10.Seconds());
 

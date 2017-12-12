@@ -60,9 +60,8 @@ namespace Jasper.Testing.Bus.Runtime
 
             envelope.DeliverBy.ShouldNotBeNull();
 
-            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTime.UtcNow.AddMinutes(5).AddSeconds(-5));
-            envelope.DeliverBy.Value.ShouldBeLessThan(DateTime.UtcNow.AddMinutes(5).AddSeconds(5));
-            envelope.DeliverBy.Value.Kind.ShouldBe(DateTimeKind.Utc);
+            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(-5));
+            envelope.DeliverBy.Value.ShouldBeLessThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(5));
         }
 
         [Fact]
@@ -73,8 +72,8 @@ namespace Jasper.Testing.Bus.Runtime
 
             };
 
-            parent.OriginalId.ShouldBeNull();
-            parent.ParentId.ShouldBeNull();
+            parent.OriginalId.ShouldBe(Guid.Empty);
+            parent.ParentId.ShouldBe(Guid.Empty);
         }
 
         [Fact]
@@ -145,7 +144,7 @@ namespace Jasper.Testing.Bus.Runtime
 
             var child = parent.ForResponse(childMessage);
 
-            child.ResponseId.ShouldBeNull();
+            child.ResponseId.ShouldBe(Guid.Empty);
             child.Destination.ShouldBeNull();
         }
 
@@ -163,7 +162,7 @@ namespace Jasper.Testing.Bus.Runtime
             var childMessage = new Message1();
 
             var child = parent.ForResponse(childMessage);
-            child.ResponseId.ShouldBeNull();
+            child.ResponseId.ShouldBe(Guid.Empty);
             child.Destination.ShouldBeNull();
         }
 

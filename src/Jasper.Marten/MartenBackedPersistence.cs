@@ -20,9 +20,7 @@ namespace Jasper.Marten
             registry.Services.AddSingleton<IPersistence, MartenBackedMessagePersistence>();
             registry.Settings.Alter<StoreOptions>(options =>
             {
-                options.Schema.For<Envelope>()
-                    .Duplicate(x => x.Status)
-                    .Duplicate(x => x.OwnerId);
+                options.Storage.Add<PostgresqlEnvelopeStorage>();
             });
 
             registry.Services.AddSingleton<IHostedService, SchedulingAgent>();

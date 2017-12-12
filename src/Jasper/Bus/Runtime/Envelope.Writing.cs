@@ -92,7 +92,7 @@ namespace Jasper.Bus.Runtime
         {
             writer.Write(EnvelopeVersionId.SourceInstanceId.ToByteArray());
             writer.Write(EnvelopeVersionId.MessageIdentifier.ToByteArray());
-            writer.Write(Destination.QueueName());
+            writer.Write(Destination?.QueueName() ?? "");
             writer.Write(SubQueue ?? "");
             writer.Write(SentAt.ToBinary());
 
@@ -220,6 +220,19 @@ namespace Jasper.Bus.Runtime
         }
 
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, DateTime? value)
+        {
+            if (value.HasValue)
+            {
+                writer.Write(key);
+                writer.Write(value.Value.ToString("o"));
+
+                count++;
+            }
+
+
+        }
+
+        public static void WriteProp(this BinaryWriter writer, ref int count, string key, DateTimeOffset? value)
         {
             if (value.HasValue)
             {

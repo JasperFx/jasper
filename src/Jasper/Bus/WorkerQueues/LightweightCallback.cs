@@ -29,7 +29,7 @@ namespace Jasper.Bus.WorkerQueues
             return _queue.Enqueue(envelope);
         }
 
-        public Task MoveToDelayedUntil(DateTime time, Envelope envelope)
+        public Task MoveToDelayedUntil(DateTimeOffset time, Envelope envelope)
         {
             _queue.DelayedJobs.Enqueue(time, envelope);
             return Task.CompletedTask;

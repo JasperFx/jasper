@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -8,13 +9,16 @@ using Jasper;
 using Jasper.Bus;
 using Jasper.Bus.Delayed;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Stub;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Marten;
+using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Testing.Bus.Runtime;
 using Marten;
 using Marten.Util;
 using Microsoft.Extensions.DependencyInjection;
@@ -73,9 +77,16 @@ namespace DurabilitySpecs.Fixtures.Marten
                 {
                     x.FirstNodeReassignmentExecution = 30.Minutes();
                     x.FirstScheduledJobExecution = 30.Minutes();
+                    x.FirstNodeReassignmentExecution = 30.Minutes();
+                    x.NodeReassignmentPollingTime = 30.Minutes();
                 });
 
             });
+
+            _runtime.Get<MartenBackedMessagePersistence>().ClearAllStoredMessages();
+
+            _marker = _runtime.Get<EnvelopeTables>();
+            _serializers = _runtime.Get<BusMessageSerializationGraph>();
 
             theStore = _runtime.Get<IDocumentStore>();
             theStore.Advanced.Clean.DeleteAllDocuments();
@@ -100,7 +111,7 @@ namespace DurabilitySpecs.Fixtures.Marten
         [ExposeAsTable("The persisted envelopes are")]
         public void EnvelopesAre(
             [Default("NULL")]string Note,
-            string Id,
+            Guid Id,
             [SelectionList("channels"), Default("stub://one")] Uri Destination,
             [Default("NULL")] DateTime? ExecutionTime,
             [Default("TODAY+1")] DateTime DeliverBy,
@@ -111,13 +122,18 @@ namespace DurabilitySpecs.Fixtures.Marten
 
             var envelope = new Envelope
             {
-                //Id = Id, --- TODO -- handle this one some how
+                Id = Id,
                 ExecutionTime = ExecutionTime,
                 Status = Status,
                 OwnerId = ownerId,
                 DeliverBy = DeliverBy,
-                Destination = Destination
+                Destination = Destination,
+                Message = new Message1()
             };
+
+            var writer = _serializers.JsonWriterFor(envelope.Message.GetType());
+            envelope.Data = writer.Write(envelope.Message);
+            envelope.ContentType = writer.ContentType;
 
             _envelopes.Add(envelope);
         }
@@ -165,8 +181,11 @@ namespace DurabilitySpecs.Fixtures.Marten
         {
             using (var session = theStore.QuerySession())
             {
-                return session.Query<Envelope>().Where(x => x.OwnerId == ownerId).ToList();
+                return session.AllIncomingEnvelopes().Concat(session.AllOutgoingEnvelopes())
+                    .Where(x => x.OwnerId == ownerId)
+                    .ToList();
             }
+
         }
 
         public IGrammar ThePersistedEnvelopesOwnedByTheCurrentNodeAre()
@@ -192,6 +211,8 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
         private RecordingSchedulingAgent _schedulerAgent;
+        private EnvelopeTables _marker;
+        private BusMessageSerializationGraph _serializers;
 
         [FormatAs("Node {node} is active")]
         public void NodeIsActive([SelectionList("owners")]string node)
@@ -204,14 +225,32 @@ namespace DurabilitySpecs.Fixtures.Marten
         {
             using (var session = theStore.LightweightSession())
             {
-                session.Store(_envelopes.ToArray());
+                foreach (var envelope in _envelopes)
+                {
+                    if (envelope.Status == TransportConstants.Outgoing)
+                    {
+                        session.StoreOutgoing(_marker, envelope, envelope.OwnerId);
+                    }
+                    else
+                    {
+                        session.StoreIncoming(_marker, envelope);
+                    }
+                }
+
                 await session.SaveChangesAsync();
             }
 
             var action = _runtime.Get<T>();
             using (var session = theStore.LightweightSession())
             {
-                await action.Execute(session);
+                try
+                {
+                    await action.Execute(session);
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine(e.ToString());
+                }
             }
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
@@ -11,21 +12,27 @@ using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Marten.Persistence.Resiliency;
 using Marten;
+using Marten.Util;
+using NpgsqlTypes;
 
 namespace Jasper.Marten.Persistence
 {
     public class MartenBackedRetryAgent : RetryAgent
     {
         private readonly IDocumentStore _store;
-        private readonly OwnershipMarker _marker;
+        private readonly EnvelopeTables _marker;
+        private readonly CompositeTransportLogger _logger;
+        private readonly string _deleteIncoming;
 
-        public MartenBackedRetryAgent(IDocumentStore store, ISender sender, RetrySettings settings, OwnershipMarker marker) : base(sender, settings)
+        public MartenBackedRetryAgent(IDocumentStore store, ISender sender, RetrySettings settings, EnvelopeTables marker, CompositeTransportLogger logger) : base(sender, settings)
         {
             _store = store;
             _marker = marker;
+            _logger = logger;
+
+            _deleteIncoming = $"delete from {_marker.Incoming} where id = ANY(:idlist)";
         }
 
-        // TODO -- add logging for envelopes discarded
         public override async Task EnqueueForRetry(OutgoingMessageBatch batch)
         {
 
@@ -37,10 +44,9 @@ namespace Jasper.Marten.Persistence
             {
                 using (var session = _store.LightweightSession())
                 {
-                    foreach (var envelope in expiredInBatch.Concat(expiredInQueue))
-                    {
-                        session.Delete(envelope);
-                    }
+                    var expired = expiredInBatch.Concat(expiredInQueue).ToArray();
+
+                    session.DeleteEnvelopes(_marker.Incoming, expired);
 
                     var all = Queued.Where(x => !expiredInQueue.Contains(x))
                         .Concat(batch.Messages.Where(x => !expiredInBatch.Contains(x)))
@@ -49,21 +55,27 @@ namespace Jasper.Marten.Persistence
                     if (all.Count > _settings.MaximumEnvelopeRetryStorage)
                     {
                         var reassigned = all.Skip(_settings.MaximumEnvelopeRetryStorage).ToArray();
-                        await _marker.MarkOwnedByAnyNode(session, reassigned);
+
+
+                        session.MarkOwnership(_marker.Incoming, TransportConstants.AnyNode, reassigned);
                     }
 
                     await session.SaveChangesAsync();
 
+                    _logger.DiscardedExpired(expired);
+
                     Queued = all.Take(_settings.MaximumEnvelopeRetryStorage).ToList();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // Put these back
+                _logger.LogException(e, message:"Failed while trying to enqueue a message batch for retries");
 
-                // TODO -- FAR BETTER STRATEGY HERE!
-                Thread.Sleep(100);
-                await EnqueueForRetry(batch);
+
+#pragma warning disable 4014
+                Task.Delay(100).ContinueWith(async _ => await EnqueueForRetry(batch));
+#pragma warning restore 4014
+
             }
         }
 
@@ -74,14 +86,13 @@ namespace Jasper.Marten.Persistence
             var expired = Queued.Where(x => x.IsExpired());
             if (expired.Any())
             {
-                using (var session = _store.LightweightSession())
+                using (var conn = _store.Tenancy.Default.CreateConnection())
                 {
-                    foreach (var envelope in expired)
-                    {
-                        session.Delete(envelope);
-                    }
+                    conn.Open();
 
-                    session.SaveChanges();
+                    conn.CreateCommand(_deleteIncoming)
+                        .With("idlist", expired.Select(x => x.Id).ToArray(), NpgsqlDbType.Array | NpgsqlDbType.Uuid)
+                        .ExecuteNonQuery();
                 }
             }
 

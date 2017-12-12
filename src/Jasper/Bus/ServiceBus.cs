@@ -61,7 +61,7 @@ namespace Jasper.Bus
             return _sender.Send(envelope);
         }
 
-        public Task<Guid> Schedule<T>(T message, DateTime executionTime)
+        public Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime)
         {
             var envelope = new Envelope(message)
             {
@@ -73,7 +73,7 @@ namespace Jasper.Bus
 
         public Task<Guid> Schedule<T>(T message, TimeSpan delay)
         {
-            return Schedule(message, DateTime.UtcNow.Add(delay));
+            return Schedule(message, DateTimeOffset.UtcNow.Add(delay));
         }
 
 

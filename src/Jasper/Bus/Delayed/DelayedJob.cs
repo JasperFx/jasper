@@ -13,7 +13,7 @@ namespace Jasper.Bus.Delayed
         public Guid EnvelopeId { get; }
 
         public DateTime ReceivedAt { get; set; }
-        public DateTime ExecutionTime { get; set; }
+        public DateTimeOffset ExecutionTime { get; set; }
 
         public string From { get; set; }
         public string MessageType { get; set; }

@@ -11,6 +11,7 @@ using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Util;
 using Marten;
@@ -79,19 +80,28 @@ namespace Jasper.Marten.Tests.Persistence
             theStore = DocumentStore.For(_ =>
             {
                 _.Connection(ConnectionSource.ConnectionString);
+                _.PLV8Enabled = false;
+                _.Storage.Add<PostgresqlEnvelopeStorage>();
             });
 
             theStore.Advanced.Clean.CompletelyRemoveAll();
+
+            theStore.Schema.ApplyAllConfiguredChangesToDatabase();
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
             theSettings = new BusSettings();
 
+            var tables = new EnvelopeTables(theSettings, new StoreOptions());
+
+            var retries = new MartenRetries(theStore, tables, CompositeTransportLogger.Empty(), theSettings);
+
+
             theListener = new MartenBackedListener(
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
                 theStore,
-                CompositeTransportLogger.Empty(), theSettings);
+                CompositeTransportLogger.Empty(), theSettings, tables, retries);
         }
 
         public void Dispose()
@@ -149,7 +159,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             using (var session = theStore.QuerySession())
             {
-                return await session.Query<Envelope>().ToListAsync();
+                return session.AllIncomingEnvelopes();
             }
         }
 
