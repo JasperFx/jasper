@@ -18,6 +18,7 @@ namespace Jasper.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _tables;
         private readonly ITransportLogger _logger;
+        private readonly BusSettings _settings;
         private readonly ActionBlock<Envelope[]> _deleteIncoming;
         private readonly BatchingBlock<Envelope> _deleteIncomingBatching;
         private readonly ActionBlock<Envelope[]> _deleteOutgoing;
@@ -38,6 +39,7 @@ namespace Jasper.Marten.Persistence
             _store = store;
             _tables = tables;
             _logger = logger;
+            _settings = settings;
 
             _deleteIncoming = new ActionBlock<Envelope[]>(deleteIncoming);
             _deleteIncomingBatching = new BatchingBlock<Envelope>(250.Milliseconds(), _deleteIncoming, settings.Cancellation);
@@ -124,6 +126,8 @@ namespace Jasper.Marten.Persistence
 
         private async Task logErrorReports(ErrorReport[] errors)
         {
+            if (!_settings.PersistDeadLetterEnvelopes) return;
+
             try
             {
                 using (var session = _store.LightweightSession())
@@ -159,6 +163,7 @@ namespace Jasper.Marten.Persistence
 
         public void LogErrorReport(ErrorReport report)
         {
+            if (!_settings.PersistDeadLetterEnvelopes) return;
             _logErrorReportBatching.Post(report);
         }
 

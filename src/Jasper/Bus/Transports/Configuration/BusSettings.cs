@@ -199,7 +199,7 @@ namespace Jasper.Bus.Transports.Configuration
 
         public RetrySettings Retries { get; } = new RetrySettings();
 
-
+        // TODO -- move these underneath Retries and introduce a new value object
         public TimeSpan FirstScheduledJobExecution { get; set; } = 0.Seconds();
         public TimeSpan ScheduledJobPollingTime { get; set; } = 5.Seconds();
         public TimeSpan NodeReassignmentPollingTime { get; set; } = 1.Minutes();
@@ -212,6 +212,12 @@ namespace Jasper.Bus.Transports.Configuration
         /// messages
         /// </summary>
         public int MaximumLocalEnqueuedBackPressureThreshold { get; set; } = 2000;
+
+        /// <summary>
+        /// Used to control whether or not envelopes being moved to the dead letter queue are permanently stored
+        /// with the related error report
+        /// </summary>
+        public bool PersistDeadLetterEnvelopes { get; set; } = true;
 
     }
 
