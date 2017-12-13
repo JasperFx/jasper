@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
@@ -41,6 +42,51 @@ namespace Jasper.Marten.Tests.Persistence
         {
             theSender?.Dispose();
             theReceiver?.Dispose();
+        }
+
+        [Fact]
+        public async Task send_with_outbox_mechanics()
+        {
+            var bus = theSender.Get<IServiceBus>();
+            var senderStore = theSender.Get<IDocumentStore>();
+
+            var item = new ItemCreated
+            {
+                Name = "Shoe",
+                Id = Guid.NewGuid()
+            };
+
+            var waiter = theTracker.WaitFor<ItemCreated>();
+
+            using (var session = senderStore.LightweightSession())
+            {
+                bus.EnlistInTransaction(session);
+
+                await bus.Send(item);
+
+                await session.SaveChangesAsync();
+            }
+
+            waiter.Wait(5.Seconds());
+
+            waiter.IsCompleted.ShouldBeTrue();
+
+            using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
+            {
+                var item2 = session.Load<ItemCreated>(item.Id);
+                if (item2 == null)
+                {
+                    Thread.Sleep(500);
+                    item2 = session.Load<ItemCreated>(item.Id);
+                }
+
+
+
+                item2.Name.ShouldBe("Shoe");
+
+                session.AllIncomingEnvelopes().Any().ShouldBeFalse();
+
+            }
         }
 
         [Fact]

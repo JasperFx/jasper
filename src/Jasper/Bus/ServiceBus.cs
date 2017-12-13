@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Baseline.Dates;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
@@ -15,6 +17,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Bus
 {
+    public interface IEnvelopePersistor
+    {
+        Task Persist(Envelope envelope);
+        Task Persist(IEnumerable<Envelope> envelopes);
+    }
+
     public partial class ServiceBus : IServiceBus
     {
         private readonly IMessageRouter _router;
@@ -23,7 +31,6 @@ namespace Jasper.Bus
         private readonly SerializationGraph _serialization;
         private readonly BusSettings _settings;
         private readonly IChannelGraph _channels;
-        private readonly IPersistence _persistence;
         private readonly CompositeLogger _logger;
 
         public ServiceBus(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization, BusSettings settings, IChannelGraph channels, IPersistence persistence, CompositeLogger logger)
@@ -34,9 +41,69 @@ namespace Jasper.Bus
             _serialization = serialization;
             _settings = settings;
             _channels = channels;
-            _persistence = persistence;
+            Persistence = persistence;
             _logger = logger;
         }
+
+        public IPersistence Persistence { get; }
+        public int UniqueNodeId => _settings.UniqueNodeId;
+
+        private readonly List<Envelope> _outstanding = new List<Envelope>();
+        private IEnvelopePersistor _persistor;
+
+        public IEnumerable<Envelope> Outstanding => _outstanding;
+
+        public bool EnlistedInTransaction { get; private set; }
+
+        public void EnlistInTransaction(IEnvelopePersistor persistor)
+        {
+            _persistor = persistor;
+            EnlistedInTransaction = true;
+        }
+
+        public async Task FlushOutstanding()
+        {
+            foreach (var envelope in Outstanding)
+            {
+                await envelope.QuickSend();
+            }
+
+            _outstanding.Clear();
+        }
+
+        private async Task persistOrSend(Envelope[] outgoing)
+        {
+            if (EnlistedInTransaction)
+            {
+                await _persistor.Persist(outgoing.Where(x => x.Route.Channel.IsDurable));
+
+                _outstanding.AddRange(outgoing);
+            }
+            else
+            {
+                foreach (var outgoingEnvelope in outgoing)
+                {
+                    await outgoingEnvelope.Send();
+                }
+            }
+        }
+
+        public async Task Publish(Envelope envelope)
+        {
+            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
+
+            var outgoing = await _router.Route(envelope);
+
+            if (!outgoing.Any())
+            {
+                _logger.NoRoutesFor(envelope);
+                return;
+            }
+
+            await persistOrSend(outgoing);
+        }
+
+
 
         public async Task<Guid> Send(Envelope envelope)
         {
@@ -51,10 +118,7 @@ namespace Jasper.Bus
                 throw new NoRoutesException(envelope);
             }
 
-            foreach (var outgoingEnvelope in outgoing)
-            {
-                await outgoingEnvelope.Send();
-            }
+            await persistOrSend(outgoing);
 
             return envelope.Id;
         }
@@ -91,7 +155,7 @@ namespace Jasper.Bus
                 ExecutionTime = executionTime
             };
 
-            return _persistence.ScheduleMessage(envelope).ContinueWith(_ => envelope.Id);
+            return Persistence.ScheduleMessage(envelope).ContinueWith(_ => envelope.Id);
         }
 
         public Task<Guid> Schedule<T>(T message, TimeSpan delay)
@@ -210,21 +274,6 @@ namespace Jasper.Bus
             return Publish(envelope);
         }
 
-        public async Task Publish(Envelope envelope)
-        {
-            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = await _router.Route(envelope);
-
-            if (!outgoing.Any())
-            {
-                _logger.NoRoutesFor(envelope);
-            }
-
-            foreach (var outgoingEnvelope in outgoing)
-            {
-                await outgoingEnvelope.Send();
-            }
-        }
     }
 }

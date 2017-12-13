@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 
 namespace Jasper.Bus
 {
@@ -147,5 +149,11 @@ namespace Jasper.Bus
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         Task<Guid> Schedule<T>(T message, TimeSpan delay);
+
+        IEnumerable<Envelope> Outstanding { get; }
+        bool EnlistedInTransaction { get; }
+        IPersistence Persistence { get; }
+        Task FlushOutstanding();
+        void EnlistInTransaction(IEnvelopePersistor persistor);
     }
 }

@@ -20,35 +20,37 @@ namespace Jasper.Marten.Persistence
     {
         private readonly IDocumentStore _store;
         private readonly CompositeTransportLogger _logger;
-        private readonly BusSettings _settings;
-        private readonly EnvelopeTables _marker;
         private readonly SerializationGraph _serializers;
         private MartenRetries _retries;
 
-        public MartenBackedMessagePersistence(IDocumentStore store, CompositeTransportLogger logger, BusSettings settings, EnvelopeTables marker, BusMessageSerializationGraph serializers)
+        public MartenBackedMessagePersistence(IDocumentStore store, CompositeTransportLogger logger, BusSettings settings, EnvelopeTables tables, BusMessageSerializationGraph serializers)
         {
             _store = store;
             _logger = logger;
-            _settings = settings;
-            _marker = marker;
+            Settings = settings;
+            Tables = tables;
             _serializers = serializers;
 
-            _retries = new MartenRetries(_store, marker, _logger, _settings);
+            _retries = new MartenRetries(_store, tables, _logger, Settings);
         }
+
+        public BusSettings Settings { get; }
+
+        public EnvelopeTables Tables { get; }
 
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
         {
-            return new MartenBackedSendingAgent(destination, _store, sender, cancellation, _logger, _settings, _marker, _retries);
+            return new MartenBackedSendingAgent(destination, _store, sender, cancellation, _logger, Settings, Tables, _retries);
         }
 
         public ISendingAgent BuildLocalAgent(Uri destination, IWorkerQueue queues)
         {
-            return new LocalSendingAgent(destination, queues, _store, _marker, _serializers, _retries, _logger);
+            return new LocalSendingAgent(destination, queues, _store, Tables, _serializers, _retries, _logger);
         }
 
         public IListener BuildListener(IListeningAgent agent, IWorkerQueue queues)
         {
-            return new MartenBackedListener(agent, queues, _store, _logger, _settings, _marker, _retries);
+            return new MartenBackedListener(agent, queues, _store, _logger, Settings, Tables, _retries);
         }
 
         public void ClearAllStoredMessages()
@@ -57,7 +59,7 @@ namespace Jasper.Marten.Persistence
             {
                 conn.Open();
 
-                conn.CreateCommand().Sql($"delete from {_marker.Incoming};delete from {_marker.Outgoing}")
+                conn.CreateCommand().Sql($"delete from {Tables.Incoming};delete from {Tables.Outgoing}")
                     .ExecuteNonQuery();
 
             }
@@ -86,7 +88,7 @@ namespace Jasper.Marten.Persistence
             envelope.OwnerId = TransportConstants.AnyNode;
             using (var session = _store.LightweightSession())
             {
-                session.StoreIncoming(_marker, envelope);
+                session.StoreIncoming(Tables, envelope);
                 await session.SaveChangesAsync();
             }
         }

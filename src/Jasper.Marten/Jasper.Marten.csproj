@@ -22,4 +22,9 @@
   <ItemGroup>
     <PackageReference Include="Marten" Version="2.5.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Marten, Version=2.0.0.51134, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\.nuget\packages\marten\2.2.0\lib\netstandard1.3\Marten.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
