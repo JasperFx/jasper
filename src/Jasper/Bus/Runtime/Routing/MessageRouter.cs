@@ -89,7 +89,7 @@ namespace Jasper.Bus.Runtime.Routing
                 // TODO -- watch this
                 if (!envelope.RequiresLocalReply)
                 {
-                    envelope.ReplyUri = envelope.ReplyUri ?? _channels.SystemReplyUri;
+                    outgoing.ReplyUri = envelope.ReplyUri ?? _channels.SystemReplyUri;
                 }
 
             }

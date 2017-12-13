@@ -101,7 +101,6 @@ namespace Jasper.Bus.Transports.Configuration
 
 
 
-        public NoRouteBehavior NoMessageRouteBehavior { get; set; } = NoRouteBehavior.ThrowOnNoRoutes;
         public string NodeId { get; private set; }
 
 

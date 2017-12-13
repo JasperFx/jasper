@@ -7,6 +7,7 @@ using Jasper.Bus.Logging;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Http.Transport;
+using Jasper.Testing.Bus.Lightweight.Protocol;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Xunit;
@@ -37,6 +38,8 @@ namespace IntegrationTests.Bus
             {
                 var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
                     CancellationToken.None, CompositeTransportLogger.Empty());
+
+                sender.Start(new StubSenderCallback());
 
                 await sender.Ping();
             }

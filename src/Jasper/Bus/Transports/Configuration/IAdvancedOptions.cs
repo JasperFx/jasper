@@ -17,12 +17,6 @@ namespace Jasper.Bus.Transports.Configuration
         MediaSelectionMode MediaSelectionMode { get; set; }
 
         /// <summary>
-        /// What should the messaging do if the system tries to send
-        /// a message with no known subscribers or message routing
-        /// </summary>
-        NoRouteBehavior NoMessageRouteBehavior { get; set; }
-
-        /// <summary>
         /// Disables all messaging transport bootstrapping
         /// </summary>
         bool DisableAllTransports { get; set; }

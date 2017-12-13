@@ -20,6 +20,6 @@
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Marten" Version="2.4.0" />
+    <PackageReference Include="Marten" Version="2.5.0" />
   </ItemGroup>
 </Project>

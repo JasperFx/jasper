@@ -15,22 +15,13 @@ namespace Jasper.Testing.Bus
         {
             withAllDefaults();
 
-            await Exception<NoRoutesException>.ShouldBeThrownBy(async () =>
+            await Exception<NoRoutesException>.ShouldBeThrownByAsync(async () =>
             {
                 await Bus.Send(new MessageWithNoRoutes());
             });
         }
 
-        [Fact]
-        public async Task do_not_throw_when_configured_to_ignore()
-        {
-            with(_ =>
-            {
-                _.Advanced.NoMessageRouteBehavior = NoRouteBehavior.Ignore;
-            });
 
-            await Bus.Send(new MessageWithNoRoutes());
-        }
     }
 
     public class MessageWithNoRoutes

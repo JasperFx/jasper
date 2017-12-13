@@ -48,10 +48,7 @@ namespace Jasper.Bus
             {
                 _logger.NoRoutesFor(envelope);
 
-                if (_settings.NoMessageRouteBehavior == NoRouteBehavior.ThrowOnNoRoutes)
-                {
-                    throw new NoRoutesException(envelope);
-                }
+                throw new NoRoutesException(envelope);
             }
 
             foreach (var outgoingEnvelope in outgoing)
@@ -218,6 +215,11 @@ namespace Jasper.Bus
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
             var outgoing = await _router.Route(envelope);
+
+            if (!outgoing.Any())
+            {
+                _logger.NoRoutesFor(envelope);
+            }
 
             foreach (var outgoingEnvelope in outgoing)
             {

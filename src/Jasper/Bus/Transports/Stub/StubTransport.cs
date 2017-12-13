@@ -4,12 +4,32 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Baseline;
+using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
 
 namespace Jasper.Bus.Transports.Stub
 {
+    public static class StubTransportExtensions
+    {
+        public static StubTransport GetStubTransport(this JasperRuntime runtime)
+        {
+            return runtime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
+        }
+
+        public static void ClearStubTransportSentList(this JasperRuntime runtime)
+        {
+            runtime.GetStubTransport().Channels.Each(x => x.Sent.Clear());
+        }
+
+        public static Envelope[] AllSentThroughTheStubTransport(this JasperRuntime runtime)
+        {
+            return runtime.GetStubTransport().Channels.SelectMany(x => x.Sent).ToArray();
+        }
+
+    }
+
     public class StubTransport : ITransport
     {
         public readonly LightweightCache<Uri, StubChannel> Channels;
