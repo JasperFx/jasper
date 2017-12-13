@@ -63,6 +63,8 @@ namespace Jasper.Bus.Transports
             }
         }
 
+        public bool IsDurable => _agent.IsDurable;
+
         public async Task QuickSend(Envelope envelope)
         {
             envelope.Status = TransportConstants.Outgoing;

@@ -29,6 +29,9 @@ namespace Jasper.Bus.Transports.Sending
         public Uri Destination { get; }
         public Uri DefaultReplyUri { get; set; }
         public bool Latched => _sender.Latched;
+
+        public abstract bool IsDurable { get; }
+
         public abstract Task EnqueueOutgoing(Envelope envelope);
         public abstract Task StoreAndForward(Envelope envelope);
         public abstract Task StoreAndForwardMany(IEnumerable<Envelope> envelopes);

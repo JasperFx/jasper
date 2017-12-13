@@ -38,6 +38,8 @@ namespace Jasper.Marten.Persistence
             _retries = retries;
         }
 
+        public override bool IsDurable => true;
+
         public override Task EnqueueOutgoing(Envelope envelope)
         {
             setDefaults(envelope);

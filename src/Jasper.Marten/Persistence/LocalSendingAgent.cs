@@ -43,6 +43,8 @@ namespace Jasper.Marten.Persistence
 
         public bool Latched => false;
 
+        public bool IsDurable => true;
+
         public Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.Callback = new MartenCallback(envelope, _queues, _store, _marker, _retries, _logger);

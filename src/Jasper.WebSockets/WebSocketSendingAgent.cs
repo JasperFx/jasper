@@ -25,6 +25,9 @@ namespace Jasper.WebSockets
         public Uri DefaultReplyUri { get; set; }
 
         public bool Latched { get; } = false;
+
+        public bool IsDurable => false;
+
         public Task EnqueueOutgoing(Envelope envelope)
         {
             var json = envelope.Message.ToCleanJson();

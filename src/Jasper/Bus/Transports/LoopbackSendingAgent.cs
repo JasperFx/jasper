@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.WorkerQueues;
+using Jasper.Util;
 
 namespace Jasper.Bus.Transports
 {
@@ -25,6 +26,8 @@ namespace Jasper.Bus.Transports
         }
 
         public bool Latched { get; } = false;
+
+        public bool IsDurable => Destination.IsDurable();
 
         public Task EnqueueOutgoing(Envelope envelope)
         {

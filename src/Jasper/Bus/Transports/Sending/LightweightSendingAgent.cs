@@ -17,6 +17,8 @@ namespace Jasper.Bus.Transports.Sending
 
         }
 
+        public override bool IsDurable => false;
+
         public override Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
