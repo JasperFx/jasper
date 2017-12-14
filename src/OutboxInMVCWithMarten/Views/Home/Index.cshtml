@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+  <h2>Create User</h2>
+  <form action="/Home/CreateUser" method="post">
+    User Id:
+    <input type="text" name="UserID"/> <input type="submit" value="Create"/>
+  </form>
+
+  <h2>Delete User</h2>
+  <form action="/Home/DeleteUser" method="post">
+    User Id:
+    <input type="text" name="UserID"/> <input type="submit" value="Delete"/>
+  </form>
+</div>
