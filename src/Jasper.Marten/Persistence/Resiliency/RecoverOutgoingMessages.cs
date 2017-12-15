@@ -17,7 +17,7 @@ namespace Jasper.Marten.Persistence.Resiliency
 {
     public class RecoverOutgoingMessages : IMessagingAction
     {
-        public static readonly int OutgoingMessageLockId = "recover-incoming-messages".GetHashCode();
+        public static readonly int OutgoingMessageLockId = "recover-outgoing-messages".GetHashCode();
         private readonly IChannelGraph _channels;
         private readonly EnvelopeTables _marker;
         private readonly ISchedulingAgent _schedulingAgent;
