@@ -30,6 +30,8 @@ namespace Jasper.Marten.Tests.Outbox
         private JasperRuntime theSender;
         private JasperRuntime theHandler;
 
+        private static int portCounter = 2222;
+
         public end_to_end_with_outbox()
         {
             using (var store = DocumentStore.For(ConnectionSource.ConnectionString))
@@ -37,9 +39,13 @@ namespace Jasper.Marten.Tests.Outbox
                 store.Advanced.Clean.CompletelyRemoveAll();
             }
 
-            theSender = JasperRuntime.For(new OrdersApp());
+            var senderPort = portCounter;
+
+            theSender = JasperRuntime.For(new OrdersApp(senderPort));
             // can switch between a few different implementations of the warehouse handler.
-            theHandler = JasperRuntime.For(new WarehouseApp<WarehouseHandler1>());
+            theHandler = JasperRuntime.For(new WarehouseApp<WarehouseHandler2>(senderPort));
+
+            portCounter += 2;
         }
 
         public void Dispose()
@@ -51,10 +57,11 @@ namespace Jasper.Marten.Tests.Outbox
         [Fact]
         public async Task send_and_handle_end_to_end()
         {
-            // when this code appears in an MVC controller, both the IDocumentSession and the IServiceBus could be injected as scoped dependencies.
+            // when this code appears in an MVC controller, both the IDocumentSession and the IServiceBus could be injected dependencies.
             using (var session = theSender.Get<IDocumentStore>().OpenSession())
             {
                 var bus = theSender.Get<IServiceBus>();
+
                 bus.EnlistInTransaction(session);
 
                 var order = new Order {Id = Guid.NewGuid(), ItemName = "Hat"};
@@ -94,19 +101,22 @@ namespace Jasper.Marten.Tests.Outbox
 
     public class OrdersApp : JasperRegistry
     {
-        public OrdersApp()
+        public OrdersApp(int senderPort)
         {
+            var receiverPort = senderPort + 1;
             Include<MartenBackedPersistence>();
 
             // Whether or not our event is destined for a durable queue, it will be stored durably in the outbox because of the usage of an outbox when sending it.
-            Publish.Message<ProcessOrder>().To("tcp://localhost:2345/durable");
+            Publish.Message<ProcessOrder>().To($"tcp://localhost:{receiverPort}/durable");
 
-            Transports.LightweightListenerAt(5432);
+            Transports.DurableListenerAt(senderPort);
 
             Settings.Alter<StoreOptions>(_ =>
             {
                 _.Connection(ConnectionSource.ConnectionString);
+                _.DatabaseSchemaName = "orders";
             });
+
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<OrderStatusHandler>();
         }
@@ -136,8 +146,10 @@ namespace Jasper.Marten.Tests.Outbox
 
     public class WarehouseApp<THandler> : JasperRegistry
     {
-        public WarehouseApp()
+        public WarehouseApp(int senderPort)
         {
+            var receiverPort = senderPort + 1;
+
             Include<MartenBackedPersistence>();
 
             Settings.Alter<StoreOptions>(_ =>
@@ -146,9 +158,15 @@ namespace Jasper.Marten.Tests.Outbox
             });
 
             //Note: whether or not our event is destined for a durable queue, it will be stored durably in the outbox because of the implementation of the handlers.
-            Publish.Message<ItemOutOfStock>().To("tcp://localhost:5432/");
+            Publish.Message<ItemOutOfStock>().To($"tcp://localhost:{senderPort}/durable");
 
-            Transports.DurableListenerAt(2345);
+            Transports.DurableListenerAt(receiverPort);
+
+            Settings.Alter<StoreOptions>(_ =>
+            {
+                _.Connection(ConnectionSource.ConnectionString);
+                _.DatabaseSchemaName = "warehouse";
+            });
 
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<THandler>();

@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using Jasper;
+using Jasper.Bus.Transports.Configuration;
+using Jasper.Bus.Transports.Receiving;
 using Jasper.CommandLine;
 using TestMessages;
 
@@ -19,6 +21,8 @@ namespace Subscriber
         {
             Subscribe.At("http://loadbalancer/messages");
             Subscribe.ToAllMessages();
+
+            Transports.LightweightListenerAt(22222);
         }
     }
 

@@ -1,6 +1,9 @@
 namespace TestMessages
 {
-    public class NewUser{}
+    public class NewUser
+    {
+        public string UserId { get; set; }
+    }
     public class EditUser{}
     public class DeleteUser{}
 
@@ -24,11 +27,5 @@ namespace TestMessages
     {
         public string UserId { get; set; }
     }
-
-    public class BeginUserRegistration
-    {
-        public string UserId { get; set; }
-    }
-
 
 }

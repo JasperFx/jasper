@@ -77,7 +77,7 @@ namespace OutboxInMVCWithMarten.Controllers
                 var theUser = new User { Id = userId };
                 session.Store(theUser);
 
-                await bus.Send(new BeginUserRegistration {UserId = userId});
+                await bus.Send(new NewUser {UserId = userId});
 
                 await session.SaveChangesAsync();
 
