@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -233,8 +233,7 @@ namespace Jasper
 
 
             var runtime = new JasperRuntime(registry, services);
-
-            registry.Http.As<IWebHostBuilder>().UseSetting(WebHostDefaults.ApplicationKey, registry.ServiceName);
+            registry.Http.As<IWebHostBuilder>().UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
 
             runtime.HttpAddresses = registry.Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
 

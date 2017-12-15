@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Baseline;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
@@ -59,7 +59,7 @@ namespace Jasper.Http
 
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
         {
-            builder.UseSetting(WebHostDefaults.ApplicationKey, registry.ServiceName);
+            builder.UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
 
             registry.Features.For<AspNetCoreFeature>().BootstrappedWithinAspNetCore = true;
             var runtime = JasperRuntime.For(registry);
