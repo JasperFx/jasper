@@ -86,7 +86,7 @@ end
 desc "Integration Tests"
 task :integrationtests => [:compile] do
   Dir.chdir("src/IntegrationTests") do
-    sh "dotnet xunit"
+    sh "dotnet test"
   end
 
   sh "dotnet test src/Jasper.Consul.Testing/Jasper.Consul.Testing.csproj"

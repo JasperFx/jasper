@@ -1,4 +1,6 @@
 version: 0.5.0.{build}
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 pull_requests:
   do_not_increment_build_number: true
 skip_tags: true
@@ -18,7 +20,6 @@ nuget:
 install:
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
   - ruby --version
-  - gem install bundler
   - bundle config --local path vendor/bundle
   - bundle install
   - npm install -g npm
