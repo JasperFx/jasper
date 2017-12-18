@@ -31,7 +31,7 @@ namespace MyApp
             var registry = new JasperRegistry();
 
 
-            return JasperAgent.Run(registry);
+            return JasperAgent.Run(args, registry);
         }
         // ENDSAMPLE
     }

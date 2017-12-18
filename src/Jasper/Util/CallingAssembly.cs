@@ -36,6 +36,8 @@ namespace Jasper.Util
             if (assembly.GetCustomAttributes<JasperFeatureAttribute>().Any()) return true;
 
             if (assembly.GetName().Name == "Jasper") return true;
+            if (assembly.GetName().Name == "Jasper.CommandLine") return true;
+
 
             return assembly.GetName().Name.StartsWith("System.");
         }

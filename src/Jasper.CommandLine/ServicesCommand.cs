@@ -17,10 +17,7 @@ namespace Jasper.CommandLine
 
             using (var runtime = input.BuildRuntime())
             {
-                foreach (var service in runtime.Services)
-                {
-                    Console.WriteLine(service);
-                }
+                Console.WriteLine(runtime.Container.WhatDoIHave());
             }
 
             return true;

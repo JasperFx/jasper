@@ -5,7 +5,8 @@ namespace Jasper.CommandLine
 {
     public class JasperInput
     {
-        internal JasperRegistry Registry { get; set; }
+        [IgnoreOnCommandLine]
+        public JasperRegistry Registry { get; set; }
 
         [Description("Use to override the ASP.Net Environment name")]
         public string EnvironmentFlag
@@ -17,7 +18,7 @@ namespace Jasper.CommandLine
         [Description("Write out much more information at startup and enables console logging")]
         public bool VerboseFlag { get; set; }
 
-        internal JasperRuntime BuildRuntime()
+        public JasperRuntime BuildRuntime()
         {
             if (VerboseFlag)
             {

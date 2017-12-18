@@ -9,7 +9,7 @@ namespace Subscriber
     {
         static int Main(string[] args)
         {
-            return JasperAgent.Run<SubscriberApp>();
+            return JasperAgent.Run<SubscriberApp>(args);
         }
     }
 

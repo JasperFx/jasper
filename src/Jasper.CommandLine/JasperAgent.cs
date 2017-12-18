@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Baseline;
+using Jasper.Util;
 using Oakton;
 
 [assembly:JasperFeature]
@@ -15,6 +16,8 @@ namespace Jasper.CommandLine
     /// </summary>
     public static class JasperAgent
     {
+
+
         /// <summary>
         /// Bootstrap and run the given JasperRegistry
         /// </summary>
@@ -26,7 +29,7 @@ namespace Jasper.CommandLine
         {
             if (args == null || args.Length == 0 || args[0].StartsWith("-"))
             {
-                args = new string[]{"run"}.Concat(args).ToArray();
+                args = new string[]{"run"}.Concat(args ?? new string[0]).ToArray();
             }
 
 
@@ -40,7 +43,13 @@ namespace Jasper.CommandLine
         {
             return CommandExecutor.For(factory =>
             {
+
                 factory.RegisterCommands(typeof(RunCommand).GetTypeInfo().Assembly);
+                if (registry.ApplicationAssembly != null)
+                {
+                    factory.RegisterCommands(registry.ApplicationAssembly);
+                }
+
                 factory.ConfigureRun = cmd =>
                 {
                     if (cmd.Input is JasperInput)
@@ -50,27 +59,6 @@ namespace Jasper.CommandLine
                 };
 
             });
-        }
-
-        /// <summary>
-        /// Bootstrap and run a Jasper application with customizations
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static int Run<T>(Action<T> configure = null) where T : JasperRegistry, new()
-        {
-            return Run<T>(null, configure);
-        }
-
-        /// <summary>
-        /// Bootstrap and run a Jasper application with customizations
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        public static int Run(Action<JasperRegistry> configure)
-        {
-            return Run<JasperRegistry>(null, configure);
         }
 
         /// <summary>
