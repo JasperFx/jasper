@@ -43,9 +43,9 @@ namespace Jasper.Bus.Runtime.Subscriptions
         {
         }
 
-        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task PersistCapabilities(ServiceCapabilities capabilities)
         {
-            _subscriptions.AddRange(subscriptions);
+            _subscriptions.AddRange(capabilities.Subscriptions);
             return Task.CompletedTask;
         }
     }

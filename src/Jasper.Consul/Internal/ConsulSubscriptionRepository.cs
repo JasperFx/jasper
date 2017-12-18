@@ -35,9 +35,9 @@ namespace Jasper.Consul.Internal
             return $"Consul-backed subscriptions";
         }
 
-        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task PersistCapabilities(ServiceCapabilities capabilities)
         {
-            var ops = subscriptions
+            var ops = capabilities.Subscriptions
                 .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Set) {Value = serialize(s)})
                 .ToList();
 

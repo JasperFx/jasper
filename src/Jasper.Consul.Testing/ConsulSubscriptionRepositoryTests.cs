@@ -60,9 +60,15 @@ namespace Jasper.Consul.Testing
                 new Subscription(typeof(OrangeMessage), theDestination),
             };
 
+            var capabilities = new ServiceCapabilities
+            {
+                Subscriptions = subscriptions,
+                Published = new PublishedMessage[0]
+            };
+
             subscriptions.Each(x => x.ServiceName = "ConsulSampleApp");
 
-            await theRepository.PersistSubscriptions(subscriptions);
+            await theRepository.PersistCapabilities(capabilities);
 
             var publishes = await theRepository.GetSubscribersFor(typeof(GreenMessage));
 
@@ -88,7 +94,13 @@ namespace Jasper.Consul.Testing
 
             subscriptions.Each(x => x.ServiceName = "ConsulSampleApp");
 
-            await theRepository.PersistSubscriptions(subscriptions);
+            var capabilities = new ServiceCapabilities
+            {
+                Subscriptions = subscriptions,
+                Published = new PublishedMessage[0]
+            };
+
+            await theRepository.PersistCapabilities(capabilities);
 
             var greens = await theRepository.GetSubscribersFor(typeof(GreenMessage));
             greens.Length.ShouldBe(3);
@@ -108,7 +120,13 @@ namespace Jasper.Consul.Testing
                 new Subscription(typeof(OrangeMessage), theDestination){ServiceName = "One"},
             };
 
-            await theRepository.PersistSubscriptions(subscriptions);
+            var capabilities = new ServiceCapabilities
+            {
+                Subscriptions = subscriptions,
+                Published = new PublishedMessage[0]
+            };
+
+            await theRepository.PersistCapabilities(capabilities);
 
             var replacements = new Subscription[]
             {

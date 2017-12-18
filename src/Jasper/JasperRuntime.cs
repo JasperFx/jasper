@@ -284,7 +284,7 @@ namespace Jasper
 
             var extensions = assemblies
                 .Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
-                .Where(x => x == null)
+                .Where(x => x != null)
                 .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
                 .ToArray();
 

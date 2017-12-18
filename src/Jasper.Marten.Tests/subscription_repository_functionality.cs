@@ -86,7 +86,13 @@ namespace Jasper.Marten.Tests
 
             subscriptions.Each(x => x.ServiceName = "MartenSampleApp");
 
-            await theRepository.PersistSubscriptions(subscriptions);
+            var capabilities = new ServiceCapabilities
+            {
+                Subscriptions = subscriptions,
+                Published = new PublishedMessage[0]
+            };
+
+            await theRepository.PersistCapabilities(capabilities);
 
             var publishes = await theRepository.GetSubscribersFor(typeof(GreenMessage));
 
@@ -110,7 +116,13 @@ namespace Jasper.Marten.Tests
 
             subscriptions.Each(x => x.ServiceName = "MartenSampleApp");
 
-            await theRepository.PersistSubscriptions(subscriptions);
+            var capabilities = new ServiceCapabilities
+            {
+                Subscriptions = subscriptions,
+                Published = new PublishedMessage[0]
+            };
+
+            await theRepository.PersistCapabilities(capabilities);
 
             var greens = await theRepository.GetSubscribersFor(typeof(GreenMessage));
             greens.Length.ShouldBe(3);
@@ -130,7 +142,13 @@ namespace Jasper.Marten.Tests
                 new Subscription(typeof(OrangeMessage), theDestination){ServiceName = "One"},
             };
 
-            await theRepository.PersistSubscriptions(subscriptions);
+            var capabilities = new ServiceCapabilities
+            {
+                Subscriptions = subscriptions,
+                Published = new PublishedMessage[0]
+            };
+
+            await theRepository.PersistCapabilities(capabilities);
 
             var replacements = new Subscription[]
             {

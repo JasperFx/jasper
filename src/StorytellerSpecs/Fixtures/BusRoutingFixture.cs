@@ -101,7 +101,7 @@ namespace StorytellerSpecs.Fixtures
         }
 
 
-        Task ISubscriptionsRepository.PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        Task ISubscriptionsRepository.PersistCapabilities(ServiceCapabilities capabilities)
         {
             return Task.CompletedTask;
         }

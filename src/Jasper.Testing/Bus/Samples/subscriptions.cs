@@ -73,7 +73,7 @@ namespace Jasper.Testing.Bus.Samples
             throw new NotSupportedException();
         }
 
-        public Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task PersistCapabilities(ServiceCapabilities capabilities)
         {
             throw new NotSupportedException();
         }

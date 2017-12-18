@@ -17,11 +17,11 @@ namespace Jasper.Marten.Subscriptions
             _documentStore = settings.Store;
         }
 
-        public async Task PersistSubscriptions(IEnumerable<Subscription> subscriptions)
+        public async Task PersistCapabilities(ServiceCapabilities capabilities)
         {
             using (var session = _documentStore.LightweightSession())
             {
-                session.Store(subscriptions.ToArray());
+                session.Store(capabilities.Subscriptions);
                 await session.SaveChangesAsync();
             }
         }
