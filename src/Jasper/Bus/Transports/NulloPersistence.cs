@@ -43,7 +43,7 @@ namespace Jasper.Bus.Transports
             // nothing
         }
 
-        public Task ScheduleMessage(Envelope envelope)
+        public Task ScheduleJob(Envelope envelope)
         {
             if (!envelope.ExecutionTime.HasValue)
             {

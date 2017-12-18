@@ -15,7 +15,7 @@ namespace Jasper.Bus.Transports
         IListener BuildListener(IListeningAgent agent, IWorkerQueue queues);
         void ClearAllStoredMessages();
 
-        Task ScheduleMessage(Envelope envelope);
+        Task ScheduleJob(Envelope envelope);
 
         Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
     }

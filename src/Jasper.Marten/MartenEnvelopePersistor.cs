@@ -49,6 +49,12 @@ namespace Jasper.Marten
 
             return Task.CompletedTask;
         }
+
+        public Task ScheduleJob(Envelope envelope)
+        {
+            _session.StoreIncoming(_tables, envelope);
+            return Task.CompletedTask;
+        }
     }
 
     public class FlushOutgoingMessagesOnCommit : DocumentSessionListenerBase

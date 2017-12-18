@@ -65,8 +65,10 @@ namespace Jasper.Marten.Persistence
             }
         }
 
-        public async Task ScheduleMessage(Envelope envelope)
+        public async Task ScheduleJob(Envelope envelope)
         {
+            envelope.Status = TransportConstants.Scheduled;
+
             if (envelope.Message == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
@@ -77,15 +79,6 @@ namespace Jasper.Marten.Persistence
                 throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
             }
 
-            if (envelope.Data == null || envelope.Data.Length == 0)
-            {
-                var writer = _serializers.JsonWriterFor(envelope.Message.GetType());
-                envelope.Data = writer.Write(envelope.Message);
-                envelope.ContentType = writer.ContentType;
-            }
-
-            envelope.Status = TransportConstants.Scheduled;
-            envelope.OwnerId = TransportConstants.AnyNode;
             using (var session = _store.LightweightSession())
             {
                 session.StoreIncoming(Tables, envelope);

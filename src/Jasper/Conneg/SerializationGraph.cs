@@ -23,6 +23,7 @@ namespace Jasper.Conneg
 
         private readonly ConcurrentDictionary<string, ModelReader> _modelReaders = new ConcurrentDictionary<string, ModelReader>();
         private readonly ConcurrentDictionary<Type, ModelWriter> _modelWriters = new ConcurrentDictionary<Type, ModelWriter>();
+        private readonly IList<Type> _otherTypes = new List<Type>();
 
         protected SerializationGraph(ObjectPoolProvider pooling, MediaSelectionMode selectionMode, JsonSerializerSettings jsonSettings, Forwarders forwarders, IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
         {
@@ -41,6 +42,8 @@ namespace Jasper.Conneg
 
             _readers.AddRange(readers);
             _writers.AddRange(writers);
+
+
         }
 
         public IEnumerable<ISerializerFactory> Serializers => _serializers.Values;
@@ -132,7 +135,10 @@ namespace Jasper.Conneg
             var readers = _readers.Where(x => x.MessageType == messageType).ToArray();
             var chainCandidates = determineChainCandidates(messageType);
 
-            var candidateTypes = readers.Select(x => x.DotNetType).Concat(chainCandidates).Distinct();
+            var candidateTypes = readers.Select(x => x.DotNetType)
+                .Concat(chainCandidates)
+                .Concat(_otherTypes)
+                .Distinct();
 
             var fromHandlers = candidateTypes.SelectMany(x => ReaderFor(x).Where(r => r.MessageType == messageType));
 
@@ -170,5 +176,9 @@ namespace Jasper.Conneg
         }
 
 
+        public void RegisterType(Type messageType)
+        {
+            _otherTypes.Fill(messageType);
+        }
     }
 }

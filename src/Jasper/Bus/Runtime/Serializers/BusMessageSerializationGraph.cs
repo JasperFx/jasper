@@ -22,6 +22,9 @@ namespace Jasper.Bus.Runtime.Serializers
             : base(pooling, busSettings.MediaSelectionMode, busSettings.JsonSerialization, forwarders, serializers, readers, writers)
         {
             _handlers = handlers;
+
+            // Work around here to seed this type in the serialization
+            RegisterType(typeof(Acknowledgement));
         }
 
         protected override IEnumerable<Type> determineChainCandidates(string messageType)

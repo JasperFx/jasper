@@ -17,12 +17,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Bus
 {
-    public interface IEnvelopePersistor
-    {
-        Task Persist(Envelope envelope);
-        Task Persist(IEnumerable<Envelope> envelopes);
-    }
-
     public partial class ServiceBus : IServiceBus
     {
         private readonly IMessageRouter _router;
@@ -91,6 +85,7 @@ namespace Jasper.Bus
         public async Task Publish(Envelope envelope)
         {
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
+            if (envelope.RequiresLocalReply) throw new ArgumentOutOfRangeException(nameof(envelope), "Cannot 'Publish' and envelope that requires a local reply");
 
             var outgoing = await _router.Route(envelope);
 
@@ -111,11 +106,32 @@ namespace Jasper.Bus
 
             var outgoing = await _router.Route(envelope);
 
+            if (envelope.RequiresLocalReply)
+            {
+                if (outgoing.Length > 1)
+                {
+                    throw new InvalidOperationException("Cannot find a unique handler for this request");
+                }
+
+                // this is important for the request/reply mechanics
+                outgoing[0].Id = envelope.Id;
+            }
+
             if (!outgoing.Any())
             {
                 _logger.NoRoutesFor(envelope);
 
                 throw new NoRoutesException(envelope);
+            }
+
+            if (envelope.RequiresLocalReply)
+            {
+                foreach (var outgoingEnvelope in outgoing)
+                {
+                    await outgoingEnvelope.Send();
+                }
+
+                return envelope.Id;
             }
 
             await persistOrSend(outgoing);
@@ -155,7 +171,19 @@ namespace Jasper.Bus
                 ExecutionTime = executionTime
             };
 
-            return Persistence.ScheduleMessage(envelope).ContinueWith(_ => envelope.Id);
+            if (envelope.Data == null || envelope.Data.Length == 0)
+            {
+                var writer = _serialization.JsonWriterFor(message.GetType());
+                envelope.Data = writer.Write(message);
+                envelope.ContentType = writer.ContentType;
+            }
+
+            envelope.Status = TransportConstants.Scheduled;
+            envelope.OwnerId = TransportConstants.AnyNode;
+
+            return EnlistedInTransaction
+                ? _persistor.ScheduleJob(envelope).ContinueWith(_ => envelope.Id)
+                : Persistence.ScheduleJob(envelope).ContinueWith(_ => envelope.Id);
         }
 
         public Task<Guid> Schedule<T>(T message, TimeSpan delay)
@@ -167,6 +195,8 @@ namespace Jasper.Bus
         public Envelope EnvelopeForRequestResponse<TResponse>(object request)
         {
             var messageType = typeof(TResponse).ToMessageAlias();
+            _serialization.RegisterType(typeof(TResponse));
+
             var reader = _serialization.ReaderFor(messageType);
 
             var envelope = new Envelope
@@ -210,13 +240,20 @@ namespace Jasper.Bus
         public Task Enqueue<T>(T message)
         {
             var isDurable = _settings.Workers.ShouldBeDurable(typeof(T));
-            var uri = isDurable ? TransportConstants.DurableLoopbackUri : TransportConstants.LoopbackUri;
 
-            var channel = _channels.GetOrBuildChannel(uri);
+            return isDurable
+                ? EnqueueDurably(message)
+                : Send(TransportConstants.LoopbackUri, message);
+        }
 
+        public Task EnqueueLightweight<T>(T message)
+        {
+            return Send(TransportConstants.LoopbackUri, message);
+        }
 
-            var envelope = new Envelope(message);
-            return channel.Send(envelope);
+        public Task EnqueueDurably<T>(T message)
+        {
+            return Send(TransportConstants.DurableLoopbackUri, message);
         }
 
         public Task DelaySend<T>(T message, DateTime time)

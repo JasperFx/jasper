@@ -79,12 +79,29 @@ namespace Jasper.Bus
         Task Invoke<T>(T message);
 
         /// <summary>
-        /// Enqueues the message into the default loopback queue for this application
+        /// Enqueues the message locally. Uses the message type to worker queue routing to determine
+        /// whether or not the message should be durable or fire and forget
         /// </summary>
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         Task Enqueue<T>(T message);
+
+        /// <summary>
+        /// Enqueues the message locally in a durable manner
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task EnqueueDurably<T>(T message);
+
+        /// <summary>
+        /// Enqueues the message locally in a fire and forget manner
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task EnqueueLightweight<T>(T message);
 
         /// <summary>
         /// Send a message that should be executed at the given time
@@ -156,4 +173,6 @@ namespace Jasper.Bus
         Task FlushOutstanding();
         void EnlistInTransaction(IEnvelopePersistor persistor);
     }
+
+
 }

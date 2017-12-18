@@ -63,7 +63,7 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 if (envelope.ResponseId.IsNotEmpty())
                 {
-                    completeRequestWithRequestedResponse(envelope);
+                    await completeRequestWithRequestedResponse(envelope);
                 }
                 else
                 {
@@ -180,18 +180,23 @@ namespace Jasper.Bus.Runtime.Invocation
             {
                 await context.SendAcknowledgement(envelope);
             }
+
+            await envelope.Callback.MarkComplete();
         }
 
-        private void completeRequestWithRequestedResponse(Envelope envelope)
+        private Task completeRequestWithRequestedResponse(Envelope envelope)
         {
             try
             {
                 deserialize(envelope);
                 _replies.Handle(envelope);
+
+                return envelope.Callback.MarkComplete();
             }
             catch (Exception e)
             {
                 Logger.LogException(e, envelope.Id, "Failure during reply handling.");
+                return envelope.Callback.MoveToErrors(envelope, e);
             }
         }
 

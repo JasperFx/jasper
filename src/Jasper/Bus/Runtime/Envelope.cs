@@ -246,6 +246,7 @@ namespace Jasper.Bus.Runtime
 
         public bool IsDelayed(DateTime utcNow)
         {
+
             return ExecutionTime.HasValue && ExecutionTime.Value > utcNow;
         }
 

@@ -44,5 +44,34 @@ namespace Jasper.Testing.Bus
                 received.Message.As<Message1>().Id.ShouldBe(message.Id);
             }
         }
+
+        [Fact]
+         public async Task enqueue_locally_lightweight()
+         {
+             var registry = new JasperRegistry();
+             registry.Handlers.DisableConventionalDiscovery(false);
+             registry.Handlers.IncludeType<RecordCallHandler>();
+             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+             registry.Services.AddTransient<IFakeService, FakeService>();
+             registry.Services.AddTransient<IWidget, Widget>();
+
+             var tracker = new MessageTracker();
+             registry.Services.AddSingleton(tracker);
+
+             using (var runtime = JasperRuntime.For(registry))
+             {
+                 var waiter = tracker.WaitFor<Message1>();
+                 var message = new Message1
+                 {
+                     Id = Guid.NewGuid()
+                 };
+
+                 await runtime.Get<IServiceBus>().EnqueueLightweight(message);
+
+                 var received = await waiter;
+
+                 received.Message.As<Message1>().Id.ShouldBe(message.Id);
+             }
+         }
     }
 }
