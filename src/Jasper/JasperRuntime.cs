@@ -279,18 +279,24 @@ namespace Jasper
 
         private static void applyExtensions(JasperRegistry registry)
         {
-            var assemblies = AssemblyFinder
-                .FindAssemblies(a => a.HasAttribute<JasperModuleAttribute>())
-                .ToArray();
+            var assemblies = FindExtensionAssemblies();
 
             if (!assemblies.Any()) return;
 
             var extensions = assemblies
                 .Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
+                .Where(x => x == null)
                 .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
                 .ToArray();
 
             registry.ApplyExtensions(extensions);
+        }
+
+        public static Assembly[] FindExtensionAssemblies()
+        {
+            return AssemblyFinder
+                .FindAssemblies(a => a.HasAttribute<JasperModuleAttribute>())
+                .ToArray();
         }
 
         /// <summary>

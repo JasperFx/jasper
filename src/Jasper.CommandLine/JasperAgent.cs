@@ -39,15 +39,21 @@ namespace Jasper.CommandLine
             return buildExecutor(registry).Execute(args);
         }
 
+
+
         private static CommandExecutor buildExecutor(JasperRegistry registry)
         {
             return CommandExecutor.For(factory =>
             {
-
                 factory.RegisterCommands(typeof(RunCommand).GetTypeInfo().Assembly);
                 if (registry.ApplicationAssembly != null)
                 {
                     factory.RegisterCommands(registry.ApplicationAssembly);
+                }
+
+                foreach (var assembly in JasperRuntime.FindExtensionAssemblies())
+                {
+                    factory.RegisterCommands(assembly);
                 }
 
                 factory.ConfigureRun = cmd =>

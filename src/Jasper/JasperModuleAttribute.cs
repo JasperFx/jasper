@@ -27,5 +27,9 @@ namespace Jasper
                 throw new ArgumentOutOfRangeException(nameof(extensionType), $"Has to be of type {nameof(IJasperExtension)}");
             }
         }
+
+        public JasperModuleAttribute()
+        {
+        }
     }
 }
