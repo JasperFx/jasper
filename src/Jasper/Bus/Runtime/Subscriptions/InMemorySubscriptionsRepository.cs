@@ -9,34 +9,29 @@ namespace Jasper.Bus.Runtime.Subscriptions
 {
     public class InMemorySubscriptionsRepository : ISubscriptionsRepository
     {
-        private readonly List<Subscription> _subscriptions = new List<Subscription>();
+        private readonly List<ServiceCapabilities> _subscriptions = new List<ServiceCapabilities>();
 
-        public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task RemoveCapabilities(string serviceName)
         {
-            foreach (var subscription in subscriptions)
-            {
-                _subscriptions.Remove(subscription);
-            }
-
+            _subscriptions.RemoveAll(x => x.ServiceName == serviceName);
             return Task.CompletedTask;
         }
 
+        public Task<ServiceCapabilities[]> AllCapabilities()
+        {
+            return Task.FromResult(_subscriptions.ToArray());
+        }
+
+
         public Task<Subscription[]> GetSubscribersFor(Type messageType)
         {
-            var matching = _subscriptions.Where(x => x.MessageType == messageType.ToMessageAlias()).ToArray();
+            var matching = _subscriptions.SelectMany(x => x.Subscriptions).Where(x => x.MessageType == messageType.ToMessageAlias()).ToArray();
             return Task.FromResult(matching);
         }
 
         public Task<Subscription[]> GetSubscriptions()
         {
-            return Task.FromResult(_subscriptions.ToArray());
-        }
-
-        public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
-        {
-            _subscriptions.RemoveAll(x => x.ServiceName == serviceName);
-            _subscriptions.AddRange(subscriptions);
-            return Task.CompletedTask;
+            return Task.FromResult(_subscriptions.SelectMany(x => x.Subscriptions).ToArray());
         }
 
         public void Dispose()
@@ -45,8 +40,15 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public Task PersistCapabilities(ServiceCapabilities capabilities)
         {
-            _subscriptions.AddRange(capabilities.Subscriptions);
+            _subscriptions.RemoveAll(x => x.ServiceName == capabilities.ServiceName);
+            _subscriptions.Add(capabilities);
             return Task.CompletedTask;
+        }
+
+        public Task<ServiceCapabilities> CapabilitiesFor(string serviceName)
+        {
+            var match = _subscriptions.FirstOrDefault(x => x.ServiceName == serviceName);
+            return Task.FromResult(match);
         }
     }
 }

@@ -173,7 +173,7 @@ namespace Jasper.CommandLine
 
             Console.WriteLine($"Removing all subscriptions for service {runtime.ServiceName} to {repository}");
 
-            repository.ReplaceSubscriptions(runtime.ServiceName, new Subscription[0])
+            repository.RemoveCapabilities(runtime.ServiceName)
                 .Wait(1.Minutes());
 
             sendSubscriptionUpdates(runtime);
@@ -187,7 +187,7 @@ namespace Jasper.CommandLine
 
             Console.WriteLine($"Writing subscriptions to {repository}");
 
-            repository.ReplaceSubscriptions(runtime.ServiceName, runtime.Capabilities.Subscriptions)
+            repository.PersistCapabilities(runtime.Capabilities)
                 .Wait(1.Minutes());
 
             sendSubscriptionUpdates(runtime);

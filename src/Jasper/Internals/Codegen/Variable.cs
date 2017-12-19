@@ -20,6 +20,7 @@ namespace Jasper.Internals.Codegen
             return new Variable(typeof(T), DefaultArgName(typeof(T)));
         }
 
+        // TODO -- test this w/ a generic type!!!!!!!
         public static string DefaultArgName(Type argType)
         {
             var parts = argType.Name.SplitPascalCase().Split(' ');
@@ -28,7 +29,13 @@ namespace Jasper.Internals.Codegen
                 parts = parts.Skip(1).ToArray();
             }
 
-            return parts.First().ToLower() + parts.Skip(1).Join("");
+            var raw = (parts.First().ToLower() + parts.Skip(1).Join("")).Split('`').First();
+            return raw;
+        }
+
+        public static string DefaultArgName<T>()
+        {
+            return DefaultArgName(typeof(T));
         }
 
         private Frame _frame;

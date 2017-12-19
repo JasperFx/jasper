@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Internals.Util;
@@ -20,6 +21,14 @@ namespace Jasper.Internals.Codegen
 
         public static string FullNameInCode(this Type type)
         {
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            {
+                var cleanName = type.Name.Split('`').First().Replace("+", ".");
+                var args = type.GetGenericArguments().Select(x => x.FullNameInCode()).Join(", ");
+
+                return $"{type.Namespace}.{cleanName}<{args}>";
+            }
+
             return type.FullName.Replace("+", ".");
         }
 
@@ -27,5 +36,7 @@ namespace Jasper.Internals.Codegen
         {
             return type.Name.Replace("+", ".");
         }
+
+
     }
 }

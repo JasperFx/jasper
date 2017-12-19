@@ -101,14 +101,24 @@ namespace StorytellerSpecs.Fixtures
         }
 
 
+        public Task RemoveCapabilities(string serviceName)
+        {
+            throw new NotImplementedException();
+        }
+
         Task ISubscriptionsRepository.PersistCapabilities(ServiceCapabilities capabilities)
         {
             return Task.CompletedTask;
         }
 
-        Task ISubscriptionsRepository.RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public Task<ServiceCapabilities> CapabilitiesFor(string serviceName)
         {
-            return Task.CompletedTask;
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceCapabilities[]> AllCapabilities()
+        {
+            throw new NotImplementedException();
         }
 
         Task<Subscription[]> ISubscriptionsRepository.GetSubscribersFor(Type messageType)

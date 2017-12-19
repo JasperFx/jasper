@@ -73,9 +73,24 @@ namespace Jasper.Testing.Bus.Samples
             throw new NotSupportedException();
         }
 
+        public Task RemoveCapabilities(string serviceName)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task PersistCapabilities(ServiceCapabilities capabilities)
         {
             throw new NotSupportedException();
+        }
+
+        public Task<ServiceCapabilities> CapabilitiesFor(string serviceName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceCapabilities[]> AllCapabilities()
+        {
+            throw new NotImplementedException();
         }
 
         public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)

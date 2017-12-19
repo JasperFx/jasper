@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Bus.Runtime.Subscriptions;
 using Marten;
 
 namespace Jasper.Marten.Subscriptions
@@ -9,6 +10,8 @@ namespace Jasper.Marten.Subscriptions
 
         public MartenSubscriptionSettings()
         {
+            StoreOptions.Schema.For<ServiceCapabilities>().Identity(x => x.ServiceName);
+
             _store = new Lazy<IDocumentStore>(() => new DocumentStore(StoreOptions));
 
             var connectionString = Environment.GetEnvironmentVariable("marten_subscription_database");

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
 using Jasper.Marten;
 using Jasper.Marten.Codegen;
@@ -19,7 +20,10 @@ namespace Jasper.Marten
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Settings.Require<StoreOptions>();
+            registry.Settings.Alter<StoreOptions>(x =>
+            {
+                x.Schema.For<ServiceCapabilities>().Identity(_ => _.ServiceName);
+            });
 
             registry.Services.AddSingleton<IDocumentStore>(x =>
             {
@@ -27,6 +31,8 @@ namespace Jasper.Marten
                 var documentStore = new DocumentStore(storeOptions);
                 return documentStore;
             });
+
+
 
             registry.Services.AddScoped(c => c.GetService<IDocumentStore>().OpenSession());
             registry.Services.AddScoped(c => c.GetService<IDocumentStore>().QuerySession());

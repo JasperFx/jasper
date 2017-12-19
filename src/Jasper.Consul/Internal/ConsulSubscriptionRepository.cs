@@ -18,6 +18,7 @@ namespace Jasper.Consul.Internal
     {
         private readonly ConsulSettings _settings;
         public const string SUBSCRIPTION_PREFIX = GLOBAL_PREFIX + "subscription/";
+        public const string CAPABILITY_PREFEX = GLOBAL_PREFIX + "service/";
 
         public ConsulSubscriptionRepository(ConsulSettings settings, IChannelGraph channels, BusSettings envSettings)
             : base(settings, channels, envSettings)
@@ -35,25 +36,37 @@ namespace Jasper.Consul.Internal
             return $"Consul-backed subscriptions";
         }
 
+        public Task RemoveCapabilities(string serviceName)
+        {
+            return client.KV.Delete(serviceName.ServiceCapabilityConsulId());
+        }
+
         public Task PersistCapabilities(ServiceCapabilities capabilities)
         {
             var ops = capabilities.Subscriptions
                 .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Set) {Value = serialize(s)})
                 .ToList();
 
+            var persist = new KVTxnOp(capabilities.ConsulId(), KVTxnVerb.Set){Value = serialize(capabilities)};
+            ops.Add(persist);
+
             return client.KV.Txn(ops);
         }
 
-        public Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public async Task<ServiceCapabilities> CapabilitiesFor(string serviceName)
         {
+            var prefix = serviceName.ServiceCapabilityConsulId();
+            var pair = await client.KV.Get(prefix);
+            if (pair.Response == null) return null;
 
+            return deserialize<ServiceCapabilities>(pair.Response.Value);
+        }
 
-            var ops = subscriptions
-                .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Delete));
+        public async Task<ServiceCapabilities[]> AllCapabilities()
+        {
+            var subs = await client.KV.List(CAPABILITY_PREFEX);
 
-            return client.KV.Txn(ops
-                .ToList()
-            );
+            return subs.Response?.Select(kv => deserialize<ServiceCapabilities>(kv.Value)).ToArray() ?? new ServiceCapabilities[0];
         }
 
         public async Task<Subscription[]> GetSubscribersFor(Type messageType)
@@ -69,18 +82,6 @@ namespace Jasper.Consul.Internal
             return subs.ToArray();
         }
 
-        public async Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
-        {
-            var existing = await AllSubscriptions();
-
-            var toRemove = existing.Where(x => x.ServiceName == serviceName).Select(x => new KVTxnOp(x.ConsulId(), KVTxnVerb.Delete));
-
-            var adds = subscriptions
-                .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Set) {Value = serialize(s)});
-
-            await client.KV.Txn(toRemove.Concat(adds).ToList());
-        }
-
         public async Task<IEnumerable<Subscription>> AllSubscriptions()
         {
             var subs = await client.KV.List(SUBSCRIPTION_PREFIX);
@@ -94,6 +95,16 @@ namespace Jasper.Consul.Internal
         public static string ConsulId(this Subscription subscription)
         {
             return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.Id}";
+        }
+
+        public static string ServiceCapabilityConsulId(this string serviceName)
+        {
+            return $"{ConsulSubscriptionRepository.CAPABILITY_PREFEX}{serviceName}";
+        }
+
+        public static string ConsulId(this ServiceCapabilities capabilities)
+        {
+            return $"{ConsulSubscriptionRepository.CAPABILITY_PREFEX}{capabilities.ServiceName}";
         }
 
         public static string ConsulIdPrefix(this string messageType)

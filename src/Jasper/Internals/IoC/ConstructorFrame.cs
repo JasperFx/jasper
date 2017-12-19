@@ -29,7 +29,7 @@ namespace Jasper.Internals.IoC
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             var arguments = _arguments.Select(x => x.Usage).Join(", ");
-            var implementationTypeName = ImplementationType.FullName.Replace("+", ".");
+            var implementationTypeName = ImplementationType.FullNameInCode();
 
             var declaration = $"var {Variable.Usage} = new {implementationTypeName}({arguments})";
 

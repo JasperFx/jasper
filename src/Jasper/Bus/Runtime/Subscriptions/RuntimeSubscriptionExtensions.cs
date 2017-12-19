@@ -9,7 +9,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
         public static Task PersistSubscriptions(this JasperRuntime runtime)
         {
             var repository = runtime.Get<ISubscriptionsRepository>();
-            return repository.ReplaceSubscriptions(runtime.ServiceName, runtime.Capabilities.Subscriptions);
+            return repository.PersistCapabilities(runtime.Capabilities);
         }
 
         public static void ResetSubscriptions(this JasperRuntime runtime)

@@ -57,7 +57,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         protected bool Equals(Subscription other)
         {
-            return Equals(Destination, other.Destination) && string.Equals(MessageType, other.MessageType) && string.Equals(ServiceName, other.ServiceName) && _accepts.SequenceEqual(other._accepts);
+            return Equals(Destination, other.Destination) && string.Equals(MessageType, other.MessageType) && string.Equals(ServiceName, other.ServiceName) && Accept.SequenceEqual(other.Accept);
         }
 
         public override bool Equals(object obj)
@@ -81,7 +81,7 @@ namespace Jasper.Bus.Runtime.Subscriptions
 
         public override string ToString()
         {
-            return $"{nameof(DotNetType)}: {DotNetType}, {nameof(Destination)}: {Destination}, {nameof(MessageType)}: {MessageType}, {nameof(ServiceName)}: {ServiceName}, {nameof(Accept)}: {Accept}";
+            return $"{nameof(Destination)}: {Destination}, {nameof(MessageType)}: {MessageType}, {nameof(ServiceName)}: {ServiceName}, {nameof(Accept)}: {Accept}";
         }
     }
 }

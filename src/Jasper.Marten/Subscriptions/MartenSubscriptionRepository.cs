@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Util;
@@ -17,23 +18,37 @@ namespace Jasper.Marten.Subscriptions
             _documentStore = settings.Store;
         }
 
-        public async Task PersistCapabilities(ServiceCapabilities capabilities)
+        public async Task RemoveCapabilities(string serviceName)
         {
             using (var session = _documentStore.LightweightSession())
             {
-                session.Store(capabilities.Subscriptions);
+                session.Delete<ServiceCapabilities>(serviceName);
                 await session.SaveChangesAsync();
             }
         }
 
-        public async Task RemoveSubscriptions(IEnumerable<Subscription> subscriptions)
+        public async Task PersistCapabilities(ServiceCapabilities capabilities)
         {
             using (var session = _documentStore.LightweightSession())
             {
-                foreach (var subscription in subscriptions)
-                    session.Delete(subscription.Id);
-
+                session.Store(capabilities);
                 await session.SaveChangesAsync();
+            }
+        }
+
+        public async Task<ServiceCapabilities> CapabilitiesFor(string serviceName)
+        {
+            using (var session = _documentStore.QuerySession())
+            {
+                return await session.LoadAsync<ServiceCapabilities>(serviceName);
+            }
+        }
+
+        public async Task<ServiceCapabilities[]> AllCapabilities()
+        {
+            using (var session = _documentStore.QuerySession())
+            {
+                return (await session.Query<ServiceCapabilities>().ToListAsync()).ToArray();
             }
         }
 
@@ -41,7 +56,7 @@ namespace Jasper.Marten.Subscriptions
         {
             using (var query = _documentStore.QuerySession())
             {
-                var docs = await query.Query<Subscription>()
+                var docs = await query.Query<ServiceCapabilities>().SelectMany(x => x.Subscriptions)
                     .Where(x => x.MessageType == messageType.ToMessageAlias())
                     .ToListAsync();
 
@@ -53,23 +68,13 @@ namespace Jasper.Marten.Subscriptions
         {
             using (var query = _documentStore.QuerySession())
             {
-                var docs = await query.Query<Subscription>()
+                var docs = await query.Query<ServiceCapabilities>().SelectMany(x => x.Subscriptions)
                     .ToListAsync();
 
                 return docs.ToArray();
             }
         }
 
-        public async Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
-        {
-            using (var session = _documentStore.OpenSession())
-            {
-                session.DeleteWhere<Subscription>(x => x.ServiceName == serviceName);
-                session.Store(subscriptions);
-
-                await session.SaveChangesAsync();
-            }
-        }
 
         public void Dispose()
         {
