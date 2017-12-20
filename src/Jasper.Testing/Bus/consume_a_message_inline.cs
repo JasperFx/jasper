@@ -28,7 +28,7 @@ namespace Jasper.Testing.Bus
 
                 _.Publish.MessagesFromAssemblyContaining<Message1>().To("loopback://cascading");
 
-                _.Logging.LogBusEventsWith(this);
+                _.Logging.LogMessageEventsWith(this);
 
                 _.Handlers.OnException<DivideByZeroException>().Requeue();
                 _.Handlers.DefaultMaximumAttempts = 3;

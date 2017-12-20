@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
@@ -39,7 +40,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void explicitly_add_logger()
         {
-            with(_ => _.Logging.LogBusEventsWith<ConsoleMessageLogger>());
+            with(_ => _.Logging.LogMessageEventsWith<ConsoleMessageLogger>());
 
             Runtime.Container.ShouldHaveRegistration<IMessageLogger, ConsoleMessageLogger>();
         }
@@ -55,7 +56,7 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void explicitly_add_logger_2()
         {
-            with(_ => _.Logging.LogBusEventsWith(new ConsoleMessageLogger()));
+            with(_ => _.Logging.LogMessageEventsWith(new ConsoleMessageLogger()));
 
 
             Runtime.Services
@@ -88,16 +89,33 @@ namespace Jasper.Testing.Bus
     }
     // ENDSAMPLE
 
+    // SAMPLE: SampleTransportLogger
+    public class SampleTransportLogger : TransportLoggerBase
+    {
+        public override void CircuitBroken(Uri destination)
+        {
+            // do something with the information
+        }
+
+        public override void CircuitResumed(Uri destination)
+        {
+            // do something with the information
+        }
+    }
+    // ENDSAMPLE
+
     // SAMPLE: AppWithCustomLogging
     public class AppWithCustomLogging : JasperRegistry
     {
         public AppWithCustomLogging()
         {
             // Shorthand
-            Logging.LogBusEventsWith<SampleMessageLogger>();
+            Logging.LogMessageEventsWith<SampleMessageLogger>();
+            Logging.LogTransportEventsWith<SampleTransportLogger>();
 
             // Uglier equivalent
             Services.AddTransient<IMessageLogger, SampleMessageLogger>();
+            Services.AddTransient<ITransportLogger, SampleTransportLogger>();
         }
     }
     // ENDSAMPLE

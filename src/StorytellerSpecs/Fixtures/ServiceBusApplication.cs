@@ -29,7 +29,7 @@ namespace StorytellerSpecs.Fixtures
             _registry.Services.AddTransient<IMessageLogger, MessageTrackingLogger>();
 
 
-            _registry.Logging.LogBusEventsWith(new StorytellerMessageLogger(Context));
+            _registry.Logging.LogMessageEventsWith(new StorytellerMessageLogger(Context));
         }
 
         public override void TearDown()

@@ -81,7 +81,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _receivers = new LightweightCache<string, JasperRuntime>(key =>
             {
                 var registry = new ReceiverApp();
-                registry.Logging.LogBusEventsWith(_messageLogger);
+                registry.Logging.LogMessageEventsWith(_messageLogger);
                 registry.Logging.LogTransportEventsWith(_transportLogger);
 
                 return JasperRuntime.For(registry);
@@ -90,7 +90,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _senders = new LightweightCache<string, JasperRuntime>(key =>
             {
                 var registry = new SenderApp();
-                registry.Logging.LogBusEventsWith(_messageLogger);
+                registry.Logging.LogMessageEventsWith(_messageLogger);
                 registry.Logging.LogTransportEventsWith(_transportLogger);
 
                 registry.Logging.LogTransportEventsWith(_senderWatcher);

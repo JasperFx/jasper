@@ -5,12 +5,27 @@ using Jasper.Bus.Transports.Tcp;
 
 namespace Jasper.Bus.Logging
 {
+    // SAMPLE: ITransportLogger
     public interface ITransportLogger
     {
+        /// <summary>
+        /// An outgoing batch of messages were sent successfully
+        /// </summary>
+        /// <param name="batch"></param>
         void OutgoingBatchSucceeded(OutgoingMessageBatch batch);
-        void OutgoingBatchFailed(OutgoingMessageBatch batch, Exception ex = null);
-        void IncomingBatchReceived(IEnumerable<Envelope> envelopes);
 
+        /// <summary>
+        /// An outgoing batch of messages were sent unsuccessfully
+        /// </summary>
+        /// <param name="batch"></param>
+        /// <param name="ex"></param>
+        void OutgoingBatchFailed(OutgoingMessageBatch batch, Exception ex = null);
+
+        /// <summary>
+        /// An incoming batch of messages was received successfully
+        /// </summary>
+        /// <param name="envelopes"></param>
+        void IncomingBatchReceived(IEnumerable<Envelope> envelopes);
 
         /// <summary>
         /// The sending agent for this destination experienced too many failures and has been latched
@@ -63,4 +78,5 @@ namespace Jasper.Bus.Logging
         /// <param name="envelopes"></param>
         void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes);
     }
+    // ENDSAMPLE
 }

@@ -53,7 +53,7 @@ namespace Jasper.Storyteller
             Registry = registry;
 
             Registry.Services.AddSingleton(MessageHistory);
-            Registry.Logging.LogBusEventsWith<MessageTrackingLogger>();
+            Registry.Logging.LogMessageEventsWith<MessageTrackingLogger>();
             Registry.Services.Add(new ServiceDescriptor(typeof(IMessageLogger), _messageLogger));
             Registry.Services.Add(new ServiceDescriptor(typeof(ITransportLogger), _transportLogger));
         }

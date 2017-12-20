@@ -13,7 +13,7 @@ namespace Jasper.Bus.Tracking
         public void Configure(JasperRegistry registry)
         {
             registry.Services.AddSingleton<MessageHistory>();
-            registry.Logging.LogBusEventsWith<MessageTrackingLogger>();
+            registry.Logging.LogMessageEventsWith<MessageTrackingLogger>();
         }
     }
 }

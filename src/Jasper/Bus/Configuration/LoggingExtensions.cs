@@ -7,21 +7,21 @@ namespace Jasper.Bus.Configuration
     public static class LoggingExtensions
     {
         /// <summary>
-        /// Add a custom IBusLogger to the system
+        /// Add a custom IMessageLogger to the system for message level events
         /// </summary>
         /// <param name="logging"></param>
         /// <typeparam name="T"></typeparam>
-        public static void LogBusEventsWith<T>(this Jasper.Configuration.Logging logging) where T : class, IMessageLogger
+        public static void LogMessageEventsWith<T>(this Jasper.Configuration.Logging logging) where T : class, IMessageLogger
         {
             logging.Parent.Services.AddTransient<IMessageLogger, T>();
         }
 
         /// <summary>
-        /// Add a custom IBusLogger to the system
+        /// Add a custom IMessageLogger to the system for message level events
         /// </summary>
         /// <param name="logging"></param>
         /// <param name="logger"></param>
-        public static void LogBusEventsWith(this Jasper.Configuration.Logging logging, IMessageLogger logger)
+        public static void LogMessageEventsWith(this Jasper.Configuration.Logging logging, IMessageLogger logger)
         {
             logging.Parent.Services.AddSingleton<IMessageLogger>(logger);
         }
