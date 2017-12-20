@@ -172,6 +172,7 @@ namespace Jasper.Testing.Bus.WorkerQueues
 
     public class M1{}
 
+
     [Worker("important")]
     public class M2{}
 

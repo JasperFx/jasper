@@ -1,4 +1,4 @@
-<!--title:Lightweight Fire and Forget Transport-->
+<!--title:TCP Transport-->
 
 <div class="alert alert-info"><b>Note!</b> The lightweight transport was conceived as a .Net equivalent to <a href="http://zeromq.org/">ZeroMQ</a></div>
 

@@ -11,7 +11,6 @@ namespace Jasper.Bus.WorkerQueues
     {
         public string WorkerName { get; }
 
-
         public WorkerAttribute(string workerName)
         {
             WorkerName = workerName.ToLower();

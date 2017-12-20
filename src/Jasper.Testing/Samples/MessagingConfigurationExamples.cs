@@ -153,7 +153,9 @@ namespace Jasper.Testing.Samples
     {
         public LoopbackTransportApp()
         {
-            // TODO -- talk about how to configure worker queues
+            Processing.Worker("important")
+                .IsDurable()
+                .MaximumParallelization(10);
 
             // Publish the message Message2 the important queue
             Publish.Message<Message2>().To("loopback://important");

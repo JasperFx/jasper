@@ -71,8 +71,7 @@ build scripting tool you're using know that the validation failed.
 
 **This is in flight**
 
-As of right now (Sept 2017), Jasper only supports the [StructureMap](http://structuremap.github.io) container, but is likely to transition to just using the built in
-ASP.Net Core IoC container before it hits 1.0. Regardless, we expect this command will live on.
+As of right now (Dec 2017), Jasper only supports the [StructureMap](http://structuremap.github.io) container, but is somewhat likely to transition to, um, something else (or a streamlined, faster StructureMap) to be named later before it hits 1.0. Regardless, we expect this command will live on.
 
 To bootstrap the application and list out all the services registered to the system's IoC container, use this command:
 

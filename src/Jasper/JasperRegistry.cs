@@ -69,6 +69,10 @@ namespace Jasper
 
         internal BusSettings BusSettings => _bus.Settings;
 
+        /// <summary>
+        /// Configure worker queue priority, message assignement, and worker
+        /// durability
+        /// </summary>
         public IWorkersExpression Processing => _bus.Settings.Workers;
 
         /// <summary>

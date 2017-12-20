@@ -56,6 +56,12 @@ namespace Jasper.Bus.WorkerQueues
             return this;
         }
 
+        public IWorkerSettings IsNotDurable()
+        {
+            IsDurable = false;
+            return this;
+        }
+
         public bool IsDurable { get; set; }
     }
 }
