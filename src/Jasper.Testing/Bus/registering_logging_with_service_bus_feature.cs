@@ -17,7 +17,7 @@ namespace Jasper.Testing.Bus
         {
             withAllDefaults();
 
-            Runtime.Container.ShouldNotHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.Container.ShouldNotHaveRegistration<IMessageLogger, ConsoleMessageLogger>();
         }
 
         [Fact]
@@ -25,7 +25,7 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.UseConsoleLogging = true);
 
-            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.Container.ShouldHaveRegistration<IMessageLogger, ConsoleMessageLogger>();
         }
 
         [Fact]
@@ -39,9 +39,9 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void explicitly_add_logger()
         {
-            with(_ => _.Logging.LogBusEventsWith<ConsoleBusLogger>());
+            with(_ => _.Logging.LogBusEventsWith<ConsoleMessageLogger>());
 
-            Runtime.Container.ShouldHaveRegistration<IBusLogger, ConsoleBusLogger>();
+            Runtime.Container.ShouldHaveRegistration<IMessageLogger, ConsoleMessageLogger>();
         }
 
         [Fact]
@@ -55,11 +55,11 @@ namespace Jasper.Testing.Bus
         [Fact]
         public void explicitly_add_logger_2()
         {
-            with(_ => _.Logging.LogBusEventsWith(new ConsoleBusLogger()));
+            with(_ => _.Logging.LogBusEventsWith(new ConsoleMessageLogger()));
 
 
             Runtime.Services
-                .Any(x => x.ServiceType == typeof(IBusLogger) && x.ImplementationInstance is ConsoleBusLogger).ShouldBeTrue();
+                .Any(x => x.ServiceType == typeof(IMessageLogger) && x.ImplementationInstance is ConsoleMessageLogger).ShouldBeTrue();
         }
 
         [Fact]
@@ -73,8 +73,8 @@ namespace Jasper.Testing.Bus
         }
     }
 
-    // SAMPLE: SampleBusLogger
-    public class SampleBusLogger : BusLoggerBase
+    // SAMPLE: SampleMessageLogger
+    public class SampleMessageLogger : MessageLoggerBase
     {
         public override void Sent(Envelope envelope)
         {
@@ -94,10 +94,10 @@ namespace Jasper.Testing.Bus
         public AppWithCustomLogging()
         {
             // Shorthand
-            Logging.LogBusEventsWith<SampleBusLogger>();
+            Logging.LogBusEventsWith<SampleMessageLogger>();
 
             // Uglier equivalent
-            Services.AddTransient<IBusLogger, SampleBusLogger>();
+            Services.AddTransient<IMessageLogger, SampleMessageLogger>();
         }
     }
     // ENDSAMPLE

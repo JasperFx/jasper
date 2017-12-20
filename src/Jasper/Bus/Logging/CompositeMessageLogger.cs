@@ -7,14 +7,14 @@ using Jasper.Bus.Runtime.Subscriptions;
 
 namespace Jasper.Bus.Logging
 {
-    public class CompositeLogger : IBusLogger
+    public class CompositeMessageLogger : IMessageLogger
     {
-        public CompositeLogger(IBusLogger[] loggers)
+        public CompositeMessageLogger(IMessageLogger[] loggers)
         {
             Loggers = loggers;
         }
 
-        public IBusLogger[] Loggers { get; }
+        public IMessageLogger[] Loggers { get; }
 
         public void Sent(Envelope envelope)
         {
@@ -188,9 +188,9 @@ namespace Jasper.Bus.Logging
             }
         }
 
-        public static CompositeLogger Empty()
+        public static CompositeMessageLogger Empty()
         {
-            return new CompositeLogger(new IBusLogger[0]);
+            return new CompositeMessageLogger(new IMessageLogger[0]);
         }
     }
 }

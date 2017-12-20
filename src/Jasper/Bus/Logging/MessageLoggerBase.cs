@@ -4,7 +4,7 @@ using Jasper.Bus.Runtime.Subscriptions;
 
 namespace Jasper.Bus.Logging
 {
-    public abstract class BusLoggerBase : IBusLogger
+    public abstract class MessageLoggerBase : IMessageLogger
     {
         public virtual void Sent(Envelope envelope)
         {

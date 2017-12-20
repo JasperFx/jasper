@@ -23,7 +23,7 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly Lazy<IServiceBus> _bus;
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(BusMessageSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, CompositeLogger logger, IEnumerable<IMissingHandler> missingHandlers, Lazy<IServiceBus> bus)
+        public HandlerPipeline(BusMessageSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, CompositeMessageLogger logger, IEnumerable<IMissingHandler> missingHandlers, Lazy<IServiceBus> bus)
         {
             _serializer = serializers;
             _graph = graph;
@@ -35,7 +35,7 @@ namespace Jasper.Bus.Runtime.Invocation
         }
 
 
-        public IBusLogger Logger { get; }
+        public IMessageLogger Logger { get; }
 
         public async Task Invoke(Envelope envelope)
         {

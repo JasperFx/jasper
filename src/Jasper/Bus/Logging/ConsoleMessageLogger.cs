@@ -6,7 +6,7 @@ using Jasper.Util;
 
 namespace Jasper.Bus.Logging
 {
-    public class ConsoleBusLogger : IBusLogger
+    public class ConsoleMessageLogger : IMessageLogger
     {
         public void Sent(Envelope envelope)
         {

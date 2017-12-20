@@ -12,7 +12,7 @@ using Envelope = Jasper.Bus.Runtime.Envelope;
 
 namespace Jasper.Storyteller.Logging
 {
-    public class StorytellerBusLogger : BusLoggerBase
+    public class StorytellerMessageLogger : MessageLoggerBase
     {
         private ISpecContext _context;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();

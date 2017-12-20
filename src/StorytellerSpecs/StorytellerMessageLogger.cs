@@ -7,11 +7,11 @@ using StoryTeller;
 
 namespace StorytellerSpecs
 {
-    public class StorytellerBusLogger : IBusLogger
+    public class StorytellerMessageLogger : IMessageLogger
     {
         private readonly ISpecContext _context;
 
-        public StorytellerBusLogger(ISpecContext context)
+        public StorytellerMessageLogger(ISpecContext context)
         {
             _context = context;
         }

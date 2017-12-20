@@ -35,7 +35,7 @@ namespace Jasper.Bus
             For<IServiceBus>().Use<ServiceBus>();
             ForSingletonOf<IHandlerPipeline>().Use<HandlerPipeline>();
 
-            ForSingletonOf<CompositeLogger>().Use<CompositeLogger>();
+            ForSingletonOf<CompositeMessageLogger>().Use<CompositeMessageLogger>();
             ForSingletonOf<CompositeTransportLogger>().Use<CompositeTransportLogger>();
 
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();

@@ -18,7 +18,7 @@ namespace Jasper.Bus.Runtime.Invocation
         // doesn't need to be passed the envelope here, but maybe leave this one
         Task Retry(Envelope envelope);
 
-        IBusLogger Logger { get; }
+        IMessageLogger Logger { get; }
 
         Task SendAcknowledgement(Envelope original);
     }

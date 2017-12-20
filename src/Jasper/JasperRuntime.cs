@@ -123,7 +123,7 @@ namespace Jasper
             catch (Exception e)
             {
                 Console.WriteLine($"Unable to un-register the running node");
-                Get<CompositeLogger>().LogException(e);
+                Get<CompositeMessageLogger>().LogException(e);
             }
 
             Get<BusSettings>().StopAll();
@@ -270,7 +270,7 @@ namespace Jasper
             }
             catch (Exception e)
             {
-                runtime.Get<CompositeLogger>().LogException(e, message: "Failure when trying to register the node with " + nodes);
+                runtime.Get<CompositeMessageLogger>().LogException(e, message: "Failure when trying to register the node with " + nodes);
             }
         }
 

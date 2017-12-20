@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Jasper.Testing.Bus
 {
-    public class consume_a_message_inline : IntegrationContext, IBusLogger
+    public class consume_a_message_inline : IntegrationContext, IMessageLogger
     {
         private readonly WorkTracker theTracker = new WorkTracker();
 
@@ -96,40 +96,40 @@ namespace Jasper.Testing.Bus
         }
 
 
-        void IBusLogger.Sent(Envelope envelope)
+        void IMessageLogger.Sent(Envelope envelope)
         {
 
         }
 
-        void IBusLogger.Received(Envelope envelope)
+        void IMessageLogger.Received(Envelope envelope)
         {
         }
 
-        void IBusLogger.ExecutionStarted(Envelope envelope)
+        void IMessageLogger.ExecutionStarted(Envelope envelope)
         {
         }
 
-        void IBusLogger.ExecutionFinished(Envelope envelope)
+        void IMessageLogger.ExecutionFinished(Envelope envelope)
         {
         }
 
-        void IBusLogger.MessageSucceeded(Envelope envelope)
+        void IMessageLogger.MessageSucceeded(Envelope envelope)
         {
         }
 
         public readonly IList<Exception> Exceptions = new List<Exception>();
 
-        void IBusLogger.MessageFailed(Envelope envelope, Exception ex)
+        void IMessageLogger.MessageFailed(Envelope envelope, Exception ex)
         {
             Exceptions.Add(ex);
         }
 
-        void IBusLogger.LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        void IMessageLogger.LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             Exceptions.Add(ex);
         }
 
-        void IBusLogger.NoHandlerFor(Envelope envelope)
+        void IMessageLogger.NoHandlerFor(Envelope envelope)
         {
         }
 

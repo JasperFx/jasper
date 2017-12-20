@@ -16,7 +16,7 @@ namespace Jasper.Bus.WorkerQueues
 {
     public class WorkerQueue : IWorkerQueue
     {
-        private readonly CompositeLogger _logger;
+        private readonly CompositeMessageLogger _logger;
         private readonly IHandlerPipeline _pipeline;
         private readonly BusSettings _settings;
         private readonly CancellationToken _cancellationToken;
@@ -24,7 +24,7 @@ namespace Jasper.Bus.WorkerQueues
             = new Dictionary<string, ActionBlock<Envelope>>();
 
 
-        public WorkerQueue(CompositeLogger logger, IHandlerPipeline pipeline, BusSettings settings, CancellationToken cancellationToken)
+        public WorkerQueue(CompositeMessageLogger logger, IHandlerPipeline pipeline, BusSettings settings, CancellationToken cancellationToken)
         {
             _logger = logger;
             _pipeline = pipeline;

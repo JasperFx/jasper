@@ -12,13 +12,13 @@ namespace Jasper.Bus.Transports
     // outgoing destination. Not a huge problem I believe
     public class Channel : IChannel
     {
-        private readonly CompositeLogger _logger;
+        private readonly CompositeMessageLogger _logger;
         private readonly SubscriberAddress _address;
         private readonly ISendingAgent _agent;
         public Uri Uri => _address.Uri;
         public Uri LocalReplyUri { get; }
 
-        public Channel(CompositeLogger logger, SubscriberAddress address, Uri replyUri, ISendingAgent agent)
+        public Channel(CompositeMessageLogger logger, SubscriberAddress address, Uri replyUri, ISendingAgent agent)
         {
             LocalReplyUri = replyUri;
             _logger = logger;
@@ -28,7 +28,7 @@ namespace Jasper.Bus.Transports
 
         }
 
-        public Channel(CompositeLogger logger, ISendingAgent agent, Uri replyUri)
+        public Channel(CompositeMessageLogger logger, ISendingAgent agent, Uri replyUri)
             : this(logger, new SubscriberAddress(agent.Destination), replyUri, agent)
         {
 

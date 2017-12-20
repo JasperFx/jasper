@@ -25,9 +25,9 @@ namespace Jasper.Bus
         private readonly SerializationGraph _serialization;
         private readonly BusSettings _settings;
         private readonly IChannelGraph _channels;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeMessageLogger _logger;
 
-        public ServiceBus(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization, BusSettings settings, IChannelGraph channels, IPersistence persistence, CompositeLogger logger)
+        public ServiceBus(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, BusMessageSerializationGraph serialization, BusSettings settings, IChannelGraph channels, IPersistence persistence, CompositeMessageLogger logger)
         {
             _router = router;
             _watcher = watcher;

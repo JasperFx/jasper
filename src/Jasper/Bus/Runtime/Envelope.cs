@@ -30,8 +30,6 @@ namespace Jasper.Bus.Runtime
             }
         }
 
-        public byte[] Identity() => EnvelopeVersionId.MessageIdentifier.ToByteArray();
-
 
         public int Attempts { get; set; }
 
@@ -64,7 +62,6 @@ namespace Jasper.Bus.Runtime
         public Envelope ForResponse(object message)
         {
             var child = ForSend(message);
-
 
 
             if (MatchesResponse(message))
@@ -184,19 +181,6 @@ namespace Jasper.Bus.Runtime
             }
         }
 
-
-
-
-        public void WriteData()
-        {
-            if (Writer == null || Message == null)
-            {
-                throw new InvalidOperationException("This envelope is missing a Writer and/or Message");
-            }
-
-            Data = Writer.Write(Message);
-        }
-
         public string Source { get; set; }
 
 
@@ -216,14 +200,7 @@ namespace Jasper.Bus.Runtime
 
         public Uri Destination { get; set; }
 
-        /// <summary>
-        /// Read-only string representation of the destination Uri (for persistence)
-        /// </summary>
-        public string Address => Destination.ToString();
-
         public string[] AcceptedContentTypes { get; set; } = new string[0];
-
-        public string Accepts => AcceptedContentTypes?.FirstOrDefault();
 
 
         public Guid Id { get; set; } = CombGuidIdGeneration.NewGuid();

@@ -34,7 +34,7 @@ namespace Jasper.Storyteller
     {
         public readonly MessageHistory MessageHistory = new MessageHistory();
 
-        private readonly StorytellerBusLogger _busLogger = new StorytellerBusLogger();
+        private readonly StorytellerMessageLogger _messageLogger = new StorytellerMessageLogger();
         private readonly StorytellerTransportLogger _transportLogger = new StorytellerTransportLogger();
 
         private JasperRuntime _runtime;
@@ -54,7 +54,7 @@ namespace Jasper.Storyteller
 
             Registry.Services.AddSingleton(MessageHistory);
             Registry.Logging.LogBusEventsWith<MessageTrackingLogger>();
-            Registry.Services.Add(new ServiceDescriptor(typeof(IBusLogger), _busLogger));
+            Registry.Services.Add(new ServiceDescriptor(typeof(IMessageLogger), _messageLogger));
             Registry.Services.Add(new ServiceDescriptor(typeof(ITransportLogger), _transportLogger));
         }
 
@@ -121,7 +121,7 @@ namespace Jasper.Storyteller
             _warmup = Task.Factory.StartNew(() =>
             {
                 _runtime = JasperRuntime.For(Registry);
-                _busLogger.ServiceName = _runtime.ServiceName;
+                _messageLogger.ServiceName = _runtime.ServiceName;
                 beforeAll();
             });
 
@@ -145,13 +145,13 @@ namespace Jasper.Storyteller
 
             public void BeforeExecution(ISpecContext context)
             {
-                _parent._busLogger.Start(context);
-                _parent._transportLogger.Start(context, _parent._busLogger.Errors);
+                _parent._messageLogger.Start(context);
+                _parent._transportLogger.Start(context, _parent._messageLogger.Errors);
             }
 
             public void AfterExecution(ISpecContext context)
             {
-                var reports = _parent._busLogger.BuildReports();
+                var reports = _parent._messageLogger.BuildReports();
                 foreach (var report in reports)
                 {
                     context.Reporting.Log(report);

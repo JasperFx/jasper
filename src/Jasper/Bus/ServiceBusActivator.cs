@@ -28,10 +28,10 @@ namespace Jasper.Bus
         private readonly ITransport[] _transports;
         private readonly UriAliasLookup _lookups;
         private readonly IWorkerQueue _workerQueue;
-        private readonly CompositeLogger _logger;
+        private readonly CompositeMessageLogger _logger;
         private readonly IPersistence _persistence;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IScheduledJobProcessor scheduledJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, IWorkerQueue workerQueue, CompositeLogger logger, IPersistence persistence)
+        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IScheduledJobProcessor scheduledJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, IWorkerQueue workerQueue, CompositeMessageLogger logger, IPersistence persistence)
         {
             _settings = settings;
             _pipeline = pipeline;

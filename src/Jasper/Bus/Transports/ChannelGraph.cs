@@ -16,9 +16,9 @@ namespace Jasper.Bus.Transports
         private readonly ConcurrentDictionary<Uri, Lazy<IChannel>> _channels = new ConcurrentDictionary<Uri, Lazy<IChannel>>();
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
         private UriAliasLookup _lookups;
-        private CompositeLogger _logger;
+        private CompositeMessageLogger _logger;
 
-        public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups, CapabilityGraph capabilities, CompositeLogger logger)
+        public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups, CapabilityGraph capabilities, CompositeMessageLogger logger)
         {
             _lookups = lookups;
             _settings = settings;

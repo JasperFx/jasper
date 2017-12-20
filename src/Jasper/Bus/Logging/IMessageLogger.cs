@@ -5,10 +5,8 @@ using Jasper.Bus.Runtime.Subscriptions;
 namespace Jasper.Bus.Logging
 {
 
-// TODO -- rename to IMessageLogger?
-
-    // SAMPLE: IBusLogger
-    public interface IBusLogger
+    // SAMPLE: IMessageLogger
+    public interface IMessageLogger
     {
         /// <summary>
         /// Called when an envelope is successfully sent through a transport

@@ -22,7 +22,7 @@ namespace Module1
 
             registry.Services.For<IModuleService>().Use<ServiceFromModule>();
 
-            registry.Services.For<IBusLogger>().Use<ModuleBusLogger>();
+            registry.Services.For<IMessageLogger>().Use<ModuleMessageLogger>();
         }
 
         public static JasperRegistry Registry { get; set; }
@@ -33,7 +33,7 @@ namespace Module1
 
     }
 
-    public class ModuleBusLogger : IBusLogger
+    public class ModuleMessageLogger : IMessageLogger
     {
         public void MovedToErrorQueue(Envelope envelope, Exception ex)
         {

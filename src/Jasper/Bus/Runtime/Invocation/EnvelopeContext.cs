@@ -23,7 +23,7 @@ namespace Jasper.Bus.Runtime.Invocation
             _sender = sender ?? throw new ArgumentNullException();
         }
 
-        public IBusLogger Logger => _pipeline.Logger;
+        public IMessageLogger Logger => _pipeline.Logger;
 
         public void EnqueueCascading(object message)
         {

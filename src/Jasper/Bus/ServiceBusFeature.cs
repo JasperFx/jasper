@@ -110,7 +110,7 @@ namespace Jasper.Bus
 
             if (registry.Logging.UseConsoleLogging)
             {
-                Services.For<IBusLogger>().Use<ConsoleBusLogger>();
+                Services.For<IMessageLogger>().Use<ConsoleMessageLogger>();
                 Services.For<ITransportLogger>().Use<ConsoleTransportLogger>();
             }
 

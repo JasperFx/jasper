@@ -13,7 +13,7 @@ namespace Jasper.Bus.Tracking
         {
             var history = runtime.Services.FirstOrDefault(x => x.ServiceType == typeof(MessageHistory));
             var logger = runtime.Services.Any(x =>
-                x.ServiceType == typeof(IBusLogger) && x.ImplementationType == typeof(MessageTrackingLogger));
+                x.ServiceType == typeof(IMessageLogger) && x.ImplementationType == typeof(MessageTrackingLogger));
 
             if (history == null || history.Lifetime != ServiceLifetime.Singleton || !logger)
             {

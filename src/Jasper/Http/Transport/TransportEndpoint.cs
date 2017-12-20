@@ -12,7 +12,7 @@ namespace Jasper.Http.Transport
     {
         public const string EnvelopeSenderHeader = "x-jasper-envelope-sender";
 
-        public async Task<int> put__messages(HttpRequest request, ILocalWorkerSender workers, CompositeLogger logger)
+        public async Task<int> put__messages(HttpRequest request, ILocalWorkerSender workers, CompositeMessageLogger logger)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace Jasper.Http.Transport
             }
         }
 
-        public async Task<int> put__messages_durable(HttpRequest request, ILocalWorkerSender workers, CompositeLogger logger)
+        public async Task<int> put__messages_durable(HttpRequest request, ILocalWorkerSender workers, CompositeMessageLogger logger)
         {
             try
             {
