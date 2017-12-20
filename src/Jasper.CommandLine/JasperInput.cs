@@ -3,6 +3,7 @@ using Oakton;
 
 namespace Jasper.CommandLine
 {
+    // SAMPLE: JasperInput
     public class JasperInput
     {
         [IgnoreOnCommandLine]
@@ -30,4 +31,5 @@ namespace Jasper.CommandLine
             return JasperRuntime.For(Registry);
         }
     }
+    // ENDSAMPLE
 }

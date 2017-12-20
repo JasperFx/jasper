@@ -5,6 +5,7 @@ using Oakton;
 
 namespace Jasper.CommandLine
 {
+    // SAMPLE: ServicesCommand
     [Description("Display the known StructureMap service registrations")]
     public class ServicesCommand : OaktonCommand<JasperInput>
     {
@@ -23,4 +24,5 @@ namespace Jasper.CommandLine
             return true;
         }
     }
+    // ENDSAMPLE
 }

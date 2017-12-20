@@ -87,3 +87,26 @@ And again, this command respects both the `--environment` and `--verbose` flags
 See <[linkto:documentation/messaging/routing/subscriptions]> for information about the `subscriptions` command and related workflow for exporting, updating, or validating dynamic
 subscriptions.
 
+## Custom Commands
+
+The Jasper.Console package uses the [Oakton](http://jasperfx.github.io/oakton) library for its command line support. You can add custom commands to your Jasper application by simply including `OaktonCommand<T>` classes in either the main application assembly or in any assembly that is decorated with the `[JasperModule]` attribute like so:
+
+<[sample:UseJasperModule-with-Extension]>
+
+or without any kind of extension like so:
+
+<[sample:using-JasperModule-with-no-extension]>
+
+If you want to write a command that uses the actual Jasper application, use the `JasperInput` class as either the input to your
+command or as the superclass to your input class:
+
+<[sample:JasperInput]>
+
+To make that more concrete, here is how the built in `services` command uses `JasperInput` type to build out and use the running system:
+
+<[sample:ServicesCommand]>
+
+Do note that the command will be responsible for disposing and shutting down the running `JasperRuntime`.
+
+
+

@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
+// SAMPLE: UseJasperModule-with-Extension
 [assembly:JasperModule(typeof(DiagnosticsExtension))]
+// ENDSAMPLE
 
 namespace Jasper.Diagnostics
 {

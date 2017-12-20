@@ -1,9 +1,15 @@
-﻿using System;
+﻿
+
+using System;
 using Jasper;
 using Jasper.Bus.Model;
 using Jasper.CommandLine;
 using Jasper.Marten;
 using Oakton;
+
+// SAMPLE: using-JasperModule-with-no-extension
+[assembly:JasperModule]
+// ENDSAMPLE
 
 namespace ShowHandler
 {
