@@ -66,7 +66,7 @@ namespace IntegrationTests.Bus
 
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Transports.Http.Enable(true);
+                _.Transports.Http.EnableListening(true);
                 _.Http.UseUrls("http://localhost:5005").UseKestrel();
             }))
             {

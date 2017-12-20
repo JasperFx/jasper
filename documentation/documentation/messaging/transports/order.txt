@@ -1,4 +1,4 @@
-lightweight
 durable
+tcp
 loopback
 http

@@ -222,7 +222,7 @@ namespace Jasper.Bus.Transports.Configuration
 
     public interface IHttpTransportConfiguration
     {
-        IHttpTransportConfiguration Enable(bool enabled);
+        IHttpTransportConfiguration EnableListening(bool enabled);
         IHttpTransportConfiguration RelativeUrl(string url);
         IHttpTransportConfiguration ConnectionTimeout(TimeSpan span);
     }
@@ -235,7 +235,7 @@ namespace Jasper.Bus.Transports.Configuration
 
         public bool EnableMessageTransport { get; set; } = false;
 
-        IHttpTransportConfiguration IHttpTransportConfiguration.Enable(bool enabled)
+        IHttpTransportConfiguration IHttpTransportConfiguration.EnableListening(bool enabled)
         {
             EnableMessageTransport = enabled;
             return this;

@@ -104,10 +104,8 @@ namespace Jasper.Testing.Samples
             // Set up a listener (this is optional)
             Transports.LightweightListenerAt(4000);
 
-            // Or, listen by Uri
-            // This directs Jasper to listen for messages at port 2200
-            // with the lightweight transport
-            Transports.ListenForMessagesFrom("tcp://localhost:2200");
+            // Or do the exact same thing by supplying a Uri
+            Transports.ListenForMessagesFrom("tcp://localhost:4000");
 
 
             // Registering a subscription to Message1 that should be
@@ -127,22 +125,13 @@ namespace Jasper.Testing.Samples
         public DurableTransportApp()
         {
             // Set up a listener (this is optional)
-            Transports.LightweightListenerAt(4000);
+            Transports.DurableListenerAt(2200);
 
+            // Or, alternatively set up durable listening by Uri
+            Transports.ListenForMessagesFrom("tcp://localhost:2200/durable");
 
-            // Or, listen by Uri
-            // This directs Jasper to listen for messages at port 2200
-            // with the durable transport
+            // Or, alternatively set up durable listening by Uri
             Transports.ListenForMessagesFrom("durable://localhost:2200");
-
-
-            // Registering a subscription to Message1 that should be
-            // delivered to a load balancer Uri at port 2200 and the "important"
-            // queue
-            Subscribe.To<Message1>().At("durable://loadbalancer:2200/important");
-
-            // Publish the message Message2 to the DNS entry "remoteserver"
-            Publish.Message<Message2>().To("durable://remoteserver:2201");
         }
     }
     // ENDSAMPLE

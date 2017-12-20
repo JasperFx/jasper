@@ -20,7 +20,7 @@ namespace IntegrationTests.Bus
         {
             StartTheReceiver(_ =>
             {
-                _.Transports.Http.Enable(true);
+                _.Transports.Http.EnableListening(true);
 
                 _.Http
                     .UseUrls("http://localhost:5002")

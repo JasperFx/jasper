@@ -1,4 +1,4 @@
-<!--title:Durable Store and Forward Messaging-->
+<!--title:Durable Messaging-->
 
 <div class="alert alert-warning"><b>Note!</b> This transport works by sending traffic directly via sockets and may not be acceptable in your IT department policies. We are pursuing the usage of JWT's to secure the traffic between applications using the socket based transports, see <a href="https://github.com/JasperFx/jasper/issues/184">the GitHub issue</a></div>
 

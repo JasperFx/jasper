@@ -9,4 +9,16 @@
         }
     }
     // ENDSAMPLE
+
+
+    // SAMPLE: DisableIndividualTransport
+    public class DisableOrEnableTransports : JasperRegistry
+    {
+        public DisableOrEnableTransports()
+        {
+            // TCP transport is enabled by default
+            Transports.DisableTransport("tcp");
+        }
+    }
+    // ENDSAMPLE
 }
