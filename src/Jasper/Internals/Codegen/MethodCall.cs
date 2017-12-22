@@ -65,8 +65,7 @@ namespace Jasper.Internals.Codegen
                 return new CastVariable(inner, type);
             }
 
-            Variable variable;
-            return chain.TryFindVariableByName(type, param.Name, out variable) ? variable : chain.FindVariable(type);
+            return chain.TryFindVariableByName(type, param.Name, out var variable) ? variable : chain.FindVariable(type);
         }
 
         public Variable[] Variables { get; }
@@ -120,15 +119,14 @@ namespace Jasper.Internals.Codegen
                 yield return variable;
             }
 
-            if (!Method.IsStatic && !IsLocal)
-            {
-                if (Target == null)
-                {
-                    Target = chain.FindVariable(HandlerType);
-                }
+            if (Method.IsStatic || IsLocal) yield break;
 
-                yield return Target;
+            if (Target == null)
+            {
+                Target = chain.FindVariable(HandlerType);
             }
+
+            yield return Target;
         }
 
 

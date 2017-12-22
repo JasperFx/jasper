@@ -246,6 +246,23 @@ namespace Jasper.Testing.Internals.IoC
 
             code.ShouldContain("var fakeStore = (Jasper.Testing.FakeStoreTypes.IFakeStore)serviceProvider.GetService(typeof(Jasper.Testing.FakeStoreTypes.IFakeStore));");
         }
+
+        [Fact]
+        public void can_reduce_with_closed_generic_service_dependency()
+        {
+            theRegistry.Handlers.IncludeType<GenericServiceUsingMethod<string>>();
+            theRegistry.Services.AddSingleton(new MessageTracker());
+            theRegistry.Services.AddTransient(typeof(IService<>), typeof(Service<>));
+
+            var code = codeFor<Message1>();
+
+            code.ShouldNotContain(typeof(IServiceScopeFactory).Name);
+
+            code.ShouldContain("var genericServiceUsingMethod = new Jasper.Testing.Internals.IoC.GenericServiceUsingMethod<System.String>();");
+
+            code.ShouldContain("var service = new Jasper.Testing.Internals.IoC.Service<System.String>(_messageTracker);");
+
+        }
     }
 
     [FakeTransaction]
@@ -298,6 +315,23 @@ namespace Jasper.Testing.Internals.IoC
         public void Handle(Message1 message)
         {
 
+        }
+    }
+
+    public class GenericServiceUsingMethod<T>
+    {
+        public void Handle(Message1 message, IService<T> service)
+        {
+
+        }
+    }
+
+    public interface IService<T>{}
+
+    public class Service<T> : IService<T>
+    {
+        public Service(MessageTracker tracker)
+        {
         }
     }
 

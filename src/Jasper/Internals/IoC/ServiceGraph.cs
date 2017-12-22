@@ -48,8 +48,6 @@ namespace Jasper.Internals.IoC
 
         public ServiceDescriptor FindDefault(Type serviceType)
         {
-            // TODO -- fill in by closing a generic -- LATER!!!!
-
             var candidate = _services.LastOrDefault(x => x.ServiceType == serviceType);
 
             if (candidate == null)
@@ -66,7 +64,25 @@ namespace Jasper.Internals.IoC
 
         private ServiceDescriptor TryToDiscover(Type serviceType)
         {
-            if (serviceType.IsConcrete() && ChooseConstructor(serviceType) != null)
+            if (serviceType.IsGenericType)
+            {
+                var basicType = serviceType.GetGenericTypeDefinition();
+
+
+
+
+                var templatedParameterTypes = serviceType.GetGenericArguments();
+                var candidates = _services.Where(x => x.ServiceType == basicType && x.ImplementationType != null).Select(x =>
+                {
+                    return new ServiceDescriptor(serviceType, x.ImplementationType.MakeGenericType(templatedParameterTypes), x.Lifetime);
+                }).ToArray();
+
+                _services.AddRange(candidates);
+
+                if (candidates.Any()) return candidates.LastOrDefault();
+            }
+
+            if (serviceType.IsConcrete() && !serviceType.IsGenericTypeDefinition && ChooseConstructor(serviceType) != null)
             {
                 return new ServiceDescriptor(serviceType, serviceType, ServiceLifetime.Transient);
             }
