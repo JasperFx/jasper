@@ -22,7 +22,6 @@ namespace Jasper.Internals.IoC
             Variable = new Variable(serviceType, variableName, this);
         }
 
-        public int Number { get; set; }
 
         public bool IsDisposable => ImplementationType.CanBeCastTo<IDisposable>();
 

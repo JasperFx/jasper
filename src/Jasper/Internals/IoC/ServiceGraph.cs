@@ -62,8 +62,19 @@ namespace Jasper.Internals.IoC
             return candidate;
         }
 
+        public bool CanResolve(ServiceDescriptor descriptor)
+        {
+            // TODO -- will deal w/ stuff pulled from IServiceProvider as a lambda
+            // much later
+            if (descriptor.ImplementationType == null) return false;
+
+            return CouldBuild(descriptor.ImplementationType);
+        }
+
         private ServiceDescriptor TryToDiscover(Type serviceType)
         {
+            if (serviceType.IsArray) return null;
+
             if (serviceType.IsGenericType)
             {
                 var basicType = serviceType.GetGenericTypeDefinition();

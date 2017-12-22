@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jasper.Bus.Model;
+using Jasper.Internals.Codegen;
 using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
@@ -263,6 +265,40 @@ namespace Jasper.Testing.Internals.IoC
             code.ShouldContain("var service = new Jasper.Testing.Internals.IoC.Service<System.String>(_messageTracker);");
 
         }
+
+        [Fact]
+        public void can_reduce_with_array_dependency()
+        {
+            theRegistry.Handlers.IncludeType<HandlerWithArray>();
+
+            theRegistry.Services.AddTransient<IWidget, RedWidget>();
+            theRegistry.Services.AddScoped<IWidget, GreenWidget>();
+            theRegistry.Services.AddSingleton<IWidget, BlueWidget>();
+
+            var code = codeFor<Message1>();
+
+            code.ShouldNotContain(typeof(IServiceScopeFactory).Name);
+
+            code.ShouldContain("var widgetArray = new Jasper.Testing.Bus.Compilation.IWidget[]{widget3, widget2, widget1};");
+            code.ShouldContain("var handlerWithArray = new Jasper.Testing.Internals.IoC.HandlerWithArray(widgetArray);");
+        }
+    }
+
+
+    public class RedWidget : IWidget{}
+    public class GreenWidget : IWidget{}
+    public class BlueWidget : IWidget{}
+
+    public class HandlerWithArray
+    {
+        public HandlerWithArray(IWidget[] widgets)
+        {
+        }
+
+        public void Handle(Message1 message)
+        {
+
+        }
     }
 
     [FakeTransaction]
@@ -280,7 +316,7 @@ namespace Jasper.Testing.Internals.IoC
 
     public class WidgetArrayUser
     {
-        public WidgetArrayUser(IWidget[] widgets)
+        public WidgetArrayUser(IEnumerable<IWidget> widgets)
         {
         }
 

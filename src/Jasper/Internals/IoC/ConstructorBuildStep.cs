@@ -7,17 +7,28 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Internals.IoC
 {
-    public class ConstructorBuildStep : BuildStep
+    public class ConstructorBuildStep : BuildStep, IServiceDescriptorBuildStep
     {
         private readonly ConstructorInfo _ctor;
         private BuildStep[] _dependencies;
         public Type ImplementationType { get; }
 
-        public ConstructorBuildStep(Type serviceType, Type implementationType, ServiceLifetime lifetime, ConstructorInfo ctor) : base(serviceType, lifetime == ServiceLifetime.Scoped, true)
+        public ConstructorBuildStep(ServiceDescriptor descriptor, ConstructorInfo ctor) : this(descriptor.ServiceType,
+            descriptor.ImplementationType, descriptor.Lifetime, ctor)
+        {
+            ServiceDescriptor = descriptor;
+        }
+
+
+
+
+        public ConstructorBuildStep(Type serviceType, Type implementationType, ServiceLifetime lifetime, ConstructorInfo ctor) : base(serviceType, lifetime != ServiceLifetime.Transient, true)
         {
             _ctor = ctor;
             ImplementationType = implementationType;
         }
+
+        public ServiceDescriptor ServiceDescriptor { get; }
 
         public override IEnumerable<BuildStep> ReadDependencies(BuildStepPlanner planner)
         {
@@ -35,7 +46,10 @@ namespace Jasper.Internals.IoC
 
             var args = _dependencies.Select(x => x.Variable).ToArray();
 
-            return new ConstructorFrame(ServiceType, ImplementationType, argName, args).Variable;
+            var variable = new ConstructorFrame(ServiceType, ImplementationType, argName, args).Variable;
+            variable.CanBeReused = CanBeReused;
+
+            return variable;
         }
     }
 }

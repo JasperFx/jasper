@@ -26,6 +26,8 @@ namespace Jasper.Internals.IoC
         /// If you are creating multiple instances of the same concrete type, use
         /// this as a suffix on the variable
         /// </summary>
+        // TODO -- think this will need to be moved up to the generated method scope and be
+        // on Variable itself
         public int Number { get; set; }
 
         public abstract IEnumerable<BuildStep> ReadDependencies(BuildStepPlanner planner);

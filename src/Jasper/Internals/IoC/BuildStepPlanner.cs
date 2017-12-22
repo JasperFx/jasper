@@ -91,6 +91,21 @@ namespace Jasper.Internals.IoC
             }
         }
 
+        public BuildStep FindStep(ServiceDescriptor descriptor)
+        {
+            var candidate = _method.AllKnownBuildSteps.OfType<IServiceDescriptorBuildStep>()
+                .FirstOrDefault(x => x.ServiceDescriptor == descriptor && x.CanBeReused);
+            if (candidate != null) return candidate as BuildStep;
+
+            var step = findStep(descriptor);
+            if (step != null)
+            {
+                _method.AllKnownBuildSteps.Add(step);
+            }
+
+            return step;
+        }
+
         private BuildStep findStep(Type type)
         {
             // INSTEAD, let's pull all variable sources
@@ -101,18 +116,45 @@ namespace Jasper.Internals.IoC
             if (variable != null) return new KnownVariableBuildStep(variable);
 
             var @default = _graph.FindDefault(type);
-            if (@default?.ImplementationType != null)
+
+            if (@default == null)
             {
-                var ctor = _graph.ChooseConstructor(@default.ImplementationType);
+                if (type.IsArray)
+                {
+                    return tryFillArrayOfAllKnown(type.GetElementType());
+                }
+
+                return null;
+            }
+
+            return findStep(@default);
+        }
+
+        private BuildStep findStep(ServiceDescriptor descriptor)
+        {
+            if (descriptor?.ImplementationType != null)
+            {
+                var ctor = _graph.ChooseConstructor(descriptor.ImplementationType);
                 if (ctor != null)
                 {
-                    return new ConstructorBuildStep(type, @default.ImplementationType, @default.Lifetime, ctor);
+                    return new ConstructorBuildStep(descriptor, ctor);
                 }
             }
 
-            // TODO -- split on T[], IList<T>, IEnumerable<T>, IReadOnlyList<T>
-
             return null;
+        }
+
+        private BuildStep tryFillArrayOfAllKnown(Type elementType)
+        {
+            var all = _graph.FindAll(elementType);
+
+            if (!all.All(x => _graph.CanResolve(x)))
+            {
+                return null;
+            }
+
+            var childSteps = all.Select(FindStep).ToArray();
+            return new ArrayStep(elementType, childSteps);
         }
     }
 }
