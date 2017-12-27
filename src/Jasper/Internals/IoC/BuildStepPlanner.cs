@@ -119,9 +119,9 @@ namespace Jasper.Internals.IoC
 
             if (@default == null)
             {
-                if (type.IsArray)
+                if (EnumerableStep.IsEnumerable(type))
                 {
-                    return tryFillArrayOfAllKnown(type.GetElementType());
+                    return tryFillEnumerableOfAllKnown(type);
                 }
 
                 return null;
@@ -144,8 +144,9 @@ namespace Jasper.Internals.IoC
             return null;
         }
 
-        private BuildStep tryFillArrayOfAllKnown(Type elementType)
+        private BuildStep tryFillEnumerableOfAllKnown(Type serviceType)
         {
+            var elementType = EnumerableStep.DetermineElementType(serviceType);
             var all = _graph.FindAll(elementType);
 
             if (!all.All(x => _graph.CanResolve(x)))
@@ -154,7 +155,7 @@ namespace Jasper.Internals.IoC
             }
 
             var childSteps = all.Select(FindStep).ToArray();
-            return new ArrayStep(elementType, childSteps);
+            return new EnumerableStep(serviceType, childSteps);
         }
     }
 }

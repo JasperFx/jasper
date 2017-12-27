@@ -1,4 +1,6 @@
-﻿using Jasper.Internals.Codegen;
+﻿using System.Collections.Generic;
+using Jasper.Internals.Codegen;
+using Jasper.Testing.Bus.Compilation;
 using Shouldly;
 using Xunit;
 
@@ -18,6 +20,33 @@ namespace Jasper.Testing.Internals.Codegen
         {
             Variable.DefaultArgName<IHyperdriveMotivator>()
                 .ShouldBe("hyperdriveMotivator");
+        }
+
+        [Fact]
+        public void default_arg_name_of_array()
+        {
+            Variable.DefaultArgName<IWidget[]>()
+                .ShouldBe("widgetArray");
+        }
+
+        [Fact]
+        public void default_arg_name_of_List()
+        {
+            Variable.DefaultArgName<IList<IWidget>>()
+                .ShouldBe("widgetList");
+
+            Variable.DefaultArgName<List<IWidget>>()
+                .ShouldBe("widgetList");
+
+            Variable.DefaultArgName<IReadOnlyList<IWidget>>()
+                .ShouldBe("widgetList");
+        }
+
+        [Fact]
+        public void default_arg_name_of_enumerable()
+        {
+            Variable.DefaultArgName<IEnumerable<IWidget>>()
+                .ShouldBe("widgetEnumerable");
         }
 
         [Fact]

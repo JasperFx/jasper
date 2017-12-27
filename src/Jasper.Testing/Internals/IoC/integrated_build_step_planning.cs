@@ -215,16 +215,7 @@ namespace Jasper.Testing.Internals.IoC
             code.ShouldContain("var singletonArgMethod = (Jasper.Testing.Internals.IoC.SingletonArgMethod)serviceProvider.GetService(typeof(Jasper.Testing.Internals.IoC.SingletonArgMethod));");
         }
 
-        // TODO -- Eliminate this functional gap
-        [Fact]
-        public void cannot_reduce_an_enumeration_YET()
-        {
-            theRegistry.Handlers.IncludeType<WidgetArrayUser>();
 
-            var code = codeFor<Message1>();
-
-            code.ShouldContain("var widgetArrayUser = (Jasper.Testing.Internals.IoC.WidgetArrayUser)serviceProvider.GetService(typeof(Jasper.Testing.Internals.IoC.WidgetArrayUser));");
-        }
 
         [Fact]
         public void use_a_known_variable_in_the_mix()
@@ -273,7 +264,7 @@ namespace Jasper.Testing.Internals.IoC
 
             theRegistry.Services.AddTransient<IWidget, RedWidget>();
             theRegistry.Services.AddScoped<IWidget, GreenWidget>();
-            theRegistry.Services.AddSingleton<IWidget, BlueWidget>();
+            theRegistry.Services.AddScoped<IWidget, BlueWidget>();
 
             var code = codeFor<Message1>();
 
@@ -281,6 +272,139 @@ namespace Jasper.Testing.Internals.IoC
 
             code.ShouldContain("var widgetArray = new Jasper.Testing.Bus.Compilation.IWidget[]{widget3, widget2, widget1};");
             code.ShouldContain("var handlerWithArray = new Jasper.Testing.Internals.IoC.HandlerWithArray(widgetArray);");
+        }
+
+        [Fact]
+        public void use_registered_array_if_one_is_known()
+        {
+            theRegistry.Handlers.IncludeType<HandlerWithArray>();
+
+            theRegistry.Handlers.IncludeType<HandlerWithArray>();
+            theRegistry.Services.AddSingleton<IWidget[]>(new IWidget[] {new BlueWidget(), new GreenWidget(),});
+
+            var code = codeFor<Message1>();
+
+            code.ShouldContain("public Red_Message1(IWidget[] widgetArray)");
+            code.ShouldContain("var handlerWithArray = new Jasper.Testing.Internals.IoC.HandlerWithArray(_widgetArray);");
+        }
+
+        [Fact]
+        public void can_reduce_with_enumerable_dependency()
+        {
+            theRegistry.Handlers.IncludeType<WidgetEnumerableUser>();
+
+            theRegistry.Services.AddTransient<IWidget, RedWidget>();
+            theRegistry.Services.AddScoped<IWidget, GreenWidget>();
+            theRegistry.Services.AddScoped<IWidget, BlueWidget>();
+
+            var code = codeFor<Message1>();
+
+            code.ShouldNotContain(typeof(IServiceScopeFactory).Name);
+
+            code.ShouldContain("var widgetList = new System.Collections.Generic.List<Jasper.Testing.Bus.Compilation.IWidget>{widget3, widget2, widget1};");
+        }
+
+        [Fact]
+        public void use_registered_enumerable_if_one_is_known()
+        {
+            theRegistry.Handlers.IncludeType<WidgetEnumerableUser>();
+
+            theRegistry.Services.AddSingleton<IEnumerable<IWidget>>(new IWidget[] {new BlueWidget(), new GreenWidget(),});
+
+            var code = codeFor<Message1>();
+
+            code.ShouldContain("public Red_Message1(IEnumerable<Jasper.Testing.Bus.Compilation.IWidget> widgetEnumerable)");
+            code.ShouldContain("var widgetEnumerableUser = new Jasper.Testing.Internals.IoC.WidgetEnumerableUser(_widgetEnumerable);");
+        }
+
+
+
+
+        [Fact]
+        public void can_reduce_with_list_dependency()
+        {
+            theRegistry.Handlers.IncludeType<WidgetListUser>();
+
+            theRegistry.Services.AddTransient<IWidget, RedWidget>();
+            theRegistry.Services.AddScoped<IWidget, GreenWidget>();
+            theRegistry.Services.AddScoped<IWidget, BlueWidget>();
+
+            var code = codeFor<Message1>();
+
+            code.ShouldNotContain(typeof(IServiceScopeFactory).Name);
+
+            code.ShouldContain("var widgetList = new System.Collections.Generic.List<Jasper.Testing.Bus.Compilation.IWidget>{widget3, widget2, widget1};");
+        }
+
+        [Fact]
+        public void use_registered_list_if_one_is_known()
+        {
+            theRegistry.Handlers.IncludeType<WidgetListUser>();
+
+            theRegistry.Services.AddSingleton<List<IWidget>>(new List<IWidget> {new BlueWidget(), new GreenWidget(),});
+
+            var code = codeFor<Message1>();
+
+            code.ShouldContain("public Red_Message1(List<Jasper.Testing.Bus.Compilation.IWidget> widgetList)");
+            code.ShouldContain("var widgetListUser = new Jasper.Testing.Internals.IoC.WidgetListUser(_widgetList);");
+        }
+
+        [Fact]
+        public void can_reduce_with_IList_dependency()
+        {
+            theRegistry.Handlers.IncludeType<WidgetIListUser>();
+
+            theRegistry.Services.AddTransient<IWidget, RedWidget>();
+            theRegistry.Services.AddScoped<IWidget, GreenWidget>();
+            theRegistry.Services.AddScoped<IWidget, BlueWidget>();
+
+            var code = codeFor<Message1>();
+
+            code.ShouldNotContain(typeof(IServiceScopeFactory).Name);
+
+            code.ShouldContain("var widgetList = new System.Collections.Generic.List<Jasper.Testing.Bus.Compilation.IWidget>{widget3, widget2, widget1};");
+        }
+
+        [Fact]
+        public void use_registered_Ilist_if_one_is_known()
+        {
+            theRegistry.Handlers.IncludeType<WidgetIListUser>();
+
+            theRegistry.Services.AddSingleton<IList<IWidget>>(new List<IWidget> {new BlueWidget(), new GreenWidget(),});
+
+            var code = codeFor<Message1>();
+
+            code.ShouldContain("public Red_Message1(IList<Jasper.Testing.Bus.Compilation.IWidget> widgetList)");
+            code.ShouldContain("var widgetIListUser = new Jasper.Testing.Internals.IoC.WidgetIListUser(_widgetList);");
+        }
+
+        [Fact]
+        public void can_reduce_with_IReadOnlyList_dependency()
+        {
+            theRegistry.Handlers.IncludeType<WidgetIReadOnlyListUser>();
+
+            theRegistry.Services.AddTransient<IWidget, RedWidget>();
+            theRegistry.Services.AddScoped<IWidget, GreenWidget>();
+            theRegistry.Services.AddScoped<IWidget, BlueWidget>();
+
+            var code = codeFor<Message1>();
+
+            code.ShouldNotContain(typeof(IServiceScopeFactory).Name);
+
+            code.ShouldContain("var widgetList = new System.Collections.Generic.List<Jasper.Testing.Bus.Compilation.IWidget>{widget3, widget2, widget1};");
+        }
+
+        [Fact]
+        public void use_registered_IReadOnlyList_if_one_is_known()
+        {
+            theRegistry.Handlers.IncludeType<WidgetIReadOnlyListUser>();
+
+            theRegistry.Services.AddSingleton<IReadOnlyList<IWidget>>(new List<IWidget> {new BlueWidget(), new GreenWidget(),});
+
+            var code = codeFor<Message1>();
+
+            code.ShouldContain("public Red_Message1(IReadOnlyList<Jasper.Testing.Bus.Compilation.IWidget> widgetList)");
+            code.ShouldContain("var widgetIReadOnlyListUser = new Jasper.Testing.Internals.IoC.WidgetIReadOnlyListUser(_widgetList);");
         }
     }
 
@@ -314,9 +438,45 @@ namespace Jasper.Testing.Internals.IoC
         }
     }
 
-    public class WidgetArrayUser
+    public class WidgetEnumerableUser
     {
-        public WidgetArrayUser(IEnumerable<IWidget> widgets)
+        public WidgetEnumerableUser(IEnumerable<IWidget> widgets)
+        {
+        }
+
+        public void Handle(Message1 message)
+        {
+
+        }
+    }
+
+    public class WidgetListUser
+    {
+        public WidgetListUser(List<IWidget> widgets)
+        {
+        }
+
+        public void Handle(Message1 message)
+        {
+
+        }
+    }
+
+    public class WidgetIListUser
+    {
+        public WidgetIListUser(IList<IWidget> widgets)
+        {
+        }
+
+        public void Handle(Message1 message)
+        {
+
+        }
+    }
+
+    public class WidgetIReadOnlyListUser
+    {
+        public WidgetIReadOnlyListUser(IReadOnlyList<IWidget> widgets)
         {
         }
 

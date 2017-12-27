@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Jasper.Internals.IoC;
 using Jasper.Internals.Util;
 
 namespace Jasper.Internals.Codegen
@@ -20,9 +21,23 @@ namespace Jasper.Internals.Codegen
             return new Variable(typeof(T), DefaultArgName(typeof(T)));
         }
 
-        // TODO -- test this w/ a generic type!!!!!!!
         public static string DefaultArgName(Type argType)
         {
+            if (argType.IsArray)
+            {
+                return DefaultArgName(argType.GetElementType()) + "Array";
+            }
+
+            if (EnumerableStep.IsEnumerable(argType))
+            {
+                var argPrefix = DefaultArgName(EnumerableStep.DetermineElementType(argType));
+                var suffix = argType.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                    ? "Enumerable"
+                    : "List";
+
+                return argPrefix + suffix;
+            }
+
             var parts = argType.Name.SplitPascalCase().Split(' ');
             if (argType.GetTypeInfo().IsInterface && parts.First() == "I")
             {

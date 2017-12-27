@@ -7,30 +7,6 @@ using Jasper.Internals.Util;
 
 namespace Jasper.Internals.IoC
 {
-    public class ArrayStep : BuildStep
-    {
-        public Type ElementType { get; }
-        private readonly BuildStep[] _childSteps;
-
-        public ArrayStep(Type elementType, BuildStep[] childSteps) : base(elementType.MakeArrayType(), false, false)
-        {
-            ElementType = elementType;
-            _childSteps = childSteps;
-        }
-
-        public override IEnumerable<BuildStep> ReadDependencies(BuildStepPlanner planner)
-        {
-            return _childSteps.SelectMany(x => x.ReadDependencies(planner));
-        }
-
-        protected override Variable buildVariable()
-        {
-            return new ArrayAssignmentFrame(ElementType, _childSteps.Select(x => x.Variable).ToArray()).Variable;
-        }
-
-
-    }
-
     public class ArrayAssignmentFrame : Frame
     {
         public ArrayAssignmentFrame(Type elementType, Variable[] elements) : base(false)

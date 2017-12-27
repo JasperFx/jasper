@@ -34,6 +34,14 @@ namespace Jasper.Internals.Codegen
 
         public static string NameInCode(this Type type)
         {
+            if (type.IsGenericType && !type.IsGenericTypeDefinition)
+            {
+                var cleanName = type.Name.Split('`').First().Replace("+", ".");
+                var args = type.GetGenericArguments().Select(x => x.FullNameInCode()).Join(", ");
+
+                return $"{cleanName}<{args}>";
+            }
+
             return type.Name.Replace("+", ".");
         }
 

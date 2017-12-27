@@ -73,7 +73,7 @@ namespace Jasper.Internals.IoC
 
         private ServiceDescriptor TryToDiscover(Type serviceType)
         {
-            if (serviceType.IsArray) return null;
+            if (EnumerableStep.IsEnumerable(serviceType)) return null;
 
             if (serviceType.IsGenericType)
             {
