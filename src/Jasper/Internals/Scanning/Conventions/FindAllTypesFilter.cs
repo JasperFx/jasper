@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Baseline;
 using Jasper.Internals.Util;
 using Microsoft.Extensions.DependencyInjection;
-using TypeExtensions = StructureMap.TypeRules.TypeExtensions;
 
 namespace Jasper.Internals.Scanning.Conventions
 {
@@ -18,7 +18,7 @@ namespace Jasper.Internals.Scanning.Conventions
 
         public bool Matches(Type type)
         {
-            return type.CanBeCastTo(_pluginType) && type.HasConstructors() && TypeExtensions.CanBeCreated(type);
+            return type.CanBeCastTo(_pluginType) && type.GetConstructors().Any() && type.CanBeCreated();
         }
 
         public void ScanTypes(TypeSet types, IServiceCollection services)

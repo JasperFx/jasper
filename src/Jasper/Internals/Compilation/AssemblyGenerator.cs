@@ -7,8 +7,7 @@ using System.Runtime.Loader;
 using Baseline;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using GenericEnumerableExtensions = Jasper.Internals.Util.GenericEnumerableExtensions;
-using StringExtensions = Jasper.Internals.Util.StringExtensions;
+
 
 #if !NET46
 

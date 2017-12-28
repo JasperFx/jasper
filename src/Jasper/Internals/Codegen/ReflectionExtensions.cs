@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Internals.Util;
 
 namespace Jasper.Internals.Codegen

@@ -1,25 +1,20 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.Internals;
 using Jasper.Internals.Codegen;
 using Jasper.Testing.Bus.Bootstrapping;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
-using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using StructureMap.TypeRules;
 using Xunit;
 
 namespace Jasper.Testing
 {
     public class BootstrappingTests
     {
-
-
         [Fact]
         public void can_determine_the_application_assembly()
         {
@@ -31,20 +26,13 @@ namespace Jasper.Testing
                 _.Services.For<IFakeService>().Use<FakeService>();
             }))
             {
-                runtime.ApplicationAssembly.ShouldBe(GetType().GetAssembly());
+                runtime.ApplicationAssembly.ShouldBe(GetType().Assembly);
             }
         }
-
     }
 
     public class when_bootstrapping_a_runtime_with_multiple_features : IDisposable
     {
-        private readonly JasperRegistry theRegistry = new JasperRegistry();
-        private FakeFeature1 feature1;
-        private FakeFeature2 feature2;
-        private FakeFeature3 feature3;
-        private JasperRuntime theRuntime;
-
         public when_bootstrapping_a_runtime_with_multiple_features()
         {
             theRegistry.Services.AddTransient<IMainService, MainService>();
@@ -64,6 +52,20 @@ namespace Jasper.Testing
 
             theRuntime = JasperRuntime.For(theRegistry);
         }
+
+        public void Dispose()
+        {
+            feature1?.Dispose();
+            feature2?.Dispose();
+            feature3?.Dispose();
+            theRuntime?.Dispose();
+        }
+
+        private readonly JasperRegistry theRegistry = new JasperRegistry();
+        private readonly FakeFeature1 feature1;
+        private readonly FakeFeature2 feature2;
+        private readonly FakeFeature3 feature3;
+        private readonly JasperRuntime theRuntime;
 
         [Fact]
         public void all_features_are_bootstrapped()
@@ -94,27 +96,10 @@ namespace Jasper.Testing
             theRuntime.Container.DefaultRegistrationIs<IFeatureService2, FeatureService2>();
             theRuntime.Container.DefaultRegistrationIs<IFeatureService3, FeatureService3>();
         }
-
-        public void Dispose()
-        {
-            feature1?.Dispose();
-            feature2?.Dispose();
-            feature3?.Dispose();
-            theRuntime?.Dispose();
-        }
     }
 
     public class when_shutting_down_the_runtime
     {
-        private readonly JasperRegistry theRegistry = new JasperRegistry();
-        private FakeFeature1 feature1;
-        private FakeFeature2 feature2;
-        private FakeFeature3 feature3;
-        private JasperRuntime theRuntime;
-        private MainService mainService = new MainService();
-
-
-
         public when_shutting_down_the_runtime()
         {
             theRegistry.Services.AddSingleton<IMainService>(mainService);
@@ -134,6 +119,13 @@ namespace Jasper.Testing
             theRuntime.Dispose();
         }
 
+        private readonly JasperRegistry theRegistry = new JasperRegistry();
+        private readonly FakeFeature1 feature1;
+        private readonly FakeFeature2 feature2;
+        private readonly FakeFeature3 feature3;
+        private readonly JasperRuntime theRuntime;
+        private readonly MainService mainService = new MainService();
+
         [Fact]
         public void each_feature_should_be_disposed()
         {
@@ -141,23 +133,23 @@ namespace Jasper.Testing
             feature2.WasDisposed.ShouldBeTrue();
             feature3.WasDisposed.ShouldBeTrue();
         }
-
-
-
-
     }
 
     public class FakeFeature1 : IFeature
     {
-        public void Dispose()
-        {
-            WasDisposed = true;
-        }
-
         public bool WasDisposed { get; set; }
 
         public ServiceRegistry Services { get; } = new ServiceRegistry();
         public JasperRegistry Registry { get; private set; }
+
+        public JasperRuntime Runtime { get; set; }
+
+        public bool WasActivated { get; set; }
+
+        public void Dispose()
+        {
+            WasDisposed = true;
+        }
 
         public Task<ServiceRegistry> Bootstrap(JasperRegistry registry)
         {
@@ -176,34 +168,52 @@ namespace Jasper.Testing
         {
             throw new NotSupportedException();
         }
-
-        public JasperRuntime Runtime { get; set; }
-
-        public bool WasActivated { get; set; }
     }
 
-    public interface IMainService : IDisposable{}
+    public interface IMainService : IDisposable
+    {
+    }
 
     public class MainService : IMainService
     {
+        public bool WasDisposed { get; set; }
+
         public void Dispose()
         {
             WasDisposed = true;
         }
-
-        public bool WasDisposed { get; set; }
     }
 
-    public interface IFeatureService1{}
-    public class FeatureService1 : IFeatureService1{}
+    public interface IFeatureService1
+    {
+    }
 
-    public interface IFeatureService2{}
-    public class FeatureService2 : IFeatureService2{}
+    public class FeatureService1 : IFeatureService1
+    {
+    }
 
-    public interface IFeatureService3{}
-    public class FeatureService3 : IFeatureService3{}
+    public interface IFeatureService2
+    {
+    }
+
+    public class FeatureService2 : IFeatureService2
+    {
+    }
+
+    public interface IFeatureService3
+    {
+    }
+
+    public class FeatureService3 : IFeatureService3
+    {
+    }
 
 
-    public class FakeFeature2 : FakeFeature1{}
-    public class FakeFeature3 : FakeFeature1{}
+    public class FakeFeature2 : FakeFeature1
+    {
+    }
+
+    public class FakeFeature3 : FakeFeature1
+    {
+    }
 }

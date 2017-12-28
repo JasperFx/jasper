@@ -8,9 +8,9 @@ namespace Jasper.Internals.Scanning.Conventions
     {
         public void ScanTypes(TypeSet types, IServiceCollection services)
         {
-            foreach (var type in types.FindTypes(TypeClassification.Concretes).Where(x => x.HasConstructors()))
+            foreach (var type in types.FindTypes(TypeClassification.Concretes).Where(x => x.GetConstructors().Any()))
             {
-                var interfaceType = type.AllInterfaces().FirstOrDefault();
+                var interfaceType = type.GetInterfaces().FirstOrDefault();
                 if (interfaceType != null)
                 {
                     services.AddType(interfaceType, type);

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
-using StructureMap;
-using StructureMap.Pipeline;
 
 namespace Jasper.Configuration
 {
@@ -23,12 +18,11 @@ namespace Jasper.Configuration
 
         public class RegistrationExpression<T>
         {
-            private readonly IServiceCollection _services;
             private readonly ServiceLifetime _lifetime;
+            private readonly IServiceCollection _services;
 
             public RegistrationExpression(IServiceCollection services) : this(services, ServiceLifetime.Transient)
             {
-
             }
 
             public RegistrationExpression(IServiceCollection services, ServiceLifetime lifetime)
@@ -61,5 +55,4 @@ namespace Jasper.Configuration
             }
         }
     }
-
 }

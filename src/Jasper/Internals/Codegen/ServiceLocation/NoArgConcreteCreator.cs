@@ -1,4 +1,5 @@
 ﻿using System;
+using Baseline;
 using Jasper.Internals.Util;
 
 namespace Jasper.Internals.Codegen.ServiceLocation

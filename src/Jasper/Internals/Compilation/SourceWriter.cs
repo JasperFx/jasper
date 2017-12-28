@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Baseline;
 using Jasper.Internals.Util;
 
 namespace Jasper.Internals.Compilation

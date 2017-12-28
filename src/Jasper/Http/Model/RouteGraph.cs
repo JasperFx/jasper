@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Baseline;
+using Baseline.Reflection;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Jasper.Internals.Codegen;
-using Jasper.Internals.Util;
-using StructureMap;
 using GenericEnumerableExtensions = Baseline.GenericEnumerableExtensions;
 
 namespace Jasper.Http.Model

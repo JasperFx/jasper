@@ -1,6 +1,6 @@
 ﻿using System;
 using Jasper.Internals.Compilation;
-using Jasper.Internals.Util;
+using Baseline;
 
 namespace Jasper.Internals.Codegen
 {

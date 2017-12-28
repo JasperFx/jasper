@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using Jasper.Internals.Compilation;
-using Jasper.Internals.Util;
 
 namespace Jasper.Internals.Codegen
 {

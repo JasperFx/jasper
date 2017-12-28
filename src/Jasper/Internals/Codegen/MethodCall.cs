@@ -4,8 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline;
+using Baseline.Reflection;
 using Jasper.Internals.Compilation;
-using Jasper.Internals.Util;
 
 namespace Jasper.Internals.Codegen
 {

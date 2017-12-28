@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Internals.Util;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
-using TypeExtensions = StructureMap.TypeRules.TypeExtensions;
 
 #pragma warning disable 1591
 

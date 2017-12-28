@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Http.Routing.Codegen;
 using Jasper.Util;
-using TypeExtensions = Jasper.Internals.Util.TypeExtensions;
 
 namespace Jasper.Http.Routing
 {

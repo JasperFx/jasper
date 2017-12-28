@@ -10,7 +10,7 @@ namespace Jasper.Internals.Scanning.Conventions
     {
         public void ScanTypes(TypeSet types, IServiceCollection services)
         {
-            foreach (var type in types.FindTypes(TypeClassification.Concretes).Where(type => type.HasConstructors()))
+            foreach (var type in types.FindTypes(TypeClassification.Concretes).Where(type => type.GetConstructors().Any()))
             {
                 var pluginType = FindPluginType(type);
                 if (pluginType != null)

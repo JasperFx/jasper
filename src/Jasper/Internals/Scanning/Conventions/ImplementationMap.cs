@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Baseline;
 using Jasper.Internals.Util;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +10,7 @@ namespace Jasper.Internals.Scanning.Conventions
         public void ScanTypes(TypeSet types, IServiceCollection services)
         {
             var interfaces = types.FindTypes(TypeClassification.Interfaces);
-            var concretes = types.FindTypes(TypeClassification.Concretes).Where(x => TypeExtensions.HasConstructors(x)).ToArray();
+            var concretes = types.FindTypes(TypeClassification.Concretes).Where(x => x.GetConstructors().Any()).ToArray();
 
             interfaces.Each(@interface =>
             {
