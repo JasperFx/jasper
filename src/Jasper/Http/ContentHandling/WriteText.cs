@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BlueMilk.Codegen;
 using Jasper.Http.Model;
-using Jasper.Internals.Codegen;
 
 namespace Jasper.Http.ContentHandling
 {

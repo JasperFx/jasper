@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Internals;
-using Jasper.Internals.Scanning.Conventions;
+using BlueMilk;
+using BlueMilk.Scanning.Conventions;
 using Jasper.Testing.Internals.TargetTypes;
 using Shouldly;
 using Xunit;

@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using BlueMilk;
+using BlueMilk.Codegen;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Internals;
-using Jasper.Internals.Codegen;
 using Jasper.Testing.Samples;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

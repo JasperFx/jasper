@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using NSubstitute;
 using Shouldly;
 using Xunit;

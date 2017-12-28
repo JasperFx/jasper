@@ -5,10 +5,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using BlueMilk.Codegen;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Http.Routing;
-using Jasper.Internals.Codegen;
 using Microsoft.AspNetCore.Http;
 using StructureMap;
 

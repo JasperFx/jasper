@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Baseline;
-using Jasper.Internals.Compilation;
+using BlueMilk.Compilation;
 using Shouldly;
 using Xunit;
 

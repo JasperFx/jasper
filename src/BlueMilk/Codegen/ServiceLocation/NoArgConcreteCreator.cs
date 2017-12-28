@@ -1,8 +1,7 @@
 ﻿using System;
 using Baseline;
-using Jasper.Internals.Util;
 
-namespace Jasper.Internals.Codegen.ServiceLocation
+namespace BlueMilk.Codegen.ServiceLocation
 {
     public class NoArgConcreteCreator : IVariableSource
     {

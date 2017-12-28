@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Internals.Util;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     internal class DependencyGatherer
     {

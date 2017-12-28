@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Jasper.Internals.Util
+namespace BlueMilk.Util
 {
     /// <summary>
     /// Taken directly from Marten: https://github.com/JasperFx/marten/blob/2f18d09fa2034cbc647f48a74bbf3bbb8ea51116/src/Marten/Util/EnumerableExtensions.cs

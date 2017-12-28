@@ -1,5 +1,5 @@
-﻿using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
+﻿using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 
 namespace Jasper.Http.Routing.Codegen
 {

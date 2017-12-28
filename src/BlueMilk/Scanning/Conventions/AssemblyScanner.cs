@@ -5,13 +5,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Internals.Util;
-using Jasper.Util;
+using BlueMilk.Util;
 using Microsoft.Extensions.DependencyInjection;
 
 #pragma warning disable 1591
 
-namespace Jasper.Internals.Scanning.Conventions
+namespace BlueMilk.Scanning.Conventions
 {
     public class AssemblyScanner : IAssemblyScanner
     {

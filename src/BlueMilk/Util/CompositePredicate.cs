@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Jasper.Internals.Util
+namespace BlueMilk.Util
 {
     internal class CompositePredicate<T>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Internals.Util;
+using BlueMilk.Util;
 using Jasper.Util;
 using Shouldly;
 using Xunit;

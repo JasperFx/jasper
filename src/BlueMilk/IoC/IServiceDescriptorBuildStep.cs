@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals.IoC
+namespace BlueMilk.IoC
 {
     public interface IServiceDescriptorBuildStep
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using Jasper.Internals.Codegen.ServiceLocation;
+using BlueMilk.Codegen.ServiceLocation;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class ServiceProviderVariableSource : IVariableSource
     {

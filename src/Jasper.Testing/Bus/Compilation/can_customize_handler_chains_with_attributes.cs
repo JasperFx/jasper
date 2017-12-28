@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Codegen.ServiceLocation;
-using Jasper.Internals.Compilation;
-using Jasper.Internals.IoC;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Bus.Runtime;
 using Microsoft.Extensions.DependencyInjection;

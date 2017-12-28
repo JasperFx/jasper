@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Jasper.Internals.Codegen;
+using BlueMilk.Codegen;
 using Jasper.Testing.Internals.TargetTypes;
 using Shouldly;
 using Xunit;

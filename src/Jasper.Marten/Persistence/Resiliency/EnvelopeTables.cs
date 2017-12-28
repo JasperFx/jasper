@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Internals.Codegen;
 using Jasper.Util;
 using Marten;
 using Marten.Schema;

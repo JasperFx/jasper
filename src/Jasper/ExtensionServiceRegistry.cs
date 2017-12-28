@@ -1,5 +1,5 @@
-﻿using Jasper.Configuration;
-using Jasper.Internals;
+﻿using BlueMilk;
+using Jasper.Configuration;
 
 namespace Jasper
 {

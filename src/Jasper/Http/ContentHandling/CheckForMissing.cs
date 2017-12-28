@@ -1,4 +1,4 @@
-﻿using Jasper.Internals.Codegen;
+﻿using BlueMilk.Codegen;
 
 namespace Jasper.Http.ContentHandling
 {

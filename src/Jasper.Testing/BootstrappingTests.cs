@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using BlueMilk;
+using BlueMilk.Codegen;
 using Jasper.Configuration;
-using Jasper.Internals;
-using Jasper.Internals.Codegen;
 using Jasper.Testing.Bus.Bootstrapping;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;

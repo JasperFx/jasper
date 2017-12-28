@@ -42,7 +42,7 @@ namespace Jasper.Testing
 
             var code = codeFor<Message1>();
 
-            code.ShouldContain("var noArgMethod = new Jasper.Testing.Internals.IoC.NoArgMethod();");
+            code.ShouldContain("var noArgMethod = new Jasper.Testing.NoArgMethod();");
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("public Red_Message1(MessageTracker messageTracker)");
-            code.ShouldContain("var singletonArgMethod = new Jasper.Testing.Internals.IoC.SingletonArgMethod(_messageTracker);");
+            code.ShouldContain("var singletonArgMethod = new Jasper.Testing.SingletonArgMethod(_messageTracker);");
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace Jasper.Testing
 
             var code = codeFor<Message1>();
 
-            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.Internals.IoC.MultipleArgMethod(_messageTracker, _widget);");
+            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.MultipleArgMethod(_messageTracker, _widget);");
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace Jasper.Testing
 
             code.ShouldContain("var widget = new Jasper.Testing.Bus.Compilation.Widget();");
             code.ShouldContain("var messageTracker = new Jasper.Testing.Bus.MessageTracker();");
-            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.Internals.IoC.MultipleArgMethod(messageTracker, widget);");
+            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.MultipleArgMethod(messageTracker, widget);");
         }
 
         [Fact]
@@ -99,9 +99,9 @@ namespace Jasper.Testing
 
             var code = codeFor<Message1>();
 
-            code.ShouldContain("using (var widget = new Jasper.Testing.Internals.IoC.DisposedWidget())");
+            code.ShouldContain("using (var widget = new Jasper.Testing.DisposedWidget())");
             code.ShouldContain("var messageTracker = new Jasper.Testing.Bus.MessageTracker();");
-            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.Internals.IoC.MultipleArgMethod(messageTracker, widget);");
+            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.MultipleArgMethod(messageTracker, widget);");
         }
 
         [Fact]
@@ -115,9 +115,9 @@ namespace Jasper.Testing
 
             var code = codeFor<Message1>();
 
-            code.ShouldContain("using (var messageTracker = new Jasper.Testing.Internals.IoC.DisposedMessageTracker())");
-            code.ShouldContain("using (var widget = new Jasper.Testing.Internals.IoC.DisposedWidget())");
-            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.Internals.IoC.MultipleArgMethod(messageTracker, widget);");
+            code.ShouldContain("using (var messageTracker = new Jasper.Testing.DisposedMessageTracker())");
+            code.ShouldContain("using (var widget = new Jasper.Testing.DisposedWidget())");
+            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.MultipleArgMethod(messageTracker, widget);");
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("var messageTracker = new Jasper.Testing.Bus.MessageTracker();");
-            code.ShouldContain("var singletonArgMethod = new Jasper.Testing.Internals.IoC.SingletonArgMethod(messageTracker);");
+            code.ShouldContain("var singletonArgMethod = new Jasper.Testing.SingletonArgMethod(messageTracker);");
         }
 
         [Fact]
@@ -142,8 +142,8 @@ namespace Jasper.Testing
 
             var code = codeFor<Message1>();
 
-            code.ShouldContain("using (var messageTracker = new Jasper.Testing.Internals.IoC.DisposedMessageTracker())");
-            code.ShouldContain("var singletonArgMethod = new Jasper.Testing.Internals.IoC.SingletonArgMethod(messageTracker);");
+            code.ShouldContain("using (var messageTracker = new Jasper.Testing.DisposedMessageTracker())");
+            code.ShouldContain("var singletonArgMethod = new Jasper.Testing.SingletonArgMethod(messageTracker);");
         }
 
         [Fact]
@@ -158,9 +158,9 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("var widget1 = new Jasper.Testing.Bus.Compilation.Widget();");
-            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.Internals.IoC.MultipleArgMethod(_messageTracker, widget1);");
+            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.MultipleArgMethod(_messageTracker, widget1);");
             code.ShouldContain("var widget2 = new Jasper.Testing.Bus.Compilation.Widget();");
-            code.ShouldContain("var widgetUser = new Jasper.Testing.Internals.IoC.WidgetUser(widget2);");
+            code.ShouldContain("var widgetUser = new Jasper.Testing.WidgetUser(widget2);");
         }
 
         [Fact]
@@ -175,8 +175,8 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("var widget = new Jasper.Testing.Bus.Compilation.Widget();");
-            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.Internals.IoC.MultipleArgMethod(_messageTracker, widget);");
-            code.ShouldContain("var widgetUser = new Jasper.Testing.Internals.IoC.WidgetUser(widget);");
+            code.ShouldContain("var multipleArgMethod = new Jasper.Testing.MultipleArgMethod(_messageTracker, widget);");
+            code.ShouldContain("var widgetUser = new Jasper.Testing.WidgetUser(widget);");
         }
 
         [Fact]
@@ -191,8 +191,8 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
 
-            code.ShouldContain("using (var widget1 = new Jasper.Testing.Internals.IoC.DisposedWidget())");
-            code.ShouldContain("using (var widget2 = new Jasper.Testing.Internals.IoC.DisposedWidget())");
+            code.ShouldContain("using (var widget1 = new Jasper.Testing.DisposedWidget())");
+            code.ShouldContain("using (var widget2 = new Jasper.Testing.DisposedWidget())");
         }
 
         [Fact]
@@ -208,8 +208,8 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("using (var serviceScope = _serviceScopeFactory.CreateScope())");
-            code.ShouldContain("var widgetUser = (Jasper.Testing.Internals.IoC.WidgetUser)serviceProvider.GetService(typeof(Jasper.Testing.Internals.IoC.WidgetUser));");
-            code.ShouldContain("var singletonArgMethod = (Jasper.Testing.Internals.IoC.SingletonArgMethod)serviceProvider.GetService(typeof(Jasper.Testing.Internals.IoC.SingletonArgMethod));");
+            code.ShouldContain("var widgetUser = (Jasper.Testing.WidgetUser)serviceProvider.GetService(typeof(Jasper.Testing.WidgetUser));");
+            code.ShouldContain("var singletonArgMethod = (Jasper.Testing.SingletonArgMethod)serviceProvider.GetService(typeof(Jasper.Testing.SingletonArgMethod));");
         }
 
 
@@ -223,7 +223,7 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("using (var session = _fakeStore.OpenSession())");
-            code.ShouldContain("var usesKnownServiceThing = new Jasper.Testing.Internals.IoC.UsesKnownServiceThing(session);");
+            code.ShouldContain("var usesKnownServiceThing = new Jasper.Testing.UsesKnownServiceThing(session);");
         }
 
         [Fact]
@@ -248,9 +248,9 @@ namespace Jasper.Testing
 
             code.ShouldNotContain(typeof(IServiceScopeFactory).Name);
 
-            code.ShouldContain("var genericServiceUsingMethod = new Jasper.Testing.Internals.IoC.GenericServiceUsingMethod<System.String>();");
+            code.ShouldContain("var genericServiceUsingMethod = new Jasper.Testing.GenericServiceUsingMethod<System.String>();");
 
-            code.ShouldContain("var service = new Jasper.Testing.Internals.IoC.Service<System.String>(_messageTracker);");
+            code.ShouldContain("var service = new Jasper.Testing.Service<System.String>(_messageTracker);");
 
         }
 
@@ -268,7 +268,7 @@ namespace Jasper.Testing
             code.ShouldNotContain(typeof(IServiceScopeFactory).Name);
 
             code.ShouldContain("var widgetArray = new Jasper.Testing.Bus.Compilation.IWidget[]{widget3, widget2, widget1};");
-            code.ShouldContain("var handlerWithArray = new Jasper.Testing.Internals.IoC.HandlerWithArray(widgetArray);");
+            code.ShouldContain("var handlerWithArray = new Jasper.Testing.HandlerWithArray(widgetArray);");
         }
 
         [Fact]
@@ -282,7 +282,7 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("public Red_Message1(IWidget[] widgetArray)");
-            code.ShouldContain("var handlerWithArray = new Jasper.Testing.Internals.IoC.HandlerWithArray(_widgetArray);");
+            code.ShouldContain("var handlerWithArray = new Jasper.Testing.HandlerWithArray(_widgetArray);");
         }
 
         [Fact]
@@ -311,7 +311,7 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("public Red_Message1(IEnumerable<Jasper.Testing.Bus.Compilation.IWidget> widgetEnumerable)");
-            code.ShouldContain("var widgetEnumerableUser = new Jasper.Testing.Internals.IoC.WidgetEnumerableUser(_widgetEnumerable);");
+            code.ShouldContain("var widgetEnumerableUser = new Jasper.Testing.WidgetEnumerableUser(_widgetEnumerable);");
         }
 
 
@@ -343,7 +343,7 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("public Red_Message1(List<Jasper.Testing.Bus.Compilation.IWidget> widgetList)");
-            code.ShouldContain("var widgetListUser = new Jasper.Testing.Internals.IoC.WidgetListUser(_widgetList);");
+            code.ShouldContain("var widgetListUser = new Jasper.Testing.WidgetListUser(_widgetList);");
         }
 
         [Fact]
@@ -372,7 +372,7 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("public Red_Message1(IList<Jasper.Testing.Bus.Compilation.IWidget> widgetList)");
-            code.ShouldContain("var widgetIListUser = new Jasper.Testing.Internals.IoC.WidgetIListUser(_widgetList);");
+            code.ShouldContain("var widgetIListUser = new Jasper.Testing.WidgetIListUser(_widgetList);");
         }
 
         [Fact]
@@ -401,7 +401,7 @@ namespace Jasper.Testing
             var code = codeFor<Message1>();
 
             code.ShouldContain("public Red_Message1(IReadOnlyList<Jasper.Testing.Bus.Compilation.IWidget> widgetList)");
-            code.ShouldContain("var widgetIReadOnlyListUser = new Jasper.Testing.Internals.IoC.WidgetIReadOnlyListUser(_widgetList);");
+            code.ShouldContain("var widgetIReadOnlyListUser = new Jasper.Testing.WidgetIReadOnlyListUser(_widgetList);");
         }
     }
 

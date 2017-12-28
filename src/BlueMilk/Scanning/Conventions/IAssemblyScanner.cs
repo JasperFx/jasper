@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Jasper.Internals.Scanning.Conventions
+namespace BlueMilk.Scanning.Conventions
 {
     public interface IAssemblyScanner
     {

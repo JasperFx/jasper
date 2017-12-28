@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Internals.Compilation;
+using BlueMilk.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals.Codegen.ServiceLocation
+namespace BlueMilk.Codegen.ServiceLocation
 {
     public class ServiceScopeFactoryCreation : SyncFrame
     {

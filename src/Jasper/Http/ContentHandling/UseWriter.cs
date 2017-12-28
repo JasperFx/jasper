@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using Baseline.Reflection;
+using BlueMilk.Codegen;
 using Jasper.Conneg;
 using Jasper.Http.Model;
-using Jasper.Internals.Codegen;
 
 namespace Jasper.Http.ContentHandling
 {

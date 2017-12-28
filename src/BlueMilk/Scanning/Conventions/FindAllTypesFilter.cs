@@ -2,10 +2,9 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Jasper.Internals.Util;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals.Scanning.Conventions
+namespace BlueMilk.Scanning.Conventions
 {
     public class FindAllTypesFilter : IRegistrationConvention
     {

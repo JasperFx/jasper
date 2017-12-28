@@ -8,12 +8,11 @@ using Baseline;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-
 #if !NET46
 
 #endif
 
-namespace Jasper.Internals.Compilation
+namespace BlueMilk.Compilation
 {
     public class AssemblyGenerator
     {

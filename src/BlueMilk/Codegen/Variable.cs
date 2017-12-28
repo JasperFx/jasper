@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Jasper.Internals.IoC;
-using Jasper.Internals.Util;
+using BlueMilk.IoC;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class Variable
     {

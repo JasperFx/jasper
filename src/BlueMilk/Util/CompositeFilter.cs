@@ -1,4 +1,4 @@
-﻿namespace Jasper.Internals.Util
+﻿namespace BlueMilk.Util
 {
     internal class CompositeFilter<T>
     {

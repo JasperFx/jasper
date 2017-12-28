@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Baseline.Reflection;
+using BlueMilk.Codegen;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Internals.Codegen;
 using Shouldly;
 
 namespace Jasper.Testing.Bus

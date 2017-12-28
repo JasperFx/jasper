@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Internals.IoC;
+using BlueMilk.IoC;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     /// <summary>
     /// Models a logical method and how to find candidate variables

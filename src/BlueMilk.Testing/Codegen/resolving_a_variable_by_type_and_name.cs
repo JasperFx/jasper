@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Shouldly;
 using Xunit;
 

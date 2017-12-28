@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Util;
+using BlueMilk.Codegen;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals.IoC
+namespace BlueMilk.IoC
 {
     public class BuildStepPlanner
     {

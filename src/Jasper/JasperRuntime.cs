@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Baseline.Reflection;
+using BlueMilk.Codegen;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Subscriptions;
@@ -17,7 +18,6 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
-using Jasper.Internals.Codegen;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -25,7 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StructureMap;
 using StructureMap.Graph;
 using StructureMap.Pipeline;
-using ServiceCollectionExtensions = Jasper.Internals.Scanning.Conventions.ServiceCollectionExtensions;
+using ServiceCollectionExtensions = BlueMilk.Scanning.Conventions.ServiceCollectionExtensions;
 
 namespace Jasper
 {

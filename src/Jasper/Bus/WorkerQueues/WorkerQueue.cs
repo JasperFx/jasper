@@ -10,7 +10,6 @@ using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Internals.Util;
 
 namespace Jasper.Bus.WorkerQueues
 {

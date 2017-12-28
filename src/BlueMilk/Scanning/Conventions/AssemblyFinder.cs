@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Jasper.Internals.Scanning.Conventions
+namespace BlueMilk.Scanning.Conventions
 {
     internal static class AssemblyFinder
     {

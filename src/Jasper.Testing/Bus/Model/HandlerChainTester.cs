@@ -1,8 +1,8 @@
 ﻿using System.Linq;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus.Model;
 using Jasper.Configuration;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
 using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Internals.Codegen;
+using BlueMilk.Codegen;
 
-namespace Jasper.Internals.IoC
+namespace BlueMilk.IoC
 {
     public abstract class BuildStep
     {

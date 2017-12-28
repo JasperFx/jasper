@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Configuration;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
 using Jasper.Testing.Http;
 
 namespace Jasper.Testing.FakeStoreTypes

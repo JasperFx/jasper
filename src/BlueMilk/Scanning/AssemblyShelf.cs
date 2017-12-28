@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Jasper.Internals.Scanning
+namespace BlueMilk.Scanning
 {
     public class AssemblyShelf
     {

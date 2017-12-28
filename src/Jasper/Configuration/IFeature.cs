@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Jasper.Internals;
-using Jasper.Internals.Codegen;
+using BlueMilk;
+using BlueMilk.Codegen;
 using StructureMap;
 
 namespace Jasper.Configuration

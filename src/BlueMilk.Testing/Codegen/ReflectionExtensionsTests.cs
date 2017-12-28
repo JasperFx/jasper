@@ -1,4 +1,4 @@
-﻿using Jasper.Internals.Codegen;
+﻿using BlueMilk.Codegen;
 using Shouldly;
 using Xunit;
 

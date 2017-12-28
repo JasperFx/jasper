@@ -4,13 +4,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
-using Jasper.Bus;
 using Jasper.Bus.Runtime;
 using Jasper.Conneg;
 using Jasper.Testing;
 using Jasper.Testing.Bus;
-using Jasper.Testing.Bus.Lightweight;
-using Jasper.Testing.Internals;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -20,17 +17,12 @@ namespace IntegrationTests.Conneg
 {
     public class sending_messages_without_sharing_types : IDisposable
     {
-        private JasperRuntime greenApp;
-        private JasperRuntime blueApp;
-        private MessageTracker theTracker;
-
         public sending_messages_without_sharing_types()
         {
             theTracker = new MessageTracker();
 
             greenApp = JasperRuntime.For<GreenApp>();
             blueApp = JasperRuntime.For(new BlueApp(theTracker));
-
 
 
             theTracker.ShouldBeTheSameAs(blueApp.Get<MessageTracker>());
@@ -42,20 +34,9 @@ namespace IntegrationTests.Conneg
             blueApp?.Dispose();
         }
 
-        [Fact]
-        public async Task send_green_that_gets_received_as_blue()
-        {
-            var waiter = theTracker.WaitFor<BlueMessage>();
-
-            await greenApp.Bus.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
-
-            var envelope = await waiter;
-
-
-            envelope.Message
-                .ShouldBeOfType<BlueMessage>()
-                .Name.ShouldBe("Kareem Abdul Jabbar");
-        }
+        private readonly JasperRuntime greenApp;
+        private readonly JasperRuntime blueApp;
+        private readonly MessageTracker theTracker;
 
         [Fact]
         public async Task send_green_as_text_and_receive_as_blue()
@@ -73,7 +54,20 @@ namespace IntegrationTests.Conneg
                 .Name.ShouldBe("Magic Johnson");
         }
 
+        [Fact]
+        public async Task send_green_that_gets_received_as_blue()
+        {
+            var waiter = theTracker.WaitFor<BlueMessage>();
 
+            await greenApp.Bus.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
+
+            var envelope = await waiter;
+
+
+            envelope.Message
+                .ShouldBeOfType<BlueMessage>()
+                .Name.ShouldBe("Kareem Abdul Jabbar");
+        }
     }
 
     // SAMPLE: GreenTextWriter
@@ -111,7 +105,7 @@ namespace IntegrationTests.Conneg
         protected override async Task<BlueMessage> ReadData(Stream stream)
         {
             var name = await stream.ReadAllTextAsync();
-            return new BlueMessage{Name = name};
+            return new BlueMessage {Name = name};
         }
     }
     // ENDSAMPLE

@@ -1,9 +1,8 @@
 using System;
 using System.IO;
 using Baseline;
-using Jasper.Internals.Util;
 
-namespace Jasper.Internals.Compilation
+namespace BlueMilk.Compilation
 {
     public class SourceWriter : ISourceWriter
     {

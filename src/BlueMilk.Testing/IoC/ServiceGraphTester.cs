@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Jasper.Internals;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.IoC;
+using BlueMilk;
+using BlueMilk.Codegen;
+using BlueMilk.IoC;
 using Jasper.Testing.Internals.TargetTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

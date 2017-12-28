@@ -1,4 +1,5 @@
-﻿using Jasper.Bus.Configuration;
+﻿using BlueMilk;
+using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
@@ -10,7 +11,6 @@ using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
 using Jasper.EnvironmentChecks;
 using Jasper.Http.Transport;
-using Jasper.Internals;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Bus

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using BlueMilk.Codegen;
 using Jasper.Bus.ErrorHandling;
-using Jasper.Internals.Codegen;
 using StructureMap;
 
 namespace Jasper.Bus.Model

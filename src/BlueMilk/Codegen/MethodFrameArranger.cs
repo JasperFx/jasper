@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Internals.Codegen.ServiceLocation;
-using Jasper.Internals.IoC;
-using Jasper.Internals.Util;
+using BlueMilk.Codegen.ServiceLocation;
+using BlueMilk.IoC;
+using BlueMilk.Util;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class MethodFrameArranger : IMethodVariables
     {

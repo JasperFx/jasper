@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Internals.Scanning;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Shouldly;
 using StructureMap.TypeRules;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Jasper.Internals.Scanning
+namespace BlueMilk.Scanning
 {
     // Really only tested in integration with other things
     public static class TypeRepository

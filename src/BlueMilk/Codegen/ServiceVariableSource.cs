@@ -1,9 +1,9 @@
 ﻿using System;
-using Jasper.Internals.Codegen.ServiceLocation;
-using Jasper.Internals.IoC;
+using BlueMilk.Codegen.ServiceLocation;
+using BlueMilk.IoC;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class ServiceVariableSource : IVariableSource
     {

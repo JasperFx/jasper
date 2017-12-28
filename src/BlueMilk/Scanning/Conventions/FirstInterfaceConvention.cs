@@ -1,8 +1,7 @@
 using System.Linq;
-using Jasper.Internals.Util;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals.Scanning.Conventions
+namespace BlueMilk.Scanning.Conventions
 {
     public class FirstInterfaceConvention : IRegistrationConvention
     {

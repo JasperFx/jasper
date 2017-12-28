@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus.Runtime.Invocation;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
 
 namespace Jasper.Bus.Model
 {

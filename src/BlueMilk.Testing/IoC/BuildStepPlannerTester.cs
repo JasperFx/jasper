@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Internals;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
-using Jasper.Internals.IoC;
+using BlueMilk;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
+using BlueMilk.IoC;
 using Jasper.Testing.Internals.TargetTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

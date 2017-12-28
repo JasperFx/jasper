@@ -1,6 +1,6 @@
 using System;
 
-namespace Jasper.Internals.Scanning
+namespace BlueMilk.Scanning
 {
     [Flags]
     public enum TypeClassification : short

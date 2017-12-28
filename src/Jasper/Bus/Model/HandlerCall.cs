@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Internals.Codegen;
+using BlueMilk.Codegen;
 
 namespace Jasper.Bus.Model
 {

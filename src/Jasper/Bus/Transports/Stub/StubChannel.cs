@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.Sending;
-using Jasper.Internals.Util;
 
 namespace Jasper.Bus.Transports.Stub
 {

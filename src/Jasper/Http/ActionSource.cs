@@ -5,13 +5,13 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using BlueMilk.Codegen;
 using Jasper.Http.Routing;
-using Jasper.Internals.Codegen;
 using StructureMap.Graph;
 using StructureMap.Graph.Scanning;
-using TypeClassification = Jasper.Internals.Scanning.TypeClassification;
+using TypeClassification = BlueMilk.Scanning.TypeClassification;
 using TypeExtensions = Baseline.TypeExtensions;
-using TypeRepository = Jasper.Internals.Scanning.TypeRepository;
+using TypeRepository = BlueMilk.Scanning.TypeRepository;
 
 namespace Jasper.Http
 {

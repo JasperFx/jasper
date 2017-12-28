@@ -1,8 +1,8 @@
 ﻿using System;
-using Jasper.Internals.Compilation;
 using Baseline;
+using BlueMilk.Compilation;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class NoArgCreationVariable : Variable
     {

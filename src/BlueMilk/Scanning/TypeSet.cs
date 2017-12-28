@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Jasper.Internals.Scanning
+namespace BlueMilk.Scanning
 {
     /// <summary>
     /// Access to a set of exported .Net Type's as defined in a scanning operation

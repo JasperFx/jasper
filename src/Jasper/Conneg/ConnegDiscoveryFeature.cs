@@ -5,13 +5,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
+using BlueMilk;
+using BlueMilk.Codegen;
 using Jasper.Bus;
 using Jasper.Configuration;
-using Jasper.Internals;
-using Jasper.Internals.Codegen;
 using Microsoft.Extensions.DependencyInjection;
-using TypeClassification = Jasper.Internals.Scanning.TypeClassification;
-using TypeRepository = Jasper.Internals.Scanning.TypeRepository;
+using TypeClassification = BlueMilk.Scanning.TypeClassification;
+using TypeRepository = BlueMilk.Scanning.TypeRepository;
 
 namespace Jasper.Conneg
 {

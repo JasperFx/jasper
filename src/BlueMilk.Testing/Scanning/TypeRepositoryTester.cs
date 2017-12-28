@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Jasper.Internals.Scanning;
+using BlueMilk.Scanning;
 using Shouldly;
 using Xunit;
 

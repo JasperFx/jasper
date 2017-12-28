@@ -1,9 +1,9 @@
 ﻿using System.Linq;
+using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
 using Shouldly;
 using Xunit;
 

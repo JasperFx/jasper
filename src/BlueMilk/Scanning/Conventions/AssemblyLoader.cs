@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Jasper.Internals.Scanning.Conventions
+namespace BlueMilk.Scanning.Conventions
 {
     public static class AssemblyLoader
     {

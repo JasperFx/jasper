@@ -1,7 +1,7 @@
 ﻿using System;
-using Jasper.Internals.Compilation;
+using BlueMilk.Compilation;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class InjectedField : Variable
     {

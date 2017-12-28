@@ -1,4 +1,4 @@
-﻿namespace Jasper.Internals.Compilation
+﻿namespace BlueMilk.Compilation
 {
     public interface ISourceWriter
     {

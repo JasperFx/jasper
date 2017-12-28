@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public interface IGenerates<T>
     {

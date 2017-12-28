@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Internals.Compilation;
+using BlueMilk.Compilation;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class MethodCall : Frame
     {

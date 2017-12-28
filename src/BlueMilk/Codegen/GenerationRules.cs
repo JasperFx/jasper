@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
-using Jasper.Internals.IoC;
+using BlueMilk.IoC;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class GenerationRules
     {

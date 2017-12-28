@@ -5,8 +5,6 @@ using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Configuration;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Compilation;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;

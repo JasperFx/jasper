@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Jasper.Internals;
+using BlueMilk;
 using Jasper.Testing.Internals.TargetTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

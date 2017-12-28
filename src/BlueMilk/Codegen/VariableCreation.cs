@@ -1,4 +1,4 @@
-﻿namespace Jasper.Internals.Codegen
+﻿namespace BlueMilk.Codegen
 {
     public enum VariableCreation
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Internals.Scanning.Conventions;
+using BlueMilk.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals
+namespace BlueMilk
 {
     public class ServiceRegistry : List<ServiceDescriptor>, IServiceCollection
     {

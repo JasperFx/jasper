@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Internals.Codegen;
-using Jasper.Internals.Util;
+using BlueMilk.Codegen;
 
-namespace Jasper.Internals.Compilation
+namespace BlueMilk.Compilation
 {
     public static class SourceWriterExtensions
     {

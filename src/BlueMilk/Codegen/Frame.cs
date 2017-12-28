@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Internals.Compilation;
+using BlueMilk.Compilation;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public abstract class SyncFrame : Frame
     {

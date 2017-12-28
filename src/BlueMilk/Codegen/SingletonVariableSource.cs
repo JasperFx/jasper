@@ -1,8 +1,8 @@
 ﻿using System;
-using Jasper.Internals.IoC;
+using BlueMilk.IoC;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Internals.Codegen
+namespace BlueMilk.Codegen
 {
     public class SingletonVariableSource : IVariableSource
     {

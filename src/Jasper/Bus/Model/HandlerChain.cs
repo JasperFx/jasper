@@ -5,11 +5,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using BlueMilk.Codegen;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Configuration;
-using Jasper.Internals.Codegen;
 using StructureMap;
 
 namespace Jasper.Bus.Model
