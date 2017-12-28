@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using StructureMap.TypeRules;
+using Baseline.Reflection;
+using BlueMilk;
 
 namespace Jasper.Util
 {
-    internal class CallingAssembly
+    public class CallingAssembly
     {
         internal static Assembly Find()
         {
@@ -33,11 +34,7 @@ namespace Jasper.Util
         {
             if (assembly == null) return false;
 
-            if (assembly.GetCustomAttributes<JasperFeatureAttribute>().Any()) return true;
-
-            if (assembly.GetName().Name == "Jasper") return true;
-            if (assembly.GetName().Name == "Jasper.CommandLine") return true;
-
+            if (assembly.GetCustomAttributes<IgnoreAssemblyAttribute>().Any()) return true;
 
             return assembly.GetName().Name.StartsWith("System.");
         }
@@ -74,18 +71,10 @@ namespace Jasper.Util
             return assembly;
         }
 
-        public static Assembly DetermineApplicationAssembly(JasperRegistry registry)
+        public static Assembly DetermineApplicationAssembly(object registry)
         {
-            var assembly = registry.GetType().GetAssembly();
-            var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
-            if (!Equals(assembly, typeof(JasperRegistry).GetAssembly()) && !isFeature)
-            {
-                return assembly;
-            }
-            else
-            {
-                return CallingAssembly.Find();
-            }
+            var assembly = registry.GetType().Assembly;
+            return assembly.HasAttribute<IgnoreAssemblyAttribute>() ? CallingAssembly.Find() : assembly;
         }
     }
 }

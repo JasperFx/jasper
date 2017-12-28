@@ -81,6 +81,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowHandler", "src\ShowHand
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OutboxInMVCWithMarten", "src\OutboxInMVCWithMarten\OutboxInMVCWithMarten.csproj", "{C5DE9B84-6D04-4E6A-803E-59630052FBCB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueMilk", "src\BlueMilk\BlueMilk.csproj", "{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -463,6 +465,18 @@ Global
 		{C5DE9B84-6D04-4E6A-803E-59630052FBCB}.Release|x64.Build.0 = Release|Any CPU
 		{C5DE9B84-6D04-4E6A-803E-59630052FBCB}.Release|x86.ActiveCfg = Release|Any CPU
 		{C5DE9B84-6D04-4E6A-803E-59630052FBCB}.Release|x86.Build.0 = Release|Any CPU
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Debug|x64.ActiveCfg = Debug|x64
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Debug|x64.Build.0 = Debug|x64
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Debug|x86.ActiveCfg = Debug|x86
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Debug|x86.Build.0 = Debug|x86
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|x64.ActiveCfg = Release|x64
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|x64.Build.0 = Release|x64
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|x86.ActiveCfg = Release|x86
+		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

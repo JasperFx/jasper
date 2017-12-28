@@ -1,4 +1,5 @@
 ﻿using System;
+using BlueMilk;
 
 namespace Jasper
 {
@@ -6,7 +7,7 @@ namespace Jasper
     /// Tells Jasper to ignore this assembly in its determination of the application assembly
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly)]
-    public class JasperFeatureAttribute : Attribute
+    public class JasperFeatureAttribute : IgnoreAssemblyAttribute
     {
 
     }
