@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Jasper.Internals.Codegen;
-using Jasper.Testing.Bus.Compilation;
+using Jasper.Testing.Internals.TargetTypes;
 using Shouldly;
 using Xunit;
 

@@ -1,5 +1,4 @@
 ﻿using Jasper.Internals.Codegen;
-using Jasper.Testing.Bus.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -19,4 +18,6 @@ namespace Jasper.Testing.Internals.Codegen
     {
 
     }
+
+    public class Message1{}
 }

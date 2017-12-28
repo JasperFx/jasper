@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Bus.Model;
-using Jasper.Internals.Codegen;
 using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
-using Jasper.Testing.Http;
-using Jasper.Testing.Internals.TargetTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Red;
 using Xunit;
 using IWidget = Jasper.Testing.Bus.Compilation.IWidget;
 
-namespace Jasper.Testing.Internals.IoC
+namespace Jasper.Testing
 {
     public class integrated_build_step_planning : IDisposable
     {

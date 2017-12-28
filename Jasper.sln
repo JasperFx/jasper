@@ -83,6 +83,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OutboxInMVCWithMarten", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueMilk", "src\BlueMilk\BlueMilk.csproj", "{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlueMilk.Testing", "src\BlueMilk.Testing\BlueMilk.Testing.csproj", "{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -477,6 +479,18 @@ Global
 		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|x64.Build.0 = Release|x64
 		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|x86.ActiveCfg = Release|x86
 		{12C8DD7D-3103-42AB-8C6B-A3E3A2A2E635}.Release|x86.Build.0 = Release|x86
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Debug|x64.ActiveCfg = Debug|x64
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Debug|x64.Build.0 = Debug|x64
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Debug|x86.ActiveCfg = Debug|x86
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Debug|x86.Build.0 = Debug|x86
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Release|x64.ActiveCfg = Release|x64
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Release|x64.Build.0 = Release|x64
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Release|x86.ActiveCfg = Release|x86
+		{A1C48D2D-FE82-4C40-8D20-AA8D16CAF7BD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

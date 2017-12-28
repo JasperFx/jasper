@@ -38,7 +38,4 @@
   <ItemGroup>
     <ProjectReference Include="..\BlueMilk\BlueMilk.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Internals" />
-  </ItemGroup>
 </Project>
