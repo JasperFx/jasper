@@ -106,10 +106,11 @@ end
 
 desc 'Build Nuspec packages'
 task :pack do
-	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
-  sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
-  sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
-	sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release --version-suffix #{build_revision}"
+	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release "
+  sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release "
+  sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release "
+  sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release "
+  sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release "
 end
 
 desc "Pushes the Nuget's to MyGet"
