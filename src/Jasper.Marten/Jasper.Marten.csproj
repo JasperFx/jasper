@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Jasper Service Bus subscription storage in Marten</Description>
-    <VersionPrefix>0.2.1-alpha</VersionPrefix>
+    <Description>Integrate Marten into JasperFx Applications</Description>
+    <VersionPrefix>0.5.0</VersionPrefix>
     <Authors>Jeremy D. Miller;Mark Wuthrich;Jordan Zaerr</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
