@@ -11,7 +11,6 @@ To set up a Jasper application to listen for incoming and outgoing messages thro
 
 <[sample:LightweightTransportApp]>
 
-TODO -- this is no longer valid. Fix this in the code, then come back here.
 
 In the case of a failure to send a message, the lightweight transport will retry to send the message a few times (3 is the default), but the message will
 be permanently discarded in about 10 seconds if it is unsuccessful. The lightweight transport is useful for control messages or messages that have
