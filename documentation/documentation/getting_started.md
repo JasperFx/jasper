@@ -1,6 +1,6 @@
 <!--title: Getting Started-->
 
-<div class="alert alert-info"><b>Note!</b> Jasper only targets Netstandard 1.5 and higher at this time.</div>
+<div class="alert alert-info"><b>Note!</b> Jasper only targets Netstandard 2.0 and higher at this time.</div>
 
 Jasper is a framework for building server side services in .Net. Jasper can be used as an alternative web framework for .Net, a service bus for messaging, as a "mediator" type
 pipeline within a different framework, or any combination thereof. Jasper can be used as either your main application framework that handles all the configuration and bootstrapping, or as an add on to ASP.Net Core applications.
