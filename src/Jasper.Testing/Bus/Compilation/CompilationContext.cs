@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using BlueMilk;
 using Jasper.Bus;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Configuration;
 using Shouldly;
-using StructureMap;
 using Xunit;
 
 namespace Jasper.Testing.Bus.Compilation

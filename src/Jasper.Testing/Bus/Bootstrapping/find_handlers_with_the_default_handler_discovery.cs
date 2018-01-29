@@ -1,10 +1,7 @@
 ﻿using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Bus.Runtime.Invocation;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Shouldly;
-using StructureMap.TypeRules;
 using Xunit;
 
 namespace Jasper.Testing.Bus.Bootstrapping
@@ -24,6 +21,19 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
 
         [Fact]
+        public void can_find_handlers_from_static_classes()
+        {
+            chainFor<StaticClassMessage>().Handlers.Single().HandlerType
+                .ShouldBe(typeof(StaticClassHandler));
+        }
+
+        [Fact]
+        public void does_not_find_handlers_that_do_not_match_the_type_naming_convention()
+        {
+            chainFor<MovieAdded>().ShouldNotHaveHandler<MovieWatcher>(x => x.Watch(null));
+        }
+
+        [Fact]
         public void finds_classes_suffixed_as_Consumer()
         {
             chainFor<Event1>().ShouldHaveHandler<EventConsumer>(x => x.Consume(new Event1()));
@@ -33,6 +43,15 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public void finds_classes_suffixed_as_Handler()
         {
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle(new MovieAdded()));
+        }
+
+        [Fact]
+        public void finds_interface_messages_too()
+        {
+            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Record(null));
+            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Record2(null));
+            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Record(null));
+            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Record2(null));
         }
 
         [Fact]
@@ -54,29 +73,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
         {
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle3(null, null));
         }
-
-        [Fact]
-        public void finds_interface_messages_too()
-        {
-            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Record(null));
-            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Record2(null));
-            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Record(null));
-            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Record2(null));
-        }
-
-        [Fact]
-        public void does_not_find_handlers_that_do_not_match_the_type_naming_convention()
-        {
-            chainFor<MovieAdded>().ShouldNotHaveHandler<MovieWatcher>(x => x.Watch(null));
-        }
-
-        [Fact]
-        public void can_find_handlers_from_static_classes()
-        {
-            chainFor<StaticClassMessage>().Handlers.Single().HandlerType
-                .ShouldBe(typeof(StaticClassHandler));
-        }
-
     }
 
     public class customized_finding : IntegrationContext
@@ -96,7 +92,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
 
             chainFor<MovieAdded>().ShouldHaveHandler<EpisodeWatcher>(x => x.Handle(new MovieAdded()));
         }
-
     }
 
     public interface IMovieSink
@@ -104,19 +99,19 @@ namespace Jasper.Testing.Bus.Bootstrapping
         void Listen(MovieAdded added);
     }
 
-    public interface IMovieThing { }
+    public interface IMovieThing
+    {
+    }
 
     public class EpisodeWatcher : IMovieThing
     {
         public void Handle(MovieAdded added)
         {
-
         }
     }
 
     public abstract class MovieEvent : IMovieEvent
     {
-
     }
 
     public class MovieAdded : MovieEvent
@@ -143,31 +138,33 @@ namespace Jasper.Testing.Bus.Bootstrapping
     {
         public void Watch(MovieAdded added)
         {
-
         }
     }
 
-    public class StaticClassMessage{}
+    public class StaticClassMessage
+    {
+    }
 
     public static class StaticClassHandler
     {
         public static void Handle(StaticClassMessage message)
         {
-
         }
     }
 
     // SAMPLE: JasperIgnoreAttribute
     public class NetflixHandler : IMovieSink
     {
+        public void Listen(MovieAdded added)
+        {
+        }
+
         public void Record(IMovieEvent @event)
         {
-
         }
 
         public void Record2(MovieEvent @event)
         {
-
         }
 
         public void Handle(MovieAdded added)
@@ -188,10 +185,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public static Task HandleAsync(MovieRemoved removed)
         {
             return Task.CompletedTask;
-        }
-
-        public void Listen(MovieAdded added)
-        {
         }
     }
 

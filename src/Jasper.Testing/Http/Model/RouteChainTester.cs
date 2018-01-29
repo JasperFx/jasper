@@ -4,14 +4,13 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Baseline.Reflection;
 using BlueMilk.Codegen;
-using BlueMilk.Codegen.ServiceLocation;
+using BlueMilk.Codegen.Frames;
 using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Http.Routing.Codegen;
 using Shouldly;
-using StructureMap;
 using Xunit;
 
 namespace Jasper.Testing.Http.Model
@@ -48,24 +47,6 @@ namespace Jasper.Testing.Http.Model
             chainFor(x => x.get_resource2()).ResourceType.ShouldBe(typeof(Resource2));
         }
 
-        [Fact]
-        public void adds_route_argument_frames_to_the_handle_method_body()
-        {
-            var chain = chainFor(x => x.post_select_name(null));
-
-            chain.Route.Arguments.Single().ShouldBeOfType<RouteArgument>()
-                .Position.ShouldBe(1);
-
-            var generationConfig = new GenerationRules("SomeApp");
-            generationConfig.Sources.Add(new NoArgConcreteCreator());
-
-            var @class = chain.ToClass(generationConfig);
-
-            @class.Methods.Single().Frames.OfType<StringRouteArgumentFrame>().Single()
-                .Name.ShouldBe("name");
-
-
-        }
 
 
         [Fact]

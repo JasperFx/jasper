@@ -127,6 +127,18 @@ namespace BlueMilk.Scanning.Conventions
         void TheCallingAssembly();
         void AssembliesFromApplicationBaseDirectory();
         void AssembliesFromApplicationBaseDirectory(Func<Assembly, bool> assemblyFilter);
+        
+        
+        
+        /// <summary>
+        /// Scans for PluginType's and Concrete Types that close the given open generic type
+        /// </summary>
+        /// <example>
+        /// 
+        /// </example>
+        /// <param name="openGenericType"></param>
+        void ConnectImplementationsToTypesClosing(Type openGenericType);
+
 
         /// <summary>
         /// Choosing option will direct StructureMap to *also* scan files ending in '*.exe'

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
 using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Http.Model;

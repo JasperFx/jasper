@@ -1,5 +1,5 @@
 ﻿using System;
-using BlueMilk.Codegen;
+using BlueMilk.Codegen.Variables;
 
 namespace Jasper.Bus.Model
 {

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using Jasper.Configuration;
+using BlueMilk;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using StructureMap;
 
 namespace Jasper.Http
 {
@@ -65,15 +64,9 @@ namespace Jasper.Http
                 startup.ConfigureServices(services);
             }
 
-            var registry = new Registry();
-            foreach (var service in services)
-            {
-                registry.Register(service);
-            }
+            _container.Configure(services);
 
-            _container.Configure(x => x.AddRegistry(registry));
-
-            return new StructureMapServiceProvider(_container);
+            return (IServiceProvider) _container;
         }
 
         public void Configure(IApplicationBuilder app)

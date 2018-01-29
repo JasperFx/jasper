@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
 using BlueMilk.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,13 +9,18 @@ namespace BlueMilk.Codegen.ServiceLocation
 {
     public class ServiceScopeFactoryCreation : SyncFrame
     {
-        private Variable _factory;
+        private readonly Variable _factory;
         private readonly Variable _scope;
 
         public ServiceScopeFactoryCreation()
         {
             _scope = new Variable(typeof(IServiceScope), this);
             Provider = new Variable(typeof(IServiceProvider), this);
+        }
+
+        public ServiceScopeFactoryCreation(Variable factory) : this()
+        {
+            _factory = factory;
         }
 
         public Variable Provider { get; }
@@ -27,10 +34,5 @@ namespace BlueMilk.Codegen.ServiceLocation
             });
         }
 
-        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
-        {
-            _factory = chain.FindVariable(typeof(IServiceScopeFactory));
-            yield return _factory;
-        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
 using BlueMilk.Compilation;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;

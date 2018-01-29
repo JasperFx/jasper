@@ -39,7 +39,7 @@ namespace BlueMilk.Compilation
 
             try
             {
-                var referencePath = CreateAssemblyReference(assembly);
+                var referencePath = createAssemblyReference(assembly);
 
                 if (referencePath == null)
                 {
@@ -67,7 +67,7 @@ namespace BlueMilk.Compilation
             }
         }
 
-        private static string CreateAssemblyReference(Assembly assembly)
+        private static string createAssemblyReference(Assembly assembly)
         {
             return string.IsNullOrEmpty(assembly.Location)
                 ? GetPath(assembly)
@@ -124,7 +124,7 @@ namespace BlueMilk.Compilation
                         diagnostic.Severity == DiagnosticSeverity.Error);
 
 
-                    var message = GenericEnumerableExtensions.Join(failures.Select(x => $"{x.Id}: {x.GetMessage()}"), "\n");
+                    var message = failures.Select(x => $"{x.Id}: {x.GetMessage()}").Join("\n");
 
 
                     throw new InvalidOperationException("Compilation failures!\n\n" + message + "\n\nCode:\n\n" + code);
@@ -134,23 +134,13 @@ namespace BlueMilk.Compilation
 
                 stream.Seek(0, SeekOrigin.Begin);
 
-#if NET46
-                return Assembly.Load(stream.ReadAllBytes());
-#else
                 return _context.LoadFromStream(stream);
-#endif
 
-                //                var loader = new InteractiveAssemblyLoader();
-                //
-                //                var method = loader.GetType()
-                //                    .GetMethod("LoadAssemblyFromStream", BindingFlags.NonPublic | BindingFlags.Instance);
-                //
-                //                return method.Invoke(loader, new object[] {stream, null}).As<Assembly>();
             }
         }
     }
 
-#if !NET46
+
     public class CustomAssemblyLoadContext : System.Runtime.Loader.AssemblyLoadContext
     {
         protected override Assembly Load(AssemblyName assemblyName)
@@ -158,5 +148,5 @@ namespace BlueMilk.Compilation
             return Assembly.Load(assemblyName);
         }
     }
-#endif
+
 }

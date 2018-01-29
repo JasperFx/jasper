@@ -6,32 +6,23 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.EnvironmentChecks;
 using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using StructureMap;
 using Xunit;
 
 namespace Jasper.Testing.EnvironmentChecks
 {
     public class EnvironmentChecksProcessing
     {
-
         [Fact]
-        public void finds_checks_that_were_not_registered_as_environment_check()
+        public void do_not_fail_if_advanced_says_not_to_blow_up()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            using (var runtime = JasperRuntime.For(_ =>
             {
-                using (var runtime = JasperRuntime.For(_ =>
-                {
-                    _.Handlers.DisableConventionalDiscovery();
-                    _.Services.AddTransient<ISomeService, BadService>();
-                }))
-                {
-
-                }
-            });
-
-            aggregate.InnerExceptions.Single().Message.ShouldContain("I'm bad!");
-
+                _.Handlers.DisableConventionalDiscovery();
+                _.EnvironmentChecks.Register<NegativeCheck>();
+                _.Advanced.ThrowOnValidationErrors = false;
+            }))
+            {
+            }
         }
 
 
@@ -47,26 +38,11 @@ namespace Jasper.Testing.EnvironmentChecks
                     _.EnvironmentChecks.Register<NegativeCheck>();
                 }))
                 {
-
                 }
             });
 
             aggregate.InnerExceptions.Single().Message
                 .ShouldContain("Kaboom!");
-        }
-
-        [Fact]
-        public void do_not_fail_if_advanced_says_not_to_blow_up()
-        {
-            using (var runtime = JasperRuntime.For(_ =>
-            {
-                _.Handlers.DisableConventionalDiscovery();
-                _.EnvironmentChecks.Register<NegativeCheck>();
-                _.Advanced.ThrowOnValidationErrors = false;
-            }))
-            {
-
-            }
         }
 
         [Fact]
@@ -81,26 +57,11 @@ namespace Jasper.Testing.EnvironmentChecks
                     _.EnvironmentChecks.Register("Bazinga!", () => throw new Exception("Bang"));
                 }))
                 {
-
                 }
             });
 
             aggregate.InnerExceptions.Single().Message
                 .ShouldContain("Bang");
-        }
-
-        [Fact]
-        public void succeed_with_lambda_check()
-        {
-            using (var runtime = JasperRuntime.For(_ =>
-            {
-                _.Handlers.DisableConventionalDiscovery();
-
-                _.EnvironmentChecks.Register("Bazinga!", () => { });
-            }))
-            {
-
-            }
         }
 
         [Fact]
@@ -115,10 +76,38 @@ namespace Jasper.Testing.EnvironmentChecks
                     _.EnvironmentChecks.Register<Thing>("Bazinga!", t => t.ThrowUp());
                 }))
                 {
+                }
+            });
+        }
 
+        [Fact]
+        public void finds_checks_that_were_not_registered_as_environment_check()
+        {
+            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            {
+                using (var runtime = JasperRuntime.For(_ =>
+                {
+                    _.Handlers.DisableConventionalDiscovery();
+                    _.Services.AddTransient<ISomeService, BadService>();
+                }))
+                {
                 }
             });
 
+            aggregate.InnerExceptions.Single().Message.ShouldContain("I'm bad!");
+        }
+
+        [Fact]
+        public void succeed_with_lambda_check()
+        {
+            using (var runtime = JasperRuntime.For(_ =>
+            {
+                _.Handlers.DisableConventionalDiscovery();
+
+                _.EnvironmentChecks.Register("Bazinga!", () => { });
+            }))
+            {
+            }
         }
 
         [Fact]
@@ -131,7 +120,6 @@ namespace Jasper.Testing.EnvironmentChecks
                 _.EnvironmentChecks.Register<Thing>("Bazinga!", t => t.AllGood());
             }))
             {
-
             }
         }
 
@@ -147,7 +135,6 @@ namespace Jasper.Testing.EnvironmentChecks
                     _.EnvironmentChecks.Register<Thing>("Bazinga!", t => t.TooLong(), 50.Milliseconds());
                 }))
                 {
-
                 }
             });
         }
@@ -162,7 +149,6 @@ namespace Jasper.Testing.EnvironmentChecks
 
         public void AllGood()
         {
-
         }
 
         public Task TooLong()
@@ -171,7 +157,9 @@ namespace Jasper.Testing.EnvironmentChecks
         }
     }
 
-    public interface ISomeService{}
+    public interface ISomeService
+    {
+    }
 
     public class SomeService1 : ISomeService, IEnvironmentCheck
     {
@@ -207,8 +195,11 @@ namespace Jasper.Testing.EnvironmentChecks
 
     public class StubEnvironmentRecorder : IEnvironmentRecorder
     {
-        public readonly IList<string> Successes = new List<string>();
         public readonly IDictionary<string, Exception> Failures = new Dictionary<string, Exception>();
+        public readonly IList<string> Successes = new List<string>();
+
+        public bool AssertAllWasCalled { get; set; }
+
         public void Success(string description)
         {
             Successes.Add(description);
@@ -223,8 +214,6 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             AssertAllWasCalled = true;
         }
-
-        public bool AssertAllWasCalled { get; set; }
     }
 
     // SAMPLE: registering-environment-checks
@@ -241,10 +230,7 @@ namespace Jasper.Testing.EnvironmentChecks
             // or do it manually w/ a lambda
             EnvironmentChecks.Register("settings.json can be found", () =>
             {
-                if (!File.Exists("settings.json"))
-                {
-                    throw new Exception("File cannot be found");
-                }
+                if (!File.Exists("settings.json")) throw new Exception("File cannot be found");
             });
 
             // Or register a check type
@@ -252,14 +238,11 @@ namespace Jasper.Testing.EnvironmentChecks
 
             // The concrete Store class exposes IEnvironmentCheck
             Services.AddTransient<IStore, Store>();
-
-
         }
     }
 
     public interface IStore
     {
-
     }
 
     // Jasper will still use this as an environment check
@@ -271,7 +254,6 @@ namespace Jasper.Testing.EnvironmentChecks
         }
     }
     // ENDSAMPLE
-
 
 
     public class CustomCheck : IEnvironmentCheck

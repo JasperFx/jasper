@@ -12,12 +12,8 @@ using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
-using Jasper.Conneg;
 using Jasper.Http.Transport;
-using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
-using StructureMap;
-using CapabilityGraph = Jasper.Bus.Runtime.Subscriptions.CapabilityGraph;
 
 namespace Jasper.Bus
 {
@@ -26,17 +22,17 @@ namespace Jasper.Bus
         private readonly ChannelGraph _channels = new ChannelGraph();
         private readonly LocalWorkerSender _localWorker = new LocalWorkerSender();
 
-        private HandlerGraph _graph;
-        public HandlerSource Handlers { get; } = new HandlerSource();
-
 
         public readonly CapabilityGraph Capabilities = new CapabilityGraph();
+
+        public readonly ServiceRegistry Services = new ServiceBusRegistry();
+
+        private HandlerGraph _graph;
+        public HandlerSource Handlers { get; } = new HandlerSource();
 
         public GenerationRules Generation { get; } = new GenerationRules("JasperBus.Generated");
 
         public BusSettings Settings { get; } = new BusSettings();
-
-        public readonly ServiceRegistry Services = new ServiceBusRegistry();
 
         public void Dispose()
         {
@@ -56,18 +52,14 @@ namespace Jasper.Bus
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
-            var transports = runtime.Get<ITransport[]>().Where(x => Settings.StateFor(x.Protocol) == TransportState.Enabled);
+            var transports = runtime.Get<ITransport[]>()
+                .Where(x => Settings.StateFor(x.Protocol) == TransportState.Enabled);
 
-            foreach (var transport in transports)
-            {
-                transport.Describe(writer);
-            }
+            foreach (var transport in transports) transport.Describe(writer);
 
             writer.WriteLine();
             foreach (var channel in _channels.AllKnownChannels())
-            {
                 writer.WriteLine($"Active sending agent to {channel.Uri}");
-            }
 
             if (runtime.Registry.Logging.Verbose)
             {
@@ -87,7 +79,6 @@ namespace Jasper.Bus
                 writer.WriteLine();
             }
         }
-
 
 
         private async Task<ServiceRegistry> bootstrap(JasperRegistry registry)

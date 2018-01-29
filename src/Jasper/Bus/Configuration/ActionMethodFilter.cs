@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using Baseline;
-using Baseline.Reflection;
-using StructureMap.Graph;
+using Jasper.Util;
 
 namespace Jasper.Bus.Configuration
 {
@@ -18,7 +16,7 @@ namespace Jasper.Bus.Configuration
 
         public void IgnoreMethodsDeclaredBy<T>()
         {
-            Excludes += x => x.DeclaringType == typeof (T);
+            Excludes += x => x.DeclaringType == typeof(T);
         }
     }
 }

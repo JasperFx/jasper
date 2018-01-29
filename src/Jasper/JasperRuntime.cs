@@ -4,52 +4,38 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Baseline.Reflection;
-using BlueMilk.Codegen;
+using BlueMilk;
+using BlueMilk.Codegen.Variables;
+using BlueMilk.Scanning.Conventions;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
-using StructureMap;
-using StructureMap.Graph;
-using StructureMap.Pipeline;
-using ServiceCollectionExtensions = BlueMilk.Scanning.Conventions.ServiceCollectionExtensions;
 
 namespace Jasper
 {
     /// <summary>
-    /// Strictly used to override the ASP.Net Core environment name on bootstrapping
+    ///     Strictly used to override the ASP.Net Core environment name on bootstrapping
     /// </summary>
     public static class JasperEnvironment
     {
         public static string Name { get; set; }
     }
 
-    internal class TransportsAreSingletons : StructureMap.IInstancePolicy
-    {
-        public void Apply(Type pluginType, Instance instance)
-        {
-            if (pluginType == typeof(ITransport))
-            {
-                instance.SetLifecycleTo(Lifecycles.Singleton);
-            }
-        }
-    }
 
     public class JasperRuntime : IDisposable
     {
+        private readonly Lazy<IServiceBus> _bus;
         private bool isDisposing;
 
         private JasperRuntime(JasperRegistry registry, IServiceCollection services)
@@ -58,14 +44,7 @@ namespace Jasper
 
             Services = services.ToImmutableArray();
 
-            Container = new Container(_ =>
-            {
-                _.Populate(services);
-                _.For<ITransport>().Singleton();
-                _.Policies.Add<TransportsAreSingletons>();
-
-                _.For<CancellationToken>().Use(c => c.GetInstance<BusSettings>().Cancellation);
-            })
+            Container = new Container(services)
             {
                 DisposalLock = DisposalLock.Ignore
             };
@@ -78,38 +57,54 @@ namespace Jasper
             Registry = registry;
 
             _bus = new Lazy<IServiceBus>(Get<IServiceBus>);
-
         }
 
         internal JasperRegistry Registry { get; }
 
         /// <summary>
-        /// The known service registrations to the underlying IoC container
+        ///     The known service registrations to the underlying IoC container
         /// </summary>
         public ImmutableArray<ServiceDescriptor> Services { get; }
 
         /// <summary>
-        /// The running IWebHost for this applicastion
+        ///     The running IWebHost for this applicastion
         /// </summary>
         public IWebHost Host => Registry.Features.For<AspNetCoreFeature>().Host;
 
         /// <summary>
-        /// The main application assembly for the running application
+        ///     The main application assembly for the running application
         /// </summary>
         public Assembly ApplicationAssembly => Registry.ApplicationAssembly;
 
         /// <summary>
-        /// The underlying StructureMap container
+        ///     The underlying BlueMilk container
         /// </summary>
-        public IContainer Container { get; }
+        public Container Container { get; }
 
         public bool IsDisposed { get; private set; }
 
         /// <summary>
-        /// Summary of all the message handling, subscription, and message publishing
-        /// capabilities of the running Jasper application
+        ///     Summary of all the message handling, subscription, and message publishing
+        ///     capabilities of the running Jasper application
         /// </summary>
         public ServiceCapabilities Capabilities { get; internal set; }
+
+        public string HttpAddresses { get; internal set; }
+
+        /// <summary>
+        ///     Shortcut to retrieve an instance of the IServiceBus interface for the application
+        /// </summary>
+        public IServiceBus Bus => _bus.Value;
+
+        /// <summary>
+        ///     The logical name of the application from JasperRegistry.ServiceName
+        /// </summary>
+        public string ServiceName => Registry.ServiceName;
+
+        /// <summary>
+        ///     Information about the running service node as published to service discovery
+        /// </summary>
+        public IServiceNode Node { get; internal set; }
 
         public void Dispose()
         {
@@ -131,10 +126,7 @@ namespace Jasper
             isDisposing = true;
 
 
-            foreach (var feature in Registry.Features)
-            {
-                feature.Dispose();
-            }
+            foreach (var feature in Registry.Features) feature.Dispose();
 
             Container.DisposalLock = DisposalLock.Unlocked;
             Container.Dispose();
@@ -143,8 +135,8 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Creates a Jasper application for the current executing assembly
-        /// using all the default Jasper configurations
+        ///     Creates a Jasper application for the current executing assembly
+        ///     using all the default Jasper configurations
         /// </summary>
         /// <returns></returns>
         public static JasperRuntime Basic()
@@ -153,7 +145,7 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Builds and initializes a JasperRuntime for the registry
+        ///     Builds and initializes a JasperRuntime for the registry
         /// </summary>
         /// <param name="registry"></param>
         /// <returns></returns>
@@ -163,8 +155,8 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Builds and initializes a JasperRuntime for the JasperRegistry of
-        /// type T
+        ///     Builds and initializes a JasperRuntime for the JasperRegistry of
+        ///     type T
         /// </summary>
         /// <param name="configure"></param>
         /// <typeparam name="T">The type of your JasperRegistry</typeparam>
@@ -178,7 +170,7 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Builds and initializes a JasperRuntime for the configured JasperRegistry
+        ///     Builds and initializes a JasperRuntime for the configured JasperRegistry
         /// </summary>
         /// <param name="configure"></param>
         /// <returns></returns>
@@ -201,7 +193,7 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Shorthand to fetch a service from the application container by type
+        ///     Shorthand to fetch a service from the application container by type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -222,18 +214,19 @@ namespace Jasper
             var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry)))
                 .ConfigureAwait(false);
 
-            var collections = new List<IServiceCollection>();
-            collections.AddRange(serviceRegistries);
-            collections.Add(registry.ExtensionServices);
-            collections.Add(registry.Services);
+            var services = new ServiceRegistry();
+            foreach (var serviceRegistry in serviceRegistries)
+            {
+                services.AddRange(serviceRegistry);
+            }
 
-
-            var services = await ServiceCollectionExtensions.Combine(collections.ToArray());
-            registry.Generation.ReadServices(services);
+            services.AddRange(registry.ExtensionServices);
+            services.AddRange(registry.Services);
 
 
             var runtime = new JasperRuntime(registry, services);
-            registry.Http.As<IWebHostBuilder>().UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
+            registry.Http.As<IWebHostBuilder>()
+                .UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
 
             runtime.HttpAddresses = registry.Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
 
@@ -242,10 +235,7 @@ namespace Jasper
 
             // Run environment checks
             var recorder = EnvironmentChecker.ExecuteAll(runtime);
-            if (runtime.Get<BusSettings>().ThrowOnValidationErrors)
-            {
-                recorder.AssertAllSuccessful();
-            }
+            if (runtime.Get<BusSettings>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
 
             await registerRunningNode(runtime);
 
@@ -260,9 +250,9 @@ namespace Jasper
 
             try
             {
-
                 var local = new ServiceNode(settings);
-                local.HttpEndpoints = runtime.HttpAddresses?.Split(';').Select(x => x.ToUri().ToMachineUri()).Distinct().ToArray();
+                local.HttpEndpoints = runtime.HttpAddresses?.Split(';').Select(x => x.ToUri().ToMachineUri()).Distinct()
+                    .ToArray();
 
                 runtime.Node = local;
 
@@ -270,11 +260,10 @@ namespace Jasper
             }
             catch (Exception e)
             {
-                runtime.Get<CompositeMessageLogger>().LogException(e, message: "Failure when trying to register the node with " + nodes);
+                runtime.Get<CompositeMessageLogger>()
+                    .LogException(e, message: "Failure when trying to register the node with " + nodes);
             }
         }
-
-        public string HttpAddresses { get; internal set; }
 
         private static void applyExtensions(JasperRegistry registry)
         {
@@ -294,52 +283,27 @@ namespace Jasper
         public static Assembly[] FindExtensionAssemblies()
         {
             return AssemblyFinder
-                .FindAssemblies(a => a.HasAttribute<JasperModuleAttribute>())
+                .FindAssemblies(txt => {}, false)
+                .Where(a => a.HasAttribute<JasperModuleAttribute>())
                 .ToArray();
         }
 
         /// <summary>
-        /// Writes a textual report about the configured transports and servers
-        /// for this application
+        ///     Writes a textual report about the configured transports and servers
+        ///     for this application
         /// </summary>
         /// <param name="writer"></param>
         public void Describe(TextWriter writer)
         {
             writer.WriteLine($"Running service '{ServiceName}'");
-            if (ApplicationAssembly != null)
-            {
-                writer.WriteLine("Application Assembly: " + ApplicationAssembly.FullName);
-            }
+            if (ApplicationAssembly != null) writer.WriteLine("Application Assembly: " + ApplicationAssembly.FullName);
 
             var hosting = Get<IHostingEnvironment>();
             writer.WriteLine($"Hosting environment: {hosting.EnvironmentName}");
             writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
 
 
-            foreach (var feature in Registry.Features)
-            {
-                feature.Describe(this, writer);
-            }
+            foreach (var feature in Registry.Features) feature.Describe(this, writer);
         }
-
-        private readonly Lazy<IServiceBus> _bus;
-
-        /// <summary>
-        /// Shortcut to retrieve an instance of the IServiceBus interface for the application
-        /// </summary>
-        public IServiceBus Bus => _bus.Value;
-
-        /// <summary>
-        /// The logical name of the application from JasperRegistry.ServiceName
-        /// </summary>
-        public string ServiceName => Registry.ServiceName;
-
-        /// <summary>
-        /// Information about the running service node as published to service discovery
-        /// </summary>
-        public IServiceNode Node { get; internal set; }
-
     }
 }
-
-

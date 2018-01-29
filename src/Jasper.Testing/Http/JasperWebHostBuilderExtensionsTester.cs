@@ -1,4 +1,5 @@
 ﻿using System;
+using BlueMilk;
 using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Testing.Bus.Compilation;
@@ -25,9 +26,9 @@ namespace Jasper.Testing.Http
         }
 
         [Fact]
-        public void is_using_structuremap_for_the_service_provider()
+        public void is_using_bluemilk_for_the_service_provider()
         {
-            theHost.Services.ShouldBeOfType<StructureMapServiceProvider>();
+            theHost.Services.ShouldBeOfType<Container>();
         }
 
         [Fact]

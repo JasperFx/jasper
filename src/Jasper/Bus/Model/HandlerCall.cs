@@ -4,12 +4,23 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
-using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
 
 namespace Jasper.Bus.Model
 {
     public class HandlerCall : MethodCall
     {
+        public HandlerCall(Type handlerType, MethodInfo method) : base(handlerType, method)
+        {
+            MessageType = method.MessageType();
+
+            if (MessageType == null)
+                throw new ArgumentOutOfRangeException(nameof(method),
+                    $"Method {handlerType.FullName}.{method.Name} has no message type");
+        }
+
+        public Type MessageType { get; }
+
         public static bool IsCandidate(MethodInfo method)
         {
             if (!method.GetParameters().Any()) return false;
@@ -21,7 +32,7 @@ namespace Jasper.Bus.Model
             var messageType = method.MessageType();
             if (messageType == null) return false;
 
-            bool hasOutput = method.ReturnType != typeof(void);
+            var hasOutput = method.ReturnType != typeof(void);
 
             return !hasOutput || !method.ReturnType.GetTypeInfo().IsValueType;
         }
@@ -30,15 +41,6 @@ namespace Jasper.Bus.Model
         {
             return new HandlerCall(typeof(T), ReflectionHelper.GetMethod(method));
         }
-
-        public HandlerCall(Type handlerType, MethodInfo method) : base(handlerType, method)
-        {
-            MessageType = method.MessageType();
-
-            if (MessageType == null) throw new ArgumentOutOfRangeException(nameof(method), $"Method {handlerType.FullName}.{method.Name} has no message type");
-        }
-
-        public Type MessageType { get; }
 
         public bool CouldHandleOtherMessageType(Type messageType)
         {

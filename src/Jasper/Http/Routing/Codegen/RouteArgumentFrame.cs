@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
 
 namespace Jasper.Http.Routing.Codegen
 {

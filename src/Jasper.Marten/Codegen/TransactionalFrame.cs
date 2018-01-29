@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
 using BlueMilk.Compilation;
 using Marten;
 

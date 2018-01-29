@@ -1,21 +1,30 @@
-﻿using System.Reflection;
-using Jasper.Testing.Bus.Bootstrapping;
+﻿using Jasper.Testing.Bus.Bootstrapping;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
-using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using StructureMap.TypeRules;
 using Xunit;
 
 namespace Jasper.Testing
 {
     public class JasperRegistryTests
     {
+        public interface IFoo
+        {
+        }
+
+        public class Foo : IFoo
+        {
+        }
+
+        public class MyRegistry : JasperRegistry
+        {
+        }
+
         [Fact]
         public void can_determine_the_root_assembly_on_subclass()
         {
-            new MyRegistry().ApplicationAssembly.ShouldBe(typeof(JasperRegistryTests).GetAssembly());
+            new MyRegistry().ApplicationAssembly.ShouldBe(typeof(JasperRegistryTests).Assembly);
         }
 
         [Fact]
@@ -31,14 +40,6 @@ namespace Jasper.Testing
             {
                 runtime.Container.DefaultRegistrationIs<IFoo, Foo>();
             }
-        }
-
-        public interface IFoo { }
-        public class Foo : IFoo { }
-
-        public class MyRegistry : JasperRegistry
-        {
-
         }
     }
 }

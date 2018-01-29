@@ -1,27 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus;
+using Baseline;
+using BlueMilk.Scanning;
 using Jasper.Configuration;
-using Jasper.Http;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
-using Jasper.Testing.Bus.Compilation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using StructureMap.Graph.Scanning;
-using StructureMap.TypeRules;
 using Xunit;
 
 namespace Jasper.Testing.Http
 {
     public class bootstrapping_end_to_end : IDisposable
     {
-        private readonly JasperRuntime theRuntime;
-
         public bootstrapping_end_to_end()
         {
             TypeRepository.ClearAll();
@@ -39,41 +33,12 @@ namespace Jasper.Testing.Http
             theRuntime = JasperRuntime.For(registry);
         }
 
-        [Fact]
-        public void route_graph_is_registered()
+        public void Dispose()
         {
-            theRuntime.Get<RouteGraph>()
-                .Any().ShouldBeTrue();
+            theRuntime?.Dispose();
         }
 
-        [Fact]
-        public void can_find_and_apply_endpoints_by_type_scanning()
-        {
-            var routes = theRuntime.Get<RouteGraph>();
-
-            routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)).ShouldBeTrue();
-            routes.Any(x => x.Action.HandlerType == typeof(OtherEndpoint)).ShouldBeTrue();
-        }
-
-        [Fact]
-        public void url_registry_is_registered()
-        {
-            theRuntime.Get<IUrlRegistry>().ShouldNotBeNull();
-        }
-
-        [Fact]
-        public void reverse_url_lookup_by_method()
-        {
-            var urls = theRuntime.Get<IUrlRegistry>();
-            urls.UrlFor<SimpleEndpoint>(x => x.get_hello()).ShouldBe("/hello");
-        }
-
-        [Fact]
-        public void reverse_url_lookup_by_input_model()
-        {
-            var urls = theRuntime.Get<IUrlRegistry>();
-            urls.UrlFor<OtherModel>().ShouldBe("/other");
-        }
+        private readonly JasperRuntime theRuntime;
 
         [Fact]
         public void can_apply_custom_conneg_rules()
@@ -91,15 +56,46 @@ namespace Jasper.Testing.Http
         }
 
         [Fact]
+        public void can_find_and_apply_endpoints_by_type_scanning()
+        {
+            var routes = theRuntime.Get<RouteGraph>();
+
+            routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)).ShouldBeTrue();
+            routes.Any(x => x.Action.HandlerType == typeof(OtherEndpoint)).ShouldBeTrue();
+        }
+
+        [Fact]
         public void can_import_endpoints_from_extension_includes()
         {
             theRuntime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(ExtensionThing))
                 .ShouldBeTrue();
         }
 
-        public void Dispose()
+        [Fact]
+        public void reverse_url_lookup_by_input_model()
         {
-            theRuntime?.Dispose();
+            var urls = theRuntime.Get<IUrlRegistry>();
+            urls.UrlFor<OtherModel>().ShouldBe("/other");
+        }
+
+        [Fact]
+        public void reverse_url_lookup_by_method()
+        {
+            var urls = theRuntime.Get<IUrlRegistry>();
+            urls.UrlFor<SimpleEndpoint>(x => x.get_hello()).ShouldBe("/hello");
+        }
+
+        [Fact]
+        public void route_graph_is_registered()
+        {
+            theRuntime.Get<RouteGraph>()
+                .Any().ShouldBeTrue();
+        }
+
+        [Fact]
+        public void url_registry_is_registered()
+        {
+            theRuntime.Get<IUrlRegistry>().ShouldNotBeNull();
         }
     }
 
@@ -167,9 +163,10 @@ namespace Jasper.Testing.Http
 
         public void put_other(OtherModel input)
         {
-
         }
     }
 
-    public class OtherModel { }
+    public class OtherModel
+    {
+    }
 }

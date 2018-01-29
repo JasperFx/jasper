@@ -1,12 +1,11 @@
 using System;
 using System.IO;
-using Jasper.Diagnostics.StructureMap;
+using BlueMilk;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using StructureMap;
 
 namespace Jasper.Diagnostics
 {
@@ -34,31 +33,4 @@ namespace Jasper.Diagnostics
         }
     }
 
-    public class DiagnosticsServer : IDisposable
-    {
-        private IWebHost _host;
-        private DiagnosticsSettings _settings;
-
-        public void Start(DiagnosticsSettings settings, IContainer container)
-        {
-            _settings = settings;
-
-            var url = $"http://localhost:{settings.WebsocketPort}";
-            Console.WriteLine($"Diagnostics listening on {url}");
-            _host = new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls(url)
-                .UseStructureMap(container)
-                .UseStartup<DiagnosticsServerStartup>()
-                .Build();
-
-            _host.Start();
-        }
-
-        public void Dispose()
-        {
-            _host?.Dispose();
-        }
-    }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Baseline;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,8 +9,8 @@ namespace BlueMilk.Scanning.Conventions
     {
         public void ScanTypes(TypeSet types, IServiceCollection services)
         {
-            var interfaces = types.FindTypes(TypeClassification.Interfaces);
-            var concretes = types.FindTypes(TypeClassification.Concretes).Where(x => x.GetConstructors().Any()).ToArray();
+            var interfaces = types.FindTypes(TypeClassification.Interfaces | TypeClassification.Closed).Where(x => x != typeof(IDisposable));
+            var concretes = types.FindTypes(TypeClassification.Concretes | TypeClassification.Closed).Where(x => x.GetConstructors().Any()).ToArray();
 
             interfaces.Each(@interface =>
             {

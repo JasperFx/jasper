@@ -1,4 +1,6 @@
 ﻿using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
 using BlueMilk.Compilation;
 using Jasper.Bus.Runtime;
 

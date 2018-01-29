@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
 
 namespace BlueMilk.Codegen
 {

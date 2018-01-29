@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Baseline;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
 
 namespace Jasper.Configuration
 {

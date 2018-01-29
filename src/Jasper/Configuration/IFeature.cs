@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using BlueMilk;
 using BlueMilk.Codegen;
-using StructureMap;
 
 namespace Jasper.Configuration
 {

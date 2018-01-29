@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using Jasper.Bus.ErrorHandling;
-using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Routing;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Util;
-using StructureMap.TypeRules;
 
 namespace Jasper.Bus.Configuration
 {
@@ -17,7 +14,6 @@ namespace Jasper.Bus.Configuration
         {
             _bus = bus;
         }
-
 
 
         public MessageTrackExpression Message<T>()
@@ -61,7 +57,17 @@ namespace Jasper.Bus.Configuration
 
         public MessageTrackExpression MessagesFromAssemblyContaining<T>()
         {
-            return MessagesFromAssembly(typeof(T).GetAssembly());
+            return MessagesFromAssembly(typeof(T).Assembly);
+        }
+
+        public ISubscriberAddress AllMessagesTo(string uriString)
+        {
+            return AllMessagesTo(uriString.ToUri());
+        }
+
+        private ISubscriberAddress AllMessagesTo(Uri uri)
+        {
+            return MessagesMatching("all messages", _ => true).To(uri);
         }
 
         public class MessageTrackExpression
@@ -88,17 +94,5 @@ namespace Jasper.Bus.Configuration
                 return To(address.ToUri());
             }
         }
-
-        public ISubscriberAddress AllMessagesTo(string uriString)
-        {
-            return AllMessagesTo(uriString.ToUri());
-        }
-
-        private ISubscriberAddress AllMessagesTo(Uri uri)
-        {
-            return MessagesMatching("all messages", _ => true).To(uri);
-        }
     }
-
-
 }

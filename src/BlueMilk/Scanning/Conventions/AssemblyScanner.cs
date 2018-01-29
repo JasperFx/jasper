@@ -12,12 +12,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.Scanning.Conventions
 {
+    [BlueMilkIgnore]
     public class AssemblyScanner : IAssemblyScanner
     {
         private readonly List<Assembly> _assemblies = new List<Assembly>();
         private readonly CompositeFilter<Type> _filter = new CompositeFilter<Type>();
         private readonly List<AssemblyScanRecord> _records = new List<AssemblyScanRecord>();
         private Task<TypeSet> _typeFinder;
+
+        public AssemblyScanner()
+        {
+            Exclude(type => type.HasAttribute<BlueMilkIgnoreAttribute>());
+        }
 
         public int Count => _assemblies.Count;
 
@@ -113,6 +119,12 @@ namespace BlueMilk.Scanning.Conventions
             var convention = new DefaultConventionScanner();
             With(convention);
         }
+        
+        public void ConnectImplementationsToTypesClosing(Type openGenericType)
+        {
+            var convention = new GenericConnectionScanner(openGenericType);
+            With(convention);
+        }
 
 
         public void RegisterConcreteTypesAgainstTheFirstInterface()
@@ -151,14 +163,15 @@ namespace BlueMilk.Scanning.Conventions
             _typeFinder = TypeRepository.FindTypes(_assemblies, type => _filter.Matches(type));
         }
 
-        public async Task ApplyRegistrations(IServiceCollection services)
+        public Task ApplyRegistrations(IServiceCollection services)
         {
-            var types = await _typeFinder;
-
-            foreach (var convention in Conventions)
+            return _typeFinder.ContinueWith(t =>
             {
-                convention.ScanTypes(types, services);
-            }
+                foreach (var convention in Conventions)
+                {
+                    convention.ScanTypes(t.Result, services);
+                }
+            });
         }
 
         public bool Contains(string assemblyName)

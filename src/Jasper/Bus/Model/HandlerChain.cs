@@ -5,16 +5,17 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using BlueMilk;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Compilation;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
-using Jasper.Bus.Runtime.Invocation;
 using Jasper.Configuration;
-using StructureMap;
 
 namespace Jasper.Bus.Model
 {
-    public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IGenerates<MessageHandler>, IHasErrorHandlers
+    public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasErrorHandlers
     {
         public static HandlerChain For<T>(Expression<Action<T>> expression)
         {
@@ -51,7 +52,25 @@ namespace Jasper.Bus.Model
 
         public string TypeName { get; }
 
-        public List<MethodCall> Handlers = new List<MethodCall>();
+        public readonly List<MethodCall> Handlers = new List<MethodCall>();
+        private GeneratedType _generatedType;
+
+        public void AssembleType(GeneratedAssembly generatedAssembly)
+        {
+            _generatedType = generatedAssembly.AddType(TypeName, typeof(MessageHandler));
+            var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
+            handleMethod.Sources.Add(new MessageHandlerVariableSource(MessageType));
+            handleMethod.Frames.AddRange(DetermineFrames());
+        }
+
+        public MessageHandler CreateHandler(IContainer container)
+        {
+            // TODO -- get rid of the downcast next time you update BlueMilk (0.5 prolly)
+            var handler = container.As<Container>().QuickBuild(_generatedType.CompiledType).As<MessageHandler>();
+            handler.Chain = this;
+
+            return handler;
+        }
 
         public List<Frame> DetermineFrames()
         {
@@ -99,20 +118,6 @@ namespace Jasper.Bus.Model
         public int MaximumAttempts { get; set; } = 1;
         public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
 
-        MessageHandler IGenerates<MessageHandler>.Create(Type[] types, Func<Type, object> builder)
-        {
-            var type = types.FirstOrDefault(x => x.Name == TypeName);
-            if (type == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(types), $"Could not find a type named '{TypeName}' in this assembly");
-            }
-
-            var handler = builder(type).As<MessageHandler>();
-
-            handler.Chain = this;
-
-            return handler;
-        }
 
         public void AddAbstractedHandler(HandlerCall call)
         {
@@ -126,34 +131,8 @@ namespace Jasper.Bus.Model
             return $"{MessageType.Name} handled by {Handlers.Select(x => $"{x.HandlerType.Name}.{x.Method.Name}()").Join(", ")}";
         }
 
-        public GeneratedClass ToClass(GenerationRules rules)
-        {
-            try
-            {
-                var @class = new GeneratedClass(rules, TypeName)
-                {
-                    BaseType = typeof(MessageHandler)
-                };
 
-                var method = new HandleMessageMethod(DetermineFrames());
-                method.Sources.Add(new MessageHandlerVariableSource(MessageType));
 
-                @class.AddMethod(method);
-
-                return @class;
-            }
-            catch (Exception e)
-            {
-                throw new CodeGenerationException(this, e);
-            }
-        }
     }
 
-    public class HandleMessageMethod : GeneratedMethod
-    {
-        public HandleMessageMethod(IList<Frame> frames) : base(nameof(MessageHandler.Handle), new Argument[] { Argument.For<IInvocationContext>("context") }, frames)
-        {
-            Overrides = true;
-        }
-    }
 }

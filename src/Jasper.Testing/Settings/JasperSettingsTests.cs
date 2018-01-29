@@ -1,110 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using Jasper.Bus;
-using Jasper.Configuration;
-using Jasper.Settings;
 using Microsoft.Extensions.Configuration;
-using Xunit;
 using Shouldly;
-using StructureMap;
+using Xunit;
 
 namespace Jasper.Testing.Settings
 {
     public class JasperSettingsTests : IDisposable
     {
-        private JasperRegistry theRegistry;
-        private JasperRuntime _runtime;
-
         public JasperSettingsTests()
         {
             theRegistry = new JasperRegistry();
             theRegistry.Handlers.ExcludeTypes(x => true);
         }
 
+        public void Dispose()
+        {
+            _runtime?.Dispose();
+        }
+
+        private readonly JasperRegistry theRegistry;
+        private JasperRuntime _runtime;
+
         private T get<T>()
         {
-            if (_runtime == null)
-            {
-                _runtime = JasperRuntime.For(theRegistry);
-            }
+            if (_runtime == null) _runtime = JasperRuntime.For(theRegistry);
 
             return _runtime.Get<T>();
-        }
-
-        [Fact]
-        public void can_read_settings()
-        {
-            theRegistry.Configuration.AddJsonFile("appsettings.json");
-            theRegistry.Settings.Require<MyFakeSettings>();
-
-            var settings = get<MyFakeSettings>();
-            settings.SomeSetting.ShouldBe(1);
-        }
-
-        [Fact]
-        public void can_apply_alterations_using_the_config()
-        {
-            theRegistry.Configuration.AddJsonFile("appsettings.json");
-            theRegistry.Settings.Alter<FakeSettings>((c, x) =>
-            {
-                x.SomeSetting = int.Parse(c["SomeSetting"]);
-            });
-
-            get<FakeSettings>().SomeSetting.ShouldBe(1);
         }
 
         public class FakeSettings
         {
             public int SomeSetting { get; set; }
         }
-
-        [Fact]
-        public void can_alter_settings()
-        {
-            theRegistry.Settings.Alter<MyFakeSettings>(s =>
-            {
-                s.SomeSetting = 5;
-            });
-
-            var settings = get<MyFakeSettings>();
-
-            settings.SomeSetting.ShouldBe(5);
-        }
-
-        [Fact]
-        public void can_replace_settings()
-        {
-
-            theRegistry.Settings.Replace(new MyFakeSettings
-            {
-                OtherSetting = "tacos",
-                SomeSetting = 1000
-            });
-
-            var settings = get<MyFakeSettings>();
-
-            settings.SomeSetting.ShouldBe(1000);
-            settings.OtherSetting.ShouldBe("tacos");
-        }
-
-        [Fact]
-        public void can_configure_builder()
-        {
-            theRegistry.Configuration
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile("colors.json");
-
-            theRegistry.Settings.Require<Colors>();
-            theRegistry.Settings.Require<MyFakeSettings>();
-            var colors = get<Colors>();
-            var settings = get<MyFakeSettings>();
-
-            colors.Red.ShouldBe("#ff0000");
-            settings.SomeSetting.ShouldBe(1);
-        }
-
 
 
         // SAMPLE: UsingConfigApp
@@ -122,16 +50,40 @@ namespace Jasper.Testing.Settings
                 Settings.WithConfig(c => ServiceName = c["AppName"]);
             }
         }
-        // ENDSAMPLE
 
-        // SAMPLE: can_customize_based_on_only_configuration
         [Fact]
-        public void can_customize_based_on_only_configuration()
+        public void can_alter_settings()
         {
-            using (var runtime = JasperRuntime.For<UsingConfigApp>())
-            {
-                runtime.ServiceName.ShouldBe("WocketInMyPocket");
-            }
+            theRegistry.Settings.Alter<MyFakeSettings>(s => { s.SomeSetting = 5; });
+
+            var settings = get<MyFakeSettings>();
+
+            settings.SomeSetting.ShouldBe(5);
+        }
+
+        [Fact]
+        public void can_apply_alterations_using_the_config()
+        {
+            theRegistry.Configuration.AddJsonFile("appsettings.json");
+            theRegistry.Settings.Alter<FakeSettings>((c, x) => { x.SomeSetting = int.Parse(c["SomeSetting"]); });
+
+            get<FakeSettings>().SomeSetting.ShouldBe(1);
+        }
+
+        [Fact]
+        public void can_configure_builder()
+        {
+            theRegistry.Configuration
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("colors.json");
+
+            theRegistry.Settings.Require<Colors>();
+            theRegistry.Settings.Require<MyFakeSettings>();
+            var colors = get<Colors>();
+            var settings = get<MyFakeSettings>();
+
+            colors.Red.ShouldBe("#ff0000");
+            settings.SomeSetting.ShouldBe(1);
         }
         // ENDSAMPLE
 
@@ -157,10 +109,41 @@ namespace Jasper.Testing.Settings
 
             colors.Red.ShouldBe("#ff0000");
         }
+        // ENDSAMPLE
 
-        public void Dispose()
+        // SAMPLE: can_customize_based_on_only_configuration
+        [Fact]
+        public void can_customize_based_on_only_configuration()
         {
-            _runtime?.Dispose();
+            using (var runtime = JasperRuntime.For<UsingConfigApp>())
+            {
+                runtime.ServiceName.ShouldBe("WocketInMyPocket");
+            }
+        }
+
+        [Fact]
+        public void can_read_settings()
+        {
+            theRegistry.Configuration.AddJsonFile("appsettings.json");
+            theRegistry.Settings.Require<MyFakeSettings>();
+
+            var settings = get<MyFakeSettings>();
+            settings.SomeSetting.ShouldBe(1);
+        }
+
+        [Fact]
+        public void can_replace_settings()
+        {
+            theRegistry.Settings.Replace(new MyFakeSettings
+            {
+                OtherSetting = "tacos",
+                SomeSetting = 1000
+            });
+
+            var settings = get<MyFakeSettings>();
+
+            settings.SomeSetting.ShouldBe(1000);
+            settings.OtherSetting.ShouldBe("tacos");
         }
     }
 }

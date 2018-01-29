@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Model;
 using Jasper.Bus.Runtime;
 using Jasper.Testing.Bus.Samples;
-using StructureMap.Graph.Scanning;
 
 namespace Jasper.Testing.Samples.HandlerDiscovery
 {
@@ -21,7 +15,6 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
         }
     }
     // ENDSAMPLE
-
 
 
     // SAMPLE: AsyncHandler
@@ -47,9 +40,13 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
     // ENDSAMPLE
 
     // SAMPLE: Handlers-IMessage
-    public interface IMessage { }
+    public interface IMessage
+    {
+    }
 
-    public class MessageOne : IMessage { }
+    public class MessageOne : IMessage
+    {
+    }
     // ENDSAMPLE
 
     // SAMPLE: Handlers-GenericMessageHandler
@@ -74,7 +71,6 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
     {
         public void Consume(MessageOne message)
         {
-
         }
     }
     // ENDSAMPLE
@@ -82,7 +78,6 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
     // SAMPLE: injecting-services-into-handlers
     public interface IMyService
     {
-
     }
 
     public class ServiceUsingHandler
@@ -111,7 +106,6 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
     // ENDSAMPLE
 
 
-
     // SAMPLE: CustomHandlerApp
     public class CustomHandlerApp : JasperRegistry
     {
@@ -124,18 +118,15 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
 
             // Include candidate actions by a user supplied
             // type filter
-            Handlers.IncludeTypes(t => t.IsInNamespace("MyApp.Handlers") );
+            Handlers.IncludeTypes(t => t.IsInNamespace("MyApp.Handlers"));
 
             // Include candidate classes by suffix
             Handlers.IncludeClassesSuffixedWith("Listener");
 
             // Include a specific handler class with a generic argument
             Handlers.IncludeType<SimpleHandler>();
-
         }
     }
+
     // ENDSAMPLE
-
-
-
 }

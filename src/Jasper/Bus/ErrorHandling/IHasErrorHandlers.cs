@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Baseline;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
-using StructureMap.TypeRules;
 
 namespace Jasper.Bus.ErrorHandling
 {

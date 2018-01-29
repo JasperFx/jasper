@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using BlueMilk.Codegen;
+using BlueMilk.Compilation;
 using Jasper.Bus.ErrorHandling;
-using StructureMap;
 
 namespace Jasper.Bus.Model
 {
-    public class HandlerGraph : HandlerSet<HandlerChain, MessageHandler>, IHasErrorHandlers
+    public class HandlerGraph : IHasErrorHandlers
     {
         public static readonly string Context = "context";
 
@@ -54,7 +54,6 @@ namespace Jasper.Bus.Model
             return ChainFor(typeof(T));
         }
 
-        protected override HandlerChain[] chains => _chains.Values.ToArray();
         public HandlerChain[] Chains => _chains.Values.ToArray();
 
         internal void Compile(GenerationRules generation, JasperRuntime runtime)
@@ -64,18 +63,19 @@ namespace Jasper.Bus.Model
                 Group();
             }
 
-            var handlers = CompileAndBuildAll(generation, runtime.Get);
-            foreach (var handler in handlers)
+            var generatedAssembly = new GeneratedAssembly(generation);
+            foreach (var chain in _chains.Values)
             {
-                _handlers.Add(handler.Chain.MessageType, handler);
+                chain.AssembleType(generatedAssembly);
             }
-        }
 
-        protected override void beforeGeneratingCode()
-        {
-            if (!_hasGrouped)
+            runtime.Container.CompileWithInlineServices(generatedAssembly);
+
+
+
+            foreach (var chain in _chains.Values)
             {
-                Group();
+                _handlers.Add(chain.MessageType, chain.CreateHandler(runtime.Container));
             }
         }
 

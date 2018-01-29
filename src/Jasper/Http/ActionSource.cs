@@ -5,13 +5,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
-using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Scanning;
 using Jasper.Http.Routing;
-using StructureMap.Graph;
-using StructureMap.Graph.Scanning;
-using TypeClassification = BlueMilk.Scanning.TypeClassification;
-using TypeExtensions = Baseline.TypeExtensions;
-using TypeRepository = BlueMilk.Scanning.TypeRepository;
+using Jasper.Util;
 
 namespace Jasper.Http
 {
@@ -19,10 +16,10 @@ namespace Jasper.Http
     {
         private readonly List<Assembly> _assemblies = new List<Assembly>();
         private readonly CompositeFilter<MethodCall> _callFilters = new CompositeFilter<MethodCall>();
+        private readonly IList<Type> _explicitTypes = new List<Type>();
 
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
-        private readonly IList<Type> _explicitTypes = new List<Type>();
         private bool _disableConventionalDiscovery;
 
         public ActionSource()
@@ -47,9 +44,7 @@ namespace Jasper.Http
         internal async Task<MethodCall[]> FindActions(Assembly applicationAssembly)
         {
             if (applicationAssembly == null || _disableConventionalDiscovery)
-            {
                 return _explicitTypes.SelectMany(actionsFromType).ToArray();
-            }
 
             var assemblies = Applies.Assemblies.Any() ? Applies.Assemblies : new[] {applicationAssembly};
 
@@ -158,7 +153,7 @@ namespace Jasper.Http
         }
 
         /// <summary>
-        /// Explicitly add this type as a candidate for HTTP endpoints
+        ///     Explicitly add this type as a candidate for HTTP endpoints
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public void IncludeType<T>()
@@ -167,7 +162,7 @@ namespace Jasper.Http
         }
 
         /// <summary>
-        /// Explicitly add this type as a candidate for HTTP endpoints
+        ///     Explicitly add this type as a candidate for HTTP endpoints
         /// </summary>
         /// <param name="type"></param>
         /// <exception cref="NotImplementedException"></exception>
@@ -177,7 +172,7 @@ namespace Jasper.Http
         }
 
         /// <summary>
-        /// Disables explicit discovery of HTTP endpoints
+        ///     Disables explicit discovery of HTTP endpoints
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
         public void DisableConventionalDiscovery()

@@ -7,20 +7,20 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Compilation;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using GenericEnumerableExtensions = Baseline.GenericEnumerableExtensions;
 
 namespace Jasper.Http.Model
 {
-    public class RouteGraph : HandlerSet<RouteChain, RouteHandler>, IEnumerable<RouteChain>
+    public class RouteGraph : IEnumerable<RouteChain>
     {
         public static readonly string Context = "httpContext";
         public readonly Router Router = new Router();
 
         private readonly IList<RouteChain> _chains = new List<RouteChain>();
-
-        protected override RouteChain[] chains => _chains.ToArray();
 
         public RouteChain AddRoute(Type handlerType, MethodInfo method, string url = null)
         {
@@ -58,11 +58,19 @@ namespace Jasper.Http.Model
                 rules.Apply(chain);
             }
 
-            var handlers = CompileAndBuildAll(generation, runtime.Get);
-
-            foreach (var handler in handlers)
+            var generatedAssembly = new GeneratedAssembly(generation);
+            foreach (var chain in _chains)
             {
-                var route = handler.Chain.Route;
+                chain.AssemblyType(generatedAssembly);
+            }
+
+            runtime.Container.CompileWithInlineServices(generatedAssembly);
+
+            foreach (var chain in _chains)
+            {
+                var route = chain.Route;
+                var handler = chain.CreateHandler(runtime.Container);
+                handler.Chain = chain;
                 route.Handler = handler;
                 Router.Add(route);
             }

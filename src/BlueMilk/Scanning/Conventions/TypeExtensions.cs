@@ -51,5 +51,14 @@ namespace BlueMilk.Scanning.Conventions
                 yield return interfaceType;
             }
         }
+        
+        public static bool CouldCloseTo(this Type openConcretion, Type closedInterface)
+        {
+            var openInterface = closedInterface.GetGenericTypeDefinition();
+            var arguments = closedInterface.GetGenericArguments();
+
+            var concreteArguments = openConcretion.GetGenericArguments();
+            return arguments.Length == concreteArguments.Length && openConcretion.CanBeCastTo(openInterface);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Variables;
 using Marten;
 
 namespace Jasper.Marten.Codegen

@@ -1,4 +1,5 @@
 ﻿using BlueMilk.Codegen;
+using BlueMilk.Codegen.Variables;
 using Jasper.Testing.Bus.Runtime;
 using Xunit;
 

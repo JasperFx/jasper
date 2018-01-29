@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Baseline.Reflection;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
 using Jasper.Bus.Runtime.Invocation;

@@ -1,8 +1,11 @@
 using System;
 using System.Linq;
+using Baseline;
+using BlueMilk;
+using BlueMilk.IoC;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using StructureMap;
-using StructureMap.Pipeline;
+
 
 namespace Jasper.Testing.Bus.Bootstrapping
 {
@@ -23,7 +26,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
 
         public static IContainer DefaultRegistrationIs<T>(this IContainer container, T value) where T : class
         {
-            container.Model.For<T>().Default.Get<T>().ShouldBeTheSameAs(value);
+            container.Model.For<T>().Default.Resolver.Resolve(container.As<Scope>()).ShouldBeTheSameAs(value);
 
             return container;
         }
@@ -31,7 +34,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public static IContainer DefaultSingletonIs(this IContainer container, Type pluginType, Type concreteType)
         {
             container.DefaultRegistrationIs(pluginType, concreteType);
-            container.Model.For(pluginType).Default.Lifecycle.ShouldBeOfType<SingletonLifecycle>();
+            container.Model.For(pluginType).Default.Lifetime.ShouldBe(ServiceLifetime.Singleton);
 
             return container;
         }
@@ -39,7 +42,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public static IContainer DefaultSingletonIs<T, TConcrete>(this IContainer container) where TConcrete : T
         {
             container.DefaultRegistrationIs<T, TConcrete>();
-            container.Model.For<T>().Default.Lifecycle.ShouldBeOfType<SingletonLifecycle>();
+            container.Model.For<T>().Default.Lifetime.ShouldBe(ServiceLifetime.Singleton);
 
             return container;
         }
@@ -47,7 +50,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public static IContainer ShouldHaveRegistration<T, TConcrete>(this IContainer container)
         {
             var plugin = container.Model.For<T>();
-            ShouldBeBooleanExtensions.ShouldBeTrue(plugin.Instances.Any(x => x.ReturnedType == typeof(TConcrete)));
+            plugin.Instances.Any(x => x.ImplementationType == typeof(TConcrete)).ShouldBeTrue();
 
             return container;
         }
@@ -55,7 +58,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         public static IContainer ShouldNotHaveRegistration<T, TConcrete>(this IContainer container)
         {
             var plugin = container.Model.For<T>();
-            ShouldBeBooleanExtensions.ShouldBeFalse(plugin.Instances.Any(x => x.ReturnedType == typeof(TConcrete)));
+            plugin.Instances.Any(x => x.ImplementationType == typeof(TConcrete)).ShouldBeFalse();
 
             return container;
         }

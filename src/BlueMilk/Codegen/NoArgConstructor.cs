@@ -1,5 +1,7 @@
 ﻿using System;
 using Baseline;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
 using BlueMilk.Compilation;
 
 namespace BlueMilk.Codegen

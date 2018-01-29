@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using BlueMilk.IoC;
+using BlueMilk.Codegen.Variables;
 
 namespace BlueMilk.Codegen
 {
@@ -14,7 +13,6 @@ namespace BlueMilk.Codegen
         bool TryFindVariableByName(Type dependency, string name, out Variable variable);
         Variable TryFindVariable(Type type, VariableSource source);
 
-        IList<BuildStep> AllKnownBuildSteps { get; }
 
     }
 }

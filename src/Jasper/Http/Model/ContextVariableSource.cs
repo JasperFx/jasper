@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Variables;
 using Jasper.Http.Routing.Codegen;
 using Microsoft.AspNetCore.Http;
 

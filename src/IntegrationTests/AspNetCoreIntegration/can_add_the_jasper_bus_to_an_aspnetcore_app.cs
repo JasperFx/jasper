@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BlueMilk;
 using Jasper;
 using Jasper.Bus;
 using Jasper.Configuration;
@@ -101,7 +102,7 @@ namespace IntegrationTests.AspNetCoreIntegration
         [Fact]
         public void is_definitely_using_a_StructureMap_service_provider()
         {
-            theHost.Services.ShouldBeOfType<StructureMapServiceProvider>();
+            theHost.Services.ShouldBeOfType<Container>();
         }
     }
 

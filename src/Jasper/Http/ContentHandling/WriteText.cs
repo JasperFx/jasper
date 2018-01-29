@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
 using Jasper.Http.Model;
 
 namespace Jasper.Http.ContentHandling
@@ -24,7 +26,7 @@ namespace Jasper.Http.ContentHandling
 
         public CallWriteText(Variable text) : base(typeof(CallWriteText), _method)
         {
-            Variables[0] = text;
+            Arguments[0] = text;
             IsLocal = true;
         }
     }

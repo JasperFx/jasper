@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using Baseline.Reflection;
-using StructureMap.Graph;
-using TypeExtensions = Baseline.TypeExtensions;
+using Jasper.Util;
 
 namespace Jasper.Http
 {

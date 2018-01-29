@@ -2,6 +2,7 @@
 using System.Linq;
 using Baseline;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
 
 namespace Jasper.Configuration
 {
@@ -14,7 +15,7 @@ namespace Jasper.Configuration
 
         public MiddlewareAttribute(params Type[] frameTypes)
         {
-            var notMatching = frameTypes.Where(x => !TypeExtensions.IsConcreteWithDefaultCtor(x) || !TypeExtensions.CanBeCastTo<Frame>(x)).ToArray();
+            var notMatching = frameTypes.Where(x => !x.IsConcreteWithDefaultCtor() || !x.CanBeCastTo<Frame>()).ToArray();
             if (notMatching.Any())
             {
                 throw new ArgumentOutOfRangeException($"Invalid Frame types: {notMatching.Select(x => x.FullName).Join(", ")}");

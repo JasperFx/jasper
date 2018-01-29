@@ -5,18 +5,22 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using BlueMilk;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
+using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Http;
-using StructureMap;
 
 namespace Jasper.Http.Model
 {
-    public class RouteChain : Chain<RouteChain, ModifyRouteAttribute>,IGenerates<RouteHandler>
+    public class RouteChain : Chain<RouteChain, ModifyRouteAttribute>
     {
         public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
+        private GeneratedType _generatedType;
 
         public static RouteChain For<T>(Expression<Action<T>> expression)
         {
@@ -122,34 +126,18 @@ namespace Jasper.Http.Model
             return $"{Route.HttpMethod}: {Route.Pattern}";
         }
 
-        public GeneratedClass ToClass(GenerationRules rules)
+        public void AssemblyType(GeneratedAssembly generatedAssembly)
         {
-            try
-            {
-                var @class = new GeneratedClass(rules, TypeName)
-                {
-                    BaseType = typeof(RouteHandler)
-                };
+            _generatedType = generatedAssembly.AddType(TypeName, typeof(RouteHandler));
+            var handleMethod = _generatedType.MethodFor(nameof(RouteHandler.Handle));
 
-                var frames = DetermineFrames();
-                var method = new GeneratedMethod(nameof(RouteHandler.Handle),
-                    new Argument[] {Argument.For<HttpContext>(RouteGraph.Context)}, frames)
-                {
-                    Overrides = true
-                };
+            handleMethod.Frames.AddRange(DetermineFrames());
 
-                method.Sources.Add(new ContextVariableSource());
-                method.DerivedVariables.AddRange(HttpContextVariables);
+            handleMethod.Sources.Add(new ContextVariableSource());
+            handleMethod.DerivedVariables.AddRange(HttpContextVariables);
 
-                @class.AddMethod(method);
-
-                return @class;
-            }
-            catch (Exception e)
-            {
-                throw new CodeGenerationException(this, e);
-            }
         }
+
 
         public List<Frame> DetermineFrames()
         {
@@ -169,6 +157,16 @@ namespace Jasper.Http.Model
         public bool RespondsToMethod(string httpMethod)
         {
             return Route.HttpMethod.EqualsIgnoreCase(httpMethod);
+        }
+
+
+        public RouteHandler CreateHandler(IContainer container)
+        {
+            // TODO -- get rid of the downcast next time you update BlueMilk (0.5 prolly)
+            var handler = container.As<Container>().QuickBuild(_generatedType.CompiledType).As<RouteHandler>();
+            handler.Chain = this;
+
+            return handler;
         }
     }
 }

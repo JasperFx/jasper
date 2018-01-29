@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Linq;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Frames;
 using BlueMilk.Compilation;
-using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
-using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.Bus.Runtime;
-using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using StructureMap;
 using Xunit;
 
 namespace Jasper.Testing.Bus
 {
-
     public class can_customize_handler_chains_with_attributes : IDisposable
     {
-        private JasperRuntime _runtime;
-
-
         public can_customize_handler_chains_with_attributes()
         {
             _runtime = JasperRuntime.For(_ =>
@@ -35,12 +27,7 @@ namespace Jasper.Testing.Bus
             _runtime.Dispose();
         }
 
-        [Fact]
-        public void apply_attribute_on_method()
-        {
-            var chain = _runtime.Get<HandlerGraph>().ChainFor<Message1>();
-            chain.SourceCode.ShouldContain("// fake frame here");
-        }
+        private readonly JasperRuntime _runtime;
 
         [Fact]
         public void apply_attribute_on_class()
@@ -57,7 +44,13 @@ namespace Jasper.Testing.Bus
 
 
             chain.MaximumAttempts.ShouldBe(5);
+        }
 
+        [Fact]
+        public void apply_attribute_on_method()
+        {
+            var chain = _runtime.Get<HandlerGraph>().ChainFor<Message1>();
+            chain.SourceCode.ShouldContain("// fake frame here");
         }
     }
 
@@ -68,12 +61,10 @@ namespace Jasper.Testing.Bus
         [MaximumAttempts(3)]
         public void Handle(Message1 message)
         {
-
         }
 
         public void Handle(ErrorHandledMessage message)
         {
-
         }
     }
 
@@ -81,7 +72,6 @@ namespace Jasper.Testing.Bus
     [MaximumAttempts(5)]
     public class ErrorHandledMessage
     {
-
     }
 
     [FakeFrame]
@@ -89,7 +79,6 @@ namespace Jasper.Testing.Bus
     {
         public void Handle(Message2 message)
         {
-
         }
     }
 

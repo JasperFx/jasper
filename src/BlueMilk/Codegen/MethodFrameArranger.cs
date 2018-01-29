@@ -2,45 +2,53 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using BlueMilk.Codegen.Frames;
 using BlueMilk.Codegen.ServiceLocation;
-using BlueMilk.IoC;
+using BlueMilk.Codegen.Variables;
 using BlueMilk.Util;
 
 namespace BlueMilk.Codegen
 {
+
+    
     public class MethodFrameArranger : IMethodVariables
     {
         private readonly GeneratedMethod _method;
-        private readonly GeneratedClass _class;
+        private readonly GeneratedType _type;
         private readonly Dictionary<Type, Variable> _variables = new Dictionary<Type, Variable>();
-        private readonly SingletonVariableSource _singletons;
         private readonly ServiceVariableSource _services;
 
-        public MethodFrameArranger(GeneratedMethod method, GeneratedClass @class)
+        public MethodFrameArranger(GeneratedMethod method, GeneratedType type, ServiceGraph services) : this(method, type)
         {
-            _method = method;
-            _class = @class;
-
-            _singletons = new SingletonVariableSource(_class.Rules.Services);
-            _services = new ServiceVariableSource(this, _class.Rules.Services);
+            if (services != null) _services = new ServiceVariableSource(services);
         }
 
-        public IList<BuildStep> AllKnownBuildSteps { get; } = new List<BuildStep>();
+        public MethodFrameArranger(GeneratedMethod method, GeneratedType type)
+        {
+            _method = method;
+            _type = type;
 
-        public void Arrange()
+        }
+
+
+        public void Arrange(out AsyncMode asyncMode, out Frame topFrame)
         {
             var compiled = compileFrames(_method.Frames);
+            
+            
 
+            asyncMode = AsyncMode.AsyncTask;
+            
             if (compiled.All(x => !x.IsAsync))
             {
-                _method.AsyncMode = AsyncMode.ReturnCompletedTask;
+                asyncMode = AsyncMode.None;
             }
             else if (compiled.Count(x => x.IsAsync) == 1 && compiled.Last().IsAsync && compiled.Last().CanReturnTask())
             {
-                _method.AsyncMode = compiled.Any(x => x.Wraps) ? AsyncMode.AsyncTask : AsyncMode.ReturnFromLastNode;
+                asyncMode = compiled.Any(x => x.Wraps) ? AsyncMode.AsyncTask : AsyncMode.ReturnFromLastNode;
             }
 
-            _method.Top = chainFrames(compiled);
+            topFrame = chainFrames(compiled);
         }
 
 
@@ -65,24 +73,9 @@ namespace BlueMilk.Codegen
 
             // Step 1a;) -- figure out if you can switch to inline service
             // creation instead of the container.
-            var services = frames.SelectMany(x => x.Uses).OfType<ServiceVariable>().ToArray();
-            if (services.Any() && services.All(x => x.CanBeReduced))
-            {
-                AllKnownBuildSteps.GroupBy(x => x.ServiceType).Where(x => x.Count() > 1).Each(group =>
-                {
-                    var index = 0;
-                    group.Reverse().Each(step =>
-                    {
-                        step.Number = ++index;
-                    });
-                });
-
-                foreach (var service in services)
-                {
-                    service.UseInlinePlan();
-                }
-            }
-
+            _services?.ReplaceVariables();
+            
+            
             // Step 2, calculate dependencies
             var dependencies = new DependencyGatherer(this, frames);
             findInjectedFields(dependencies);
@@ -119,24 +112,18 @@ namespace BlueMilk.Codegen
                 yield return source;
             }
 
-            foreach (var source in _class.Rules.Sources)
+            foreach (var source in _type.Rules.Sources)
             {
                 yield return source;
             }
 
-            yield return _singletons;
+            // To get injected fields
+            yield return _type;
 
-            yield return ServiceProviderVariableSource.Instance;
-
-            //yield return new NoArgConcreteCreator();
-
-
-
-            if (variableSource == VariableSource.All)
+            if (variableSource == VariableSource.All && _services != null)
             {
                 yield return _services;
             }
-
         }
 
 
@@ -160,8 +147,7 @@ namespace BlueMilk.Codegen
 
         public Variable FindVariableByName(Type dependency, string name)
         {
-            Variable variable;
-            if (TryFindVariableByName(dependency, name, out variable)) return variable;
+            if (TryFindVariableByName(dependency, name, out var variable)) return variable;
 
             throw new ArgumentOutOfRangeException(nameof(dependency), $"Cannot find a matching variable {dependency.FullName} {name}");
         }
@@ -184,6 +170,7 @@ namespace BlueMilk.Codegen
 
             return variable;
         }
+
 
         public bool TryFindVariableByName(Type dependency, string name, out Variable variable)
         {

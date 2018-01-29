@@ -7,8 +7,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Model;
-using StructureMap.Graph;
-using StructureMap.Graph.Scanning;
+using Jasper.Util;
 using TypeClassification = BlueMilk.Scanning.TypeClassification;
 using TypeRepository = BlueMilk.Scanning.TypeRepository;
 

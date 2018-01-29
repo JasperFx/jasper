@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace BlueMilk.Scanning.Conventions
 {
-    internal static class AssemblyFinder
+    public static class AssemblyFinder
     {
-        internal static IEnumerable<Assembly> FindAssemblies(Action<string> logFailure, bool includeExeFiles)
+        public static IEnumerable<Assembly> FindAssemblies(Action<string> logFailure, bool includeExeFiles)
         {
             string path;
             try {
@@ -21,7 +21,7 @@ namespace BlueMilk.Scanning.Conventions
             return FindAssemblies(path, logFailure, includeExeFiles);
         }
 
-        internal static IEnumerable<Assembly> FindAssemblies(string assemblyPath, Action<string> logFailure, bool includeExeFiles)
+        public static IEnumerable<Assembly> FindAssemblies(string assemblyPath, Action<string> logFailure, bool includeExeFiles)
         {
             var dllFiles = Directory.EnumerateFiles(assemblyPath, "*.dll", SearchOption.AllDirectories);
             var files = dllFiles;

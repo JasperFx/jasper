@@ -9,7 +9,6 @@ using Jasper.Bus.Model;
 using Jasper.Bus.Transports;
 using Jasper.Conneg;
 using Jasper.Util;
-using StructureMap.Graph.Scanning;
 using TypeClassification = BlueMilk.Scanning.TypeClassification;
 using TypeRepository = BlueMilk.Scanning.TypeRepository;
 

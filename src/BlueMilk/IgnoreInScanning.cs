@@ -1,0 +1,4 @@
+﻿using BlueMilk;
+
+[assembly:IgnoreAssembly]
+

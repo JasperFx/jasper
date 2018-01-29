@@ -1,5 +1,6 @@
 ﻿using System;
 using BlueMilk.Codegen;
+using BlueMilk.Codegen.Variables;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 
