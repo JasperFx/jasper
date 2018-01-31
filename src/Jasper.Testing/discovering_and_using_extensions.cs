@@ -28,8 +28,7 @@ namespace Jasper.Testing
         [Fact]
         public void can_inject_services_from_the_extension()
         {
-            theRuntime.Services.Any(x =>
-                    x.ServiceType == typeof(IMessageLogger) && x.ImplementationType == typeof(ModuleMessageLogger))
+            theRuntime.Container.Model.For<IMessageLogger>().Instances.Any(x => x.ImplementationType == typeof(ModuleMessageLogger))
                 .ShouldBeTrue();
 
         }

@@ -64,6 +64,7 @@ namespace Jasper
         /// <summary>
         ///     The known service registrations to the underlying IoC container
         /// </summary>
+        [Obsolete("This shouldn't be necessary w/ the dependency on BlueMilk")]
         public ImmutableArray<ServiceDescriptor> Services { get; }
 
         /// <summary>
