@@ -7,6 +7,7 @@ using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.Bus.Transports;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
+using Jasper.Testing.Samples.HandlerDiscovery;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute.Routing.Handlers;
 using Shouldly;
@@ -55,11 +56,15 @@ namespace Jasper.Testing.Bus
          public async Task enqueue_locally_lightweight()
          {
              var registry = new JasperRegistry();
-             registry.Handlers.DisableConventionalDiscovery(false);
+             registry.Handlers.DisableConventionalDiscovery();
+             registry.Http.Actions.DisableConventionalDiscovery();
+
+
              registry.Handlers.IncludeType<RecordCallHandler>();
              registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
              registry.Services.AddTransient<IFakeService, FakeService>();
              registry.Services.AddTransient<IWidget, Widget>();
+             registry.Services.AddTransient<IMyService, MyService>();
 
              var tracker = new MessageTracker();
              registry.Services.AddSingleton(tracker);

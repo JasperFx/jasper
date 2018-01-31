@@ -73,25 +73,7 @@ namespace Jasper.Http.Model
 
         public string SourceCode => _generatedType.SourceCode;
 
-        public RouteHandler Create(Type[] types, Func<Type, object> builder)
-        {
-            var type = types.FirstOrDefault(x => x.Name == TypeName);
-            if (type == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(types), $"Could not find a type named '{TypeName}' in this assembly");
-            }
 
-            var handler = builder(type).As<RouteHandler>();
-
-            handler.Chain = this;
-
-            handler.Reader = Reader;
-            handler.Writer = Writer;
-            handler.ConnegReader = ConnegReader;
-            handler.ConnegWriter = ConnegWriter;
-
-            return handler;
-        }
 
         public void ApplyConneg(SerializationGraph graph)
         {
@@ -159,12 +141,15 @@ namespace Jasper.Http.Model
             return Route.HttpMethod.EqualsIgnoreCase(httpMethod);
         }
 
-
         public RouteHandler CreateHandler(IContainer container)
         {
-            // TODO -- get rid of the downcast next time you update BlueMilk (0.5 prolly)
-            var handler = container.As<Container>().QuickBuild(_generatedType.CompiledType).As<RouteHandler>();
+            var handler = container.QuickBuild(_generatedType.CompiledType).As<RouteHandler>();
             handler.Chain = this;
+
+            handler.Reader = Reader;
+            handler.Writer = Writer;
+            handler.ConnegReader = ConnegReader;
+            handler.ConnegWriter = ConnegWriter;
 
             return handler;
         }

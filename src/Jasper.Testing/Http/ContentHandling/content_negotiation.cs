@@ -23,6 +23,8 @@ namespace Jasper.Testing.Http.ContentHandling
             _runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
+                _.Http.Actions.DisableConventionalDiscovery();
+                _.Http.Actions.IncludeType<CustomReaderWriterEndpoint>();
                 _.Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
                 _.Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
 
