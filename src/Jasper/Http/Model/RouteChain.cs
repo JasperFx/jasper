@@ -71,7 +71,7 @@ namespace Jasper.Http.Model
             return new[] {Action};
         }
 
-        public string SourceCode { get; set; }
+        public string SourceCode => _generatedType.SourceCode;
 
         public RouteHandler Create(Type[] types, Func<Type, object> builder)
         {

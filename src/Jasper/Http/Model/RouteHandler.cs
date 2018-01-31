@@ -10,7 +10,7 @@ namespace Jasper.Http.Model
 {
     public abstract class RouteHandler
     {
-        public abstract Task Handle(HttpContext input);
+        public abstract Task Handle(HttpContext httpContext);
 
         public RouteChain Chain { get; set; }
 

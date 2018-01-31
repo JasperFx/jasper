@@ -48,6 +48,7 @@ namespace Jasper
             Services = _applicationServices;
 
             ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+            if (ApplicationAssembly == null) throw new InvalidOperationException("Unable to determine an application assembly");
 
             deriveServiceName();
 

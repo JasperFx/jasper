@@ -21,8 +21,13 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
 
         public SubscriptionComplianceSpecs()
         {
-            using (var runtime = JasperRuntime.For(configure))
+            using (var runtime = JasperRuntime.For(x =>
             {
+                x.Handlers.DisableConventionalDiscovery();
+                configure(x);
+            }))
+            {
+
                 beforeEach(runtime);
             }
 

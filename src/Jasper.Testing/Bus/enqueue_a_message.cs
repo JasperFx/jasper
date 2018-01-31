@@ -21,6 +21,12 @@ namespace Jasper.Testing.Bus
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery(false);
+
+            registry.Services.Scan(x =>
+            {
+                x.TheCallingAssembly();
+                x.WithDefaultConventions();
+            });
             registry.Handlers.IncludeType<RecordCallHandler>();
             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
             registry.Services.AddTransient<IFakeService, FakeService>();

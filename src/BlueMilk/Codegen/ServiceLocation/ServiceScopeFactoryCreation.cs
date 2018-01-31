@@ -14,6 +14,7 @@ namespace BlueMilk.Codegen.ServiceLocation
 
         public ServiceScopeFactoryCreation()
         {
+
             _scope = new Variable(typeof(IServiceScope), this);
             Provider = new Variable(typeof(IServiceProvider), this);
         }
@@ -21,6 +22,7 @@ namespace BlueMilk.Codegen.ServiceLocation
         public ServiceScopeFactoryCreation(Variable factory) : this()
         {
             _factory = factory;
+            uses.Add(factory);
         }
 
         public Variable Provider { get; }

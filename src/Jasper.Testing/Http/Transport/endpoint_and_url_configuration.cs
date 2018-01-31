@@ -11,8 +11,9 @@ namespace Jasper.Testing.Http.Transport
         [Fact]
         public void transport_endpoints_are_not_enabled_by_default()
         {
-            using (var runtime = JasperRuntime.Basic())
+            using (var runtime = JasperRuntime.For(_ => _.Handlers.DisableConventionalDiscovery()))
             {
+
                 var routes = runtime.Get<RouteGraph>();
 
                 routes.ChainForAction<TransportEndpoint>(x => x.put__messages(null, null, null))
@@ -28,6 +29,9 @@ namespace Jasper.Testing.Http.Transport
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
+                _.Handlers.DisableConventionalDiscovery();
+                _.Handlers.IncludeType<TransportEndpoint>();
+
                 _.Settings.Alter<BusSettings>(x => x.Http.EnableMessageTransport = true);
             }))
             {
@@ -46,6 +50,8 @@ namespace Jasper.Testing.Http.Transport
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
+                _.Handlers.DisableConventionalDiscovery();
+                _.Handlers.IncludeType<TransportEndpoint>();
                 _.Settings.Alter<BusSettings>(x => x.Http.EnableMessageTransport = true);
             }))
             {
@@ -64,8 +70,12 @@ namespace Jasper.Testing.Http.Transport
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
+                _.Handlers.DisableConventionalDiscovery();
+                _.Handlers.IncludeType<TransportEndpoint>();
+
                 _.Settings.Alter<BusSettings>(x =>
                 {
+
                     x.Http.EnableMessageTransport = true;
                     x.Http.RelativeUrl = "api";
                 });

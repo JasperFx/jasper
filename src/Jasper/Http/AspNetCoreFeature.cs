@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using BlueMilk;
 using BlueMilk.Codegen;
+using BlueMilk.IoC.Instances;
 using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
@@ -14,6 +16,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Http
 {
@@ -38,6 +41,8 @@ namespace Jasper.Http
             _services.AddSingleton<IServer, NulloServer>();
 
             _services.AddSingleton(x => x.GetService<JasperRuntime>().Host);
+
+            _services.Policies.OnMissingFamily<LoggerPolicy>();
 
             _inner = new WebHostBuilder();
         }
@@ -145,6 +150,38 @@ namespace Jasper.Http
             Host = _inner.Build();
 
             Host.Start();
+        }
+    }
+
+    public class LoggerPolicy : IFamilyPolicy
+    {
+        public ServiceFamily Build(Type type, ServiceGraph serviceGraph)
+        {
+            if (!type.Closes(typeof(ILogger<>)))
+            {
+                return null;
+            }
+
+            var inner = type.GetGenericArguments().Single();
+            var loggerType = typeof(Logger<>).MakeGenericType(inner);
+
+            Instance instance = null;
+            if (inner.IsPublic)
+            {
+                instance = new ConstructorInstance(type, loggerType,
+                    ServiceLifetime.Transient);
+            }
+            else
+            {
+                instance = new LambdaInstance(type, provider =>
+                {
+                    var factory = provider.GetService<ILoggerFactory>();
+                    return Activator.CreateInstance(loggerType, factory);
+
+                }, ServiceLifetime.Transient);
+            }
+
+            return new ServiceFamily(type, instance);
         }
     }
 }

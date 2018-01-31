@@ -31,6 +31,7 @@ namespace Jasper.Testing
         public void sets_up_the_container_with_services()
         {
             var registry = new JasperRegistry();
+            registry.Handlers.DisableConventionalDiscovery();
             registry.Services.For<IFoo>().Use<Foo>();
             registry.Services.AddTransient<IFakeStore, FakeStore>();
             registry.Services.For<IWidget>().Use<Widget>();

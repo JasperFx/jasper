@@ -65,6 +65,7 @@ namespace Jasper.Testing.Settings
         {
             var runtime = JasperRuntime.For(_ =>
             {
+                _.Handlers.DisableConventionalDiscovery();
                 _.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
                 _.Services.For<IWidget>().Use<Widget>();
                 _.Services.For<IFakeService>().Use<FakeService>();

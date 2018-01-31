@@ -68,6 +68,7 @@ namespace Jasper.Testing.Http
 
         public BootstrappingApp()
         {
+            Handlers.DisableConventionalDiscovery();
             Services.For<BootstrappingToken>().Use(new BootstrappingToken(Id));
 
             Services.AddTransient<IFakeStore, FakeStore>();

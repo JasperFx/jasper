@@ -8,9 +8,12 @@ using Baseline.Reflection;
 using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Codegen.Frames;
+using BlueMilk.Codegen.Variables;
 using BlueMilk.Compilation;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
 using Jasper.Configuration;
 
 namespace Jasper.Bus.Model
@@ -61,6 +64,8 @@ namespace Jasper.Bus.Model
             var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
             handleMethod.Sources.Add(new MessageHandlerVariableSource(MessageType));
             handleMethod.Frames.AddRange(DetermineFrames());
+
+            handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope), $"context.{nameof(IInvocationContext.Envelope)}"));
         }
 
         public MessageHandler CreateHandler(IContainer container)
@@ -114,7 +119,7 @@ namespace Jasper.Bus.Model
             Handlers.AddRange(grouping);
         }
 
-        public string SourceCode { get; set; }
+        public string SourceCode => _generatedType.SourceCode;
         public int MaximumAttempts { get; set; } = 1;
         public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
 

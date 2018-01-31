@@ -23,12 +23,12 @@ namespace Jasper.Bus.WorkerQueues
             = new Dictionary<string, ActionBlock<Envelope>>();
 
 
-        public WorkerQueue(CompositeMessageLogger logger, IHandlerPipeline pipeline, BusSettings settings, CancellationToken cancellationToken)
+        public WorkerQueue(CompositeMessageLogger logger, IHandlerPipeline pipeline, BusSettings settings)
         {
             _logger = logger;
             _pipeline = pipeline;
             _settings = settings;
-            _cancellationToken = cancellationToken;
+            _cancellationToken = _settings.Cancellation;
 
             foreach (var worker in _settings.Workers.AllWorkers)
             {

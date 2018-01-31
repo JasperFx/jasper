@@ -13,7 +13,7 @@ namespace Jasper.Bus.Model
         public HandlerChain Chain { get; set; }
 
         // This method actually processes the incoming Envelope
-        public abstract Task Handle(IInvocationContext input);
+        public abstract Task Handle(IInvocationContext context);
     }
     // ENDSAMPLE
 }

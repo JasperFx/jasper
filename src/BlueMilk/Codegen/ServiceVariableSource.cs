@@ -36,7 +36,7 @@ namespace BlueMilk.Codegen
 
             return standin;
         }
-        
+
         // TODO -- later, do we use other variables?
         public void ReplaceVariables()
         {
@@ -79,9 +79,10 @@ namespace BlueMilk.Codegen
             }
         }
     }
-    
+
     public class ServiceStandinVariable : Variable
     {
+        private Variable _inner;
         public Instance Instance { get; }
 
         public ServiceStandinVariable(Instance instance) : base(instance.ServiceType)
@@ -91,8 +92,17 @@ namespace BlueMilk.Codegen
 
         public void UseInner(Variable variable)
         {
-            OverrideName(variable.Usage);
+            _inner = variable;
             Dependencies.Add(variable);
+        }
+
+        public override string Usage
+        {
+            get => _inner.Usage;
+            protected set {
+            {
+                base.Usage = value;
+            }}
         }
     }
 
@@ -104,10 +114,10 @@ namespace BlueMilk.Codegen
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             uses.Add(provider);
-            
+
             Variable = new Variable(serviceType, this);
         }
-        
+
         public Variable Variable { get; }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)

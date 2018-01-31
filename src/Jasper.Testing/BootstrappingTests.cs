@@ -35,6 +35,8 @@ namespace Jasper.Testing
     {
         public when_bootstrapping_a_runtime_with_multiple_features()
         {
+            theRegistry.Handlers.DisableConventionalDiscovery();
+
             theRegistry.Services.AddTransient<IMainService, MainService>();
 
             feature1 = theRegistry.Features.For<FakeFeature1>();
@@ -102,6 +104,7 @@ namespace Jasper.Testing
     {
         public when_shutting_down_the_runtime()
         {
+            theRegistry.Handlers.DisableConventionalDiscovery();
             theRegistry.Services.AddSingleton<IMainService>(mainService);
 
             theRegistry.Services.AddTransient<IFakeStore, FakeStore>();

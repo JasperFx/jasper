@@ -65,7 +65,7 @@ namespace BlueMilk.Codegen.Variables
             }
         }
         public Type VariableType { get; }
-        public string Usage { get; protected set; }
+        public virtual string Usage { get; protected set; }
 
         public virtual string ArgumentDeclaration => Usage;
 

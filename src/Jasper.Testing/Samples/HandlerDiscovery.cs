@@ -16,6 +16,13 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
     }
     // ENDSAMPLE
 
+    public class PongWriter : IPongWriter
+    {
+        public Task WritePong(PongMessage message)
+        {
+            return Task.CompletedTask;
+        }
+    }
 
     // SAMPLE: AsyncHandler
     public interface IPongWriter
@@ -52,16 +59,9 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
     // SAMPLE: Handlers-GenericMessageHandler
     public class GenericMessageHandler
     {
-        private readonly Envelope _envelope;
-
-        public GenericMessageHandler(Envelope envelope)
+        public void Consume(IMessage messagem, Envelope envelope)
         {
-            _envelope = envelope;
-        }
-
-        public void Consume(IMessage message)
-        {
-            Console.WriteLine($"Got a message from {_envelope.Source}");
+            Console.WriteLine($"Got a message from {envelope.Source}");
         }
     }
     // ENDSAMPLE
@@ -74,6 +74,8 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
         }
     }
     // ENDSAMPLE
+
+    public class MyService : IMyService{}
 
     // SAMPLE: injecting-services-into-handlers
     public interface IMyService
