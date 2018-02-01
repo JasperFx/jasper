@@ -18,6 +18,7 @@ using Jasper.Http;
 using Jasper.Settings;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
+using CallingAssembly = Jasper.Util.CallingAssembly;
 
 namespace Jasper
 {
@@ -28,6 +29,8 @@ namespace Jasper
     /// </summary>
     public class JasperRegistry : IFeatures
     {
+        private static Assembly _rememberedCallingAssembly;
+
         private readonly ServiceRegistry _applicationServices;
         protected readonly ServiceBusFeature _bus;
         private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
@@ -47,7 +50,20 @@ namespace Jasper
 
             Services = _applicationServices;
 
-            ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+            if (GetType() == typeof(JasperRegistry))
+            {
+                if (_rememberedCallingAssembly == null)
+                {
+                    _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+                }
+
+                ApplicationAssembly = _rememberedCallingAssembly;
+            }
+            else
+            {
+                ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+            }
+
             if (ApplicationAssembly == null) throw new InvalidOperationException("Unable to determine an application assembly");
 
             deriveServiceName();

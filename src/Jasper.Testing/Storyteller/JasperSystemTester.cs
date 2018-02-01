@@ -14,7 +14,11 @@ namespace Jasper.Testing.Storyteller
         [Fact]
         public async Task bootstraps_the_runtime()
         {
-            using (var system = JasperStorytellerHost.Basic())
+            using (var system = JasperStorytellerHost.Basic(x =>
+            {
+                x.Handlers.DisableConventionalDiscovery();
+                x.Http.Actions.DisableConventionalDiscovery();
+            }))
             {
                 await system.Warmup();
 

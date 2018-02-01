@@ -24,9 +24,12 @@ namespace Jasper.Storyteller
             return new JasperStorytellerHost<T>(new T());
         }
 
-        public static JasperStorytellerHost<JasperRegistry> Basic()
+        public static JasperStorytellerHost<JasperRegistry> Basic(Action<JasperRegistry> configure = null)
         {
-            return new JasperStorytellerHost<JasperRegistry>(new JasperRegistry());
+            var jasperRegistry = new JasperRegistry();
+            configure?.Invoke(jasperRegistry);
+
+            return new JasperStorytellerHost<JasperRegistry>(jasperRegistry);
         }
     }
 

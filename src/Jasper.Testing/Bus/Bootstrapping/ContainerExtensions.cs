@@ -26,7 +26,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
 
         public static IContainer DefaultRegistrationIs<T>(this IContainer container, T value) where T : class
         {
-            container.Model.For<T>().Default.Resolver.Resolve(container.As<Scope>()).ShouldBeTheSameAs(value);
+            container.Model.For<T>().Default.Resolve(container.As<Scope>()).ShouldBeTheSameAs(value);
 
             return container;
         }

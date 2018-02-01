@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Baseline.Reflection;
 
-namespace BlueMilk.Scanning
+namespace Jasper.Util
 {
-    public class CallingAssembly
+    internal class CallingAssembly
     {
         internal static Assembly Find()
         {
@@ -16,7 +15,7 @@ namespace BlueMilk.Scanning
 
             var parts = trace.Split('\n');
 
-            for (int i = 4; i < parts.Length; i++)
+            for (int i = 5; i < parts.Length; i++)
             {
                 var line = parts[i];
                 var assembly = findAssembly(line);
@@ -33,7 +32,11 @@ namespace BlueMilk.Scanning
         {
             if (assembly == null) return false;
 
-            if (assembly.GetCustomAttributes<IgnoreAssemblyAttribute>().Any()) return true;
+            if (assembly.GetCustomAttributes<JasperFeatureAttribute>().Any()) return true;
+
+            if (assembly.GetName().Name == "Jasper") return true;
+            if (assembly.GetName().Name == "Jasper.CommandLine") return true;
+
 
             return assembly.GetName().Name.StartsWith("System.");
         }
@@ -70,10 +73,18 @@ namespace BlueMilk.Scanning
             return assembly;
         }
 
-        public static Assembly DetermineApplicationAssembly(object registry)
+        public static Assembly DetermineApplicationAssembly(JasperRegistry registry)
         {
             var assembly = registry.GetType().Assembly;
-            return assembly.HasAttribute<IgnoreAssemblyAttribute>() ? CallingAssembly.Find() : assembly;
+            var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
+            if (!Equals(assembly, typeof(JasperRegistry).Assembly) && !isFeature)
+            {
+                return assembly;
+            }
+            else
+            {
+                return CallingAssembly.Find();
+            }
         }
     }
 }
