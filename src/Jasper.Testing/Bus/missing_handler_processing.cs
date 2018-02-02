@@ -20,6 +20,8 @@ namespace Jasper.Testing.Bus
 
             with(r =>
             {
+                r.Logging.UseConsoleLogging = true;
+
                 r.Services.AddTransient<IMissingHandler, NoMessageHandler1>();
                 r.Services.AddTransient<IMissingHandler, NoMessageHandler2>();
 

@@ -91,7 +91,7 @@ namespace Jasper
             ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
 
-            ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
+            ForSingletonOf<IReplyWatcher>().Use(new ReplyWatcher());
 
             For<IUriLookup>().Use<ConfigUriLookup>();
 
