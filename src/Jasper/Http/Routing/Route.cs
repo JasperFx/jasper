@@ -190,7 +190,9 @@ namespace Jasper.Http.Routing
         public string LastSegment => _segments.Count == 0 ? string.Empty : _segments.Last().CanonicalPath();
 
         public IEnumerable<ISegment> Parameters => _segments.Where(x => !(x is Segment)).ToArray();
+
         public RouteHandler Handler { get; set; }
+        public RouteChain Chain { get; internal set; }
 
 
         public IDictionary<string, string> ToParameters(object input)

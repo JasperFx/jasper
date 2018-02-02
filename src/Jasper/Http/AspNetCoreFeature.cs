@@ -100,22 +100,21 @@ namespace Jasper.Http
 
         internal void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
-            timer.Record("AspNetCoreFeature.Activate", () =>
+            var rules = timer.Record("Fetching Conneg Rules", () =>
             {
-                timer.Record("Build Routing Tree", () =>
-                {
-                    var rules = runtime.Container.QuickBuild<ConnegRules>();
+                return runtime.Container.QuickBuild<ConnegRules>();
+            });
 
-                    Routes.BuildRoutingTree(rules, generation, runtime);
-                });
+            timer.Record("Build Routing Tree", () =>
+            {
+                Routes.BuildRoutingTree(rules, generation, runtime);
+            });
 
+            if (BootstrappedWithinAspNetCore) return;
 
-                if (BootstrappedWithinAspNetCore) return;
-
-                timer.Record("Activate ASP.Net", () =>
-                {
-                    activateLocally(runtime);
-                });
+            timer.Record("Activate ASP.Net", () =>
+            {
+                activateLocally(runtime);
             });
         }
 

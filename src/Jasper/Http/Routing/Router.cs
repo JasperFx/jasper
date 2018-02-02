@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Http.Model;
 using Jasper.Http.Routing.Codegen;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -52,6 +53,7 @@ namespace Jasper.Http.Routing
             return Invoke;
         }
 
+
         public async Task Invoke(HttpContext context, RequestDelegate next)
         {
             string[] segments;
@@ -69,6 +71,17 @@ namespace Jasper.Http.Routing
 
                 try
                 {
+                    if (route.Handler == null)
+                    {
+                        lock (route)
+                        {
+                            if (route.Handler == null)
+                            {
+                                route.Handler = HandlerBuilder.Build(route.Chain);
+                            }
+                        }
+                    }
+
                     await route.Handler.Handle(context);
                 }
                 catch (Exception e)
@@ -96,6 +109,7 @@ namespace Jasper.Http.Routing
         public RouteAdder Head => new RouteAdder(HttpVerbs.HEAD, this);
         public RouteAdder Options => new RouteAdder(HttpVerbs.OPTIONS, this);
         public RouteAdder Patch => new RouteAdder(HttpVerbs.PATCH, this);
+        public RouteHandlerBuilder HandlerBuilder { get; set; }
     }
 
     public class RouteAdder

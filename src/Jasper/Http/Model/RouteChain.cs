@@ -14,6 +14,7 @@ using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Http;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.Http.Model
 {
@@ -54,6 +55,8 @@ namespace Jasper.Http.Model
 
             InputType = RouteBuilder.DetermineInputType(action.Method);
             ResourceType = action.ReturnVariable?.VariableType;
+
+            Route.Chain = this;
         }
 
         public RouteChain(MethodCall action, string url)
@@ -64,6 +67,8 @@ namespace Jasper.Http.Model
 
             InputType = RouteBuilder.DetermineInputType(action.Method);
             ResourceType = action.ReturnVariable?.VariableType;
+
+            Route.Chain = this;
         }
 
         protected override MethodCall[] handlerCalls()

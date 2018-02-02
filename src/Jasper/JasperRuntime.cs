@@ -47,10 +47,15 @@ namespace Jasper
 
             Services = services.ToImmutableArray();
 
-            Container = new Container(services)
+            timer.Record("new Container()", () =>
             {
-                DisposalLock = DisposalLock.Ignore
-            };
+                Container = new Container(services)
+                {
+                    DisposalLock = DisposalLock.Ignore
+                };
+            });
+
+
 
             registry.Generation.Sources.Add(new NowTimeVariableSource());
 
@@ -85,7 +90,7 @@ namespace Jasper
         /// <summary>
         ///     The underlying BlueMilk container
         /// </summary>
-        public Container Container { get; }
+        public Container Container { get; private set; }
 
         public bool IsDisposed { get; private set; }
 
@@ -208,6 +213,15 @@ namespace Jasper
 
         private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
         {
+
+            if (registry.Logging.UseConsoleLogging)
+            {
+                registry.Services.AddTransient<IMessageLogger, ConsoleMessageLogger>();
+                registry.Services.AddTransient<ITransportLogger, ConsoleTransportLogger>();
+
+            }
+
+
             var timer = new PerfTimer();
             timer.Start("Bootstrapping");
 

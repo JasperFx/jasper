@@ -51,27 +51,11 @@ namespace Jasper.Http.Model
 
         public void BuildRoutingTree(ConnegRules rules, GenerationRules generation, JasperRuntime runtime)
         {
+            Router.HandlerBuilder = new RouteHandlerBuilder(runtime.Container, rules, generation);
             assertNoDuplicateRoutes();
 
-            foreach (var chain in _chains)
+            foreach (var route in _chains.Select(x => x.Route))
             {
-                rules.Apply(chain);
-            }
-
-            var generatedAssembly = new GeneratedAssembly(generation);
-            foreach (var chain in _chains)
-            {
-                chain.AssemblyType(generatedAssembly);
-            }
-
-            runtime.Container.CompileWithInlineServices(generatedAssembly);
-
-            foreach (var chain in _chains)
-            {
-                var route = chain.Route;
-                var handler = chain.CreateHandler(runtime.Container);
-                handler.Chain = chain;
-                route.Handler = handler;
                 Router.Add(route);
             }
         }
