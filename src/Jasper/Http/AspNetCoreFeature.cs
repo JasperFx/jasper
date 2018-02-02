@@ -15,13 +15,14 @@ using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Http
 {
-    public class AspNetCoreFeature : IFeature, IWebHostBuilder
+    public class AspNetCoreFeature : IWebHostBuilder
     {
         private readonly WebHostBuilder _inner;
 
@@ -66,43 +67,44 @@ namespace Jasper.Http
             Host?.Dispose();
         }
 
-        async Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry, PerfTimer timer)
+
+        internal Task FindRoutes(JasperRegistry registry, PerfTimer timer)
         {
-            timer.MarkStart("AspNetCoreFeature.Bootstrap");
-            var actions = await Actions.FindActions(registry.ApplicationAssembly);
-            foreach (var methodCall in actions) Routes.AddRoute(methodCall);
-
-            var httpTransportSettings = registry.BusSettings.Http;
-            if (httpTransportSettings.EnableMessageTransport)
+            return Actions.FindActions(registry.ApplicationAssembly).ContinueWith(t =>
             {
+                timer.Record("Find Routes", () =>
+                {
+                    var actions = t.Result;
+                    foreach (var methodCall in actions) Routes.AddRoute(methodCall);
+
+                    var httpTransportSettings = registry.BusSettings.Http;
+                    if (httpTransportSettings.EnableMessageTransport)
+                    {
 #pragma warning disable 4014
-                Routes.AddRoute<TransportEndpoint>(x => x.put__messages(null, null, null),
-                    httpTransportSettings.RelativeUrl).Route.HttpMethod = "PUT";
+                        Routes.AddRoute<TransportEndpoint>(x => x.put__messages(null, null, null),
+                            httpTransportSettings.RelativeUrl).Route.HttpMethod = "PUT";
 
 
-                Routes.AddRoute<TransportEndpoint>(x => x.put__messages_durable(null, null, null),
-                    httpTransportSettings.RelativeUrl.AppendUrl("durable")).Route.HttpMethod = "PUT";
+                        Routes.AddRoute<TransportEndpoint>(x => x.put__messages_durable(null, null, null),
+                            httpTransportSettings.RelativeUrl.AppendUrl("durable")).Route.HttpMethod = "PUT";
 
 #pragma warning restore 4014
-            }
+                    }
 
-            _services.AddSingleton(Routes);
-            _services.AddSingleton<IUrlRegistry>(Routes.Router.Urls);
-
-            if (!BootstrappedWithinAspNetCore) _services.ForSingletonOf<IServer>().UseIfNone<NulloServer>();
-
-            timer.MarkFinished("AspNetCoreFeature.Bootstrap");
-
-            return _services;
+                    _services.AddSingleton(Routes);
+                    _services.AddSingleton<IUrlRegistry>(Routes.Router.Urls);
+                });
+            });
         }
 
-        void IFeature.Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
+
+        internal void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
             timer.Record("AspNetCoreFeature.Activate", () =>
             {
                 timer.Record("Build Routing Tree", () =>
                 {
-                    var rules = runtime.Get<ConnegRules>();
+                    var rules = runtime.Container.QuickBuild<ConnegRules>();
 
                     Routes.BuildRoutingTree(rules, generation, runtime);
                 });

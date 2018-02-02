@@ -75,7 +75,7 @@ namespace Jasper
         /// <summary>
         ///     The running IWebHost for this applicastion
         /// </summary>
-        public IWebHost Host => Registry.Features.For<AspNetCoreFeature>().Host;
+        public IWebHost Host => Registry.Http.Host;
 
         /// <summary>
         ///     The main application assembly for the running application
@@ -130,9 +130,6 @@ namespace Jasper
             Get<BusSettings>().StopAll();
 
             isDisposing = true;
-
-
-            foreach (var feature in Registry.Features) feature.Dispose();
 
             Container.DisposalLock = DisposalLock.Unlocked;
             Container.Dispose();
@@ -222,14 +219,10 @@ namespace Jasper
             timer.Record("Bootstrapping Settings", () => registry.Settings.Bootstrap());
 
 
+            var handlerCompilation = registry.Bus.CompileHandlers(registry, timer);
+            var routeDetermination = registry.Http.FindRoutes(registry, timer);
 
-            var features = registry.Features;
-
-            var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry, timer)))
-                .ConfigureAwait(false);
-
-            var services = timer.Record("Combine Service Registrations",
-                () => combineServiceRegistrations(registry, serviceRegistries));
+            var services = registry.CombinedServices();
 
 
 
@@ -246,10 +239,12 @@ namespace Jasper
 
 
 
-            foreach (var feature in features)
-            {
-                feature.Activate(runtime, registry.Generation, timer);
-            }
+            var busActivation = handlerCompilation.ContinueWith(t => registry.Bus.Activate(runtime, registry.Generation, timer));
+            registry.Http.Activate(runtime, registry.Generation, timer);
+
+
+            await busActivation;
+
 
             // Run environment checks
             timer.Record("Environment Checks", () =>
@@ -259,6 +254,8 @@ namespace Jasper
             });
 
 
+            await busActivation;
+
             timer.MarkStart("Register Node");
             await registerRunningNode(runtime);
             timer.MarkFinished("Register Node");
@@ -266,20 +263,6 @@ namespace Jasper
             timer.Stop();
 
             return runtime;
-        }
-
-        private static ServiceRegistry combineServiceRegistrations(JasperRegistry registry, ServiceRegistry[] serviceRegistries)
-        {
-            var services = new ServiceRegistry();
-            foreach (var serviceRegistry in serviceRegistries)
-            {
-                services.AddRange(serviceRegistry);
-            }
-
-            services.AddRange(registry.ExtensionServices);
-            services.AddRange(registry.Services);
-
-            return services;
         }
 
         private static async Task registerRunningNode(JasperRuntime runtime)
@@ -344,8 +327,8 @@ namespace Jasper
             writer.WriteLine($"Hosting environment: {hosting.EnvironmentName}");
             writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
 
-
-            foreach (var feature in Registry.Features) feature.Describe(this, writer);
+            Registry.Bus.Describe(this, writer);
+            Registry.Http.Describe(this, writer);
         }
     }
 }

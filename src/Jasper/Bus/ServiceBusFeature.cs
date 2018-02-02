@@ -18,44 +18,31 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Bus
 {
-    public class ServiceBusFeature : IFeature
+    public class ServiceBusFeature
     {
-        private readonly ChannelGraph _channels = new ChannelGraph();
-        private readonly LocalWorkerSender _localWorker = new LocalWorkerSender();
-
-
         public readonly CapabilityGraph Capabilities = new CapabilityGraph();
 
-        public readonly ServiceRegistry Services = new ServiceBusRegistry();
 
-        private HandlerGraph _graph;
         public HandlerSource Handlers { get; } = new HandlerSource();
 
 
         public BusSettings Settings { get; } = new BusSettings();
 
+        public ChannelGraph Channels { get; } = new ChannelGraph();
+
+        public LocalWorkerSender LocalWorker { get; } = new LocalWorkerSender();
+
         public void Dispose()
         {
         }
 
-        Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry, PerfTimer timer)
+        public HandlerGraph Graph { get;  } = new HandlerGraph();
+
+
+        internal Task Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
-            return bootstrap(registry, timer);
-        }
-
-        void IFeature.Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
-        {
-            timer.MarkStart("ServiceBusFeature.Activate");
-
-
-
-
-            runtime.Get<ServiceBusActivator>()
-                .Activate(_graph, Capabilities, runtime, _channels, _localWorker, timer, generation, Settings)
-                .Wait();
-
-
-            timer.MarkFinished("ServiceBusFeature.Activate");
+            return runtime.Container.QuickBuild<ServiceBusActivator>()
+                .Activate(Graph, Capabilities, runtime, Channels, LocalWorker, timer, generation, Settings);
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
@@ -66,16 +53,16 @@ namespace Jasper.Bus
             foreach (var transport in transports) transport.Describe(writer);
 
             writer.WriteLine();
-            foreach (var channel in _channels.AllKnownChannels())
+            foreach (var channel in Channels.AllKnownChannels())
                 writer.WriteLine($"Active sending agent to {channel.Uri}");
 
             if (runtime.Registry.Logging.Verbose)
             {
                 writer.WriteLine("Handles messages:");
 
-                var longestMessageName = _graph.Chains.Select(x => x.MessageType.FullName.Length).Max() + 2;
+                var longestMessageName = Graph.Chains.Select(x => x.MessageType.FullName.Length).Max() + 2;
 
-                foreach (var chain in _graph.Chains)
+                foreach (var chain in Graph.Chains)
                 {
                     var messageName = chain.MessageType.FullName.PadLeft(longestMessageName);
                     var handlers = chain.Handlers.Select(x => x.ToString()).Join(", ");
@@ -88,38 +75,25 @@ namespace Jasper.Bus
             }
         }
 
-
-        private async Task<ServiceRegistry> bootstrap(JasperRegistry registry, PerfTimer timer)
+        internal Task CompileHandlers(JasperRegistry registry, PerfTimer timer)
         {
-            timer.MarkStart("ServiceBusFeature.Bootstrap");
-
-            var calls = await Handlers.FindCalls(registry).ConfigureAwait(false);
-
-            _graph = new HandlerGraph();
-            _graph.AddRange(calls);
-            _graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged())));
-
-            _graph.Group();
-            Handlers.ApplyPolicies(_graph);
-
-            Services.AddSingleton(_graph);
-            Services.AddSingleton<IChannelGraph>(_channels);
-            Services.AddSingleton<ILocalWorkerSender>(_localWorker);
-
-            Services.AddTransient<ServiceBusActivator>();
-
-
-            if (registry.Logging.UseConsoleLogging)
+            return Handlers.FindCalls(registry).ContinueWith(t =>
             {
-                Services.For<IMessageLogger>().Use<ConsoleMessageLogger>();
-                Services.For<ITransportLogger>().Use<ConsoleTransportLogger>();
-            }
+                timer.Record("Compile Handlers", () =>
+                {
+                    var calls = t.Result;
 
-            Services.ForSingletonOf<IScheduledJobProcessor>().UseIfNone<InMemoryScheduledJobProcessor>();
+                    Graph.AddRange(calls);
+                    Graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged())));
 
-            timer.MarkFinished("ServiceBusFeature.Bootstrap");
+                    Graph.Group();
+                    Handlers.ApplyPolicies(Graph);
 
-            return Services;
+                });
+
+
+            });
         }
+
     }
 }

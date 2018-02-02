@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Baseline;
 using BlueMilk;
@@ -9,15 +10,30 @@ using BlueMilk.Scanning;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
+using Jasper.Bus.Logging;
+using Jasper.Bus.Runtime;
+using Jasper.Bus.Runtime.Invocation;
+using Jasper.Bus.Runtime.Routing;
+using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Bus.Scheduled;
+using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Configuration;
 using Jasper.Conneg;
+using Jasper.EnvironmentChecks;
 using Jasper.Http;
+using Jasper.Http.Model;
+using Jasper.Http.Routing;
+using Jasper.Http.Transport;
 using Jasper.Settings;
 using Jasper.Util;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.ObjectPool;
 using CallingAssembly = Jasper.Util.CallingAssembly;
 
 namespace Jasper
@@ -27,22 +43,18 @@ namespace Jasper
     /// <summary>
     /// Completely defines and configures a Jasper application
     /// </summary>
-    public class JasperRegistry : IFeatures
+    public class JasperRegistry
     {
         private static Assembly _rememberedCallingAssembly;
 
         private readonly ServiceRegistry _applicationServices;
-        protected readonly ServiceBusFeature _bus;
-        private readonly Dictionary<Type, IFeature> _features = new Dictionary<Type, IFeature>();
+        private JasperServiceRegistry _baseServices;
+
 
         public JasperRegistry()
         {
-            _bus = Features.For<ServiceBusFeature>();
-
-            Http = Features.For<AspNetCoreFeature>();
-
-            Publish = new PublishingExpression(_bus);
-
+            Logging = new Logging(this);
+            Publish = new PublishingExpression(Bus);
 
             ExtensionServices = new ExtensionServiceRegistry();
 
@@ -64,19 +76,18 @@ namespace Jasper
 
             if (ApplicationAssembly == null) throw new InvalidOperationException("Unable to determine an application assembly");
 
-            _applicationServices = new JasperServiceRegistry(ApplicationAssembly);
-
-
+            _baseServices = new JasperServiceRegistry(this);
+            _applicationServices = new ServiceRegistry();
 
             deriveServiceName();
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
             Generation = new GenerationRules($"{name}.Generated");
 
-            Logging = new Logging(this);
+
             Settings = new JasperSettings(this);
 
-            Settings.Replace(_bus.Settings);
+            Settings.Replace(Bus.Settings);
             Settings.Replace(Http.Settings);
 
             if (JasperEnvironment.Name.IsNotEmpty())
@@ -87,13 +98,15 @@ namespace Jasper
             EnvironmentChecks = new EnvironmentCheckExpression(this);
         }
 
-        internal BusSettings BusSettings => _bus.Settings;
+
+        internal ServiceBusFeature Bus { get; } = new ServiceBusFeature();
+        internal BusSettings BusSettings => Bus.Settings;
 
         /// <summary>
         /// Configure worker queue priority, message assignement, and worker
         /// durability
         /// </summary>
-        public IWorkersExpression Processing => _bus.Settings.Workers;
+        public IWorkersExpression Processing => Bus.Settings.Workers;
 
         /// <summary>
         /// Register environment checks to debug application bootstrapping failures
@@ -113,13 +126,13 @@ namespace Jasper
         /// Options to control how Jasper discovers message handler actions, error
         /// handling and other policies on message handling
         /// </summary>
-        public HandlerSource Handlers => _bus.Handlers;
+        public HandlerSource Handlers => Bus.Handlers;
 
         /// <summary>
         /// IWebHostBuilder and other configuration for ASP.net Core usage within a Jasper
         /// application
         /// </summary>
-        public AspNetCoreFeature Http { get; }
+        public AspNetCoreFeature Http { get; } = new AspNetCoreFeature();
 
         /// <summary>
         /// Configure static message routing rules and message publishing rules
@@ -129,7 +142,7 @@ namespace Jasper
         /// <summary>
         /// Configure or disable the built in transports
         /// </summary>
-        public ITransportsExpression Transports => _bus.Settings;
+        public ITransportsExpression Transports => Bus.Settings;
 
         /// <summary>
         /// Use to load and apply configuration sources within the application
@@ -152,9 +165,6 @@ namespace Jasper
         /// </summary>
         public JasperSettings Settings { get; }
 
-        // TODO -- move this to advanced
-        public IFeatures Features => this;
-
         /// <summary>
         /// Use to configure or customize Jasper event logging
         /// </summary>
@@ -168,44 +178,19 @@ namespace Jasper
         /// </summary>
         public string ServiceName
         {
-            get => _bus.Settings.ServiceName;
-            set => _bus.Settings.ServiceName = value;
+            get => Bus.Settings.ServiceName;
+            set => Bus.Settings.ServiceName = value;
         }
 
         /// <summary>
         /// Configure dynamic subscriptions to this application
         /// </summary>
-        public ISubscriptions Subscribe => _bus.Capabilities;
+        public ISubscriptions Subscribe => Bus.Capabilities;
 
         /// <summary>
         /// Configure uncommonly used, advanced options
         /// </summary>
-        public IAdvancedOptions Advanced => _bus.Settings;
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IEnumerator<IFeature> GetEnumerator()
-        {
-            return _features.Values.GetEnumerator();
-        }
-
-        void IFeatures.Include<T>()
-        {
-            if (!_features.ContainsKey(typeof(T)))
-                _features.Add(typeof(T), new T());
-        }
-
-
-        T IFeatures.For<T>()
-        {
-            if (!_features.ContainsKey(typeof(T)))
-                _features.Add(typeof(T), new T());
-
-            return _features[typeof(T)].As<T>();
-        }
+        public IAdvancedOptions Advanced => Bus.Settings;
 
         private void deriveServiceName()
         {
@@ -249,31 +234,106 @@ namespace Jasper
 
             Include(extension);
         }
+
+
+        internal ServiceRegistry CombinedServices()
+        {
+            var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
+
+            var combined = new ServiceRegistry();
+            combined.AddRange(all);
+
+            return combined;
+        }
     }
 
 
     public class JasperServiceRegistry : ServiceRegistry
     {
-        public JasperServiceRegistry(Assembly applicationAssembly)
+        public JasperServiceRegistry(JasperRegistry parent)
+        {
+            Policies.OnMissingFamily<LoggerPolicy>();
+
+            conneg(parent);
+            messaging(parent);
+
+            routing(parent);
+        }
+
+        private void routing(JasperRegistry parent)
+        {
+            this.AddSingleton(parent.Http.Routes);
+            ForSingletonOf<IUrlRegistry>().Use(parent.Http.Routes.Router.Urls);
+            For<IServer>().Use<NulloServer>();
+        }
+
+        private void conneg(JasperRegistry parent)
         {
             var forwarding = new Forwarders();
             For<Forwarders>().Use(forwarding);
 
             Scan(_ =>
             {
-                _.Assembly(applicationAssembly);
+                _.Assembly(parent.ApplicationAssembly);
                 _.AddAllTypesOf<IMessageSerializer>();
                 _.AddAllTypesOf<IMessageDeserializer>();
                 _.With(new ForwardingRegistration(forwarding));
             });
         }
+
+        private void messaging(JasperRegistry parent)
+        {
+            this.AddSingleton(parent.Bus.Graph);
+            this.AddSingleton<IChannelGraph>(parent.Bus.Channels);
+            this.AddSingleton<ILocalWorkerSender>(parent.Bus.LocalWorker);
+
+
+            if (parent.Logging.UseConsoleLogging)
+            {
+                For<IMessageLogger>().Use<ConsoleMessageLogger>();
+                For<ITransportLogger>().Use<ConsoleTransportLogger>();
+            }
+
+            ForSingletonOf<IScheduledJobProcessor>().UseIfNone<InMemoryScheduledJobProcessor>();
+
+            ForSingletonOf<ITransport>()
+                .Use<LoopbackTransport>();
+
+            ForSingletonOf<ITransport>()
+                .Use<TcpTransport>();
+
+            ForSingletonOf<ITransport>()
+                .Use<HttpTransport>();
+
+            ForSingletonOf<ObjectPoolProvider>().Use<DefaultObjectPoolProvider>();
+
+            ForSingletonOf<IWorkerQueue>().Use<WorkerQueue>();
+
+            For<IServiceBus>().Use<ServiceBus>();
+            ForSingletonOf<IHandlerPipeline>().Use<HandlerPipeline>();
+
+            ForSingletonOf<CompositeMessageLogger>().Use<CompositeMessageLogger>();
+            ForSingletonOf<CompositeTransportLogger>().Use<CompositeTransportLogger>();
+
+            ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
+            ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
+
+            ForSingletonOf<IReplyWatcher>().Use<ReplyWatcher>();
+
+            For<IUriLookup>().Use<ConfigUriLookup>();
+
+            ForSingletonOf<BusMessageSerializationGraph>().Use<BusMessageSerializationGraph>();
+
+            ForSingletonOf<IMessageRouter>().Use<MessageRouter>();
+
+            ForSingletonOf<UriAliasLookup>().Use<UriAliasLookup>();
+
+
+            For<IPersistence>().Use<NulloPersistence>();
+
+            For<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
+        }
     }
 
 
-    [Obsolete("Try to eliminate this")]
-    public interface IFeatures : IEnumerable<IFeature>
-    {
-        void Include<T>() where T : IFeature, new();
-        T For<T>() where T : IFeature, new();
-    }
 }

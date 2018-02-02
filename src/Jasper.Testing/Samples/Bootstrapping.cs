@@ -169,11 +169,6 @@ namespace Bootstrapping.Configuration2
     {
         public EnvironmentNameRegistry()
         {
-            // By default, this is delegating to ASP.Net Core
-            if (EnvironmentName == "Development")
-            {
-                Features.Include<DiagnosticServer>();
-            }
 
             // Override the Environment
             EnvironmentName = "Production";
@@ -185,26 +180,5 @@ namespace Bootstrapping.Configuration2
     }
     // ENDSAMPLE
 
-    public class DiagnosticServer : IFeature
-    {
-        public void Dispose()
-        {
-            throw new System.NotImplementedException();
-        }
 
-        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry, PerfTimer timer)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Describe(JasperRuntime runtime, TextWriter writer)
-        {
-            throw new System.NotImplementedException();
-        }
-    }
 }
