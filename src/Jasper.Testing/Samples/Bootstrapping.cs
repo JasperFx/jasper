@@ -4,6 +4,7 @@ using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper;
 using Jasper.Configuration;
+using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -191,12 +192,12 @@ namespace Bootstrapping.Configuration2
             throw new System.NotImplementedException();
         }
 
-        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry)
+        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry, PerfTimer timer)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task Activate(JasperRuntime runtime, GenerationRules generation)
+        public void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
             throw new System.NotImplementedException();
         }

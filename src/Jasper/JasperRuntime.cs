@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Timers;
 using Baseline;
 using Baseline.Dates;
 using Baseline.Reflection;
@@ -38,8 +39,10 @@ namespace Jasper
         private readonly Lazy<IServiceBus> _bus;
         private bool isDisposing;
 
-        private JasperRuntime(JasperRegistry registry, IServiceCollection services)
+        private JasperRuntime(JasperRegistry registry, IServiceCollection services, PerfTimer timer)
         {
+            Bootstrapping = timer;
+
             services.AddSingleton(this);
 
             Services = services.ToImmutableArray();
@@ -58,6 +61,8 @@ namespace Jasper
 
             _bus = new Lazy<IServiceBus>(Get<IServiceBus>);
         }
+
+        public PerfTimer Bootstrapping { get; }
 
         internal JasperRegistry Registry { get; }
 
@@ -206,15 +211,65 @@ namespace Jasper
 
         private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
         {
-            applyExtensions(registry);
+            var timer = new PerfTimer();
+            timer.Start("Bootstrapping");
 
-            registry.Settings.Bootstrap();
+            timer.Record("Finding and Applying Extensions", () =>
+            {
+                applyExtensions(registry);
+            });
+
+            timer.Record("Bootstrapping Settings", () => registry.Settings.Bootstrap());
+
+
 
             var features = registry.Features;
 
-            var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry)))
+            var serviceRegistries = await Task.WhenAll(features.Select(x => x.Bootstrap(registry, timer)))
                 .ConfigureAwait(false);
 
+            var services = timer.Record("Combine Service Registrations",
+                () => combineServiceRegistrations(registry, serviceRegistries));
+
+
+
+            var runtime = new JasperRuntime(registry, services, timer);
+            registry.Http.As<IWebHostBuilder>()
+                .UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
+
+            timer.Record("Lookup Http Address",
+                () =>
+                {
+                    runtime.HttpAddresses =
+                        registry.Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
+                });
+
+
+
+            foreach (var feature in features)
+            {
+                feature.Activate(runtime, registry.Generation, timer);
+            }
+
+            // Run environment checks
+            timer.Record("Environment Checks", () =>
+            {
+                var recorder = EnvironmentChecker.ExecuteAll(runtime);
+                if (runtime.Get<BusSettings>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
+            });
+
+
+            timer.MarkStart("Register Node");
+            await registerRunningNode(runtime);
+            timer.MarkFinished("Register Node");
+
+            timer.Stop();
+
+            return runtime;
+        }
+
+        private static ServiceRegistry combineServiceRegistrations(JasperRegistry registry, ServiceRegistry[] serviceRegistries)
+        {
             var services = new ServiceRegistry();
             foreach (var serviceRegistry in serviceRegistries)
             {
@@ -224,27 +279,13 @@ namespace Jasper
             services.AddRange(registry.ExtensionServices);
             services.AddRange(registry.Services);
 
-
-            var runtime = new JasperRuntime(registry, services);
-            registry.Http.As<IWebHostBuilder>()
-                .UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
-
-            runtime.HttpAddresses = registry.Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
-
-            await Task.WhenAll(features.Select(x => x.Activate(runtime, registry.Generation)))
-                .ConfigureAwait(false);
-
-            // Run environment checks
-            var recorder = EnvironmentChecker.ExecuteAll(runtime);
-            if (runtime.Get<BusSettings>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
-
-            await registerRunningNode(runtime);
-
-            return runtime;
+            return services;
         }
 
         private static async Task registerRunningNode(JasperRuntime runtime)
         {
+
+
             // TODO -- get a helper for this, it's ugly
             var settings = runtime.Get<BusSettings>();
             var nodes = runtime.Get<INodeDiscovery>();

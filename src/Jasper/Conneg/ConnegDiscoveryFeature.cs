@@ -9,6 +9,7 @@ using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper.Bus;
 using Jasper.Configuration;
+using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using TypeClassification = BlueMilk.Scanning.TypeClassification;
 using TypeRepository = BlueMilk.Scanning.TypeRepository;
@@ -48,8 +49,10 @@ namespace Jasper.Conneg
             // nothing
         }
 
-        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry)
+        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry, PerfTimer timer)
         {
+            timer.MarkStart("ConnegDiscoveryFeature.Bootstrap");
+
             var forwarding = new Forwarders();
             var services = new ServiceRegistry();
 
@@ -74,13 +77,15 @@ namespace Jasper.Conneg
                         forwarding.Add(type);
                     }
 
+                    timer.MarkFinished("ConnegDiscoveryFeature.Bootstrap");
+
                     return services;
                 });
         }
 
-        public Task Activate(JasperRuntime runtime, GenerationRules generation)
+        public void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
-            return Task.CompletedTask;
+
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)

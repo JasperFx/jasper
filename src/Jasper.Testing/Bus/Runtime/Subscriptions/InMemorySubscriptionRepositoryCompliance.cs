@@ -27,9 +27,15 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
                 configure(x);
             }))
             {
+                var displayTimings = runtime.Bootstrapping.DisplayTimings();
+
+//displayTimings.WriteToConsole();
+//throw new Exception(displayTimings.ToString());
 
                 beforeEach(runtime);
             }
+
+
 
             _coolColors1 = app("Cool", _ =>
             {

@@ -13,6 +13,7 @@ using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.Http.Transport;
+using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Bus
@@ -30,7 +31,6 @@ namespace Jasper.Bus
         private HandlerGraph _graph;
         public HandlerSource Handlers { get; } = new HandlerSource();
 
-        public GenerationRules Generation { get; } = new GenerationRules("JasperBus.Generated");
 
         public BusSettings Settings { get; } = new BusSettings();
 
@@ -38,16 +38,24 @@ namespace Jasper.Bus
         {
         }
 
-        Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry)
+        Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry, PerfTimer timer)
         {
-            return bootstrap(registry);
+            return bootstrap(registry, timer);
         }
 
-        Task IFeature.Activate(JasperRuntime runtime, GenerationRules generation)
+        void IFeature.Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
-            _graph.Compile(generation, runtime);
+            timer.MarkStart("ServiceBusFeature.Activate");
 
-            return runtime.Get<ServiceBusActivator>().Activate(_graph, Capabilities, runtime, _channels, _localWorker);
+
+
+
+            runtime.Get<ServiceBusActivator>()
+                .Activate(_graph, Capabilities, runtime, _channels, _localWorker, timer, generation, Settings)
+                .Wait();
+
+
+            timer.MarkFinished("ServiceBusFeature.Activate");
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
@@ -81,8 +89,10 @@ namespace Jasper.Bus
         }
 
 
-        private async Task<ServiceRegistry> bootstrap(JasperRegistry registry)
+        private async Task<ServiceRegistry> bootstrap(JasperRegistry registry, PerfTimer timer)
         {
+            timer.MarkStart("ServiceBusFeature.Bootstrap");
+
             var calls = await Handlers.FindCalls(registry).ConfigureAwait(false);
 
             _graph = new HandlerGraph();
@@ -106,6 +116,8 @@ namespace Jasper.Bus
             }
 
             Services.ForSingletonOf<IScheduledJobProcessor>().UseIfNone<InMemoryScheduledJobProcessor>();
+
+            timer.MarkFinished("ServiceBusFeature.Bootstrap");
 
             return Services;
         }

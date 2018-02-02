@@ -7,6 +7,7 @@ using Jasper.Configuration;
 using Jasper.Testing.Bus.Bootstrapping;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
+using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -154,17 +155,16 @@ namespace Jasper.Testing
             WasDisposed = true;
         }
 
-        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry)
+        public Task<ServiceRegistry> Bootstrap(JasperRegistry registry, PerfTimer timer)
         {
             Registry = registry;
             return Task.FromResult(Services);
         }
 
-        public Task Activate(JasperRuntime runtime, GenerationRules generation)
+        public void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
             Runtime = runtime;
             WasActivated = true;
-            return Task.CompletedTask;
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)

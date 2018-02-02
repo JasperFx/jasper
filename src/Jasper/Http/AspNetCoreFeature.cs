@@ -11,6 +11,7 @@ using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Http.Transport;
+using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
@@ -65,8 +66,9 @@ namespace Jasper.Http
             Host?.Dispose();
         }
 
-        async Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry)
+        async Task<ServiceRegistry> IFeature.Bootstrap(JasperRegistry registry, PerfTimer timer)
         {
+            timer.MarkStart("AspNetCoreFeature.Bootstrap");
             var actions = await Actions.FindActions(registry.ApplicationAssembly);
             foreach (var methodCall in actions) Routes.AddRoute(methodCall);
 
@@ -89,20 +91,29 @@ namespace Jasper.Http
 
             if (!BootstrappedWithinAspNetCore) _services.ForSingletonOf<IServer>().UseIfNone<NulloServer>();
 
+            timer.MarkFinished("AspNetCoreFeature.Bootstrap");
+
             return _services;
         }
 
-        Task IFeature.Activate(JasperRuntime runtime, GenerationRules generation)
+        void IFeature.Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
-            return Task.Factory.StartNew(() =>
+            timer.Record("AspNetCoreFeature.Activate", () =>
             {
-                var rules = runtime.Get<ConnegRules>();
+                timer.Record("Build Routing Tree", () =>
+                {
+                    var rules = runtime.Get<ConnegRules>();
 
-                Routes.BuildRoutingTree(rules, generation, runtime);
+                    Routes.BuildRoutingTree(rules, generation, runtime);
+                });
+
 
                 if (BootstrappedWithinAspNetCore) return;
 
-                activateLocally(runtime);
+                timer.Record("Activate ASP.Net", () =>
+                {
+                    activateLocally(runtime);
+                });
             });
         }
 

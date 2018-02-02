@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlueMilk.Codegen;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
@@ -15,14 +16,13 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
 using Jasper.Http.Transport;
+using Jasper.Util;
 using Microsoft.CodeAnalysis;
 
 namespace Jasper.Bus
 {
     public class ServiceBusActivator
     {
-        private readonly BusSettings _settings;
-        private readonly IHandlerPipeline _pipeline;
         private readonly IScheduledJobProcessor scheduledJobs;
         private readonly SerializationGraph _serialization;
         private readonly ITransport[] _transports;
@@ -31,10 +31,10 @@ namespace Jasper.Bus
         private readonly CompositeMessageLogger _logger;
         private readonly IPersistence _persistence;
 
-        public ServiceBusActivator(BusSettings settings, IHandlerPipeline pipeline, IScheduledJobProcessor scheduledJobs, BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups, IWorkerQueue workerQueue, CompositeMessageLogger logger, IPersistence persistence)
+        public ServiceBusActivator(IScheduledJobProcessor scheduledJobs,
+            BusMessageSerializationGraph serialization, IEnumerable<ITransport> transports, UriAliasLookup lookups,
+            IWorkerQueue workerQueue, CompositeMessageLogger logger, IPersistence persistence)
         {
-            _settings = settings;
-            _pipeline = pipeline;
             this.scheduledJobs = scheduledJobs;
             _serialization = serialization;
             _transports = transports.ToArray();
@@ -44,32 +44,58 @@ namespace Jasper.Bus
             _persistence = persistence;
         }
 
-        public async Task Activate(HandlerGraph handlers, CapabilityGraph capabilities, JasperRuntime runtime, ChannelGraph channels, LocalWorkerSender localWorker)
+        public async Task Activate(HandlerGraph handlers, CapabilityGraph capabilities, JasperRuntime runtime,
+            ChannelGraph channels, LocalWorkerSender localWorker, PerfTimer timer, GenerationRules generation,
+            BusSettings settings)
         {
+            timer.MarkStart("ServiceBusActivator");
+
+            timer.Record("HandlerGraph.Compile", () =>
+            {
+                handlers.Compile(generation, runtime);
+            });
+
+
             var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime, _transports, _lookups);
 
-            var transports = _transports.Where(x => _settings.StateFor(x.Protocol) != TransportState.Disabled)
+
+
+
+
+            var transports = _transports.Where(x => settings.StateFor(x.Protocol) != TransportState.Disabled)
                 .ToArray();
 
-            _settings.Workers.Compile(handlers.Chains.Select(x => x.MessageType));
+            timer.Record("WorkersGraph.Compile", () =>
+            {
+                settings.Workers.Compile(handlers.Chains.Select(x => x.MessageType));
+            });
+
+
 
             localWorker.Start(_persistence, _workerQueue);
 
-            if (!_settings.DisableAllTransports)
+            if (!settings.DisableAllTransports)
             {
-                await _settings.ApplyLookups(_lookups);
+                timer.MarkStart("ApplyLookups");
 
-                channels.Start(_settings, transports, _lookups, capabilities, _logger);
+                await settings.ApplyLookups(_lookups);
 
+                timer.MarkFinished("ApplyLookups");
+
+
+                timer.Record("ChannelGraph.Start",
+                    () => { channels.Start(settings, transports, _lookups, capabilities, _logger); });
 
                 scheduledJobs.Start(_workerQueue);
             }
 
             runtime.Capabilities = await capabilityCompilation;
-            if (runtime.Capabilities.Errors.Any() && _settings.ThrowOnValidationErrors)
+            if (runtime.Capabilities.Errors.Any() && settings.ThrowOnValidationErrors)
             {
                 throw new InvalidSubscriptionException(runtime.Capabilities.Errors);
             }
+
+            timer.MarkFinished("ServiceBusActivator");
         }
 
     }

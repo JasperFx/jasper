@@ -3,13 +3,14 @@ using System.IO;
 using System.Threading.Tasks;
 using BlueMilk;
 using BlueMilk.Codegen;
+using Jasper.Util;
 
 namespace Jasper.Configuration
 {
     public interface IFeature : IDisposable
     {
-        Task<ServiceRegistry> Bootstrap(JasperRegistry registry);
-        Task Activate(JasperRuntime runtime, GenerationRules generation);
+        Task<ServiceRegistry> Bootstrap(JasperRegistry registry, PerfTimer timer);
+        void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer);
         void Describe(JasperRuntime runtime, TextWriter writer);
     }
 }
