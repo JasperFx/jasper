@@ -20,6 +20,8 @@ namespace Jasper.Bus.Runtime.Invocation
         private readonly BusMessageSerializationGraph _serializer;
         private readonly HandlerGraph _graph;
         private readonly IReplyWatcher _replies;
+
+        // TODO -- try to eliminate this dependency
         private readonly Lazy<IServiceBus> _bus;
         private readonly IMissingHandler[] _missingHandlers;
 

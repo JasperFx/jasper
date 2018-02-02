@@ -37,15 +37,13 @@ namespace Jasper
 
         public JasperRegistry()
         {
-            Features.Include<ConnegDiscoveryFeature>();
-
             _bus = Features.For<ServiceBusFeature>();
 
             Http = Features.For<AspNetCoreFeature>();
 
             Publish = new PublishingExpression(_bus);
 
-            _applicationServices = new ServiceRegistry();
+
             ExtensionServices = new ExtensionServiceRegistry();
 
             Services = _applicationServices;
@@ -65,6 +63,10 @@ namespace Jasper
             }
 
             if (ApplicationAssembly == null) throw new InvalidOperationException("Unable to determine an application assembly");
+
+            _applicationServices = new JasperServiceRegistry(ApplicationAssembly);
+
+
 
             deriveServiceName();
 
@@ -250,7 +252,25 @@ namespace Jasper
     }
 
 
+    public class JasperServiceRegistry : ServiceRegistry
+    {
+        public JasperServiceRegistry(Assembly applicationAssembly)
+        {
+            var forwarding = new Forwarders();
+            For<Forwarders>().Use(forwarding);
 
+            Scan(_ =>
+            {
+                _.Assembly(applicationAssembly);
+                _.AddAllTypesOf<IMessageSerializer>();
+                _.AddAllTypesOf<IMessageDeserializer>();
+                _.With(new ForwardingRegistration(forwarding));
+            });
+        }
+    }
+
+
+    [Obsolete("Try to eliminate this")]
     public interface IFeatures : IEnumerable<IFeature>
     {
         void Include<T>() where T : IFeature, new();

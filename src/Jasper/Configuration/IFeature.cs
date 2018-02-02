@@ -7,6 +7,7 @@ using Jasper.Util;
 
 namespace Jasper.Configuration
 {
+    [Obsolete("Try to get rid of this")]
     public interface IFeature : IDisposable
     {
         Task<ServiceRegistry> Bootstrap(JasperRegistry registry, PerfTimer timer);
