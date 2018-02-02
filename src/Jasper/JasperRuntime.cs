@@ -253,11 +253,18 @@ namespace Jasper
 
 
 
-            var busActivation = handlerCompilation.ContinueWith(t => registry.Bus.Activate(runtime, registry.Generation, timer));
+            var busActivation = handlerCompilation.ContinueWith(t => registry.Bus.Activate(runtime, registry.Generation, timer))
+                .Unwrap();
+
             registry.Http.Activate(runtime, registry.Generation, timer);
 
 
             await busActivation;
+
+            if (busActivation.IsFaulted)
+            {
+                throw busActivation.Exception.Flatten();
+            }
 
 
             // Run environment checks
