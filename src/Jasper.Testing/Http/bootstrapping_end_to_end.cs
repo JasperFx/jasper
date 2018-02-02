@@ -43,7 +43,7 @@ namespace Jasper.Testing.Http
         [Fact]
         public void can_apply_custom_conneg_rules()
         {
-            var rules = theRuntime.Get<ConnegRules>();
+            var rules = theRuntime.Container.QuickBuild<ConnegRules>();
             rules.Readers.First().ShouldBeOfType<CustomReaderRule>();
             rules.Writers.First().ShouldBeOfType<CustomWriterRule>();
         }
