@@ -12,6 +12,7 @@ using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -33,10 +34,13 @@ namespace Jasper.Testing.Bus.Lightweight
 
             theSender = JasperRuntime.For(_ =>
             {
+                _.Http.Actions.DisableConventionalDiscovery();
                 _.Handlers.DisableConventionalDiscovery();
+                _.Services.AddSingleton(theTracker);
             });
 
             var receiver = new JasperRegistry();
+            receiver.Http.Actions.DisableConventionalDiscovery();
             receiver.Handlers.DisableConventionalDiscovery();
 
             receiver.Transports.ListenForMessagesFrom(theAddress);

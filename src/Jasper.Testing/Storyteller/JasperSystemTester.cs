@@ -123,6 +123,8 @@ namespace Jasper.Testing.Storyteller
         public FakeStorytellerSystem()
         {
             Registry.Services.AddSingleton(DisposableGuy);
+            Registry.Http.Actions.DisableConventionalDiscovery();
+            Registry.Handlers.DisableConventionalDiscovery();
         }
 
         protected override void beforeAll()

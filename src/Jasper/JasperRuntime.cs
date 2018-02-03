@@ -253,18 +253,10 @@ namespace Jasper
 
 
 
-            var busActivation = handlerCompilation.ContinueWith(t => registry.Bus.Activate(runtime, registry.Generation, timer))
-                .Unwrap();
+            await handlerCompilation;
+            await registry.Bus.Activate(runtime, registry.Generation, timer);
 
             registry.Http.Activate(runtime, registry.Generation, timer);
-
-
-            await busActivation;
-
-            if (busActivation.IsFaulted)
-            {
-                throw busActivation.Exception.Flatten();
-            }
 
 
             // Run environment checks
@@ -273,9 +265,6 @@ namespace Jasper
                 var recorder = EnvironmentChecker.ExecuteAll(runtime);
                 if (runtime.Get<BusSettings>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
             });
-
-
-            await busActivation;
 
             timer.MarkStart("Register Node");
             await registerRunningNode(runtime);

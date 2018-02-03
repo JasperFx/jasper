@@ -34,4 +34,7 @@
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.7.0" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BlueMilk\BlueMilk.csproj" />
+  </ItemGroup>
 </Project>
