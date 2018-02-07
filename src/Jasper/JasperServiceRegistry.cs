@@ -87,8 +87,8 @@ namespace Jasper
             ForSingletonOf<CompositeMessageLogger>().Use<CompositeMessageLogger>();
             ForSingletonOf<CompositeTransportLogger>().Use<CompositeTransportLogger>();
 
-            ForSingletonOf<INodeDiscovery>().UseIfNone<InMemoryNodeDiscovery>();
-            ForSingletonOf<ISubscriptionsRepository>().UseIfNone<InMemorySubscriptionsRepository>();
+            ForSingletonOf<INodeDiscovery>().UseIfNone(new InMemoryNodeDiscovery(parent.BusSettings));
+            ForSingletonOf<ISubscriptionsRepository>().UseIfNone(new InMemorySubscriptionsRepository());
 
             ForSingletonOf<IReplyWatcher>().Use(new ReplyWatcher());
 

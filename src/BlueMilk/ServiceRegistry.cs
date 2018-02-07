@@ -19,20 +19,20 @@ namespace BlueMilk
             instance.Lifetime = ServiceLifetime.Scoped;
             return instance;
         }
-        
+
         public static T Singleton<T>(this T instance) where T : Instance
         {
             instance.Lifetime = ServiceLifetime.Singleton;
             return instance;
         }
-        
+
         public static T Transient<T>(this T instance) where T : Instance
         {
             instance.Lifetime = ServiceLifetime.Transient;
             return instance;
         }
     }
-    
+
     public class ServiceRegistry : List<ServiceDescriptor>, IServiceCollection
     {
         public static ServiceRegistry For(Action<ServiceRegistry> configuration)
@@ -42,12 +42,12 @@ namespace BlueMilk
 
             return registry;
         }
-        
+
         public ServiceRegistry()
         {
         }
-        
-        
+
+
 
         public DescriptorExpression<T> For<T>() where T : class
         {
@@ -56,7 +56,7 @@ namespace BlueMilk
 
         public DescriptorExpression For(Type serviceType)
         {
-             return new DescriptorExpression(serviceType, this);   
+             return new DescriptorExpression(serviceType, this);
         }
 
         public class DescriptorExpression
@@ -124,6 +124,19 @@ namespace BlueMilk
             }
 
             /// <summary>
+            /// Fills in a default type implementation for a service type if there are no prior
+            /// registrations
+            /// </summary>
+            /// <typeparam name="TConcrete"></typeparam>
+            public void UseIfNone(T service)
+            {
+                if (_parent.FindDefault<T>() == null)
+                {
+                    Use(service);
+                }
+            }
+
+            /// <summary>
             /// Delegates to Use<TConcrete>(), polyfill for StructureMap syntax
             /// </summary>
             /// <typeparam name="TConcrete"></typeparam>
@@ -150,17 +163,17 @@ namespace BlueMilk
             public LambdaInstance Add<TConcrete>(Func<IServiceProvider, TConcrete> func) where TConcrete : T
             {
                 var instance = LambdaInstance.For<T, TConcrete>(func);
-                
+
                 _parent.Add(instance);
 
                 return instance;
 
             }
-            
+
             public LambdaInstance Add<TConcrete>(Func<TConcrete> func) where TConcrete : T
             {
                 var instance = LambdaInstance.For<T, TConcrete>(s => func());
-                
+
                 _parent.Add(instance);
 
                 return instance;
@@ -189,7 +202,7 @@ namespace BlueMilk
         {
             this.AddRange(new T());
         }
-        
+
         /// <summary>
         /// Configure Container-wide policies and conventions
         /// </summary>
@@ -226,7 +239,7 @@ namespace BlueMilk
             {
                 Add(new T());
             }
-            
+
             /// <summary>
             /// Register an interception policy
             /// </summary>
