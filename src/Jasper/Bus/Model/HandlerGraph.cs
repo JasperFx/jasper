@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Compilation;
 using Jasper.Bus.ErrorHandling;
+using Jasper.Util;
 
 namespace Jasper.Bus.Model
 {
@@ -16,6 +18,8 @@ namespace Jasper.Bus.Model
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
         private readonly Dictionary<Type, HandlerChain> _chains = new Dictionary<Type, HandlerChain>();
         private readonly Dictionary<Type, MessageHandler> _handlers = new Dictionary<Type, MessageHandler>();
+        private GenerationRules _generation;
+        private Container _container;
 
         private void assertNotGrouped()
         {
@@ -34,10 +38,7 @@ namespace Jasper.Bus.Model
             _calls.AddRange(calls);
         }
 
-        public MessageHandler HandlerFor(Type messageType)
-        {
-            return _handlers.ContainsKey(messageType) ? _handlers[messageType] : null;
-        }
+
 
         public MessageHandler HandlerFor<T>()
         {
@@ -46,7 +47,7 @@ namespace Jasper.Bus.Model
 
         public HandlerChain ChainFor(Type messageType)
         {
-            return _chains.ContainsKey(messageType) ? _chains[messageType] : null;
+            return HandlerFor(messageType)?.Chain;
         }
 
         public HandlerChain ChainFor<T>()
@@ -56,27 +57,54 @@ namespace Jasper.Bus.Model
 
         public HandlerChain[] Chains => _chains.Values.ToArray();
 
-        internal void Compile(GenerationRules generation, JasperRuntime runtime)
+
+        private readonly object _locker = new object();
+
+        public MessageHandler HandlerFor(Type messageType)
+        {
+            if (!_handlers.ContainsKey(messageType))
+            {
+                lock (_locker)
+                {
+                    if (!_handlers.ContainsKey(messageType))
+                    {
+                        if (_chains.ContainsKey(messageType))
+                        {
+                            var chain = _chains[messageType];
+                            var generatedAssembly = new GeneratedAssembly(_generation);
+                            chain.AssembleType(generatedAssembly);
+                            _container.CompileWithInlineServices(generatedAssembly);
+
+                            var handler = chain.CreateHandler(_container);
+
+                            _handlers.Add(messageType, handler);
+
+                            return handler;
+                        }
+                        else
+                        {
+                            _handlers.Add(messageType, null); // memoize the "miss"
+
+                            return null;
+                        }
+                    }
+                }
+
+                return _handlers[messageType];
+            }
+
+            return _handlers.ContainsKey(messageType) ? _handlers[messageType] : null;
+        }
+
+        internal void Compile(GenerationRules generation, JasperRuntime runtime, PerfTimer timer)
         {
             if (!_hasGrouped)
             {
                 Group();
             }
 
-            var generatedAssembly = new GeneratedAssembly(generation);
-            foreach (var chain in _chains.Values)
-            {
-                chain.AssembleType(generatedAssembly);
-            }
-
-            runtime.Container.CompileWithInlineServices(generatedAssembly);
-
-
-
-            foreach (var chain in _chains.Values)
-            {
-                _handlers.Add(chain.MessageType, chain.CreateHandler(runtime.Container));
-            }
+            _generation = generation;
+            _container = runtime.Container;
         }
 
         public void Group()

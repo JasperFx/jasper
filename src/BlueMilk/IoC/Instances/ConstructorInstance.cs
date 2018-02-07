@@ -20,7 +20,7 @@ namespace BlueMilk.IoC.Instances
         {
         }
     }
-     
+
     public class ConstructorInstance : GeneratedInstance
     {
         public static readonly string NoPublicConstructors = "No public constructors";
@@ -29,7 +29,7 @@ namespace BlueMilk.IoC.Instances
             "Cannot fill the dependencies of any of the public constructors";
 
         private CtorArg[] _arguments = new CtorArg[0];
-        
+
 
         public ConstructorInstance(Type serviceType, Type implementationType, ServiceLifetime lifetime) : base(
             serviceType, implementationType, lifetime)
@@ -54,8 +54,8 @@ namespace BlueMilk.IoC.Instances
 
         public override object QuickResolve(Scope scope)
         {
-            if (_resolver != null) return Resolve(scope);
-            
+            if (_resolver != null || Lifetime != ServiceLifetime.Transient) return Resolve(scope);
+
             var values = _arguments.Select(x => x.Instance.QuickResolve(scope)).ToArray();
             var service = Activator.CreateInstance(ImplementationType, values);
 
@@ -81,12 +81,12 @@ namespace BlueMilk.IoC.Instances
 
             // TODO' -- later!
             //Dependencies.Each(arg => closedInstance.Dependencies.Add(arg.CloseType(types)));
-            
+
 
             return closedInstance;
         }
-        
-        
+
+
         protected override Variable generateVariableForBuilding(ResolverVariables variables, BuildMode mode, bool isRoot)
         {
             var disposalTracking = determineDisposalTracking(mode);
@@ -101,12 +101,12 @@ namespace BlueMilk.IoC.Instances
             return new ConstructorFrame(this, disposalTracking, ctorParameters).Variable;
         }
 
-        
+
         public override Frame CreateBuildFrame()
         {
             var variables = new ResolverVariables();
             var ctorParameters = _arguments.Select(arg => arg.Resolve(variables, BuildMode.Dependency)).ToArray();
-            
+
             return new ConstructorFrame(this, DisposeTracking.None, ctorParameters)
             {
                 ReturnCreated = true
@@ -148,8 +148,8 @@ namespace BlueMilk.IoC.Instances
             if (Constructor != null)
             {
                 // TODO -- this will need to get smarter when we have inline dependencies and named stuff
-                
-                
+
+
                 _arguments = Constructor.GetParameters().Select(x => new CtorArg(x, services.FindDefault(x.ParameterType))).Where(x => x.Instance != null).ToArray();
 
 

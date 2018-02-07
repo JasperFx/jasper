@@ -13,11 +13,14 @@ namespace Jasper.Testing.Bus.Compilation
         {
             withAllDefaults();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(Handlers.Chains.Any());
+            Handlers.Chains.Any().ShouldBeTrue();
 
             foreach (var chain in Handlers.Chains)
             {
-                ShouldBeStringTestExtensions.ShouldContain(chain.SourceCode, chain.TypeName);
+                // Source generation is lazy now, so you gotta do this
+                Handlers.HandlerFor(chain.MessageType);
+
+                chain.SourceCode.ShouldContain(chain.TypeName);
 
 //                Console.WriteLine("Should be " + chain.TypeName);
 //                Console.WriteLine("--------------------------------------");

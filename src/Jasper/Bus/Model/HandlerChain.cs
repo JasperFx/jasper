@@ -70,8 +70,7 @@ namespace Jasper.Bus.Model
 
         public MessageHandler CreateHandler(IContainer container)
         {
-            // TODO -- get rid of the downcast next time you update BlueMilk (0.5 prolly)
-            var handler = container.As<Container>().QuickBuild(_generatedType.CompiledType).As<MessageHandler>();
+            var handler = container.QuickBuild(_generatedType.CompiledType).As<MessageHandler>();
             handler.Chain = this;
 
             return handler;

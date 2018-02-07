@@ -50,10 +50,7 @@ namespace Jasper.Bus
         {
             timer.MarkStart("ServiceBusActivator");
 
-            timer.Record("HandlerGraph.Compile", () =>
-            {
-                handlers.Compile(generation, runtime);
-            });
+            handlers.Compile(generation, runtime, timer);
 
 
             var capabilityCompilation = capabilities.Compile(handlers, _serialization, channels, runtime, _transports, _lookups);
