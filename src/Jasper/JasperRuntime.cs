@@ -12,6 +12,7 @@ using Baseline.Reflection;
 using BlueMilk;
 using BlueMilk.Codegen.Variables;
 using BlueMilk.Scanning.Conventions;
+using BlueMilk.Util;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Subscriptions;

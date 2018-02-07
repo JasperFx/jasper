@@ -5,6 +5,7 @@ using Baseline;
 using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Compilation;
+using BlueMilk.Util;
 using Jasper.Bus.ErrorHandling;
 using Jasper.Util;
 

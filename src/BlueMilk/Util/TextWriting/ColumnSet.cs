@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Baseline;
 
-namespace Jasper.Util.TextWriting
+namespace BlueMilk.Util.TextWriting
 {
     public class ColumnSet
     {

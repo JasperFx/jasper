@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Baseline;
 
-namespace Jasper.Util.TextWriting
+namespace BlueMilk.Util.TextWriting
 {
     public class TextReport
     {
@@ -67,9 +67,5 @@ namespace Jasper.Util.TextWriting
             return writer.ToString();
         }
 
-        public void WriteToConsole()
-        {
-            Write(Console.Out, ConsoleWriter.ConsoleBufferWidth);
-        }
     }
 }

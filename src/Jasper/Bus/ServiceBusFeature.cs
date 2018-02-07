@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Baseline;
 using BlueMilk;
 using BlueMilk.Codegen;
+using BlueMilk.Util;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Model;
@@ -41,7 +42,10 @@ namespace Jasper.Bus
 
         internal Task Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
-            return runtime.Container.QuickBuild<ServiceBusActivator>()
+            var activator = timer.Record("Building ServiceBusActivator", () => runtime.Container.QuickBuild<ServiceBusActivator>());
+
+
+            return activator
                 .Activate(Graph, Capabilities, runtime, Channels, LocalWorker, timer, generation, Settings);
         }
 

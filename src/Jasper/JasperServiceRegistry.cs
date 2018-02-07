@@ -65,9 +65,8 @@ namespace Jasper
             this.AddSingleton<IChannelGraph>(parent.Bus.Channels);
             this.AddSingleton<ILocalWorkerSender>(parent.Bus.LocalWorker);
 
-
-
             ForSingletonOf<IScheduledJobProcessor>().UseIfNone<InMemoryScheduledJobProcessor>();
+
 
             ForSingletonOf<ITransport>()
                 .Use<LoopbackTransport>();

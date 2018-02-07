@@ -6,6 +6,7 @@ using Baseline;
 using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.IoC.Instances;
+using BlueMilk.Util;
 using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;

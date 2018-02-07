@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Baseline;
-using Jasper.Util.TextWriting;
+using BlueMilk.Util.TextWriting;
 
-namespace Jasper.Util
+namespace BlueMilk.Util
 {
 
     public class PerfTimer

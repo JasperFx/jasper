@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Jasper.Util.TextWriting
+namespace BlueMilk.Util.TextWriting
 {
     public interface Line
     {

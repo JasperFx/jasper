@@ -1,4 +1,4 @@
-namespace Jasper.Util.TextWriting
+namespace BlueMilk.Util.TextWriting
 {
     public enum ColumnJustification
     {

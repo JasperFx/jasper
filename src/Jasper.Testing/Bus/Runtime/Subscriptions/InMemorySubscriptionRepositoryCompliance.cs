@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             }))
             {
                 var displayTimings = runtime.Bootstrapping.DisplayTimings();
-                //throw new Exception(displayTimings.ToString());
+                throw new Exception(displayTimings.ToString());
 
                 beforeEach(runtime);
             }
@@ -46,6 +46,9 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
 
                 _.Transports.LightweightListenerAt(2000);
             });
+
+            //var displayTimings = _coolColors1.Bootstrapping.DisplayTimings();
+            //throw new Exception(displayTimings.ToString());
 
             _coolColors2 = app("Cool", _ =>
             {
