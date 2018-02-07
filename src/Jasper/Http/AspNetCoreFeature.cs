@@ -27,8 +27,6 @@ namespace Jasper.Http
     {
         private readonly WebHostBuilder _inner;
 
-        private readonly ServiceRegistry _services;
-
         public readonly ActionSource Actions = new ActionSource();
 
         public readonly RouteGraph Routes = new RouteGraph();
@@ -37,15 +35,6 @@ namespace Jasper.Http
         {
             Actions.IncludeClassesSuffixedWithEndpoint();
 
-            _services = new ServiceRegistry();
-            _services.AddSingleton(Routes.Router);
-            _services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
-            _services.AddSingleton<ConnegRules>();
-            _services.AddSingleton<IServer, NulloServer>();
-
-            _services.AddSingleton(x => x.GetService<JasperRuntime>().Host);
-
-            _services.Policies.OnMissingFamily<LoggerPolicy>();
 
             _inner = new WebHostBuilder();
         }
@@ -92,8 +81,6 @@ namespace Jasper.Http
 #pragma warning restore 4014
                     }
 
-                    _services.AddSingleton(Routes);
-                    _services.AddSingleton<IUrlRegistry>(Routes.Router.Urls);
                 });
             });
         }

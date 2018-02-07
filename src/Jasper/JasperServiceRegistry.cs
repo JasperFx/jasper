@@ -9,6 +9,7 @@ using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
+using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Jasper.Http.Transport;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -32,10 +33,17 @@ namespace Jasper
 
         private void routing(JasperRegistry parent)
         {
+            this.AddSingleton<ConnegRules>();
+            this.AddSingleton<IServer, NulloServer>();
+            this.AddSingleton(x => x.GetService<JasperRuntime>().Host);
+
             this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
+            this.AddSingleton(parent.Http.Routes.Router);
             this.AddSingleton(parent.Http.Routes);
             ForSingletonOf<IUrlRegistry>().Use(parent.Http.Routes.Router.Urls);
             For<IServer>().Use<NulloServer>();
+
+            Policies.OnMissingFamily<LoggerPolicy>();
         }
 
         private void conneg(JasperRegistry parent)
