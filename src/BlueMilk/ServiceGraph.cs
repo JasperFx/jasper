@@ -30,6 +30,7 @@ namespace BlueMilk
         private readonly Dictionary<Type, ServiceFamily> _families = new Dictionary<Type, ServiceFamily>();
 
 
+
         public ServiceGraph(IServiceCollection services, Scope rootScope)
         {
             Services = services;
@@ -85,14 +86,14 @@ namespace BlueMilk
             services.Add(instance);
         }
 
-        public void Initialize()
+        public void Initialize(PerfTimer timer)
         {
-            organizeIntoFamilies(Services);
+            timer.Record("Organize Into Families", () =>
+            {
+                organizeIntoFamilies(Services);
+            });
 
-
-            buildOutMissingResolvers();
-
-            return;
+            timer.Record("Planning Instances", buildOutMissingResolvers);
 
             var generatedSingletons = AllInstances().OfType<GeneratedInstance>().Where(x => x.Lifetime != ServiceLifetime.Transient && !x.ServiceType.IsOpenGeneric()).ToArray();
             if (generatedSingletons.Any())

@@ -11,6 +11,7 @@ using BlueMilk.Compilation;
 using BlueMilk.IoC.Diagnostics;
 using BlueMilk.IoC.Instances;
 using BlueMilk.Scanning;
+using BlueMilk.Util;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueMilk.IoC
@@ -18,20 +19,48 @@ namespace BlueMilk.IoC
     public class Scope : IServiceScope, IServiceProvider, ISupportRequiredService, IServiceScopeFactory
     {
         protected bool _hasDisposed;
-        
+
         public static Scope Empty()
         {
             return new Scope(new ServiceRegistry());
         }
-        
 
+        public PerfTimer Bootstrapping { get; }
 
-        public Scope(IServiceCollection services)
+        public Scope(IServiceCollection services, PerfTimer timer = null)
         {
+            if (timer == null)
+            {
+                Bootstrapping = new PerfTimer();
+
+                Bootstrapping.Start("Bootstrapping Container");
+            }
+            else
+            {
+                Bootstrapping = timer;
+                Bootstrapping.MarkStart("BlueMilk Scope Creation");
+            }
+
+
+
             Root = this;
+
+            Bootstrapping.MarkStart("Build ServiceGraph");
             ServiceGraph = new ServiceGraph(services, this);
-            
-            ServiceGraph.Initialize();
+            Bootstrapping.MarkFinished("Build ServiceGraph");
+
+            ServiceGraph.Initialize(Bootstrapping);
+
+            if (timer == null)
+            {
+                Bootstrapping.Stop();
+            }
+            else
+            {
+                Bootstrapping.MarkFinished("BlueMilk Scope Creation");
+            }
+
+
         }
 
         public Scope Root { get; }
@@ -41,7 +70,7 @@ namespace BlueMilk.IoC
             ServiceGraph = serviceGraph;
             Root = root ?? throw new ArgumentNullException(nameof(root));
         }
-        
+
         /// <summary>
         /// Asserts that this container is not disposed yet.
         /// </summary>
@@ -69,7 +98,7 @@ namespace BlueMilk.IoC
         {
             Disposables.Add(disposable);
         }
-        
+
         internal readonly Dictionary<int, object> Services = new Dictionary<int, object>();
 
 
@@ -89,12 +118,12 @@ namespace BlueMilk.IoC
         }
 
         public IServiceProvider ServiceProvider => this;
-        
+
         public object GetService(Type serviceType)
         {
             return TryGetInstance(serviceType);
         }
-        
+
         public T GetInstance<T>()
         {
             return (T) GetInstance(typeof(T));
@@ -109,12 +138,12 @@ namespace BlueMilk.IoC
         {
             assertNotDisposed();
             var instance = ServiceGraph.FindDefault(serviceType);
-            
+
             if (instance == null)
             {
                 throw new BlueMilkMissingRegistrationException(serviceType);
             }
-            
+
             return instance.Resolve(this);
         }
 
@@ -130,7 +159,7 @@ namespace BlueMilk.IoC
 
             return instance.Resolve(this);
         }
-        
+
         public T TryGetInstance<T>()
         {
             return (T)(TryGetInstance(typeof(T)) ?? default(T));
@@ -163,7 +192,7 @@ namespace BlueMilk.IoC
         public object QuickBuild(Type objectType)
         {
             assertNotDisposed();
-            
+
             if (!objectType.IsConcrete()) throw new InvalidOperationException("Type must be concrete");
 
             var ctor = ConstructorInstance.DetermineConstructor(ServiceGraph, objectType, out var message);
@@ -206,7 +235,7 @@ namespace BlueMilk.IoC
             assertNotDisposed();
             return new Scope(ServiceGraph, this);
         }
-        
+
 
         public string WhatDoIHave(Type serviceType = null, Assembly assembly = null, string @namespace = null,
             string typeName = null)
@@ -222,7 +251,7 @@ namespace BlueMilk.IoC
                 TypeName = typeName
             });
         }
-        
+
         /// <summary>
         /// Returns a textual report of all the assembly scanners used to build up this Container
         /// </summary>
@@ -230,7 +259,7 @@ namespace BlueMilk.IoC
         public string WhatDidIScan()
         {
             assertNotDisposed();
-            
+
             var scanners = Model.Scanners;
 
             if (!scanners.Any()) return "No type scanning in this Container";

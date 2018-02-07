@@ -37,7 +37,7 @@ namespace Jasper
 
         private void routing(JasperRegistry parent)
         {
-            this.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+            this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
             this.AddSingleton(parent.Http.Routes);
             ForSingletonOf<IUrlRegistry>().Use(parent.Http.Routes.Router.Urls);
             For<IServer>().Use<NulloServer>();
@@ -77,7 +77,7 @@ namespace Jasper
             ForSingletonOf<ITransport>()
                 .Use<HttpTransport>();
 
-            ForSingletonOf<ObjectPoolProvider>().Use<DefaultObjectPoolProvider>();
+            ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());
 
             ForSingletonOf<IWorkerQueue>().Use<WorkerQueue>();
 

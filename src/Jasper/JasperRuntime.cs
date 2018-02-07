@@ -50,7 +50,7 @@ namespace Jasper
 
             timer.Record("new Container()", () =>
             {
-                Container = new Container(services)
+                Container = new Container(services, timer)
                 {
                     DisposalLock = DisposalLock.Ignore
                 };
