@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
+using Jasper.Bus.WorkerQueues;
 
 namespace Jasper.Bus.Transports
 {
@@ -14,7 +15,7 @@ namespace Jasper.Bus.Transports
 
         Uri LocalReplyUri { get; }
 
-        void StartListening(BusSettings settings);
+        void StartListening(BusSettings settings, IWorkerQueue workers);
 
         void Describe(TextWriter writer);
     }

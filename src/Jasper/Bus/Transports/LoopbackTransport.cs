@@ -13,11 +13,10 @@ namespace Jasper.Bus.Transports
     public class LoopbackTransport : ITransport
     {
         private readonly IPersistence _persistence;
-        private readonly IWorkerQueue _workerQueue;
+        private IWorkerQueue _workerQueue;
 
-        public LoopbackTransport(IWorkerQueue workerQueue, IPersistence persistence)
+        public LoopbackTransport(IPersistence persistence)
         {
-            _workerQueue = workerQueue;
             _persistence = persistence;
         }
 
@@ -37,9 +36,9 @@ namespace Jasper.Bus.Transports
 
         public Uri LocalReplyUri => TransportConstants.RetryUri;
 
-        public void StartListening(BusSettings settings)
+        public void StartListening(BusSettings settings, IWorkerQueue workers)
         {
-            // Nothing really, since it's just a handoff to the internal worker queues
+            _workerQueue = workers;
         }
 
         public void Describe(TextWriter writer)

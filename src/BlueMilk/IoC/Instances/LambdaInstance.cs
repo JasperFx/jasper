@@ -30,7 +30,7 @@ namespace BlueMilk.IoC.Instances
         {
             return new LambdaInstance(typeof(T), s => factory(s), lifetime);
         }
-        
+
         public static LambdaInstance For<T, TConcrete>(Func<IServiceProvider, TConcrete> factory,
             ServiceLifetime lifetime = ServiceLifetime.Transient)
         {
@@ -56,6 +56,8 @@ namespace BlueMilk.IoC.Instances
                     if (_resolver == null)
                     {
                         _resolver = buildResolver(scope.Root);
+                        _resolver.Hash = Hash;
+                        _resolver.Name = Name;
                     }
                 }
             }
@@ -76,7 +78,7 @@ namespace BlueMilk.IoC.Instances
                 case ServiceLifetime.Singleton:
                     return typeof(SingletonLambdaResolver<>).CloseAndBuildAs<IResolver>(Factory, rootScope, ServiceType);
             }
-            
+
             throw new ArgumentOutOfRangeException(nameof(Lifetime));
         }
 

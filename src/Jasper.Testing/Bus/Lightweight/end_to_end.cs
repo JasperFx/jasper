@@ -153,6 +153,10 @@ namespace Jasper.Testing.Bus.Lightweight
         {
 
         }
+
+        public void Dispose()
+        {
+        }
     }
 
     public class MessageConsumer

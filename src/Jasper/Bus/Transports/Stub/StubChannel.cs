@@ -4,18 +4,19 @@ using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.Sending;
+using Jasper.Bus.WorkerQueues;
 
 namespace Jasper.Bus.Transports.Stub
 {
     public class StubChannel : ISendingAgent, IDisposable
     {
+        private readonly IWorkerQueue _workers;
         private readonly StubTransport _stubTransport;
-        private readonly IHandlerPipeline _pipeline;
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
-        public StubChannel(Uri destination, IHandlerPipeline pipeline, StubTransport stubTransport)
+        public StubChannel(Uri destination, IWorkerQueue workers, StubTransport stubTransport)
         {
-            _pipeline = pipeline;
+            _workers = workers;
             _stubTransport = stubTransport;
             Destination = destination;
         }
@@ -51,7 +52,8 @@ namespace Jasper.Bus.Transports.Stub
 
             envelope.ReceivedAt = Destination;
 
-            return _pipeline.Invoke(envelope);
+
+            return _workers.Enqueue(envelope);
         }
 
         public Task StoreAndForward(Envelope envelope)

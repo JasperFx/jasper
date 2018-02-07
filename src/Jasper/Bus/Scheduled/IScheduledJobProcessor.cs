@@ -5,7 +5,7 @@ using Jasper.Bus.WorkerQueues;
 
 namespace Jasper.Bus.Scheduled
 {
-    public interface IScheduledJobProcessor
+    public interface IScheduledJobProcessor : IDisposable
     {
         void Enqueue(DateTimeOffset executionTime, Envelope envelope);
 

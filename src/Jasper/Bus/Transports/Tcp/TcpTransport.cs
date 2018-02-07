@@ -17,15 +17,14 @@ namespace Jasper.Bus.Transports.Tcp
     {
         private readonly IPersistence _persistence;
         private readonly CompositeTransportLogger _logger;
-        private readonly IWorkerQueue _workerQueue;
+        private IWorkerQueue _workerQueue;
         private readonly BusSettings _settings;
         private readonly IList<IListener> _listeners = new List<IListener>();
 
-        public TcpTransport(IPersistence persistence, CompositeTransportLogger logger, IWorkerQueue workerQueue, BusSettings settings)
+        public TcpTransport(IPersistence persistence, CompositeTransportLogger logger, BusSettings settings)
         {
             _persistence = persistence;
             _logger = logger;
-            _workerQueue = workerQueue;
             _settings = settings;
         }
 
@@ -56,9 +55,11 @@ namespace Jasper.Bus.Transports.Tcp
 
         public Uri LocalReplyUri { get; private set; }
 
-        public void StartListening(BusSettings settings)
+        public void StartListening(BusSettings settings, IWorkerQueue workers)
         {
             if (settings.StateFor(Protocol) == TransportState.Disabled) return;
+
+            _workerQueue = workers;
 
             var incoming = settings.Listeners.Where(x => x.Scheme == Protocol).ToArray();
 

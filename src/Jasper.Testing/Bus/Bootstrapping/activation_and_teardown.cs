@@ -20,19 +20,6 @@ namespace Jasper.Testing.Bus.Bootstrapping
         }
 
         [Fact]
-        public void should_have_the_handler_pipeline_registered()
-        {
-            theRuntime.Container.DefaultRegistrationIs<IHandlerPipeline, HandlerPipeline>();
-        }
-
-        [Fact]
-        public void should_have_the_service_bus_registered()
-        {
-            theRuntime.Container.DefaultRegistrationIs<IServiceBus, ServiceBus>();
-        }
-
-
-        [Fact]
         public void subscriptions_repository_must_be_a_singleton()
         {
             theRuntime.Services.Where(x => x.ServiceType == typeof(ISubscriptionsRepository))

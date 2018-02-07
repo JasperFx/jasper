@@ -14,19 +14,19 @@ namespace BlueMilk.IoC.Instances
     public abstract class GeneratedInstance : Instance
     {
         private GeneratedType _resolverType;
-        
+
         protected GeneratedInstance(Type serviceType, Type implementationType, ServiceLifetime lifetime) : base(serviceType, implementationType, lifetime)
         {
         }
 
-        
+
         public void GenerateResolver(GeneratedAssembly generatedAssembly)
         {
             if (ErrorMessages.Any() || Dependencies.SelectMany(x => x.ErrorMessages).Any()) return;
-            
+
             var typeName = (ServiceType.FullNameInCode() + "_" + Name).Replace('<', '_').Replace('>', '_').Replace(" ", "")
                 .Replace(',', '_').Replace('.', '_').Replace("[", "").Replace("]", "");
-            
+
             _resolverType = generatedAssembly.AddType(typeName, ResolverBaseType.MakeGenericType(ServiceType));
 
             var method = _resolverType.MethodFor("Build");
@@ -38,12 +38,19 @@ namespace BlueMilk.IoC.Instances
 
         public void AttachResolver(Scope root)
         {
-            _resolver = (IResolver) root.QuickBuild(_resolverType.CompiledType);
-            
+            if (ErrorMessages.Any() || Dependencies.Any(x => x.ErrorMessages.Any()))
+            {
+                _resolver = new ErrorMessageResolver(this);
+            }
+            else
+            {
+                _resolver = (IResolver) root.QuickBuild(_resolverType.CompiledType);
+            }
+
             _resolver.Hash = GetHashCode();
             _resolver.Name = Name;
         }
-        
+
         public sealed override Variable CreateVariable(BuildMode mode, ResolverVariables variables, bool isRoot)
         {
             if (Lifetime == ServiceLifetime.Singleton)
@@ -51,16 +58,16 @@ namespace BlueMilk.IoC.Instances
                     ? generateVariableForBuilding(variables, mode, isRoot)
                     : new InjectedServiceField(this);
 
-            
+
 
 
             if (Lifetime == ServiceLifetime.Scoped && mode == BuildMode.Dependency)
             {
                 return new GetInstanceFrame(this).Variable;
             }
-            
-            
-            
+
+
+
             return generateVariableForBuilding(variables, mode, isRoot);
         }
 
@@ -69,7 +76,7 @@ namespace BlueMilk.IoC.Instances
 
         private readonly object _locker = new object();
         protected IResolver _resolver;
-        
+
         public override object Resolve(Scope scope)
         {
             if (_resolver == null)
@@ -94,11 +101,11 @@ namespace BlueMilk.IoC.Instances
                             else
                             {
                                 assembly.CompileAll();
-                        
+
                                 _resolver = (IResolver) scope.Root.QuickBuild(_resolverType.CompiledType);
                             }
                         }
-                        
+
                         _resolver.Hash = GetHashCode();
                         _resolver.Name = Name;
                     }

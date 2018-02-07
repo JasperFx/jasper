@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             }))
             {
                 var displayTimings = runtime.Bootstrapping.DisplayTimings();
-                throw new Exception(displayTimings.ToString());
+                //throw new Exception(displayTimings.ToString());
 
                 beforeEach(runtime);
             }

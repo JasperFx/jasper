@@ -42,11 +42,9 @@ namespace Jasper.Bus
 
         internal Task Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
-            var activator = timer.Record("Building ServiceBusActivator", () => runtime.Container.QuickBuild<ServiceBusActivator>());
+            var activator = timer.Record("Building ServiceBusActivator", runtime.Get<MessagingRoot>);
 
-
-            return activator
-                .Activate(Graph, Capabilities, runtime, Channels, LocalWorker, timer, generation, Settings);
+            return activator.Activate(LocalWorker, Capabilities, runtime, generation, timer);
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)

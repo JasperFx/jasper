@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Receiving;
 using Jasper.Bus.Transports.Sending;
@@ -14,13 +15,13 @@ namespace Jasper.Bus.Transports
     {
         private readonly CompositeTransportLogger _logger;
         private readonly BusSettings _settings;
-        private readonly IWorkerQueue _workers;
+        private InMemoryScheduledJobProcessor _scheduledJobs;
 
-        public NulloPersistence(CompositeTransportLogger logger, BusSettings settings, IWorkerQueue workers)
+        public NulloPersistence(CompositeTransportLogger logger, BusSettings settings)
         {
             _logger = logger;
             _settings = settings;
-            _workers = workers;
+            _scheduledJobs = new InMemoryScheduledJobProcessor();
         }
 
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
@@ -50,7 +51,7 @@ namespace Jasper.Bus.Transports
                 throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
             }
 
-            _workers.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+            _scheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
             return Task.CompletedTask;
         }
 

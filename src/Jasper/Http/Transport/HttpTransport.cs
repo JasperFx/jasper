@@ -9,6 +9,7 @@ using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -62,7 +63,7 @@ namespace Jasper.Http.Transport
         // The sending agent will take care of this one
         public Uri LocalReplyUri { get; private set; }
 
-        public void StartListening(BusSettings settings)
+        public void StartListening(BusSettings settings, IWorkerQueue workers)
         {
             if (_runtime.HttpAddresses.IsNotEmpty())
             {

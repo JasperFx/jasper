@@ -2,12 +2,7 @@
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Runtime.Routing;
-using Jasper.Bus.Runtime.Serializers;
 using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Scheduled;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
@@ -65,40 +60,37 @@ namespace Jasper
             this.AddSingleton<IChannelGraph>(parent.Bus.Channels);
             this.AddSingleton<ILocalWorkerSender>(parent.Bus.LocalWorker);
 
-            ForSingletonOf<IScheduledJobProcessor>().UseIfNone<InMemoryScheduledJobProcessor>();
 
-
-            ForSingletonOf<ITransport>()
+            For<ITransport>()
                 .Use<LoopbackTransport>();
 
-            ForSingletonOf<ITransport>()
+            For<ITransport>()
                 .Use<TcpTransport>();
 
-            ForSingletonOf<ITransport>()
+            For<ITransport>()
                 .Use<HttpTransport>();
+
+            ForSingletonOf<MessagingRoot>().Use<MessagingRoot>();
 
             ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());
 
-            ForSingletonOf<IWorkerQueue>().Use<WorkerQueue>();
+            this.AddSingleton<IWorkerQueue>(s => s.GetService<MessagingRoot>().Workers);
+            this.AddSingleton(s => s.GetService<MessagingRoot>().Pipeline);
+            this.AddSingleton(s => s.GetService<MessagingRoot>().Serialization);
+            this.AddTransient(s => s.GetService<MessagingRoot>().Build());
+            this.AddSingleton(s => s.GetService<MessagingRoot>().Logger);
+            this.AddSingleton(s => s.GetService<MessagingRoot>().Router);
+            this.AddSingleton(s => s.GetService<MessagingRoot>().Lookup);
+            this.AddSingleton(s => s.GetService<MessagingRoot>().ScheduledJobs);
 
-            For<IServiceBus>().Use<ServiceBus>();
-            ForSingletonOf<IHandlerPipeline>().Use<HandlerPipeline>();
 
-            ForSingletonOf<CompositeMessageLogger>().Use<CompositeMessageLogger>();
             ForSingletonOf<CompositeTransportLogger>().Use<CompositeTransportLogger>();
 
             ForSingletonOf<INodeDiscovery>().UseIfNone(new InMemoryNodeDiscovery(parent.BusSettings));
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone(new InMemorySubscriptionsRepository());
 
-            ForSingletonOf<IReplyWatcher>().Use(new ReplyWatcher());
 
             For<IUriLookup>().Use<ConfigUriLookup>();
-
-            ForSingletonOf<BusMessageSerializationGraph>().Use<BusMessageSerializationGraph>();
-
-            ForSingletonOf<IMessageRouter>().Use<MessageRouter>();
-
-            ForSingletonOf<UriAliasLookup>().Use<UriAliasLookup>();
 
 
             For<IPersistence>().Use<NulloPersistence>();

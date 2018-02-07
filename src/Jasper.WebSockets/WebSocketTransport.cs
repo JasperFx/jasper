@@ -22,12 +22,12 @@ namespace Jasper.WebSockets
     {
         private readonly HandlerGraph _handlers;
         public static readonly Uri DefaultUri = "ws://default".ToUri();
-        private readonly WebSocketCollection _sockets;
+        private WebSocketCollection _sockets;
 
-        public WebSocketTransport(HandlerGraph handlers, IWorkerQueue workerQueue)
+        public WebSocketTransport(HandlerGraph handlers)
         {
             _handlers = handlers;
-            _sockets = new WebSocketCollection(workerQueue);
+
         }
 
         public void Dispose()
@@ -49,13 +49,12 @@ namespace Jasper.WebSockets
             return new WebSocketSendingAgent(_sockets);
         }
 
-        Uri ITransport.LocalReplyUri
-        {
-            get { return DefaultUri; }
-        }
+        Uri ITransport.LocalReplyUri => DefaultUri;
 
-        public void StartListening(BusSettings settings)
+        public void StartListening(BusSettings settings, IWorkerQueue workers)
         {
+            _sockets = new WebSocketCollection(workers);
+
             foreach (var messageType in _handlers.Chains.Select(x => x.MessageType).Where(x => x.CanBeCastTo<ClientMessage>()))
             {
                 JsonSerialization.RegisterType(messageType.ToMessageAlias(), messageType);

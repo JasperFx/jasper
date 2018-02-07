@@ -9,6 +9,7 @@ using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
+using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -194,7 +195,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             get { return TransportConstants.RepliesUri; }
         }
 
-        public void StartListening(BusSettings settings)
+        public void StartListening(BusSettings settings, IWorkerQueue workers)
         {
 
         }

@@ -7,6 +7,7 @@ using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Bus.WorkerQueues;
 
 namespace Jasper.Bus.Transports
 {
@@ -18,7 +19,8 @@ namespace Jasper.Bus.Transports
         private UriAliasLookup _lookups;
         private CompositeMessageLogger _logger;
 
-        public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups, CapabilityGraph capabilities, CompositeMessageLogger logger)
+        public void Start(BusSettings settings, ITransport[] transports, UriAliasLookup lookups,
+            CapabilityGraph capabilities, CompositeMessageLogger logger, IWorkerQueue workers)
         {
             _lookups = lookups;
             _settings = settings;
@@ -39,7 +41,7 @@ namespace Jasper.Bus.Transports
 
             foreach (var transport in _transports.Values)
             {
-                transport.StartListening(settings);
+                transport.StartListening(settings, workers);
             }
 
             buildInitialSendingAgents(settings);

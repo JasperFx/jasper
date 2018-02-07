@@ -8,6 +8,7 @@ using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
+using Jasper.Bus.WorkerQueues;
 
 namespace Jasper.Bus.Transports.Stub
 {
@@ -32,17 +33,14 @@ namespace Jasper.Bus.Transports.Stub
 
     public class StubTransport : ITransport
     {
-        public readonly LightweightCache<Uri, StubChannel> Channels;
-        private readonly IHandlerPipeline _pipeline;
+        public LightweightCache<Uri, StubChannel> Channels;
 
-        public StubTransport(IHandlerPipeline pipeline)
+        public StubTransport()
 
         {
-            _pipeline = pipeline;
             LocalReplyUri = new Uri($"stub://replies");
 
-            Channels =
-                new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, pipeline, this));
+
 
 
         }
@@ -64,8 +62,12 @@ namespace Jasper.Bus.Transports.Stub
 
         public Uri LocalReplyUri { get; }
 
-        public void StartListening(BusSettings settings)
+        public void StartListening(BusSettings settings, IWorkerQueue workers)
         {
+            Channels =
+                new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, workers, this));
+
+
             var incoming = settings.Listeners.Where(x => x.Scheme == "stub");
             foreach (var uri in incoming)
             {
