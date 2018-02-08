@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Baseline;
 using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Scanning;
+using BlueMilk.Util;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.ErrorHandling;
@@ -238,6 +240,11 @@ namespace Jasper
             combined.AddRange(all);
 
             return combined;
+        }
+
+        protected internal virtual Task BuildFeatures(JasperRuntime runtime, PerfTimer timer)
+        {
+            return Http.FindRoutes(runtime, timer);
         }
     }
 }

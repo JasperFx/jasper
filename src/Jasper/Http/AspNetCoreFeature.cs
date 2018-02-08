@@ -58,18 +58,22 @@ namespace Jasper.Http
         }
 
 
-        internal Task FindRoutes(JasperRegistry registry, PerfTimer timer)
+        internal Task FindRoutes(JasperRuntime runtime, PerfTimer timer)
         {
-            _inner.UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
+            var applicationAssembly = runtime.Registry.ApplicationAssembly;
+            var generation = runtime.Registry.Generation;
 
-            return Actions.FindActions(registry.ApplicationAssembly).ContinueWith(t =>
+
+            _inner.UseSetting(WebHostDefaults.ApplicationKey, applicationAssembly.FullName);
+
+            return Actions.FindActions(applicationAssembly).ContinueWith(t =>
             {
                 timer.Record("Find Routes", () =>
                 {
                     var actions = t.Result;
                     foreach (var methodCall in actions) Routes.AddRoute(methodCall);
 
-                    var httpTransportSettings = registry.BusSettings.Http;
+                    var httpTransportSettings = runtime.Registry.BusSettings.Http;
                     if (httpTransportSettings.EnableMessageTransport)
                     {
 #pragma warning disable 4014
@@ -84,28 +88,32 @@ namespace Jasper.Http
                     }
 
                 });
+
+                var rules = timer.Record("Fetching Conneg Rules", () =>
+                {
+                    return runtime.Container.QuickBuild<ConnegRules>();
+                });
+
+                timer.Record("Build Routing Tree", () =>
+                {
+                    Routes.BuildRoutingTree(rules, generation, runtime);
+                });
+
+                if (BootstrappedWithinAspNetCore) return;
+
+                timer.Record("Activate ASP.Net", () =>
+                {
+                    activateLocally(runtime);
+                });
+
+
             });
         }
 
 
         internal void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {
-            var rules = timer.Record("Fetching Conneg Rules", () =>
-            {
-                return runtime.Container.QuickBuild<ConnegRules>();
-            });
 
-            timer.Record("Build Routing Tree", () =>
-            {
-                Routes.BuildRoutingTree(rules, generation, runtime);
-            });
-
-            if (BootstrappedWithinAspNetCore) return;
-
-            timer.Record("Activate ASP.Net", () =>
-            {
-                activateLocally(runtime);
-            });
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)

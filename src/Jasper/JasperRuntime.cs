@@ -234,18 +234,17 @@ namespace Jasper
 
 
             var handlerCompilation = registry.Bus.CompileHandlers(registry, timer);
-            var routeDetermination = registry.Http.FindRoutes(registry, timer);
+
 
             var services = registry.CombinedServices();
 
             var runtime = new JasperRuntime(registry, services, timer);
+            var routeDetermination = registry.BuildFeatures(runtime, timer);
 
             await handlerCompilation;
             await registry.Bus.Activate(runtime, registry.Generation, timer);
 
             await routeDetermination;
-            registry.Http.Activate(runtime, registry.Generation, timer);
-
 
             // Run environment checks
             timer.Record("Environment Checks", () =>
@@ -265,8 +264,6 @@ namespace Jasper
 
         private static async Task registerRunningNode(JasperRuntime runtime)
         {
-
-
             // TODO -- get a helper for this, it's ugly
             var settings = runtime.Get<BusSettings>();
             var nodes = runtime.Get<INodeDiscovery>();
