@@ -159,6 +159,8 @@ namespace Jasper.Http
 
             Host = _inner.Build();
 
+            runtime.Container.Configure(x => x.AddSingleton(Host));
+
             Host.Start();
         }
     }

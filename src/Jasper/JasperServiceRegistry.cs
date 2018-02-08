@@ -35,7 +35,6 @@ namespace Jasper
         {
             this.AddSingleton<ConnegRules>();
             this.AddSingleton<IServer, NulloServer>();
-            this.AddSingleton(x => x.GetService<JasperRuntime>().Host);
 
             this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
             this.AddSingleton(parent.Http.Routes.Router);

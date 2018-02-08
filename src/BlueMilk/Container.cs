@@ -14,6 +14,8 @@ namespace BlueMilk
 {
     public class Container : Scope, IContainer, IServiceScopeFactory
     {
+        private bool _isDisposing;
+
         public new static Container Empty()
         {
             return For(_ => { });
@@ -67,7 +69,11 @@ namespace BlueMilk
 
         public override void Dispose()
         {
+            // Because a StackOverflowException when trying to cleanly shut down
+            // an application is really no fun
+            if (_isDisposing) return;
 
+            _isDisposing = true;
 
             base.Dispose();
             ServiceGraph.Dispose();

@@ -79,11 +79,6 @@ namespace Jasper
         public ImmutableArray<ServiceDescriptor> Services { get; }
 
         /// <summary>
-        ///     The running IWebHost for this applicastion
-        /// </summary>
-        public IWebHost Host => Registry.Http.Host;
-
-        /// <summary>
         ///     The main application assembly for the running application
         /// </summary>
         public Assembly ApplicationAssembly => Registry.ApplicationAssembly;

@@ -32,7 +32,7 @@ namespace JasperHttpTesting
 
             Urls = _runtime.Get<JasperUrlLookup>();
 
-            return _runtime.Host;
+            return _runtime.Get<IWebHost>();
         }
 
         public new void Dispose()
