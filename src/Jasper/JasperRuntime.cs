@@ -101,7 +101,7 @@ namespace Jasper
         /// </summary>
         public ServiceCapabilities Capabilities { get; internal set; }
 
-        public string HttpAddresses { get; internal set; }
+        public string HttpAddresses => Registry.HttpAddresses;
 
         /// <summary>
         ///     Shortcut to retrieve an instance of the IServiceBus interface for the application
@@ -219,7 +219,6 @@ namespace Jasper
             {
                 registry.Services.AddTransient<IMessageLogger, ConsoleMessageLogger>();
                 registry.Services.AddTransient<ITransportLogger, ConsoleTransportLogger>();
-
             }
 
 
@@ -239,24 +238,12 @@ namespace Jasper
 
             var services = registry.CombinedServices();
 
-
-
             var runtime = new JasperRuntime(registry, services, timer);
-            registry.Http.As<IWebHostBuilder>()
-                .UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
-
-            timer.Record("Lookup Http Address",
-                () =>
-                {
-                    runtime.HttpAddresses =
-                        registry.Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
-                });
-
-
 
             await handlerCompilation;
             await registry.Bus.Activate(runtime, registry.Generation, timer);
 
+            await routeDetermination;
             registry.Http.Activate(runtime, registry.Generation, timer);
 
 

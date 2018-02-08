@@ -18,6 +18,7 @@ using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Settings;
 using Jasper.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using CallingAssembly = Jasper.Util.CallingAssembly;
 
@@ -182,6 +183,8 @@ namespace Jasper
         /// Configure uncommonly used, advanced options
         /// </summary>
         public IAdvancedOptions Advanced => Bus.Settings;
+
+        public virtual string HttpAddresses => Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
 
         private void deriveServiceName()
         {

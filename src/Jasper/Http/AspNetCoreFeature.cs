@@ -60,6 +60,8 @@ namespace Jasper.Http
 
         internal Task FindRoutes(JasperRegistry registry, PerfTimer timer)
         {
+            _inner.UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
+
             return Actions.FindActions(registry.ApplicationAssembly).ContinueWith(t =>
             {
                 timer.Record("Find Routes", () =>
