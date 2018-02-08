@@ -46,8 +46,6 @@ namespace Jasper
 
             services.AddSingleton(this);
 
-            Services = services.ToImmutableArray();
-
             timer.Record("new Container()", () =>
             {
                 Container = new Container(services, timer)
@@ -71,12 +69,6 @@ namespace Jasper
         public PerfTimer Bootstrapping { get; }
 
         internal JasperRegistry Registry { get; }
-
-        /// <summary>
-        ///     The known service registrations to the underlying IoC container
-        /// </summary>
-        [Obsolete("This shouldn't be necessary w/ the dependency on BlueMilk")]
-        public ImmutableArray<ServiceDescriptor> Services { get; }
 
         /// <summary>
         ///     The main application assembly for the running application

@@ -5,6 +5,7 @@ using Jasper.Testing;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
+using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -24,10 +25,8 @@ namespace IntegrationTests.AspNetCoreIntegration
 
             using (var runtime = JasperRuntime.For(registry))
             {
-
-                var @default = runtime.Services.Last(x => x.ServiceType == typeof(IService));
-                SpecificationExtensions.ShouldNotBeNull(@default);
-                @default.ImplementationType.ShouldBe(typeof(FooService));
+                runtime.Container.Model.For<IService>().Default.ImplementationType
+                    .ShouldBe(typeof(FooService));
             }
         }
 
@@ -42,8 +41,8 @@ namespace IntegrationTests.AspNetCoreIntegration
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                SpecificationExtensions.ShouldNotBeNull(runtime.Get<IServiceProvider>());
-                SpecificationExtensions.ShouldNotBeNull(runtime.Get<IServiceScopeFactory>());
+                runtime.Get<IServiceProvider>().ShouldNotBeNull();
+                runtime.Get<IServiceScopeFactory>().ShouldNotBeNull();
             }
         }
 
@@ -76,7 +75,9 @@ namespace IntegrationTests.AspNetCoreIntegration
 
         public static JasperRuntime DefaultSingletonIs(this JasperRuntime runtime, Type pluginType, Type concreteType)
         {
-            var @default = runtime.Services.Last(x => x.ServiceType == pluginType);
+            var @default = runtime.Container.Model.For(pluginType).Default;
+
+
             @default.ImplementationType.ShouldBe(concreteType);
             @default.Lifetime.ShouldBe(ServiceLifetime.Singleton);
 
@@ -90,7 +91,7 @@ namespace IntegrationTests.AspNetCoreIntegration
 
         public static JasperRuntime ShouldHaveRegistration<T, TConcrete>(this JasperRuntime runtime)
         {
-            runtime.Services.Any(x => x.ServiceType == typeof(T) && x.ImplementationType == typeof(TConcrete))
+            runtime.Container.Model.For<T>().Instances.Any(x => x.ImplementationType == typeof(TConcrete))
                 .ShouldBeTrue();
 
             return runtime;
@@ -98,8 +99,10 @@ namespace IntegrationTests.AspNetCoreIntegration
 
         public static JasperRuntime ShouldNotHaveRegistration<T, TConcrete>(this JasperRuntime runtime)
         {
-            runtime.Services.Any(x => x.ServiceType == typeof(T) && x.ImplementationType == typeof(TConcrete))
+            runtime.Container.Model.For<T>().Instances.Any(x => x.ImplementationType == typeof(TConcrete))
                 .ShouldBeFalse();
+
+            return runtime;
 
             return runtime;
         }

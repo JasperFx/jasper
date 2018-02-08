@@ -22,8 +22,7 @@ namespace Jasper.Testing.Bus.Bootstrapping
         [Fact]
         public void subscriptions_repository_must_be_a_singleton()
         {
-            theRuntime.Services.Where(x => x.ServiceType == typeof(ISubscriptionsRepository))
-                .All(x => x.Lifetime == ServiceLifetime.Singleton).ShouldBeTrue();
+            theRuntime.Container.Model.For<ISubscriptionsRepository>().Default.Lifetime.ShouldBe(ServiceLifetime.Singleton);
         }
 
         [Fact]

@@ -58,9 +58,9 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.LogMessageEventsWith(new ConsoleMessageLogger()));
 
-
-            Runtime.Services
-                .Any(x => x.ServiceType == typeof(IMessageLogger) && x.ImplementationInstance is ConsoleMessageLogger).ShouldBeTrue();
+            Runtime.Container.Model.For<IMessageLogger>().Instances
+                .Any(x => x.ImplementationType == typeof(ConsoleMessageLogger))
+                .ShouldBeTrue();
         }
 
         [Fact]
@@ -68,9 +68,9 @@ namespace Jasper.Testing.Bus
         {
             with(_ => _.Logging.LogTransportEventsWith(new ConsoleTransportLogger()));
 
-
-            Runtime.Services
-                .Any(x => x.ServiceType == typeof(ITransportLogger) && x.ImplementationInstance is ConsoleTransportLogger).ShouldBeTrue();
+            Runtime.Container.Model.For<ITransportLogger>().Instances
+                .Any(x => x.ImplementationType == typeof(ConsoleTransportLogger))
+                .ShouldBeTrue();
         }
     }
 

@@ -11,11 +11,11 @@ namespace Jasper.Bus.Tracking
     {
         private static void validateMessageTrackerExists(this JasperRuntime runtime)
         {
-            var history = runtime.Services.FirstOrDefault(x => x.ServiceType == typeof(MessageHistory));
-            var logger = runtime.Services.Any(x =>
-                x.ServiceType == typeof(IMessageLogger) && x.ImplementationType == typeof(MessageTrackingLogger));
+            var history = runtime.Container.Model.For<MessageHistory>().Default;
+            var logger = runtime.Container.Model.For<IMessageLogger>().Instances
+                .FirstOrDefault(x => x.ImplementationType == typeof(MessageTrackingLogger));
 
-            if (history == null || history.Lifetime != ServiceLifetime.Singleton || !logger)
+            if (history == null || history.Lifetime != ServiceLifetime.Singleton || logger == null)
             {
                 throw new InvalidOperationException($"The {nameof(MessageTrackingExtension)} extension is not applied to this application");
             }
