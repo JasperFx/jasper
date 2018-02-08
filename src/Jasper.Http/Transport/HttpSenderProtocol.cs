@@ -14,11 +14,11 @@ namespace Jasper.Http.Transport
         private readonly HttpClient _client;
         private readonly BusSettings _settings;
 
-        public HttpSenderProtocol(BusSettings settings)
+        public HttpSenderProtocol(BusSettings settings, HttpTransportSettings httpSettings)
         {
             _client = new HttpClient
             {
-                Timeout = settings.Http.ConnectionTimeout
+                Timeout = httpSettings.ConnectionTimeout
             };
 
             _settings = settings;

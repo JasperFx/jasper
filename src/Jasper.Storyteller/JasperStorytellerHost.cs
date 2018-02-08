@@ -4,6 +4,7 @@ using Baseline;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Tracking;
+using Jasper.Http;
 using Jasper.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,22 +15,22 @@ namespace Jasper.Storyteller
 {
     public static class JasperStorytellerHost
     {
-        public static void Run<T>(string[] args) where T : JasperRegistry, new()
+        public static void Run<T>(string[] args) where T : JasperHttpRegistry, new()
         {
             StorytellerAgent.Run(args, For<T>());
         }
 
-        public static JasperStorytellerHost<T> For<T>() where T : JasperRegistry, new()
+        public static JasperStorytellerHost<T> For<T>() where T : JasperHttpRegistry, new()
         {
             return new JasperStorytellerHost<T>(new T());
         }
 
-        public static JasperStorytellerHost<JasperRegistry> Basic(Action<JasperRegistry> configure = null)
+        public static JasperStorytellerHost<JasperHttpRegistry> Basic(Action<JasperHttpRegistry> configure = null)
         {
-            var jasperRegistry = new JasperRegistry();
+            var jasperRegistry = new JasperHttpRegistry();
             configure?.Invoke(jasperRegistry);
 
-            return new JasperStorytellerHost<JasperRegistry>(jasperRegistry);
+            return new JasperStorytellerHost<JasperHttpRegistry>(jasperRegistry);
         }
     }
 

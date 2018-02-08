@@ -19,13 +19,15 @@ namespace Jasper.Http.Transport
     public class HttpTransport : ITransport
     {
         private readonly BusSettings _settings;
+        private readonly HttpTransportSettings _httpSettings;
         private readonly JasperRuntime _runtime;
         private readonly IPersistence _persistence;
         private readonly CompositeTransportLogger _logger;
 
-        public HttpTransport(BusSettings settings, JasperRuntime runtime, IPersistence persistence, CompositeTransportLogger logger)
+        public HttpTransport(BusSettings settings, HttpTransportSettings httpSettings, JasperRuntime runtime, IPersistence persistence, CompositeTransportLogger logger)
         {
             _settings = settings;
+            _httpSettings = httpSettings;
             _runtime = runtime;
             _persistence = persistence;
             _logger = logger;
@@ -41,7 +43,7 @@ namespace Jasper.Http.Transport
 
         public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
         {
-            var batchedSender = new BatchedSender(uri, new HttpSenderProtocol(_settings), cancellation, _logger);
+            var batchedSender = new BatchedSender(uri, new HttpSenderProtocol(_settings, _httpSettings), cancellation, _logger);
 
             ISendingAgent agent;
 
@@ -70,7 +72,7 @@ namespace Jasper.Http.Transport
                 var candidate = _runtime.HttpAddresses.Split(';').Select(x => x.ToUri()).FirstOrDefault(x => x.Host == "localhost" || x.Host == "127.0.0.1")?.ToMachineUri();
                 if (candidate != null)
                 {
-                    LocalReplyUri = candidate.ToString().TrimEnd('/').AppendUrl(settings.Http.RelativeUrl).ToUri();
+                    LocalReplyUri = candidate.ToString().TrimEnd('/').AppendUrl(_httpSettings.RelativeUrl).ToUri();
                 }
             }
 
@@ -78,7 +80,7 @@ namespace Jasper.Http.Transport
 
         public void Describe(TextWriter writer)
         {
-            if (_settings.Http.EnableMessageTransport)
+            if (_httpSettings.EnableMessageTransport)
             {
                 writer.WriteLine($"Listening for messages at {LocalReplyUri}");
                 writer.WriteLine($"Listening for messages at {LocalReplyUri.ToString().AppendUrl("durable")}");

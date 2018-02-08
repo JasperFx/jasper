@@ -31,8 +31,6 @@ namespace Jasper.Testing.Conneg
             {
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Handlers.IncludeType<NewMessageHandler>();
-
-                _.Http.Actions.ExcludeTypes(t => true);
             }))
             {
                 var modelReader = runtime.Get<BusMessageSerializationGraph>().ReaderFor(typeof(NewMessage));

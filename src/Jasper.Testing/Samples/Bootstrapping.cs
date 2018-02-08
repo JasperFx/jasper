@@ -4,6 +4,7 @@ using BlueMilk;
 using BlueMilk.Codegen;
 using Jasper;
 using Jasper.Configuration;
+using Jasper.Http;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -165,7 +166,7 @@ namespace Bootstrapping.Configuration2
     // ENDSAMPLE
 
     // SAMPLE: EnvironmentNameRegistry
-    public class EnvironmentNameRegistry : JasperRegistry
+    public class EnvironmentNameRegistry : JasperHttpRegistry
     {
         public EnvironmentNameRegistry()
         {

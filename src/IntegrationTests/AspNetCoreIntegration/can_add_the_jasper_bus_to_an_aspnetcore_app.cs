@@ -107,7 +107,7 @@ namespace IntegrationTests.AspNetCoreIntegration
     }
 
     // SAMPLE: SimpleJasperBusApp
-    public class SimpleJasperBusApp : JasperRegistry
+    public class SimpleJasperBusApp : JasperHttpRegistry
     // ENDSAMPLE
     {
         public SimpleJasperBusApp()

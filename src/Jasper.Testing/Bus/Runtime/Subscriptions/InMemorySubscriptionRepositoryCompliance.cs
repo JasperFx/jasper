@@ -24,7 +24,6 @@ namespace Jasper.Testing.Bus.Runtime.Subscriptions
             using (var runtime = JasperRuntime.For(x =>
             {
                 x.Handlers.DisableConventionalDiscovery();
-                x.Http.Actions.DisableConventionalDiscovery();
                 configure(x);
             }))
             {

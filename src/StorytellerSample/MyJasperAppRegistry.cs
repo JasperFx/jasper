@@ -1,10 +1,11 @@
 ﻿using Jasper;
+using Jasper.Http;
 using Jasper.Storyteller;
 using StoryTeller;
 
 namespace StorytellerSample
 {
-    public class MyJasperAppRegistry : JasperRegistry
+    public class MyJasperAppRegistry : JasperHttpRegistry
     {
 
     }

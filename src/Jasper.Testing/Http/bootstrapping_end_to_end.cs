@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Baseline;
 using BlueMilk.Scanning;
 using Jasper.Configuration;
+using Jasper.Http;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
@@ -20,7 +21,7 @@ namespace Jasper.Testing.Http
         {
             TypeRepository.ClearAll();
 
-            var registry = new JasperRegistry();
+            var registry = new JasperHttpRegistry();
             registry.Http.Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
             registry.Include<EndpointExtension>();
@@ -103,7 +104,7 @@ namespace Jasper.Testing.Http
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Http.Actions.IncludeType<ExtensionThing>();
+            registry.As<JasperHttpRegistry>().Http.Actions.IncludeType<ExtensionThing>();
         }
     }
 

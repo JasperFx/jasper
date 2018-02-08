@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Jasper.Bus.Transports.Util
 {
-    internal static class StreamExtensions
+    public static class StreamExtensions
     {
-        internal static async Task<byte[]> ReadBytesAsync(this Stream stream, long? length)
+        public static async Task<byte[]> ReadBytesAsync(this Stream stream, long? length)
         {
             byte[] buffer = new byte[length.Value];
             int totalRead = 0;
@@ -21,7 +21,7 @@ namespace Jasper.Bus.Transports.Util
             return buffer;
         }
 
-        internal static async Task<bool> ReadExpectedBuffer(this Stream stream, byte[] expected)
+        public static async Task<bool> ReadExpectedBuffer(this Stream stream, byte[] expected)
         {
             try
             {

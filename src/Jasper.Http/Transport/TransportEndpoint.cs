@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Jasper.Bus;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Runtime;
+using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Util;
 using Microsoft.AspNetCore.Http;
 

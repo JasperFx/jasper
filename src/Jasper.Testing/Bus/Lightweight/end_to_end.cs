@@ -34,13 +34,11 @@ namespace Jasper.Testing.Bus.Lightweight
 
             theSender = JasperRuntime.For(_ =>
             {
-                _.Http.Actions.DisableConventionalDiscovery();
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.AddSingleton(theTracker);
             });
 
             var receiver = new JasperRegistry();
-            receiver.Http.Actions.DisableConventionalDiscovery();
             receiver.Handlers.DisableConventionalDiscovery();
 
             receiver.Transports.ListenForMessagesFrom(theAddress);

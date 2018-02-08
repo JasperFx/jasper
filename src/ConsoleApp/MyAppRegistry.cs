@@ -1,5 +1,6 @@
 ﻿using Jasper;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 using StorytellerSpecs.Fixtures;
 
@@ -7,7 +8,7 @@ namespace MyApp
 {
 
     // SAMPLE: MyAppRegistryWithOptions
-    public class MyAppRegistry : JasperRegistry
+    public class MyAppRegistry : JasperHttpRegistry
     {
         public MyAppRegistry()
         {

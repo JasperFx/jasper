@@ -12,7 +12,7 @@ namespace IntegrationTests.AspNetCoreIntegration
 {
     public class composing_request_delegate_order : IDisposable
     {
-        private readonly JasperRegistry theRegistry = new JasperRegistry();
+        private readonly JasperHttpRegistry theRegistry = new JasperHttpRegistry();
 
         private readonly Lazy<JasperRuntime> _runtime;
 

@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Baseline;
 using Jasper.Conneg;
+using Jasper.Http;
 using Jasper.Http.Model;
+using Jasper.Testing.Settings;
 using Jasper.Util;
 using JasperHttpTesting;
 using Microsoft.AspNetCore.Http;
@@ -20,10 +22,11 @@ namespace Jasper.Testing.Http.ContentHandling
 
         public content_negotiation()
         {
-            _runtime = JasperRuntime.For(_ =>
+
+
+            _runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
-                _.Http.Actions.DisableConventionalDiscovery();
                 _.Http.Actions.IncludeType<CustomReaderWriterEndpoint>();
                 _.Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
                 _.Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();

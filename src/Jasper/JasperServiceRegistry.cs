@@ -8,12 +8,6 @@ using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
 using Jasper.EnvironmentChecks;
-using Jasper.Http;
-using Jasper.Http.ContentHandling;
-using Jasper.Http.Routing;
-using Jasper.Http.Transport;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.ObjectPool;
 
@@ -23,26 +17,8 @@ namespace Jasper
     {
         public JasperServiceRegistry(JasperRegistry parent)
         {
-            Policies.OnMissingFamily<LoggerPolicy>();
-
             conneg(parent);
             messaging(parent);
-
-            routing(parent);
-        }
-
-        private void routing(JasperRegistry parent)
-        {
-            this.AddSingleton<ConnegRules>();
-            this.AddSingleton<IServer, NulloServer>();
-
-            this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
-            this.AddSingleton(parent.Http.Routes.Router);
-            this.AddSingleton(parent.Http.Routes);
-            ForSingletonOf<IUrlRegistry>().Use(parent.Http.Routes.Router.Urls);
-            For<IServer>().Use<NulloServer>();
-
-            Policies.OnMissingFamily<LoggerPolicy>();
         }
 
         private void conneg(JasperRegistry parent)
@@ -74,8 +50,7 @@ namespace Jasper
             For<ITransport>()
                 .Use<TcpTransport>();
 
-            For<ITransport>()
-                .Use<HttpTransport>();
+
 
             ForSingletonOf<MessagingRoot>().Use<MessagingRoot>();
 

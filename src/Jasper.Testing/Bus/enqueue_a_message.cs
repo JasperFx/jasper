@@ -57,7 +57,6 @@ namespace Jasper.Testing.Bus
          public async Task enqueue_locally_lightweight()
          {
              var registry = new JasperRegistry();
-             registry.Http.Actions.DisableConventionalDiscovery();
 
 
              registry.Handlers.IncludeType<RecordCallHandler>();

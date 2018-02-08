@@ -32,7 +32,8 @@ namespace Jasper.Bus.Runtime.Subscriptions
             MachineName = settings.MachineName;
             Id = $"{ServiceName}@{MachineName}";
 
-            MessagesUrl = settings.Http.RelativeUrl;
+            // TODO -- need to replace this somehow
+            //MessagesUrl = settings.Http.RelativeUrl;
 
 
             TcpEndpoints = settings.Listeners.Where(x => x.Scheme == "tcp")

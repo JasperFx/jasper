@@ -1,4 +1,5 @@
 ﻿using Jasper.Bus.Transports.Configuration;
+using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Http.Transport;
 using Shouldly;
@@ -27,12 +28,13 @@ namespace Jasper.Testing.Http.Transport
         [Fact]
         public void transport_endpoints_are_enabled_and_a_chain_should_be_present()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<TransportEndpoint>();
 
-                _.Settings.Alter<BusSettings>(x => x.Http.EnableMessageTransport = true);
+                _.Http.Transport.EnableListening(true);
+
             }))
             {
                 var routes = runtime.Get<RouteGraph>();
@@ -48,11 +50,11 @@ namespace Jasper.Testing.Http.Transport
         [Fact]
         public void transport_endpoints_are_enabled_and_a_chain_should_be_present_with_default_urls()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<TransportEndpoint>();
-                _.Settings.Alter<BusSettings>(x => x.Http.EnableMessageTransport = true);
+                _.Http.Transport.EnableListening(true);
             }))
             {
                 var routes = runtime.Get<RouteGraph>();
@@ -68,17 +70,12 @@ namespace Jasper.Testing.Http.Transport
         [Fact]
         public void transport_endpoints_are_enabled_and_a_chain_should_be_present_with_overridden_urls()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<TransportEndpoint>();
 
-                _.Settings.Alter<BusSettings>(x =>
-                {
-
-                    x.Http.EnableMessageTransport = true;
-                    x.Http.RelativeUrl = "api";
-                });
+                _.Http.Transport.EnableListening(true).RelativeUrl("api");
             }))
             {
                 var routes = runtime.Get<RouteGraph>();

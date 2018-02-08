@@ -191,11 +191,6 @@ namespace Jasper.Bus.Transports.Configuration
             _cancellation.Cancel();
         }
 
-        public HttpTransportSettings Http { get; } = new HttpTransportSettings();
-
-        IHttpTransportConfiguration ITransportsExpression.Http => Http;
-
-
         public RetrySettings Retries { get; } = new RetrySettings();
 
         // TODO -- move these underneath Retries and introduce a new value object
@@ -217,52 +212,6 @@ namespace Jasper.Bus.Transports.Configuration
         /// with the related error report
         /// </summary>
         public bool PersistDeadLetterEnvelopes { get; set; } = true;
-
-    }
-
-    public interface IHttpTransportConfiguration
-    {
-        IHttpTransportConfiguration EnableListening(bool enabled);
-        IHttpTransportConfiguration RelativeUrl(string url);
-        IHttpTransportConfiguration ConnectionTimeout(TimeSpan span);
-    }
-
-    public class HttpTransportSettings : IHttpTransportConfiguration
-    {
-        public TimeSpan ConnectionTimeout { get; set; } = 10.Seconds();
-        public string RelativeUrl { get; set; } = "messages";
-
-
-        public bool EnableMessageTransport { get; set; } = false;
-
-        IHttpTransportConfiguration IHttpTransportConfiguration.EnableListening(bool enabled)
-        {
-            EnableMessageTransport = enabled;
-            return this;
-        }
-
-        IHttpTransportConfiguration IHttpTransportConfiguration.RelativeUrl(string url)
-        {
-            RelativeUrl = url;
-            return this;
-        }
-
-        IHttpTransportConfiguration IHttpTransportConfiguration.ConnectionTimeout(TimeSpan span)
-        {
-            ConnectionTimeout = span;
-            return this;
-        }
-    }
-
-    public class RetrySettings
-    {
-        public TimeSpan Cooldown { get; set; } = 1.Seconds();
-        public int FailuresBeforeCircuitBreaks { get; set; } = 3;
-        public int MaximumEnvelopeRetryStorage { get; set; } = 100;
-
-        public int RecoveryBatchSize { get; set; } = 100;
-
-
 
     }
 }

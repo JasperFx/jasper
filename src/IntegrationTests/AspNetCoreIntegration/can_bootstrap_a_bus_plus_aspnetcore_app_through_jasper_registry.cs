@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.Bus;
+using Jasper.Http;
 using Jasper.Testing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -60,7 +61,7 @@ namespace IntegrationTests.AspNetCoreIntegration
     }
 
     // SAMPLE: ConfiguringAspNetCoreWithinJasperRegistry
-    public class JasperServerApp : JasperRegistry
+    public class JasperServerApp : JasperHttpRegistry
     {
         public JasperServerApp()
         {

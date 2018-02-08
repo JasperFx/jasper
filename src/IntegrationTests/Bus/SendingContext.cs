@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper;
+using Jasper.Http;
 using Jasper.Testing.Bus;
 using Jasper.Testing.Bus.Lightweight;
 
@@ -7,8 +8,8 @@ namespace IntegrationTests.Bus
 {
     public abstract class SendingContext : IDisposable
     {
-        private readonly JasperRegistry senderRegistry = new JasperRegistry();
-        private readonly JasperRegistry receiverRegistry = new JasperRegistry();
+        private readonly JasperHttpRegistry senderRegistry = new JasperHttpRegistry();
+        private readonly JasperHttpRegistry receiverRegistry = new JasperHttpRegistry();
         protected JasperRuntime theSender;
         protected JasperRuntime theReceiver;
         protected MessageTracker theTracker;
@@ -40,7 +41,7 @@ namespace IntegrationTests.Bus
             theSender?.Dispose();
         }
 
-        protected void StartTheReceiver(Action<JasperRegistry> configure)
+        protected void StartTheReceiver(Action<JasperHttpRegistry> configure)
         {
             configure(receiverRegistry);
             theReceiver = JasperRuntime.For(receiverRegistry);

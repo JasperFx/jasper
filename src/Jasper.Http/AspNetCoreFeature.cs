@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using BlueMilk;
+using Baseline.Dates;
 using BlueMilk.Codegen;
-using BlueMilk.IoC.Instances;
 using BlueMilk.Util;
 using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
@@ -19,7 +17,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Jasper.Http
 {
@@ -58,10 +55,10 @@ namespace Jasper.Http
         }
 
 
-        internal Task FindRoutes(JasperRuntime runtime, PerfTimer timer)
+        internal Task FindRoutes(JasperRuntime runtime, JasperHttpRegistry registry, PerfTimer timer)
         {
-            var applicationAssembly = runtime.Registry.ApplicationAssembly;
-            var generation = runtime.Registry.Generation;
+            var applicationAssembly = registry.ApplicationAssembly;
+            var generation = registry.Generation;
 
 
             _inner.UseSetting(WebHostDefaults.ApplicationKey, applicationAssembly.FullName);
@@ -73,16 +70,15 @@ namespace Jasper.Http
                     var actions = t.Result;
                     foreach (var methodCall in actions) Routes.AddRoute(methodCall);
 
-                    var httpTransportSettings = runtime.Registry.BusSettings.Http;
-                    if (httpTransportSettings.EnableMessageTransport)
+                    if (_transport.EnableMessageTransport)
                     {
 #pragma warning disable 4014
                         Routes.AddRoute<TransportEndpoint>(x => x.put__messages(null, null, null),
-                            httpTransportSettings.RelativeUrl).Route.HttpMethod = "PUT";
+                            _transport.RelativeUrl).Route.HttpMethod = "PUT";
 
 
                         Routes.AddRoute<TransportEndpoint>(x => x.put__messages_durable(null, null, null),
-                            httpTransportSettings.RelativeUrl.AppendUrl("durable")).Route.HttpMethod = "PUT";
+                            _transport.RelativeUrl.AppendUrl("durable")).Route.HttpMethod = "PUT";
 
 #pragma warning restore 4014
                     }
@@ -163,37 +159,43 @@ namespace Jasper.Http
 
             Host.Start();
         }
+
+        private readonly HttpTransportSettings _transport = new HttpTransportSettings();
+
+        public IHttpTransportConfiguration Transport => _transport;
     }
 
-    public class LoggerPolicy : IFamilyPolicy
+    public interface IHttpTransportConfiguration
     {
-        public ServiceFamily Build(Type type, ServiceGraph serviceGraph)
+        IHttpTransportConfiguration EnableListening(bool enabled);
+        IHttpTransportConfiguration RelativeUrl(string url);
+        IHttpTransportConfiguration ConnectionTimeout(TimeSpan span);
+    }
+
+    public class HttpTransportSettings : IHttpTransportConfiguration
+    {
+        public TimeSpan ConnectionTimeout { get; set; } = 10.Seconds();
+        public string RelativeUrl { get; set; } = "messages";
+
+
+        public bool EnableMessageTransport { get; set; } = false;
+
+        IHttpTransportConfiguration IHttpTransportConfiguration.EnableListening(bool enabled)
         {
-            if (!type.Closes(typeof(ILogger<>)))
-            {
-                return null;
-            }
+            EnableMessageTransport = enabled;
+            return this;
+        }
 
-            var inner = type.GetGenericArguments().Single();
-            var loggerType = typeof(Logger<>).MakeGenericType(inner);
+        IHttpTransportConfiguration IHttpTransportConfiguration.RelativeUrl(string url)
+        {
+            RelativeUrl = url;
+            return this;
+        }
 
-            Instance instance = null;
-            if (inner.IsPublic)
-            {
-                instance = new ConstructorInstance(type, loggerType,
-                    ServiceLifetime.Transient);
-            }
-            else
-            {
-                instance = new LambdaInstance(type, provider =>
-                {
-                    var factory = provider.GetService<ILoggerFactory>();
-                    return Activator.CreateInstance(loggerType, factory);
-
-                }, ServiceLifetime.Transient);
-            }
-
-            return new ServiceFamily(type, instance);
+        IHttpTransportConfiguration IHttpTransportConfiguration.ConnectionTimeout(TimeSpan span)
+        {
+            ConnectionTimeout = span;
+            return this;
         }
     }
 }

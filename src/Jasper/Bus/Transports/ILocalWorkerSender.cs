@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Bus.Runtime;
 
-namespace Jasper.Http.Transport
+namespace Jasper.Bus.Transports
 {
     public interface ILocalWorkerSender
     {

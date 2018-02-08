@@ -26,7 +26,6 @@ namespace Jasper.Testing.Bus.Compilation
             theRegistry.Services.AddSingleton(theTracking);
             theRegistry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
 
-            theRegistry.Http.Actions.DisableConventionalDiscovery();
 
         }
 

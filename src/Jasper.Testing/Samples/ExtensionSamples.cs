@@ -25,10 +25,6 @@ namespace Jasper.Testing.Samples
                 _.JsonSerialization.TypeNameHandling = TypeNameHandling.All;
             });
 
-            // Register additional ASP.Net Core middleware,
-            // but it'd probably be better to use an IStartupFilter
-            // for ordering instead
-            registry.Http.AddSomeMiddleware();
         }
     }
     // ENDSAMPLE

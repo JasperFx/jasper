@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Http;
 using Jasper.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -87,7 +88,7 @@ namespace Jasper.WebSockets.Testing
         }
     }
 
-    public class WebSocketPingPongApp : JasperRegistry
+    public class WebSocketPingPongApp : JasperHttpRegistry
     {
         public WebSocketPingPongApp()
         {

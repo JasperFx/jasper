@@ -5,6 +5,7 @@ using Baseline.Dates;
 using IntegrationTests.Conneg;
 using Jasper.Bus;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Http;
 using Jasper.Testing.Bus.Lightweight;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Util;
@@ -20,7 +21,7 @@ namespace IntegrationTests.Bus
         {
             StartTheReceiver(_ =>
             {
-                _.Transports.Http.EnableListening(true);
+                _.Http.Transport.EnableListening(true);
 
                 _.Http
                     .UseUrls("http://localhost:5002")
@@ -36,8 +37,10 @@ namespace IntegrationTests.Bus
         [Fact]
         public void http_transport_is_enabled_and_registered()
         {
-            var busSettings = theReceiver.Get<BusSettings>();
-            busSettings.Http.EnableMessageTransport.ShouldBeTrue();
+
+
+            var settings = theReceiver.Get<HttpTransportSettings>();
+            settings.EnableMessageTransport.ShouldBeTrue();
 
             theReceiver.Get<IChannelGraph>().ValidTransports.ShouldContain("http");
         }

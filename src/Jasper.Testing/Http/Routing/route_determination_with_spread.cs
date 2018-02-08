@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using JasperHttpTesting;
@@ -16,7 +17,7 @@ namespace Jasper.Testing.Http.Routing
 
         public route_determination_with_spread()
         {
-            _runtime = JasperRuntime.For(_ =>
+            _runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
                 _.Http.Actions.IncludeType<SpreadHttpActions>();
                 _.Http.Actions.DisableConventionalDiscovery();

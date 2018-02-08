@@ -16,7 +16,7 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
 
-    public class ServiceBusApp : JasperRegistry
+    public class ServiceBusApp : JasperHttpRegistry
     {
 
     }
@@ -55,7 +55,7 @@ namespace Jasper.Testing.Samples
 namespace Jasper.Testing.Samples2
 {
     // SAMPLE: MyAppRegistry2
-    public class MyAppRegistry : JasperRegistry
+    public class MyAppRegistry : JasperHttpRegistry
     {
         public MyAppRegistry()
         {

@@ -62,7 +62,7 @@ namespace Jasper.Testing.Http
 
 
 
-    public class BootstrappingApp : JasperRegistry
+    public class BootstrappingApp : JasperHttpRegistry
     {
         public static readonly Guid Id = Guid.NewGuid();
 

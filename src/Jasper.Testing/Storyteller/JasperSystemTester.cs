@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Http;
 using Jasper.Storyteller;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -116,7 +117,7 @@ namespace Jasper.Testing.Storyteller
 
     }
 
-    public class FakeStorytellerSystem : JasperStorytellerHost<JasperRegistry>
+    public class FakeStorytellerSystem : JasperStorytellerHost<JasperHttpRegistry>
     {
         public readonly DisposableGuy DisposableGuy = new DisposableGuy();
 

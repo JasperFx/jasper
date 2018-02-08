@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Timers;
 using Baseline;
 using Baseline.Dates;
 using Baseline.Reflection;
@@ -19,7 +16,6 @@ using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.EnvironmentChecks;
-using Jasper.Http;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,7 +49,6 @@ namespace Jasper
                     DisposalLock = DisposalLock.Ignore
                 };
             });
-
 
 
             registry.Generation.Sources.Add(new NowTimeVariableSource());
@@ -201,7 +196,6 @@ namespace Jasper
 
         private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
         {
-
             if (registry.Logging.UseConsoleLogging)
             {
                 registry.Services.AddTransient<IMessageLogger, ConsoleMessageLogger>();
@@ -212,10 +206,7 @@ namespace Jasper
             var timer = new PerfTimer();
             timer.Start("Bootstrapping");
 
-            timer.Record("Finding and Applying Extensions", () =>
-            {
-                applyExtensions(registry);
-            });
+            timer.Record("Finding and Applying Extensions", () => { applyExtensions(registry); });
 
             timer.Record("Bootstrapping Settings", () => registry.Settings.Bootstrap());
 
@@ -290,7 +281,7 @@ namespace Jasper
         public static Assembly[] FindExtensionAssemblies()
         {
             return AssemblyFinder
-                .FindAssemblies(txt => {}, false)
+                .FindAssemblies(txt => { }, false)
                 .Where(a => a.HasAttribute<JasperModuleAttribute>())
                 .ToArray();
         }
@@ -309,8 +300,9 @@ namespace Jasper
             writer.WriteLine($"Hosting environment: {hosting.EnvironmentName}");
             writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
 
-            Registry.Bus.Describe(this, writer);
-            Registry.Http.Describe(this, writer);
+            Registry.Describe(this, writer);
+
+
         }
     }
 }

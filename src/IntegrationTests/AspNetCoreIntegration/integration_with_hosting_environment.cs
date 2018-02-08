@@ -1,4 +1,5 @@
 ﻿using Jasper;
+using Jasper.Http;
 using Jasper.Testing.Http.ContentHandling;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -33,7 +34,7 @@ namespace IntegrationTests.AspNetCoreIntegration
         [Fact]
         public void hosting_environment_uses_config_2()
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperHttpRegistry();
             registry.Handlers.DisableConventionalDiscovery(true);
             registry.Http.UseEnvironment("Fake2");
 

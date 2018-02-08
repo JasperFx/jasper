@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
+using Jasper.Http;
 using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Http;
@@ -67,7 +69,7 @@ namespace IntegrationTests.AlbaSupport
         }
     }
 
-    public class AlbaTargetApp : JasperRegistry
+    public class AlbaTargetApp : JasperHttpRegistry
     {
         public AlbaTargetApp()
         {
@@ -93,7 +95,7 @@ namespace IntegrationTests.AlbaSupport
         }
     }
 
-    public class AlbaTargetApp2 : JasperRegistry
+    public class AlbaTargetApp2 : JasperHttpRegistry
     {
         public AlbaTargetApp2()
         {

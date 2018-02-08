@@ -6,6 +6,7 @@ using Jasper;
 using Jasper.Bus.Logging;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Sending;
+using Jasper.Http;
 using Jasper.Http.Transport;
 using Jasper.Testing.Bus.Lightweight.Protocol;
 using Jasper.Util;
@@ -48,7 +49,7 @@ namespace IntegrationTests.Bus
         [Fact]
         public async Task ping_sad_path_with_http_protocol()
         {
-            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, CompositeTransportLogger.Empty());
+            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings(), new HttpTransportSettings()), CancellationToken.None, CompositeTransportLogger.Empty());
 
 
 
@@ -61,12 +62,12 @@ namespace IntegrationTests.Bus
         [Fact]
         public async Task ping_happy_path_with_http_protocol()
         {
-            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings()), CancellationToken.None, CompositeTransportLogger.Empty());
+            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new BusSettings(), new HttpTransportSettings()), CancellationToken.None, CompositeTransportLogger.Empty());
 
 
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
-                _.Transports.Http.EnableListening(true);
+                _.Http.Transport.EnableListening(true);
                 _.Http.UseUrls("http://localhost:5005").UseKestrel();
             }))
             {

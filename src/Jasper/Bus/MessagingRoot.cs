@@ -18,7 +18,6 @@ using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
-using Jasper.Http.Transport;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Bus

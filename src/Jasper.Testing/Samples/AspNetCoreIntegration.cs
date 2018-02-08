@@ -11,7 +11,7 @@ namespace Jasper.Testing.Samples
     }
 
     // SAMPLE: AppWithMiddleware
-    public class AppWithMiddleware : JasperRegistry
+    public class AppWithMiddleware : JasperHttpRegistry
     {
         public AppWithMiddleware()
         {

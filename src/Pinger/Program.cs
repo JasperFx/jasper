@@ -6,6 +6,7 @@ using Jasper.Bus;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.CommandLine;
 using Jasper.Diagnostics;
+using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,7 +19,7 @@ namespace Pinger
     {
         static int Main(string[] args)
         {
-            return JasperAgent.Run(args, _ =>
+            return JasperAgent.Run<JasperHttpRegistry>(args, _ =>
             {
                 _.Logging.UseConsoleLogging = true;
 

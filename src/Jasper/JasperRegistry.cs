@@ -1,43 +1,33 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using BlueMilk;
 using BlueMilk.Codegen;
-using BlueMilk.Scanning;
 using BlueMilk.Util;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
-using Jasper.Bus.ErrorHandling;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Configuration;
-using Jasper.Http;
-using Jasper.Http.Model;
 using Jasper.Settings;
 using Jasper.Util;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using CallingAssembly = Jasper.Util.CallingAssembly;
 
 namespace Jasper
 {
-
-
     /// <summary>
-    /// Completely defines and configures a Jasper application
+    ///     Completely defines and configures a Jasper application
     /// </summary>
     public class JasperRegistry
     {
         private static Assembly _rememberedCallingAssembly;
 
         private readonly ServiceRegistry _applicationServices = new ServiceRegistry();
-        private readonly JasperServiceRegistry _baseServices;
-
+        protected readonly ServiceRegistry _baseServices;
 
         public JasperRegistry()
         {
@@ -63,83 +53,52 @@ namespace Jasper
             Settings = new JasperSettings(this);
 
             Settings.Replace(Bus.Settings);
-            Settings.Replace(Http.Settings);
 
-            if (JasperEnvironment.Name.IsNotEmpty())
-            {
-                EnvironmentName = JasperEnvironment.Name;
-            }
+
+            if (JasperEnvironment.Name.IsNotEmpty()) EnvironmentName = JasperEnvironment.Name;
 
             EnvironmentChecks = new EnvironmentCheckExpression(this);
         }
 
-        private void establishApplicationAssembly()
-        {
-            if (GetType() == typeof(JasperRegistry))
-            {
-                if (_rememberedCallingAssembly == null)
-                {
-                    _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
-                }
-
-                ApplicationAssembly = _rememberedCallingAssembly;
-            }
-            else
-            {
-                ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
-            }
-
-            if (ApplicationAssembly == null) throw new InvalidOperationException("Unable to determine an application assembly");
-        }
-
 
         internal ServiceBusFeature Bus { get; } = new ServiceBusFeature();
-        internal BusSettings BusSettings => Bus.Settings;
+        protected internal BusSettings BusSettings => Bus.Settings;
 
         /// <summary>
-        /// Configure worker queue priority, message assignement, and worker
-        /// durability
+        ///     Configure worker queue priority, message assignement, and worker
+        ///     durability
         /// </summary>
         public IWorkersExpression Processing => Bus.Settings.Workers;
 
         /// <summary>
-        /// Register environment checks to debug application bootstrapping failures
+        ///     Register environment checks to debug application bootstrapping failures
         /// </summary>
         public EnvironmentCheckExpression EnvironmentChecks { get; }
 
         /// <summary>
-        /// Gets or sets the ASP.Net Core environment names
+        ///     Gets or sets the ASP.Net Core environment names
         /// </summary>
-        public string EnvironmentName
-        {
-            get => Http.EnvironmentName;
-            set => Http.EnvironmentName = value;
-        }
+        public virtual string EnvironmentName { get; set; } = JasperEnvironment.Name;
 
         /// <summary>
-        /// Options to control how Jasper discovers message handler actions, error
-        /// handling and other policies on message handling
+        ///     Options to control how Jasper discovers message handler actions, error
+        ///     handling and other policies on message handling
         /// </summary>
         public HandlerSource Handlers => Bus.Handlers;
 
-        /// <summary>
-        /// IWebHostBuilder and other configuration for ASP.net Core usage within a Jasper
-        /// application
-        /// </summary>
-        public AspNetCoreFeature Http { get; } = new AspNetCoreFeature();
 
         /// <summary>
-        /// Configure static message routing rules and message publishing rules
+        ///     Configure static message routing rules and message publishing rules
         /// </summary>
         public PublishingExpression Publish { get; }
 
         /// <summary>
-        /// Configure or disable the built in transports
+        ///     Configure or disable the built in transports
         /// </summary>
         public ITransportsExpression Transports => Bus.Settings;
 
         /// <summary>
-        /// Use to load and apply configuration sources within the application
+        ///     Use to load and apply configuration sources within the application
         /// </summary>
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
@@ -149,26 +108,26 @@ namespace Jasper
         public Assembly ApplicationAssembly { get; set; }
 
         /// <summary>
-        /// Register additional services to the underlying IoC container
+        ///     Register additional services to the underlying IoC container
         /// </summary>
         public ServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Access to the strong typed configuration settings and alterations within
-        /// a Jasper application
+        ///     Access to the strong typed configuration settings and alterations within
+        ///     a Jasper application
         /// </summary>
         public JasperSettings Settings { get; }
 
         /// <summary>
-        /// Use to configure or customize Jasper event logging
+        ///     Use to configure or customize Jasper event logging
         /// </summary>
         public Logging Logging { get; }
 
         internal ServiceRegistry ExtensionServices { get; }
 
         /// <summary>
-        /// Gets or sets the logical service name for this Jasper application. By default,
-        /// this is derived from the name of the JasperRegistry class
+        ///     Gets or sets the logical service name for this Jasper application. By default,
+        ///     this is derived from the name of the JasperRegistry class
         /// </summary>
         public string ServiceName
         {
@@ -177,16 +136,34 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Configure dynamic subscriptions to this application
+        ///     Configure dynamic subscriptions to this application
         /// </summary>
         public ISubscriptions Subscribe => Bus.Capabilities;
 
         /// <summary>
-        /// Configure uncommonly used, advanced options
+        ///     Configure uncommonly used, advanced options
         /// </summary>
         public IAdvancedOptions Advanced => Bus.Settings;
 
-        public virtual string HttpAddresses => Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
+        public virtual string HttpAddresses => null;
+
+        private void establishApplicationAssembly()
+        {
+            if (GetType() == typeof(JasperRegistry))
+            {
+                if (_rememberedCallingAssembly == null)
+                    _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+
+                ApplicationAssembly = _rememberedCallingAssembly;
+            }
+            else
+            {
+                ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+            }
+
+            if (ApplicationAssembly == null)
+                throw new InvalidOperationException("Unable to determine an application assembly");
+        }
 
         private void deriveServiceName()
         {
@@ -210,7 +187,7 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Applies the extension to this application
+        ///     Applies the extension to this application
         /// </summary>
         /// <param name="extension"></param>
         public void Include(IJasperExtension extension)
@@ -219,7 +196,7 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Applies the extension with optional configuration to the application
+        ///     Applies the extension with optional configuration to the application
         /// </summary>
         /// <param name="configure"></param>
         /// <typeparam name="T"></typeparam>
@@ -244,7 +221,12 @@ namespace Jasper
 
         protected internal virtual Task BuildFeatures(JasperRuntime runtime, PerfTimer timer)
         {
-            return Http.FindRoutes(runtime, timer);
+            return Task.CompletedTask;
+        }
+
+        internal protected virtual void Describe(JasperRuntime runtime, TextWriter writer)
+        {
+            Bus.Describe(runtime, writer);
         }
     }
 }

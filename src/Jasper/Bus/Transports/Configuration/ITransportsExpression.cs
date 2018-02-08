@@ -46,10 +46,6 @@ namespace Jasper.Bus.Transports.Configuration
         /// <param name="protocol"></param>
         void DisableTransport(string protocol);
 
-        /// <summary>
-        /// Configure the HTTP message transport
-        /// </summary>
-        IHttpTransportConfiguration Http { get; }
     }
 
     public static class TransportsExpressionExtensions

@@ -49,15 +49,15 @@ namespace Jasper.Http
 
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder)
         {
-            return builder.UseJasper(new JasperRegistry());
+            return builder.UseJasper(new JasperHttpRegistry());
         }
 
-        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder) where T : JasperRegistry, new()
+        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder) where T : JasperHttpRegistry, new()
         {
             return builder.UseJasper(new T());
         }
 
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperHttpRegistry registry)
         {
             builder.UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
 
@@ -69,7 +69,6 @@ namespace Jasper.Http
 
                 JasperStartup.Register(runtime.Container, services, registry.Http.Routes.Router);
             });
-
 
             return builder;
         }

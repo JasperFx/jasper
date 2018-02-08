@@ -1,16 +1,17 @@
 ﻿using Baseline.Dates;
+using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Jasper.Testing.Samples
 {
     // SAMPLE: AppUsingHttpTransport
-    public class AppUsingHttpTransport : JasperRegistry
+    public class AppUsingHttpTransport : JasperHttpRegistry
     {
         public AppUsingHttpTransport()
         {
             // While *sending* by the HTTP transport is enabled by default,
             // you have to explicitly enable the HTTP transport listening
-            Transports.Http.EnableListening(true)
+            Http.Transport.EnableListening(true)
 
                 // The default is 10 seconds
                 .ConnectionTimeout(2.Seconds())

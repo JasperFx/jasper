@@ -2,6 +2,7 @@
 using Jasper;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
+using Jasper.Http;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Shouldly;
@@ -11,7 +12,7 @@ namespace IntegrationTests
 {
     public class ServiceNodeDeterminationTests : IDisposable
     {
-        private readonly JasperRegistry theRegistry = new JasperRegistry();
+        private readonly JasperHttpRegistry theRegistry = new JasperHttpRegistry();
         private Lazy<JasperRuntime> _runtime;
 
         private IServiceNode theServiceNode => _runtime.Value.Node;

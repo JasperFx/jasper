@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Jasper.Http;
 using Jasper.Http.Routing;
 using JasperHttpTesting;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,7 @@ namespace Jasper.Testing.Http.Routing
 
         public route_determination_and_usage_with_arguments()
         {
-            _runtime = JasperRuntime.For(_ =>
+            _runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Http.Actions.IncludeType<RouteEndpoints>();

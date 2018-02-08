@@ -16,7 +16,7 @@ namespace IntegrationTests.AspNetCoreIntegration
 
         private void theAppIs(Action<IApplicationBuilder> configure)
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperHttpRegistry();
             registry.Handlers.DisableConventionalDiscovery(true);
 
             _alba = SystemUnderTest.For(builder =>
