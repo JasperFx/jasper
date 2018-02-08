@@ -4,7 +4,7 @@ APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
-BUILD_VERSION = '0.5.0'
+BUILD_VERSION = '0.6.0'
 
 tc_build_number = ENV["APPVEYOR_BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')
@@ -80,6 +80,7 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj"
+	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj"
 
 end
 

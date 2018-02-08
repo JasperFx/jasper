@@ -36,6 +36,7 @@ namespace Jasper.Util
 
             if (assembly.GetName().Name == "Jasper") return true;
             if (assembly.GetName().Name == "Jasper.CommandLine") return true;
+            if (assembly.GetName().Name == "Jasper.Http") return true;
 
 
             return assembly.GetName().Name.StartsWith("System.");

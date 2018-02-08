@@ -31,7 +31,7 @@ namespace BlueMilk.Compilation
             {
                 generatedType.InheritsFrom(baseType);
             }
-            
+
             GeneratedTypes.Add(generatedType);
 
             return generatedType;
@@ -52,14 +52,14 @@ namespace BlueMilk.Compilation
                 generatedType.FindType(generated);
             }
         }
-        
+
         public string GenerateCode(ServiceGraph services = null)
         {
             foreach (var generatedType in GeneratedTypes)
             {
                 generatedType.ArrangeFrames(services);
             }
-            
+
             var namespaces = GeneratedTypes
                 .SelectMany(x => x.Args())
                 .Select(x => x.ArgType.Namespace)
@@ -97,7 +97,7 @@ namespace BlueMilk.Compilation
 
             return code;
         }
-        
+
         private AssemblyGenerator buildGenerator(GenerationRules generation)
         {
             var generator = new AssemblyGenerator();
@@ -109,14 +109,16 @@ namespace BlueMilk.Compilation
                 generator.ReferenceAssembly(assembly);
             }
 
-            GeneratedTypes
+            var assemblies = GeneratedTypes
                 .SelectMany(x => x.AssemblyReferences())
-                .Distinct()
+                .Distinct().ToArray();
+
+            assemblies
                 .Each(x => generator.ReferenceAssembly(x));
 
             return generator;
         }
-        
+
         private void attachSourceCodeToChains(string code)
         {
             var parser = new SourceCodeParser(code);

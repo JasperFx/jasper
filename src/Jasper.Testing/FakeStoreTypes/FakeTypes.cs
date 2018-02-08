@@ -7,7 +7,6 @@ using BlueMilk.Compilation;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Configuration;
-using Jasper.Testing.Http;
 
 namespace Jasper.Testing.FakeStoreTypes
 {

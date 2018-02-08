@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -34,6 +35,11 @@ namespace BlueMilk.Compilation
             if (assembly == null) return;
 
             if (_assemblies.Contains(assembly)) return;
+
+            if (assembly.FullName.Contains("Jasper.Testing"))
+            {
+                Debug.WriteLine("Somethig");
+            }
 
             _assemblies.Add(assembly);
 

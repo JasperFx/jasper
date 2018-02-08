@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Model;
-using Jasper.Configuration;
+﻿using System.Threading.Tasks;
 using Jasper.Testing.Bus.Runtime;
 using Jasper.Testing.FakeStoreTypes;
-using Jasper.Testing.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
@@ -17,23 +9,20 @@ namespace Jasper.Testing.Bus.Compilation
 {
     public class use_wrappers : CompilationContext
     {
-        private readonly FakeStoreTypes.Tracking theTracking = new FakeStoreTypes.Tracking();
-
         public use_wrappers()
         {
             theRegistry.Handlers.IncludeType<TransactionalHandler>();
 
             theRegistry.Services.AddSingleton(theTracking);
             theRegistry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-
-
         }
 
+        private readonly FakeStoreTypes.Tracking theTracking = new FakeStoreTypes.Tracking();
 
         [Fact]
-        public async Task wrapper_executes()
+        public async Task wrapper_applied_by_generic_attribute_executes()
         {
-            var message = new Message1();
+            var message = new Message2();
 
             await Execute(message);
 
@@ -42,10 +31,11 @@ namespace Jasper.Testing.Bus.Compilation
             theTracking.CalledSaveChanges.ShouldBeTrue();
         }
 
+
         [Fact]
-        public async Task wrapper_applied_by_generic_attribute_executes()
+        public async Task wrapper_executes()
         {
-            var message = new Message2();
+            var message = new Message1();
 
             await Execute(message);
 
@@ -61,19 +51,11 @@ namespace Jasper.Testing.Bus.Compilation
         [FakeTransaction]
         public void Handle(Message1 message)
         {
-
         }
 
         [GenericFakeTransaction]
         public void Handle(Message2 message)
         {
-
         }
     }
-
-
-
-
-
-
 }

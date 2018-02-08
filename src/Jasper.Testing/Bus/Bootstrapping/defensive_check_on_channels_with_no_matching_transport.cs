@@ -1,5 +1,4 @@
 ﻿using Jasper.Bus;
-using Jasper.Testing.Http;
 using Xunit;
 
 namespace Jasper.Testing.Bus.Bootstrapping

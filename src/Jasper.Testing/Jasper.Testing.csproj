@@ -12,8 +12,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Http\Jasper.Http.csproj" />
-    <ProjectReference Include="..\JasperHttpTesting\JasperHttpTesting.csproj" />
     <ProjectReference Include="..\Jasper.Storyteller\Jasper.Storyteller.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
     <ProjectReference Include="..\Module1\Module1.csproj" />

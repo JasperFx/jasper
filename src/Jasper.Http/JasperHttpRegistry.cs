@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline;
 using BlueMilk.Util;
@@ -33,6 +34,8 @@ namespace Jasper.Http
             _baseServices.AddSingleton(Http.Routes);
             _baseServices.ForSingletonOf<IUrlRegistry>().Use(Http.Routes.Router.Urls);
             _baseServices.For<IServer>().Use<NulloServer>();
+
+            _baseServices.AddSingleton<IWebHost>(x => Http.Host);
 
         }
 
