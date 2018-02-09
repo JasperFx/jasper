@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Jasper.Testing
 {
+    [Collection("integration")]
     public class including_extensions
     {
         [Fact]

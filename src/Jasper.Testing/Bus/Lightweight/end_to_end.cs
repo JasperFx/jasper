@@ -18,6 +18,7 @@ using Xunit;
 
 namespace Jasper.Testing.Bus.Lightweight
 {
+    [Collection("integration")]
     public class end_to_end : IDisposable
     {
         private static int port = 2114;

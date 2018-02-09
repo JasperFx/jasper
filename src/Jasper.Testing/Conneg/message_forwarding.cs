@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Jasper.Testing.Conneg
 {
+    [Collection("integration")]
     public class message_forwarding
     {
         [Fact]
@@ -41,6 +42,7 @@ namespace Jasper.Testing.Conneg
                 modelReader.ContentTypes.OrderBy(x => x).ShouldHaveTheSameElementsAs("application/json", typeof(OriginalMessage).ToContentType("json"), typeof(NewMessage).ToContentType("json"));
             }
         }
+
 
         [Fact]
         public async Task send_message_via_forwarding()

@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Jasper.Testing.Storyteller
 {
+    [Collection("integration")]
     public class JasperSystemTester
     {
         [Fact]

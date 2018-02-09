@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using Baseline;
 using Jasper.Bus;
 using Jasper.Bus.Configuration;
 using Jasper.Bus.Model;
 using Jasper.Bus.Transports.Configuration;
+using Xunit;
 
 namespace Jasper.Testing.Bus
 {
+    [Collection("integration")]
     public class IntegrationContext : IDisposable
     {
         public JasperRuntime Runtime { get; private set; }

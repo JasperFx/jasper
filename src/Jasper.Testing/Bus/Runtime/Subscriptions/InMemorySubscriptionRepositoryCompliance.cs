@@ -9,6 +9,7 @@ using Xunit;
 
 namespace Jasper.Testing.Bus.Runtime.Subscriptions
 {
+    [Collection("integration")]
     public class SubscriptionComplianceSpecs : IDisposable
     {
         private readonly IList<IDisposable> _disposables = new List<IDisposable>();

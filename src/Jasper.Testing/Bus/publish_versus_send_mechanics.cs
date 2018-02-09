@@ -12,6 +12,7 @@ using Xunit;
 
 namespace Jasper.Testing.Bus
 {
+    [Collection("integration")]
     public class publish_versus_send_mechanics : IDisposable
     {
         private JasperRuntime theRuntime;

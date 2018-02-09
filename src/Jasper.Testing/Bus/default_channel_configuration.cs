@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Jasper.Testing.Bus
 {
+    [Collection("integration")]
     public class default_channel_configuration
     {
         [Fact]

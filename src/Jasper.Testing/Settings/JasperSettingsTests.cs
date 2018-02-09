@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Jasper.Testing.Settings
 {
+    [Collection("integration")]
     public class JasperSettingsTests : IDisposable
     {
         public JasperSettingsTests()

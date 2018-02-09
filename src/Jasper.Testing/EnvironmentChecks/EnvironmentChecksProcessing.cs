@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Jasper.Testing.EnvironmentChecks
 {
+    [Collection("integration")]
     public class EnvironmentChecksProcessing
     {
         [Fact]

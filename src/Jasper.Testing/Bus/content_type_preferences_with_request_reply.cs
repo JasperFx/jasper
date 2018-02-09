@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Jasper.Testing.Bus
 {
+    [Collection("integration")]
     public class content_type_preferences_with_request_reply : IntegrationContext
     {
         [Fact]

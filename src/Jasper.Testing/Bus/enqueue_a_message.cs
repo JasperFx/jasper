@@ -14,6 +14,7 @@ using Xunit;
 
 namespace Jasper.Testing.Bus
 {
+    [Collection("integration")]
     public class enqueue_a_message
     {
         [Fact]

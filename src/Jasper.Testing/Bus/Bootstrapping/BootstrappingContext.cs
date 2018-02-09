@@ -6,9 +6,11 @@ using Jasper.Bus.Transports;
 using Jasper.Bus.Transports.Configuration;
 using Jasper.Bus.Transports.Stub;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Jasper.Testing.Bus.Bootstrapping
 {
+    [Collection("integration")]
     public class BootstrappingContext : IDisposable
     {
         private readonly Lazy<JasperRuntime> _runtime;

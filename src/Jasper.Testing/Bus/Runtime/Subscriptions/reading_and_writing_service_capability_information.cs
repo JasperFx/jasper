@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Jasper.Testing.Bus.Runtime.Subscriptions
 {
+    [Collection("integration")]
     public class reading_and_writing_service_capability_information
     {
         [Fact]

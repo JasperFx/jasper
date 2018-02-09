@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -10,9 +11,11 @@ using Jasper.Bus.Transports.Sending;
 using Jasper.Bus.Transports.Tcp;
 using Jasper.Util;
 using Shouldly;
+using Xunit;
 
 namespace Jasper.Testing.Bus.Lightweight.Protocol
 {
+    [Collection("protocol")]
     public abstract class ProtocolContext : IDisposable
     {
         protected StubReceiverCallback theReceiver = new StubReceiverCallback();

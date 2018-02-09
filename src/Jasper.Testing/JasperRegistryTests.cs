@@ -7,6 +7,7 @@ using Xunit;
 
 namespace Jasper.Testing
 {
+    [Collection("integration")]
     public class JasperRegistryTests
     {
         public interface IFoo

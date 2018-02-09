@@ -14,6 +14,7 @@ using Xunit;
 
 namespace Jasper.Testing
 {
+    [Collection("integration")]
     public class BootstrappingTests
     {
         [Fact]
