@@ -133,11 +133,11 @@ namespace Jasper.Http.Testing
         public bool WasStopped { get; set; }
     }
 
-    public class EndpointExtension : IJasperExtension
+    public class EndpointExtension : JasperHttpExtension
     {
-        public void Configure(JasperRegistry registry)
+        public override void Configure(JasperHttpRegistry registry)
         {
-            registry.As<JasperHttpRegistry>().Http.Actions.IncludeType<ExtensionThing>();
+            registry.Http.Actions.IncludeType<ExtensionThing>();
         }
     }
 
