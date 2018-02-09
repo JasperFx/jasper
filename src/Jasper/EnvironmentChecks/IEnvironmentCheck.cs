@@ -13,6 +13,12 @@
         /// </summary>
         /// <param name="runtime"></param>
         void Assert(JasperRuntime runtime);
+
+        /// <summary>
+        /// A textual description for command line output that describes
+        /// what is being checked
+        /// </summary>
+        string Description { get; }
     }
     // ENDSAMPLE
 }

@@ -21,6 +21,8 @@ namespace Jasper.EnvironmentChecks
             }
         }
 
+        public string Description => ToString();
+
         public override string ToString()
         {
             return $"File {_file} exists";

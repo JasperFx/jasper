@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Core Library for JasperFx Applications</Description>
-    <VersionPrefix>0.5.0</VersionPrefix>
-    <Authors>Jeremy D. Miller</Authors>
+    <VersionPrefix>0.6.0</VersionPrefix>
+    <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper</AssemblyName>

@@ -22,11 +22,11 @@ namespace Jasper.EnvironmentChecks
                 try
                 {
                     check.Assert(runtime);
-                    recorder.Success(check.ToString());
+                    recorder.Success(check.Description);
                 }
                 catch (Exception e)
                 {
-                    recorder.Failure(check.ToString(), e);
+                    recorder.Failure(check.Description, e);
                 }
             }
             return recorder;

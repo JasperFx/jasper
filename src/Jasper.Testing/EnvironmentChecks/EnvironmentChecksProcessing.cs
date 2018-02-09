@@ -168,6 +168,8 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             // all good
         }
+
+        public string Description { get; } = "SomeService1";
     }
 
     public class BadService : ISomeService, IEnvironmentCheck
@@ -176,6 +178,8 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             throw new Exception("I'm bad!");
         }
+
+        public string Description { get; } = "BadService";
     }
 
     public class PositiveCheck : IEnvironmentCheck
@@ -184,6 +188,8 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             // all good
         }
+
+        public string Description { get; } = "PositiveCheck";
     }
 
     public class NegativeCheck : IEnvironmentCheck
@@ -192,6 +198,8 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             throw new Exception("Kaboom!");
         }
+
+        public string Description { get; } = "NegativeCheck";
     }
 
     public class StubEnvironmentRecorder : IEnvironmentRecorder
@@ -253,6 +261,11 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             // do the assertion of valid state
         }
+
+        public string Description { get; } = "Fake Store Environment Check";
+
+
+
     }
     // ENDSAMPLE
 
@@ -263,5 +276,7 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             // do something here
         }
+
+        public string Description { get; } = "Some Description";
     }
 }
