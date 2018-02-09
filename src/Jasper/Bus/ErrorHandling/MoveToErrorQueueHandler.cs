@@ -12,5 +12,10 @@ namespace Jasper.Bus.ErrorHandling
 
             return null;
         }
+
+        public override string ToString()
+        {
+            return $"Move to Error Queue if ex is {typeof(T).Name}";
+        }
     }
 }

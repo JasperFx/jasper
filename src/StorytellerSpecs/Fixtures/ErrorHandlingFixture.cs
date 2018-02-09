@@ -181,7 +181,7 @@ namespace StorytellerSpecs.Fixtures
             var callback = _transport.LastCallback();
             if (callback == null)
             {
-                throw new Exception("Something went really wrong, there's not messag3e history");
+                throw new Exception("Something went really wrong, there's no message history");
             }
 
             if (callback.MarkedSucessful)

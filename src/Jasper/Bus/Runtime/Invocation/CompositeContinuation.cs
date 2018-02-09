@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 
@@ -46,5 +47,9 @@ namespace Jasper.Bus.Runtime.Invocation
             return GetEnumerator();
         }
 
+        public override string ToString()
+        {
+            return _continuations.Select(x => x.ToString()).Join(" and ");
+        }
     }
 }

@@ -18,6 +18,11 @@ namespace Jasper.Bus.ErrorHandling
         }
 
         public TimeSpan Delay { get; }
+
+        public override string ToString()
+        {
+            return $"Schedule Retry in {Delay.TotalSeconds} seconds";
+        }
     }
 }
 

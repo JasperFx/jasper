@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Runtime.Invocation;
 
@@ -13,6 +14,12 @@ namespace Jasper.Bus.ErrorHandling
         public void AddContinuation(IContinuation continuation)
         {
             Sources.Add(new ContinuationSource(continuation));
+        }
+
+        public override string ToString()
+        {
+            return $"If {Conditions.Select(x => x.ToString()).Join(", «")}, then {Sources.Select(x => x.ToString()).Join(", ")}";
+
         }
 
         public IContinuation Continuation(Envelope envelope, Exception ex)
@@ -72,6 +79,11 @@ namespace Jasper.Bus.ErrorHandling
         }
 
         public IContinuation Continuation { get; }
+
+        public override string ToString()
+        {
+            return Continuation.ToString();
+        }
     }
 
     public interface IContinuationSource

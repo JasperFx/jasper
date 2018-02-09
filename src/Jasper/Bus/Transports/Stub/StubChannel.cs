@@ -10,13 +10,13 @@ namespace Jasper.Bus.Transports.Stub
 {
     public class StubChannel : ISendingAgent, IDisposable
     {
-        private readonly IWorkerQueue _workers;
+        private readonly IHandlerPipeline _pipeline;
         private readonly StubTransport _stubTransport;
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
-        public StubChannel(Uri destination, IWorkerQueue workers, StubTransport stubTransport)
+        public StubChannel(Uri destination, IHandlerPipeline pipeline, StubTransport stubTransport)
         {
-            _workers = workers;
+            _pipeline = pipeline;
             _stubTransport = stubTransport;
             Destination = destination;
         }
@@ -53,7 +53,7 @@ namespace Jasper.Bus.Transports.Stub
             envelope.ReceivedAt = Destination;
 
 
-            return _workers.Enqueue(envelope);
+            return _pipeline.InvokeNow(envelope);
         }
 
         public Task StoreAndForward(Envelope envelope)

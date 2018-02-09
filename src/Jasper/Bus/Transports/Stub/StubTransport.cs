@@ -39,10 +39,6 @@ namespace Jasper.Bus.Transports.Stub
 
         {
             LocalReplyUri = new Uri($"stub://replies");
-
-
-
-
         }
 
         public void Dispose()
@@ -64,8 +60,10 @@ namespace Jasper.Bus.Transports.Stub
 
         public void StartListening(BusSettings settings, IWorkerQueue workers)
         {
+            var pipeline = workers.As<WorkerQueue>().Pipeline;
+
             Channels =
-                new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, workers, this));
+                new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, pipeline, this));
 
 
             var incoming = settings.Listeners.Where(x => x.Scheme == "stub");

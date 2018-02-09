@@ -16,7 +16,6 @@ namespace Jasper.Bus.WorkerQueues
     public class WorkerQueue : IWorkerQueue
     {
         private readonly CompositeMessageLogger _logger;
-        private readonly IHandlerPipeline _pipeline;
         private readonly BusSettings _settings;
         private readonly CancellationToken _cancellationToken;
         private readonly Dictionary<string, ActionBlock<Envelope>> _receivers
@@ -26,7 +25,7 @@ namespace Jasper.Bus.WorkerQueues
         public WorkerQueue(CompositeMessageLogger logger, IHandlerPipeline pipeline, BusSettings settings)
         {
             _logger = logger;
-            _pipeline = pipeline;
+            Pipeline = pipeline;
             _settings = settings;
             _cancellationToken = _settings.Cancellation;
 
@@ -39,6 +38,9 @@ namespace Jasper.Bus.WorkerQueues
         }
 
         public IScheduledJobProcessor ScheduledJobs { get; }
+
+        // Hate this, but leave it here
+        internal IHandlerPipeline Pipeline { get; }
 
         public Task Enqueue(Envelope envelope)
         {
@@ -87,7 +89,7 @@ namespace Jasper.Bus.WorkerQueues
                 {
                     envelope.ContentType = envelope.ContentType ?? "application/json";
 
-                    return _pipeline.Invoke(envelope);
+                    return Pipeline.Invoke(envelope);
                 }, options);
 
                 _receivers.Add(queueName, receiver);

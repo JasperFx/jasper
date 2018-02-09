@@ -18,5 +18,10 @@ namespace Jasper.Bus.ErrorHandling
         {
             return context.Retry(envelope);
         }
+
+        public override string ToString()
+        {
+            return "Retry Now";
+        }
     }
 }

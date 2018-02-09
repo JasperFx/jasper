@@ -23,5 +23,10 @@ namespace Jasper.Bus.ErrorHandling
 
             return new RespondWithMessageContinuation(message);
         }
+
+        public override string ToString()
+        {
+            return $"Response with message if Ex is {typeof(T).Name}";
+        }
     }
 }

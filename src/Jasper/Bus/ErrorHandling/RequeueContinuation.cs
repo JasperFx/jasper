@@ -17,5 +17,10 @@ namespace Jasper.Bus.ErrorHandling
         {
             return envelope.Callback.Requeue(envelope);
         }
+
+        public override string ToString()
+        {
+            return "Requeue Message Locallyf";
+        }
     }
 }

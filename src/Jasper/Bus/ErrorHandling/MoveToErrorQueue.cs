@@ -23,5 +23,10 @@ namespace Jasper.Bus.ErrorHandling
             context.Logger.MovedToErrorQueue(envelope, Exception);
 
         }
+
+        public override string ToString()
+        {
+            return $"Move to Error Queue";
+        }
     }
 }
