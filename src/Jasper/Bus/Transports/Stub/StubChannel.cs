@@ -53,7 +53,9 @@ namespace Jasper.Bus.Transports.Stub
             envelope.ReceivedAt = Destination;
 
 
-            return _pipeline.InvokeNow(envelope);
+            _pipeline.Invoke(envelope).Wait();
+
+            return Task.CompletedTask;
         }
 
         public Task StoreAndForward(Envelope envelope)
