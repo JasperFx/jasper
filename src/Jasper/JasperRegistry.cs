@@ -2,8 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Util;
@@ -15,7 +17,10 @@ using Jasper.Bus.WorkerQueues;
 using Jasper.Configuration;
 using Jasper.Settings;
 using Jasper.Util;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper
 {
@@ -227,6 +232,35 @@ namespace Jasper
         internal protected virtual void Describe(JasperRuntime runtime, TextWriter writer)
         {
             Bus.Describe(runtime, writer);
+        }
+
+        internal protected virtual async Task Startup(JasperRuntime runtime)
+        {
+            var services = runtime.Container.GetAllInstances<IHostedService>();
+
+            foreach (var service in services)
+            {
+                await service.StartAsync(BusSettings.Cancellation);
+            }
+        }
+
+        internal protected virtual async Task Stop(JasperRuntime runtime)
+        {
+            var services = runtime.Container.GetAllInstances<IHostedService>();
+
+            foreach (var service in services)
+            {
+                try
+                {
+                    await service.StopAsync(CancellationToken.None);
+                }
+                catch (Exception e)
+                {
+                    ConsoleWriter.Write(ConsoleColor.Red, "Failed to stop hosted service" + service);
+                    ConsoleWriter.Write(ConsoleColor.Yellow, e.ToString());
+                    throw;
+                }
+            }
         }
     }
 }

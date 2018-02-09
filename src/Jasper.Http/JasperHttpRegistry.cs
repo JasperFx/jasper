@@ -67,5 +67,18 @@ namespace Jasper.Http
             base.Describe(runtime, writer);
             Http.Describe(runtime, writer);
         }
+
+        protected override Task Startup(JasperRuntime runtime)
+        {
+            // Handled by ASP.Net Core itself
+            return Task.CompletedTask;
+        }
+
+
+        protected override Task Stop(JasperRuntime runtime)
+        {
+            // Handled by ASP.Net Core itself
+            return Task.CompletedTask;
+        }
     }
 }

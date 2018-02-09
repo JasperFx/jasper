@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using BlueMilk;
 using BlueMilk.Codegen;
@@ -9,6 +10,7 @@ using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -30,6 +32,31 @@ namespace Jasper.Testing
             {
                 runtime.ApplicationAssembly.ShouldBe(GetType().Assembly);
             }
+        }
+
+        [Fact]
+        public void registrations_from_the_main_registry_are_applied()
+        {
+            using (var runtime = JasperRuntime.For(_ => { _.Services.AddTransient<IMainService, MainService>(); }))
+            {
+                runtime.Container.DefaultRegistrationIs<IMainService, MainService>();
+            }
+
+        }
+
+        [Fact]
+        public void can_use_custom_hosted_service_without_aspnet()
+        {
+            var service = new CustomHostedService();
+
+            var runtime = JasperRuntime.For(_ => _.Services.AddSingleton<IHostedService>(service));
+
+            service.WasStarted.ShouldBeTrue();
+            service.WasStopped.ShouldBeFalse();
+
+            runtime.Dispose();
+
+            service.WasStopped.ShouldBeTrue();
         }
     }
 
@@ -58,11 +85,7 @@ namespace Jasper.Testing
         private readonly JasperRuntime theRuntime;
 
 
-        [Fact]
-        public void registrations_from_the_main_registry_are_applied()
-        {
-            theRuntime.Container.DefaultRegistrationIs<IMainService, MainService>();
-        }
+
 
     }
 
@@ -103,6 +126,25 @@ namespace Jasper.Testing
         {
             WasDisposed = true;
         }
+    }
+
+    public class CustomHostedService : IHostedService
+    {
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            WasStarted = true;
+            return Task.CompletedTask;
+        }
+
+        public bool WasStarted { get; set; }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            WasStopped = true;
+            return Task.CompletedTask;
+        }
+
+        public bool WasStopped { get; set; }
     }
 
 

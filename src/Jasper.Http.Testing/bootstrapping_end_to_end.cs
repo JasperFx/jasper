@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using BlueMilk.Scanning;
@@ -9,6 +10,7 @@ using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -18,8 +20,6 @@ namespace Jasper.Http.Testing
     {
         public bootstrapping_end_to_end()
         {
-            TypeRepository.ClearAll();
-
             var registry = new JasperHttpRegistry();
             registry.Http.Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
@@ -97,6 +97,40 @@ namespace Jasper.Http.Testing
         {
             theRuntime.Get<IUrlRegistry>().ShouldNotBeNull();
         }
+
+        [Fact]
+        public void can_use_custom_hosted_service_without_aspnet()
+        {
+            var service = new CustomHostedService();
+
+            var runtime = JasperRuntime.For<JasperHttpRegistry>(_ => _.Services.AddSingleton<IHostedService>(service));
+
+            service.WasStarted.ShouldBeTrue();
+            service.WasStopped.ShouldBeFalse();
+
+            runtime.Dispose();
+
+            service.WasStopped.ShouldBeTrue();
+        }
+    }
+
+    public class CustomHostedService : IHostedService
+    {
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            WasStarted = true;
+            return Task.CompletedTask;
+        }
+
+        public bool WasStarted { get; set; }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            WasStopped = true;
+            return Task.CompletedTask;
+        }
+
+        public bool WasStopped { get; set; }
     }
 
     public class EndpointExtension : IJasperExtension

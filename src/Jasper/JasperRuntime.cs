@@ -115,6 +115,8 @@ namespace Jasper
                 Get<CompositeMessageLogger>().LogException(e);
             }
 
+            Registry.Stop(this).Wait(10.Seconds());
+
             Get<BusSettings>().StopAll();
 
             isDisposing = true;
@@ -217,12 +219,14 @@ namespace Jasper
             var services = registry.CombinedServices();
 
             var runtime = new JasperRuntime(registry, services, timer);
-            var routeDetermination = registry.BuildFeatures(runtime, timer);
+            var featureBuilding = registry.BuildFeatures(runtime, timer);
 
             await handlerCompilation;
             await registry.Bus.Activate(runtime, registry.Generation, timer);
 
-            await routeDetermination;
+            await featureBuilding;
+
+            await registry.Startup(runtime);
 
             // Run environment checks
             timer.Record("Environment Checks", () =>
@@ -305,4 +309,6 @@ namespace Jasper
 
         }
     }
+
+
 }

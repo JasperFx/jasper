@@ -8,6 +8,7 @@ using Jasper.Bus.Transports.Tcp;
 using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
 using Jasper.EnvironmentChecks;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.ObjectPool;
 
@@ -17,6 +18,10 @@ namespace Jasper
     {
         public JasperServiceRegistry(JasperRegistry parent)
         {
+            // Will be overwritten when ASP.Net is in place too,
+            // but that's okay
+            this.AddSingleton<HostedServiceExecutor>();
+
             conneg(parent);
             messaging(parent);
         }
