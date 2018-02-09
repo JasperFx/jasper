@@ -1,7 +1,7 @@
-﻿using Baseline;
+﻿using Alba;
+using Alba.Stubs;
+using Baseline;
 using Jasper.Http.Routing;
-using JasperHttpTesting;
-using JasperHttpTesting.Stubs;
 using Microsoft.AspNetCore.Http;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;

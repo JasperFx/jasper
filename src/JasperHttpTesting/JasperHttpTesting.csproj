@@ -6,4 +6,7 @@
     <ProjectReference Include="..\Jasper.Http\Jasper.Http.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Alba.AspNetCore2" Version="1.4.0" />
+  </ItemGroup>
 </Project>

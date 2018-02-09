@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Alba;
 using JasperHttpTesting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,14 @@ using Xunit;
 
 namespace Jasper.Http.Testing.AspNetCoreIntegration
 {
+    public class EmptyStartup
+    {
+        public void Configure()
+        {
+
+        }
+    }
+
     public class composing_request_delegate_order_within_aspnetcore_bootstrapping : IDisposable
     {
         private SystemUnderTest _alba;
@@ -17,13 +26,16 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
             var registry = new JasperHttpRegistry();
             registry.Handlers.DisableConventionalDiscovery(true);
 
-            _alba = SystemUnderTest.For(builder =>
+            _alba = new SystemUnderTest();
+            _alba.UseStartup<EmptyStartup>();
+            _alba.Configure(builder =>
             {
                 builder
                     .UseServer(new NulloServer())
                     .Configure(configure)
                     .UseJasper(registry);
             });
+
 
         }
 
@@ -190,4 +202,6 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
 
         }
     }
+
+
 }
