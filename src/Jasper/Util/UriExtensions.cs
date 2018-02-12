@@ -61,11 +61,11 @@ namespace Jasper.Util
             {
                 case "tcp":
                     return uri.IsDurable()
-                            ? $"tcp://localhost:{uri.Port}/{TransportConstants.Durable}".ToUri()
-                            : $"tcp://localhost:{uri.Port}".ToUri();
+                            ? $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}".ToUri()
+                            : $"tcp://{uri.Host}:{uri.Port}".ToUri();
 
                 case "durable":
-                    return $"tcp://localhost:{uri.Port}/{TransportConstants.Durable}".ToUri();
+                    return $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}".ToUri();
 
                 default:
                     return uri;

@@ -24,13 +24,14 @@ namespace Jasper.Bus.Transports.Receiving
         private readonly ActionBlock<Socket> _socketHandling;
         private readonly Uri _uri;
 
-        public ListeningAgent(IReceiverCallback callback, int port, string protocol, CancellationToken cancellationToken)
+        public ListeningAgent(IReceiverCallback callback, IPAddress ipaddr, int port, string protocol, CancellationToken cancellationToken)
         {
+            
             Port = port;
             _callback = callback;
             _cancellationToken = cancellationToken;
 
-            _listener = new TcpListener(new IPEndPoint(IPAddress.Any, port));
+            _listener = new TcpListener(new IPEndPoint(ipaddr, port));
             _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             _socketHandling = new ActionBlock<Socket>(async s =>
@@ -41,7 +42,7 @@ namespace Jasper.Bus.Transports.Receiving
                 }
             });
 
-            _uri = $"{protocol}://{Environment.MachineName}:{port}/".ToUri();
+            _uri = $"{protocol}://{ipaddr}:{port}/".ToUri();
 
         }
 

@@ -11,24 +11,25 @@ namespace Jasper.Bus.Transports.Receiving
 {
     public class SocketListeningAgent : IListeningAgent
     {
+        private readonly IPAddress _ipaddr;
         private readonly int _port;
         private readonly CancellationToken _cancellationToken;
         private TcpListener _listener;
         private ActionBlock<Socket> _socketHandling;
         private Task _receivingLoop;
 
-        public SocketListeningAgent(int port, CancellationToken cancellationToken)
+        public SocketListeningAgent(IPAddress ipaddr, int port, CancellationToken cancellationToken)
         {
             _port = port;
+            _ipaddr = ipaddr;
             _cancellationToken = cancellationToken;
 
-
-            Address = $"tcp://{Environment.MachineName}:{port}/".ToUri();
+            Address = $"tcp://{ipaddr}:{port}/".ToUri();
         }
 
         public void Start(IReceiverCallback callback)
         {
-            _listener = new TcpListener(new IPEndPoint(IPAddress.Loopback, _port));
+            _listener = new TcpListener(new IPEndPoint(_ipaddr, _port));
             _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             _socketHandling = new ActionBlock<Socket>(async s =>
