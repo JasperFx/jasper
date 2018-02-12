@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using Baseline;
 using Jasper.Bus.Logging;
@@ -59,7 +60,7 @@ namespace Jasper.Bus.Transports.Tcp
         {
             if (settings.StateFor(Protocol) == TransportState.Disabled) return;
 
-            _workerQueue = workers;
+           _workerQueue = workers;
 
             var incoming = settings.Listeners.Where(x => x.Scheme == Protocol).ToArray();
 
@@ -67,7 +68,17 @@ namespace Jasper.Bus.Transports.Tcp
 
             foreach (var uri in incoming)
             {
-                var agent = new SocketListeningAgent(uri.Port, settings.Cancellation);
+                // check the uri for an ip address to bind to
+                if (uri.HostNameType == UriHostNameType.IPv4 || uri.HostNameType == UriHostNameType.IPv6)
+                {
+                    IPAddress ipaddr = IPAddress.Parse(uri.Host);
+                    agent = new SocketListeningAgent(ipaddr, uri.Port, settings.Cancellation);
+                } else if (uri.HostName == "localhost") {
+                    agent = new SocketListeningAgent(IPAddress.Loopback, uri.Port, settings.Cancellation);
+                } else {
+                    agent = new SocketListeningAgent(IPAddress.Any, uri.Port, settings.Cancellation);
+                }
+                
                 var listener = uri.IsDurable()
                     ? _persistence.BuildListener(agent, _workerQueue)
                     : new LightweightListener( _workerQueue, _logger, agent);

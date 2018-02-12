@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bus.Lightweight.Protocol
 
         public ProtocolContext()
         {
-            _listener = new ListeningAgent(theReceiver, thePort, "durable", CancellationToken.None);
+            _listener = new ListeningAgent(theReceiver, theAddress, thePort, "durable", CancellationToken.None);
 
 
 
