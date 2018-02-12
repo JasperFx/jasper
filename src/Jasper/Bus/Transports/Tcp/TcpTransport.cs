@@ -68,12 +68,13 @@ namespace Jasper.Bus.Transports.Tcp
 
             foreach (var uri in incoming)
             {
+                SocketListeningAgent agent;
                 // check the uri for an ip address to bind to
                 if (uri.HostNameType == UriHostNameType.IPv4 || uri.HostNameType == UriHostNameType.IPv6)
                 {
                     IPAddress ipaddr = IPAddress.Parse(uri.Host);
                     agent = new SocketListeningAgent(ipaddr, uri.Port, settings.Cancellation);
-                } else if (uri.HostName == "localhost") {
+                } else if (uri.Host == "localhost") {
                     agent = new SocketListeningAgent(IPAddress.Loopback, uri.Port, settings.Cancellation);
                 } else {
                     agent = new SocketListeningAgent(IPAddress.Any, uri.Port, settings.Cancellation);
