@@ -236,7 +236,7 @@ namespace Jasper
             });
 
             timer.MarkStart("Register Node");
-            await registerRunningNode(runtime);
+            await registerRunningNode(runtime, registry);
             timer.MarkFinished("Register Node");
 
             timer.Stop();
@@ -244,7 +244,7 @@ namespace Jasper
             return runtime;
         }
 
-        private static async Task registerRunningNode(JasperRuntime runtime)
+        private static async Task registerRunningNode(JasperRuntime runtime, JasperRegistry registry)
         {
             // TODO -- get a helper for this, it's ugly
             var settings = runtime.Get<BusSettings>();
@@ -253,6 +253,9 @@ namespace Jasper
             try
             {
                 var local = new ServiceNode(settings);
+                registry.AlterNode(local);
+
+
                 local.HttpEndpoints = runtime.HttpAddresses?.Split(';').Select(x => x.ToUri().ToMachineUri()).Distinct()
                     .ToArray();
 

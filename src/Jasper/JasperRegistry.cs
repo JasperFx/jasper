@@ -262,5 +262,10 @@ namespace Jasper
                 }
             }
         }
+
+        internal protected virtual void AlterNode(ServiceNode local)
+        {
+
+        }
     }
 }

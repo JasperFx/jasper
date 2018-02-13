@@ -1,23 +1,21 @@
 ﻿using System;
-using Jasper;
 using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports.Configuration;
-using Jasper.Http;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests
+namespace Jasper.Http.Testing
 {
-    public class ServiceNodeDeterminationTests : IDisposable
+    public class ServiceNode_determination_specs : IDisposable
     {
         private readonly JasperHttpRegistry theRegistry = new JasperHttpRegistry();
-        private Lazy<JasperRuntime> _runtime;
+        private readonly Lazy<JasperRuntime> _runtime;
 
         private IServiceNode theServiceNode => _runtime.Value.Node;
 
-        public ServiceNodeDeterminationTests()
+        public ServiceNode_determination_specs()
         {
             _runtime = new Lazy<JasperRuntime>(() => JasperRuntime.For(theRegistry));
         }
@@ -56,8 +54,9 @@ namespace IntegrationTests
         {
             theRegistry.Http.UseUrls("http://localhost:5003");
 
-            theServiceNode.HttpEndpoints.ShouldContain($"http://{Environment.MachineName}:5003".ToUri());
-            theServiceNode.MessagesUrl.ShouldBe(new HttpTransportSettings().RelativeUrl);
+            var serviceNode = theServiceNode;
+            serviceNode.HttpEndpoints.ShouldContain($"http://{Environment.MachineName}:5003".ToUri());
+            serviceNode.MessagesUrl.ShouldBe(new HttpTransportSettings().RelativeUrl);
         }
 
         [Fact]

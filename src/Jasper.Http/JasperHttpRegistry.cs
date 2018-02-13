@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline;
 using BlueMilk.Util;
+using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Bus.Transports;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
@@ -68,6 +69,11 @@ namespace Jasper.Http
             Http.Describe(runtime, writer);
         }
 
+        protected override void AlterNode(ServiceNode local)
+        {
+            local.MessagesUrl = Http.Transport.As<HttpTransportSettings>().RelativeUrl;
+        }
+
         protected override Task Startup(JasperRuntime runtime)
         {
             // Handled by ASP.Net Core itself
@@ -80,5 +86,9 @@ namespace Jasper.Http
             // Handled by ASP.Net Core itself
             return Task.CompletedTask;
         }
+
+
+
+
     }
 }
