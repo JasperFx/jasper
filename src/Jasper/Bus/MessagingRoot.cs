@@ -71,10 +71,14 @@ namespace Jasper.Bus
 
             Router = new MessageRouter(Serialization, channels, subscriptions, handlers, Logger, Lookup, settings);
 
-            ScheduledJobs = new InMemoryScheduledJobProcessor();
+            // TODO -- ZOMG this is horrible, and I admit it.
+            if (_persistence is NulloPersistence)
+            {
+                _persistence.As<NulloPersistence>().ScheduledJobs = ScheduledJobs;
+            }
         }
 
-        public IScheduledJobProcessor ScheduledJobs { get; }
+        public IScheduledJobProcessor ScheduledJobs => Workers.ScheduledJobs;
 
         public IMessageRouter Router { get; }
 
@@ -131,7 +135,6 @@ namespace Jasper.Bus
                 timer.Record("ChannelGraph.Start",
                     () => { _channels.As<ChannelGraph>().Start(_settings, transports, Lookup, capabilities, Logger, Workers); });
 
-                ScheduledJobs.Start(Workers);
             }
 
             runtime.Capabilities = await capabilityCompilation;

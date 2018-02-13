@@ -19,6 +19,5 @@ namespace Jasper.Bus.Scheduled
 
         ScheduledJob[] QueuedJobs();
 
-        void Start(IWorkerQueue workerQueue);
     }
 }

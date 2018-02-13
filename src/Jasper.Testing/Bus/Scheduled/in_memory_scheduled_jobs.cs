@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Bus.Runtime;
 using Jasper.Bus.Scheduled;
 using Jasper.Bus.WorkerQueues;
@@ -23,7 +24,7 @@ namespace IntegrationTests.Scheduled
 
         public in_memory_scheduled_jobs()
         {
-            theScheduledJobs = InMemoryScheduledJobProcessor.ForQueue(this);
+            theScheduledJobs = new InMemoryScheduledJobProcessor(this);
         }
 
         Task IWorkerQueue.Enqueue(Envelope envelope)
@@ -61,7 +62,7 @@ namespace IntegrationTests.Scheduled
         }
 
         [Fact]
-        public async Task run_simplest_case()
+        public void run_simplest_case()
         {
             var envelope = ObjectMother.Envelope();
             var waiter = waitForReceipt(envelope);
@@ -70,7 +71,7 @@ namespace IntegrationTests.Scheduled
 
             theScheduledJobs.Count().ShouldBe(1);
 
-            await waiter;
+            waiter.Wait(10.Seconds());
 
             sent.ShouldContain(envelope);
 

@@ -15,13 +15,11 @@ namespace Jasper.Bus.Transports
     {
         private readonly CompositeTransportLogger _logger;
         private readonly BusSettings _settings;
-        private InMemoryScheduledJobProcessor _scheduledJobs;
 
         public NulloPersistence(CompositeTransportLogger logger, BusSettings settings)
         {
             _logger = logger;
             _settings = settings;
-            _scheduledJobs = new InMemoryScheduledJobProcessor();
         }
 
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
@@ -44,6 +42,8 @@ namespace Jasper.Bus.Transports
             // nothing
         }
 
+        public IScheduledJobProcessor ScheduledJobs { get; set; }
+
         public Task ScheduleJob(Envelope envelope)
         {
             if (!envelope.ExecutionTime.HasValue)
@@ -51,7 +51,7 @@ namespace Jasper.Bus.Transports
                 throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
             }
 
-            _scheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+            ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
             return Task.CompletedTask;
         }
 

@@ -331,6 +331,12 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         }
 
-        public IScheduledJobProcessor ScheduledJobs { get;} = new InMemoryScheduledJobProcessor();
+        public IScheduledJobProcessor ScheduledJobs
+        {
+            get
+            {
+                return new InMemoryScheduledJobProcessor(this);
+            }
+        }
     }
 }

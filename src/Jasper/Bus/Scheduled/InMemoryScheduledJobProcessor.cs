@@ -13,17 +13,16 @@ namespace Jasper.Bus.Scheduled
         private readonly ConcurrentCache<Guid, InMemoryScheduledJob> _outstandingJobs
             = new ConcurrentCache<Guid, InMemoryScheduledJob>();
 
-        public IWorkerQueue _queue;
+        public readonly IWorkerQueue _queue;
 
+        public InMemoryScheduledJobProcessor(IWorkerQueue queue)
+        {
+            _queue = queue;
+        }
 
         public void Enqueue(DateTimeOffset executionTime, Envelope envelope)
         {
             _outstandingJobs[envelope.Id] = new InMemoryScheduledJob(this, envelope, executionTime);
-        }
-
-        public void Start(IWorkerQueue workerQueue)
-        {
-            _queue = workerQueue;
         }
 
         public async Task PlayAll()
@@ -66,11 +65,6 @@ namespace Jasper.Bus.Scheduled
                 job.Cancel();
 
             _outstandingJobs.ClearAll();
-        }
-
-        public static InMemoryScheduledJobProcessor ForQueue(IWorkerQueue queue)
-        {
-            return new InMemoryScheduledJobProcessor {_queue = queue};
         }
 
         public class InMemoryScheduledJob

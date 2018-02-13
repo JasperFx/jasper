@@ -34,7 +34,7 @@ namespace Jasper.Bus.WorkerQueues
                 AddQueue(worker.Name, worker.Parallelization);
             }
 
-            ScheduledJobs = InMemoryScheduledJobProcessor.ForQueue(this);
+            ScheduledJobs = new InMemoryScheduledJobProcessor(this);
         }
 
         public IScheduledJobProcessor ScheduledJobs { get; }

@@ -15,7 +15,7 @@ namespace IntegrationTests.Scheduled
 
         public end_to_end_with_in_memory()
         {
-            ScheduledMessageHandler.Reset();
+            ScheduledMessageCatcher.Reset();
 
             theRuntime = JasperRuntime.For<ScheduledMessageApp>();
         }
@@ -36,11 +36,11 @@ namespace IntegrationTests.Scheduled
 
 
 
-            ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);
+            ScheduledMessageCatcher.ReceivedMessages.Count.ShouldBe(0);
 
-            ScheduledMessageHandler.Received.Wait(10.Seconds());
+            ScheduledMessageCatcher.Received.Wait(30.Seconds());
 
-            ScheduledMessageHandler.ReceivedMessages.Single()
+            ScheduledMessageCatcher.ReceivedMessages.Single()
                 .Id.ShouldBe(2);
         }
 
@@ -60,11 +60,11 @@ namespace IntegrationTests.Scheduled
 
 
 
-            ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);
+            ScheduledMessageCatcher.ReceivedMessages.Count.ShouldBe(0);
 
-            ScheduledMessageHandler.Received.Wait(10.Seconds());
+            ScheduledMessageCatcher.Received.Wait(10.Seconds());
 
-            ScheduledMessageHandler.ReceivedMessages.Single()
+            ScheduledMessageCatcher.ReceivedMessages.Single()
                 .Id.ShouldBe(2);
         }
 
@@ -84,6 +84,9 @@ namespace IntegrationTests.Scheduled
             Transports.ListenForMessagesFrom("loopback://incoming");
 
             Logging.UseConsoleLogging = true;
+
+            Handlers.DisableConventionalDiscovery();
+            Handlers.IncludeType<ScheduledMessageCatcher>();
         }
     }
 
@@ -92,7 +95,7 @@ namespace IntegrationTests.Scheduled
         public int Id { get; set; }
     }
 
-    public class ScheduledMessageHandler
+    public class ScheduledMessageCatcher
     {
         public static readonly IList<ScheduledMessage> ReceivedMessages = new List<ScheduledMessage>();
 
