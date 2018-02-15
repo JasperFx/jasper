@@ -1,6 +1,6 @@
-﻿using Jasper.Testing.Bus.Bootstrapping;
-using Jasper.Testing.Bus.Compilation;
-using Jasper.Testing.FakeStoreTypes;
+﻿using Jasper.Testing.FakeStoreTypes;
+using Jasper.Testing.Messaging.Bootstrapping;
+using Jasper.Testing.Messaging.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;

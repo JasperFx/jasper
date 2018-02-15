@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reflection;
 using Jasper;
-using Jasper.Bus.Configuration;
 using Jasper.Configuration;
 using Jasper.Diagnostics;
 using Jasper.Diagnostics.Messages;
+using Jasper.Messaging.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Bus;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Util;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Util;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Transport

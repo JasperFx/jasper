@@ -8,8 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Jasper;
-using Jasper.Bus;
 using Jasper.Diagnostics;
+using Jasper.Messaging;
 
 namespace DiagnosticsHarness
 {
@@ -67,7 +67,7 @@ namespace DiagnosticsHarness
 
         public static void UseRequestLogging(IApplicationBuilder app)
         {
-            var bus = app.ApplicationServices.GetService<IServiceBus>();
+            var bus = app.ApplicationServices.GetService<IMessageContext>();
 
              app.Use( async (context, next) =>
              {
@@ -81,7 +81,7 @@ namespace DiagnosticsHarness
 
          public static void UseErrorMap(IApplicationBuilder app)
          {
-             var bus = app.ApplicationServices.GetService<IServiceBus>();
+             var bus = app.ApplicationServices.GetService<IMessageContext>();
 
              app.Map("/error", _ => _.Use( async (context, next) => {
                 context.Response.ContentType = "text/html";
@@ -107,9 +107,9 @@ namespace DiagnosticsHarness
 
     public class SomeMiddleware
     {
-        private readonly IServiceBus _bus;
+        private readonly IMessageContext _bus;
 
-        public SomeMiddleware(RequestDelegate next, IServiceBus bus)
+        public SomeMiddleware(RequestDelegate next, IMessageContext bus)
         {
             _bus = bus;
         }

@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
-using Jasper.Testing.Bus;
-using Jasper.Testing.Bus.Transports;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Serializers;
+using Jasper.Testing.Messaging;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -34,7 +33,7 @@ namespace Jasper.Testing.Conneg
                 _.Handlers.IncludeType<NewMessageHandler>();
             }))
             {
-                var modelReader = runtime.Get<BusMessageSerializationGraph>().ReaderFor(typeof(NewMessage));
+                var modelReader = runtime.Get<MessagingSerializationGraph>().ReaderFor(typeof(NewMessage));
 
                 var reader = modelReader.OfType<ForwardingMessageDeserializer<NewMessage>>().Single();
                 reader.ShouldNotBeNull();
@@ -64,7 +63,7 @@ namespace Jasper.Testing.Conneg
             {
                 var waiter = tracker.WaitFor<NewMessage>();
 
-                await runtime.Bus.Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
+                await runtime.Messaging.Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
                 {
                     e.Destination = channel;
                     e.ContentType = typeof(OriginalMessage).ToContentType("json");

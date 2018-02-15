@@ -1,5 +1,5 @@
 ﻿using Jasper.Conneg;
-using Jasper.Testing.Bus;
+using Jasper.Testing.Messaging;
 using Shouldly;
 using Xunit;
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Invocation;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Util;
 
 namespace Jasper.Testing.Samples.CascadingMessages
@@ -22,9 +22,9 @@ namespace Jasper.Testing.Samples.CascadingMessages
     // SAMPLE: NoCascadingHandler
     public class NoCascadingHandler
     {
-        private readonly IServiceBus _bus;
+        private readonly IMessageContext _bus;
 
-        public NoCascadingHandler(IServiceBus bus)
+        public NoCascadingHandler(IMessageContext bus)
         {
             _bus = bus;
         }
@@ -51,9 +51,9 @@ namespace Jasper.Testing.Samples.CascadingMessages
     // SAMPLE: Request/Replay-with-cascading
     public class Requester
     {
-        private readonly IServiceBus _bus;
+        private readonly IMessageContext _bus;
 
-        public Requester(IServiceBus bus)
+        public Requester(IMessageContext bus)
         {
             _bus = bus;
         }

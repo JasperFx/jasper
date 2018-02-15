@@ -2,11 +2,10 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Jasper;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Runtime;
 using Jasper.Consul;
 using Jasper.Consul.Internal;
+using Jasper.Messaging;
+using Jasper.Messaging.Configuration;
 using Jasper.Util;
 using Shouldly;
 using Xunit;

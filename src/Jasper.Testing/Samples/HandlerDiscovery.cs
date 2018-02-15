@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus.Runtime;
-using Jasper.Testing.Bus.Samples;
+using Jasper.Messaging.Runtime;
+using Jasper.Testing.Messaging.Samples;
 
 namespace Jasper.Testing.Samples.HandlerDiscovery
 {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.WorkerQueues;
 using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.WorkerQueues;
 using Marten;
 using Marten.Events;
 using Marten.Util;

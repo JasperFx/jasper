@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Baseline;
 using BlueMilk;
 using BlueMilk.Codegen;
-using Jasper.Bus;
 using Jasper.Configuration;
+using Jasper.Messaging;
 using Jasper.Util;
 using TypeRepository = BlueMilk.Scanning.TypeRepository;
 

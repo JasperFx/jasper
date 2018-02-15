@@ -1,7 +1,6 @@
 using System;
 using DiagnosticsHarnessMessages;
 using Jasper;
-using Jasper.Bus;
 using Jasper.Diagnostics;
 
 namespace DiagnosticsServiceHarness

@@ -1,8 +1,8 @@
 ﻿using Baseline;
 using Jasper;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.CommandLine;
 using Jasper.Consul;
+using Jasper.Messaging.Transports.Configuration;
 using TestMessages;
 
 namespace Publisher

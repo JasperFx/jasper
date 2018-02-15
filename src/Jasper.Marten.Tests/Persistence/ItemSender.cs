@@ -1,6 +1,6 @@
-﻿using Jasper.Bus.Transports.Configuration;
-using Jasper.Marten.Tests.Persistence.Resiliency;
+﻿using Jasper.Marten.Tests.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Transports.Configuration;
 using Marten;
 
 namespace Jasper.Marten.Tests.Persistence

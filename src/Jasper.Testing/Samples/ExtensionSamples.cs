@@ -1,5 +1,5 @@
-﻿using Jasper.Bus.Transports.Configuration;
-using Jasper.Configuration;
+﻿using Jasper.Configuration;
+using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,7 @@ namespace Jasper.Testing.Samples
             registry.Services.AddTransient<IFoo, Foo>();
 
             // Alter settings within the application
-            registry.Settings.Alter<BusSettings>(_ =>
+            registry.Settings.Alter<MessagingSettings>(_ =>
             {
                 _.JsonSerialization.TypeNameHandling = TypeNameHandling.All;
             });

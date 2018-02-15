@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Bus;
-using Jasper.Bus.Tracking;
+using Jasper.Messaging;
+using Jasper.Messaging.Tracking;
 using StoryTeller;
 
 namespace Jasper.Storyteller
@@ -10,7 +10,7 @@ namespace Jasper.Storyteller
         /// <summary>
         /// The service bus for the currently running application
         /// </summary>
-        protected IServiceBus Bus => Context.Service<IServiceBus>();
+        protected IMessageContext Bus => Context.Service<IMessageContext>();
 
         protected MessageHistory History => Context.Service<MessageHistory>();
 

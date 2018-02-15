@@ -1,8 +1,7 @@
 using System;
 using Jasper;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Receiving;
 using Jasper.CommandLine;
+using Jasper.Messaging.Transports.Configuration;
 using TestMessages;
 
 namespace Subscriber

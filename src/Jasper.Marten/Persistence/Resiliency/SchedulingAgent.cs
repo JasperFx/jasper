@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
-using Jasper.Bus;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.WorkerQueues;
+using Jasper.Messaging;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.WorkerQueues;
 using Marten;
 using Marten.Services;
 using Marten.Util;
@@ -22,7 +22,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IChannelGraph _channels;
         private readonly IWorkerQueue _workers;
         private readonly IDocumentStore _store;
-        private readonly BusSettings _settings;
+        private readonly MessagingSettings _settings;
         private readonly CompositeTransportLogger _logger;
         private readonly StoreOptions _storeOptions;
         private readonly ActionBlock<IMessagingAction> _worker;
@@ -34,7 +34,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private Timer _nodeReassignmentTimer;
         private readonly ReassignFromDormantNodes _nodeReassignment;
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, BusSettings settings, CompositeTransportLogger logger, StoreOptions storeOptions, MartenRetries retries)
+        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, CompositeTransportLogger logger, StoreOptions storeOptions, MartenRetries retries)
         {
             _channels = channels;
             _workers = workers;

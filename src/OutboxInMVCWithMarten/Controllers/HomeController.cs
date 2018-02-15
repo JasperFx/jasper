@@ -4,8 +4,8 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus;
 using Jasper.Marten;
+using Jasper.Messaging;
 using Marten;
 using Microsoft.AspNetCore.Mvc;
 using TestMessages;
@@ -67,12 +67,12 @@ namespace OutboxInMVCWithMarten.Controllers
         public async Task<IActionResult> CreateUser(
             string userId,
             [FromServices] IDocumentStore martenStore,
-            [FromServices] IServiceBus bus)
+            [FromServices] IMessageContext bus)
         {
             // The Marten IDocumentSession represents the unit of work
             using (var session = martenStore.OpenSession())
             {
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 var theUser = new User { Id = userId };
                 session.Store(theUser);
@@ -89,12 +89,12 @@ namespace OutboxInMVCWithMarten.Controllers
         public async Task<IActionResult> DeleteUser(
             string userId,
             [FromServices] IDocumentStore martenStore,
-            [FromServices] IServiceBus bus)
+            [FromServices] IMessageContext bus)
         {
             // the bus can use a document session no matter how it has been created
             using (var session = martenStore.DirtyTrackedSession(IsolationLevel.Serializable))
             {
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 var existing = session.Load<User>(userId);
                 if (existing != null && !existing.IsDeleted)

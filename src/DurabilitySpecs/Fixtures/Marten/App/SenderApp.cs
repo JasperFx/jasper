@@ -1,8 +1,8 @@
 ﻿using Baseline.Dates;
 using Jasper;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Transports.Configuration;
 using Marten;
 
 namespace DurabilitySpecs.Fixtures.Marten.App
@@ -23,7 +23,7 @@ namespace DurabilitySpecs.Fixtures.Marten.App
 
             Logging.UseConsoleLogging = true;
 
-            Settings.Alter<BusSettings>(_ =>
+            Settings.Alter<MessagingSettings>(_ =>
             {
                 _.ScheduledJobPollingTime = 1.Seconds();
                 _.FirstScheduledJobExecution = 0.Seconds();

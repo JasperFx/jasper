@@ -1,5 +1,5 @@
-﻿using Jasper.Bus;
-using Jasper.Marten.Tests.Setup;
+﻿using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging;
 using Jasper.Util;
 using Shouldly;
 using Xunit;

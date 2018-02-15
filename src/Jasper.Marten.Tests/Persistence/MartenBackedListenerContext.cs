@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Receiving;
-using Jasper.Bus.Transports.Tcp;
-using Jasper.Bus.WorkerQueues;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Receiving;
+using Jasper.Messaging.Transports.Tcp;
+using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Marten;
 using NSubstitute;
@@ -69,7 +69,7 @@ namespace Jasper.Marten.Tests.Persistence
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected readonly DocumentStore theStore;
         protected IWorkerQueue theWorkerQueue;
-        protected BusSettings theSettings;
+        protected MessagingSettings theSettings;
         protected MartenBackedListener theListener;
 
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
@@ -90,7 +90,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
-            theSettings = new BusSettings();
+            theSettings = new MessagingSettings();
 
             var tables = new EnvelopeTables(theSettings, new StoreOptions());
 

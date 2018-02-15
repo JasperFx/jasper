@@ -1,10 +1,9 @@
 ﻿using System;
 using Jasper;
-using Jasper.Bus;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Module1
 {

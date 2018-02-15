@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using BlueMilk;
-using Jasper.Bus;
+using Jasper.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -81,7 +81,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         [Fact]
         public void has_the_bus()
         {
-            theHost.Services.GetService(typeof(IServiceBus))
+            theHost.Services.GetService(typeof(IMessageContext))
                 .ShouldNotBeNull();
         }
 

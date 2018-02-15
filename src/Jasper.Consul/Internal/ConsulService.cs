@@ -1,9 +1,7 @@
 ﻿using System.Text;
 using Consul;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging;
+using Jasper.Messaging.Transports.Configuration;
 using Newtonsoft.Json;
 
 namespace Jasper.Consul.Internal
@@ -15,7 +13,7 @@ namespace Jasper.Consul.Internal
         private readonly IChannelGraph _channels;
 
 
-        protected ConsulService(ConsulSettings settings, IChannelGraph channels, BusSettings envSettings)
+        protected ConsulService(ConsulSettings settings, IChannelGraph channels, MessagingSettings envSettings)
         {
             _channels = channels;
             client = settings.Client;

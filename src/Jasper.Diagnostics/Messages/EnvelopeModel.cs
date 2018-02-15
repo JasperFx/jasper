@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Bus.Runtime;
+using Jasper.Messaging.Runtime;
 
 namespace Jasper.Diagnostics.Messages
 {

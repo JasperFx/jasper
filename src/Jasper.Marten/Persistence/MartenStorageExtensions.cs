@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
 using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Marten;
 using Marten.Schema;
 using Marten.Util;

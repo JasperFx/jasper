@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Jasper.Bus.Logging;
-using Jasper.Testing.Bus.Bootstrapping;
+using Jasper.Messaging.Logging;
+using Jasper.Testing.Messaging.Bootstrapping;
 using Module1;
 using Shouldly;
 using Xunit;

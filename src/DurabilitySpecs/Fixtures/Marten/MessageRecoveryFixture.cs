@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Serializers;
-using Jasper.Bus.Scheduled;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Stub;
-using Jasper.Bus.WorkerQueues;
 using Jasper.Marten;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Testing.Bus.Runtime;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Serializers;
+using Jasper.Messaging.Scheduled;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Stub;
+using Jasper.Messaging.WorkerQueues;
+using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Marten.Util;
 using Microsoft.Extensions.DependencyInjection;
@@ -73,7 +73,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
                 _.Include<MartenBackedPersistence>();
 
-                _.Settings.Alter<BusSettings>(x =>
+                _.Settings.Alter<MessagingSettings>(x =>
                 {
                     x.FirstNodeReassignmentExecution = 30.Minutes();
                     x.FirstScheduledJobExecution = 30.Minutes();
@@ -86,12 +86,12 @@ namespace DurabilitySpecs.Fixtures.Marten
             _runtime.Get<MartenBackedMessagePersistence>().ClearAllStoredMessages();
 
             _marker = _runtime.Get<EnvelopeTables>();
-            _serializers = _runtime.Get<BusMessageSerializationGraph>();
+            _serializers = _runtime.Get<MessagingSerializationGraph>();
 
             theStore = _runtime.Get<IDocumentStore>();
             theStore.Advanced.Clean.DeleteAllDocuments();
 
-            _currentNodeId = _runtime.Get<BusSettings>().UniqueNodeId;
+            _currentNodeId = _runtime.Get<MessagingSettings>().UniqueNodeId;
 
             _owners["This Node"] = _currentNodeId;
         }
@@ -212,7 +212,7 @@ namespace DurabilitySpecs.Fixtures.Marten
         private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
         private RecordingSchedulingAgent _schedulerAgent;
         private EnvelopeTables _marker;
-        private BusMessageSerializationGraph _serializers;
+        private MessagingSerializationGraph _serializers;
 
         [FormatAs("Node {node} is active")]
         public void NodeIsActive([SelectionList("owners")]string node)

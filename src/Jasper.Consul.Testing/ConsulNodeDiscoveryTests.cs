@@ -4,9 +4,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Baseline;
 using Consul;
-using Jasper.Bus;
-using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Consul.Internal;
+using Jasper.Messaging.Runtime.Subscriptions;
 using Shouldly;
 using Xunit;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using Jasper.Bus;
 using Oakton;
 
 namespace Jasper.CommandLine

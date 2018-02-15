@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Persistence;
 using Jasper.Marten.Tests.Persistence.Resiliency;
-using Jasper.Testing.Bus;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Testing.Messaging;
 using Jasper.Util;
 using Marten;
 using Shouldly;
@@ -49,7 +49,7 @@ namespace Jasper.Marten.Tests.Outbox
         [Fact]
         public async Task send_and_await_still_works()
         {
-            var bus = theSender.Get<IServiceBus>();
+            var bus = theSender.Get<IMessageContext>();
             var senderStore = theSender.Get<IDocumentStore>();
 
             var item = new ItemCreated
@@ -60,7 +60,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             using (var session = senderStore.LightweightSession())
             {
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 await bus.SendAndWait(item);
 
@@ -85,7 +85,7 @@ namespace Jasper.Marten.Tests.Outbox
         [Fact]
         public async Task request_reply_still_works()
         {
-            var bus = theSender.Get<IServiceBus>();
+            var bus = theSender.Get<IMessageContext>();
             var senderStore = theSender.Get<IDocumentStore>();
 
             var question = new Question
@@ -96,7 +96,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             using (var session = senderStore.LightweightSession())
             {
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 var answer = await bus.Request<Answer>(question);
                 answer.Sum.ShouldBe(7);
@@ -106,7 +106,7 @@ namespace Jasper.Marten.Tests.Outbox
         [Fact]
         public async Task basic_send()
         {
-            var bus = theSender.Get<IServiceBus>();
+            var bus = theSender.Get<IMessageContext>();
             var senderStore = theSender.Get<IDocumentStore>();
 
             var item = new ItemCreated
@@ -119,7 +119,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             using (var session = senderStore.LightweightSession())
             {
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 await bus.Send(item);
 
@@ -171,7 +171,7 @@ namespace Jasper.Marten.Tests.Outbox
             theReceiver.Dispose();
             theReceiver = null;
 
-            var bus = theSender.Get<IServiceBus>();
+            var bus = theSender.Get<IMessageContext>();
             var senderStore = theSender.Get<IDocumentStore>();
 
             var item = new ItemCreated
@@ -184,7 +184,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             using (var session = senderStore.LightweightSession())
             {
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 await bus.Send(item);
 
@@ -202,7 +202,7 @@ namespace Jasper.Marten.Tests.Outbox
         [Fact]
         public async Task schedule_local_job_durably()
         {
-            var bus = theSender.Get<IServiceBus>();
+            var bus = theSender.Get<IMessageContext>();
             var senderStore = theSender.Get<IDocumentStore>();
 
             var item = new ItemCreated
@@ -213,7 +213,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             using (var session = senderStore.LightweightSession())
             {
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 await bus.Schedule(item, 1.Hours());
 

@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.WorkerQueues;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.WorkerQueues;
 using Marten;
 using Marten.Util;
 
@@ -17,11 +16,11 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly CompositeTransportLogger _logger;
         private readonly EnvelopeTables _marker;
         private readonly ISchedulingAgent _schedulingAgent;
-        private readonly BusSettings _settings;
+        private readonly MessagingSettings _settings;
         private readonly IWorkerQueue _workers;
         private readonly string _findAtLargeEnvelopesSql;
 
-        public RecoverIncomingMessages(IWorkerQueue workers, BusSettings settings, EnvelopeTables marker,
+        public RecoverIncomingMessages(IWorkerQueue workers, MessagingSettings settings, EnvelopeTables marker,
             ISchedulingAgent schedulingAgent, CompositeTransportLogger logger)
         {
             _workers = workers;

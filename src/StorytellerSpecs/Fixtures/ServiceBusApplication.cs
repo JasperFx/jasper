@@ -1,11 +1,11 @@
 ﻿using System;
 using Jasper;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Model;
-using Jasper.Bus.Tracking;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Stub;
+using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
+using Jasper.Messaging.Tracking;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Stub;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 

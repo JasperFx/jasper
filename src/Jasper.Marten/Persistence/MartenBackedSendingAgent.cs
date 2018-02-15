@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.Transports.Tcp;
 using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Sending;
+using Jasper.Messaging.Transports.Tcp;
 using Marten;
 using Marten.Util;
 using Microsoft.CodeAnalysis.Emit;
@@ -23,11 +22,11 @@ namespace Jasper.Marten.Persistence
         private readonly CancellationToken _cancellation;
         private readonly CompositeTransportLogger _logger;
         private readonly IDocumentStore _store;
-        private readonly BusSettings _settings;
+        private readonly MessagingSettings _settings;
         private readonly EnvelopeTables _marker;
         private readonly MartenRetries _retries;
 
-        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, CompositeTransportLogger logger, BusSettings settings, EnvelopeTables marker, MartenRetries retries)
+        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, CompositeTransportLogger logger, MessagingSettings settings, EnvelopeTables marker, MartenRetries retries)
             : base(destination, sender, logger, settings, new MartenBackedRetryAgent(store, sender, settings.Retries, marker, logger))
         {
             _cancellation = cancellation;

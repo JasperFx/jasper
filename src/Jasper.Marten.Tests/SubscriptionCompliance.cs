@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten.Subscriptions;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Shouldly;
 using Xunit;

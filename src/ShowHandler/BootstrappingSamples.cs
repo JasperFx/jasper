@@ -1,5 +1,5 @@
 ﻿using Jasper;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;

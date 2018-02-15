@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Marten;
 using Marten.Services;
 using NSubstitute;

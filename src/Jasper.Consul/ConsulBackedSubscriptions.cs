@@ -1,6 +1,6 @@
-﻿using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Configuration;
+﻿using Jasper.Configuration;
 using Jasper.Consul.Internal;
+using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Consul
 {

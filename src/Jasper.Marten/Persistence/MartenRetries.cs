@@ -4,11 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Util;
 using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Util;
 using Marten;
 
 namespace Jasper.Marten.Persistence
@@ -18,7 +18,7 @@ namespace Jasper.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _tables;
         private readonly ITransportLogger _logger;
-        private readonly BusSettings _settings;
+        private readonly MessagingSettings _settings;
         private readonly ActionBlock<Envelope[]> _deleteIncoming;
         private readonly BatchingBlock<Envelope> _deleteIncomingBatching;
         private readonly ActionBlock<Envelope[]> _deleteOutgoing;
@@ -34,7 +34,7 @@ namespace Jasper.Marten.Persistence
         public readonly ManualResetEvent Scheduled = new ManualResetEvent(false);
         public readonly ManualResetEvent ErrorReportLogged = new ManualResetEvent(false);
 
-        public MartenRetries(IDocumentStore store, EnvelopeTables tables, CompositeTransportLogger logger, BusSettings settings)
+        public MartenRetries(IDocumentStore store, EnvelopeTables tables, CompositeTransportLogger logger, MessagingSettings settings)
         {
             _store = store;
             _tables = tables;

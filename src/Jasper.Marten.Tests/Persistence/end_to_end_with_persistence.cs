@@ -3,12 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Testing.Bus;
-using Jasper.Testing.Bus.Lightweight;
+using Jasper.Messaging.Runtime;
+using Jasper.Testing.Messaging;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -59,7 +57,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             var waiter = theTracker.WaitFor<ItemCreated>();
 
-            await theReceiver.Bus.Enqueue(item);
+            await theReceiver.Messaging.Enqueue(item);
 
             waiter.Wait(5.Seconds());
 
@@ -94,7 +92,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             var waiter = theTracker.WaitFor<ItemCreated>();
 
-            await theReceiver.Bus.EnqueueDurably(item);
+            await theReceiver.Messaging.EnqueueDurably(item);
 
             waiter.Wait(5.Seconds());
 
@@ -135,7 +133,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             var waiter = theTracker.WaitFor<ItemCreated>();
 
-            await theSender.Bus.Send(item);
+            await theSender.Messaging.Send(item);
 
             waiter.Wait(5.Seconds());
 

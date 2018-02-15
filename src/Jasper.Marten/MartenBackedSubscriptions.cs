@@ -1,6 +1,6 @@
-﻿using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Configuration;
+﻿using Jasper.Configuration;
 using Jasper.Marten.Subscriptions;
+using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Marten
 {

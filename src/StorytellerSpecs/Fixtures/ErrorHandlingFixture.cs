@@ -7,13 +7,12 @@ using Jasper;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using System.Threading.Tasks;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.ErrorHandling;
-using Jasper.Bus.Model;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Stub;
+using Jasper.Messaging;
+using Jasper.Messaging.ErrorHandling;
+using Jasper.Messaging.Model;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Stub;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -98,7 +97,7 @@ namespace StorytellerSpecs.Fixtures
         private HandlerGraph _graph;
         private HandlerChain _chain;
         private StubTransport _transport;
-        private IServiceBus _bus;
+        private IMessageContext _bus;
         private ErrorCausingMessage _message;
         private AttemptTracker _tracker;
 
@@ -122,7 +121,7 @@ namespace StorytellerSpecs.Fixtures
             _chain = _graph.ChainFor<ErrorCausingMessage>();
 
 
-            _bus = _runtime.Get<IServiceBus>();
+            _bus = _runtime.Get<IMessageContext>();
         }
 
         public override void TearDown()

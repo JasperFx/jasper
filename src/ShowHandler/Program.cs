@@ -2,9 +2,9 @@
 
 using System;
 using Jasper;
-using Jasper.Bus.Model;
 using Jasper.CommandLine;
 using Jasper.Marten;
+using Jasper.Messaging.Model;
 using Oakton;
 
 // SAMPLE: using-JasperModule-with-no-extension

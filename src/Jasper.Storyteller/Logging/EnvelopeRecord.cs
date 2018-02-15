@@ -1,4 +1,4 @@
-﻿using Jasper.Bus.Runtime;
+﻿using Jasper.Messaging.Runtime;
 
 namespace Jasper.Storyteller.Logging
 {

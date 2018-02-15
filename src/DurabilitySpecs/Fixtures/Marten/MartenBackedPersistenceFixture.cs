@@ -7,13 +7,10 @@ using Baseline;
 using Baseline.Dates;
 using DurabilitySpecs.Fixtures.Marten.App;
 using Jasper;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Logging;
 using Jasper.Storyteller.Logging;
 using Marten;
 using Marten.Util;
@@ -133,7 +130,7 @@ namespace DurabilitySpecs.Fixtures.Marten
         [ExposeAsTable("Send Messages")]
         public Task SendFrom([Header("Sending Node"), Default("Sender1")]string sender, [Header("Message Name")]string name)
         {
-            return _senders[sender].Bus.Send(new TraceMessage {Name = name});
+            return _senders[sender].Messaging.Send(new TraceMessage {Name = name});
         }
 
         [FormatAs("Send {count} messages from {sender}")]
@@ -144,7 +141,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             for (int i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
-                await runtime.Bus.Send(msg);
+                await runtime.Messaging.Send(msg);
             }
         }
 

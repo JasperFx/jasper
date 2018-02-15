@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Diagnostics.Messages
 {

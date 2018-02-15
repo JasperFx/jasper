@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -42,11 +42,11 @@ namespace Jasper.Marten.Tests.Persistence
             var message3 = new ScheduledMessage{Id = 3};
 
 
-            await theRuntime.Bus.Schedule(message1, 2.Hours());
+            await theRuntime.Messaging.Schedule(message1, 2.Hours());
 
-            var id = await theRuntime.Bus.Schedule(message2, 5.Seconds());
+            var id = await theRuntime.Messaging.Schedule(message2, 5.Seconds());
 
-            await theRuntime.Bus.Schedule(message3, 2.Hours());
+            await theRuntime.Messaging.Schedule(message3, 2.Hours());
 
             ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);
 
@@ -69,9 +69,9 @@ namespace Jasper.Marten.Tests.Persistence
 
             using (var sender = JasperRuntime.For<SenderApp>())
             {
-                await sender.Bus.ScheduleSend(message1, 2.Hours());
-                await sender.Bus.ScheduleSend(message2, 5.Seconds());
-                await sender.Bus.ScheduleSend(message3, 2.Hours());
+                await sender.Messaging.ScheduleSend(message1, 2.Hours());
+                await sender.Messaging.ScheduleSend(message2, 5.Seconds());
+                await sender.Messaging.ScheduleSend(message3, 2.Hours());
 
                 ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);
 

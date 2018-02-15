@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten.Subscriptions;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Testing;
 using Jasper.Util;
 using Marten;
@@ -35,7 +35,7 @@ namespace Jasper.Marten.Tests
 
                 _.ServiceName = "MartenSampleApp";
 
-                _.Settings.Alter<BusSettings>(x =>
+                _.Settings.Alter<MessagingSettings>(x =>
                 {
                     x.MachineName = "MyBox";
                 });

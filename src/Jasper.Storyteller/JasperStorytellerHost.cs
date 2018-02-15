@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Tracking;
 using Jasper.Http;
+using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Tracking;
 using Jasper.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

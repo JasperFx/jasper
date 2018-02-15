@@ -1,7 +1,6 @@
 ﻿using System;
 using BlueMilk.Codegen;
 using BlueMilk.Compilation;
-using Jasper.Bus.Model;
 using Jasper.Http.Model;
 
 namespace Jasper.Http.Routing.Codegen

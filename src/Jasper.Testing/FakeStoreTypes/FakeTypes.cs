@@ -4,9 +4,9 @@ using BlueMilk.Codegen;
 using BlueMilk.Codegen.Frames;
 using BlueMilk.Codegen.Variables;
 using BlueMilk.Compilation;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Model;
 using Jasper.Configuration;
+using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Model;
 
 namespace Jasper.Testing.FakeStoreTypes
 {

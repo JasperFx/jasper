@@ -1,7 +1,7 @@
 ﻿using System;
-using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.CommandLine;
+using Jasper.Messaging.Runtime.Invocation;
+using Jasper.Messaging.Transports.Configuration;
 using Oakton;
 using TestMessages;
 

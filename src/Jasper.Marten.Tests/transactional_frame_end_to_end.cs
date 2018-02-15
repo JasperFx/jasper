@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Model;
 using Jasper.Marten.Codegen;
-using Jasper.Testing.Bus.Runtime;
+using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Model;
+using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -20,7 +20,7 @@ namespace Jasper.Marten.Tests
             using (var runtime = JasperRuntime.For<MartenUsingApp>())
             {
                 var command = new CreateDocCommand();
-                await runtime.Bus.Invoke(command);
+                await runtime.Messaging.Invoke(command);
 
                 using (var query = runtime.Get<IQuerySession>())
                 {

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Sending;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.WebSockets
 {

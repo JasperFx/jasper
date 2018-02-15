@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -181,7 +181,7 @@ namespace Jasper.Testing.Samples
     {
         public CustomizingJsonSerialization()
         {
-            Settings.Alter<BusSettings>(_ =>
+            Settings.Alter<MessagingSettings>(_ =>
             {
                 // Edit the JsonSerializerSettings used by the messaging serialization
                 _.JsonSerialization.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;

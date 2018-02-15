@@ -1,6 +1,6 @@
 ﻿using System;
-using Jasper.Testing.Bus.Compilation;
 using Jasper.Testing.FakeStoreTypes;
+using Jasper.Testing.Messaging.Compilation;
 using Microsoft.Extensions.Configuration;
 using Shouldly;
 using Xunit;

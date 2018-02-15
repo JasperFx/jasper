@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Jasper.Bus;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Conneg;
 using Jasper.Conneg.Json;
+using Jasper.Messaging;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Microsoft.Extensions.ObjectPool;
 using Xunit;
@@ -11,7 +11,7 @@ namespace Jasper.Testing.Conneg
 {
     public class NewtonsoftSerializerTests
     {
-        private readonly BusSettings theSettings = new BusSettings();
+        private readonly MessagingSettings theSettings = new MessagingSettings();
 
         private NewtonsoftSerializerFactory theSerializerFactory
         {

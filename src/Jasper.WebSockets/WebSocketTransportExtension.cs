@@ -1,9 +1,9 @@
 ﻿using System;
 using Baseline;
 using Jasper;
-using Jasper.Bus.Transports;
 using Jasper.Configuration;
 using Jasper.Http;
+using Jasper.Messaging.Transports;
 using Jasper.WebSockets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

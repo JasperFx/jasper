@@ -1,6 +1,6 @@
-﻿using Jasper.Bus.Transports.Configuration;
-using Jasper.Marten.Tests.Setup;
-using Jasper.Testing.Bus;
+﻿using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Testing.Messaging;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 

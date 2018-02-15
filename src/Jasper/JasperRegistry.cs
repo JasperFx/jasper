@@ -9,12 +9,13 @@ using Baseline.Dates;
 using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Util;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.WorkerQueues;
 using Jasper.Configuration;
+using Jasper.Messaging;
+using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.WorkerQueues;
 using Jasper.Settings;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -52,7 +53,7 @@ namespace Jasper
             deriveServiceName();
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
-            Generation = new GenerationRules($"{name}.Generated");
+            Generation = new GenerationRules($"{name.Replace(".", "_")}_Generated");
 
 
             Settings = new JasperSettings(this);
@@ -66,8 +67,8 @@ namespace Jasper
         }
 
 
-        internal ServiceBusFeature Bus { get; } = new ServiceBusFeature();
-        protected internal BusSettings BusSettings => Bus.Settings;
+        internal MessagingConfiguration Bus { get; } = new MessagingConfiguration();
+        protected internal MessagingSettings MessagingSettings => Bus.Settings;
 
         /// <summary>
         ///     Configure worker queue priority, message assignement, and worker
@@ -221,6 +222,8 @@ namespace Jasper
             var combined = new ServiceRegistry();
             combined.AddRange(all);
 
+            combined.For<IPersistence>().UseIfNone<NulloPersistence>();
+
             return combined;
         }
 
@@ -240,7 +243,7 @@ namespace Jasper
 
             foreach (var service in services)
             {
-                await service.StartAsync(BusSettings.Cancellation);
+                await service.StartAsync(MessagingSettings.Cancellation);
             }
         }
 

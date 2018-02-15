@@ -1,6 +1,4 @@
-﻿using Jasper.Bus.Logging;
-
-namespace Jasper.Configuration
+﻿namespace Jasper.Configuration
 {
     public class Logging
     {

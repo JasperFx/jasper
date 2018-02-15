@@ -5,8 +5,8 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.WorkerQueues;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.WorkerQueues;
 
 namespace Jasper.WebSockets
 {

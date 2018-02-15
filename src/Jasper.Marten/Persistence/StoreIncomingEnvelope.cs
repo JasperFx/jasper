@@ -1,5 +1,5 @@
 ﻿using System;
-using Jasper.Bus.Runtime;
+using Jasper.Messaging.Runtime;
 using Marten.Schema;
 using Marten.Services;
 using Marten.Util;

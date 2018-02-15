@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
-using Jasper.Bus;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports.Configuration;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Oakton;
 
@@ -53,7 +53,7 @@ namespace Jasper.CommandLine
         {
             if (input.Action == SubscriptionsAction.validate)
             {
-                input.Registry.Settings.Alter<BusSettings>(x => x.ThrowOnValidationErrors = false);
+                input.Registry.Settings.Alter<MessagingSettings>(x => x.ThrowOnValidationErrors = false);
             }
 
             using (var runtime = input.BuildRuntime())
@@ -88,7 +88,7 @@ namespace Jasper.CommandLine
 
 
 
-        public async Task FanOutSubscriptionChangedMessage(IServiceBus bus, INodeDiscovery discovery)
+        public async Task FanOutSubscriptionChangedMessage(IMessageContext bus, INodeDiscovery discovery)
         {
             var peers = await discovery.FindPeers();
 
@@ -222,10 +222,10 @@ namespace Jasper.CommandLine
 
     public class SubscriptionChangeNotifier
     {
-        private readonly IServiceBus _bus;
+        private readonly IMessageContext _bus;
         private readonly INodeDiscovery _nodes;
 
-        public SubscriptionChangeNotifier(IServiceBus bus, INodeDiscovery nodes)
+        public SubscriptionChangeNotifier(IMessageContext bus, INodeDiscovery nodes)
         {
             _bus = bus;
             _nodes = nodes;

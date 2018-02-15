@@ -1,7 +1,7 @@
 ﻿using System;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Storyteller.Logging;
 using StoryTeller;
 

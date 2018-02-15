@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagnosticsHarnessMessages"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.Diagnostics", "src\Jasper.Diagnostics\Jasper.Diagnostics.csproj", "{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "src\IntegrationTests\IntegrationTests.csproj", "{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.Consul", "src\Jasper.Consul\Jasper.Consul.csproj", "{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.Consul.Testing", "src\Jasper.Consul.Testing\Jasper.Consul.Testing.csproj", "{0DDA33BD-C94F-479A-8717-5738A554F3B1}"
@@ -193,18 +191,6 @@ Global
 		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Release|x64.Build.0 = Release|Any CPU
 		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Release|x86.ActiveCfg = Release|Any CPU
 		{768CBDA0-9CE9-4C72-BFA6-DD3316966ADE}.Release|x86.Build.0 = Release|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|x64.Build.0 = Debug|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Debug|x86.Build.0 = Debug|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Release|x64.ActiveCfg = Release|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Release|x64.Build.0 = Release|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Release|x86.ActiveCfg = Release|Any CPU
-		{03C6C087-A5C2-4A11-BF0C-C8F4847BBE1B}.Release|x86.Build.0 = Release|Any CPU
 		{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87A7D128-DBA3-4F3A-A44D-8C2257D67BC6}.Debug|x64.ActiveCfg = Debug|Any CPU

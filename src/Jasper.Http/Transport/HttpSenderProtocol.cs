@@ -2,19 +2,18 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.Transports.Tcp;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Sending;
+using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.Http.Transport
 {
     public class HttpSenderProtocol : ISenderProtocol, IDisposable
     {
         private readonly HttpClient _client;
-        private readonly BusSettings _settings;
+        private readonly MessagingSettings _settings;
 
-        public HttpSenderProtocol(BusSettings settings, HttpTransportSettings httpSettings)
+        public HttpSenderProtocol(MessagingSettings settings, HttpTransportSettings httpSettings)
         {
             _client = new HttpClient
             {

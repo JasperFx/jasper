@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading;
 using Baseline;
 using Baseline.Dates;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.WorkerQueues;
+using Jasper.Messaging;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -18,13 +17,13 @@ namespace Jasper.Http.Transport
 {
     public class HttpTransport : ITransport
     {
-        private readonly BusSettings _settings;
+        private readonly MessagingSettings _settings;
         private readonly HttpTransportSettings _httpSettings;
         private readonly JasperRuntime _runtime;
         private readonly IPersistence _persistence;
         private readonly CompositeTransportLogger _logger;
 
-        public HttpTransport(BusSettings settings, HttpTransportSettings httpSettings, JasperRuntime runtime, IPersistence persistence, CompositeTransportLogger logger)
+        public HttpTransport(MessagingSettings settings, HttpTransportSettings httpSettings, JasperRuntime runtime, IPersistence persistence, CompositeTransportLogger logger)
         {
             _settings = settings;
             _httpSettings = httpSettings;
@@ -41,7 +40,7 @@ namespace Jasper.Http.Transport
 
         public string Protocol { get; } = "http";
 
-        public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
+        public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
             var batchedSender = new BatchedSender(uri, new HttpSenderProtocol(_settings, _httpSettings), cancellation, _logger);
 
@@ -65,7 +64,7 @@ namespace Jasper.Http.Transport
         // The sending agent will take care of this one
         public Uri LocalReplyUri { get; private set; }
 
-        public void StartListening(BusSettings settings, IWorkerQueue workers)
+        public void StartListening(IMessagingRoot root)
         {
             if (_runtime.HttpAddresses.IsNotEmpty())
             {

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Baseline;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg.Json;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Serializers;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 

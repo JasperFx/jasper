@@ -1,5 +1,5 @@
 ﻿using System;
-using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Messaging.Runtime.Subscriptions;
 using Marten;
 
 namespace Jasper.Marten.Subscriptions

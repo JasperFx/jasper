@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using Baseline.Dates;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Testing.Bus;
-using Jasper.Testing.Bus.Runtime;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Testing.Messaging;
+using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Xunit;
 using Shouldly;

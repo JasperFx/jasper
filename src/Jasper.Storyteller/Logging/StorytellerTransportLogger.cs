@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Transports.Tcp;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Transports.Tcp;
 using StoryTeller;
 using StoryTeller.Results;
 using StoryTeller.Util;
-using Envelope = Jasper.Bus.Runtime.Envelope;
+using Envelope = Jasper.Messaging.Runtime.Envelope;
 
 namespace Jasper.Storyteller.Logging
 {

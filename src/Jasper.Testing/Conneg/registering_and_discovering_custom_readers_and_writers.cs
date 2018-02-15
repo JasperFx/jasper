@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime.Serializers;
 using Jasper.Conneg;
 using Jasper.Conneg.Json;
-using Jasper.Testing.Bus;
-using Jasper.Testing.Bus.Runtime;
+using Jasper.Messaging.Runtime.Serializers;
+using Jasper.Testing.Messaging;
+using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -21,7 +21,7 @@ namespace Jasper.Testing.Conneg
         {
             withAllDefaults();
 
-            theSerialization = Runtime.Get<BusMessageSerializationGraph>();
+            theSerialization = Runtime.Get<MessagingSerializationGraph>();
         }
 
         [Fact]

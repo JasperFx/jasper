@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging;
+using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -15,14 +14,14 @@ using Xunit;
 namespace Jasper.Marten.Tests.Outbox
 {
     ///<summary>
-    /// In this example, the OrdersApp would be running in an 
+    /// In this example, the OrdersApp would be running in an
     /// ASP.Net Core app which receives an HTTP request to create an order.
-    /// 
-    /// While processing the HTTP request, it creates the order in its 
+    ///
+    /// While processing the HTTP request, it creates the order in its
     /// database and sends a ProcessOrder command message.
-    /// 
+    ///
     /// A WarehouseApp consumes that command, and its handler
-    /// creates a picklist in its own database and publishes an 
+    /// creates a picklist in its own database and publishes an
     /// ItemOutOfStock event which is delivered back to the OrdersApp.
     /// </summary>
     public class end_to_end_with_outbox : IDisposable
@@ -60,9 +59,9 @@ namespace Jasper.Marten.Tests.Outbox
             // when this code appears in an MVC controller, both the IDocumentSession and the IServiceBus could be injected dependencies.
             using (var session = theSender.Get<IDocumentStore>().OpenSession())
             {
-                var bus = theSender.Get<IServiceBus>();
+                var bus = theSender.Get<IMessageContext>();
 
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 var order = new Order {Id = Guid.NewGuid(), ItemName = "Hat"};
                 session.Store(order);
@@ -176,7 +175,7 @@ namespace Jasper.Marten.Tests.Outbox
     /* Two different alternatives for handler implementations that make use of the outbox */
 
     /// <summary>
-    /// By using MartenTransaction and cascading messages, I expect the cascading messages to be stored 
+    /// By using MartenTransaction and cascading messages, I expect the cascading messages to be stored
     /// to the outgoing table in the same document session as the one supplied to the handler.
     /// </summary>
     public class WarehouseHandler1
@@ -201,22 +200,22 @@ namespace Jasper.Marten.Tests.Outbox
     /// </summary>
     public class WarehouseHandler2
     {
-        public void Handle(ProcessOrder processOrder, IDocumentStore martenStore, IServiceBus bus)
+        public async Task Handle(ProcessOrder processOrder, IDocumentStore martenStore, IMessageContext bus)
         {
             using (var session = martenStore.OpenSession())
             {
-                bus.EnlistInTransaction(session);
+                await bus.EnlistInTransaction(session);
 
                 session.Store(new PickList {Id = processOrder.Id});
                 var outOfStockEvent = new ItemOutOfStock { OrderId = processOrder.Id, ItemName = processOrder.ItemName };
 
-                bus.Publish(outOfStockEvent);
+                await bus.Publish(outOfStockEvent);
 
                 // wait here for the test to inspect state.
                 TestSynch.HandledProcessOrderCommand.Set();
                 TestSynch.WarehouseHandlerShouldContinueEvent.WaitOne(5.Seconds());
 
-                session.SaveChanges();
+                await session.SaveChangesAsync();
             }
         }
     }

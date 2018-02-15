@@ -1,5 +1,5 @@
-﻿using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Consul.Internal;
+﻿using Jasper.Consul.Internal;
+using Jasper.Messaging.Runtime.Subscriptions;
 using Shouldly;
 using Xunit;
 

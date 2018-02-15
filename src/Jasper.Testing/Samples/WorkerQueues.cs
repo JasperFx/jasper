@@ -1,5 +1,5 @@
 ﻿using Baseline;
-using Jasper.Bus.WorkerQueues;
+using Jasper.Messaging.WorkerQueues;
 
 namespace Jasper.Testing.Samples
 {

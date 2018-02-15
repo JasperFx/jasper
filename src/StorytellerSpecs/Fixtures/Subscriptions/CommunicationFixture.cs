@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Tracking;
+using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Tracking;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
@@ -104,7 +103,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
             var waiter = history.Watch(() =>
             {
-                _publisher.Bus.Send(message).Wait();
+                _publisher.Messaging.Send(message).Wait();
             });
 
             waiter.Wait(5.Seconds());

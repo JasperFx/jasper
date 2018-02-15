@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Baseline;
 using Baseline.Dates;
-using Jasper.Bus.ErrorHandling;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Testing.Bus.Runtime;
-using Jasper.Testing.Bus.Samples;
+using Jasper.Messaging.ErrorHandling;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Testing.Messaging.Runtime;
+using Jasper.Testing.Messaging.Samples;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
 

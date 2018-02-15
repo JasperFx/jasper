@@ -1,6 +1,6 @@
 ﻿using System;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Shouldly;
@@ -39,7 +39,7 @@ namespace Jasper.Http.Testing
         public void capture_overridden_machine_name()
         {
             theRegistry.ServiceName = "ImportantService";
-            theRegistry.Settings.Alter<BusSettings>(_ =>
+            theRegistry.Settings.Alter<MessagingSettings>(_ =>
             {
                 _.MachineName = "BigBox";
             });

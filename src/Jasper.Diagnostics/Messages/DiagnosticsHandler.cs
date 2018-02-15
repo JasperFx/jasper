@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Model;
-using Jasper.Bus.Runtime.Subscriptions;
+using Jasper.Messaging.Model;
+using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Diagnostics.Messages
 {

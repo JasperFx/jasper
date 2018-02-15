@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Consul;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Consul.Internal;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports.Configuration;
 using Shouldly;
 using Xunit;
 

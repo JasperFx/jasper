@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime;
-using Jasper.Testing.Bus.Runtime;
+using Jasper.Messaging.Runtime;
+using Jasper.Testing.Messaging.Runtime;
 using Jasper.Testing.Samples.FirstTry;
 using Marten;
 

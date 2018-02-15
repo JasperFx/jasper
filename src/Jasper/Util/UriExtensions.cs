@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Bus.Transports;
+using Jasper.Messaging.Transports;
 
 namespace Jasper.Util
 {

@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
-using Jasper.Bus;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.CommandLine;
 using Jasper.Diagnostics;
 using Jasper.Http;
+using Jasper.Messaging;
+using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,9 +48,9 @@ namespace Pinger
 
     public class PingSender : BackgroundService
     {
-        private readonly IServiceBus _bus;
+        private readonly IMessageContext _bus;
 
-        public PingSender(IServiceBus bus)
+        public PingSender(IMessageContext bus)
         {
             _bus = bus;
         }

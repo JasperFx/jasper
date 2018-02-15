@@ -1,6 +1,5 @@
-﻿using Jasper.Bus.Runtime;
-using Jasper.Testing.Bus;
-using Jasper.Testing.Bus.Lightweight;
+﻿using Jasper.Messaging.Runtime;
+using Jasper.Testing.Messaging;
 using Marten;
 
 namespace Jasper.Marten.Tests.Persistence

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Bus.Runtime;
+using Jasper.Messaging.Runtime;
 using Marten.Schema;
 using Marten.Services;
 using Marten.Util;

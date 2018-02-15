@@ -2,10 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Marten.Subscriptions;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Testing.Bus;
 using Jasper.Util;
 using Marten;
 using Microsoft.Extensions.Configuration;

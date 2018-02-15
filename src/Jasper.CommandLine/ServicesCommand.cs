@@ -1,6 +1,5 @@
 ﻿using System;
-using Jasper.Bus;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging.Transports.Configuration;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -11,7 +10,7 @@ namespace Jasper.CommandLine
     {
         public override bool Execute(JasperInput input)
         {
-            input.Registry.Settings.Alter<BusSettings>(_ =>
+            input.Registry.Settings.Alter<MessagingSettings>(_ =>
             {
                 _.ThrowOnValidationErrors = false;
             });

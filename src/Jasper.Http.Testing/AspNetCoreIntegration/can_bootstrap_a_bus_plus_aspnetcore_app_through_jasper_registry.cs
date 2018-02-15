@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Jasper.Bus;
+using Jasper.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +34,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         [Fact]
         public void has_the_bus()
         {
-            theRuntime.Get<IServiceBus>().ShouldNotBeNull();
+            theRuntime.Get<IMessageContext>().ShouldNotBeNull();
         }
 
         [Fact]

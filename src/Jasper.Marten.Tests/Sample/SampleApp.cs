@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Tracking;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Testing.Bus.Runtime;
+using Jasper.Messaging.Tracking;
 using Marten;
 using Marten.Schema;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +48,7 @@ namespace Jasper.Marten.Tests.Sample
         {
             await theRuntime.ExecuteAndWait(() =>
             {
-                return theRuntime.Bus.Invoke(new CreateUser {Name = "Tom"});
+                return theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"});
             });
 
 
@@ -67,7 +66,7 @@ namespace Jasper.Marten.Tests.Sample
         {
             await theRuntime.ExecuteAndWait(() =>
             {
-                theRuntime.Bus.Invoke(new CreateUser {Name = "Tom"});
+                theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"});
             });
 
 

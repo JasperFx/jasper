@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime;
 using Marten;
 using Marten.Services;
 
@@ -18,14 +18,14 @@ namespace Jasper.Marten
         private readonly int _nodeId;
         private readonly EnvelopeTables _tables;
 
-        public MartenEnvelopePersistor(IDocumentSession session, IServiceBus bus)
+        public MartenEnvelopePersistor(IDocumentSession session, IMessageContext bus)
         {
-            if (!(bus.Persistence is MartenBackedMessagePersistence))
+            if (!(bus.Advanced.Persistence is MartenBackedMessagePersistence))
             {
                 throw new InvalidOperationException("This Jasper application is not using Marten as the backing message persistence");
             }
 
-            var martenPersistence = bus.Persistence.As<MartenBackedMessagePersistence>();
+            var martenPersistence = bus.Advanced.Persistence.As<MartenBackedMessagePersistence>();
 
             _nodeId = martenPersistence.Settings.UniqueNodeId;
             _tables = martenPersistence.Tables;
@@ -55,38 +55,30 @@ namespace Jasper.Marten
             _session.StoreIncoming(_tables, envelope);
             return Task.CompletedTask;
         }
+
+        public Task CopyTo(IEnvelopePersistor other)
+        {
+            throw new NotSupportedException();
+        }
     }
 
     public class FlushOutgoingMessagesOnCommit : DocumentSessionListenerBase
     {
-        private readonly IServiceBus _bus;
+        private readonly IMessageContext _bus;
 
-        public FlushOutgoingMessagesOnCommit(IServiceBus bus)
+        public FlushOutgoingMessagesOnCommit(IMessageContext bus)
         {
             _bus = bus;
         }
 
         public override void AfterCommit(IDocumentSession session, IChangeSet commit)
         {
-            _bus.FlushOutstanding();
+            _bus.SendAllQueuedOutgoingMessages();
         }
 
         public override Task AfterCommitAsync(IDocumentSession session, IChangeSet commit, CancellationToken token)
         {
-            return _bus.FlushOutstanding();
+            return _bus.SendAllQueuedOutgoingMessages();
         }
     }
-
-    public static class ServiceBusExtensions
-    {
-        public static void EnlistInTransaction(this IServiceBus bus, IDocumentSession session)
-        {
-            var persistor = new MartenEnvelopePersistor(session, bus);
-            session.Listeners.Add(new FlushOutgoingMessagesOnCommit(bus));
-
-            bus.EnlistInTransaction(persistor);
-        }
-    }
-
-
 }

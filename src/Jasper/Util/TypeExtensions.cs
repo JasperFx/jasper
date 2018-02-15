@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Baseline;
-using Jasper.Bus;
 using Jasper.Conneg;
+using Jasper.Messaging;
 
 namespace Jasper.Util
 {

@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Jasper;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.WorkerQueues;
 using Jasper.Conneg;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Sending;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -51,7 +49,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public override void TearDown()
         {
-            _registry.Settings.Alter<BusSettings>(_ =>
+            _registry.Settings.Alter<MessagingSettings>(_ =>
             {
                 _.DisableAllTransports = true;
                 _.ThrowOnValidationErrors = false;
@@ -185,7 +183,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         }
 
-        public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
+        public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
             throw new NotImplementedException();
         }
@@ -195,7 +193,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             get { return TransportConstants.RepliesUri; }
         }
 
-        public void StartListening(BusSettings settings, IWorkerQueue workers)
+        public void StartListening(IMessagingRoot root)
         {
 
         }

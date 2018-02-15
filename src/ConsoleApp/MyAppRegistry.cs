@@ -1,6 +1,6 @@
 ﻿using Jasper;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Http;
+using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using StorytellerSpecs.Fixtures;
 

@@ -2,15 +2,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.WorkerQueues;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Testing.Bus;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.WorkerQueues;
+using Jasper.Testing.Messaging;
 using Marten;
 using Marten.Schema;
 using NSubstitute;
@@ -48,7 +48,7 @@ namespace Jasper.Marten.Tests.Persistence
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Status = TransportConstants.Incoming;
 
-            var marker = new EnvelopeTables(new BusSettings(), new StoreOptions());
+            var marker = new EnvelopeTables(new MessagingSettings(), new StoreOptions());
 
             using (var session = theStore.OpenSession())
             {
@@ -58,7 +58,7 @@ namespace Jasper.Marten.Tests.Persistence
 
 
             var logger = CompositeTransportLogger.Empty();
-            theRetries = new MartenRetries(theStore, marker, logger, new BusSettings());
+            theRetries = new MartenRetries(theStore, marker, logger, new MessagingSettings());
 
             theCallback = new MartenCallback(theEnvelope, Substitute.For<IWorkerQueue>(), theStore, marker, theRetries, logger);
         }

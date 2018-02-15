@@ -3,12 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime.Subscriptions;
 using StoryTeller;
 using StoryTeller.Results;
-using Envelope = Jasper.Bus.Runtime.Envelope;
+using Envelope = Jasper.Messaging.Runtime.Envelope;
 
 namespace Jasper.Storyteller.Logging
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-using Jasper.Bus.Model;
+using Jasper.Messaging.Model;
 using Marten;
 using Shouldly;
 using Xunit;

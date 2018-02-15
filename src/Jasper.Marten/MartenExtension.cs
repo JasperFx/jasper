@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
-using Jasper.Bus.Runtime.Subscriptions;
 using Jasper.Configuration;
 using Jasper.Marten;
 using Jasper.Marten.Codegen;
+using Jasper.Messaging.Runtime.Subscriptions;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Marten.Util;
 
@@ -15,7 +13,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         public readonly int ReassignmentLockId = "jasper-reassign-envelopes".GetHashCode();
         private readonly string _reassignDormantNodeSql;
 
-        public ReassignFromDormantNodes(EnvelopeTables marker, BusSettings settings)
+        public ReassignFromDormantNodes(EnvelopeTables marker, MessagingSettings settings)
         {
             _marker = marker;
 

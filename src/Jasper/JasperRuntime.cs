@@ -10,12 +10,12 @@ using BlueMilk;
 using BlueMilk.Codegen.Variables;
 using BlueMilk.Scanning.Conventions;
 using BlueMilk.Util;
-using Jasper.Bus;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Configuration;
 using Jasper.EnvironmentChecks;
+using Jasper.Messaging;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +33,7 @@ namespace Jasper
 
     public class JasperRuntime : IDisposable
     {
-        private readonly Lazy<IServiceBus> _bus;
+        private readonly Lazy<IMessageContext> _bus;
         private bool isDisposing;
 
         private JasperRuntime(JasperRegistry registry, IServiceCollection services, PerfTimer timer)
@@ -58,7 +58,7 @@ namespace Jasper
 
             Registry = registry;
 
-            _bus = new Lazy<IServiceBus>(Get<IServiceBus>);
+            _bus = new Lazy<IMessageContext>(Get<IMessageContext>);
         }
 
         public PerfTimer Bootstrapping { get; }
@@ -88,7 +88,7 @@ namespace Jasper
         /// <summary>
         ///     Shortcut to retrieve an instance of the IServiceBus interface for the application
         /// </summary>
-        public IServiceBus Bus => _bus.Value;
+        public IMessageContext Messaging => _bus.Value;
 
         /// <summary>
         ///     The logical name of the application from JasperRegistry.ServiceName
@@ -117,7 +117,7 @@ namespace Jasper
 
             Registry.Stop(this).Wait(10.Seconds());
 
-            Get<BusSettings>().StopAll();
+            Get<MessagingSettings>().StopAll();
 
             isDisposing = true;
 
@@ -232,7 +232,7 @@ namespace Jasper
             timer.Record("Environment Checks", () =>
             {
                 var recorder = EnvironmentChecker.ExecuteAll(runtime);
-                if (runtime.Get<BusSettings>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
+                if (runtime.Get<MessagingSettings>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
             });
 
             timer.MarkStart("Register Node");
@@ -247,7 +247,7 @@ namespace Jasper
         private static async Task registerRunningNode(JasperRuntime runtime, JasperRegistry registry)
         {
             // TODO -- get a helper for this, it's ugly
-            var settings = runtime.Get<BusSettings>();
+            var settings = runtime.Get<MessagingSettings>();
             var nodes = runtime.Get<INodeDiscovery>();
 
             try

@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Marten;
 using Marten.Schema;
@@ -11,7 +10,7 @@ namespace Jasper.Marten.Persistence.Resiliency
     {
         private readonly string _markOwnedIncomingSql;
 
-        public EnvelopeTables(BusSettings settings, StoreOptions storeConfiguration)
+        public EnvelopeTables(MessagingSettings settings, StoreOptions storeConfiguration)
         {
             Incoming = new DbObjectName(storeConfiguration.DatabaseSchemaName,
                 PostgresqlEnvelopeStorage.IncomingTableName);

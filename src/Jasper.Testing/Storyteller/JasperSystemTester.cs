@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Jasper.Bus.Transports.Configuration;
 using Jasper.Http;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Storyteller;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -24,7 +24,7 @@ namespace Jasper.Testing.Storyteller
             {
                 await system.Warmup();
 
-                ShouldBeNullExtensions.ShouldNotBeNull(system.Runtime.Get<BusSettings>());
+                ShouldBeNullExtensions.ShouldNotBeNull(system.Runtime.Get<MessagingSettings>());
             }
         }
 
@@ -109,7 +109,7 @@ namespace Jasper.Testing.Storyteller
 
                 using (var context = system.CreateContext())
                 {
-                    context.GetService<BusSettings>().ShouldBeTheSameAs(system.Runtime.Get<BusSettings>());
+                    context.GetService<MessagingSettings>().ShouldBeTheSameAs(system.Runtime.Get<MessagingSettings>());
                 }
 
             }

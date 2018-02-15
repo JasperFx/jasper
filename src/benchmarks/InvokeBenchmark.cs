@@ -27,12 +27,12 @@ namespace benchmarks
         [Benchmark]
         public Task InvokeMessage()
         {
-            if (Parallelization == 1) return _runtime.Bus.Invoke(new UserCreated {Name = Guid.NewGuid().ToString()});
+            if (Parallelization == 1) return _runtime.Messaging.Invoke(new UserCreated {Name = Guid.NewGuid().ToString()});
 
             var tasks = new Task[Parallelization];
             for (int i = 0; i < tasks.Length; i++)
             {
-                tasks[i] = _runtime.Bus.Invoke(new UserCreated {Name = Guid.NewGuid().ToString()});
+                tasks[i] = _runtime.Messaging.Invoke(new UserCreated {Name = Guid.NewGuid().ToString()});
             }
 
             return Task.WhenAll(tasks);

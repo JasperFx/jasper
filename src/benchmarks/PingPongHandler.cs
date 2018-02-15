@@ -1,4 +1,4 @@
-﻿using Jasper.Bus.Runtime.Invocation;
+﻿using Jasper.Messaging.Runtime.Invocation;
 
 namespace benchmarks
 {

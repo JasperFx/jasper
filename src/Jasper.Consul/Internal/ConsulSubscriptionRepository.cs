@@ -4,11 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Consul;
-using Jasper.Bus;
-using Jasper.Bus.Configuration;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Subscriptions;
-using Jasper.Bus.Transports.Configuration;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -20,7 +18,7 @@ namespace Jasper.Consul.Internal
         public const string SUBSCRIPTION_PREFIX = GLOBAL_PREFIX + "subscription/";
         public const string CAPABILITY_PREFEX = GLOBAL_PREFIX + "service/";
 
-        public ConsulSubscriptionRepository(ConsulSettings settings, IChannelGraph channels, BusSettings envSettings)
+        public ConsulSubscriptionRepository(ConsulSettings settings, IChannelGraph channels, MessagingSettings envSettings)
             : base(settings, channels, envSettings)
         {
             _settings = settings;

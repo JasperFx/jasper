@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading;
 using Baseline;
 using BenchmarkDotNet.Running;
-using Jasper.Bus.Transports.Configuration;
 using Newtonsoft.Json;
 
 namespace benchmarks

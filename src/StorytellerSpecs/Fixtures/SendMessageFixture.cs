@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Bus;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Tracking;
-using Jasper.Bus.Transports;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Tracking;
+using Jasper.Messaging.Transports;
 using Jasper.Util;
 using StoryTeller;
 
@@ -53,7 +53,7 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() => { _runtime.Get<IServiceBus>().Send(message).Wait(); });
+            var waiter = history.Watch(() => { _runtime.Get<IMessageContext>().Send(message).Wait(); });
 
             waiter.Wait(5.Seconds());
 
@@ -75,9 +75,9 @@ namespace StorytellerSpecs.Fixtures
             waiter.Wait(5.Seconds());
         }
 
-        private IServiceBus bus()
+        private IMessageContext bus()
         {
-            return _runtime.Get<IServiceBus>();
+            return _runtime.Get<IMessageContext>();
         }
 
         public IGrammar TheMessagesSentShouldBe()
@@ -100,7 +100,12 @@ namespace StorytellerSpecs.Fixtures
 
         private IList<MessageRecord> sent()
         {
-            return _runtime.Get<MessageTracker>().Records;
+            return _runtime.Get<MessageTracker>().Records.Select(x =>
+            {
+                x.ReceivedAt = x.ReceivedAt.ToString().Replace("127.0.0.1", "localhost").ToUri();
+
+                return x;
+            }).ToList();
         }
 
         [FormatAs("Send a Message1 named 'Ack' that we expect to succeed and wait for the ack")]
@@ -158,7 +163,7 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _runtime.Get<IServiceBus>();
+            var sender = _runtime.Get<IMessageContext>();
             await sender.Send(envelope);
         }
 
@@ -171,7 +176,7 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _runtime.Get<IServiceBus>();
+            var sender = _runtime.Get<IMessageContext>();
             await sender.Send(envelope);
         }
 

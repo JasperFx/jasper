@@ -6,14 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Bus;
-using Jasper.Bus.Model;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Runtime.Invocation;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Sending;
-using Jasper.Bus.WorkerQueues;
+using Jasper.Messaging;
+using Jasper.Messaging.Model;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 
 namespace Jasper.WebSockets
@@ -44,16 +41,16 @@ namespace Jasper.WebSockets
             return _sockets.SendJsonToAll(json);
         }
 
-        public ISendingAgent BuildSendingAgent(Uri uri, CancellationToken cancellation)
+        public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
             return new WebSocketSendingAgent(_sockets);
         }
 
         Uri ITransport.LocalReplyUri => DefaultUri;
 
-        public void StartListening(BusSettings settings, IWorkerQueue workers)
+        public void StartListening(IMessagingRoot root)
         {
-            _sockets = new WebSocketCollection(workers);
+            _sockets = new WebSocketCollection(root.Workers);
 
             foreach (var messageType in _handlers.Chains.Select(x => x.MessageType).Where(x => x.CanBeCastTo<ClientMessage>()))
             {

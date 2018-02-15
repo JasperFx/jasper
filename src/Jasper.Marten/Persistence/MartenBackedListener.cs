@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Bus.Logging;
-using Jasper.Bus.Runtime;
-using Jasper.Bus.Transports;
-using Jasper.Bus.Transports.Configuration;
-using Jasper.Bus.Transports.Receiving;
-using Jasper.Bus.Transports.Tcp;
-using Jasper.Bus.WorkerQueues;
 using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Receiving;
+using Jasper.Messaging.Transports.Tcp;
+using Jasper.Messaging.WorkerQueues;
 using Marten;
 
 namespace Jasper.Marten.Persistence
@@ -19,11 +19,11 @@ namespace Jasper.Marten.Persistence
         private readonly IWorkerQueue _queues;
         private readonly IDocumentStore _store;
         private readonly CompositeTransportLogger _logger;
-        private readonly BusSettings _settings;
+        private readonly MessagingSettings _settings;
         private readonly EnvelopeTables _marker;
         private readonly MartenRetries _retries;
 
-        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeTransportLogger logger, BusSettings settings, EnvelopeTables marker, MartenRetries retries)
+        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeTransportLogger logger, MessagingSettings settings, EnvelopeTables marker, MartenRetries retries)
         {
             _agent = agent;
             _queues = queues;

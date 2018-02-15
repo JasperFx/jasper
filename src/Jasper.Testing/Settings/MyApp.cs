@@ -1,5 +1,5 @@
-﻿using Jasper.Testing.Bus.Compilation;
-using Jasper.Testing.FakeStoreTypes;
+﻿using Jasper.Testing.FakeStoreTypes;
+using Jasper.Testing.Messaging.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Testing.Settings
