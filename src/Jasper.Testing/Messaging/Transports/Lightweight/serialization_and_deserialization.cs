@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using Baseline;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
@@ -11,6 +13,7 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
     {
         private Envelope outgoing;
         private Envelope _incoming;
+        private PropertyInfo sentAttempts;
 
         private Envelope incoming
         {
@@ -31,14 +34,14 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
             outgoing = new Envelope
             {
                 SentAt = DateTime.Today.ToUniversalTime(),
-                EnvelopeVersionId = PersistedMessageId.GenerateRandom(),
-                Queue = "incoming",
                 Data = new byte[]{1, 5, 6, 11, 2, 3},
                 Destination = "durable://localhost:2222/incoming".ToUri(),
-                SentAttempts = 2,
                 DeliverBy = DateTime.Today.ToUniversalTime(),
                 ReplyUri = "durable://localhost:2221/replies".ToUri()
             };
+
+            sentAttempts = typeof(Envelope).GetProperty("SentAttempts", BindingFlags.Instance | BindingFlags.NonPublic);
+            sentAttempts.SetValue(outgoing, 2);
 
             outgoing.Headers.Add("name", "Jeremy");
             outgoing.Headers.Add("state", "Texas");
@@ -56,12 +59,6 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
         public void brings_over_the_correlation_id()
         {
             incoming.Id.ShouldBe(outgoing.Id);
-        }
-
-        [Fact]
-        public void queue()
-        {
-            incoming.Queue.ShouldBe(outgoing.Queue);
         }
 
         [Fact]
@@ -100,7 +97,7 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
         [Fact]
         public void sent_attempts()
         {
-            incoming.SentAttempts.ShouldBe(outgoing.SentAttempts);
+            sentAttempts.GetValue(incoming).As<int>().ShouldBe(2);
         }
 
 

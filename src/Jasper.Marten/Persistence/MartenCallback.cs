@@ -47,8 +47,6 @@ namespace Jasper.Marten.Persistence
 
         public async Task Requeue(Envelope envelope)
         {
-            envelope.Attempts++;
-
             try
             {
                 using (var conn = _store.Tenancy.Default.CreateConnection())
@@ -80,13 +78,5 @@ namespace Jasper.Marten.Persistence
             return Task.CompletedTask;
         }
 
-        private async Task moveToScheduled(DateTimeOffset time, Envelope envelope)
-        {
-            envelope.Attempts++;
-            envelope.ExecutionTime = time;
-            envelope.Status = TransportConstants.Scheduled;
-
-            _retries.ScheduleExecution(envelope);
-        }
     }
 }

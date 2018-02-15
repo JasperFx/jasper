@@ -174,28 +174,6 @@ namespace Jasper.Testing.Messaging.Runtime
 
 
         [Fact]
-        public void cloning_an_envelope()
-        {
-            var envelope = new Envelope
-            {
-                Message = new Message1(),
-                Headers =
-                {
-                    ["a"] = "1",
-                    ["b"] = "2"
-                }
-            };
-
-            var clone = envelope.Clone();
-
-            clone.ShouldNotBeTheSameAs(envelope);
-            clone.Message.ShouldBeTheSameAs(envelope.Message);
-
-            clone.Headers["a"].ShouldBe("1");
-            clone.Headers["b"].ShouldBe("2");
-        }
-
-        [Fact]
         public void automatically_set_the_message_type_header_off_of_the_message()
         {
             var envelope = new Envelope

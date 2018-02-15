@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using StoryTeller;
 using StoryTeller.Results;
@@ -34,7 +35,7 @@ namespace Jasper.Storyteller.Logging
         {
             if (!envelopes.Any()) return;
 
-            if (envelopes.First().IsPing())
+            if (envelopes.First().MessageType == TransportConstants.PingMessageType)
             {
                 _report.Trace("Received a Ping message");
                 return;

@@ -51,10 +51,8 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
         {
             return new Envelope
             {
-                EnvelopeVersionId = PersistedMessageId.GenerateRandom(),
                 Destination = destination,
                 Data = new byte[]{1,2,3,4,5,6,7},
-                Queue = "outgoing",
                 SentAt = DateTime.Today.ToUniversalTime()
             };
         }

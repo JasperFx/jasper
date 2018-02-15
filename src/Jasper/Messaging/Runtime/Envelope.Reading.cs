@@ -7,9 +7,7 @@ namespace Jasper.Messaging.Runtime
 {
     public partial class Envelope
     {
-
-
-        public void ReadData(string key, string value)
+        private void ReadData(string key, string value)
         {
             try
             {

@@ -168,7 +168,7 @@ namespace Jasper.Messaging.Runtime
 
     }
 
-    public static class BinaryWriterExtensions
+    internal static class BinaryWriterExtensions
     {
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, string value)
         {

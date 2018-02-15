@@ -54,7 +54,8 @@ namespace Jasper.Marten.Persistence
                         envelope.ExecutionTime = raw.ToUniversalTime();
                     }
 
-                    envelope.Attempts = reader.GetFieldValue<int>(4);
+                    // Attempts will come in from the Envelope.Read
+                    //envelope.Attempts = reader.GetFieldValue<int>(4);
 
                     list.Add(envelope);
                 }
