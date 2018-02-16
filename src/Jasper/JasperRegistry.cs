@@ -63,17 +63,11 @@ namespace Jasper
 
             if (JasperEnvironment.Name.IsNotEmpty()) EnvironmentName = JasperEnvironment.Name;
 
-            EnvironmentChecks = new EnvironmentCheckExpression(this);
         }
 
 
         internal MessagingConfiguration Messaging { get; } = new MessagingConfiguration();
         protected internal MessagingSettings MessagingSettings => Messaging.Settings;
-
-        /// <summary>
-        ///     Register environment checks to debug application bootstrapping failures
-        /// </summary>
-        public EnvironmentCheckExpression EnvironmentChecks { get; }
 
         /// <summary>
         ///     Gets or sets the ASP.Net Core environment names

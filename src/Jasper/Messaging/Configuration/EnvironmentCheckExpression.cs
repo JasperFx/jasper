@@ -5,51 +5,74 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Messaging.Configuration
 {
-    public class EnvironmentCheckExpression
+    public static class EnvironmentCheckServiceExtensions
     {
-        private readonly JasperRegistry _parent;
-
-        public EnvironmentCheckExpression(JasperRegistry parent)
-        {
-            _parent = parent;
-        }
-
         /// <summary>
-        /// Register a single environment check by type
+        /// Shorthand to register an IEnvironmentCheck service
         /// </summary>
+        /// <param name="services"></param>
         /// <typeparam name="T"></typeparam>
-        public void Register<T>() where T : class, IEnvironmentCheck
+        public static void EnvironmentCheck(this IServiceCollection services, IEnvironmentCheck check)
         {
-            _parent.Services.AddTransient<IEnvironmentCheck, T>();
+            services.AddSingleton<IEnvironmentCheck>(check);
         }
 
         /// <summary>
-        /// Register a single environment check object
+        /// Shorthand to register an IEnvironmentCheck service
         /// </summary>
-        /// <param name="check"></param>
-        public void Register(IEnvironmentCheck check)
+        /// <param name="services"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void EnvironmentCheck<T>(this IServiceCollection services) where T : class, IEnvironmentCheck
         {
-            _parent.Services.AddSingleton<IEnvironmentCheck>(check);
+            services.AddTransient<IEnvironmentCheck, T>();
         }
 
-        public void Register(string description, Action<JasperRuntime> action)
+        /// <summary>
+        /// Register an environment check for the supplied action
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="description"></param>
+        /// <param name="action"></param>
+        public static void EnvironmentCheck(this IServiceCollection services, string description, Action<JasperRuntime> action)
         {
-            Register(new LambdaCheck(description, action));
+            services.AddSingleton<IEnvironmentCheck>(new LambdaCheck(description, action));
         }
 
-        public void Register<T>(string description, Action<T> action)
+        /// <summary>
+        /// Register an environment check for the supplied action using a registered service T
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="description"></param>
+        /// <param name="action"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void EnvironmentCheck<T>(this IServiceCollection services, string description, Action<T> action)
         {
-            Register(description, r => action(r.Get<T>()));
+            services.EnvironmentCheck(description, r => action(r.Get<T>()));
         }
 
-        public void Register(string description, Action action)
+        /// <summary>
+        /// Register an environment check for the supplied action
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="description"></param>
+        /// <param name="action"></param>
+        public static void EnvironmentCheck(this IServiceCollection services, string description, Action action)
         {
-            Register(description, r => action());
+            services.EnvironmentCheck(description, r => action());
         }
 
-        public void Register<T>(string description, Func<T, Task> func, TimeSpan timeout)
+        /// <summary>
+        /// Register an environment check for an asynchronous operation
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="description"></param>
+        /// <param name="func"></param>
+        /// <param name="timeout"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <exception cref="TimeoutException"></exception>
+        public static void EnvironmentCheck<T>(this IServiceCollection services, string description, Func<T, Task> func, TimeSpan timeout)
         {
-            Register(description, r =>
+            services.EnvironmentCheck(description, r =>
             {
                 var task = func(r.Get<T>());
                 task.Wait(timeout);
@@ -61,9 +84,14 @@ namespace Jasper.Messaging.Configuration
             });
         }
 
-        public void FileShouldExist(string file)
+        /// <summary>
+        /// Register an environment check for the existence of the named file
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="file"></param>
+        public static void CheckFileExists(this IServiceCollection services, string file)
         {
-            Register(new FileExistsCheck(file));
+            services.AddSingleton<IEnvironmentCheck>(new FileExistsCheck(file));
         }
     }
 }
