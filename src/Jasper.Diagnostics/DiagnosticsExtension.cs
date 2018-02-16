@@ -26,7 +26,7 @@ namespace Jasper.Diagnostics
 
             registry.Settings.Require<DiagnosticsSettings>();
 
-            registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+            registry.CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);
         }
     }
 

@@ -51,10 +51,10 @@ namespace Jasper
             });
 
 
-            registry.Generation.Sources.Add(new NowTimeVariableSource());
+            registry.CodeGeneration.Sources.Add(new NowTimeVariableSource());
 
-            registry.Generation.Assemblies.Add(GetType().GetTypeInfo().Assembly);
-            registry.Generation.Assemblies.Add(registry.ApplicationAssembly);
+            registry.CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+            registry.CodeGeneration.Assemblies.Add(registry.ApplicationAssembly);
 
             Registry = registry;
 
@@ -223,7 +223,7 @@ namespace Jasper
             var featureBuilding = registry.BuildFeatures(runtime, timer);
 
             await handlerCompilation;
-            await registry.Messaging.Activate(runtime, registry.Generation, timer);
+            await registry.Messaging.Activate(runtime, registry.CodeGeneration, timer);
 
             await featureBuilding;
 

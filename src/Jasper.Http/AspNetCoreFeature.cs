@@ -58,7 +58,7 @@ namespace Jasper.Http
         internal Task FindRoutes(JasperRuntime runtime, JasperHttpRegistry registry, PerfTimer timer)
         {
             var applicationAssembly = registry.ApplicationAssembly;
-            var generation = registry.Generation;
+            var generation = registry.CodeGeneration;
 
 
             _inner.UseSetting(WebHostDefaults.ApplicationKey, applicationAssembly.FullName);

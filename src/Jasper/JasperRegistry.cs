@@ -53,7 +53,7 @@ namespace Jasper
             deriveServiceName();
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
-            Generation = new GenerationRules($"{name.Replace(".", "_")}_Generated");
+            CodeGeneration = new GenerationRules($"{name.Replace(".", "_")}_Generated");
 
 
             Settings = new JasperSettings(this);
@@ -108,10 +108,15 @@ namespace Jasper
         /// </summary>
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
-        // TODO -- move this to advanced too? Won't be used very often
-        public GenerationRules Generation { get; }
+        /// <summary>
+        /// Configure or extend the BlueMilk code generation
+        /// </summary>
+        public GenerationRules CodeGeneration { get; }
 
-        public Assembly ApplicationAssembly { get; set; }
+        /// <summary>
+        /// The main application assembly for this Jasper system
+        /// </summary>
+        public Assembly ApplicationAssembly { get; private set; }
 
         /// <summary>
         ///     Register additional services to the underlying IoC container

@@ -12,7 +12,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         {
             with(_ =>
             {
-                _.Generation.Sources.Add(new SpecialServiceSource());
+                _.CodeGeneration.Sources.Add(new SpecialServiceSource());
                 _.Handlers.IncludeType<SpecialServiceUsingThing>();
             });
 

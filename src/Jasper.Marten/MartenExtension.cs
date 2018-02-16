@@ -37,7 +37,7 @@ namespace Jasper.Marten
             registry.Services.AddScoped(c => c.GetService<IDocumentStore>().OpenSession());
             registry.Services.AddScoped(c => c.GetService<IDocumentStore>().QuerySession());
 
-            registry.Generation.Sources.Add(new SessionVariableSource());
+            registry.CodeGeneration.Sources.Add(new SessionVariableSource());
 
         }
     }
