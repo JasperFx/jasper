@@ -56,7 +56,7 @@ namespace Jasper.Http
             set => Http.EnvironmentName = value;
         }
 
-        public override string HttpAddresses => Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
+        protected override string HttpAddresses => Http.As<IWebHostBuilder>().GetSetting(WebHostDefaults.ServerUrlsKey);
 
         protected override Task BuildFeatures(JasperRuntime runtime, PerfTimer timer)
         {

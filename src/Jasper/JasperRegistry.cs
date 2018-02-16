@@ -151,7 +151,7 @@ namespace Jasper
         /// </summary>
         public IAdvancedOptions Advanced => Messaging.Settings;
 
-        public virtual string HttpAddresses => null;
+        internal protected virtual string HttpAddresses => null;
 
         private void establishApplicationAssembly()
         {
