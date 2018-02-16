@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Invocation
 {
-    public class Respond : ISendMyself
+    public static class Respond
+    {
+        public static Response With(object message)
+        {
+            return new Response(message);
+        }
+    }
+
+    public class Response : ISendMyself
     {
         private readonly object _message;
         private readonly IList<Action<Envelope, Envelope>> _actions = new List<Action<Envelope, Envelope>>();
         private string _description;
         private bool _sentToSender;
 
-        public static Respond With(object message)
-        {
-            return new Respond(message);
-        }
 
-        private Respond(object message)
+
+        internal Response(object message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
             _description = "Respond '{0}'".ToFormat(message);
@@ -32,7 +38,13 @@ namespace Jasper.Messaging.Runtime.Invocation
             }
         }
 
-        public Respond WithHeader(string key, string value)
+        /// <summary>
+        /// Set custom headers on the outgoing message envelope
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public Response WithHeader(string key, string value)
         {
             alter = (_, e) => e.Headers[key] = value;
             _description += "; {0}='{1}'".ToFormat(key, value);
@@ -40,7 +52,11 @@ namespace Jasper.Messaging.Runtime.Invocation
             return this;
         }
 
-        public Respond ToSender()
+        /// <summary>
+        /// Send the response back to the original sender
+        /// </summary>
+        /// <returns></returns>
+        public Response ToSender()
         {
             alter = (old, @new) => @new.Destination = old.ReplyUri;
             _description += "; respond to sender";
@@ -50,15 +66,23 @@ namespace Jasper.Messaging.Runtime.Invocation
             return this;
         }
 
-        public void AssertWasSentBackToSender()
+
+        /// <summary>
+        /// Send the message to a specific destination
+        /// </summary>
+        /// <param name="uriString"></param>
+        /// <returns></returns>
+        public Response To(string uriString)
         {
-            if (!_sentToSender)
-            {
-                throw new Exception("Was NOT sent back to the sender");
-            }
+            return To(uriString.ToUri());
         }
 
-        public Respond To(Uri destination)
+        /// <summary>
+        /// Send the message to a specific destination
+        /// </summary>
+        /// <param name="destination"></param>
+        /// <returns></returns>
+        public Response To(Uri destination)
         {
             alter = (_, e) => e.Destination = destination;
             _description += "; Destination=" + destination;
@@ -66,7 +90,12 @@ namespace Jasper.Messaging.Runtime.Invocation
             return this;
         }
 
-        public Respond DelayedUntil(DateTime time)
+        /// <summary>
+        /// Scheduled execution until the designated time
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public Response DelayedUntil(DateTime time)
         {
             alter = (_, e) => e.ExecutionTime = time.ToUniversalTime();
             _description += "; Delayed until " + time.ToUniversalTime();
@@ -74,18 +103,28 @@ namespace Jasper.Messaging.Runtime.Invocation
             return this;
         }
 
-        public Respond DelayedBy(TimeSpan timeSpan)
+        /// <summary>
+        /// Delay the execution by the time designated
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        public Response DelayedBy(TimeSpan timeSpan)
         {
             return DelayedUntil(DateTime.UtcNow.Add(timeSpan));
         }
 
-        public Respond Altered(Action<Envelope> alteration)
+        /// <summary>
+        /// Make other customizations to the outgoing Envelope
+        /// </summary>
+        /// <param name="alteration"></param>
+        /// <returns></returns>
+        public Response Altered(Action<Envelope> alteration)
         {
             alter = (_, e) => alteration(e);
             return this;
         }
 
-        public Envelope CreateEnvelope(Envelope original)
+        Envelope ISendMyself.CreateEnvelope(Envelope original)
         {
             var envelope = original.ForResponse(_message);
 

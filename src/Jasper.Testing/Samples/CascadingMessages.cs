@@ -157,7 +157,7 @@ namespace Jasper.Testing.Samples.CascadingMessages
     // SAMPLE: RespondsHandler
     public class RespondsHandler
     {
-        public Respond Consume(MyMessage message)
+        public Response Consume(MyMessage message)
         {
             return Respond
                 // The actual message being send back out

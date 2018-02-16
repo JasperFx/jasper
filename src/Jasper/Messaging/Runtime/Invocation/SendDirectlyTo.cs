@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Invocation
 {
@@ -11,6 +12,11 @@ namespace Jasper.Messaging.Runtime.Invocation
         {
             _destination = destination;
             _message = message;
+        }
+
+        public SendDirectlyTo(string uriString, object message) : this(uriString.ToUri(), message)
+        {
+
         }
 
         public Envelope CreateEnvelope(Envelope original)
