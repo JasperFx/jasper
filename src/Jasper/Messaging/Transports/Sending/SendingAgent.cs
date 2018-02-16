@@ -14,10 +14,10 @@ namespace Jasper.Messaging.Transports.Sending
     public abstract class SendingAgent : ISendingAgent, ISenderCallback
     {
         protected readonly ISender _sender;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         protected readonly RetryAgent _retries;
 
-        protected SendingAgent(Uri destination, ISender sender, CompositeTransportLogger logger, MessagingSettings settings, RetryAgent retries)
+        protected SendingAgent(Uri destination, ISender sender, ITransportLogger logger, MessagingSettings settings, RetryAgent retries)
         {
             _sender = sender;
             _logger = logger;

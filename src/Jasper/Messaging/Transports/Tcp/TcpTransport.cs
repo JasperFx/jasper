@@ -17,12 +17,12 @@ namespace Jasper.Messaging.Transports.Tcp
     public class TcpTransport : ITransport
     {
         private readonly IPersistence _persistence;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private IWorkerQueue _workerQueue;
         private readonly MessagingSettings _settings;
         private readonly IList<IListener> _listeners = new List<IListener>();
 
-        public TcpTransport(IPersistence persistence, CompositeTransportLogger logger, MessagingSettings settings)
+        public TcpTransport(IPersistence persistence, ITransportLogger logger, MessagingSettings settings)
         {
             _persistence = persistence;
             _logger = logger;

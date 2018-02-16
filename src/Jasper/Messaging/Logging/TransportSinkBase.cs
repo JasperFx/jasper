@@ -5,7 +5,7 @@ using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.Messaging.Logging
 {
-    public abstract class TransportLoggerBase : ITransportLogger
+    public abstract class TransportSinkBase : ITransportEventSink
     {
         public virtual void OutgoingBatchSucceeded(OutgoingMessageBatch batch)
         {

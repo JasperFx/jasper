@@ -24,7 +24,7 @@ namespace Jasper.Testing.Messaging
         public UriAliasLookup Lookup { get; } = new UriAliasLookup(new IUriLookup[0]);
         public IWorkerQueue Workers { get; } = Substitute.For<IWorkerQueue>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
-        public CompositeMessageLogger Logger { get; } = CompositeMessageLogger.Empty();
+        public IMessageLogger Logger { get; } = CompositeMessageLogger.Empty();
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
         public IReplyWatcher Replies { get; } = new ReplyWatcher();
         public MessagingSettings Settings { get; } = new MessagingSettings();

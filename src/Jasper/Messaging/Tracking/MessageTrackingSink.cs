@@ -8,7 +8,7 @@ namespace Jasper.Messaging.Tracking
     /// Useful for automated testing scenarios against the service bus to "know"
     /// when all outstanding messages are completed. DO NOT USE IN PRODUCTION!!!
     /// </summary>
-    public class MessageTrackingLogger : MessageLoggerBase
+    public class MessageTrackingSink : MessageSinkBase
     {
         public static readonly string Envelope = "Envelope";
         public static readonly string Execution = "Execution";
@@ -16,7 +16,7 @@ namespace Jasper.Messaging.Tracking
         private readonly MessageHistory _history;
 
 
-        public MessageTrackingLogger(MessageHistory history)
+        public MessageTrackingSink(MessageHistory history)
         {
             _history = history;
         }

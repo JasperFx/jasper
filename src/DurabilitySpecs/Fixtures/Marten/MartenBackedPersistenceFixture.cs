@@ -28,8 +28,8 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         private LightweightCache<string, JasperRuntime> _senders;
 
-        private StorytellerMessageLogger _messageLogger;
-        private StorytellerTransportLogger _transportLogger;
+        private StorytellerMessageSink _messageSink;
+        private StorytellerTransportSink _transportSink;
         private SenderLatchDetected _senderWatcher;
 
         public MartenBackedPersistenceFixture()
@@ -39,11 +39,11 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public override void SetUp()
         {
-            _messageLogger = new StorytellerMessageLogger();
-            _transportLogger = new StorytellerTransportLogger();
+            _messageSink = new StorytellerMessageSink();
+            _transportSink = new StorytellerTransportSink();
 
-            _messageLogger.Start(Context);
-            _transportLogger.Start(Context, _messageLogger.Errors);
+            _messageSink.Start(Context);
+            _transportSink.Start(Context, _messageSink.Errors);
 
             _senderWatcher = new SenderLatchDetected();
 
@@ -78,8 +78,8 @@ namespace DurabilitySpecs.Fixtures.Marten
             _receivers = new LightweightCache<string, JasperRuntime>(key =>
             {
                 var registry = new ReceiverApp();
-                registry.Logging.LogMessageEventsWith(_messageLogger);
-                registry.Logging.LogTransportEventsWith(_transportLogger);
+                registry.Logging.LogMessageEventsWith(_messageSink);
+                registry.Logging.LogTransportEventsWith(_transportSink);
 
                 return JasperRuntime.For(registry);
             });
@@ -87,8 +87,8 @@ namespace DurabilitySpecs.Fixtures.Marten
             _senders = new LightweightCache<string, JasperRuntime>(key =>
             {
                 var registry = new SenderApp();
-                registry.Logging.LogMessageEventsWith(_messageLogger);
-                registry.Logging.LogTransportEventsWith(_transportLogger);
+                registry.Logging.LogMessageEventsWith(_messageSink);
+                registry.Logging.LogTransportEventsWith(_transportSink);
 
                 registry.Logging.LogTransportEventsWith(_senderWatcher);
 
@@ -106,7 +106,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _senders.Each(x => x.Dispose());
             _senders.ClearAll();
 
-            _messageLogger.BuildReports().Each(x => Context.Reporting.Log(x));
+            _messageSink.BuildReports().Each(x => Context.Reporting.Log(x));
 
             _receiverStore.Dispose();
             _receiverStore = null;
@@ -224,7 +224,7 @@ namespace DurabilitySpecs.Fixtures.Marten
     }
 
 
-    public class SenderLatchDetected : TransportLoggerBase
+    public class SenderLatchDetected : TransportSinkBase
     {
         public TaskCompletionSource<bool> Waiter = new TaskCompletionSource<bool>();
 

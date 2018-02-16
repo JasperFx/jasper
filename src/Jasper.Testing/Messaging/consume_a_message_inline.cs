@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    public class consume_a_message_inline : IntegrationContext, IMessageLogger
+    public class consume_a_message_inline : IntegrationContext, IMessageEventSink, IExceptionSink
     {
         private readonly WorkTracker theTracker = new WorkTracker();
 
@@ -28,6 +28,7 @@ namespace Jasper.Testing.Messaging
                 _.Publish.MessagesFromAssemblyContaining<Message1>().To("loopback://cascading");
 
                 _.Logging.LogMessageEventsWith(this);
+                _.Logging.LogExceptionsWith(this);
 
                 _.Handlers.OnException<DivideByZeroException>().Requeue();
                 _.Handlers.DefaultMaximumAttempts = 3;
@@ -95,40 +96,40 @@ namespace Jasper.Testing.Messaging
         }
 
 
-        void IMessageLogger.Sent(Envelope envelope)
+        void IMessageEventSink.Sent(Envelope envelope)
         {
 
         }
 
-        void IMessageLogger.Received(Envelope envelope)
+        void IMessageEventSink.Received(Envelope envelope)
         {
         }
 
-        void IMessageLogger.ExecutionStarted(Envelope envelope)
+        void IMessageEventSink.ExecutionStarted(Envelope envelope)
         {
         }
 
-        void IMessageLogger.ExecutionFinished(Envelope envelope)
+        void IMessageEventSink.ExecutionFinished(Envelope envelope)
         {
         }
 
-        void IMessageLogger.MessageSucceeded(Envelope envelope)
+        void IMessageEventSink.MessageSucceeded(Envelope envelope)
         {
         }
 
         public readonly IList<Exception> Exceptions = new List<Exception>();
 
-        void IMessageLogger.MessageFailed(Envelope envelope, Exception ex)
+        void IMessageEventSink.MessageFailed(Envelope envelope, Exception ex)
         {
             Exceptions.Add(ex);
         }
 
-        void IMessageLogger.LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        void IExceptionSink.LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             Exceptions.Add(ex);
         }
 
-        void IMessageLogger.NoHandlerFor(Envelope envelope)
+        void IMessageEventSink.NoHandlerFor(Envelope envelope)
         {
         }
 

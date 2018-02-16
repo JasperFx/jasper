@@ -16,7 +16,7 @@ namespace Jasper.Messaging.Transports
         private readonly ConcurrentDictionary<Uri, Lazy<IChannel>> _channels = new ConcurrentDictionary<Uri, Lazy<IChannel>>();
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
         private UriAliasLookup _lookups;
-        private CompositeMessageLogger _logger;
+        private IMessageLogger _logger;
         private IMessagingRoot _root;
 
         public void Start(IMessagingRoot root, CapabilityGraph capabilities)

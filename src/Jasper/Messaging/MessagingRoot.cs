@@ -29,7 +29,7 @@ namespace Jasper.Messaging
         UriAliasLookup Lookup { get; }
         IWorkerQueue Workers { get; }
         IHandlerPipeline Pipeline { get; }
-        CompositeMessageLogger Logger { get; }
+        IMessageLogger Logger { get; }
         MessagingSerializationGraph Serialization { get; }
         IReplyWatcher Replies { get; }
         IChannelGraph Channels { get; }
@@ -72,7 +72,8 @@ namespace Jasper.Messaging
             IEnumerable<ISerializerFactory> serializers,
             IEnumerable<IMessageDeserializer> readers,
             IEnumerable<IMessageSerializer> writers,
-            IMessageLogger[] loggers,
+            IMessageEventSink[] sinks,
+            IExceptionSink[] exceptionSinks,
             ITransport[] transports,
             IEnumerable<IMissingHandler> missingHandlers,
             IEnumerable<IUriLookup> lookups)
@@ -92,7 +93,7 @@ namespace Jasper.Messaging
             Serialization = new MessagingSerializationGraph(pooling, settings, handlers, forwarders, serializers,
                 readers, writers);
 
-            Logger = new CompositeMessageLogger(loggers);
+            Logger = new CompositeMessageLogger(sinks, exceptionSinks);
 
             Pipeline = new HandlerPipeline(Serialization, handlers, Replies, Logger, missingHandlers,
                 this);
@@ -126,7 +127,7 @@ namespace Jasper.Messaging
 
         public IHandlerPipeline Pipeline { get; }
 
-        public CompositeMessageLogger Logger { get; }
+        public IMessageLogger Logger { get; }
 
         public MessagingSerializationGraph Serialization { get; }
 

@@ -25,10 +25,10 @@ namespace Jasper.Messaging
         private readonly SerializationGraph _serialization;
         private readonly MessagingSettings _settings;
         private readonly IChannelGraph _channels;
-        private readonly CompositeMessageLogger _logger;
+        private readonly IMessageLogger _logger;
 
         // TODO -- just pull in MessagingRoot?
-        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IPersistence persistence, CompositeMessageLogger logger)
+        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IPersistence persistence, IMessageLogger logger)
         {
             _router = router;
             _watcher = watcher;
@@ -41,7 +41,7 @@ namespace Jasper.Messaging
         }
 
         // TODO -- just pull in MessagingRoot?
-        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IPersistence persistence, CompositeMessageLogger logger, Envelope originalEnvelope)
+        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IPersistence persistence, IMessageLogger logger, Envelope originalEnvelope)
         {
             _router = router;
             _watcher = watcher;

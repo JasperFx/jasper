@@ -26,10 +26,10 @@ namespace StorytellerSpecs.Fixtures
             _registry.Services.AddSingleton(new MessageTracker());
             _registry.Services.AddSingleton(new MessageHistory());
 
-            _registry.Services.AddTransient<IMessageLogger, MessageTrackingLogger>();
+            _registry.Services.AddTransient<IMessageEventSink, MessageTrackingSink>();
 
 
-            _registry.Logging.LogMessageEventsWith(new StorytellerMessageLogger(Context));
+            _registry.Logging.LogMessageEventsWith(new StorytellerMessageSink(Context));
         }
 
         public override void TearDown()

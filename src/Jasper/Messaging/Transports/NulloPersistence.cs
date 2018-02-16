@@ -12,10 +12,10 @@ namespace Jasper.Messaging.Transports
 {
     public class NulloPersistence : IPersistence
     {
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly MessagingSettings _settings;
 
-        public NulloPersistence(CompositeTransportLogger logger, MessagingSettings settings)
+        public NulloPersistence(ITransportLogger logger, MessagingSettings settings)
         {
             _logger = logger;
             _settings = settings;

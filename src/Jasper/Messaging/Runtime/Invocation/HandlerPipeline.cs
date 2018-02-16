@@ -26,7 +26,7 @@ namespace Jasper.Messaging.Runtime.Invocation
         // TODO -- try to eliminate this dependency
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, CompositeMessageLogger logger, IEnumerable<IMissingHandler> missingHandlers, IMessagingRoot root)
+        public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IMessageLogger logger, IEnumerable<IMissingHandler> missingHandlers, IMessagingRoot root)
         {
             _serializer = serializers;
             _graph = graph;

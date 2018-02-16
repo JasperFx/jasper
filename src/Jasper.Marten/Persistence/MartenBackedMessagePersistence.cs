@@ -18,10 +18,10 @@ namespace Jasper.Marten.Persistence
     public class MartenBackedMessagePersistence : IPersistence
     {
         private readonly IDocumentStore _store;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly MartenRetries _retries;
 
-        public MartenBackedMessagePersistence(IDocumentStore store, CompositeTransportLogger logger,
+        public MartenBackedMessagePersistence(IDocumentStore store, ITransportLogger logger,
             MessagingSettings settings, EnvelopeTables tables)
         {
             _store = store;

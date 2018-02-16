@@ -34,7 +34,7 @@ namespace Jasper.Marten.Persistence
         public readonly ManualResetEvent Scheduled = new ManualResetEvent(false);
         public readonly ManualResetEvent ErrorReportLogged = new ManualResetEvent(false);
 
-        public MartenRetries(IDocumentStore store, EnvelopeTables tables, CompositeTransportLogger logger, MessagingSettings settings)
+        public MartenRetries(IDocumentStore store, EnvelopeTables tables, ITransportLogger logger, MessagingSettings settings)
         {
             _store = store;
             _tables = tables;

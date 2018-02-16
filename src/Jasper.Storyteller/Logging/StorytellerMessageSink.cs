@@ -11,7 +11,7 @@ using Envelope = Jasper.Messaging.Runtime.Envelope;
 
 namespace Jasper.Storyteller.Logging
 {
-    public class StorytellerMessageLogger : MessageLoggerBase
+    public class StorytellerMessageSink : MessageSinkBase
     {
         private ISpecContext _context;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();

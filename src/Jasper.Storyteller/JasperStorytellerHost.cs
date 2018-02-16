@@ -38,8 +38,8 @@ namespace Jasper.Storyteller
     {
         public readonly MessageHistory MessageHistory = new MessageHistory();
 
-        private readonly StorytellerMessageLogger _messageLogger = new StorytellerMessageLogger();
-        private readonly StorytellerTransportLogger _transportLogger = new StorytellerTransportLogger();
+        private readonly StorytellerMessageSink _messageSink = new StorytellerMessageSink();
+        private readonly StorytellerTransportSink _transportSink = new StorytellerTransportSink();
 
         private JasperRuntime _runtime;
 
@@ -57,9 +57,9 @@ namespace Jasper.Storyteller
             Registry = registry;
 
             Registry.Services.AddSingleton(MessageHistory);
-            Registry.Logging.LogMessageEventsWith<MessageTrackingLogger>();
-            Registry.Services.Add(new ServiceDescriptor(typeof(IMessageLogger), _messageLogger));
-            Registry.Services.Add(new ServiceDescriptor(typeof(ITransportLogger), _transportLogger));
+            Registry.Logging.LogMessageEventsWith<MessageTrackingSink>();
+            Registry.Services.Add(new ServiceDescriptor(typeof(IMessageEventSink), _messageSink));
+            Registry.Services.Add(new ServiceDescriptor(typeof(ITransportEventSink), _transportSink));
         }
 
         public T Registry { get; }
@@ -125,7 +125,7 @@ namespace Jasper.Storyteller
             _warmup = Task.Factory.StartNew(() =>
             {
                 _runtime = JasperRuntime.For(Registry);
-                _messageLogger.ServiceName = _runtime.ServiceName;
+                _messageSink.ServiceName = _runtime.ServiceName;
                 beforeAll();
             });
 
@@ -149,13 +149,13 @@ namespace Jasper.Storyteller
 
             public void BeforeExecution(ISpecContext context)
             {
-                _parent._messageLogger.Start(context);
-                _parent._transportLogger.Start(context, _parent._messageLogger.Errors);
+                _parent._messageSink.Start(context);
+                _parent._transportSink.Start(context, _parent._messageSink.Errors);
             }
 
             public void AfterExecution(ISpecContext context)
             {
-                var reports = _parent._messageLogger.BuildReports();
+                var reports = _parent._messageSink.BuildReports();
                 foreach (var report in reports)
                 {
                     context.Reporting.Log(report);

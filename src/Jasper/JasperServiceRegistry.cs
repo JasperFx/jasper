@@ -71,7 +71,7 @@ namespace Jasper
             this.AddSingleton(s => s.GetService<IMessagingRoot>().ScheduledJobs);
 
 
-            ForSingletonOf<CompositeTransportLogger>().Use<CompositeTransportLogger>();
+            ForSingletonOf<ITransportLogger>().Use<CompositeTransportLogger>();
 
             ForSingletonOf<INodeDiscovery>().UseIfNone(new InMemoryNodeDiscovery(parent.MessagingSettings));
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone(new InMemorySubscriptionsRepository());

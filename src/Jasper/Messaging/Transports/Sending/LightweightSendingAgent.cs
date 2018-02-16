@@ -10,7 +10,7 @@ namespace Jasper.Messaging.Transports.Sending
 {
     public class LightweightSendingAgent : SendingAgent
     {
-        public LightweightSendingAgent(Uri destination, ISender sender, CompositeTransportLogger logger, MessagingSettings settings)
+        public LightweightSendingAgent(Uri destination, ISender sender, ITransportLogger logger, MessagingSettings settings)
         : base(destination, sender, logger, settings, new LightweightRetryAgent(sender, settings.Retries))
         {
 

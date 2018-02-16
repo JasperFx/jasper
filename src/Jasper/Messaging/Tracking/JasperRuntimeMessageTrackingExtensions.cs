@@ -11,8 +11,8 @@ namespace Jasper.Messaging.Tracking
         private static void validateMessageTrackerExists(this JasperRuntime runtime)
         {
             var history = runtime.Container.Model.For<MessageHistory>().Default;
-            var logger = runtime.Container.Model.For<IMessageLogger>().Instances
-                .FirstOrDefault(x => x.ImplementationType == typeof(MessageTrackingLogger));
+            var logger = runtime.Container.Model.For<IMessageEventSink>().Instances
+                .FirstOrDefault(x => x.ImplementationType == typeof(MessageTrackingSink));
 
             if (history == null || history.Lifetime != ServiceLifetime.Singleton || logger == null)
             {

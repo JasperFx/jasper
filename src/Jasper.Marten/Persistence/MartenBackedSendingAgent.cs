@@ -20,13 +20,13 @@ namespace Jasper.Marten.Persistence
     public class MartenBackedSendingAgent : SendingAgent
     {
         private readonly CancellationToken _cancellation;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly IDocumentStore _store;
         private readonly MessagingSettings _settings;
         private readonly EnvelopeTables _marker;
         private readonly MartenRetries _retries;
 
-        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, CompositeTransportLogger logger, MessagingSettings settings, EnvelopeTables marker, MartenRetries retries)
+        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, MartenRetries retries)
             : base(destination, sender, logger, settings, new MartenBackedRetryAgent(store, sender, settings.Retries, marker, logger))
         {
             _cancellation = cancellation;

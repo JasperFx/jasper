@@ -7,16 +7,19 @@ namespace Jasper.Messaging.Logging
 {
     public class CompositeMessageLogger : IMessageLogger
     {
-        public CompositeMessageLogger(IMessageLogger[] loggers)
+        private readonly IExceptionSink[] _exceptions;
+
+        public CompositeMessageLogger(IMessageEventSink[] sinks, IExceptionSink[] exceptions)
         {
-            Loggers = loggers;
+            _exceptions = exceptions;
+            Sinks = sinks;
         }
 
-        public IMessageLogger[] Loggers { get; }
+        public IMessageEventSink[] Sinks { get; }
 
         public void Sent(Envelope envelope)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -30,7 +33,7 @@ namespace Jasper.Messaging.Logging
 
         public void Received(Envelope envelope)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -44,7 +47,7 @@ namespace Jasper.Messaging.Logging
 
         public void ExecutionStarted(Envelope envelope)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -58,7 +61,7 @@ namespace Jasper.Messaging.Logging
 
         public void ExecutionFinished(Envelope envelope)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -72,7 +75,7 @@ namespace Jasper.Messaging.Logging
 
         public void MessageSucceeded(Envelope envelope)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -86,7 +89,7 @@ namespace Jasper.Messaging.Logging
 
         public void MessageFailed(Envelope envelope, Exception ex)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -109,7 +112,7 @@ namespace Jasper.Messaging.Logging
 
             }
 
-            foreach (var sink in Loggers)
+            foreach (var sink in _exceptions)
             {
                 try
                 {
@@ -123,7 +126,7 @@ namespace Jasper.Messaging.Logging
 
         public void NoHandlerFor(Envelope envelope)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -137,7 +140,7 @@ namespace Jasper.Messaging.Logging
 
         public void NoRoutesFor(Envelope envelope)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -151,7 +154,7 @@ namespace Jasper.Messaging.Logging
 
         public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
         {
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -174,7 +177,7 @@ namespace Jasper.Messaging.Logging
 
             }
 
-            foreach (var sink in Loggers)
+            foreach (var sink in Sinks)
             {
                 try
                 {
@@ -188,7 +191,7 @@ namespace Jasper.Messaging.Logging
 
         public static CompositeMessageLogger Empty()
         {
-            return new CompositeMessageLogger(new IMessageLogger[0]);
+            return new CompositeMessageLogger(new IMessageEventSink[0], new IExceptionSink[0]);
         }
     }
 }

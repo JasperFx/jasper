@@ -23,7 +23,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IWorkerQueue _workers;
         private readonly IDocumentStore _store;
         private readonly MessagingSettings _settings;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly StoreOptions _storeOptions;
         private readonly ActionBlock<IMessagingAction> _worker;
         private NpgsqlConnection _connection;
@@ -34,7 +34,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private Timer _nodeReassignmentTimer;
         private readonly ReassignFromDormantNodes _nodeReassignment;
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, CompositeTransportLogger logger, StoreOptions storeOptions, MartenRetries retries)
+        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, ITransportLogger logger, StoreOptions storeOptions, MartenRetries retries)
         {
             _channels = channels;
             _workers = workers;

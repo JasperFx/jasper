@@ -21,13 +21,13 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IChannelGraph _channels;
         private readonly EnvelopeTables _marker;
         private readonly ISchedulingAgent _schedulingAgent;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly MessagingSettings _settings;
         private readonly string _findUniqueDestinations;
         private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
 
-        public RecoverOutgoingMessages(IChannelGraph channels, MessagingSettings settings, EnvelopeTables marker, ISchedulingAgent schedulingAgent, CompositeTransportLogger logger)
+        public RecoverOutgoingMessages(IChannelGraph channels, MessagingSettings settings, EnvelopeTables marker, ISchedulingAgent schedulingAgent, ITransportLogger logger)
         {
             _channels = channels;
             _settings = settings;

@@ -11,7 +11,7 @@ using Envelope = Jasper.Messaging.Runtime.Envelope;
 
 namespace Jasper.Storyteller.Logging
 {
-    public class StorytellerTransportLogger : ITransportLogger
+    public class StorytellerTransportSink : ITransportEventSink
     {
         private ISpecContext _context;
         private TransportLoggingReport _report;

@@ -5,8 +5,13 @@ using Jasper.Messaging.Runtime.Subscriptions;
 namespace Jasper.Messaging.Logging
 {
 
+    public interface IMessageLogger : IMessageEventSink, IExceptionSink
+    {
+
+    }
+
     // SAMPLE: IMessageLogger
-    public interface IMessageLogger
+    public interface IMessageEventSink
     {
         /// <summary>
         /// Called when an envelope is successfully sent through a transport
@@ -44,14 +49,6 @@ namespace Jasper.Messaging.Logging
         /// <param name="envelope"></param>
         /// <param name="ex"></param>
         void MessageFailed(Envelope envelope, Exception ex);
-
-        /// <summary>
-        /// Catch all hook for any exceptions encountered by the messaging
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <param name="correlationId"></param>
-        /// <param name="message"></param>
-        void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:");
 
         /// <summary>
         /// Called when a message is received for which the application has no handler

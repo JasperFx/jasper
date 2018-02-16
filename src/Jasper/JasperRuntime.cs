@@ -112,7 +112,7 @@ namespace Jasper
             catch (Exception e)
             {
                 Console.WriteLine($"Unable to un-register the running node");
-                Get<CompositeMessageLogger>().LogException(e);
+                Get<IMessageLogger>().LogException(e);
             }
 
             Registry.Stop(this).Wait(10.Seconds());
@@ -200,8 +200,9 @@ namespace Jasper
         {
             if (registry.Logging.UseConsoleLogging)
             {
-                registry.Services.AddTransient<IMessageLogger, ConsoleMessageLogger>();
-                registry.Services.AddTransient<ITransportLogger, ConsoleTransportLogger>();
+                registry.Services.AddTransient<IMessageEventSink, ConsoleMessageSink>();
+                registry.Services.AddTransient<ITransportEventSink, ConsoleTransportSink>();
+                registry.Services.AddTransient<IExceptionSink, ConsoleExceptionSink>();
             }
 
 
@@ -265,7 +266,7 @@ namespace Jasper
             }
             catch (Exception e)
             {
-                runtime.Get<CompositeMessageLogger>()
+                runtime.Get<IMessageLogger>()
                     .LogException(e, message: "Failure when trying to register the node with " + nodes);
             }
         }

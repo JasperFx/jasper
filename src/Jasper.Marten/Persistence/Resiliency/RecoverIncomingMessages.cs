@@ -13,7 +13,7 @@ namespace Jasper.Marten.Persistence.Resiliency
     public class RecoverIncomingMessages : IMessagingAction
     {
         public static readonly int IncomingMessageLockId = "recover-incoming-messages".GetHashCode();
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly EnvelopeTables _marker;
         private readonly ISchedulingAgent _schedulingAgent;
         private readonly MessagingSettings _settings;
@@ -21,7 +21,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly string _findAtLargeEnvelopesSql;
 
         public RecoverIncomingMessages(IWorkerQueue workers, MessagingSettings settings, EnvelopeTables marker,
-            ISchedulingAgent schedulingAgent, CompositeTransportLogger logger)
+            ISchedulingAgent schedulingAgent, ITransportLogger logger)
         {
             _workers = workers;
             _settings = settings;

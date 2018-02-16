@@ -7,7 +7,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Logging
 {
-    public class ConsoleTransportLogger : ITransportLogger
+    public class ConsoleTransportSink : ITransportEventSink
     {
         public void OutgoingBatchSucceeded(OutgoingMessageBatch batch)
         {
@@ -70,18 +70,7 @@ namespace Jasper.Messaging.Logging
             }
         }
 
-        public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
-        {
-            ConsoleWriter.Write(ConsoleColor.Red, message);
 
-            if (correlationId.IsNotEmpty())
-            {
-                ConsoleWriter.Write(ConsoleColor.Red, $"Id: {correlationId}");
-            }
-
-            ConsoleWriter.Write(ConsoleColor.Yellow, ex.ToString());
-            Console.WriteLine();
-        }
 
         public void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes)
         {

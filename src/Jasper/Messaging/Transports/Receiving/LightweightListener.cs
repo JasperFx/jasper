@@ -10,10 +10,10 @@ namespace Jasper.Messaging.Transports.Receiving
     public class LightweightListener : IListener
     {
         private readonly IWorkerQueue _workerQueue;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly IListeningAgent _agent;
 
-        public LightweightListener(IWorkerQueue workerQueue, CompositeTransportLogger logger, IListeningAgent agent)
+        public LightweightListener(IWorkerQueue workerQueue, ITransportLogger logger, IListeningAgent agent)
         {
             _workerQueue = workerQueue;
             _logger = logger;

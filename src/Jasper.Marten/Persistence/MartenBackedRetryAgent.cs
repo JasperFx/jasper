@@ -21,10 +21,10 @@ namespace Jasper.Marten.Persistence
     {
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _marker;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly string _deleteIncoming;
 
-        public MartenBackedRetryAgent(IDocumentStore store, ISender sender, RetrySettings settings, EnvelopeTables marker, CompositeTransportLogger logger) : base(sender, settings)
+        public MartenBackedRetryAgent(IDocumentStore store, ISender sender, RetrySettings settings, EnvelopeTables marker, ITransportLogger logger) : base(sender, settings)
         {
             _store = store;
             _marker = marker;

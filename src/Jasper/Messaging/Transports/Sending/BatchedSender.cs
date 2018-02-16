@@ -15,7 +15,7 @@ namespace Jasper.Messaging.Transports.Sending
 
         private readonly ISenderProtocol _protocol;
         private readonly CancellationToken _cancellation;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private ISenderCallback _callback;
         private ActionBlock<OutgoingMessageBatch> _sender;
         private BatchingBlock<Envelope> _batching;
@@ -23,7 +23,7 @@ namespace Jasper.Messaging.Transports.Sending
         private ActionBlock<Envelope> _serializing;
         private TransformBlock<Envelope[], OutgoingMessageBatch> _batchWriting;
 
-        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation, CompositeTransportLogger logger)
+        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation, ITransportLogger logger)
         {
             Destination = destination;
             _protocol = protocol;

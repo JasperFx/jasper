@@ -20,13 +20,13 @@ namespace Jasper.Messaging.Runtime.Routing
         private readonly IChannelGraph _channels;
         private readonly ISubscriptionsRepository _subscriptions;
         private readonly HandlerGraph _handlers;
-        private readonly CompositeMessageLogger _logger;
+        private readonly IMessageLogger _logger;
         private readonly UriAliasLookup _lookup;
         private readonly MessagingSettings _settings;
 
         private readonly ConcurrentDictionary<Type, MessageRoute[]> _routes = new ConcurrentDictionary<Type, MessageRoute[]>();
 
-        public MessageRouter(MessagingSerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, CompositeMessageLogger logger, UriAliasLookup lookup, MessagingSettings settings)
+        public MessageRouter(MessagingSerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, IMessageLogger logger, UriAliasLookup lookup, MessagingSettings settings)
         {
             _serializers = serializers;
             _channels = channels;

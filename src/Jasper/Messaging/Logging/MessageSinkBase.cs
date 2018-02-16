@@ -4,7 +4,7 @@ using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Messaging.Logging
 {
-    public abstract class MessageLoggerBase : IMessageLogger
+    public abstract class MessageSinkBase : IMessageEventSink
     {
         public virtual void Sent(Envelope envelope)
         {

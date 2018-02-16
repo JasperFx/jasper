@@ -20,12 +20,12 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IWorkerQueue _workers;
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _marker;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly MartenRetries _retries;
         public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
         private readonly string _markOwnedIncomingSql;
 
-        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, EnvelopeTables marker, CompositeTransportLogger logger, MartenRetries retries)
+        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, EnvelopeTables marker, ITransportLogger logger, MartenRetries retries)
         {
             _workers = workers;
             _store = store;

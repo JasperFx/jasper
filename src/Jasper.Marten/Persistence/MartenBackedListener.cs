@@ -18,12 +18,12 @@ namespace Jasper.Marten.Persistence
         private readonly IListeningAgent _agent;
         private readonly IWorkerQueue _queues;
         private readonly IDocumentStore _store;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         private readonly MessagingSettings _settings;
         private readonly EnvelopeTables _marker;
         private readonly MartenRetries _retries;
 
-        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, CompositeTransportLogger logger, MessagingSettings settings, EnvelopeTables marker, MartenRetries retries)
+        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, MartenRetries retries)
         {
             _agent = agent;
             _queues = queues;

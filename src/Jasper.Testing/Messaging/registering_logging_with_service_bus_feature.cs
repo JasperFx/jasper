@@ -17,7 +17,7 @@ namespace Jasper.Testing.Messaging
         {
             withAllDefaults();
 
-            Runtime.Container.ShouldNotHaveRegistration<IMessageLogger, ConsoleMessageLogger>();
+            Runtime.Container.ShouldNotHaveRegistration<IMessageEventSink, ConsoleMessageSink>();
         }
 
         [Fact]
@@ -25,7 +25,15 @@ namespace Jasper.Testing.Messaging
         {
             with(_ => _.Logging.UseConsoleLogging = true);
 
-            Runtime.Container.ShouldHaveRegistration<IMessageLogger, ConsoleMessageLogger>();
+            Runtime.Container.ShouldHaveRegistration<IMessageEventSink, ConsoleMessageSink>();
+        }
+
+        [Fact]
+        public void using_console_logging_has_exception_sing()
+        {
+            with(_ => _.Logging.UseConsoleLogging = true);
+
+            Runtime.Container.ShouldHaveRegistration<IExceptionSink, ConsoleExceptionSink>();
         }
 
         [Fact]
@@ -33,48 +41,48 @@ namespace Jasper.Testing.Messaging
         {
             with(_ => _.Logging.UseConsoleLogging = true);
 
-            Runtime.Container.ShouldHaveRegistration<ITransportLogger, ConsoleTransportLogger>();
+            Runtime.Container.ShouldHaveRegistration<ITransportEventSink, ConsoleTransportSink>();
         }
 
         [Fact]
         public void explicitly_add_logger()
         {
-            with(_ => _.Logging.LogMessageEventsWith<ConsoleMessageLogger>());
+            with(_ => _.Logging.LogMessageEventsWith<ConsoleMessageSink>());
 
-            Runtime.Container.ShouldHaveRegistration<IMessageLogger, ConsoleMessageLogger>();
+            Runtime.Container.ShouldHaveRegistration<IMessageEventSink, ConsoleMessageSink>();
         }
 
         [Fact]
         public void explicitly_add_logger_transport()
         {
-            with(_ => _.Logging.LogTransportEventsWith<ConsoleTransportLogger>());
+            with(_ => _.Logging.LogTransportEventsWith<ConsoleTransportSink>());
 
-            Runtime.Container.ShouldHaveRegistration<ITransportLogger, ConsoleTransportLogger>();
+            Runtime.Container.ShouldHaveRegistration<ITransportEventSink, ConsoleTransportSink>();
         }
 
         [Fact]
         public void explicitly_add_logger_2()
         {
-            with(_ => _.Logging.LogMessageEventsWith(new ConsoleMessageLogger()));
+            with(_ => _.Logging.LogMessageEventsWith(new ConsoleMessageSink()));
 
-            Runtime.Container.Model.For<IMessageLogger>().Instances
-                .Any(x => x.ImplementationType == typeof(ConsoleMessageLogger))
+            Runtime.Container.Model.For<IMessageEventSink>().Instances
+                .Any(x => x.ImplementationType == typeof(ConsoleMessageSink))
                 .ShouldBeTrue();
         }
 
         [Fact]
         public void explicitly_add_logger_2_transport()
         {
-            with(_ => _.Logging.LogTransportEventsWith(new ConsoleTransportLogger()));
+            with(_ => _.Logging.LogTransportEventsWith(new ConsoleTransportSink()));
 
-            Runtime.Container.Model.For<ITransportLogger>().Instances
-                .Any(x => x.ImplementationType == typeof(ConsoleTransportLogger))
+            Runtime.Container.Model.For<ITransportEventSink>().Instances
+                .Any(x => x.ImplementationType == typeof(ConsoleTransportSink))
                 .ShouldBeTrue();
         }
     }
 
     // SAMPLE: SampleMessageLogger
-    public class SampleMessageLogger : MessageLoggerBase
+    public class SampleMessageSink : MessageSinkBase
     {
         public override void Sent(Envelope envelope)
         {
@@ -89,7 +97,7 @@ namespace Jasper.Testing.Messaging
     // ENDSAMPLE
 
     // SAMPLE: SampleTransportLogger
-    public class SampleTransportLogger : TransportLoggerBase
+    public class SampleTransportSink : TransportSinkBase
     {
         public override void CircuitBroken(Uri destination)
         {
@@ -109,12 +117,12 @@ namespace Jasper.Testing.Messaging
         public AppWithCustomLogging()
         {
             // Shorthand
-            Logging.LogMessageEventsWith<SampleMessageLogger>();
-            Logging.LogTransportEventsWith<SampleTransportLogger>();
+            Logging.LogMessageEventsWith<SampleMessageSink>();
+            Logging.LogTransportEventsWith<SampleTransportSink>();
 
             // Uglier equivalent
-            Services.AddTransient<IMessageLogger, SampleMessageLogger>();
-            Services.AddTransient<ITransportLogger, SampleTransportLogger>();
+            Services.AddTransient<IMessageEventSink, SampleMessageSink>();
+            Services.AddTransient<ITransportEventSink, SampleTransportSink>();
         }
     }
     // ENDSAMPLE

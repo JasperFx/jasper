@@ -19,10 +19,10 @@ namespace Jasper.Marten.Persistence
         private readonly EnvelopeTables _marker;
         private readonly SerializationGraph _serializers;
         private readonly MartenRetries _retries;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
         public Uri Destination { get; }
 
-        public LocalSendingAgent(Uri destination, IWorkerQueue queues, IDocumentStore store, EnvelopeTables marker, SerializationGraph serializers, MartenRetries retries, CompositeTransportLogger logger)
+        public LocalSendingAgent(Uri destination, IWorkerQueue queues, IDocumentStore store, EnvelopeTables marker, SerializationGraph serializers, MartenRetries retries, ITransportLogger logger)
         {
             _queues = queues;
             _store = store;

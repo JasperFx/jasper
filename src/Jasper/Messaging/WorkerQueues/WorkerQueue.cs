@@ -15,14 +15,14 @@ namespace Jasper.Messaging.WorkerQueues
 {
     public class WorkerQueue : IWorkerQueue
     {
-        private readonly CompositeMessageLogger _logger;
+        private readonly IMessageLogger _logger;
         private readonly MessagingSettings _settings;
         private readonly CancellationToken _cancellationToken;
         private readonly Dictionary<string, ActionBlock<Envelope>> _receivers
             = new Dictionary<string, ActionBlock<Envelope>>();
 
 
-        public WorkerQueue(CompositeMessageLogger logger, IHandlerPipeline pipeline, MessagingSettings settings)
+        public WorkerQueue(IMessageLogger logger, IHandlerPipeline pipeline, MessagingSettings settings)
         {
             _logger = logger;
             Pipeline = pipeline;

@@ -21,9 +21,9 @@ namespace Jasper.Http.Transport
         private readonly HttpTransportSettings _httpSettings;
         private readonly JasperRuntime _runtime;
         private readonly IPersistence _persistence;
-        private readonly CompositeTransportLogger _logger;
+        private readonly ITransportLogger _logger;
 
-        public HttpTransport(MessagingSettings settings, HttpTransportSettings httpSettings, JasperRuntime runtime, IPersistence persistence, CompositeTransportLogger logger)
+        public HttpTransport(MessagingSettings settings, HttpTransportSettings httpSettings, JasperRuntime runtime, IPersistence persistence, ITransportLogger logger)
         {
             _settings = settings;
             _httpSettings = httpSettings;

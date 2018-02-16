@@ -8,11 +8,11 @@ using Jasper.WebSockets;
 namespace Jasper.Diagnostics
 {
     // TODO -- turn this into a subclass of BusLoggerBase after Preston's diagnostics changes get in
-    public class DiagnosticsMessageLogger : IMessageLogger
+    public class DiagnosticsMessageSink : IMessageEventSink
     {
         private readonly Lazy<IWebSocketSender> _client;
 
-        public DiagnosticsMessageLogger(Lazy<IWebSocketSender> client)
+        public DiagnosticsMessageSink(Lazy<IWebSocketSender> client)
         {
             _client = client;
         }

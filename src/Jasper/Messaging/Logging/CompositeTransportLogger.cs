@@ -8,16 +8,18 @@ namespace Jasper.Messaging.Logging
 {
     public class CompositeTransportLogger : ITransportLogger
     {
-        public ITransportLogger[] Loggers { get; }
+        private readonly IExceptionSink[] _exceptions;
+        public ITransportEventSink[] Sinks { get; }
 
-        public CompositeTransportLogger(ITransportLogger[] loggers)
+        public CompositeTransportLogger(ITransportEventSink[] sinks, IExceptionSink[] exceptions)
         {
-            Loggers = loggers;
+            _exceptions = exceptions;
+            Sinks = sinks;
         }
 
         public void OutgoingBatchSucceeded(OutgoingMessageBatch batch)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -41,7 +43,7 @@ namespace Jasper.Messaging.Logging
 
             }
 
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -56,7 +58,7 @@ namespace Jasper.Messaging.Logging
 
         public void IncomingBatchReceived(IEnumerable<Envelope> envelopes)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -71,7 +73,7 @@ namespace Jasper.Messaging.Logging
 
         public void CircuitBroken(Uri destination)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -86,7 +88,7 @@ namespace Jasper.Messaging.Logging
 
         public void CircuitResumed(Uri destination)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -101,7 +103,7 @@ namespace Jasper.Messaging.Logging
 
         public void ScheduledJobsQueuedForExecution(IEnumerable<Envelope> envelopes)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -116,7 +118,7 @@ namespace Jasper.Messaging.Logging
 
         public void RecoveredIncoming(IEnumerable<Envelope> envelopes)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -131,7 +133,7 @@ namespace Jasper.Messaging.Logging
 
         public void RecoveredOutgoing(IEnumerable<Envelope> envelopes)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -146,7 +148,7 @@ namespace Jasper.Messaging.Logging
 
         public void DiscardedExpired(IEnumerable<Envelope> envelopes)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
@@ -170,7 +172,7 @@ namespace Jasper.Messaging.Logging
 
             }
 
-            foreach (var logger in Loggers)
+            foreach (var logger in _exceptions)
             {
                 try
                 {
@@ -185,12 +187,12 @@ namespace Jasper.Messaging.Logging
 
         public static CompositeTransportLogger Empty()
         {
-            return new CompositeTransportLogger(new ITransportLogger[0]);
+            return new CompositeTransportLogger(new ITransportEventSink[0], new IExceptionSink[0]);
         }
 
         public void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes)
         {
-            foreach (var logger in Loggers)
+            foreach (var logger in Sinks)
             {
                 try
                 {
