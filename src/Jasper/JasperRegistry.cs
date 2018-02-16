@@ -39,7 +39,7 @@ namespace Jasper
         {
             Logging = new Logging(this);
 
-            Publish = new PublishingExpression(Bus);
+            Publish = new PublishingExpression(Messaging);
 
             ExtensionServices = new ExtensionServiceRegistry();
 
@@ -58,7 +58,7 @@ namespace Jasper
 
             Settings = new JasperSettings(this);
 
-            Settings.Replace(Bus.Settings);
+            Settings.Replace(Messaging.Settings);
 
 
             if (JasperEnvironment.Name.IsNotEmpty()) EnvironmentName = JasperEnvironment.Name;
@@ -67,14 +67,14 @@ namespace Jasper
         }
 
 
-        internal MessagingConfiguration Bus { get; } = new MessagingConfiguration();
-        protected internal MessagingSettings MessagingSettings => Bus.Settings;
+        internal MessagingConfiguration Messaging { get; } = new MessagingConfiguration();
+        protected internal MessagingSettings MessagingSettings => Messaging.Settings;
 
         /// <summary>
         ///     Configure worker queue priority, message assignement, and worker
         ///     durability
         /// </summary>
-        public IWorkersExpression Processing => Bus.Settings.Workers;
+        public IWorkersExpression Processing => Messaging.Settings.Workers;
 
         /// <summary>
         ///     Register environment checks to debug application bootstrapping failures
@@ -90,7 +90,7 @@ namespace Jasper
         ///     Options to control how Jasper discovers message handler actions, error
         ///     handling and other policies on message handling
         /// </summary>
-        public HandlerSource Handlers => Bus.Handlers;
+        public HandlerSource Handlers => Messaging.Handlers;
 
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Jasper
         /// <summary>
         ///     Configure or disable the built in transports
         /// </summary>
-        public ITransportsExpression Transports => Bus.Settings;
+        public ITransportsExpression Transports => Messaging.Settings;
 
         /// <summary>
         ///     Use to load and apply configuration sources within the application
@@ -137,19 +137,19 @@ namespace Jasper
         /// </summary>
         public string ServiceName
         {
-            get => Bus.Settings.ServiceName;
-            set => Bus.Settings.ServiceName = value;
+            get => Messaging.Settings.ServiceName;
+            set => Messaging.Settings.ServiceName = value;
         }
 
         /// <summary>
         ///     Configure dynamic subscriptions to this application
         /// </summary>
-        public ISubscriptions Subscribe => Bus.Capabilities;
+        public ISubscriptions Subscribe => Messaging.Capabilities;
 
         /// <summary>
         ///     Configure uncommonly used, advanced options
         /// </summary>
-        public IAdvancedOptions Advanced => Bus.Settings;
+        public IAdvancedOptions Advanced => Messaging.Settings;
 
         public virtual string HttpAddresses => null;
 
@@ -234,7 +234,7 @@ namespace Jasper
 
         internal protected virtual void Describe(JasperRuntime runtime, TextWriter writer)
         {
-            Bus.Describe(runtime, writer);
+            Messaging.Describe(runtime, writer);
         }
 
         internal protected virtual async Task Startup(JasperRuntime runtime)

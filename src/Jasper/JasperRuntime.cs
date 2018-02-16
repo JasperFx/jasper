@@ -213,7 +213,7 @@ namespace Jasper
             timer.Record("Bootstrapping Settings", () => registry.Settings.Bootstrap());
 
 
-            var handlerCompilation = registry.Bus.CompileHandlers(registry, timer);
+            var handlerCompilation = registry.Messaging.CompileHandlers(registry, timer);
 
 
             var services = registry.CombinedServices();
@@ -222,7 +222,7 @@ namespace Jasper
             var featureBuilding = registry.BuildFeatures(runtime, timer);
 
             await handlerCompilation;
-            await registry.Bus.Activate(runtime, registry.Generation, timer);
+            await registry.Messaging.Activate(runtime, registry.Generation, timer);
 
             await featureBuilding;
 

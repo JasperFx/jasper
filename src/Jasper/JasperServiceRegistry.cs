@@ -44,9 +44,9 @@ namespace Jasper
 
         private void messaging(JasperRegistry parent)
         {
-            this.AddSingleton(parent.Bus.Graph);
-            this.AddSingleton<IChannelGraph>(parent.Bus.Channels);
-            this.AddSingleton<ILocalWorkerSender>(parent.Bus.LocalWorker);
+            this.AddSingleton(parent.Messaging.Graph);
+            this.AddSingleton<IChannelGraph>(parent.Messaging.Channels);
+            this.AddSingleton<ILocalWorkerSender>(parent.Messaging.LocalWorker);
 
 
             For<ITransport>()
