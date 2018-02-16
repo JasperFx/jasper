@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Baseline;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.WorkerQueues;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -34,18 +37,44 @@ namespace Jasper.Messaging.Configuration
         /// if there is no explicit configuration at the chain level. The default is 1
         /// </summary>
         int DefaultMaximumAttempts { get; set; }
+
+        /// <summary>
+        /// Configure a named, local worker queue, including the routing of message
+        /// types to local worker queue and maximum concurrency
+        /// </summary>
+        /// <param name="queueName"></param>
+        /// <returns></returns>
+        IWorkerSettings Worker(string queueName);
+
+        /// <summary>
+        /// Configure the default local worker queue
+        /// </summary>
+        IWorkerSettings DefaultWorker { get; }
     }
 
 
     public class HandlerConfiguration : IHandlerConfiguration
     {
+        private readonly MessagingSettings _settings;
         internal readonly HandlerSource Source = new HandlerSource();
+
+        public HandlerConfiguration(MessagingSettings settings)
+        {
+            _settings = settings;
+        }
 
         public IHandlerConfiguration Discovery(Action<HandlerSource> configure)
         {
             configure(Source);
             return this;
         }
+
+        public IWorkerSettings Worker(string queueName)
+        {
+            return _settings.Workers[queueName];
+        }
+
+        public IWorkerSettings DefaultWorker => _settings.Workers[TransportConstants.Default];
 
         private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
 

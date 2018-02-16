@@ -71,12 +71,6 @@ namespace Jasper
         protected internal MessagingSettings MessagingSettings => Messaging.Settings;
 
         /// <summary>
-        ///     Configure worker queue priority, message assignement, and worker
-        ///     durability
-        /// </summary>
-        public IWorkersExpression Processing => Messaging.Settings.Workers;
-
-        /// <summary>
         ///     Register environment checks to debug application bootstrapping failures
         /// </summary>
         public EnvironmentCheckExpression EnvironmentChecks { get; }

@@ -11,26 +11,26 @@ namespace Jasper.Testing.Samples
             // What if you want the StatusUpdated
             // messages to be handled one at a time
             // in the order in which they are received?
-            Processing.Worker("updates")
+            Handlers.Worker("updates")
                 .HandlesMessage<StatusUpdated>()
                 .Sequential();
 
             // Super important messages should get more threads
-            Processing.Worker("important")
+            Handlers.Worker("important")
                 .HandlesMessage<SuperImportantMessage>()
                 .MaximumParallelization(10); // the default is 5
 
 
             // Messages that are ephemeral should not
             // be durable
-            Processing.Worker("fireandforget")
+            Handlers.Worker("fireandforget")
                 .HandleMessages(type => type.CanBeCastTo<EphemeralMessage>())
                 .IsNotDurable();
 
 
             // Force messages assigned to a certain worker queue to be
             // durable
-            Processing.Worker("durable")
+            Handlers.Worker("durable")
                 .HandleMessages(x => x.CanBeCastTo<DurableMessage>())
                 .IsDurable();
 

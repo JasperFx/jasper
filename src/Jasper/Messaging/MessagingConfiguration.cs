@@ -17,7 +17,7 @@ namespace Jasper.Messaging
         public readonly CapabilityGraph Capabilities = new CapabilityGraph();
 
 
-        public HandlerConfiguration Handling { get; } = new HandlerConfiguration();
+        public HandlerConfiguration Handling { get; }
 
 
         public MessagingSettings Settings { get; } = new MessagingSettings();
@@ -26,12 +26,15 @@ namespace Jasper.Messaging
 
         public LocalWorkerSender LocalWorker { get; } = new LocalWorkerSender();
 
-        public void Dispose()
-        {
-        }
+
 
         public HandlerGraph Graph { get;  } = new HandlerGraph();
 
+
+        public MessagingConfiguration()
+        {
+            Handling = new HandlerConfiguration(Settings);
+        }
 
         internal Task Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
         {

@@ -142,7 +142,7 @@ namespace Jasper.Testing.Samples
     {
         public LoopbackTransportApp()
         {
-            Processing.Worker("important")
+            Handlers.Worker("important")
                 .IsDurable()
                 .MaximumParallelization(10);
 
