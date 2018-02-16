@@ -20,7 +20,7 @@ namespace Jasper.Testing.Messaging.Scheduled
             theRuntime = JasperRuntime.For<ScheduledMessageApp>();
         }
 
-        //[Fact] -- too stupidly unreliable for CI. REplace w/ ST
+        [Fact] //-- too stupidly unreliable for CI. REplace w/ ST
         public void run_scheduled_job_locally()
         {
             var message1 = new ScheduledMessage{Id = 1};
