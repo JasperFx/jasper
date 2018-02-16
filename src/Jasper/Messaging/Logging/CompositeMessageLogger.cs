@@ -101,6 +101,20 @@ namespace Jasper.Messaging.Logging
             }
         }
 
+        public void DiscardedEnvelope(Envelope envelope)
+        {
+            foreach (var sink in Sinks)
+            {
+                try
+                {
+                    sink.DiscardedEnvelope(envelope);
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
         public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             try

@@ -39,6 +39,11 @@ namespace Jasper.Messaging.Logging
             Console.WriteLine();
         }
 
+        public void DiscardedEnvelope(Envelope envelope)
+        {
+            Console.WriteLine($"Expired envelope {envelope} was discarded");
+        }
+
         public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
 

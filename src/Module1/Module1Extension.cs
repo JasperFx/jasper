@@ -39,6 +39,11 @@ namespace Module1
 
         }
 
+        public void DiscardedEnvelope(Envelope envelope)
+        {
+
+        }
+
         public void Sent(Envelope envelope)
         {
         }

@@ -58,6 +58,11 @@ namespace Jasper.Diagnostics
 
         }
 
+        public void DiscardedEnvelope(Envelope envelope)
+        {
+
+        }
+
         public void Received(Envelope envelope)
         {
         }

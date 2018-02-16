@@ -16,6 +16,10 @@ namespace Jasper.Messaging.Logging
             MessageFailed(envelope, ex);
         }
 
+        public virtual void DiscardedEnvelope(Envelope envelope)
+        {
+        }
+
         public virtual void Received(Envelope envelope)
         {
         }

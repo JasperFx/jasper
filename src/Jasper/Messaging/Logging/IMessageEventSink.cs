@@ -75,6 +75,12 @@ namespace Jasper.Messaging.Logging
         /// </summary>
         /// <param name="envelope"></param>
         void MovedToErrorQueue(Envelope envelope, Exception ex);
+
+        /// <summary>
+        /// Called when Jasper discards a received envelope that has expired
+        /// </summary>
+        /// <param name="envelope"></param>
+        void DiscardedEnvelope(Envelope envelope);
     }
     // ENDSAMPLE
 }

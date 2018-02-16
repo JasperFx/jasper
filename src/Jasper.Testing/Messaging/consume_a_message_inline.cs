@@ -152,6 +152,11 @@ namespace Jasper.Testing.Messaging
         {
 
         }
+
+        public void DiscardedEnvelope(Envelope envelope)
+        {
+
+        }
     }
 
     public class WorkTracker

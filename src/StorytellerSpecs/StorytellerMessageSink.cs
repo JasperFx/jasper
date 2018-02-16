@@ -76,6 +76,11 @@ namespace StorytellerSpecs
 
         }
 
+        public void DiscardedEnvelope(Envelope envelope)
+        {
+            trace($"Envelope {envelope} was expired and discarded");
+        }
+
         private void trace(string message)
         {
             _context.Reporting.ReporterFor<BusActivity>().Messages.Add(message);
