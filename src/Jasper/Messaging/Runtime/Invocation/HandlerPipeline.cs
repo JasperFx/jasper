@@ -42,6 +42,13 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         public async Task Invoke(Envelope envelope)
         {
+            if (envelope.IsExpired())
+            {
+                await discardEnvelope(envelope);
+                return;
+            }
+
+
             var now = DateTime.UtcNow;
 
             try
@@ -54,6 +61,19 @@ namespace Jasper.Messaging.Runtime.Invocation
                 // could never be handled
                 await envelope.Callback.MoveToErrors(envelope, e);
                 Logger.LogException(e, envelope.Id);
+            }
+        }
+
+        private async Task discardEnvelope(Envelope envelope)
+        {
+            try
+            {
+                Logger.DiscardedEnvelope(envelope);
+                await envelope.Callback.MarkComplete();
+            }
+            catch (Exception e)
+            {
+                Logger.LogException(e);
             }
         }
 
