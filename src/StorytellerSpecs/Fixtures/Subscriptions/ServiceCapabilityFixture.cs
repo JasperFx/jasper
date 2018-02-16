@@ -44,7 +44,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public override void SetUp()
         {
             _registry = new JasperRegistry();
-            _registry.Handlers.DisableConventionalDiscovery(true);
+            _registry.Handlers.DisableConventionalDiscovery();
         }
 
         public override void TearDown()
@@ -74,7 +74,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
             var handlerType = _handlerTypes[type];
 
-            _registry.Handlers.IncludeType(handlerType);
+            _registry.Handlers.Discovery(x => x.IncludeType(handlerType));
         }
 
         [FormatAs("Subscribes to all handled messages at {destination}")]

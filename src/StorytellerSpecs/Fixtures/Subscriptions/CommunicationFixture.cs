@@ -129,7 +129,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public override void SetUp()
         {
             _registry = new JasperRegistry();
-            _registry.Handlers.DisableConventionalDiscovery(true);
+            _registry.Handlers.DisableConventionalDiscovery();
 
             _registry.Handlers.IncludeType<Message1Handler>();
             _registry.Handlers.IncludeType<Message2Handler>();

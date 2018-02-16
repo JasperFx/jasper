@@ -6,6 +6,7 @@ using Baseline.Dates;
 using Jasper.Conneg;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
+using Jasper.Testing;
 using Jasper.Testing.Messaging;
 using Jasper.Testing.Messaging.Lightweight;
 using Jasper.Testing.Messaging.Runtime;

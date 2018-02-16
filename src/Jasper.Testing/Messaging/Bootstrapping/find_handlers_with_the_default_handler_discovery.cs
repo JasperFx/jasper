@@ -80,7 +80,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         [Fact]
         public void extra_suffix()
         {
-            with(x => x.Handlers.IncludeClassesSuffixedWith("Watcher"));
+            with(x => x.Handlers.Discovery(d => d.IncludeClassesSuffixedWith("Watcher")));
 
             chainFor<MovieAdded>().ShouldHaveHandler<MovieWatcher>(x => x.Watch(null));
         }
@@ -88,7 +88,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         [Fact]
         public void handler_types_from_a_marker_interface()
         {
-            with(x => x.Handlers.IncludeTypesImplementing<IMovieThing>());
+            with(x => x.Handlers.Discovery(d => d.IncludeTypesImplementing<IMovieThing>()));
 
             chainFor<MovieAdded>().ShouldHaveHandler<EpisodeWatcher>(x => x.Handle(new MovieAdded()));
         }

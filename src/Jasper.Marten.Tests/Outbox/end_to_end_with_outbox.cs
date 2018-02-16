@@ -7,6 +7,7 @@ using Baseline.Dates;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Testing;
 using Marten;
 using Shouldly;
 using Xunit;

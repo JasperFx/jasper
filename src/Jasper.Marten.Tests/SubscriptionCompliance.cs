@@ -6,6 +6,7 @@ using Jasper.Marten.Subscriptions;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Testing;
 using Marten;
 using Shouldly;
 using Xunit;

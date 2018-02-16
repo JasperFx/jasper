@@ -87,10 +87,10 @@ namespace Jasper
         public virtual string EnvironmentName { get; set; } = JasperEnvironment.Name;
 
         /// <summary>
-        ///     Options to control how Jasper discovers message handler actions, error
-        ///     handling and other policies on message handling
+        /// Options to control how Jasper discovers message handler actions, error
+        /// handling, local worker queues, and other policies on message handling
         /// </summary>
-        public HandlerSource Handlers => Messaging.Handlers;
+        public IHandlerConfiguration Handlers => Messaging.Handling;
 
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace Jasper.Testing.Settings
         public RegistrySettingsTests()
         {
             theRegistry = new JasperRegistry();
-            theRegistry.Handlers.ExcludeTypes(x => true);
+            theRegistry.Handlers.DisableConventionalDiscovery();
         }
 
         public void Dispose()

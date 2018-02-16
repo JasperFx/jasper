@@ -62,7 +62,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
     {
         public JasperServerApp()
         {
-            Handlers.DisableConventionalDiscovery(true);
+            Handlers.Discovery(x => x.DisableConventionalDiscovery());
 
             Http
                 .UseKestrel()

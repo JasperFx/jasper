@@ -201,12 +201,12 @@ namespace Jasper.Consul.Testing
         public ColorsApp(string name)
         {
             ServiceName = name;
-            Handlers.DisableConventionalDiscovery(true);
+            Handlers.Discovery(x => x.DisableConventionalDiscovery());
         }
 
         public void Handles<T>()
         {
-            Handlers.IncludeType<Handler<T>>();
+            Handlers.Discovery(x => x.IncludeType<Handler<T>>());
         }
     }
 

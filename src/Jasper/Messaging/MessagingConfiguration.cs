@@ -17,7 +17,7 @@ namespace Jasper.Messaging
         public readonly CapabilityGraph Capabilities = new CapabilityGraph();
 
 
-        public HandlerSource Handlers { get; } = new HandlerSource();
+        public HandlerConfiguration Handling { get; } = new HandlerConfiguration();
 
 
         public MessagingSettings Settings { get; } = new MessagingSettings();
@@ -72,7 +72,7 @@ namespace Jasper.Messaging
 
         internal Task CompileHandlers(JasperRegistry registry, PerfTimer timer)
         {
-            return Handlers.FindCalls(registry).ContinueWith(t =>
+            return Handling.Source.FindCalls(registry).ContinueWith(t =>
             {
                 timer.Record("Compile Handlers", () =>
                 {
@@ -82,7 +82,7 @@ namespace Jasper.Messaging
                     Graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged())));
 
                     Graph.Group();
-                    Handlers.ApplyPolicies(Graph);
+                    Handling.ApplyPolicies(Graph);
 
                 });
 

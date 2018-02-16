@@ -2,6 +2,7 @@
 using Jasper;
 using Jasper.Marten;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Testing;
 using Jasper.Util;
 using Marten;
 

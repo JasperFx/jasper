@@ -113,20 +113,22 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
     {
         public CustomHandlerApp()
         {
-            // Turn off the default handler conventions
-            // altogether
-            Handlers.DisableConventionalDiscovery();
+            Handlers.Discovery(x =>
+            {
+                // Turn off the default handler conventions
+                // altogether
+                x.DisableConventionalDiscovery();
 
+                // Include candidate actions by a user supplied
+                // type filter
+                x.IncludeTypes(t => t.IsInNamespace("MyApp.Handlers"));
 
-            // Include candidate actions by a user supplied
-            // type filter
-            Handlers.IncludeTypes(t => t.IsInNamespace("MyApp.Handlers"));
+                // Include candidate classes by suffix
+                x.IncludeClassesSuffixedWith("Listener");
 
-            // Include candidate classes by suffix
-            Handlers.IncludeClassesSuffixedWith("Listener");
-
-            // Include a specific handler class with a generic argument
-            Handlers.IncludeType<SimpleHandler>();
+                // Include a specific handler class with a generic argument
+                x.IncludeType<SimpleHandler>();
+            });
         }
     }
 

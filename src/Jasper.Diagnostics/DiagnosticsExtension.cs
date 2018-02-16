@@ -19,7 +19,8 @@ namespace Jasper.Diagnostics
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Handlers.IncludeType(typeof(DiagnosticsHandler));
+            registry.Handlers.Discovery(x => x.IncludeType(typeof(DiagnosticsHandler)));
+
             registry.Logging.LogMessageEventsWith<DiagnosticsMessageSink>();
 
             registry.Services.AddTransient<IStartupFilter, AddJasperDiagnosticMiddleware>();

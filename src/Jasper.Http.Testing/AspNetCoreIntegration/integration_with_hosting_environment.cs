@@ -1,4 +1,5 @@
 ﻿using Jasper.Http.Testing.ContentHandling;
+using Jasper.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Shouldly;

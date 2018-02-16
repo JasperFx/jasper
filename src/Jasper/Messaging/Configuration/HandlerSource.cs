@@ -13,7 +13,7 @@ using TypeRepository = BlueMilk.Scanning.TypeRepository;
 
 namespace Jasper.Messaging.Configuration
 {
-    public class HandlerSource : IHasErrorHandlers
+    public class HandlerSource
     {
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
@@ -148,50 +148,6 @@ namespace Jasper.Messaging.Configuration
             _explicitTypes.Fill(type);
         }
 
-        private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
 
-        // TODO -- have a Local option later
-        /// <summary>
-        /// Applies a handler policy to all known message handlers
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void GlobalPolicy<T>() where T : IHandlerPolicy, new()
-        {
-            GlobalPolicy(new T());
-        }
-
-        /// <summary>
-        /// Applies a handler policy to all known message handlers
-        /// </summary>
-        /// <param name="policy"></param>
-        public void GlobalPolicy(IHandlerPolicy policy)
-        {
-            _globals.Add(policy);
-        }
-
-
-        internal void ApplyPolicies(HandlerGraph graph)
-        {
-            foreach (var policy in _globals)
-            {
-                policy.Apply(graph);
-            }
-
-            graph.ErrorHandlers.AddRange(this.As<IHasErrorHandlers>().ErrorHandlers);
-
-            foreach (var chain in graph.Chains)
-            {
-                chain.MaximumAttempts = DefaultMaximumAttempts;
-            }
-        }
-
-        /// <summary>
-        /// The default number of attempts to try to process a received message
-        /// if there is no explicit configuration at the chain level. The default is 1
-        /// </summary>
-        public int DefaultMaximumAttempts { get; set; } = 1;
-
-
-        IList<IErrorHandler> IHasErrorHandlers.ErrorHandlers { get; } = new List<IErrorHandler>();
     }
 }

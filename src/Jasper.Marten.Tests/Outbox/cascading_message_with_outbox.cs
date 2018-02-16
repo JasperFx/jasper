@@ -6,6 +6,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Testing;
 using Jasper.Testing.Messaging;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
