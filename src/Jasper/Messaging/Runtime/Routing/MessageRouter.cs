@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using ImTools;
 using Jasper.Conneg;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -24,7 +25,7 @@ namespace Jasper.Messaging.Runtime.Routing
         private readonly UriAliasLookup _lookup;
         private readonly MessagingSettings _settings;
 
-        private readonly ConcurrentDictionary<Type, MessageRoute[]> _routes = new ConcurrentDictionary<Type, MessageRoute[]>();
+        private ImHashMap<Type, MessageRoute[]> _routes = ImHashMap<Type, MessageRoute[]>.Empty;
 
         public MessageRouter(MessagingSerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, IMessageLogger logger, UriAliasLookup lookup, MessagingSettings settings)
         {
@@ -39,20 +40,17 @@ namespace Jasper.Messaging.Runtime.Routing
 
         public void ClearAll()
         {
-            _routes.Clear();
+            _routes = ImHashMap<Type, MessageRoute[]>.Empty;
         }
 
         public async Task<MessageRoute[]> Route(Type messageType)
         {
-            if (!_routes.ContainsKey(messageType))
-            {
-                var routes = (await compileRoutes(messageType)).ToArray();
-                _routes[messageType] = routes;
+            if (_routes.TryFind(messageType, out var routes)) return routes;
 
-                return routes;
-            }
+            routes = (await compileRoutes(messageType)).ToArray();
+            _routes = _routes.AddOrUpdate(messageType, routes);
 
-            return _routes[messageType];
+            return routes;
         }
 
         public async Task<MessageRoute> RouteForDestination(Envelope envelope)

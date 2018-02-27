@@ -6,6 +6,7 @@ using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Compilation;
 using BlueMilk.Util;
+using ImTools;
 using Jasper.Messaging.ErrorHandling;
 
 namespace Jasper.Messaging.Model
@@ -16,8 +17,11 @@ namespace Jasper.Messaging.Model
 
         private bool _hasGrouped = false;
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
-        private readonly Dictionary<Type, HandlerChain> _chains = new Dictionary<Type, HandlerChain>();
-        private readonly Dictionary<Type, MessageHandler> _handlers = new Dictionary<Type, MessageHandler>();
+
+        private ImHashMap<Type, HandlerChain> _chains = ImHashMap<Type, HandlerChain>.Empty;
+        private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
+
+
         private GenerationRules _generation;
         private Container _container;
 
@@ -55,45 +59,33 @@ namespace Jasper.Messaging.Model
             return ChainFor(typeof(T));
         }
 
-        public HandlerChain[] Chains => _chains.Values.ToArray();
+        public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
 
 
         private readonly object _locker = new object();
 
         public MessageHandler HandlerFor(Type messageType)
         {
-            if (!_handlers.ContainsKey(messageType))
+            if (_handlers.TryFind(messageType, out var handler)) return handler;
+
+
+            if (_chains.TryFind(messageType, out var chain))
             {
-                lock (_locker)
-                {
-                    if (!_handlers.ContainsKey(messageType))
-                    {
-                        if (_chains.ContainsKey(messageType))
-                        {
-                            var chain = _chains[messageType];
-                            var generatedAssembly = new GeneratedAssembly(_generation);
-                            chain.AssembleType(generatedAssembly);
-                            _container.CompileWithInlineServices(generatedAssembly);
+                var generatedAssembly = new GeneratedAssembly(_generation);
+                chain.AssembleType(generatedAssembly);
+                _container.CompileWithInlineServices(generatedAssembly);
 
-                            var handler = chain.CreateHandler(_container);
+                handler = chain.CreateHandler(_container);
 
-                            _handlers.Add(messageType, handler);
+                _handlers = _handlers.AddOrUpdate(messageType, handler);
 
-                            return handler;
-                        }
-                        else
-                        {
-                            _handlers.Add(messageType, null); // memoize the "miss"
-
-                            return null;
-                        }
-                    }
-                }
-
-                return _handlers[messageType];
+                return handler;
             }
 
-            return _handlers.ContainsKey(messageType) ? _handlers[messageType] : null;
+            // memoize the "miss"
+            _handlers = _handlers.AddOrUpdate(messageType, null);
+            return null;
+
         }
 
         internal void Compile(GenerationRules generation, JasperRuntime runtime, PerfTimer timer)
@@ -114,14 +106,17 @@ namespace Jasper.Messaging.Model
             _calls.Where(x => x.MessageType.IsConcrete())
                 .GroupBy(x => x.MessageType)
                 .Select(group => new HandlerChain(@group))
-                .Each(
-                    chain => { _chains.Add(chain.MessageType, chain); });
+                .Each(chain =>
+                {
+                    _chains = _chains.AddOrUpdate(chain.MessageType, chain);
+                });
 
             _calls.Where(x => !x.MessageType.IsConcrete())
                 .Each(call =>
                 {
-                    _chains.Where(pair => call.CouldHandleOtherMessageType(pair.Key))
-                        .Each(chain => { chain.Value.AddAbstractedHandler(call); });
+                    Chains
+                        .Where(c => call.CouldHandleOtherMessageType(c.MessageType))
+                        .Each(c => { c.AddAbstractedHandler(call); });
                 });
 
             _hasGrouped = true;
@@ -131,7 +126,7 @@ namespace Jasper.Messaging.Model
 
         public bool CanHandle(Type messageType)
         {
-            return _chains.ContainsKey(messageType);
+            return _chains.TryFind(messageType, out var chain);
         }
 
     }

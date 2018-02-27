@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using ImTools;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Subscriptions;
@@ -13,7 +14,12 @@ namespace Jasper.Messaging.Transports
     public class ChannelGraph : IChannelGraph, IDisposable
     {
         private MessagingSettings _settings;
-        private readonly ConcurrentDictionary<Uri, Lazy<IChannel>> _channels = new ConcurrentDictionary<Uri, Lazy<IChannel>>();
+
+
+
+        private ImHashMap<Uri, IChannel> _channels = ImHashMap<Uri, IChannel>.Empty;
+        private readonly object _channelLock = new object();
+
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
         private UriAliasLookup _lookups;
         private IMessageLogger _logger;
@@ -59,8 +65,6 @@ namespace Jasper.Messaging.Transports
         }
 
         private void buildInitialSendingAgents(IMessagingRoot root)
-
-
         {
             foreach (var subscriberAddress in root.Settings.KnownSubscribers)
             {
@@ -69,7 +73,8 @@ namespace Jasper.Messaging.Transports
 
                 var channel = new Channel(_logger, subscriberAddress, transport.LocalReplyUri, agent);
 
-                _channels[subscriberAddress.Uri] = new Lazy<IChannel>(() => channel);
+
+                _channels = _channels.AddOrUpdate(subscriberAddress.Uri, channel);
             }
         }
 
@@ -113,15 +118,13 @@ namespace Jasper.Messaging.Transports
 
         public void Dispose()
         {
-            foreach (var value in _channels.Values)
+            foreach (var channel in _channels.Enumerate())
             {
-                if (value.IsValueCreated)
-                {
-                    value.Value.Dispose();
-                }
+                channel.Value.Dispose();
             }
 
-            _channels.Clear();
+
+            _channels = ImHashMap<Uri, IChannel>.Empty;
         }
 
 
@@ -131,17 +134,29 @@ namespace Jasper.Messaging.Transports
 
             assertValidTransport(uri);
 
-            return _channels.GetOrAdd(uri, u => new Lazy<IChannel>(() => buildChannel(u))).Value;
+            if (_channels.TryFind(uri, out var channel)) return channel;
+
+            lock (_channelLock)
+            {
+                if (!_channels.TryFind(uri, out channel))
+                {
+                    channel = buildChannel(address);
+                    _channels = _channels.AddOrUpdate(address, channel);
+                }
+
+                return channel;
+            }
+
         }
 
         public bool HasChannel(Uri uri)
         {
-            return _channels.ContainsKey(uri);
+            return _channels.TryFind(uri, out var channel);
         }
 
         public IChannel[] AllKnownChannels()
         {
-            return _channels.Values.Select(x => x.Value).ToArray();
+            return _channels.Enumerate().Select(x => x.Value).ToArray();
         }
 
         public Uri SystemReplyUri { get; private set; }

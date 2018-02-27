@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Baseline;
+using ImTools;
 using Jasper.Conneg.Json;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Serializers;
@@ -21,8 +22,10 @@ namespace Jasper.Conneg
         private readonly IList<IMessageDeserializer> _readers = new List<IMessageDeserializer>();
         private readonly IList<IMessageSerializer> _writers = new List<IMessageSerializer>();
 
-        private readonly ConcurrentDictionary<string, ModelReader> _modelReaders = new ConcurrentDictionary<string, ModelReader>();
-        private readonly ConcurrentDictionary<Type, ModelWriter> _modelWriters = new ConcurrentDictionary<Type, ModelWriter>();
+
+        private ImHashMap<string, ModelReader> _modelReaders = ImHashMap<string, ModelReader>.Empty;
+        private ImHashMap<Type, ModelWriter> _modelWriters = ImHashMap<Type, ModelWriter>.Empty;
+
         private readonly IList<Type> _otherTypes = new List<Type>();
 
         protected SerializationGraph(ObjectPoolProvider pooling, MediaSelectionMode selectionMode, JsonSerializerSettings jsonSettings, Forwarders forwarders, IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
@@ -96,7 +99,12 @@ namespace Jasper.Conneg
 
         public ModelWriter WriterFor(Type messageType)
         {
-            return _modelWriters.GetOrAdd(messageType, compileWriter);
+            if (_modelWriters.TryFind(messageType, out var writer)) return writer;
+
+            var modelWriter = compileWriter(messageType);
+            _modelWriters = _modelWriters.AddOrUpdate(messageType, modelWriter);
+
+            return modelWriter;
         }
 
         private ModelWriter compileWriter(Type messageType)
@@ -109,7 +117,13 @@ namespace Jasper.Conneg
 
         public ModelReader ReaderFor(string messageType)
         {
-            return _modelReaders.GetOrAdd(messageType, compileReader);
+            if (_modelReaders.TryFind(messageType, out var reader)) return reader;
+
+            var modelReader = compileReader(messageType);
+
+            _modelReaders = _modelReaders.AddOrUpdate(messageType, modelReader);
+
+            return modelReader;
         }
 
         public ModelReader ReaderFor(Type inputType)
