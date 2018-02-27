@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Http.Model;
@@ -14,6 +15,8 @@ namespace Jasper.Http.Routing
     public class Router
     {
         private readonly IDictionary<string, RouteTree> _trees = new Dictionary<string, RouteTree>();
+        private bool _hasRoutes;
+
 
         public Router()
         {
@@ -27,6 +30,11 @@ namespace Jasper.Http.Routing
             Add(route);
         }
 
+        public bool HasAnyRoutes()
+        {
+            return _hasRoutes;
+        }
+
         public RequestDelegate NotFound { get; set; } = c =>
         {
             c.Response.StatusCode = 404;
@@ -38,6 +46,7 @@ namespace Jasper.Http.Routing
 
         public void Add(Route route)
         {
+            _hasRoutes = true;
             _trees[route.HttpMethod.ToUpperInvariant()].AddRoute(route);
             Urls.Register(route);
         }

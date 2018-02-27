@@ -41,6 +41,7 @@ namespace Jasper.Http.Testing
 
         private readonly JasperRuntime theRuntime;
 
+
         [Fact]
         public void can_apply_custom_conneg_rules()
         {

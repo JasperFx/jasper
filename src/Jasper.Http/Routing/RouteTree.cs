@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Baseline;
 using Microsoft.AspNetCore.Http;
 
@@ -22,6 +23,11 @@ namespace Jasper.Http.Routing
         }
 
         public string HttpVerb { get; }
+
+        public bool HasAnyRoutes()
+        {
+            return _all.Any() || _leaves.Any();
+        }
 
         public void AddRoute(Route route)
         {

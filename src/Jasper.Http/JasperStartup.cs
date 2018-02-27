@@ -78,7 +78,7 @@ namespace Jasper.Http
                 startup.Configure(app);
             }
 
-            if (!app.HasJasperBeenApplied())
+            if (!app.HasJasperBeenApplied() && _router.HasAnyRoutes())
             {
                 app.Run(_router.Invoke);
             }
