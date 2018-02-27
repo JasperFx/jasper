@@ -291,13 +291,31 @@ namespace Jasper.Messaging
             return SendEnvelope(new Envelope { Message = message, Destination = destination});
         }
 
-        public Task Invoke<T>(T message)
+        public Task Invoke(object message)
         {
             return _pipeline.InvokeNow(new Envelope(message)
             {
                 Callback = new InvocationCallback(),
                 ReplyUri = TransportConstants.RepliesUri
             });
+        }
+
+        public async Task<T> Invoke<T>(object message) where T : class
+        {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+
+            var envelope = new Envelope(message)
+            {
+                Callback = new InvocationCallback(),
+                ReplyUri = TransportConstants.RepliesUri,
+                ReplyRequested = typeof(T).ToMessageAlias(),
+                ResponseType = typeof(T)
+
+            };
+
+            await _pipeline.InvokeNow(envelope);
+
+            return envelope.Response as T;
         }
 
         public Task Enqueue<T>(T message)
@@ -381,10 +399,18 @@ namespace Jasper.Messaging
 
         public async Task EnqueueCascading(object message)
         {
+            if (Envelope.ResponseType != null && message?.GetType() == Envelope.ResponseType)
+            {
+                Envelope.Response = message;
+                return;
+            }
+
             switch (message)
             {
                 case null:
                     return;
+
+
 
                 case IEnumerable<object> enumerable:
                     foreach (var o in enumerable)

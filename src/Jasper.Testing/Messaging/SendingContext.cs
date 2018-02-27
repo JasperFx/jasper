@@ -1,9 +1,11 @@
 ﻿using System;
 using Jasper.Http;
 using Jasper.Testing.Messaging.Lightweight;
+using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
+    [Collection("integration")]
     public abstract class SendingContext : IDisposable
     {
         private readonly JasperHttpRegistry senderRegistry = new JasperHttpRegistry();

@@ -1,106 +1,33 @@
 using Jasper;
-using Jasper.Bus.Runtime.Routing;
+using StorytellerSpecs.Fixtures;
 using System.Threading.Tasks;
 
-namespace Storyteller.Generated
+namespace StorytellerSpecs_Generated
 {
     // START: StorytellerSpecs_Fixtures_Message1
-    public class StorytellerSpecs_Fixtures_Message1 : Jasper.Bus.Model.MessageHandler
+    public class StorytellerSpecs_Fixtures_Message1 : Jasper.Messaging.Model.MessageHandler
     {
+        private readonly MessageTracker _messageTracker;
         private readonly JasperRuntime _jasperRuntime;
 
-        public StorytellerSpecs_Fixtures_Message1(JasperRuntime jasperRuntime)
+        public StorytellerSpecs_Fixtures_Message1(MessageTracker messageTracker, JasperRuntime jasperRuntime)
         {
+            _messageTracker = messageTracker;
             _jasperRuntime = jasperRuntime;
         }
 
 
-        public override Task Handle(Jasper.Bus.Runtime.Invocation.IInvocationContext context)
+        public override Task Handle(Jasper.Messaging.IMessageContext context)
         {
             var message1Handler = new StorytellerSpecs.Fixtures.Message1Handler();
-            var messageTracker = new StorytellerSpecs.Fixtures.MessageTracker();
             var message1 = (StorytellerSpecs.Fixtures.Message1)context.Envelope.Message;
-            message1Handler.Handle(message1, messageTracker, context.Envelope, _jasperRuntime);
+            .Handle(message1, _messageTracker, context.Envelope, _jasperRuntime);
             return Task.CompletedTask;
         }
 
     }
 
     // END: StorytellerSpecs_Fixtures_Message1
-    
-    
-    // START: StorytellerSpecs_Fixtures_Message2
-    public class StorytellerSpecs_Fixtures_Message2 : Jasper.Bus.Model.MessageHandler
-    {
-        private readonly JasperRuntime _jasperRuntime;
-
-        public StorytellerSpecs_Fixtures_Message2(JasperRuntime jasperRuntime)
-        {
-            _jasperRuntime = jasperRuntime;
-        }
-
-
-        public override Task Handle(Jasper.Bus.Runtime.Invocation.IInvocationContext context)
-        {
-            var message2Handler = new StorytellerSpecs.Fixtures.Message2Handler();
-            var messageTracker = new StorytellerSpecs.Fixtures.MessageTracker();
-            var message2 = (StorytellerSpecs.Fixtures.Message2)context.Envelope.Message;
-            message2Handler.Handle(message2, messageTracker, context.Envelope, _jasperRuntime);
-            return Task.CompletedTask;
-        }
-
-    }
-
-    // END: StorytellerSpecs_Fixtures_Message2
-    
-    
-    // START: StorytellerSpecs_Fixtures_Message3
-    public class StorytellerSpecs_Fixtures_Message3 : Jasper.Bus.Model.MessageHandler
-    {
-        private readonly JasperRuntime _jasperRuntime;
-
-        public StorytellerSpecs_Fixtures_Message3(JasperRuntime jasperRuntime)
-        {
-            _jasperRuntime = jasperRuntime;
-        }
-
-
-        public override Task Handle(Jasper.Bus.Runtime.Invocation.IInvocationContext context)
-        {
-            var message3Handler = new StorytellerSpecs.Fixtures.Message3Handler();
-            var messageTracker = new StorytellerSpecs.Fixtures.MessageTracker();
-            var message3 = (StorytellerSpecs.Fixtures.Message3)context.Envelope.Message;
-            message3Handler.Handle(message3, messageTracker, context.Envelope, _jasperRuntime);
-            return Task.CompletedTask;
-        }
-
-    }
-
-    // END: StorytellerSpecs_Fixtures_Message3
-    
-    
-    // START: Jasper_Bus_Runtime_Subscriptions_SubscriptionsChanged
-    public class Jasper_Bus_Runtime_Subscriptions_SubscriptionsChanged : Jasper.Bus.Model.MessageHandler
-    {
-        private readonly IMessageRouter _messageRouter;
-
-        public Jasper_Bus_Runtime_Subscriptions_SubscriptionsChanged(IMessageRouter messageRouter)
-        {
-            _messageRouter = messageRouter;
-        }
-
-
-        public override Task Handle(Jasper.Bus.Runtime.Invocation.IInvocationContext context)
-        {
-            var subscriptionsHandler = new Jasper.Bus.Runtime.Subscriptions.SubscriptionsHandler(_messageRouter);
-            var subscriptionsChanged = (Jasper.Bus.Runtime.Subscriptions.SubscriptionsChanged)context.Envelope.Message;
-            subscriptionsHandler.Handle(subscriptionsChanged);
-            return Task.CompletedTask;
-        }
-
-    }
-
-    // END: Jasper_Bus_Runtime_Subscriptions_SubscriptionsChanged
     
     
 }
