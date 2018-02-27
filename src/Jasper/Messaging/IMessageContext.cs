@@ -76,7 +76,20 @@ namespace Jasper.Messaging
         /// Error actions will not be executed and the message consumers will not be retried
         /// if an error happens.
         /// </summary>
-        Task Invoke<T>(T message);
+        Task Invoke(object message);
+
+
+        /// <summary>
+        /// Invoke consumers for the relevant messages managed by the current
+        /// service bus instance and expect a response of type T from the processing. This happens immediately and on the current thread.
+        /// Error actions will not be executed and the message consumers will not be retried
+        /// if an error happens.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task<T> Invoke<T>(object message) where T : class;
+
 
         /// <summary>
         /// Enqueues the message locally. Uses the message type to worker queue routing to determine

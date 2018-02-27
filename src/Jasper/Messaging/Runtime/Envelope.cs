@@ -299,6 +299,16 @@ namespace Jasper.Messaging.Runtime
         internal MessageRoute Route { get; set; }
 
         /// <summary>
+        /// Used by IMessageContext.Invoke<T> to denote the response type
+        /// </summary>
+        internal Type ResponseType { get; set; }
+
+        /// <summary>
+        /// Also used by IMessageContext.Invoke<T> to catch the response
+        /// </summary>
+        internal object Response { get; set; }
+
+        /// <summary>
         /// Should the processing of this message be scheduled for a later time
         /// </summary>
         /// <param name="utcNow"></param>
