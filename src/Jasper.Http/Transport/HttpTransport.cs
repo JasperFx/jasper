@@ -11,6 +11,7 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace Jasper.Http.Transport
@@ -66,9 +67,11 @@ namespace Jasper.Http.Transport
 
         public void StartListening(IMessagingRoot root)
         {
-            if (_runtime.HttpAddresses.IsNotEmpty())
+            if (_runtime.HttpAddresses.Any())
             {
-                var candidate = _runtime.HttpAddresses.Split(';').Select(x => x.ToUri()).FirstOrDefault(x => x.Host == "localhost" || x.Host == "127.0.0.1")?.ToMachineUri();
+
+
+                var candidate = _runtime.HttpAddresses.Select(x => x.ToUri()).FirstOrDefault(x => x.Host == "localhost" || x.Host == "127.0.0.1")?.ToMachineUri();
                 if (candidate != null)
                 {
                     LocalReplyUri = candidate.ToString().TrimEnd('/').AppendUrl(_httpSettings.RelativeUrl).ToUri();
@@ -86,4 +89,5 @@ namespace Jasper.Http.Transport
             }
         }
     }
+
 }

@@ -115,7 +115,7 @@ namespace Jasper.Http
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
             if (runtime.HttpAddresses == null) return;
-            foreach (var url in runtime.HttpAddresses.Split(';')) writer.WriteLine($"Now listening on: {url}");
+            foreach (var url in runtime.HttpAddresses) writer.WriteLine($"Now listening on: {url}");
         }
 
         IWebHost IWebHostBuilder.Build()

@@ -18,6 +18,8 @@ using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper
@@ -83,7 +85,8 @@ namespace Jasper
         /// </summary>
         public ServiceCapabilities Capabilities { get; internal set; }
 
-        public string HttpAddresses => Registry.HttpAddresses;
+        public string[] HttpAddresses => Container.TryGetInstance<IServer>()?.Features?.Get<IServerAddressesFeature>()?.Addresses?.ToArray() ??
+                                         Registry.HttpAddresses?.Split(';').ToArray() ?? new string[0];
 
         /// <summary>
         ///     Shortcut to retrieve an instance of the IServiceBus interface for the application
@@ -257,7 +260,7 @@ namespace Jasper
                 registry.AlterNode(local);
 
 
-                local.HttpEndpoints = runtime.HttpAddresses?.Split(';').Select(x => x.ToUri().ToMachineUri()).Distinct()
+                local.HttpEndpoints = runtime.HttpAddresses?.Select(x => x.ToUri().ToMachineUri()).Distinct()
                     .ToArray();
 
                 runtime.Node = local;

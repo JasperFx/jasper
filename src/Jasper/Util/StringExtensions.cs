@@ -8,6 +8,18 @@ namespace Jasper.Util
     {
         public static Uri ToUri(this string uriString)
         {
+            if (uriString.Contains("://*"))
+            {
+                var parts = uriString.Split(':');
+
+                var protocol = parts[0];
+                var segments = parts[2].Split('/');
+                var port = int.Parse(segments.First());
+
+                var uri = $"{protocol}://localhost:{port}/{segments.Skip(1).Join("/")}";
+                return new Uri(uri);
+            }
+
             return uriString.IsEmpty() ? null : new Uri(uriString);
         }
 
