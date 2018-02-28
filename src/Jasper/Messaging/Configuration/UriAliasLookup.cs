@@ -62,7 +62,17 @@ namespace Jasper.Messaging.Configuration
 
                 for (int i = 0; i < incoming.Length; i++)
                 {
-                    _aliases.Add(incoming[i], resolved[i]);
+                    var key = incoming[i];
+                    var value = resolved[i];
+
+                    if (_aliases.ContainsKey(key))
+                    {
+                        _aliases[key] = value;
+                    }
+                    else
+                    {
+                        _aliases.Add(key, value);
+                    }
                 }
             }
         }

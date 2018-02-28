@@ -145,7 +145,7 @@ task :storyteller => [:compile] do
   result_output = File.expand_path "#{RESULTS_DIR}/stresults.htm"
   puts "appveyor AddTest Testing -Framework Storyteller -FileName SomeFile -Outcome Skipped"
   Dir.chdir("src/StorytellerSpecs") do
-    system "dotnet run -- run -r #{result_output} --tracing appveyor"
+    system "dotnet run -- run -r #{result_output} --tracing verbose"
   end
 end
 

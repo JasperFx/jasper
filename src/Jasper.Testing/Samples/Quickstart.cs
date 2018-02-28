@@ -16,10 +16,15 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
 
+    // SAMPLE: ServiceBusApp
     public class ServiceBusApp : JasperHttpRegistry
     {
-
+        public ServiceBusApp()
+        {
+            // Customize your messaging setup here
+        }
     }
+    // ENDSAMPLE
 
     public static class Program
     {

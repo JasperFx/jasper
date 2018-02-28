@@ -11,6 +11,7 @@ using Xunit;
 
 namespace Jasper.Http.Testing.Routing
 {
+    [Collection("integration")]
     public class route_determination_with_spread : IDisposable
     {
         private readonly JasperRuntime _runtime;

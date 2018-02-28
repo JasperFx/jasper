@@ -1,6 +1,8 @@
 <!--title: Getting Started-->
 
-<div class="alert alert-info"><b>Note!</b> Jasper only targets Netstandard 2.0 and higher at this time.</div>
+<[info]>
+Jasper only targets Netstandard 2.0 and higher at this time.
+<[/info]>
 
 Jasper is a framework for building server side services in .Net. Jasper can be used as an alternative web framework for .Net, a service bus for messaging, as a "mediator" type
 pipeline within a different framework, or any combination thereof. Jasper can be used as either your main application framework that handles all the configuration and bootstrapping, or as an add on to ASP.Net Core applications.
@@ -19,7 +21,8 @@ Now, to bootstrap your application, add this code to the entrypoint of your cons
 
 <[sample:QuickStartConsoleMain]>
 
-By itself, this doesn't really do much, so let's add Kestrel as a web server for serving HTTP services and start listening for messages from other applications using Jasper's built in, lightweight transport:
+By itself, this doesn't really do much, so let's start listening for messages from other applications using Jasper's built in, lightweight transport.
+
 
 <[sample:MyAppRegistryWithOptions]>
 
@@ -27,11 +30,10 @@ Now, when you run the console application you should see output like this:
 
 ```
 Hosting environment: Production
-Content root path: /Users/jeremill/code/jasper/src/MyApp/bin/Debug/netcoreapp1.1
+Content root path: /Users/jeremill/code/jasper/src/MyApp/bin/Debug/netcoreapp2.0
 Listening for messages at loopback://delayed/
 Listening for messages at jasper://localhost:2333/replies
 Listening for messages at jasper://localhost:2222/incoming
-Now listening on: http://localhost:3001
 Application started. Press Ctrl+C to shut down.
 ```
 
@@ -42,9 +44,22 @@ to an idiomatic ASP.Net Core application.
 
 ## Adding Jasper to an ASP.Net Core Application
 
+
+<[info]>
+As of Jasper 0.6, the ASP.Net Core integration moved into the Jasper.Http library.
+<[/info]>
+
+While you may certainly build headless services with Jasper, it's pretty likely that you will also want to integrate Jasper into
+ASP.Net Core applications. The first step is to add a Nuget dependency on the `Jasper.Http` library to get Jasper's recipes for quick integration.
+
 If you prefer to use typical ASP.Net Core bootstrapping or want to add Jasper messaging support to an existing project, you can use the `UseJasper<T>()` extension method on ASP.Net Core's `IWebHostBuilder` as shown below:
 
 <[sample:QuickStart-Add-To-AspNetCore]>
+
+The `T` constraint will refer to the Jasper configuration for your hybrid Jasper/ASP.Net Core application, this time in a subclass of the `JasperHttpRegistry` class that's just a specialized version of
+`JasperRegistry`:
+
+<[sample:ServiceBusApp]>
 
 See <[linkto:documentation/bootstrapping/aspnetcore]> for more information about configuring Jasper through ASP.Net Core hosting.
 
@@ -55,7 +70,7 @@ The obligatory "Hello World" http endpoint is just this:
 
 <[sample:QuickStartHomeEndpoint]>
 
-As long as that class is in the same assembly as your `JasperRegistry` class, Jasper will find it and make the "Get" method handle the root url of your application.
+As long as that class is in the same assembly as your `JasperHttpRegistry` class, Jasper will find it and make the "Get" method handle the root url of your application.
 
 See <[linkto:documentation/http]> for more information about Jasper's HTTP handling features.
 
