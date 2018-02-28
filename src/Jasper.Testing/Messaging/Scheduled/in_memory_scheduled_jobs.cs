@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Scheduled
 {
+    [Collection("integration")]
     public class in_memory_scheduled_jobs : IWorkerQueue
     {
         private readonly InMemoryScheduledJobProcessor theScheduledJobs;

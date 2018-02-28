@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +14,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
+    [Collection("integration")]
     public class ping_handling
     {
         [Fact]

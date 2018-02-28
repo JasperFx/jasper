@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BlueMilk.Codegen;
 using BlueMilk.Codegen.Frames;
 using BlueMilk.Compilation;
@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation
 {
+    [Collection("integration")]
     public class can_customize_handler_chains_with_attributes : IDisposable
     {
         public can_customize_handler_chains_with_attributes()
