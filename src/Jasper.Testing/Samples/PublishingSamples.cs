@@ -91,6 +91,22 @@ namespace Jasper.Testing.Samples
         }
         // ENDSAMPLE
 
+        // SAMPLE: schedule-job-locally
+        public async Task ScheduleLocally(IMessageContext bus, Guid invoiceId)
+        {
+            var message = new ValidateInvoiceIsNotLate
+            {
+                InvoiceId = invoiceId
+            };
+
+            // Schedule the message to be processed in a certain amount
+            // of time
+            await bus.Schedule(message, 30.Days());
+
+            // Schedule the message to be processed at a certain time
+            await bus.Schedule(message, DateTime.UtcNow.AddDays(30));
+        }
+        // ENDSAMPLE
 
         // SAMPLE: sending-message-with-servicebus
         public Task SendMessage(IMessageContext bus)
