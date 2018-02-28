@@ -8,12 +8,10 @@ namespace MyApp
 {
 
     // SAMPLE: MyAppRegistryWithOptions
-    public class MyAppRegistry : JasperHttpRegistry
+    public class MyAppRegistry : JasperRegistry
     {
         public MyAppRegistry()
         {
-            Http.UseKestrel().UseUrls("http://localhost:3001");
-
             Transports.LightweightListenerAt(2222);
 
             Publish.Message<Message1>();
