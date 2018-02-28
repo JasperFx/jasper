@@ -61,13 +61,13 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task ping_happy_path_with_http_protocol()
         {
-            var sender = new BatchedSender("http://localhost:5000/messages".ToUri(), new HttpSenderProtocol(new MessagingSettings(), new HttpTransportSettings()), CancellationToken.None, CompositeTransportLogger.Empty());
+            var sender = new BatchedSender("http://localhost:5005/messages".ToUri(), new HttpSenderProtocol(new MessagingSettings(), new HttpTransportSettings()), CancellationToken.None, CompositeTransportLogger.Empty());
 
 
             using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
                 _.Http.Transport.EnableListening(true);
-                _.Http.UseUrls("http://*:5000").UseKestrel();
+                _.Http.UseUrls("http://*:5005").UseKestrel();
             }))
             {
                 await sender.Ping();
