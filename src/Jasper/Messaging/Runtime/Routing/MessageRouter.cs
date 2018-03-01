@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using ImTools;
 using Jasper.Conneg;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -12,6 +11,7 @@ using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Routing
 {

@@ -14,6 +14,8 @@ using Jasper.Util;
 using Marten;
 using Shouldly;
 using Xunit;
+using Answer = Jasper.Marten.Tests.Persistence.Resiliency.Answer;
+using Question = Jasper.Marten.Tests.Persistence.Resiliency.Question;
 
 namespace Jasper.Marten.Tests.Outbox
 {

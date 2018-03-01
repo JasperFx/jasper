@@ -6,8 +6,8 @@ using BlueMilk;
 using BlueMilk.Codegen;
 using BlueMilk.Compilation;
 using BlueMilk.Util;
-using ImTools;
 using Jasper.Messaging.ErrorHandling;
+using Jasper.Util;
 
 namespace Jasper.Messaging.Model
 {

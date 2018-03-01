@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BlueMilk.Util;
 using Jasper.Util;
+using Marten.Util;
 using Shouldly;
 using Xunit;
 
