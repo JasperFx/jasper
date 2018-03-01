@@ -25,16 +25,13 @@ namespace Jasper.Http
             _baseServices.For<ITransport>()
                 .Use<HttpTransport>();
 
-            _baseServices.Policies.OnMissingFamily<LoggerPolicy>();
 
             _baseServices.AddSingleton<ConnegRules>();
-            _baseServices.AddSingleton<IServer, NulloServer>();
 
             _baseServices.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
             _baseServices.AddSingleton(Http.Routes.Router);
             _baseServices.AddSingleton(Http.Routes);
             _baseServices.ForSingletonOf<IUrlRegistry>().Use(Http.Routes.Router.Urls);
-            _baseServices.For<IServer>().Use<NulloServer>();
 
             _baseServices.AddSingleton<IWebHost>(x => Http.Host);
 

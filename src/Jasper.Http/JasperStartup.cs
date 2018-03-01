@@ -5,6 +5,7 @@ using BlueMilk;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Http
@@ -62,6 +63,11 @@ namespace Jasper.Http
             foreach (var startup in _others)
             {
                 startup.ConfigureServices(services);
+            }
+
+            if (services.All(x => x.ServiceType != typeof(IServer)))
+            {
+                services.AddSingleton<IServer, NulloServer>();
             }
 
             _container.Configure(services);

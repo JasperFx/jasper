@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
@@ -151,7 +153,18 @@ namespace Jasper.Http
 
         private void activateLocally(JasperRuntime runtime)
         {
-            _inner.ConfigureServices(services => JasperStartup.Register(runtime.Container, services, Routes.Router));
+            _inner.ConfigureServices(services =>
+            {
+                JasperStartup.Register(runtime.Container, services, Routes.Router);
+                if (services.All(x => x.ServiceType != typeof(IServer)))
+                {
+                    services.AddSingleton<IServer, NulloServer>();
+                }
+            });
+
+
+
+            var txt = runtime.Container.WhatDoIHave();
 
             Host = _inner.Build();
 

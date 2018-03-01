@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Http;
 using Jasper.Http.Transport;
 using Jasper.Messaging.Logging;
@@ -9,7 +10,9 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Testing.Messaging.Lightweight.Protocol;
 using Jasper.Util;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace Jasper.Testing.Messaging
@@ -59,6 +62,7 @@ namespace Jasper.Testing.Messaging
             });
         }
 
+
         [Fact]
         public async Task ping_happy_path_with_http_protocol()
         {
@@ -68,7 +72,14 @@ namespace Jasper.Testing.Messaging
             using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
             {
                 _.Http.Transport.EnableListening(true);
-                _.Http.UseUrls("http://*:5005").UseKestrel();
+                _.Http.UseUrls("http://localhost:5005").UseKestrel();
+
+                _.Http.Configure(app =>
+                {
+                    app.AddJasper();
+
+                    app.Run(c => c.Response.WriteAsync("Hello"));
+                });
             }))
             {
                 await sender.Ping();
