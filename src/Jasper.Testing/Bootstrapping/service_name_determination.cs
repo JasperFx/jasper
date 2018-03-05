@@ -1,7 +1,7 @@
 ﻿using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing
+namespace Jasper.Testing.Bootstrapping
 {
     public class service_name_determination
     {

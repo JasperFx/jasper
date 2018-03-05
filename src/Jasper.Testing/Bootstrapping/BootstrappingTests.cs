@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing
+namespace Jasper.Testing.Bootstrapping
 {
     [Collection("integration")]
     public class BootstrappingTests

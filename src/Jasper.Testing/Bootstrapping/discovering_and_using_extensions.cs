@@ -6,7 +6,7 @@ using Module1;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing
+namespace Jasper.Testing.Bootstrapping
 {
     [Collection("integration")]
     public class discovering_and_using_extensions : IDisposable

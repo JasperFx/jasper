@@ -13,7 +13,8 @@ BUILD_NUMBER = build_number
 
 CI = ENV["CI"].nil? ? false : true
 
-task :ci => [:default, :integrationtests, :pack, :appVeyorPush]
+# task :ci => [:default, :integrationtests, :pack, :appVeyorPush]
+task :ci => [:test]
 
 task :default => [:test, :storyteller]
 task :full => [:default, :integrationtests]
@@ -79,8 +80,21 @@ desc 'Run the unit tests'
 task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
-	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj"
-	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj"
+  Dir.chdir("src/Jasper.Testing") do
+    sh "dotnet test --filter Jasper.Testing.Binding"
+    sh "dotnet test --filter Jasper.Testing.Bootstrapping"
+    sh "dotnet test --filter Jasper.Testing.Conneg"
+    sh "dotnet test --filter Jasper.Testing.EnvironmentChecks"
+    sh "dotnet test --filter Jasper.Testing.Settings"
+    sh "dotnet test --filter Jasper.Testing.Storyteller"
+    sh "dotnet test --filter Jasper.Testing.Util"
+    sh "dotnet test --filter Jasper.Testing.Messaging"
+  end
+
+
+
+	#sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj"
+	#sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj"
 
 end
 
@@ -90,7 +104,9 @@ task :integrationtests => [:compile] do
     sh "dotnet test"
   end
 
-  sh "dotnet test src/Jasper.Consul.Testing/Jasper.Consul.Testing.csproj"
+
+
+  #sh "dotnet test src/Jasper.Consul.Testing/Jasper.Consul.Testing.csproj"
 
   # one test is unreliable. Grr.
   #sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj"
