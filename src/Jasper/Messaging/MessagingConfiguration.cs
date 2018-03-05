@@ -2,13 +2,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using BlueMilk.Codegen;
-using BlueMilk.Util;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
+using Lamar.Codegen;
+using Lamar.Util;
 
 namespace Jasper.Messaging
 {

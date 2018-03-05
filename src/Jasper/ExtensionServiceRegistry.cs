@@ -1,7 +1,8 @@
-﻿using BlueMilk;
-using Jasper.Configuration;
+﻿using Lamar;
 
 namespace Jasper
 {
-    internal class ExtensionServiceRegistry : ServiceRegistry{}
+    internal class ExtensionServiceRegistry : ServiceRegistry
+    {
+    }
 }

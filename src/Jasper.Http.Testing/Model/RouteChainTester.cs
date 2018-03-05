@@ -3,11 +3,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Baseline.Reflection;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Http.Model;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
+using Lamar.Compilation;
 using Shouldly;
 using Xunit;
 

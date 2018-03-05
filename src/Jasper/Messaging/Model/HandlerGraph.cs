@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using BlueMilk;
-using BlueMilk.Codegen;
-using BlueMilk.Compilation;
-using BlueMilk.Util;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Util;
+using Lamar;
+using Lamar.Codegen;
+using Lamar.Compilation;
+using Lamar.Util;
 
 namespace Jasper.Messaging.Model
 {

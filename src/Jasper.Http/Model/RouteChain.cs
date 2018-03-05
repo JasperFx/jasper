@@ -5,47 +5,24 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
-using BlueMilk;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Codegen.Variables;
-using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Http.Routing;
+using Lamar;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
+using Lamar.Codegen.Variables;
+using Lamar.Compilation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.Http.Model
 {
     public class RouteChain : Chain<RouteChain, ModifyRouteAttribute>
     {
-        public static readonly Variable[] HttpContextVariables = Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
+        public static readonly Variable[] HttpContextVariables =
+            Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
+
         private GeneratedType _generatedType;
-
-        public static RouteChain For<T>(Expression<Action<T>> expression)
-        {
-            var method = ReflectionHelper.GetMethod(expression);
-            var call = new MethodCall(typeof(T), method);
-
-            return new RouteChain(call);
-        }
-
-        public static RouteChain For<T>(string methodName)
-        {
-            var handlerType = typeof(T);
-            var method = handlerType.GetMethod(methodName,
-                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-
-            if (method == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(methodName), $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
-            }
-
-            var call = new MethodCall(handlerType, method);
-
-            return new RouteChain(call);
-        }
 
         public RouteChain(MethodCall action)
         {
@@ -71,27 +48,7 @@ namespace Jasper.Http.Model
             Route.Chain = this;
         }
 
-        protected override MethodCall[] handlerCalls()
-        {
-            return new[] {Action};
-        }
-
         public string SourceCode => _generatedType.SourceCode;
-
-
-
-        public void ApplyConneg(SerializationGraph graph)
-        {
-            if (InputType != null)
-            {
-                ConnegReader = graph.ReaderFor(InputType);
-            }
-
-            if (ResourceType != null)
-            {
-                ConnegWriter = graph.WriterFor(ResourceType);
-            }
-        }
 
         public ModelWriter ConnegWriter { get; set; }
 
@@ -108,6 +65,42 @@ namespace Jasper.Http.Model
         public Type InputType { get; }
         public Type ResourceType { get; }
 
+        public static RouteChain For<T>(Expression<Action<T>> expression)
+        {
+            var method = ReflectionHelper.GetMethod(expression);
+            var call = new MethodCall(typeof(T), method);
+
+            return new RouteChain(call);
+        }
+
+        public static RouteChain For<T>(string methodName)
+        {
+            var handlerType = typeof(T);
+            var method = handlerType.GetMethod(methodName,
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+
+            if (method == null)
+                throw new ArgumentOutOfRangeException(nameof(methodName),
+                    $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
+
+            var call = new MethodCall(handlerType, method);
+
+            return new RouteChain(call);
+        }
+
+        protected override MethodCall[] handlerCalls()
+        {
+            return new[] {Action};
+        }
+
+
+        public void ApplyConneg(SerializationGraph graph)
+        {
+            if (InputType != null) ConnegReader = graph.ReaderFor(InputType);
+
+            if (ResourceType != null) ConnegWriter = graph.WriterFor(ResourceType);
+        }
+
         public override string ToString()
         {
             return $"{Route.HttpMethod}: {Route.Pattern}";
@@ -122,7 +115,6 @@ namespace Jasper.Http.Model
 
             handleMethod.Sources.Add(new ContextVariableSource());
             handleMethod.DerivedVariables.AddRange(HttpContextVariables);
-
         }
 
 

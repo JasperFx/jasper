@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Baseline.Reflection;
-using BlueMilk;
-using BlueMilk.Codegen.Variables;
-using BlueMilk.Scanning.Conventions;
-using BlueMilk.Util;
 using Jasper.Configuration;
 using Jasper.EnvironmentChecks;
 using Jasper.Messaging;
@@ -17,6 +13,10 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
+using Lamar;
+using Lamar.Codegen.Variables;
+using Lamar.Scanning.Conventions;
+using Lamar.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -24,15 +24,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper
 {
-    /// <summary>
-    ///     Strictly used to override the ASP.Net Core environment name on bootstrapping
-    /// </summary>
-    public static class JasperEnvironment
-    {
-        public static string Name { get; set; }
-    }
-
-
     public class JasperRuntime : IDisposable
     {
         private readonly Lazy<IMessageContext> _bus;
@@ -85,7 +76,8 @@ namespace Jasper
         /// </summary>
         public ServiceCapabilities Capabilities { get; internal set; }
 
-        public string[] HttpAddresses => Container.TryGetInstance<IServer>()?.Features?.Get<IServerAddressesFeature>()?.Addresses?.ToArray() ??
+        public string[] HttpAddresses => Container.TryGetInstance<IServer>()?.Features?.Get<IServerAddressesFeature>()
+                                             ?.Addresses?.ToArray() ??
                                          Registry.HttpAddresses?.Split(';').ToArray() ?? new string[0];
 
         /// <summary>
@@ -312,10 +304,6 @@ namespace Jasper
             writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
 
             Registry.Describe(this, writer);
-
-
         }
     }
-
-
 }

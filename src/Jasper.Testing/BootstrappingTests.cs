@@ -1,14 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using BlueMilk;
-using BlueMilk.Codegen;
-using Jasper.Configuration;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Messaging.Bootstrapping;
 using Jasper.Testing.Messaging.Compilation;
-using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -35,16 +30,6 @@ namespace Jasper.Testing
         }
 
         [Fact]
-        public void registrations_from_the_main_registry_are_applied()
-        {
-            using (var runtime = JasperRuntime.For(_ => { _.Services.AddTransient<IMainService, MainService>(); }))
-            {
-                runtime.Container.DefaultRegistrationIs<IMainService, MainService>();
-            }
-
-        }
-
-        [Fact]
         public void can_use_custom_hosted_service_without_aspnet()
         {
             var service = new CustomHostedService();
@@ -58,10 +43,23 @@ namespace Jasper.Testing
 
             service.WasStopped.ShouldBeTrue();
         }
+
+        [Fact]
+        public void registrations_from_the_main_registry_are_applied()
+        {
+            using (var runtime = JasperRuntime.For(_ => { _.Services.AddTransient<IMainService, MainService>(); }))
+            {
+                runtime.Container.DefaultRegistrationIs<IMainService, MainService>();
+            }
+        }
     }
 
     public class when_bootstrapping_a_runtime_with_multiple_features : IDisposable
     {
+        private readonly JasperRegistry theRegistry = new JasperRegistry();
+
+        private readonly JasperRuntime theRuntime;
+
         public when_bootstrapping_a_runtime_with_multiple_features()
         {
             theRegistry.Handlers.DisableConventionalDiscovery();
@@ -79,18 +77,16 @@ namespace Jasper.Testing
         {
             theRuntime?.Dispose();
         }
+    }
+
+    public class when_shutting_down_the_runtime
+    {
+        private readonly MainService mainService = new MainService();
 
         private readonly JasperRegistry theRegistry = new JasperRegistry();
 
         private readonly JasperRuntime theRuntime;
 
-
-
-
-    }
-
-    public class when_shutting_down_the_runtime
-    {
         public when_shutting_down_the_runtime()
         {
             theRegistry.Handlers.DisableConventionalDiscovery();
@@ -105,12 +101,6 @@ namespace Jasper.Testing
 
             theRuntime.Dispose();
         }
-
-        private readonly JasperRegistry theRegistry = new JasperRegistry();
-
-        private readonly JasperRuntime theRuntime;
-        private readonly MainService mainService = new MainService();
-
     }
 
 
@@ -130,22 +120,20 @@ namespace Jasper.Testing
 
     public class CustomHostedService : IHostedService
     {
+        public bool WasStarted { get; set; }
+
+        public bool WasStopped { get; set; }
+
         public Task StartAsync(CancellationToken cancellationToken)
         {
             WasStarted = true;
             return Task.CompletedTask;
         }
 
-        public bool WasStarted { get; set; }
-
         public Task StopAsync(CancellationToken cancellationToken)
         {
             WasStopped = true;
             return Task.CompletedTask;
         }
-
-        public bool WasStopped { get; set; }
     }
-
-
 }

@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Http.Model;
 using Jasper.Testing.FakeStoreTypes;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
+using Lamar.Compilation;
 using Shouldly;
 using Xunit;
 

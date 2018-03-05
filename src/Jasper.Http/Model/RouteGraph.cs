@@ -6,11 +6,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Compilation;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
 using GenericEnumerableExtensions = Baseline.GenericEnumerableExtensions;
 
 namespace Jasper.Http.Model

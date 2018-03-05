@@ -9,8 +9,7 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
-using TypeClassification = BlueMilk.Scanning.TypeClassification;
-using TypeRepository = BlueMilk.Scanning.TypeRepository;
+using Lamar.Scanning;
 
 namespace Jasper.Messaging.Runtime.Subscriptions
 {

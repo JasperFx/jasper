@@ -1,15 +1,13 @@
 ﻿using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline;
-using BlueMilk.Util;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Jasper.Http.Transport;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports;
+using Lamar.Util;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,19 +31,18 @@ namespace Jasper.Http
             _baseServices.AddSingleton(Http.Routes);
             _baseServices.ForSingletonOf<IUrlRegistry>().Use(Http.Routes.Router.Urls);
 
-            _baseServices.AddSingleton<IWebHost>(x => Http.Host);
-
+            _baseServices.AddSingleton(x => Http.Host);
         }
 
         /// <summary>
-        /// IWebHostBuilder and other configuration for ASP.net Core usage within a Jasper
-        /// application
+        ///     IWebHostBuilder and other configuration for ASP.net Core usage within a Jasper
+        ///     application
         /// </summary>
         public AspNetCoreFeature Http { get; } = new AspNetCoreFeature();
 
 
         /// <summary>
-        /// Gets or sets the ASP.Net Core environment names
+        ///     Gets or sets the ASP.Net Core environment names
         /// </summary>
         public override string EnvironmentName
         {
@@ -83,9 +80,5 @@ namespace Jasper.Http
             // Handled by ASP.Net Core itself
             return Task.CompletedTask;
         }
-
-
-
-
     }
 }

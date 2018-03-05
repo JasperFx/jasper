@@ -1,17 +1,18 @@
 ﻿using System.Reflection;
 using Baseline.Reflection;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Codegen.Variables;
+using Lamar.Codegen.Frames;
+using Lamar.Codegen.Variables;
 
 namespace Jasper.Messaging.Model
 {
     public class CaptureCascadingMessages : MethodCall
     {
-        private readonly static MethodInfo _method =
+        private static readonly MethodInfo _method =
             ReflectionHelper.GetMethod<IAdvancedMessagingActions>(x => x.EnqueueCascading(null));
 
 
-        public CaptureCascadingMessages(Variable messages, int position) : base(typeof(IAdvancedMessagingActions), _method)
+        public CaptureCascadingMessages(Variable messages, int position) : base(typeof(IAdvancedMessagingActions),
+            _method)
         {
             messages.OverrideName("outgoing" + position);
             Arguments[0] = messages;

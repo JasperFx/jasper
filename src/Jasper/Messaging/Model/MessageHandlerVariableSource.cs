@@ -1,6 +1,6 @@
 ﻿using System;
-using BlueMilk.Codegen.Variables;
 using Jasper.Messaging.Runtime;
+using Lamar.Codegen.Variables;
 
 namespace Jasper.Messaging.Model
 {

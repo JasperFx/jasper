@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Compilation;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
+using Lamar.Compilation;
 using Shouldly;
 using Xunit;
 
@@ -24,10 +24,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     {
         public void Apply(HandlerGraph graph)
         {
-            foreach (var chain in graph.Chains)
-            {
-                chain.Middleware.Add(new SimpleWrapper());
-            }
+            foreach (var chain in graph.Chains) chain.Middleware.Add(new SimpleWrapper());
         }
     }
 

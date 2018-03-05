@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Variables;
 using Jasper.Http.Routing.Codegen;
+using Lamar.Codegen.Variables;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Model

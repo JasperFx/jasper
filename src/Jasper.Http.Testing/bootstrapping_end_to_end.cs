@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using BlueMilk.Scanning;
-using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
@@ -74,6 +72,21 @@ namespace Jasper.Http.Testing
         }
 
         [Fact]
+        public void can_use_custom_hosted_service_without_aspnet()
+        {
+            var service = new CustomHostedService();
+
+            var runtime = JasperRuntime.For<JasperHttpRegistry>(_ => _.Services.AddSingleton<IHostedService>(service));
+
+            service.WasStarted.ShouldBeTrue();
+            service.WasStopped.ShouldBeFalse();
+
+            runtime.Dispose();
+
+            service.WasStopped.ShouldBeTrue();
+        }
+
+        [Fact]
         public void reverse_url_lookup_by_input_model()
         {
             var urls = theRuntime.Get<IUrlRegistry>();
@@ -99,40 +112,25 @@ namespace Jasper.Http.Testing
         {
             theRuntime.Get<IUrlRegistry>().ShouldNotBeNull();
         }
-
-        [Fact]
-        public void can_use_custom_hosted_service_without_aspnet()
-        {
-            var service = new CustomHostedService();
-
-            var runtime = JasperRuntime.For<JasperHttpRegistry>(_ => _.Services.AddSingleton<IHostedService>(service));
-
-            service.WasStarted.ShouldBeTrue();
-            service.WasStopped.ShouldBeFalse();
-
-            runtime.Dispose();
-
-            service.WasStopped.ShouldBeTrue();
-        }
     }
 
     public class CustomHostedService : IHostedService
     {
+        public bool WasStarted { get; set; }
+
+        public bool WasStopped { get; set; }
+
         public Task StartAsync(CancellationToken cancellationToken)
         {
             WasStarted = true;
             return Task.CompletedTask;
         }
 
-        public bool WasStarted { get; set; }
-
         public Task StopAsync(CancellationToken cancellationToken)
         {
             WasStopped = true;
             return Task.CompletedTask;
         }
-
-        public bool WasStopped { get; set; }
     }
 
     public class EndpointExtension : JasperHttpExtension

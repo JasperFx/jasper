@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Baseline.Reflection;
-using BlueMilk.Codegen.Frames;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Invocation;
+using Lamar.Codegen.Frames;
 using Shouldly;
 
 namespace Jasper.Testing.Messaging
@@ -17,13 +17,13 @@ namespace Jasper.Testing.Messaging
             ShouldBeNullExtensions.ShouldNotBeNull(chain);
 
             var method = ReflectionHelper.GetMethod(expression);
-            ShouldBeBooleanExtensions.ShouldBeTrue(chain.Handlers.Any(x => x.Method.Name == method.Name));
+            chain.Handlers.Any(x => x.Method.Name == method.Name).ShouldBeTrue();
         }
 
         public static void ShouldHaveHandler<T>(this HandlerChain chain, string methodName)
         {
             ShouldBeNullExtensions.ShouldNotBeNull(chain);
-            ShouldBeBooleanExtensions.ShouldBeTrue(chain.Handlers.Any(x => x.Method.Name == methodName && x.HandlerType == typeof(T)));
+            chain.Handlers.Any(x => x.Method.Name == methodName && x.HandlerType == typeof(T)).ShouldBeTrue();
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, Expression<Action<T>> expression)
@@ -31,7 +31,7 @@ namespace Jasper.Testing.Messaging
             if (chain == null) return;
 
             var method = ReflectionHelper.GetMethod(expression);
-            ShouldBeBooleanExtensions.ShouldBeFalse(chain.Handlers.Any(x => x.Method.Name == method.Name && x.HandlerType == typeof(T)));
+            chain.Handlers.Any(x => x.Method.Name == method.Name && x.HandlerType == typeof(T)).ShouldBeFalse();
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, string methodName)
@@ -42,27 +42,27 @@ namespace Jasper.Testing.Messaging
         public static void ShouldBeWrappedWith<T>(this HandlerChain chain) where T : Frame
         {
             ShouldBeNullExtensions.ShouldNotBeNull(chain);
-            ShouldBeBooleanExtensions.ShouldBeTrue(chain.Middleware.OfType<T>().Any());
+            chain.Middleware.OfType<T>().Any().ShouldBeTrue();
         }
 
         public static void ShouldHandleExceptionWith<TEx, TContinuation>(this HandlerChain chain)
             where TEx : Exception
             where TContinuation : IContinuation
         {
-            ShouldBeBooleanExtensions.ShouldBeTrue(chain.ErrorHandlers.OfType<ErrorHandler>()
-                    .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<TEx>)
-                    .SelectMany(x => x.Sources)
-                    .OfType<ContinuationSource>()
-                    .Any(x => x.Continuation is TContinuation));
+            chain.ErrorHandlers.OfType<ErrorHandler>()
+                .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<TEx>)
+                .SelectMany(x => x.Sources)
+                .OfType<ContinuationSource>()
+                .Any(x => x.Continuation is TContinuation).ShouldBeTrue();
         }
 
         public static void ShouldMoveToErrorQueue<T>(this HandlerChain chain) where T : Exception
         {
-            ShouldBeBooleanExtensions.ShouldBeTrue(chain.ErrorHandlers.OfType<ErrorHandler>()
-                    .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<T>)
-                    .SelectMany(x => x.Sources)
-                    .OfType<MoveToErrorQueueHandler<T>>()
-                    .Any());
+            chain.ErrorHandlers.OfType<ErrorHandler>()
+                .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<T>)
+                .SelectMany(x => x.Sources)
+                .OfType<MoveToErrorQueueHandler<T>>()
+                .Any().ShouldBeTrue();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Jasper.Testing.Storyteller
             {
                 await system.Warmup();
 
-                ShouldBeNullExtensions.ShouldNotBeNull(system.Runtime.Get<MessagingSettings>());
+                system.Runtime.Get<MessagingSettings>().ShouldNotBeNull();
             }
         }
 

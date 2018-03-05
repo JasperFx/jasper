@@ -5,15 +5,15 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
-using BlueMilk;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Codegen.Variables;
-using BlueMilk.Compilation;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
+using Lamar;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
+using Lamar.Codegen.Variables;
+using Lamar.Compilation;
 
 namespace Jasper.Messaging.Model
 {

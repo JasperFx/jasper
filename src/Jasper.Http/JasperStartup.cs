@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using BlueMilk;
 using Jasper.Http.Routing;
+using Lamar;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -35,10 +35,14 @@ namespace Jasper.Http
 
         public static void Register(IContainer container, IServiceCollection services, Router router)
         {
-            var startups = services
-                .Where(x => x.ServiceType == typeof(IStartup))
+            var serviceDescriptors = services
+                .Where(x => x.ServiceType == typeof(IStartup)).ToArray();
+
+            var startups = serviceDescriptors
                 .Select(Build)
                 .ToArray();
+
+            services.RemoveAll(x => serviceDescriptors.Contains(x));
 
             services.AddTransient<IStartup>(sp =>
             {
@@ -71,6 +75,12 @@ namespace Jasper.Http
             }
 
             _container.Configure(services);
+
+            bool hasServer = _container.Model.HasRegistrationFor<IServer>();
+            if (!hasServer)
+            {
+                throw new Exception("Got no server!");
+            }
 
             return (IServiceProvider) _container;
         }

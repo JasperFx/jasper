@@ -1,6 +1,6 @@
 using System.Linq;
-using BlueMilk.Scanning;
-using BlueMilk.Scanning.Conventions;
+using Lamar.Scanning;
+using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 using TypeExtensions = Baseline.TypeExtensions;
 

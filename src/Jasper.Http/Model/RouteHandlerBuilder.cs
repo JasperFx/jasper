@@ -1,7 +1,7 @@
-﻿using BlueMilk;
-using BlueMilk.Codegen;
-using BlueMilk.Compilation;
-using Jasper.Http.ContentHandling;
+﻿using Jasper.Http.ContentHandling;
+using Lamar;
+using Lamar.Codegen;
+using Lamar.Compilation;
 
 namespace Jasper.Http.Model
 {

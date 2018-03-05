@@ -1,6 +1,5 @@
 ﻿using System;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Variables;
+using Lamar.Codegen.Variables;
 using Marten;
 
 namespace Jasper.Marten.Codegen
@@ -14,15 +13,9 @@ namespace Jasper.Marten.Codegen
 
         public Variable Create(Type type)
         {
-            if (type == typeof(IQuerySession))
-            {
-                return new QuerySessionFrame().Session;
-            }
+            if (type == typeof(IQuerySession)) return new QuerySessionFrame().Session;
 
-            if (type == typeof(IDocumentSession))
-            {
-                return new SessionFrame().Session;
-            }
+            if (type == typeof(IDocumentSession)) return new SessionFrame().Session;
 
             throw new ArgumentOutOfRangeException();
         }

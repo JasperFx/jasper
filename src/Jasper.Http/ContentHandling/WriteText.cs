@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Codegen.Variables;
+﻿using System.Reflection;
 using Jasper.Http.Model;
+using Lamar.Codegen.Frames;
+using Lamar.Codegen.Variables;
 
 namespace Jasper.Http.ContentHandling
 {

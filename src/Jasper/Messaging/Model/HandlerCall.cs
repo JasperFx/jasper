@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
-using BlueMilk.Codegen.Frames;
+using Lamar.Codegen.Frames;
 
 namespace Jasper.Messaging.Model
 {

@@ -1,11 +1,6 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using BlueMilk;
-using BlueMilk.Codegen;
-using Jasper;
+﻿using Jasper;
 using Jasper.Configuration;
 using Jasper.Http;
-using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +33,7 @@ namespace Jasper.Testing.Samples
             {
                 // do stuff
             }
+
             // ENDSAMPLE
         }
     }
@@ -45,12 +41,12 @@ namespace Jasper.Testing.Samples
     // SAMPLE: Bootstrapping-CustomJasperExtension
     public class CustomJasperExtension : IJasperExtension
     {
+        public int Threshold { get; set; } = 10;
+
         public void Configure(JasperRegistry registry)
         {
             // apply alterations
         }
-
-        public int Threshold { get; set; } = 10;
     }
     // ENDSAMPLE
 
@@ -66,10 +62,7 @@ namespace Jasper.Testing.Samples
             Include(new CustomJasperExtension());
 
             // or use the extension with customizations
-            Include<CustomJasperExtension>(_ =>
-            {
-                _.Threshold = 20;
-            });
+            Include<CustomJasperExtension>(_ => { _.Threshold = 20; });
         }
     }
     // ENDSAMPLE
@@ -77,10 +70,11 @@ namespace Jasper.Testing.Samples
 
     public interface ISecurityService
     {
-
     }
 
-    public class MySecurityService : ISecurityService{}
+    public class MySecurityService : ISecurityService
+    {
+    }
 
     // SAMPLE: Bootstrapping-ServiceRegistrations
     public class MyJasperApp : JasperRegistry
@@ -95,12 +89,12 @@ namespace Jasper.Testing.Samples
             Services.For<ISecurityService>().Use<MySecurityService>();
         }
     }
+
     // ENDSAMPLE
 }
 
 namespace Bootstrapping.Configuration
 {
-
     public class MyJasperApp : JasperRegistry
     {
         public MyJasperApp()
@@ -109,15 +103,12 @@ namespace Bootstrapping.Configuration
             Configuration
                 .AddEnvironmentVariables()
                 .AddJsonFile("appsettings.json");
-
-
         }
     }
 }
 
 namespace Bootstrapping.Configuration2
 {
-
     // SAMPLE: CustomJasperRegistry
     public class MyJasperApp : JasperRegistry
     {
@@ -148,6 +139,7 @@ namespace Bootstrapping.Configuration2
             {
                 // do stuff
             }
+
             // ENDSAMPLE
         }
     }
@@ -159,8 +151,6 @@ namespace Bootstrapping.Configuration2
         {
             // The derived default would be "CustomService"
             ServiceName = "My Custom Service";
-
-
         }
     }
     // ENDSAMPLE
@@ -170,16 +160,13 @@ namespace Bootstrapping.Configuration2
     {
         public EnvironmentNameRegistry()
         {
-
             // Override the Environment
             EnvironmentName = "Production";
 
             // which is just a shortcut for:
             Http.UseEnvironment("Production");
-
         }
     }
+
     // ENDSAMPLE
-
-
 }

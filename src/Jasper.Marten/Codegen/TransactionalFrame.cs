@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Codegen.Variables;
-using BlueMilk.Compilation;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
+using Lamar.Codegen.Variables;
+using Lamar.Compilation;
 using Marten;
 
 namespace Jasper.Marten.Codegen

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
 
 namespace Jasper.Configuration
 {

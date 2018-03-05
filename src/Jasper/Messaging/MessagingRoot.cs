@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using BlueMilk.Codegen;
-using BlueMilk.Util;
 using Jasper.Conneg;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -18,6 +16,8 @@ using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
+using Lamar.Codegen;
+using Lamar.Util;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Messaging

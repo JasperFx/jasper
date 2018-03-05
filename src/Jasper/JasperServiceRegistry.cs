@@ -1,5 +1,4 @@
-﻿using BlueMilk;
-using Jasper.Conneg;
+﻿using Jasper.Conneg;
 using Jasper.EnvironmentChecks;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
@@ -7,7 +6,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
-using Jasper.Messaging.WorkerQueues;
+using Lamar;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.ObjectPool;
@@ -18,6 +17,8 @@ namespace Jasper
     {
         public JasperServiceRegistry(JasperRegistry parent)
         {
+            this.AddLogging();
+
             // Will be overwritten when ASP.Net is in place too,
             // but that's okay
             this.AddSingleton<HostedServiceExecutor>();
@@ -56,12 +57,11 @@ namespace Jasper
                 .Use<TcpTransport>();
 
 
-
             ForSingletonOf<IMessagingRoot>().Use<MessagingRoot>();
 
             ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());
 
-            this.AddSingleton<IWorkerQueue>(s => s.GetService<MessagingRoot>().Workers);
+            this.AddSingleton(s => s.GetService<MessagingRoot>().Workers);
             this.AddSingleton(s => s.GetService<IMessagingRoot>().Pipeline);
             this.AddSingleton(s => s.GetService<IMessagingRoot>().Serialization);
             this.AddTransient(s => s.GetService<IMessagingRoot>().NewContext());

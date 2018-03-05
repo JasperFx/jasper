@@ -5,22 +5,18 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Baseline.Dates;
-using BlueMilk;
-using BlueMilk.Codegen;
-using BlueMilk.Util;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Messaging.WorkerQueues;
 using Jasper.Settings;
 using Jasper.Util;
-using Microsoft.AspNetCore.Hosting.Internal;
+using Lamar;
+using Lamar.Codegen;
+using Lamar.Util;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper
@@ -62,7 +58,6 @@ namespace Jasper
 
 
             if (JasperEnvironment.Name.IsNotEmpty()) EnvironmentName = JasperEnvironment.Name;
-
         }
 
 
@@ -75,8 +70,8 @@ namespace Jasper
         public virtual string EnvironmentName { get; set; } = JasperEnvironment.Name;
 
         /// <summary>
-        /// Options to control how Jasper discovers message handler actions, error
-        /// handling, local worker queues, and other policies on message handling
+        ///     Options to control how Jasper discovers message handler actions, error
+        ///     handling, local worker queues, and other policies on message handling
         /// </summary>
         public IHandlerConfiguration Handlers => Messaging.Handling;
 
@@ -97,12 +92,12 @@ namespace Jasper
         public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
         /// <summary>
-        /// Configure or extend the BlueMilk code generation
+        ///     Configure or extend the BlueMilk code generation
         /// </summary>
         public GenerationRules CodeGeneration { get; }
 
         /// <summary>
-        /// The main application assembly for this Jasper system
+        ///     The main application assembly for this Jasper system
         /// </summary>
         public Assembly ApplicationAssembly { get; private set; }
 
@@ -144,7 +139,7 @@ namespace Jasper
         /// </summary>
         public IAdvancedOptions Advanced => Messaging.Settings;
 
-        internal protected virtual string HttpAddresses => null;
+        protected internal virtual string HttpAddresses => null;
 
         private void establishApplicationAssembly()
         {
@@ -225,27 +220,23 @@ namespace Jasper
             return Task.CompletedTask;
         }
 
-        internal protected virtual void Describe(JasperRuntime runtime, TextWriter writer)
+        protected internal virtual void Describe(JasperRuntime runtime, TextWriter writer)
         {
             Messaging.Describe(runtime, writer);
         }
 
-        internal protected virtual async Task Startup(JasperRuntime runtime)
+        protected internal virtual async Task Startup(JasperRuntime runtime)
         {
             var services = runtime.Container.GetAllInstances<IHostedService>();
 
-            foreach (var service in services)
-            {
-                await service.StartAsync(MessagingSettings.Cancellation);
-            }
+            foreach (var service in services) await service.StartAsync(MessagingSettings.Cancellation);
         }
 
-        internal protected virtual async Task Stop(JasperRuntime runtime)
+        protected internal virtual async Task Stop(JasperRuntime runtime)
         {
             var services = runtime.Container.GetAllInstances<IHostedService>();
 
             foreach (var service in services)
-            {
                 try
                 {
                     await service.StopAsync(CancellationToken.None);
@@ -256,12 +247,10 @@ namespace Jasper
                     ConsoleWriter.Write(ConsoleColor.Yellow, e.ToString());
                     throw;
                 }
-            }
         }
 
-        internal protected virtual void AlterNode(ServiceNode local)
+        protected internal virtual void AlterNode(ServiceNode local)
         {
-
         }
     }
 }

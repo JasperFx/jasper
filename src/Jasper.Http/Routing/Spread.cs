@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
 using Jasper.Http.Routing.Codegen;
+using Lamar.Codegen.Frames;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing
 {
     public class Spread : ISegment, IRoutingFrameSource
     {
+        public Spread(int position)
+        {
+            Position = position;
+        }
+
         public int Position { get; }
+
         public string CanonicalPath()
         {
             return string.Empty;
@@ -23,9 +28,14 @@ namespace Jasper.Http.Routing
             throw new NotSupportedException();
         }
 
-        public Spread(int position)
+        public string ReadRouteDataFromMethodArguments(List<object> arguments)
         {
-            Position = position;
+            throw new NotSupportedException();
+        }
+
+        public string SegmentFromParameters(IDictionary<string, object> parameters)
+        {
+            throw new NotSupportedException();
         }
 
         public void SetValues(HttpContext routeData, string[] segments)
@@ -40,19 +50,9 @@ namespace Jasper.Http.Routing
 
             if (Position == 0) return segments;
 
-            if (Position > (segments.Length - 1)) return new string[0];
+            if (Position > segments.Length - 1) return new string[0];
 
             return segments.Skip(Position).ToArray();
-        }
-
-        public string ReadRouteDataFromMethodArguments(List<object> arguments)
-        {
-            throw new NotSupportedException();
-        }
-
-        public string SegmentFromParameters(IDictionary<string, object> parameters)
-        {
-            throw new NotSupportedException();
         }
 
         public override string ToString()
@@ -66,8 +66,6 @@ namespace Jasper.Http.Routing
             return parameter.Name == Route.PathSegments
                 ? (Frame) new PathSegmentsFrame(Position)
                 : new RelativePathFrame(Position);
-
-
         }
 
         protected bool Equals(Spread other)
@@ -79,7 +77,7 @@ namespace Jasper.Http.Routing
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Spread) obj);
         }
 

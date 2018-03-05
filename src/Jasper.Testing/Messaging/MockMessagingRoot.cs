@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using BlueMilk.Codegen;
-using BlueMilk.Util;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -13,6 +11,8 @@ using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
+using Lamar.Codegen;
+using Lamar.Util;
 using NSubstitute;
 
 namespace Jasper.Testing.Messaging

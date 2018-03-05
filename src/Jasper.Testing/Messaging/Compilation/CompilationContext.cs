@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using BlueMilk;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
+using Lamar;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation

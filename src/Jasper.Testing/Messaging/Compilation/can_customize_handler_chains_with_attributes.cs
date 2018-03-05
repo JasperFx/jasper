@@ -1,10 +1,10 @@
 using System;
-using BlueMilk.Codegen;
-using BlueMilk.Codegen.Frames;
-using BlueMilk.Compilation;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Testing.Messaging.Runtime;
+using Lamar.Codegen;
+using Lamar.Codegen.Frames;
+using Lamar.Compilation;
 using Shouldly;
 using Xunit;
 

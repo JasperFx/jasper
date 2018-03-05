@@ -1,5 +1,5 @@
-﻿using BlueMilk.Codegen.Variables;
-using Jasper.Testing.Messaging.Runtime;
+﻿using Jasper.Testing.Messaging.Runtime;
+using Lamar.Codegen.Variables;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Bootstrapping

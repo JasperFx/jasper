@@ -1,6 +1,6 @@
 ﻿using System;
-using BlueMilk;
 using Jasper.Testing;
+using Lamar;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

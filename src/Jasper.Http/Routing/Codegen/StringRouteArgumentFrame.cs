@@ -1,17 +1,16 @@
-﻿using BlueMilk.Codegen;
-using BlueMilk.Compilation;
+﻿using Lamar.Codegen;
+using Lamar.Compilation;
 
 namespace Jasper.Http.Routing.Codegen
 {
     public class StringRouteArgumentFrame : RouteArgumentFrame
     {
-        public string Name { get; }
-
-
         public StringRouteArgumentFrame(string name, int position) : base(name, position, typeof(string))
         {
             Name = name;
         }
+
+        public string Name { get; }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
@@ -20,9 +19,5 @@ namespace Jasper.Http.Routing.Codegen
 
             Next?.GenerateCode(method, writer);
         }
-
-
-
-
     }
 }

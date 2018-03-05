@@ -5,11 +5,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Util;
-using TypeClassification = BlueMilk.Scanning.TypeClassification;
-using TypeRepository = BlueMilk.Scanning.TypeRepository;
+using Lamar.Scanning;
 
 namespace Jasper.Messaging.Configuration
 {
