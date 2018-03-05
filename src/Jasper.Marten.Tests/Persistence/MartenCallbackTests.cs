@@ -132,7 +132,7 @@ namespace Jasper.Marten.Tests.Persistence
             {
                 var persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
 
-                persisted.Attempts.ShouldBe(1);
+                persisted.ShouldNotBeNull();
             }
         }
 
