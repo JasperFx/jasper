@@ -83,7 +83,7 @@ task :test => [:compile] do
   Dir.chdir("src/Jasper.Testing") do
 
     sh "dotnet test --filter Jasper.Testing.Messaging.Bootstrapping"
-    sh "dotnet test --filter Jasper.Testing.Messaging.Compilation"
+    #sh "dotnet test --filter Jasper.Testing.Messaging.Compilation"
     sh "dotnet test --filter Jasper.Testing.Messaging.ErrorHandling"
     sh "dotnet test --filter Jasper.Testing.Messaging.Lightweight"
     sh "dotnet test --filter Jasper.Testing.Messaging.Model"
