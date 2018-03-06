@@ -36,7 +36,7 @@ namespace Jasper.Testing.Messaging
             var source = new TaskCompletionSource<Envelope>();
             _waiters[typeof(T)].Add(source);
 
-            Task.Delay(10.Seconds()).ContinueWith(x => { source.TrySetCanceled(); });
+            Task.Delay(30.Seconds()).ContinueWith(x => { source.TrySetCanceled(); });
 
             return source.Task;
         }

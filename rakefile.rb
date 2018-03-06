@@ -13,8 +13,8 @@ BUILD_NUMBER = build_number
 
 CI = ENV["CI"].nil? ? false : true
 
-# task :ci => [:default, :integrationtests, :pack, :appVeyorPush]
-task :ci => [:test]
+task :ci => [:default, :integrationtests, :pack, :appVeyorPush]
+
 
 task :default => [:test, :storyteller]
 task :full => [:default, :integrationtests]
@@ -80,41 +80,17 @@ desc 'Run the unit tests'
 task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
-  Dir.chdir("src/Jasper.Testing") do
-sh "dotnet test --filter Jasper.Testing.Messaging"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Bootstrapping"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Compilation"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.ErrorHandling"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Lightweight"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Model"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Runtime"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Samples"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Scheduled"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Serializers"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Tracking"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.Transports"
-    #sh "dotnet test --filter Jasper.Testing.Messaging.WorkerQueues"
-  end
-
-
-
-	#sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj"
-	#sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj"
+	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
+	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj --no-restore"
 
 end
 
 desc "Integration Tests"
 task :integrationtests => [:compile] do
-  Dir.chdir("src/IntegrationTests") do
-    sh "dotnet test"
-  end
-
-
-
-  #sh "dotnet test src/Jasper.Consul.Testing/Jasper.Consul.Testing.csproj"
+  sh "dotnet test src/Jasper.Consul.Testing/Jasper.Consul.Testing.csproj --no-restore"
 
   # one test is unreliable. Grr.
-  #sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj"
+  sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj --no-restore"
 
 end
 
@@ -128,11 +104,11 @@ end
 
 desc 'Build Nuspec packages'
 task :pack do
-	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release "
-  sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release "
-  sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release "
-  sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release "
-  sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release "
+	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release --no-restore"
 end
 
 desc "Pushes the Nuget's to MyGet"
