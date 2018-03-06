@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using Jasper.Messaging.Runtime;
 using Jasper.Testing.Messaging.Lightweight;
 
@@ -34,6 +35,8 @@ namespace Jasper.Testing.Messaging
         {
             var source = new TaskCompletionSource<Envelope>();
             _waiters[typeof(T)].Add(source);
+
+            Task.Delay(10.Seconds()).ContinueWith(x => { source.TrySetCanceled(); });
 
             return source.Task;
         }
