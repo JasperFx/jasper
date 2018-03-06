@@ -81,14 +81,19 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
   Dir.chdir("src/Jasper.Testing") do
-    sh "dotnet test --filter Jasper.Testing.Binding"
-    sh "dotnet test --filter Jasper.Testing.Bootstrapping"
-    sh "dotnet test --filter Jasper.Testing.Conneg"
-    sh "dotnet test --filter Jasper.Testing.EnvironmentChecks"
-    sh "dotnet test --filter Jasper.Testing.Settings"
-    sh "dotnet test --filter Jasper.Testing.Storyteller"
-    sh "dotnet test --filter Jasper.Testing.Util"
-    sh "dotnet test --filter Jasper.Testing.Messaging"
+
+    sh "dotnet test --filter Jasper.Testing.Messaging.Bootstrapping"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Compilation"
+    sh "dotnet test --filter Jasper.Testing.Messaging.ErrorHandling"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Lightweight"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Model"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Runtime"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Samples"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Scheduled"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Serializers"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Tracking"
+    sh "dotnet test --filter Jasper.Testing.Messaging.Transports"
+    sh "dotnet test --filter Jasper.Testing.Messaging.WorkerQueues"
   end
 
 
