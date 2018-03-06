@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation
 {
-    [Collection("compilation")]
+
     public class abstract_and_interface_calls : CompilationContext
     {
         public abstract_and_interface_calls()

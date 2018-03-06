@@ -7,7 +7,6 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation
 {
-    [Collection("compilation")]
     public class using_services_from_container : CompilationContext
     {
         public using_services_from_container()

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation
 {
-    [Collection("compilation")]
+    [Collection("integration")]
     public abstract class CompilationContext: IDisposable
     {
         private Lazy<IContainer> _container;
