@@ -109,6 +109,7 @@ task :pack do
   sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.Http/Jasper.Http.csproj -o ./../../artifacts --configuration Release --no-restore"
 end
 
 desc "Pushes the Nuget's to MyGet"
