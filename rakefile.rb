@@ -13,7 +13,7 @@ BUILD_NUMBER = build_number
 
 CI = ENV["CI"].nil? ? false : true
 
-task :ci => [:default, :integrationtests, :pack, :appVeyorPush]
+task :ci => [:default, :commands, :integrationtests, :pack, :appVeyorPush]
 
 
 task :default => [:test, :storyteller]
@@ -98,6 +98,17 @@ desc 'npm install for Diagnostics'
 task :npm_install do
   Dir.chdir("src/Jasper.Diagnostics") do
     sh "yarn"
+  end
+end
+
+desc 'Try out commands'
+task :commands do
+  Dir.chdir("src/Subscriber") do
+    sh "dotnet run -- ?"
+    sh "dotnet run -- services"
+    sh "dotnet run -- validate"
+    sh "dotnet run -- subscriptions"
+    sh "dotnet run -- export-json-schema obj/schema"
   end
 end
 

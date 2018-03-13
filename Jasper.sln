@@ -85,6 +85,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.Http", "src\Jasper.H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.Http.Testing", "src\Jasper.Http.Testing\Jasper.Http.Testing.csproj", "{BE568549-51E8-4763-845D-BB5137AD7D27}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.JsonCommands", "src\Jasper.JsonCommands\Jasper.JsonCommands.csproj", "{627A87BA-75B9-4C2E-861E-02880CA04295}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -479,6 +481,18 @@ Global
 		{BE568549-51E8-4763-845D-BB5137AD7D27}.Release|x64.Build.0 = Release|Any CPU
 		{BE568549-51E8-4763-845D-BB5137AD7D27}.Release|x86.ActiveCfg = Release|Any CPU
 		{BE568549-51E8-4763-845D-BB5137AD7D27}.Release|x86.Build.0 = Release|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Debug|x64.Build.0 = Debug|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Debug|x86.Build.0 = Debug|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Release|Any CPU.Build.0 = Release|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Release|x64.ActiveCfg = Release|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Release|x64.Build.0 = Release|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Release|x86.ActiveCfg = Release|Any CPU
+		{627A87BA-75B9-4C2E-861E-02880CA04295}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

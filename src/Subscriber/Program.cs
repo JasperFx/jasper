@@ -1,6 +1,7 @@
 using System;
 using Jasper;
 using Jasper.CommandLine;
+using Jasper.Http;
 using Jasper.Messaging.Transports.Configuration;
 using TestMessages;
 
@@ -14,10 +15,11 @@ namespace Subscriber
         }
     }
 
-    public class SubscriberApp : JasperRegistry
+    public class SubscriberApp : JasperHttpRegistry
     {
         public SubscriberApp()
         {
+            Http.Transport.EnableListening(true);
             Subscribe.At("http://loadbalancer/messages");
             Subscribe.ToAllMessages();
 
