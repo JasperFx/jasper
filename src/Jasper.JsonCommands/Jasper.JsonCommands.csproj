@@ -7,5 +7,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NJsonSchema" Version="9.10.32" />
+    <PackageReference Include="NJsonSchema.CodeGeneration.CSharp" Version="9.10.32" />
   </ItemGroup>
 </Project>
