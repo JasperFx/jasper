@@ -5,8 +5,8 @@
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
-    <AssemblyName>Jasper</AssemblyName>
-    <PackageId>Jasper</PackageId>
+    <AssemblyName>Jasper.Storyteller</AssemblyName>
+    <PackageId>Jasper.Storyteller</PackageId>
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
     <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>
