@@ -299,9 +299,13 @@ namespace Jasper
             writer.WriteLine($"Running service '{ServiceName}'");
             if (ApplicationAssembly != null) writer.WriteLine("Application Assembly: " + ApplicationAssembly.FullName);
 
-            var hosting = Get<IHostingEnvironment>();
-            writer.WriteLine($"Hosting environment: {hosting.EnvironmentName}");
-            writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
+            var hosting = Container.TryGetInstance<IHostingEnvironment>();
+
+            if (hosting != null)
+            {
+                writer.WriteLine($"Hosting environment: {hosting.EnvironmentName}");
+                writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
+            }
 
             Registry.Describe(this, writer);
         }
