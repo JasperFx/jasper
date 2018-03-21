@@ -94,14 +94,14 @@ namespace Jasper.Marten.Tests.Persistence
 
             var tables = new EnvelopeTables(theSettings, new StoreOptions());
 
-            var retries = new MartenRetries(theStore, tables, CompositeTransportLogger.Empty(), theSettings);
+            var retries = new MartenRetries(theStore, tables, TransportLogger.Empty(), theSettings);
 
 
             theListener = new MartenBackedListener(
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
                 theStore,
-                CompositeTransportLogger.Empty(), theSettings, tables, retries);
+                TransportLogger.Empty(), theSettings, tables, retries);
         }
 
         public void Dispose()

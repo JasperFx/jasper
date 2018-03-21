@@ -4,14 +4,18 @@ using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Messaging.Logging
 {
-    public interface IMessageLogger : IMessageEventSink, IExceptionSink
-    {
-
-    }
 
     // SAMPLE: IMessageLogger
-    public interface IMessageEventSink
+    public interface IMessageLogger
     {
+        /// <summary>
+        /// Catch all hook for any exceptions encountered by the messaging
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="correlationId"></param>
+        /// <param name="message"></param>
+        void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:");
+
         /// <summary>
         /// Called when an envelope is successfully sent through a transport
         /// </summary>

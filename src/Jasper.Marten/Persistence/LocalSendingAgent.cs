@@ -46,7 +46,7 @@ namespace Jasper.Marten.Persistence
 
         public Task EnqueueOutgoing(Envelope envelope)
         {
-            envelope.Callback = new MartenCallback(envelope, _queues, _store, _marker, _retries, _logger);
+            envelope.Callback = new MartenCallback(envelope, _queues, _store, _marker, _retries);
 
             return _queues.Enqueue(envelope);
         }

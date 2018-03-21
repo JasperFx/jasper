@@ -97,8 +97,6 @@ namespace Jasper.Marten.Tests.Persistence
 
             Include<MartenBackedPersistence>();
 
-            Logging.UseConsoleLogging = true;
-
             Publish.Message<ScheduledMessage>().To("tcp://localhost:2777");
         }
     }
@@ -112,8 +110,6 @@ namespace Jasper.Marten.Tests.Persistence
             Settings.MartenConnectionStringIs(ConnectionSource.ConnectionString);
 
             Include<MartenBackedPersistence>();
-
-            Logging.UseConsoleLogging = true;
         }
     }
 

@@ -44,8 +44,6 @@ namespace DiagnosticsServiceHarness
             var uri = "durable://localhost:2110/servicebus_example";
             Transports.ListenForMessagesFrom(uri);
 
-            Logging.UseConsoleLogging = true;
-
             Settings.Alter<DiagnosticsSettings>(_ =>
             {
                 _.WebsocketPort = 3300;

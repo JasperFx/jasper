@@ -33,8 +33,6 @@ namespace Jasper
 
         public JasperRegistry()
         {
-            Logging = new Logging(this);
-
             Publish = new PublishingExpression(Messaging);
 
             ExtensionServices = new ExtensionServiceRegistry();
@@ -111,11 +109,6 @@ namespace Jasper
         ///     a Jasper application
         /// </summary>
         public JasperSettings Settings { get; }
-
-        /// <summary>
-        ///     Use to configure or customize Jasper event logging
-        /// </summary>
-        public Logging Logging { get; }
 
         internal ServiceRegistry ExtensionServices { get; }
 

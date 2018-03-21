@@ -24,8 +24,9 @@ namespace Jasper.CommandLine
             if (VerboseFlag)
             {
                 Console.WriteLine("Verbose flag is on.");
-                Registry.Logging.UseConsoleLogging = true;
-                Registry.Logging.Verbose = true;
+
+
+                // TODO -- need to configure Logging here
             }
 
             return JasperRuntime.For(Registry);

@@ -132,5 +132,6 @@ namespace Jasper.Messaging.Logging
         {
             _logger.LogError(ex, message);
         }
+
     }
 }

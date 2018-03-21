@@ -133,5 +133,10 @@ namespace Jasper.Messaging.Logging
         {
             _logger.LogError(correlationId == Guid.Empty ? message : message + correlationId, ex);
         }
+
+        public static ITransportLogger Empty()
+        {
+            return new TransportLogger(new LoggerFactory());
+        }
     }
 }

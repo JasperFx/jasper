@@ -193,14 +193,6 @@ namespace Jasper
 
         private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
         {
-            if (registry.Logging.UseConsoleLogging)
-            {
-                registry.Services.AddTransient<IMessageEventSink, ConsoleMessageSink>();
-                registry.Services.AddTransient<ITransportEventSink, ConsoleTransportSink>();
-                registry.Services.AddTransient<IExceptionSink, ConsoleExceptionSink>();
-            }
-
-
             var timer = new PerfTimer();
             timer.Start("Bootstrapping");
 

@@ -21,7 +21,7 @@ namespace Jasper.Testing.Messaging.Transports.Sending
 
         public BatchedSenderTests()
         {
-            theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token, CompositeTransportLogger.Empty());
+            theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token, TransportLogger.Empty());
             theSender.Start(theSenderCallback);
 
             theBatch = new OutgoingMessageBatch(theSender.Destination, new Envelope[]

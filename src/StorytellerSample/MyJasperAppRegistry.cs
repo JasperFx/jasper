@@ -20,8 +20,6 @@ namespace StorytellerSample
             // extra logging, or maybe override service registrations
             // with stubs
             Registry.EnvironmentName = "Testing";
-
-            Registry.Logging.UseConsoleLogging = true;
         }
 
         protected override void beforeAll()

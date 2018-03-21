@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Messaging.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,10 +12,9 @@ namespace Jasper.Messaging.Tracking
         private static void validateMessageTrackerExists(this JasperRuntime runtime)
         {
             var history = runtime.Container.Model.For<MessageHistory>().Default;
-            var logger = runtime.Container.Model.For<IMessageEventSink>().Instances
-                .FirstOrDefault(x => x.ImplementationType == typeof(MessageTrackingSink));
+            var hasLogger = runtime.Container.Model.For<IMessageLogger>().Default.ImplementationType.CanBeCastTo<MessageTrackingLogger>();
 
-            if (history == null || history.Lifetime != ServiceLifetime.Singleton || logger == null)
+            if (history == null || history.Lifetime != ServiceLifetime.Singleton || !hasLogger)
             {
                 throw new InvalidOperationException($"The {nameof(MessageTrackingExtension)} extension is not applied to this application");
             }

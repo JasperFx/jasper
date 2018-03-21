@@ -1,4 +1,5 @@
 ﻿using System;
+using Baseline;
 using Jasper;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -6,6 +7,7 @@ using Jasper.Messaging.Model;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
+using Jasper.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 
@@ -26,15 +28,17 @@ namespace StorytellerSpecs.Fixtures
             _registry.Services.AddSingleton(new MessageTracker());
             _registry.Services.AddSingleton(new MessageHistory());
 
-            _registry.Services.AddTransient<IMessageEventSink, MessageTrackingSink>();
+            _registry.Services.AddTransient<IMessageLogger, StorytellerMessageLogger>();
 
-
-            _registry.Logging.LogMessageEventsWith(new StorytellerMessageSink(Context));
         }
 
         public override void TearDown()
         {
             var runtime = JasperRuntime.For(_registry);
+
+            // Goofy, but gets things hooked up here
+            runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>().Start(Context);
+
             var history = runtime.Get<MessageHistory>();
             var graph = runtime.Get<HandlerGraph>();
 

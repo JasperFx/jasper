@@ -69,11 +69,10 @@ namespace Jasper.Messaging
             IPersistence persistence,
             IChannelGraph channels,
             ISubscriptionsRepository subscriptions,
+            IMessageLogger messageLogger,
             IEnumerable<ISerializerFactory> serializers,
             IEnumerable<IMessageDeserializer> readers,
             IEnumerable<IMessageSerializer> writers,
-            IMessageEventSink[] sinks,
-            IExceptionSink[] exceptionSinks,
             ITransport[] transports,
             IEnumerable<IMissingHandler> missingHandlers,
             IEnumerable<IUriLookup> lookups)
@@ -93,7 +92,7 @@ namespace Jasper.Messaging
             Serialization = new MessagingSerializationGraph(pooling, settings, handlers, forwarders, serializers,
                 readers, writers);
 
-            Logger = new CompositeMessageLogger(sinks, exceptionSinks);
+            Logger = messageLogger;
 
             Pipeline = new HandlerPipeline(Serialization, handlers, Replies, Logger, missingHandlers,
                 this);

@@ -21,8 +21,6 @@ namespace Pinger
         {
             return JasperAgent.Run<JasperHttpRegistry>(args, _ =>
             {
-                _.Logging.UseConsoleLogging = true;
-
                 _.Transports.LightweightListenerAt(2600);
 
                 // Using static routing rules to start

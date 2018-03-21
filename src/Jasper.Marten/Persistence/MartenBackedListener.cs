@@ -76,7 +76,7 @@ namespace Jasper.Marten.Persistence
 
                 foreach (var message in messages.Where(x => x.Status == TransportConstants.Incoming))
                 {
-                    message.Callback = new MartenCallback(message, _queues, _store, _marker, _retries, _logger);
+                    message.Callback = new MartenCallback(message, _queues, _store, _marker, _retries);
                     await _queues.Enqueue(message);
                 }
 

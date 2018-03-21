@@ -19,6 +19,9 @@ namespace Jasper
         {
             this.AddLogging();
 
+            For<IMessageLogger>().Use<MessageLogger>().Singleton();
+            For<ITransportLogger>().Use<TransportLogger>().Singleton();
+
             // Will be overwritten when ASP.Net is in place too,
             // but that's okay
             this.AddSingleton<HostedServiceExecutor>();
@@ -65,13 +68,12 @@ namespace Jasper
             this.AddSingleton(s => s.GetService<IMessagingRoot>().Pipeline);
             this.AddSingleton(s => s.GetService<IMessagingRoot>().Serialization);
             this.AddTransient(s => s.GetService<IMessagingRoot>().NewContext());
-            this.AddSingleton(s => s.GetService<IMessagingRoot>().Logger);
             this.AddSingleton(s => s.GetService<IMessagingRoot>().Router);
             this.AddSingleton(s => s.GetService<IMessagingRoot>().Lookup);
             this.AddSingleton(s => s.GetService<IMessagingRoot>().ScheduledJobs);
 
 
-            ForSingletonOf<ITransportLogger>().Use<CompositeTransportLogger>();
+            ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
 
             ForSingletonOf<INodeDiscovery>().UseIfNone(new InMemoryNodeDiscovery(parent.MessagingSettings));
             ForSingletonOf<ISubscriptionsRepository>().UseIfNone(new InMemorySubscriptionsRepository());

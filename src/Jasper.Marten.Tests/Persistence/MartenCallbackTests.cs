@@ -57,10 +57,10 @@ namespace Jasper.Marten.Tests.Persistence
             }
 
 
-            var logger = CompositeTransportLogger.Empty();
+            var logger = TransportLogger.Empty();
             theRetries = new MartenRetries(theStore, marker, logger, new MessagingSettings());
 
-            theCallback = new MartenCallback(theEnvelope, Substitute.For<IWorkerQueue>(), theStore, marker, theRetries, logger);
+            theCallback = new MartenCallback(theEnvelope, Substitute.For<IWorkerQueue>(), theStore, marker, theRetries);
         }
 
         public void Dispose()

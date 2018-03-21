@@ -21,7 +21,7 @@ namespace Module1
 
             registry.Services.For<IModuleService>().Use<ServiceFromModule>();
 
-            registry.Services.For<IMessageEventSink>().Use<ModuleMessageSink>();
+            registry.Services.For<IMessageLogger>().Use<ModuleMessageSink>();
         }
 
         public static JasperRegistry Registry { get; set; }
@@ -32,7 +32,7 @@ namespace Module1
 
     }
 
-    public class ModuleMessageSink : IMessageEventSink
+    public class ModuleMessageSink : IMessageLogger
     {
         public void MovedToErrorQueue(Envelope envelope, Exception ex)
         {

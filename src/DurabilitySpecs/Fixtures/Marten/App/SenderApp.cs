@@ -21,8 +21,6 @@ namespace DurabilitySpecs.Fixtures.Marten.App
 
             Include<MartenBackedPersistence>();
 
-            Logging.UseConsoleLogging = true;
-
             Settings.Alter<MessagingSettings>(_ =>
             {
                 _.ScheduledJobPollingTime = 1.Seconds();

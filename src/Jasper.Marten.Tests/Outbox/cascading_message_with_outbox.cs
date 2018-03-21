@@ -19,7 +19,6 @@ namespace Jasper.Marten.Tests.Outbox
     {
         public OutboxSender(MessageTracker tracker)
         {
-            Logging.UseConsoleLogging = true;
 
             Handlers.DisableConventionalDiscovery().IncludeType<CascadeReceiver>();
             Services.AddSingleton(tracker);
@@ -40,7 +39,6 @@ namespace Jasper.Marten.Tests.Outbox
     {
         public OutboxReceiver()
         {
-            Logging.UseConsoleLogging = true;
 
             Handlers.DisableConventionalDiscovery().IncludeType<TriggerMessageReceiver>();
             Settings.ConfigureMarten(marten =>

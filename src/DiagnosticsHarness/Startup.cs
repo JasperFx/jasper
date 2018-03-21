@@ -99,7 +99,6 @@ namespace DiagnosticsHarness
                  Publish.Message<MiddlewareMessage>().To(uri);
                  Publish.Message<AMessageThatWillError>().To(uri);
 
-                 Logging.UseConsoleLogging = true;
 
              }
          }

@@ -20,16 +20,15 @@ namespace Jasper.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _marker;
         private readonly MartenRetries _retries;
-        private readonly ITransportEventSink _sink;
 
-        public MartenCallback(Envelope envelope, IWorkerQueue queue, IDocumentStore store, EnvelopeTables marker, MartenRetries retries, ITransportEventSink sink)
+        public MartenCallback(Envelope envelope, IWorkerQueue queue, IDocumentStore store, EnvelopeTables marker,
+            MartenRetries retries)
         {
             _envelope = envelope;
             _queue = queue;
             _store = store;
             _marker = marker;
             _retries = retries;
-            _sink = sink;
         }
 
         public Task MarkComplete()

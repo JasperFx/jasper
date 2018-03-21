@@ -54,23 +54,20 @@ namespace Jasper.Messaging
             foreach (var channel in Channels.AllKnownChannels())
                 writer.WriteLine($"Active sending agent to {channel.Uri}");
 
-            if (runtime.Registry.Logging.Verbose)
+            writer.WriteLine("Handles messages:");
+
+            var longestMessageName = Graph.Chains.Select(x => x.MessageType.FullName.Length).Max() + 2;
+
+            foreach (var chain in Graph.Chains)
             {
-                writer.WriteLine("Handles messages:");
-
-                var longestMessageName = Graph.Chains.Select(x => x.MessageType.FullName.Length).Max() + 2;
-
-                foreach (var chain in Graph.Chains)
-                {
-                    var messageName = chain.MessageType.FullName.PadLeft(longestMessageName);
-                    var handlers = chain.Handlers.Select(x => x.ToString()).Join(", ");
+                var messageName = chain.MessageType.FullName.PadLeft(longestMessageName);
+                var handlers = chain.Handlers.Select(x => x.ToString()).Join(", ");
 
 
-                    writer.WriteLine($"{messageName}: {handlers}");
-                }
-
-                writer.WriteLine();
+                writer.WriteLine($"{messageName}: {handlers}");
             }
+
+            writer.WriteLine();
         }
 
         internal Task CompileHandlers(JasperRegistry registry, PerfTimer timer)

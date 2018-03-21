@@ -25,7 +25,7 @@ namespace Jasper.Testing.Messaging
         {
             var sender = new BatchedSender("http://localhost:5005/messages".ToUri(),
                 new HttpSenderProtocol(new MessagingSettings(), new HttpTransportSettings()), CancellationToken.None,
-                CompositeTransportLogger.Empty());
+                TransportLogger.Empty());
 
 
             using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
@@ -54,7 +54,7 @@ namespace Jasper.Testing.Messaging
             using (var runtime = JasperRuntime.For(_ => { _.Transports.LightweightListenerAt(2222); }))
             {
                 var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
-                    CancellationToken.None, CompositeTransportLogger.Empty());
+                    CancellationToken.None, TransportLogger.Empty());
 
                 sender.Start(new StubSenderCallback());
 
@@ -67,7 +67,7 @@ namespace Jasper.Testing.Messaging
         {
             var sender = new BatchedSender("http://localhost:5005/messages".ToUri(),
                 new HttpSenderProtocol(new MessagingSettings(), new HttpTransportSettings()), CancellationToken.None,
-                CompositeTransportLogger.Empty());
+                TransportLogger.Empty());
 
 
             await Exception<HttpRequestException>.ShouldBeThrownByAsync(async () => { await sender.Ping(); });
@@ -77,7 +77,7 @@ namespace Jasper.Testing.Messaging
         public async Task ping_sad_path_with_tcp()
         {
             var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
-                CancellationToken.None, CompositeTransportLogger.Empty());
+                CancellationToken.None, TransportLogger.Empty());
 
             await Exception<InvalidOperationException>.ShouldBeThrownByAsync(async () => { await sender.Ping(); });
         }

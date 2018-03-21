@@ -21,7 +21,8 @@ namespace Jasper.Diagnostics
         {
             registry.Handlers.Discovery(x => x.IncludeType(typeof(DiagnosticsHandler)));
 
-            registry.Logging.LogMessageEventsWith<DiagnosticsMessageSink>();
+            // TODO -- how do we register for message and transport messages?
+
 
             registry.Services.AddTransient<IStartupFilter, AddJasperDiagnosticMiddleware>();
 

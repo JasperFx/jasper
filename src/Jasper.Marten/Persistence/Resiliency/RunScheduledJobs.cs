@@ -74,7 +74,7 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             foreach (var envelope in readyToExecute)
             {
-                envelope.Callback = new MartenCallback(envelope, _workers, _store, _marker, _retries, _logger);
+                envelope.Callback = new MartenCallback(envelope, _workers, _store, _marker, _retries);
 
                 await _workers.Enqueue(envelope);
             }

@@ -83,8 +83,6 @@ namespace Jasper.Testing.Messaging.Scheduled
 
             Transports.ListenForMessagesFrom("loopback://incoming");
 
-            Logging.UseConsoleLogging = true;
-
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<ScheduledMessageCatcher>();
         }

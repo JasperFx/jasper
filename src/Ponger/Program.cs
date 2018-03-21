@@ -13,8 +13,6 @@ namespace Ponger
         {
             return JasperAgent.Run(args, _ =>
             {
-                _.Logging.UseConsoleLogging = true;
-
                 _.Transports.LightweightListenerAt(2601);
             });
         }

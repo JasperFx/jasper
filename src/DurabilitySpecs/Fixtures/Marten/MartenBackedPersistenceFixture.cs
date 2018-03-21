@@ -14,6 +14,9 @@ using Jasper.Messaging.Logging;
 using Jasper.Storyteller.Logging;
 using Marten;
 using Marten.Util;
+using Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -28,8 +31,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         private LightweightCache<string, JasperRuntime> _senders;
 
-        private StorytellerMessageSink _messageSink;
-        private StorytellerTransportSink _transportSink;
+        private StorytellerMessageLogger _messageLogger;
         private SenderLatchDetected _senderWatcher;
 
         public MartenBackedPersistenceFixture()
@@ -39,13 +41,9 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public override void SetUp()
         {
-            _messageSink = new StorytellerMessageSink();
-            _transportSink = new StorytellerTransportSink();
+            _messageLogger.Start(Context);
 
-            _messageSink.Start(Context);
-            _transportSink.Start(Context, _messageSink.Errors);
-
-            _senderWatcher = new SenderLatchDetected();
+            _senderWatcher = new SenderLatchDetected(new LoggerFactory());
 
             _receiverStore = DocumentStore.For(_ =>
             {
@@ -78,8 +76,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _receivers = new LightweightCache<string, JasperRuntime>(key =>
             {
                 var registry = new ReceiverApp();
-                registry.Logging.LogMessageEventsWith(_messageSink);
-                registry.Logging.LogTransportEventsWith(_transportSink);
+                registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
                 return JasperRuntime.For(registry);
             });
@@ -87,10 +84,9 @@ namespace DurabilitySpecs.Fixtures.Marten
             _senders = new LightweightCache<string, JasperRuntime>(key =>
             {
                 var registry = new SenderApp();
-                registry.Logging.LogMessageEventsWith(_messageSink);
-                registry.Logging.LogTransportEventsWith(_transportSink);
+                registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
-                registry.Logging.LogTransportEventsWith(_senderWatcher);
+                registry.Services.For<ITransportLogger>().Use(_senderWatcher);
 
                 return JasperRuntime.For(registry);
             });
@@ -106,7 +102,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _senders.Each(x => x.Dispose());
             _senders.ClearAll();
 
-            _messageSink.BuildReports().Each(x => Context.Reporting.Log(x));
+            _messageLogger.BuildReports().Each(x => Context.Reporting.Log(x));
 
             _receiverStore.Dispose();
             _receiverStore = null;
@@ -224,11 +220,15 @@ namespace DurabilitySpecs.Fixtures.Marten
     }
 
 
-    public class SenderLatchDetected : TransportSinkBase
+    public class SenderLatchDetected : TransportLogger
     {
         public TaskCompletionSource<bool> Waiter = new TaskCompletionSource<bool>();
 
         public Task<bool> Received => Waiter.Task;
+
+        public SenderLatchDetected(ILoggerFactory factory) : base(factory)
+        {
+        }
 
         public override void CircuitResumed(Uri destination)
         {
@@ -236,6 +236,8 @@ namespace DurabilitySpecs.Fixtures.Marten
             {
                 Waiter.TrySetResult(true);
             }
+
+            base.CircuitResumed(destination);
         }
 
         public override void CircuitBroken(Uri destination)
@@ -244,6 +246,8 @@ namespace DurabilitySpecs.Fixtures.Marten
             {
                 Reset();
             }
+
+            base.CircuitBroken(destination);
         }
 
         public void Reset()

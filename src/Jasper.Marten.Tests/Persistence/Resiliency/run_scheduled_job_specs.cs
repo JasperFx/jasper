@@ -22,7 +22,7 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
 
         public run_scheduled_job_specs()
         {
-            var logger = CompositeTransportLogger.Empty();
+            var logger = TransportLogger.Empty();
             var envelopeTables = new EnvelopeTables(theSettings, new StoreOptions());
             var retries = new MartenRetries(theStore, envelopeTables, logger, theSettings);
 
