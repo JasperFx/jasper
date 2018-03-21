@@ -21,6 +21,7 @@ namespace Jasper.Storyteller.Logging
 
         public StorytellerMessageLogger(MessageHistory history, ILoggerFactory factory) : base(history, factory)
         {
+            Errors = new BusErrors();
         }
 
         public void Start(ISpecContext context)
@@ -51,6 +52,7 @@ namespace Jasper.Storyteller.Logging
 
         private void trace(Envelope envelope, string message)
         {
+            if (_context == null) return;
             _records.Add(new EnvelopeRecord(envelope, _context.Timings.Duration, message, ServiceName));
         }
 

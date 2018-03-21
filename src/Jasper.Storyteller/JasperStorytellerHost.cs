@@ -128,6 +128,7 @@ namespace Jasper.Storyteller
             _warmup = Task.Factory.StartNew(() =>
             {
                 _runtime = JasperRuntime.For(Registry);
+                _messageLogger = _runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>();
                 _messageLogger.ServiceName = _runtime.ServiceName;
 
                 _messageLogger = _runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>();
