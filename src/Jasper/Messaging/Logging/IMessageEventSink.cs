@@ -4,7 +4,6 @@ using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Messaging.Logging
 {
-
     public interface IMessageLogger : IMessageEventSink, IExceptionSink
     {
 

@@ -5,6 +5,8 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Logging
 {
+
+
     public class ConsoleMessageSink : IMessageEventSink
     {
         public void Sent(Envelope envelope)

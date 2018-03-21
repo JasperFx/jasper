@@ -395,6 +395,12 @@ namespace Jasper.Messaging.Runtime
 
             return Route.Channel.QuickSend(this);
         }
+
+
+        internal string GetMessageTypeName()
+        {
+            return Message?.GetType().Name ?? MessageType;
+        }
     }
 
 }
