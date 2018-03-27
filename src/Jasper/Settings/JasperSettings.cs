@@ -108,15 +108,12 @@ namespace Jasper.Settings
         }
 
 
-        // TODO -- this will need to have the configuration *pushed* into it from now onw
-        internal void Bootstrap()
+        internal void Bootstrap(IConfigurationRoot config)
         {
-            // Have ISettingsProvider delegate to JasperSettings
-
-            var config = _parent.Configuration.Build();
-
             foreach (var configAction in _configActions)
+            {
                 configAction(config);
+            }
 
             _parent.Services.AddSingleton(config);
             _parent.Services.AddSingleton<IConfiguration>(config);

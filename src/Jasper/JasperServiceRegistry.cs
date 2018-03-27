@@ -20,6 +20,7 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper
 {
+
     internal class JasperServiceRegistry : ServiceRegistry
     {
         public JasperServiceRegistry(JasperRegistry parent)

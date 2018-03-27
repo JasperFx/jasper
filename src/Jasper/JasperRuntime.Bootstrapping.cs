@@ -46,17 +46,24 @@ namespace Jasper
             var timer = new PerfTimer();
             timer.Start("Bootstrapping");
 
-            timer.Record("Finding and Applying Extensions", () => { applyExtensions(registry); });
+            timer.Record("Finding and Applying Extensions", () =>
+            {
+                applyExtensions(registry);
+            });
 
-            timer.Record("Bootstrapping Settings", () => registry.Settings.Bootstrap());
+            var buildingServices = Task.Factory.StartNew(() =>
+            {
+                return timer.Record("Combining Services and Building Settings", registry.CompileAspNetConfiguration);
+            });
+
 
 
             var handlerCompilation = registry.Messaging.CompileHandlers(registry, timer);
 
 
-            var services = registry.CombinedServices();
             var runtime = new JasperRuntime(registry, timer);
 
+            var services = await buildingServices;
             services.AddSingleton(runtime);
 
 

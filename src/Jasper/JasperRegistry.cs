@@ -76,6 +76,12 @@ namespace Jasper
         }
 
         /// <summary>
+        ///     Use to load and apply configuration sources within the application
+        /// </summary>
+        public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
+
+
+        /// <summary>
         /// Configure how HTTP routes are discovered and handled
         /// </summary>
         public HttpSettings HttpRoutes { get; }
@@ -85,11 +91,6 @@ namespace Jasper
         /// </summary>
         public IWebHostBuilder Hosting { get; }
 
-
-        /// <summary>
-        ///     Use to load and apply configuration sources within the application
-        /// </summary>
-        public ConfigurationBuilder Configuration { get; } = new ConfigurationBuilder();
 
         /// <summary>
         ///     Configure or extend the BlueMilk code generation
@@ -144,26 +145,6 @@ namespace Jasper
         }
 
 
-
-        internal ServiceRegistry CombinedServices()
-        {
-            _baseServices.Insert(0, ServiceDescriptor.Singleton<IHostedService, MessagingActivator>());
-
-            RegisterAspNetCoreServices();
-            var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
-
-            var combined = new ServiceRegistry();
-            combined.AddRange(all);
-
-            combined.For<IPersistence>().UseIfNone<NulloPersistence>();
-
-            return combined;
-        }
-
-        protected internal virtual Task BuildFeatures(JasperRuntime runtime, PerfTimer timer)
-        {
-            return Task.CompletedTask;
-        }
 
         protected internal void Describe(JasperRuntime runtime, TextWriter writer)
         {

@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Messaging;
+using Jasper.Messaging.Transports;
+using Lamar;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper
@@ -111,8 +116,11 @@ namespace Jasper
             return this;
         }
 
-        internal void RegisterAspNetCoreServices()
+        internal ServiceRegistry CompileAspNetConfiguration()
         {
+            _baseServices.Insert(0, ServiceDescriptor.Singleton<IHostedService, MessagingActivator>());
+
+
             // TODO -- partially bail out of here if this is bootstrapped by WebHostBuilder
 
             // Add services
@@ -132,7 +140,6 @@ namespace Jasper
             Services.AddSingleton(_hostingEnvironment);
             Services.AddSingleton(context);
 
-            // Do this first? Maybe copy the JasperRegistry.Configuration around
             var builder = Configuration
                 .SetBasePath(_hostingEnvironment.ContentRootPath)
                 .AddInMemoryCollection(EnvironmentConfiguration.AsEnumerable());
@@ -145,6 +152,9 @@ namespace Jasper
             var configuration = builder.Build();
             Services.AddSingleton<IConfiguration>(configuration);
             context.Configuration = configuration;
+
+            // TODO -- have this push in HostingEnvironment too
+            Settings.Bootstrap(configuration);
 
             var listener = new DiagnosticListener("Microsoft.AspNetCore");
             Services.AddSingleton<DiagnosticListener>(listener);
@@ -166,6 +176,15 @@ namespace Jasper
             {
                 configureServices(context, Services);
             }
+
+            var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
+
+            var combined = new ServiceRegistry();
+            combined.AddRange(all);
+
+            combined.For<IPersistence>().UseIfNone<NulloPersistence>();
+
+            return combined;
         }
 
         private string ResolveContentRootPath(string contentRootPath, string basePath)
