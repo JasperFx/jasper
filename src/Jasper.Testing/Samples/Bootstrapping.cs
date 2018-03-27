@@ -156,15 +156,12 @@ namespace Bootstrapping.Configuration2
     // ENDSAMPLE
 
     // SAMPLE: EnvironmentNameRegistry
-    public class EnvironmentNameRegistry : JasperHttpRegistry
+    public class EnvironmentNameRegistry : JasperRegistry
     {
         public EnvironmentNameRegistry()
         {
-            // Override the Environment
-            EnvironmentName = "Production";
-
             // which is just a shortcut for:
-            Http.UseEnvironment("Production");
+            Hosting.UseEnvironment("Production");
         }
     }
 

@@ -15,22 +15,22 @@ namespace Jasper.Storyteller
 {
     public static class JasperStorytellerHost
     {
-        public static void Run<T>(string[] args) where T : JasperHttpRegistry, new()
+        public static void Run<T>(string[] args) where T : JasperRegistry, new()
         {
             StorytellerAgent.Run(args, For<T>());
         }
 
-        public static JasperStorytellerHost<T> For<T>() where T : JasperHttpRegistry, new()
+        public static JasperStorytellerHost<T> For<T>() where T : JasperRegistry, new()
         {
             return new JasperStorytellerHost<T>(new T());
         }
 
-        public static JasperStorytellerHost<JasperHttpRegistry> Basic(Action<JasperHttpRegistry> configure = null)
+        public static JasperStorytellerHost<JasperRegistry> Basic(Action<JasperRegistry> configure = null)
         {
-            var jasperRegistry = new JasperHttpRegistry();
+            var jasperRegistry = new JasperRegistry();
             configure?.Invoke(jasperRegistry);
 
-            return new JasperStorytellerHost<JasperHttpRegistry>(jasperRegistry);
+            return new JasperStorytellerHost<JasperRegistry>(jasperRegistry);
         }
     }
 

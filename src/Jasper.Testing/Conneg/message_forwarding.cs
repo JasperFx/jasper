@@ -14,7 +14,6 @@ using Xunit;
 
 namespace Jasper.Testing.Conneg
 {
-    [Collection("integration")]
     public class message_forwarding
     {
         [Fact]

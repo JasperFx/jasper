@@ -22,28 +22,6 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Messaging
 {
-    public interface IMessagingRoot
-    {
-        IScheduledJobProcessor ScheduledJobs { get; }
-        IMessageRouter Router { get; }
-        UriAliasLookup Lookup { get; }
-        IWorkerQueue Workers { get; }
-        IHandlerPipeline Pipeline { get; }
-        IMessageLogger Logger { get; }
-        MessagingSerializationGraph Serialization { get; }
-        IReplyWatcher Replies { get; }
-        IChannelGraph Channels { get; }
-        MessagingSettings Settings { get; }
-        IPersistence Persistence { get; }
-        ITransport[] Transports { get; }
-
-        IMessageContext NewContext();
-        IMessageContext ContextFor(Envelope envelope);
-
-        Task Activate(LocalWorkerSender localWorker, CapabilityGraph capabilities, JasperRuntime runtime,
-            GenerationRules generation, PerfTimer timer);
-    }
-
     public class MessagingRoot : IDisposable, IMessagingRoot
     {
         // bouncing through this makes the mock root easier

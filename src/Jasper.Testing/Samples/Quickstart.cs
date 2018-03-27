@@ -17,7 +17,7 @@ namespace Jasper.Testing.Samples
 
 
     // SAMPLE: ServiceBusApp
-    public class ServiceBusApp : JasperHttpRegistry
+    public class ServiceBusApp : JasperRegistry
     {
         public ServiceBusApp()
         {
@@ -60,11 +60,11 @@ namespace Jasper.Testing.Samples
 namespace Jasper.Testing.Samples2
 {
     // SAMPLE: MyAppRegistry2
-    public class MyAppRegistry : JasperHttpRegistry
+    public class MyAppRegistry : JasperRegistry
     {
         public MyAppRegistry()
         {
-            Http.UseKestrel();
+            Hosting.UseKestrel();
         }
     }
     // ENDSAMPLE

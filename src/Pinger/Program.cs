@@ -19,7 +19,7 @@ namespace Pinger
     {
         static int Main(string[] args)
         {
-            return JasperAgent.Run<JasperHttpRegistry>(args, _ =>
+            return JasperAgent.Run<JasperRegistry>(args, _ =>
             {
                 _.Transports.LightweightListenerAt(2600);
 
@@ -28,7 +28,7 @@ namespace Pinger
 
                 _.Services.AddSingleton<IHostedService, PingSender>();
 
-                _.Http
+                _.Hosting
                     .UseUrls("http://localhost:5000")
                     .UseKestrel();
             });

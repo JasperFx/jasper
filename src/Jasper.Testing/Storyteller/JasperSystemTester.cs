@@ -10,7 +10,6 @@ using Xunit;
 
 namespace Jasper.Testing.Storyteller
 {
-    [Collection("integration")]
     public class JasperSystemTester
     {
         [Fact]
@@ -118,7 +117,7 @@ namespace Jasper.Testing.Storyteller
 
     }
 
-    public class FakeStorytellerSystem : JasperStorytellerHost<JasperHttpRegistry>
+    public class FakeStorytellerSystem : JasperStorytellerHost<JasperRegistry>
     {
         public readonly DisposableGuy DisposableGuy = new DisposableGuy();
 

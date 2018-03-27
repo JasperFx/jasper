@@ -17,7 +17,12 @@ namespace Jasper.Http.Testing.Routing
 
         public route_determination_and_usage_with_arguments()
         {
-            _runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
+
+        }
+
+        private async Task withApp()
+        {
+            _runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Http.Actions.IncludeType<RouteEndpoints>();
@@ -36,13 +41,15 @@ namespace Jasper.Http.Testing.Routing
 
 
         [Fact]
-        public Task int_argument()
+        public async Task int_argument()
         {
+            await withApp();
+
             var route = routeFor(x => x.get_int_number(5));
             route.HttpMethod.ShouldBe("GET");
             route.Pattern.ShouldBe("int/:number");
 
-            return _runtime.Scenario(_ =>
+            await _runtime.Scenario(_ =>
             {
                 _.Get.Url("/int/5");
                 _.ContentShouldBe("5");
@@ -50,9 +57,11 @@ namespace Jasper.Http.Testing.Routing
         }
 
         [Fact]
-        public Task long_argument()
+        public async Task long_argument()
         {
-            return _runtime.Scenario(_ =>
+            await withApp();
+
+            await _runtime.Scenario(_ =>
             {
                 _.Get.Url("/long/11");
                 _.ContentShouldBe("11");
@@ -60,9 +69,11 @@ namespace Jasper.Http.Testing.Routing
         }
 
         [Fact]
-        public Task double_argument()
+        public async Task double_argument()
         {
-            return _runtime.Scenario(_ =>
+            await withApp();
+
+            await _runtime.Scenario(_ =>
             {
                 _.Get.Url("/double/1.23");
                 _.ContentShouldBe("1.23");
@@ -70,9 +81,11 @@ namespace Jasper.Http.Testing.Routing
         }
 
         [Fact]
-        public Task char_arguments()
+        public async Task char_arguments()
         {
-            return _runtime.Scenario(_ =>
+            await withApp();
+
+            await _runtime.Scenario(_ =>
             {
                 _.Get.Url("/letters/f/to/k");
                 _.ContentShouldBe("f-k");
@@ -82,6 +95,8 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task bool_arguments()
         {
+            await withApp();
+
             await _runtime.Scenario(_ =>
             {
                 _.Get.Url("/bool/true");
@@ -96,11 +111,13 @@ namespace Jasper.Http.Testing.Routing
         }
 
         [Fact]
-        public Task guid_argument()
+        public async Task guid_argument()
         {
+            await withApp();
+
             var id = Guid.NewGuid().ToString();
 
-            return _runtime.Scenario(_ =>
+            await _runtime.Scenario(_ =>
             {
                 _.Get.Url("/guid/" + id);
                 _.ContentShouldBe($"*{id}*");

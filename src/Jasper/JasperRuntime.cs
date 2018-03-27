@@ -24,24 +24,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper
 {
-    public class JasperRuntime : IDisposable
+    public partial class JasperRuntime : IDisposable
     {
         private readonly Lazy<IMessageContext> _bus;
         private bool isDisposing;
 
-        private JasperRuntime(JasperRegistry registry, IServiceCollection services, PerfTimer timer)
+
+
+        private JasperRuntime(JasperRegistry registry, PerfTimer timer)
         {
             Bootstrapping = timer;
 
-            services.AddSingleton(this);
-
-            timer.Record("new Container()", () =>
-            {
-                Container = new Container(services, timer)
-                {
-                    DisposalLock = DisposalLock.Ignore
-                };
-            });
 
 
             registry.CodeGeneration.Sources.Add(new NowTimeVariableSource());
@@ -64,9 +57,9 @@ namespace Jasper
         public Assembly ApplicationAssembly => Registry.ApplicationAssembly;
 
         /// <summary>
-        ///     The underlying BlueMilk container
+        /// The underlying Lamar container
         /// </summary>
-        public Container Container { get; private set; }
+        public IContainer Container { get; private set; }
 
         public bool IsDisposed { get; private set; }
 
@@ -76,9 +69,7 @@ namespace Jasper
         /// </summary>
         public ServiceCapabilities Capabilities { get; internal set; }
 
-        public string[] HttpAddresses => Container.TryGetInstance<IServer>()?.Features?.Get<IServerAddressesFeature>()
-                                             ?.Addresses?.ToArray() ??
-                                         Registry.HttpAddresses?.Split(';').ToArray() ?? new string[0];
+        public string[] HttpAddresses { get; private set; } = new string[0];
 
         /// <summary>
         ///     Shortcut to retrieve an instance of the IServiceBus interface for the application
@@ -95,32 +86,7 @@ namespace Jasper
         /// </summary>
         public IServiceNode Node { get; internal set; }
 
-        public void Dispose()
-        {
-            // Because StackOverflowException's are a drag
-            if (IsDisposed || isDisposing) return;
 
-            try
-            {
-                Get<INodeDiscovery>().UnregisterLocalNode().Wait(3.Seconds());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Unable to un-register the running node");
-                Get<IMessageLogger>().LogException(e);
-            }
-
-            Registry.Stop(this).Wait(10.Seconds());
-
-            Get<MessagingSettings>().StopAll();
-
-            isDisposing = true;
-
-            Container.DisposalLock = DisposalLock.Unlocked;
-            Container.Dispose();
-
-            IsDisposed = true;
-        }
 
         /// <summary>
         ///     Creates a Jasper application for the current executing assembly
@@ -129,7 +95,17 @@ namespace Jasper
         /// <returns></returns>
         public static JasperRuntime Basic()
         {
-            return bootstrap(new JasperRegistry()).GetAwaiter().GetResult();
+            return BasicAsync().GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        ///     Creates a Jasper application for the current executing assembly
+        ///     using all the default Jasper configurations
+        /// </summary>
+        /// <returns></returns>
+        public static Task<JasperRuntime> BasicAsync()
+        {
+            return bootstrap(new JasperRegistry());
         }
 
         /// <summary>
@@ -139,7 +115,17 @@ namespace Jasper
         /// <returns></returns>
         public static JasperRuntime For(JasperRegistry registry)
         {
-            return bootstrap(registry).GetAwaiter().GetResult();
+            return ForAsync(registry).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        ///     Builds and initializes a JasperRuntime for the registry
+        /// </summary>
+        /// <param name="registry"></param>
+        /// <returns></returns>
+        public static Task<JasperRuntime> ForAsync(JasperRegistry registry)
+        {
+            return bootstrap(registry);
         }
 
         /// <summary>
@@ -151,10 +137,22 @@ namespace Jasper
         /// <returns></returns>
         public static JasperRuntime For<T>(Action<T> configure = null) where T : JasperRegistry, new()
         {
+            return ForAsync<T>(configure).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        ///     Builds and initializes a JasperRuntime for the JasperRegistry of
+        ///     type T
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <typeparam name="T">The type of your JasperRegistry</typeparam>
+        /// <returns></returns>
+        public static Task<JasperRuntime> ForAsync<T>(Action<T> configure = null) where T : JasperRegistry, new()
+        {
             var registry = new T();
             configure?.Invoke(registry);
 
-            return bootstrap(registry).GetAwaiter().GetResult();
+            return bootstrap(registry);
         }
 
         /// <summary>
@@ -164,10 +162,20 @@ namespace Jasper
         /// <returns></returns>
         public static JasperRuntime For(Action<JasperRegistry> configure)
         {
+            return ForAsync(configure).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        ///     Builds and initializes a JasperRuntime for the configured JasperRegistry
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static Task<JasperRuntime> ForAsync(Action<JasperRegistry> configure)
+        {
             var registry = new JasperRegistry();
             configure?.Invoke(registry);
 
-            return bootstrap(registry).GetAwaiter().GetResult();
+            return bootstrap(registry);
         }
 
         /// <summary>
@@ -188,97 +196,6 @@ namespace Jasper
         public object Get(Type type)
         {
             return Container.GetInstance(type);
-        }
-
-
-        private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
-        {
-            var timer = new PerfTimer();
-            timer.Start("Bootstrapping");
-
-            timer.Record("Finding and Applying Extensions", () => { applyExtensions(registry); });
-
-            timer.Record("Bootstrapping Settings", () => registry.Settings.Bootstrap());
-
-
-            var handlerCompilation = registry.Messaging.CompileHandlers(registry, timer);
-
-
-            var services = registry.CombinedServices();
-
-            var runtime = new JasperRuntime(registry, services, timer);
-            var featureBuilding = registry.BuildFeatures(runtime, timer);
-
-            await handlerCompilation;
-            await registry.Messaging.Activate(runtime, registry.CodeGeneration, timer);
-
-            await featureBuilding;
-
-            await registry.Startup(runtime);
-
-            // Run environment checks
-            timer.Record("Environment Checks", () =>
-            {
-                var recorder = EnvironmentChecker.ExecuteAll(runtime);
-                if (runtime.Get<MessagingSettings>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
-            });
-
-            timer.MarkStart("Register Node");
-            await registerRunningNode(runtime, registry);
-            timer.MarkFinished("Register Node");
-
-            timer.Stop();
-
-            return runtime;
-        }
-
-        private static async Task registerRunningNode(JasperRuntime runtime, JasperRegistry registry)
-        {
-            // TODO -- get a helper for this, it's ugly
-            var settings = runtime.Get<MessagingSettings>();
-            var nodes = runtime.Get<INodeDiscovery>();
-
-            try
-            {
-                var local = new ServiceNode(settings);
-                registry.AlterNode(local);
-
-
-                local.HttpEndpoints = runtime.HttpAddresses?.Select(x => x.ToUri().ToMachineUri()).Distinct()
-                    .ToArray();
-
-                runtime.Node = local;
-
-                await nodes.Register(local);
-            }
-            catch (Exception e)
-            {
-                runtime.Get<IMessageLogger>()
-                    .LogException(e, message: "Failure when trying to register the node with " + nodes);
-            }
-        }
-
-        private static void applyExtensions(JasperRegistry registry)
-        {
-            var assemblies = FindExtensionAssemblies();
-
-            if (!assemblies.Any()) return;
-
-            var extensions = assemblies
-                .Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
-                .Where(x => x != null)
-                .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
-                .ToArray();
-
-            registry.ApplyExtensions(extensions);
-        }
-
-        public static Assembly[] FindExtensionAssemblies()
-        {
-            return AssemblyFinder
-                .FindAssemblies(txt => { }, false)
-                .Where(a => a.HasAttribute<JasperModuleAttribute>())
-                .ToArray();
         }
 
         /// <summary>

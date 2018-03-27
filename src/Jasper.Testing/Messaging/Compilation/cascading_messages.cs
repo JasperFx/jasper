@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
@@ -7,9 +8,9 @@ namespace Jasper.Testing.Messaging.Compilation
     public class source_code_attachment_to_handler_chains : IntegrationContext
     {
         [Fact]
-        public void should_have_code_on_each_chain()
+        public async Task should_have_code_on_each_chain()
         {
-            withAllDefaults();
+            await withAllDefaults();
 
             Handlers.Chains.Any().ShouldBeTrue();
 

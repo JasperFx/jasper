@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Lamar.Codegen;
@@ -12,9 +13,9 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     public class applying_handler_policies : IntegrationContext
     {
         [Fact]
-        public void can_apply_a_wrapper_to_all_chains()
+        public async Task can_apply_a_wrapper_to_all_chains()
         {
-            with(_ => _.Handlers.GlobalPolicy<WrapWithSimple>());
+            await with(_ => _.Handlers.GlobalPolicy<WrapWithSimple>());
 
             chainFor<MovieAdded>().Middleware.OfType<SimpleWrapper>().Any().ShouldBeTrue();
         }

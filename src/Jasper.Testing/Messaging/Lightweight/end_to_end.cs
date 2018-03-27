@@ -21,17 +21,16 @@ namespace Jasper.Testing.Messaging.Lightweight
     {
         private static int port = 2114;
 
-        private readonly JasperRuntime theSender;
+        private JasperRuntime theSender;
         private readonly Uri theAddress = $"tcp://localhost:{++port}/incoming".ToUri();
         private readonly MessageTracker theTracker = new MessageTracker();
-        private readonly JasperRuntime theReceiver;
+        private JasperRuntime theReceiver;
         private FakeScheduledJobProcessor scheduledJobs;
 
-        public end_to_end()
+
+        private async Task getReady()
         {
-
-
-            theSender = JasperRuntime.For(_ =>
+            theSender = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.AddSingleton(theTracker);
@@ -53,7 +52,7 @@ namespace Jasper.Testing.Messaging.Lightweight
 
             receiver.Services.For<MessageTracker>().Use(theTracker);
 
-            theReceiver = JasperRuntime.For(receiver);
+            theReceiver = await JasperRuntime.ForAsync(receiver);
 
         }
 
@@ -66,6 +65,8 @@ namespace Jasper.Testing.Messaging.Lightweight
         [Fact]
         public async Task can_send_from_one_node_to_another()
         {
+            await getReady();
+
             var waiter = theTracker.WaitFor<Message1>();
 
             await theSender.Messaging.Send(theAddress, new Message1());
@@ -78,6 +79,8 @@ namespace Jasper.Testing.Messaging.Lightweight
         [Fact]
         public async Task can_apply_requeue_mechanics()
         {
+            await getReady();
+
             var waiter = theTracker.WaitFor<Message2>();
 
             await theSender.Messaging.Send(theAddress, new Message2());
@@ -90,6 +93,8 @@ namespace Jasper.Testing.Messaging.Lightweight
         [Fact]
         public async Task tags_the_envelope_with_the_source()
         {
+            await getReady();
+
             var waiter = theTracker.WaitFor<Message2>();
 
             await theSender.Messaging.Send(theAddress, new Message2());

@@ -3,68 +3,79 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Scheduled
 {
-    [Collection("integration")]
     public class end_to_end_with_in_memory : IDisposable
     {
         private JasperRuntime theRuntime;
+        private ScheduledMessageReceiver theReceiver;
 
         public end_to_end_with_in_memory()
         {
-            ScheduledMessageCatcher.Reset();
 
-            theRuntime = JasperRuntime.For<ScheduledMessageApp>();
+        }
+
+        private async Task withApp()
+        {
+            var registry = new ScheduledMessageApp();
+            theReceiver = registry.Receiver;
+
+            theRuntime = await JasperRuntime.ForAsync(registry);
         }
 
         [Fact] //-- too stupidly unreliable for CI. REplace w/ ST
-        public void run_scheduled_job_locally()
+        public async Task run_scheduled_job_locally()
         {
+            await withApp();
+
             var message1 = new ScheduledMessage{Id = 1};
             var message2 = new ScheduledMessage{Id = 2};
             var message3 = new ScheduledMessage{Id = 3};
 
 
-            theRuntime.Messaging.Schedule(message1, 2.Hours());
-            theRuntime.Messaging.Schedule(message2, 5.Seconds());
+            await theRuntime.Messaging.Schedule(message1, 2.Hours());
+            await theRuntime.Messaging.Schedule(message2, 5.Seconds());
 
-            theRuntime.Messaging.Schedule(message3, 2.Hours());
-
-
+            await theRuntime.Messaging.Schedule(message3, 2.Hours());
 
 
-            ScheduledMessageCatcher.ReceivedMessages.Count.ShouldBe(0);
 
-            ScheduledMessageCatcher.Received.Wait(30.Seconds());
 
-            ScheduledMessageCatcher.ReceivedMessages.Single()
+            theReceiver.ReceivedMessages.Count.ShouldBe(0);
+
+            theReceiver.Received.Wait(30.Seconds());
+
+            theReceiver.ReceivedMessages.Single()
                 .Id.ShouldBe(2);
         }
 
         [Fact]
-        public void send_in_a_delayed_message()
+        public async Task send_in_a_delayed_message()
         {
+            await withApp();
+
             var message1 = new ScheduledMessage{Id = 1};
             var message2 = new ScheduledMessage{Id = 2};
             var message3 = new ScheduledMessage{Id = 3};
 
 
-            theRuntime.Messaging.ScheduleSend(message1, 2.Hours());
-            theRuntime.Messaging.ScheduleSend(message2, 5.Seconds());
+            await theRuntime.Messaging.ScheduleSend(message1, 2.Hours());
+            await theRuntime.Messaging.ScheduleSend(message2, 5.Seconds());
 
-            theRuntime.Messaging.ScheduleSend(message3, 2.Hours());
-
-
+            await theRuntime.Messaging.ScheduleSend(message3, 2.Hours());
 
 
-            ScheduledMessageCatcher.ReceivedMessages.Count.ShouldBe(0);
 
-            ScheduledMessageCatcher.Received.Wait(10.Seconds());
 
-            ScheduledMessageCatcher.ReceivedMessages.Single()
+            theReceiver.ReceivedMessages.Count.ShouldBe(0);
+
+            await theReceiver.Received;
+
+            theReceiver.ReceivedMessages.Single()
                 .Id.ShouldBe(2);
         }
 
@@ -76,8 +87,12 @@ namespace Jasper.Testing.Messaging.Scheduled
 
     public class ScheduledMessageApp : JasperRegistry
     {
+        public readonly ScheduledMessageReceiver Receiver = new ScheduledMessageReceiver();
+
         public ScheduledMessageApp() : base()
         {
+            Services.AddSingleton(Receiver);
+
             Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
                 .To("loopback://incoming");
 
@@ -93,26 +108,34 @@ namespace Jasper.Testing.Messaging.Scheduled
         public int Id { get; set; }
     }
 
+
+    public class ScheduledMessageReceiver
+    {
+        public readonly IList<ScheduledMessage> ReceivedMessages = new List<ScheduledMessage>();
+
+        public readonly TaskCompletionSource<ScheduledMessage> Source = new TaskCompletionSource<ScheduledMessage>();
+
+        public Task<ScheduledMessage> Received => Source.Task;
+    }
+
     public class ScheduledMessageCatcher
     {
-        public static readonly IList<ScheduledMessage> ReceivedMessages = new List<ScheduledMessage>();
+        private readonly ScheduledMessageReceiver _receiver;
 
-        private static TaskCompletionSource<ScheduledMessage> _source;
+        public ScheduledMessageCatcher(ScheduledMessageReceiver receiver)
+        {
+            _receiver = receiver;
+        }
+
 
         public void Consume(ScheduledMessage message)
         {
-            _source?.SetResult(message);
+            _receiver.Source.SetResult(message);
 
-            ReceivedMessages.Add(message);
+            _receiver.ReceivedMessages.Add(message);
         }
 
-        public static void Reset()
-        {
-            _source = new TaskCompletionSource<ScheduledMessage>();
-            Received = _source.Task;
-            ReceivedMessages.Clear();
-        }
 
-        public static Task<ScheduledMessage> Received { get; private set; }
+
     }
 }

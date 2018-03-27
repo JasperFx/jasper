@@ -11,11 +11,11 @@ namespace Jasper.Testing.Samples
     }
 
     // SAMPLE: AppWithMiddleware
-    public class AppWithMiddleware : JasperHttpRegistry
+    public class AppWithMiddleware : JasperRegistry
     {
         public AppWithMiddleware()
         {
-            Http.Configure(app =>
+            Hosting.Configure(app =>
             {
                 app.UseMiddleware<CustomMiddleware>();
 

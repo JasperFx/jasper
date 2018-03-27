@@ -36,13 +36,6 @@ namespace Jasper.Messaging
             Handling = new HandlerConfiguration(Settings);
         }
 
-        internal Task Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
-        {
-            var activator = timer.Record("Building ServiceBusActivator", runtime.Get<IMessagingRoot>);
-
-            return activator.Activate(LocalWorker, Capabilities, runtime, generation, timer);
-        }
-
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
             var transports = runtime.Get<ITransport[]>()
@@ -78,7 +71,7 @@ namespace Jasper.Messaging
                 {
                     var calls = t.Result;
 
-                    Graph.AddRange(calls);
+                    if (calls != null && calls.Any()) Graph.AddRange(calls);
                     Graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged())));
 
                     Graph.Group();

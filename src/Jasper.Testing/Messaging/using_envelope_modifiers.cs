@@ -2,21 +2,28 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
+using Jasper.Testing.Messaging.Lightweight.Protocol;
 using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
+    [Collection("integration")] // gotta get rid of the static EnvelopeCatchingHandler first
     public class using_envelope_modifiers : IntegrationContext
     {
-        public using_envelope_modifiers()
+        [Fact]
+        public async Task applies_modifiers_per_channel()
         {
-            EnvelopeCatchingHandler.Received.Clear();
+            var receiver = new EnvelopeReceiver();
 
-            with(_ =>
+
+            await with(_ =>
             {
+                _.Services.AddSingleton(receiver);
+
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<EnvelopeCatchingHandler>();
 
@@ -26,16 +33,11 @@ namespace Jasper.Testing.Messaging
             });
 
 
-        }
-
-        [Fact]
-        public async Task applies_modifiers_per_channel()
-        {
             await Bus.SendAndWait(new Message1());
             await Bus.SendAndWait(new Message2());
 
-            var envelopeForChannelOne = EnvelopeCatchingHandler.Received.First(x => x.MessageType == typeof(Message1).ToMessageAlias());
-            var envelopeForChannelTwo = EnvelopeCatchingHandler.Received.First(x => x.MessageType == typeof(Message2).ToMessageAlias());
+            var envelopeForChannelOne = receiver.Received.First(x => x.MessageType == typeof(Message1).ToMessageAlias());
+            var envelopeForChannelTwo = receiver.Received.First(x => x.MessageType == typeof(Message2).ToMessageAlias());
 
             envelopeForChannelOne.Headers["foo"].ShouldBe("yes");
             envelopeForChannelOne.Headers["bar"].ShouldBe("yes");
@@ -45,18 +47,28 @@ namespace Jasper.Testing.Messaging
         }
     }
 
+    public class EnvelopeReceiver
+    {
+        public readonly IList<Envelope> Received = new List<Envelope>();
+    }
+
     public class EnvelopeCatchingHandler
     {
-        public readonly static IList<Envelope> Received = new List<Envelope>();
+        private EnvelopeReceiver _receiver;
+
+        public EnvelopeCatchingHandler(EnvelopeReceiver receiver)
+        {
+            _receiver = receiver;
+        }
 
         public void Handle(Message1 message, Envelope envelope)
         {
-            Received.Add(envelope);
+            _receiver.Received.Add(envelope);
         }
 
         public void Handle(Message2 message, Envelope envelope)
         {
-            Received.Add(envelope);
+            _receiver.Received.Add(envelope);
         }
     }
 

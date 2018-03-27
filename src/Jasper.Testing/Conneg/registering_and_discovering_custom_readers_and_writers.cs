@@ -15,32 +15,29 @@ namespace Jasper.Testing.Conneg
 {
     public class registering_and_discovering_custom_readers_and_writers : IntegrationContext
     {
-        private SerializationGraph theSerialization;
-
-        public registering_and_discovering_custom_readers_and_writers()
-        {
-            withAllDefaults();
-
-            theSerialization = Runtime.Get<MessagingSerializationGraph>();
-        }
+        public MessagingSerializationGraph theSerialization => Runtime.Get<MessagingSerializationGraph>();
 
         [Fact]
-        public void scans_for_custom_writers_in_the_app_assembly()
+        public async Task scans_for_custom_writers_in_the_app_assembly()
         {
+            await withAllDefaults();
             theSerialization.WriterFor(typeof(Message5)).ContentTypes
                 .ShouldHaveTheSameElementsAs("application/json", "green", "blue");
         }
 
         [Fact]
-        public void scans_for_custom_readers_in_the_app_assembly()
+        public async Task scans_for_custom_readers_in_the_app_assembly()
         {
+            await withAllDefaults();
             theSerialization.ReaderFor(typeof(Message1).ToMessageAlias())
                 .ContentTypes.ShouldContain("green");
         }
 
         [Fact]
-        public void can_override_json_serialization_for_a_mesage()
+        public async Task can_override_json_serialization_for_a_mesage()
         {
+            await withAllDefaults();
+
             // Not overridden, so it should be the default
             theSerialization.WriterFor(typeof(Message1))["application/json"]
                 .ShouldBeOfType<NewtonsoftJsonWriter>();
@@ -51,8 +48,10 @@ namespace Jasper.Testing.Conneg
         }
 
         [Fact]
-        public void can_override_json_serialization_reader_for_a_message_type()
+        public async Task can_override_json_serialization_reader_for_a_message_type()
         {
+            await withAllDefaults();
+
             // Not overridden, so it should be the default
             theSerialization.ReaderFor(typeof(Message4).ToMessageAlias())["application/json"]
                 .ShouldBeOfType<NewtonsoftJsonReader>();

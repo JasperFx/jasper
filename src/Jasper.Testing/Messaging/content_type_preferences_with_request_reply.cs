@@ -12,13 +12,12 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public class content_type_preferences_with_request_reply : IntegrationContext
     {
         [Fact]
-        public void envelope_has_accepts_for_known_response_readers()
+        public async Task envelope_has_accepts_for_known_response_readers()
         {
-            withAllDefaults();
+            await withAllDefaults();
 
             var envelope = Bus.As<MessageContext>().EnvelopeForRequestResponse<Message1>(new Message2());
 

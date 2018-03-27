@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Http\Jasper.Http.csproj" />
     <ProjectReference Include="..\Jasper.JsonCommands\Jasper.JsonCommands.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />

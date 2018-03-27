@@ -1,4 +1,5 @@
-﻿using Jasper.Testing.FakeStoreTypes;
+﻿using System.Threading.Tasks;
+using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Messaging.Bootstrapping;
 using Jasper.Testing.Messaging.Compilation;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,6 @@ using Xunit;
 
 namespace Jasper.Testing
 {
-    [Collection("integration")]
     public class JasperRegistryTests
     {
         public interface IFoo
@@ -29,18 +29,22 @@ namespace Jasper.Testing
         }
 
         [Fact]
-        public void sets_up_the_container_with_services()
+        public async Task sets_up_the_container_with_services()
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery();
             registry.Services.For<IFoo>().Use<Foo>();
             registry.Services.AddTransient<IFakeStore, FakeStore>();
-            registry.Services.For<IWidget>().Use<Widget>();
-            registry.Services.For<IFakeService>().Use<FakeService>();
 
-            using (var runtime = JasperRuntime.For(registry))
+            var runtime = await JasperRuntime.ForAsync(registry);
+
+            try
             {
                 runtime.Container.DefaultRegistrationIs<IFoo, Foo>();
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
     }

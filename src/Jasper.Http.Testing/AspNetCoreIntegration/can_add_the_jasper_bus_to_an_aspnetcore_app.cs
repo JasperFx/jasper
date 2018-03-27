@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Jasper.Http.Testing.AspNetCoreIntegration
 {
+    [Collection("aspnetcore")]
     public class can_add_the_jasper_bus_to_an_aspnetcore_app : IDisposable
     {
         private IWebHost theHost;
@@ -98,7 +99,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
     }
 
     // SAMPLE: SimpleJasperBusApp
-    public class SimpleJasperBusApp : JasperHttpRegistry
+    public class SimpleJasperBusApp : JasperRegistry
     // ENDSAMPLE
     {
         public SimpleJasperBusApp()

@@ -1,31 +1,31 @@
-﻿using Baseline.Dates;
+﻿using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Messaging.Transports.Tcp;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Lightweight.Protocol
 {
-    [Collection("integration")]
     public class receiver_says_that_the_process_failed_cleanly : ProtocolContext
     {
         public receiver_says_that_the_process_failed_cleanly()
         {
             theReceiver.StatusToReturn = ReceivedStatus.ProcessFailure;
-
-            afterSending().Wait(2.Seconds());
         }
 
         [Fact]
-        public void did_not_succeed()
+        public async Task did_not_succeed()
         {
+            await afterSending();
             theSender.Succeeded.ShouldBeFalse();
         }
 
 
 
         [Fact]
-        public void logs_processing_failure_in_sender()
+        public async Task logs_processing_failure_in_sender()
         {
+            await afterSending();
             theSender.ProcessingFailed.ShouldBeTrue();
         }
     }

@@ -23,7 +23,7 @@ namespace Jasper.Messaging.Model
 
 
         private GenerationRules _generation;
-        private Container _container;
+        private IContainer _container;
 
         private void assertNotGrouped()
         {

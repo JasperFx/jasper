@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
@@ -11,25 +12,26 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     public class activation_and_teardown : BootstrappingContext
     {
         [Fact]
-        public void has_service_capabilities()
+        public async Task has_service_capabilities()
         {
-            theRuntime.Capabilities.ShouldNotBeNull();
+            (await theRuntime()).Capabilities.ShouldNotBeNull();
         }
 
         [Fact]
-        public void subscriptions_repository_must_be_a_singleton()
+        public async Task subscriptions_repository_must_be_a_singleton()
         {
-            theRuntime.Container.Model.For<ISubscriptionsRepository>().Default.Lifetime.ShouldBe(ServiceLifetime.Singleton);
+            (await theRuntime()).Container.Model.For<ISubscriptionsRepository>().Default.Lifetime.ShouldBe(ServiceLifetime.Singleton);
         }
 
         [Fact]
-        public void transport_is_disposed()
+        public async Task transport_is_disposed()
         {
-            var transport = theRuntime.Get<ITransport[]>().OfType<StubTransport>().Single();
+            var runtime = await theRuntime();
+            var transport = runtime.Get<ITransport[]>().OfType<StubTransport>().Single();
             transport.WasDisposed.ShouldBeFalse();
 
 
-            theRuntime.Dispose();
+            await runtime.Shutdown();
 
             transport.WasDisposed.ShouldBeTrue();
         }

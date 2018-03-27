@@ -11,7 +11,6 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public class discarding_expired_envelopes
     {
         [Fact]
@@ -19,11 +18,13 @@ namespace Jasper.Testing.Messaging
         {
             var logger = Substitute.For<IMessageLogger>();
 
-            using (var runtime = JasperRuntime.For(x =>
+            var runtime = await JasperRuntime.ForAsync(x =>
             {
                 x.Handlers.DisableConventionalDiscovery();
                 x.Services.AddSingleton(logger);
-            }))
+            });
+
+            try
             {
                 var pipeline = runtime.Get<IHandlerPipeline>();
 
@@ -38,8 +39,10 @@ namespace Jasper.Testing.Messaging
 
 
                 envelope.Callback.Received().MarkComplete();
-
-
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
     }

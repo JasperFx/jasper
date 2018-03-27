@@ -1,19 +1,19 @@
-﻿using Jasper.Messaging.Runtime.Subscriptions;
+﻿using System.Threading.Tasks;
+using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Runtime.Subscriptions
 {
-    [Collection("integration")]
     public class reading_and_writing_service_capability_information
     {
         [Fact]
-        public void can_write_then_read()
+        public async Task can_write_then_read()
         {
             ServiceCapabilities services;
 
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
 
@@ -28,13 +28,19 @@ namespace Jasper.Testing.Messaging.Runtime.Subscriptions
                 _.Publish.Message<Message5>();
 
                 _.Settings.Alter<MessagingSettings>(x => x.ThrowOnValidationErrors = false);
-            }))
+            });
+
+            try
             {
                 services = runtime.Capabilities;
 
                 services.Errors.Length.ShouldBeGreaterThan(0);
                 services.Subscriptions.Length.ShouldBeGreaterThan(0);
                 services.Published.Length.ShouldBeGreaterThan(0);
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
 
             services.WriteToFile("services.json");

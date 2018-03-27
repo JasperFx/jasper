@@ -15,7 +15,7 @@ namespace Jasper.Http.Testing.Transport
             {
                 _.Http.Transport.EnableListening(true);
 
-                _.Http
+                _.Hosting
                     .UseUrls(urlListener);
 
                 _.Handlers.IncludeType<MessageConsumer>();

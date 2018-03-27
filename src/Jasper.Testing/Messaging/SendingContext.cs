@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper.Http;
 using Jasper.Testing.Messaging.Lightweight;
 using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public abstract class SendingContext : IDisposable
     {
-        private readonly JasperHttpRegistry senderRegistry = new JasperHttpRegistry();
-        private readonly JasperHttpRegistry receiverRegistry = new JasperHttpRegistry();
+        private readonly JasperRegistry senderRegistry = new JasperRegistry();
+        private readonly JasperRegistry receiverRegistry = new JasperRegistry();
         protected JasperRuntime theSender;
         protected JasperRuntime theReceiver;
         protected MessageTracker theTracker;
@@ -25,15 +25,15 @@ namespace Jasper.Testing.Messaging
 
         }
 
-        protected void StartTheSender(Action<JasperRegistry> configure)
+        protected async Task StartTheSender(Action<JasperRegistry> configure)
         {
             configure(senderRegistry);
-            theSender = JasperRuntime.For(senderRegistry);
+            theSender = await JasperRuntime.ForAsync(senderRegistry);
         }
 
-        protected void RestartTheSender()
+        protected async Task RestartTheSender()
         {
-            theSender = JasperRuntime.For(senderRegistry);
+            theSender = await JasperRuntime.ForAsync(senderRegistry);
         }
 
         protected void StopTheSender()
@@ -41,15 +41,15 @@ namespace Jasper.Testing.Messaging
             theSender?.Dispose();
         }
 
-        protected void StartTheReceiver(Action<JasperHttpRegistry> configure)
+        protected async Task StartTheReceiver(Action<JasperRegistry> configure)
         {
             configure(receiverRegistry);
-            theReceiver = JasperRuntime.For(receiverRegistry);
+            theReceiver = await JasperRuntime.ForAsync(receiverRegistry);
         }
 
-        protected void RestartTheReceiver()
+        protected async Task RestartTheReceiver()
         {
-            theSender = JasperRuntime.For(receiverRegistry);
+            theSender = await JasperRuntime.ForAsync(receiverRegistry);
         }
 
         protected void StopTheReceiver()

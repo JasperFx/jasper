@@ -11,8 +11,6 @@ namespace Jasper.Testing.Settings
             Handlers.DisableConventionalDiscovery();
 
             Services.AddTransient<IFakeStore, FakeStore>();
-            Services.For<IWidget>().Use<Widget>();
-            Services.For<IFakeService>().Use<FakeService>();
 
             Settings.With<MyFakeSettings>(_ =>
             {

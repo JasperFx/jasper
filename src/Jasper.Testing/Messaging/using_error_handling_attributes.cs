@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
@@ -12,38 +13,38 @@ namespace Jasper.Testing.Messaging
     public class using_error_handling_attributes : IntegrationContext
     {
         [Fact]
-        public void use_maximum_attempts()
+        public async Task use_maximum_attempts()
         {
-            withAllDefaults();
+            await withAllDefaults();
             chainFor<Message1>().MaximumAttempts.ShouldBe(3);
         }
 
         [Fact]
-        public void use_retry_on_attribute()
+        public async Task use_retry_on_attribute()
         {
-            withAllDefaults();
+            await withAllDefaults();
             chainFor<Message2>().ShouldHandleExceptionWith<DivideByZeroException, RetryNowContinuation>();
         }
 
         [Fact]
-        public void use_requeue_on_attribute()
+        public async Task use_requeue_on_attribute()
         {
-            withAllDefaults();
+            await withAllDefaults();
             chainFor<Message3>().ShouldHandleExceptionWith<NotImplementedException, RequeueContinuation>();
         }
 
         [Fact]
-        public void use_move_to_error_queue_on_attribute()
+        public async Task use_move_to_error_queue_on_attribute()
         {
-            withAllDefaults();
+            await withAllDefaults();
 
             chainFor<Message4>().ShouldMoveToErrorQueue<DataMisalignedException>();
         }
 
         [Fact]
-        public void use_retry_later_attribute()
+        public async Task use_retry_later_attribute()
         {
-            withAllDefaults();
+            await withAllDefaults();
 
             var continuation = chainFor<Message5>()
                 .ErrorHandlers.OfType<ErrorHandler>()

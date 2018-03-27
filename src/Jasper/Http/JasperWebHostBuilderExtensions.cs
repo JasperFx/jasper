@@ -49,19 +49,19 @@ namespace Jasper.Http
 
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder)
         {
-            return builder.UseJasper(new JasperHttpRegistry());
+            return builder.UseJasper(new JasperRegistry());
         }
 
-        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder) where T : JasperHttpRegistry, new()
+        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder) where T : JasperRegistry, new()
         {
             return builder.UseJasper(new T());
         }
 
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperHttpRegistry registry)
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
         {
             builder.UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
 
-            registry.Http.BootstrappedWithinAspNetCore = true;
+            registry.BootstrappedWithinAspNetCore = true;
             var runtime = JasperRuntime.For(registry);
             builder.ConfigureServices(services =>
             {

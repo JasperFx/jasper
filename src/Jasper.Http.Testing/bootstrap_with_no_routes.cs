@@ -13,20 +13,23 @@ namespace Jasper.Http.Testing
         [Fact]
         public async Task will_still_apply_middleware()
         {
-            using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
+            var runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
             {
                 _.Http.Actions.DisableConventionalDiscovery();
-                _.Http.Configure(app =>
-                {
-                    app.Run(c => c.Response.WriteAsync("Hello"));
-                });
-            }))
+                _.Hosting.Configure(app => { app.Run(c => c.Response.WriteAsync("Hello")); });
+            });
+
+            try
             {
                 await runtime.Scenario(s =>
                 {
                     s.Get.Url("/");
                     s.ContentShouldBe("Hello");
                 });
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
     }

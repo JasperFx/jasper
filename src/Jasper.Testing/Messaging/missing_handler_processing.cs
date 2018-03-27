@@ -17,7 +17,7 @@ namespace Jasper.Testing.Messaging
              NoMessageHandler1.Reset();
              NoMessageHandler2.Reset();
 
-            with(r =>
+            await with(r =>
             {
                 r.Services.AddTransient<IMissingHandler, NoMessageHandler1>();
                 r.Services.AddTransient<IMissingHandler, NoMessageHandler2>();

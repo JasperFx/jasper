@@ -20,27 +20,20 @@ namespace Jasper.Http.Testing.Transport
 {
     public class http_transport_end_to_end : SendingContext
     {
-        public http_transport_end_to_end()
+        [Fact]
+        public async Task http_transport_is_enabled_and_registered()
         {
-            StartTheReceiver(_ =>
+            await StartTheReceiver(_ =>
             {
                 _.Http.Transport.EnableListening(true);
 
-                _.Http
+                _.Hosting
                     .UseUrls("http://localhost:5002")
                     .UseKestrel();
 
                 _.Handlers.IncludeType<MessageConsumer>();
                 _.Handlers.IncludeType<RequestReplyHandler>();
             });
-
-
-        }
-
-        [Fact]
-        public void http_transport_is_enabled_and_registered()
-        {
-
 
             var settings = theReceiver.Get<HttpTransportSettings>();
             settings.EnableMessageTransport.ShouldBeTrue();
@@ -49,9 +42,21 @@ namespace Jasper.Http.Testing.Transport
         }
 
         [Fact]
-        public void send_messages_end_to_end_lightweight()
+        public async Task send_messages_end_to_end_lightweight()
         {
-            StartTheSender(_ =>
+            await StartTheReceiver(_ =>
+            {
+                _.Http.Transport.EnableListening(true);
+
+                _.Hosting
+                    .UseUrls("http://localhost:5002")
+                    .UseKestrel();
+
+                _.Handlers.IncludeType<MessageConsumer>();
+                _.Handlers.IncludeType<RequestReplyHandler>();
+            });
+
+            await StartTheSender(_ =>
             {
                 _.Publish.Message<Message1>().To("http://localhost:5002/messages");
                 _.Publish.Message<Message2>().To("http://localhost:5002/messages");
@@ -63,8 +68,8 @@ namespace Jasper.Http.Testing.Transport
             var message1 = new Message1 {Id = Guid.NewGuid()};
             var message2 = new Message2 {Id = Guid.NewGuid()};
 
-            theSender.Messaging.Send(message1);
-            theSender.Messaging.Send(message2);
+            await theSender.Messaging.Send(message1);
+            await theSender.Messaging.Send(message2);
 
             waiter1.Wait(10.Seconds());
             waiter2.Wait(10.Seconds());
@@ -77,8 +82,8 @@ namespace Jasper.Http.Testing.Transport
 
     public abstract class SendingContext : IDisposable
     {
-        private readonly JasperHttpRegistry senderRegistry = new JasperHttpRegistry();
-        private readonly JasperHttpRegistry receiverRegistry = new JasperHttpRegistry();
+        private readonly JasperRegistry senderRegistry = new JasperRegistry();
+        private readonly JasperRegistry receiverRegistry = new JasperRegistry();
         protected JasperRuntime theSender;
         protected JasperRuntime theReceiver;
         protected MessageTracker theTracker;
@@ -94,36 +99,17 @@ namespace Jasper.Http.Testing.Transport
 
         }
 
-        protected void StartTheSender(Action<JasperRegistry> configure)
+        protected async Task StartTheSender(Action<JasperRegistry> configure)
         {
             configure(senderRegistry);
-            theSender = JasperRuntime.For(senderRegistry);
+            theSender = await JasperRuntime.ForAsync(senderRegistry);
         }
 
-        protected void RestartTheSender()
-        {
-            theSender = JasperRuntime.For(senderRegistry);
-        }
 
-        protected void StopTheSender()
-        {
-            theSender?.Dispose();
-        }
-
-        protected void StartTheReceiver(Action<JasperHttpRegistry> configure)
+        protected async Task StartTheReceiver(Action<JasperRegistry> configure)
         {
             configure(receiverRegistry);
-            theReceiver = JasperRuntime.For(receiverRegistry);
-        }
-
-        protected void RestartTheReceiver()
-        {
-            theSender = JasperRuntime.For(receiverRegistry);
-        }
-
-        protected void StopTheReceiver()
-        {
-            theSender?.Dispose();
+            theReceiver = await JasperRuntime.ForAsync(receiverRegistry);
         }
 
 

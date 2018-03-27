@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -9,30 +10,42 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
     public class service_registrations_with_aspnet_core_abstractions
     {
         [Fact]
-        public void services_registered_by_the_DI_abstraction_are_in_the_container()
+        public async Task services_registered_by_the_DI_abstraction_are_in_the_container()
         {
             var registry = new JasperRegistry();
             registry.Services.AddTransient<IService, FooService>();
 
+            var runtime = await JasperRuntime.ForAsync(registry);
 
-            using (var runtime = JasperRuntime.For(registry))
+            try
             {
                 runtime.Container.Model.For<IService>().Default.ImplementationType
                     .ShouldBe(typeof(FooService));
             }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+
         }
 
         [Fact]
-        public void adds_the_core_service_provider_abstractions()
+        public async Task adds_the_core_service_provider_abstractions()
         {
             var registry = new JasperRegistry();
             registry.Services.AddTransient<IService, FooService>();
 
-            using (var runtime = JasperRuntime.For(registry))
+            var runtime = await JasperRuntime.ForAsync(registry);
+            try
             {
                 runtime.Get<IServiceProvider>().ShouldNotBeNull();
                 runtime.Get<IServiceScopeFactory>().ShouldNotBeNull();
             }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+
         }
 
         public interface IService{}

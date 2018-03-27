@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Jasper.Testing.EnvironmentChecks;
 using Microsoft.Extensions.Configuration;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Settings
 {
-    [Collection("integration")]
-    public class JasperSettingsTests : IDisposable
+    public class JasperSettingsTests
     {
         public JasperSettingsTests()
         {
@@ -15,19 +16,22 @@ namespace Jasper.Testing.Settings
             theRegistry.Handlers.DisableConventionalDiscovery();
         }
 
-        public void Dispose()
-        {
-            _runtime?.Dispose();
-        }
-
         private readonly JasperRegistry theRegistry;
-        private JasperRuntime _runtime;
 
-        private T get<T>()
+        private async Task with<T>(Action<T> action)
         {
-            if (_runtime == null) _runtime = JasperRuntime.For(theRegistry);
+            var runtime = await JasperRuntime.ForAsync(theRegistry);
 
-            return _runtime.Get<T>();
+            var service = runtime.Get<T>();
+
+            try
+            {
+                action(service);
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
         }
 
         public class FakeSettings
@@ -53,87 +57,103 @@ namespace Jasper.Testing.Settings
         }
 
         [Fact]
-        public void can_alter_settings()
+        public Task can_alter_settings()
         {
             theRegistry.Settings.Alter<MyFakeSettings>(s => { s.SomeSetting = 5; });
 
-            var settings = get<MyFakeSettings>();
 
-            settings.SomeSetting.ShouldBe(5);
+            return with<MyFakeSettings>(x => x.SomeSetting.ShouldBe(5));
         }
 
         [Fact]
-        public void can_apply_alterations_using_the_config()
+        public Task can_apply_alterations_using_the_config()
         {
             theRegistry.Configuration.AddJsonFile("appsettings.json");
             theRegistry.Settings.Alter<FakeSettings>((c, x) => { x.SomeSetting = int.Parse(c["SomeSetting"]); });
 
-            get<FakeSettings>().SomeSetting.ShouldBe(1);
+            return with<FakeSettings>(x => x.SomeSetting.ShouldBe(1));
         }
 
         [Fact]
-        public void can_configure_builder()
+        public async Task can_configure_builder()
         {
             theRegistry.Configuration
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("colors.json");
 
+
             theRegistry.Settings.Require<Colors>();
             theRegistry.Settings.Require<MyFakeSettings>();
-            var colors = get<Colors>();
-            var settings = get<MyFakeSettings>();
 
-            colors.Red.ShouldBe("#ff0000");
-            settings.SomeSetting.ShouldBe(1);
+            var runtime = await JasperRuntime.ForAsync(theRegistry);
+
+            try
+            {
+                var colors = runtime.Get<Colors>();
+                var settings = runtime.Get<MyFakeSettings>();
+
+                colors.Red.ShouldBe("#ff0000");
+                settings.SomeSetting.ShouldBe(1);
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+
+
+
         }
         // ENDSAMPLE
 
         [Fact]
-        public void can_configure_settings()
+        public Task can_configure_settings()
         {
             theRegistry.Configuration.AddJsonFile("nested.json");
 
             theRegistry.Settings.Configure<Colors>(_ => _.GetSection("NestedSettings"));
 
-            var colors = get<Colors>();
 
-            colors.Red.ShouldBe("#ff0000");
+            return with<Colors>(colors => colors.Red.ShouldBe("#ff0000"));
         }
 
         [Fact]
-        public void can_configure_settings_with_the_syntactical_sugure()
+        public Task can_configure_settings_with_the_syntactical_sugure()
         {
             theRegistry.Configuration.AddJsonFile("nested.json");
             theRegistry.Settings.BindToConfigSection<Colors>("NestedSettings");
 
-            var colors = get<Colors>();
 
-            colors.Red.ShouldBe("#ff0000");
+            return with<Colors>(colors => colors.Red.ShouldBe("#ff0000"));
         }
         // ENDSAMPLE
 
         // SAMPLE: can_customize_based_on_only_configuration
         [Fact]
-        public void can_customize_based_on_only_configuration()
+        public async Task can_customize_based_on_only_configuration()
         {
-            using (var runtime = JasperRuntime.For<UsingConfigApp>())
+            var runtime = await JasperRuntime.ForAsync<UsingConfigApp>();
+
+            try
             {
                 runtime.ServiceName.ShouldBe("WocketInMyPocket");
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
 
         [Fact]
-        public void can_read_settings()
+        public Task can_read_settings()
         {
             theRegistry.Configuration.AddJsonFile("appsettings.json");
             theRegistry.Settings.Require<MyFakeSettings>();
 
-            var settings = get<MyFakeSettings>();
-            settings.SomeSetting.ShouldBe(1);
+            return with<MyFakeSettings>(settings => settings.SomeSetting.ShouldBe(1));
         }
 
         [Fact]
-        public void can_replace_settings()
+        public Task can_replace_settings()
         {
             theRegistry.Settings.Replace(new MyFakeSettings
             {
@@ -141,10 +161,11 @@ namespace Jasper.Testing.Settings
                 SomeSetting = 1000
             });
 
-            var settings = get<MyFakeSettings>();
-
-            settings.SomeSetting.ShouldBe(1000);
-            settings.OtherSetting.ShouldBe("tacos");
+            return with<MyFakeSettings>(settings =>
+            {
+                settings.SomeSetting.ShouldBe(1000);
+                settings.OtherSetting.ShouldBe("tacos");
+            });
         }
     }
 }

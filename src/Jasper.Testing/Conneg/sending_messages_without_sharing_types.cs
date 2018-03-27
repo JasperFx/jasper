@@ -13,18 +13,13 @@ using Xunit;
 
 namespace Jasper.Testing.Conneg
 {
-    [Collection("integration")]
     public class sending_messages_without_sharing_types : IDisposable
     {
         public sending_messages_without_sharing_types()
         {
             theTracker = new MessageTracker();
 
-            greenApp = JasperRuntime.For<GreenApp>();
-            blueApp = JasperRuntime.For(new BlueApp(theTracker));
 
-
-            theTracker.ShouldBeTheSameAs(blueApp.Get<MessageTracker>());
         }
 
         public void Dispose()
@@ -33,13 +28,19 @@ namespace Jasper.Testing.Conneg
             blueApp?.Dispose();
         }
 
-        private readonly JasperRuntime greenApp;
-        private readonly JasperRuntime blueApp;
+        private JasperRuntime greenApp;
+        private JasperRuntime blueApp;
         private readonly MessageTracker theTracker;
 
         [Fact]
         public async Task send_green_as_text_and_receive_as_blue()
         {
+            greenApp = await JasperRuntime.ForAsync<GreenApp>();
+            blueApp = await JasperRuntime.ForAsync(new BlueApp(theTracker));
+
+
+            theTracker.ShouldBeTheSameAs(blueApp.Get<MessageTracker>());
+
             var waiter = theTracker.WaitFor<BlueMessage>();
 
             await greenApp.Messaging
@@ -56,6 +57,9 @@ namespace Jasper.Testing.Conneg
         [Fact]
         public async Task send_green_that_gets_received_as_blue()
         {
+            greenApp = await JasperRuntime.ForAsync<GreenApp>();
+            blueApp = await JasperRuntime.ForAsync(new BlueApp(theTracker));
+
             var waiter = theTracker.WaitFor<BlueMessage>();
 
             await greenApp.Messaging.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});

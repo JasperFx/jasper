@@ -11,7 +11,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Http\Jasper.Http.csproj" />
     <ProjectReference Include="..\Jasper.Testing\Jasper.Testing.csproj" />
     <ProjectReference Include="..\JasperHttpTesting\JasperHttpTesting.csproj" />
   </ItemGroup>

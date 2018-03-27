@@ -1,35 +1,37 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Testing.EnvironmentChecks;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Lightweight.Protocol
 {
-    [Collection("integration")]
     public class error_in_receiver : ProtocolContext
     {
         public error_in_receiver()
         {
             theReceiver.ThrowErrorOnReceived = true;
-
-            afterSending().Wait(2.Seconds());
         }
 
         [Fact]
-        public void did_not_succeed()
+        public async Task did_not_succeed()
         {
+            await afterSending();
             theSender.Succeeded.ShouldBeFalse();
         }
 
         [Fact]
-        public void logs_processing_failure_in_sender()
+        public async Task logs_processing_failure_in_sender()
         {
+            await afterSending();
             theSender.ProcessingFailed.ShouldBeTrue();
         }
 
         [Fact]
-        public void logs_the_exception_on_the_receiving_side()
+        public async Task logs_the_exception_on_the_receiving_side()
         {
+            await afterSending();
             theReceiver.FailureException.ShouldBeOfType<DivideByZeroException>();
         }
     }

@@ -13,7 +13,6 @@ using Xunit;
 
 namespace Jasper.Testing.Conneg
 {
-    [Collection("integration")]
     public class using_accepted_types_with_request_reply
     {
         [Fact]
@@ -25,11 +24,12 @@ namespace Jasper.Testing.Conneg
             var requestorRegistry = new JasperRegistry();
             requestorRegistry.Publish.Message<Request1>().To("tcp://localhost:2457/incoming");
             requestorRegistry.Transports.ListenForMessagesFrom("tcp://localhost:1555");
-            var requestor = JasperRuntime.For(requestorRegistry);
+
+            var requestor = await JasperRuntime.ForAsync(requestorRegistry);
 
             var replierRegistry = new JasperRegistry();
             replierRegistry.Transports.ListenForMessagesFrom("tcp://localhost:2457/incoming");
-            var replier = JasperRuntime.For(replierRegistry);
+            var replier = await JasperRuntime.ForAsync(replierRegistry);
 
 
             try

@@ -14,20 +14,23 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Lightweight.Protocol
 {
-    [Collection("protocol")]
     public abstract class ProtocolContext : IDisposable
     {
+        protected static int NextPort = 6000;
+
+
         protected StubReceiverCallback theReceiver = new StubReceiverCallback();
         protected StubSenderCallback theSender = new StubSenderCallback();
         private readonly IPAddress theAddress = IPAddress.Loopback;
-        private readonly int thePort = 2112;
-        private Uri destination = $"durable://localhost:2112/incoming".ToUri();
+        private readonly int thePort = ++NextPort;
+        private Uri destination;
         private OutgoingMessageBatch theMessageBatch;
         private bool _isDisposed;
         private ListeningAgent _listener;
 
         public ProtocolContext()
         {
+            destination = $"durable://localhost:{thePort}/incoming".ToUri();
             _listener = new ListeningAgent(theReceiver, theAddress, thePort, "durable", CancellationToken.None);
 
 

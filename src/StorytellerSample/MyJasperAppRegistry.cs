@@ -1,11 +1,12 @@
 ﻿using Jasper;
 using Jasper.Http;
 using Jasper.Storyteller;
+using Microsoft.AspNetCore.Hosting;
 using StoryTeller;
 
 namespace StorytellerSample
 {
-    public class MyJasperAppRegistry : JasperHttpRegistry
+    public class MyJasperAppRegistry : JasperRegistry
     {
 
     }
@@ -19,7 +20,7 @@ namespace StorytellerSample
             // Customize the application by adding testing concerns,
             // extra logging, or maybe override service registrations
             // with stubs
-            Registry.EnvironmentName = "Testing";
+            Registry.Hosting.UseEnvironment("Testing");
         }
 
         protected override void beforeAll()

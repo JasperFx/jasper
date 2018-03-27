@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
+using Jasper.Http;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Runtime.Subscriptions;
@@ -16,7 +17,11 @@ using Jasper.Util;
 using Lamar;
 using Lamar.Codegen;
 using Lamar.Util;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper
@@ -24,8 +29,13 @@ namespace Jasper
     /// <summary>
     ///     Completely defines and configures a Jasper application
     /// </summary>
-    public class JasperRegistry
+    public partial class JasperRegistry
     {
+        static JasperRegistry()
+        {
+            Container.Warmup();
+        }
+
         private static Assembly _rememberedCallingAssembly;
 
         private readonly ServiceRegistry _applicationServices = new ServiceRegistry();
@@ -34,8 +44,6 @@ namespace Jasper
         public JasperRegistry()
         {
             Publish = new PublishingExpression(Messaging);
-
-            ExtensionServices = new ExtensionServiceRegistry();
 
             Services = _applicationServices;
 
@@ -55,34 +63,27 @@ namespace Jasper
             Settings.Replace(Messaging.Settings);
 
 
-            if (JasperEnvironment.Name.IsNotEmpty()) EnvironmentName = JasperEnvironment.Name;
+            Hosting = this;
+
+            // ASP.Net Core will freak out if this isn't there
+            EnvironmentConfiguration[WebHostDefaults.ApplicationKey] = ApplicationAssembly.FullName;
+
+            Settings.Replace(Http.Settings);
+            Settings.Replace(Http.Transport.As<HttpTransportSettings>()); // Hokey, but I'll allow it
+
         }
 
-
-        internal MessagingConfiguration Messaging { get; } = new MessagingConfiguration();
-        protected internal MessagingSettings MessagingSettings => Messaging.Settings;
+        /// <summary>
+        ///     IWebHostBuilder and other configuration for ASP.net Core usage within a Jasper
+        ///     application
+        /// </summary>
+        public AspNetCoreFeature Http { get; } = new AspNetCoreFeature();
 
         /// <summary>
-        ///     Gets or sets the ASP.Net Core environment names
+        /// Configure ASP.Net Core Hosting
         /// </summary>
-        public virtual string EnvironmentName { get; set; } = JasperEnvironment.Name;
+        public IWebHostBuilder Hosting { get; }
 
-        /// <summary>
-        ///     Options to control how Jasper discovers message handler actions, error
-        ///     handling, local worker queues, and other policies on message handling
-        /// </summary>
-        public IHandlerConfiguration Handlers => Messaging.Handling;
-
-
-        /// <summary>
-        ///     Configure static message routing rules and message publishing rules
-        /// </summary>
-        public PublishingExpression Publish { get; }
-
-        /// <summary>
-        ///     Configure or disable the built in transports
-        /// </summary>
-        public ITransportsExpression Transports => Messaging.Settings;
 
         /// <summary>
         ///     Use to load and apply configuration sources within the application
@@ -110,29 +111,10 @@ namespace Jasper
         /// </summary>
         public JasperSettings Settings { get; }
 
-        internal ServiceRegistry ExtensionServices { get; }
 
-        /// <summary>
-        ///     Gets or sets the logical service name for this Jasper application. By default,
-        ///     this is derived from the name of the JasperRegistry class
-        /// </summary>
-        public string ServiceName
-        {
-            get => Messaging.Settings.ServiceName;
-            set => Messaging.Settings.ServiceName = value;
-        }
 
-        /// <summary>
-        ///     Configure dynamic subscriptions to this application
-        /// </summary>
-        public ISubscriptions Subscribe => Messaging.Capabilities;
 
-        /// <summary>
-        ///     Configure uncommonly used, advanced options
-        /// </summary>
-        public IAdvancedOptions Advanced => Messaging.Settings;
-
-        protected internal virtual string HttpAddresses => null;
+        internal string HttpAddresses => EnvironmentConfiguration[WebHostDefaults.ServerUrlsKey];
 
         private void establishApplicationAssembly()
         {
@@ -160,44 +142,13 @@ namespace Jasper
                 ServiceName = GetType().Name.Replace("JasperRegistry", "").Replace("Registry", "");
         }
 
-        internal void ApplyExtensions(IJasperExtension[] extensions)
-        {
-            Settings.ApplyingExtensions = true;
-            Services = ExtensionServices;
-
-
-            foreach (var extension in extensions)
-                extension.Configure(this);
-
-            Services = _applicationServices;
-            Settings.ApplyingExtensions = false;
-        }
-
-        /// <summary>
-        ///     Applies the extension to this application
-        /// </summary>
-        /// <param name="extension"></param>
-        public void Include(IJasperExtension extension)
-        {
-            ApplyExtensions(new[] {extension});
-        }
-
-        /// <summary>
-        ///     Applies the extension with optional configuration to the application
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <typeparam name="T"></typeparam>
-        public void Include<T>(Action<T> configure = null) where T : IJasperExtension, new()
-        {
-            var extension = new T();
-            configure?.Invoke(extension);
-
-            Include(extension);
-        }
 
 
         internal ServiceRegistry CombinedServices()
         {
+            _baseServices.Insert(0, ServiceDescriptor.Singleton<IHostedService, MessagingActivator>());
+
+            RegisterAspNetCoreServices();
             var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
 
             var combined = new ServiceRegistry();
@@ -218,32 +169,5 @@ namespace Jasper
             Messaging.Describe(runtime, writer);
         }
 
-        protected internal virtual async Task Startup(JasperRuntime runtime)
-        {
-            var services = runtime.Container.GetAllInstances<IHostedService>();
-
-            foreach (var service in services) await service.StartAsync(MessagingSettings.Cancellation);
-        }
-
-        protected internal virtual async Task Stop(JasperRuntime runtime)
-        {
-            var services = runtime.Container.GetAllInstances<IHostedService>();
-
-            foreach (var service in services)
-                try
-                {
-                    await service.StopAsync(CancellationToken.None);
-                }
-                catch (Exception e)
-                {
-                    ConsoleWriter.Write(ConsoleColor.Red, "Failed to stop hosted service" + service);
-                    ConsoleWriter.Write(ConsoleColor.Yellow, e.ToString());
-                    throw;
-                }
-        }
-
-        protected internal virtual void AlterNode(ServiceNode local)
-        {
-        }
     }
 }

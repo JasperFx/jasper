@@ -14,10 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Http
 {
-    public class AspNetCoreFeature : IWebHostBuilder
+    public class AspNetCoreFeature
     {
-        private readonly WebHostBuilder _inner;
-
         private readonly HttpTransportSettings _transport = new HttpTransportSettings();
 
         public readonly ActionSource Actions = new ActionSource();
@@ -27,71 +25,22 @@ namespace Jasper.Http
         public AspNetCoreFeature()
         {
             Actions.IncludeClassesSuffixedWithEndpoint();
-
-
-            _inner = new WebHostBuilder();
         }
 
-        public IWebHost Host { get; private set; }
-
-        internal string EnvironmentName
-        {
-            get => _inner.GetSetting(WebHostDefaults.EnvironmentKey);
-            set => this.UseEnvironment(value);
-        }
-
-
-        internal bool BootstrappedWithinAspNetCore { get; set; }
+        /// <summary>
+        /// Completely enable or disable all Jasper HTTP features
+        /// </summary>
+        public bool Enabled { get; set; } = true;
 
         public HttpSettings Settings { get; } = new HttpSettings();
 
         public IHttpTransportConfiguration Transport => _transport;
 
-        IWebHost IWebHostBuilder.Build()
-        {
-            throw new NotSupportedException("Jasper needs to do the web host building within its bootstrapping");
-        }
 
-        IWebHostBuilder IWebHostBuilder.ConfigureServices(Action<IServiceCollection> configureServices)
-        {
-            return _inner.ConfigureServices(configureServices);
-        }
-
-        IWebHostBuilder IWebHostBuilder.ConfigureServices(
-            Action<WebHostBuilderContext, IServiceCollection> configureServices)
-        {
-            return _inner.ConfigureServices(configureServices);
-        }
-
-        IWebHostBuilder IWebHostBuilder.UseSetting(string key, string value)
-        {
-            return _inner.UseSetting(key, value);
-        }
-
-        string IWebHostBuilder.GetSetting(string key)
-        {
-            return _inner.GetSetting(key);
-        }
-
-        public IWebHostBuilder ConfigureAppConfiguration(
-            Action<WebHostBuilderContext, IConfigurationBuilder> configureDelegate)
-        {
-            return _inner.ConfigureAppConfiguration(configureDelegate);
-        }
-
-        public void Dispose()
-        {
-            Host?.Dispose();
-        }
-
-
-        internal Task FindRoutes(JasperRuntime runtime, JasperHttpRegistry registry, PerfTimer timer)
+        internal Task FindRoutes(JasperRuntime runtime, JasperRegistry registry, PerfTimer timer)
         {
             var applicationAssembly = registry.ApplicationAssembly;
             var generation = registry.CodeGeneration;
-
-
-            _inner.UseSetting(WebHostDefaults.ApplicationKey, applicationAssembly.FullName);
 
             return Actions.FindActions(applicationAssembly).ContinueWith(t =>
             {
@@ -115,20 +64,16 @@ namespace Jasper.Http
                 });
 
                 var rules = timer.Record("Fetching Conneg Rules",
-                    () => { return runtime.Container.QuickBuild<ConnegRules>(); });
+                    () => runtime.Container.QuickBuild<ConnegRules>());
 
-                timer.Record("Build Routing Tree", () => { Routes.BuildRoutingTree(rules, generation, runtime); });
+                timer.Record("Build Routing Tree", () =>
+                {
+                    Routes.BuildRoutingTree(rules, generation, runtime);
+                });
 
-                if (BootstrappedWithinAspNetCore) return;
-
-                timer.Record("Activate ASP.Net", () => { activateLocally(runtime); });
             });
         }
 
-
-        internal void Activate(JasperRuntime runtime, GenerationRules generation, PerfTimer timer)
-        {
-        }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
@@ -136,17 +81,6 @@ namespace Jasper.Http
             foreach (var url in runtime.HttpAddresses) writer.WriteLine($"Now listening on: {url}");
         }
 
-        private void activateLocally(JasperRuntime runtime)
-        {
-            _inner.ConfigureServices(
-                services => { JasperStartup.Register(runtime.Container, services, Routes.Router); });
-
-            Host = _inner.Build();
-
-            runtime.Container.Configure(x => x.AddSingleton(Host));
-
-            Host.Start();
-        }
     }
 
     public interface IHttpTransportConfiguration
@@ -155,6 +89,7 @@ namespace Jasper.Http
         IHttpTransportConfiguration RelativeUrl(string url);
         IHttpTransportConfiguration ConnectionTimeout(TimeSpan span);
     }
+
 
     public class HttpTransportSettings : IHttpTransportConfiguration
     {

@@ -14,9 +14,9 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
     {
         private readonly MessageTracker theTracker = new MessageTracker();
 
-        public inmemory_integration_specs()
+        private Task configure()
         {
-            with(_ =>
+            return with(_ =>
             {
                 _.Publish.Message<Message1>().To("loopback://incoming");
 
@@ -31,8 +31,9 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
         }
 
         [Fact]
-        public void automatically_sticks_in_replies_queue()
+        public async Task automatically_sticks_in_replies_queue()
         {
+            await configure();
             Channels.HasChannel(TransportConstants.RetryUri)
                 .ShouldBeTrue();
         }
@@ -41,20 +42,22 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
         [Fact]
         public async Task send_a_message_and_get_the_response()
         {
+            await configure();
+
             var bus = Runtime.Get<IMessageContext>();
 
-            var task = theTracker.WaitFor<Message1>();
+            var waiter = theTracker.WaitFor<Message1>();
 
             await bus.Send(new Message1());
 
-            task.Wait(20.Seconds());
+            await waiter;
 
-            if (!task.IsCompleted)
+            if (!waiter.IsCompleted)
             {
                 throw new Exception("Got no envelope!");
             }
 
-            var envelope = task.Result;
+            var envelope = waiter.Result;
 
             envelope.ShouldNotBeNull();
         }

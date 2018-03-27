@@ -1,7 +1,7 @@
 ﻿
 namespace Jasper.Http.Testing.ContentHandling
 {
-    public class HttpTestingApp : JasperHttpRegistry
+    public class HttpTestingApp : JasperRegistry
     {
         public HttpTestingApp()
         {

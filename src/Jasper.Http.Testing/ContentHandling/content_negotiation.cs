@@ -17,13 +17,7 @@ namespace Jasper.Http.Testing.ContentHandling
     {
         public content_negotiation()
         {
-            _runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
-            {
-                _.Handlers.DisableConventionalDiscovery(true);
-                _.Http.Actions.IncludeType<CustomReaderWriterEndpoint>();
-                _.Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
-                _.Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
-            });
+
         }
 
         public void Dispose()
@@ -31,11 +25,19 @@ namespace Jasper.Http.Testing.ContentHandling
             _runtime?.Dispose();
         }
 
-        private readonly JasperRuntime _runtime;
+        private JasperRuntime _runtime;
 
-        private Task<IScenarioResult> scenario(Action<Scenario> configure)
+        private async Task<IScenarioResult> scenario(Action<Scenario> configure)
         {
-            return _runtime.Scenario(configure);
+            _runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
+            {
+                _.Handlers.DisableConventionalDiscovery(true);
+                _.Http.Actions.IncludeType<CustomReaderWriterEndpoint>();
+                _.Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
+                _.Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
+            });
+
+            return await _runtime.Scenario(configure);
         }
 
         [Fact]

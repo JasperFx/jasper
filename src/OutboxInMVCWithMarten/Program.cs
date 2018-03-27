@@ -36,7 +36,7 @@ namespace OutboxInMVCWithMarten
                 .Build();
     }
 
-    public class OutboxSampleApp : JasperHttpRegistry
+    public class OutboxSampleApp : JasperRegistry
     {
         public OutboxSampleApp()
         {

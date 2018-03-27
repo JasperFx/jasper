@@ -14,7 +14,6 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public class enqueue_a_message
     {
         [Fact]
@@ -30,13 +29,13 @@ namespace Jasper.Testing.Messaging
             });
             registry.Handlers.IncludeType<RecordCallHandler>();
             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-            registry.Services.AddTransient<IFakeService, FakeService>();
-            registry.Services.AddTransient<IWidget, Widget>();
 
             var tracker = new MessageTracker();
             registry.Services.AddSingleton(tracker);
 
-            using (var runtime = JasperRuntime.For(registry))
+            var runtime = await JasperRuntime.ForAsync(registry);
+
+            try
             {
                 var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1
@@ -50,6 +49,10 @@ namespace Jasper.Testing.Messaging
 
                 received.Message.As<Message1>().Id.ShouldBe(message.Id);
             }
+            finally
+            {
+                await runtime.Shutdown();
+            }
         }
 
         [Fact]
@@ -60,15 +63,15 @@ namespace Jasper.Testing.Messaging
 
             registry.Handlers.IncludeType<RecordCallHandler>();
             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-            registry.Services.AddTransient<IFakeService, FakeService>();
-            registry.Services.AddTransient<IWidget, Widget>();
             registry.Services.AddTransient<IMyService, MyService>();
             registry.Services.AddTransient<IPongWriter, PongWriter>();
 
             var tracker = new MessageTracker();
             registry.Services.AddSingleton(tracker);
 
-            using (var runtime = JasperRuntime.For(registry))
+            var runtime = await JasperRuntime.ForAsync(registry);
+
+            try
             {
                 var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1
@@ -82,6 +85,10 @@ namespace Jasper.Testing.Messaging
                 var received = waiter.Result;
 
                 received.Message.As<Message1>().Id.ShouldBe(message.Id);
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
     }

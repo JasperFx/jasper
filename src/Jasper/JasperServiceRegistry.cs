@@ -1,5 +1,9 @@
 ﻿using Jasper.Conneg;
 using Jasper.EnvironmentChecks;
+using Jasper.Http;
+using Jasper.Http.ContentHandling;
+using Jasper.Http.Routing;
+using Jasper.Http.Transport;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -8,7 +12,10 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Lamar;
 using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper
@@ -22,12 +29,35 @@ namespace Jasper
             For<IMessageLogger>().Use<MessageLogger>().Singleton();
             For<ITransportLogger>().Use<TransportLogger>().Singleton();
 
+
+
             // Will be overwritten when ASP.Net is in place too,
             // but that's okay
-            this.AddSingleton<HostedServiceExecutor>();
+            For<IHostedService>().Use<NodeRegistration>();
 
             conneg(parent);
             messaging(parent);
+
+            aspnetcore(parent);
+        }
+
+        private void aspnetcore(JasperRegistry parent)
+        {
+            // This would be overridden by the app to do anything useful
+            For<IServer>().Use<NulloServer>();
+
+            For<ITransport>()
+                .Use<HttpTransport>();
+
+
+            this.AddSingleton<ConnegRules>();
+
+            this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
+            this.AddSingleton(parent.Http.Routes.Router);
+            this.AddSingleton(parent.Http.Routes);
+            ForSingletonOf<IUrlRegistry>().Use(parent.Http.Routes.Router.Urls);
+
+            this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());
         }
 
         private void conneg(JasperRegistry parent)

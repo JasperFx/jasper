@@ -8,20 +8,24 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public class default_channel_configuration
     {
         [Fact]
-        public void use_the_loopback_replies_queue_by_default()
+        public async Task use_the_loopback_replies_queue_by_default()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
-            }))
-            {
+            });
 
+            try
+            {
                 var channels = runtime.Get<IChannelGraph>();
                 channels.DefaultChannel.Uri.ShouldBe("loopback://replies".ToUri());
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
 
@@ -36,17 +40,23 @@ namespace Jasper.Testing.Messaging
         // ENDSAMPLE
 
         [Fact]
-        public void override_the_default_channel()
+        public async Task override_the_default_channel()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Transports.DefaultIs("loopback://incoming");
-            }))
+            });
+
+            try
             {
                 var channels = runtime.Get<IChannelGraph>();
                 channels.DefaultChannel
                     .ShouldBeTheSameAs(channels.GetOrBuildChannel("loopback://incoming".ToUri()));
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
 
@@ -54,12 +64,14 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task will_route_to_the_default_channel_if_there_is_a_handler_but_no_routes()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Transports.DefaultIs("loopback://incoming");
                 _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
-            }))
+            });
+
+            try
             {
                 var router = runtime.Get<IMessageRouter>();
 
@@ -67,19 +79,26 @@ namespace Jasper.Testing.Messaging
 
                 routes.Single().Destination.ShouldBe("loopback://incoming".ToUri());
             }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+
         }
 
         [Fact]
         public async Task will_not_route_to_the_default_channel_if_there_is_a_handler_and_routes()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Transports.DefaultIs("loopback://incoming");
                 _.Handlers.IncludeType<DefaultRoutedMessageHandler>();
 
                 _.Publish.Message<DefaultRoutedMessage>().To("tcp://localhost:2444/outgoing");
-            }))
+            });
+
+            try
             {
                 var router = runtime.Get<IMessageRouter>();
 
@@ -87,23 +106,33 @@ namespace Jasper.Testing.Messaging
 
                 routes.Single().Destination.ShouldBe("tcp://localhost:2444/outgoing".ToUri());
             }
+            finally
+            {
+                await runtime.Shutdown();
+            }
         }
 
         [Fact]
         public async Task will_not_route_locally_with_no_handler()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Transports.DefaultIs("loopback://incoming");
 
-            }))
+            });
+
+            try
             {
                 var router = runtime.Get<IMessageRouter>();
 
                 var routes = await router.Route(typeof(DefaultRoutedMessage));
 
                 routes.Any().ShouldBeFalse();
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
 

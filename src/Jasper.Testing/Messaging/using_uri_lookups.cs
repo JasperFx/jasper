@@ -17,9 +17,9 @@ namespace Jasper.Testing.Messaging
     public class using_uri_lookups : IntegrationContext
     {
         [Fact]
-        public void using_the_config_lookup()
+        public async Task using_the_config_lookup()
         {
-            with(_ =>
+            await with(_ =>
             {
                 _.Configuration
                     .AddInMemoryCollection(new Dictionary<string, string> {{"invoicing", "durable://server2:2345"}});
@@ -35,7 +35,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task static_routing_rules_respect_the_uri_lookup()
         {
-            with(_ =>
+            await with(_ =>
             {
                 _.Services.For<IUriLookup>().Use<FakeUriLookup>();
                 _.Publish.Message<Message1>().To("fake://one");
@@ -49,9 +49,9 @@ namespace Jasper.Testing.Messaging
 
 
         [Fact]
-        public void listeners_are_corrected_by_the_lookups()
+        public async Task listeners_are_corrected_by_the_lookups()
         {
-            with(_ =>
+            await with(_ =>
             {
                 _.Services.For<IUriLookup>().Use<FakeUriLookup>();
                 _.Transports.ListenForMessagesFrom("fake://one");
@@ -69,7 +69,7 @@ namespace Jasper.Testing.Messaging
         {
             var tracker = new MessageTracker();
 
-            with(_ =>
+            await with(_ =>
             {
                 _.Services.AddSingleton(tracker);
                 _.Services.For<IUriLookup>().Use<FakeUriLookup>();
@@ -91,7 +91,7 @@ namespace Jasper.Testing.Messaging
         {
             var tracker = new MessageTracker();
 
-            with(_ =>
+            await with(_ =>
             {
                 _.Services.AddSingleton(tracker);
                 _.Services.For<IUriLookup>().Use<FakeUriLookup>();

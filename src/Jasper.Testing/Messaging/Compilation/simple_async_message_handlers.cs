@@ -15,15 +15,6 @@ namespace Jasper.Testing.Messaging.Compilation
         }
 
         [Fact]
-        public async Task execute_the_simplest_possible_static_chain()
-        {
-            var message = new Message1();
-            await Execute(message);
-
-            AsyncHandler.LastMessage1.ShouldBeSameAs(message);
-        }
-
-        [Fact]
         public async Task execute_the_simplest_possible_instance_chain()
         {
             var message = new Message2();

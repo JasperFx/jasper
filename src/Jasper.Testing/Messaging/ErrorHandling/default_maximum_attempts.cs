@@ -1,4 +1,5 @@
-﻿using Jasper.Messaging.Model;
+﻿using System.Threading.Tasks;
+using Jasper.Messaging.Model;
 using Jasper.Testing.Messaging.Bootstrapping;
 using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
@@ -9,20 +10,20 @@ namespace Jasper.Testing.Messaging.ErrorHandling
     public class default_maximum_attempts : BootstrappingContext
     {
         [Fact]
-        public void can_set_the_global_default()
+        public async Task can_set_the_global_default()
         {
             theRegistry.Handlers.DefaultMaximumAttempts = 3;
 
-            theHandlers.ChainFor<SimpleMessage>()
+            (await theHandlers()).ChainFor<SimpleMessage>()
                 .MaximumAttempts.ShouldBe(3);
         }
 
         [Fact]
-        public void explicit_configuration_always_wins()
+        public async Task explicit_configuration_always_wins()
         {
             theRegistry.Handlers.DefaultMaximumAttempts = 3;
 
-            theHandlers.ChainFor<Message4>().MaximumAttempts.ShouldBe(11);
+            (await theHandlers()).ChainFor<Message4>().MaximumAttempts.ShouldBe(11);
         }
     }
 

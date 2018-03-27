@@ -4,7 +4,6 @@ using Xunit;
 
 namespace Jasper.Testing.Bootstrapping
 {
-    [Collection("integration")]
     public class including_extensions
     {
         [Fact]

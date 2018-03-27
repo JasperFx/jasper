@@ -1,4 +1,6 @@
-﻿using Jasper.Messaging;
+﻿using System.Threading.Tasks;
+using Jasper.Messaging;
+using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
 using Xunit;
@@ -16,32 +18,40 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         }
 
         [Fact]
-        public void has_explicitly_published_messages()
+        public async Task has_explicitly_published_messages()
         {
-            theRuntime.Capabilities.Publishes<Message1>().ShouldBeTrue();
-            theRuntime.Capabilities.Publishes<Message2>().ShouldBeTrue();
+            var capabilities = (await theRuntime()).Capabilities;
+
+            capabilities.Publishes<Message1>().ShouldBeTrue();
+            capabilities.Publishes<Message2>().ShouldBeTrue();
         }
 
         [Fact]
-        public void negative_case()
+        public async Task negative_case()
         {
+            var capabilities = (await theRuntime()).Capabilities;
+
             // doesn't match conventions and not explicitly added
-            theRuntime.Capabilities.Publishes<Message3>().ShouldBeFalse();
+            capabilities.Publishes<Message3>().ShouldBeFalse();
         }
 
         [Fact]
-        public void find_attributes()
+        public async Task find_attributes()
         {
-            theRuntime.Capabilities.Publishes<PublishedMessage1>().ShouldBeTrue();
-            theRuntime.Capabilities.Publishes<PublishedMessage2>().ShouldBeTrue();
+            var capabilities = (await theRuntime()).Capabilities;
+
+            capabilities.Publishes<PublishedMessage1>().ShouldBeTrue();
+            capabilities.Publishes<PublishedMessage2>().ShouldBeTrue();
         }
 
         [Fact]
-        public void find_by_conventions_against_the_application_assembly()
+        public async Task find_by_conventions_against_the_application_assembly()
         {
-            theRuntime.Capabilities.Publishes<ConventionalMessage1>().ShouldBeTrue();
-            theRuntime.Capabilities.Publishes<ConventionalMessage2>().ShouldBeTrue();
-            theRuntime.Capabilities.Publishes<ConventionalMessage3>().ShouldBeTrue();
+            var capabilities = (await theRuntime()).Capabilities;
+
+            capabilities.Publishes<ConventionalMessage1>().ShouldBeTrue();
+            capabilities.Publishes<ConventionalMessage2>().ShouldBeTrue();
+            capabilities.Publishes<ConventionalMessage3>().ShouldBeTrue();
         }
     }
 

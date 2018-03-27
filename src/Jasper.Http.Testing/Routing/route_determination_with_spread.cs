@@ -18,7 +18,7 @@ namespace Jasper.Http.Testing.Routing
 
         public route_determination_with_spread()
         {
-            _runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
+            _runtime = JasperRuntime.For<JasperRegistry>(_ =>
             {
                 _.Http.Actions.IncludeType<SpreadHttpActions>();
                 _.Http.Actions.DisableConventionalDiscovery();

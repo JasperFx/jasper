@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
@@ -10,25 +11,28 @@ namespace Jasper.Http.Testing
 {
     public class ServiceNode_determination_specs : IDisposable
     {
-        private readonly JasperHttpRegistry theRegistry = new JasperHttpRegistry();
-        private readonly Lazy<JasperRuntime> _runtime;
+        private readonly JasperRegistry theRegistry = new JasperRegistry();
+        private JasperRuntime _runtime;
 
-        private IServiceNode theServiceNode => _runtime.Value.Node;
+        private IServiceNode theServiceNode => _runtime.Node;
 
-        public ServiceNode_determination_specs()
+
+        private async Task withApp()
         {
-            _runtime = new Lazy<JasperRuntime>(() => JasperRuntime.For(theRegistry));
+            _runtime = await JasperRuntime.ForAsync(theRegistry);
         }
 
         public void Dispose()
         {
-            if (_runtime.IsValueCreated) _runtime.Value.Dispose();
+            _runtime?.Dispose();
         }
 
         [Fact]
-        public void capture_service_name_and_machine_name()
+        public async Task capture_service_name_and_machine_name()
         {
             theRegistry.ServiceName = "ImportantService";
+
+            await withApp();
 
             theServiceNode.ServiceName.ShouldBe("ImportantService");
             theServiceNode.MachineName.ShouldBe(Environment.MachineName);
@@ -36,7 +40,7 @@ namespace Jasper.Http.Testing
         }
 
         [Fact]
-        public void capture_overridden_machine_name()
+        public async Task capture_overridden_machine_name()
         {
             theRegistry.ServiceName = "ImportantService";
             theRegistry.Settings.Alter<MessagingSettings>(_ =>
@@ -44,15 +48,19 @@ namespace Jasper.Http.Testing
                 _.MachineName = "BigBox";
             });
 
+            await withApp();
+
             theServiceNode.ServiceName.ShouldBe("ImportantService");
             theServiceNode.MachineName.ShouldBe("BigBox");
             theServiceNode.Id.ShouldBe("ImportantService@BigBox");
         }
 
         [Fact]
-        public void register_http_listener()
+        public async Task register_http_listener()
         {
-            theRegistry.Http.UseUrls("http://localhost:5003");
+            theRegistry.Hosting.UseUrls("http://localhost:5003");
+
+            await withApp();
 
             var serviceNode = theServiceNode;
             serviceNode.HttpEndpoints.ShouldContain($"http://{Environment.MachineName}:5003".ToUri());
@@ -60,10 +68,13 @@ namespace Jasper.Http.Testing
         }
 
         [Fact]
-        public void register_tcp_listener_if_any()
+        public async Task register_tcp_listener_if_any()
         {
+
             theRegistry.Transports.LightweightListenerAt(2222);
             theRegistry.Transports.DurableListenerAt(2333);
+
+            await withApp();
 
             theServiceNode.TcpEndpoints.ShouldContain($"tcp://{Environment.MachineName}:2222".ToUri());
             theServiceNode.TcpEndpoints.ShouldContain($"tcp://{Environment.MachineName}:2333/durable".ToUri());

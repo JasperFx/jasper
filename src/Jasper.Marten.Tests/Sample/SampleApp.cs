@@ -85,12 +85,20 @@ namespace Jasper.Marten.Tests.Sample
     {
         public AppUsingMessageTracking()
         {
-            if (EnvironmentName == "Development" || EnvironmentName == "Testing")
+            // TODO -- need to change this when GH-346 is done
+            Hosting.ConfigureAppConfiguration((context, config) =>
             {
-                // Don't use this in production because it'd
-                // cause a memory leak issue
-                Include<MessageTrackingExtension>();
-            }
+                var environment = context.HostingEnvironment.EnvironmentName;
+
+                if (environment == "Development" || environment == "Testing")
+                {
+                    // Don't use this in production because it'd
+                    // cause a memory leak issue
+                    Include<MessageTrackingExtension>();
+                }
+            });
+
+
         }
     }
     // ENDSAMPLE

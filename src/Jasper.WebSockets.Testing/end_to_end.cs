@@ -88,11 +88,11 @@ namespace Jasper.WebSockets.Testing
         }
     }
 
-    public class WebSocketPingPongApp : JasperHttpRegistry
+    public class WebSocketPingPongApp : JasperRegistry
     {
         public WebSocketPingPongApp()
         {
-            Http
+            Hosting
                 .UseKestrel()
                 .UseUrls("http://localhost:3010")
                 .Configure(app =>

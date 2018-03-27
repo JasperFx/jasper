@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Messaging.Compilation;
 using Microsoft.Extensions.Configuration;
@@ -7,32 +8,10 @@ using Xunit;
 
 namespace Jasper.Testing.Settings
 {
-    [Collection("integration")]
-    public class RegistrySettingsTests : IDisposable
+    public class RegistrySettingsTests
     {
-        public RegistrySettingsTests()
-        {
-            theRegistry = new JasperRegistry();
-            theRegistry.Handlers.DisableConventionalDiscovery();
-        }
-
-        public void Dispose()
-        {
-            _runtime?.Dispose();
-        }
-
-        private readonly JasperRegistry theRegistry;
-        private JasperRuntime _runtime;
-
-        private T get<T>()
-        {
-            if (_runtime == null) _runtime = JasperRuntime.For(theRegistry);
-
-            return _runtime.Get<T>();
-        }
-
         [Fact]
-        public void can_alter_and_registry_still_gets_defaults()
+        public async Task can_alter_and_registry_still_gets_defaults()
         {
             var app = new MyApp();
             app.Configuration.AddJsonFile("appsettings.json")
@@ -41,7 +20,9 @@ namespace Jasper.Testing.Settings
             app.Settings.Require<Colors>();
             app.Settings.Alter<MyFakeSettings>(_ => { _.SomeSetting = 29; });
 
-            using (var runtime = JasperRuntime.For(app))
+            var runtime = await JasperRuntime.ForAsync(app);
+
+            try
             {
                 var mySettings = runtime.Get<MyFakeSettings>();
                 var colors = runtime.Get<Colors>();
@@ -49,32 +30,50 @@ namespace Jasper.Testing.Settings
                 mySettings.SomeSetting.ShouldBe(29);
                 colors.Red.ShouldBe("#ff0000");
             }
-        }
-
-        [Fact]
-        public void can_modify_registry()
-        {
-            var app = new MyApp();
-            using (var runtime = JasperRuntime.For(app))
+            finally
             {
-                app.MySetting.ShouldBe(true);
+                await runtime.Shutdown();
             }
         }
 
         [Fact]
-        public void settings_policy_registers_settings()
+        public async Task can_modify_registry()
         {
-            var runtime = JasperRuntime.For(_ =>
+            var app = new MyApp();
+
+            var runtime = await JasperRuntime.ForAsync(app);
+
+            try
+            {
+                app.MySetting.ShouldBe(true);
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+        }
+
+        [Fact]
+        public async Task settings_policy_registers_settings()
+        {
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-                _.Services.For<IWidget>().Use<Widget>();
-                _.Services.For<IFakeService>().Use<FakeService>();
             });
 
 
-            var settings = runtime.Get<MyFakeSettings>();
-            settings.SomeSetting.ShouldBe(0);
+            try
+            {
+                var settings = runtime.Get<MyFakeSettings>();
+                settings.SomeSetting.ShouldBe(0);
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+
+
         }
     }
 }

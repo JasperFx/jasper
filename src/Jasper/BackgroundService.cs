@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper
 {
-
     /// <summary>
     /// Base class for implementing a long running <see cref="IHostedService"/>.
     /// </summary>

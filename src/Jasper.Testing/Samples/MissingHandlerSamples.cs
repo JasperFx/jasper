@@ -18,9 +18,9 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
     // SAMPLE: ConfigureMissingHandler
-    public class ConfigureMissingHandler : JasperRegistry
+    public class ConfigureMissingHandlerApp : JasperRegistry
     {
-        public ConfigureMissingHandler()
+        public ConfigureMissingHandlerApp()
         {
             // Just add your type to the IoC container
             Services.AddSingleton<IMissingHandler, MyMissingHandler>();

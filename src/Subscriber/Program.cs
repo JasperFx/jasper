@@ -15,7 +15,7 @@ namespace Subscriber
         }
     }
 
-    public class SubscriberApp : JasperHttpRegistry
+    public class SubscriberApp : JasperRegistry
     {
         public SubscriberApp()
         {

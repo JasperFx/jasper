@@ -5,7 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
-    <ProjectReference Include="..\Jasper.Http\Jasper.Http.csproj" />
     <ProjectReference Include="..\Jasper.Marten\Jasper.Marten.csproj" />
     <ProjectReference Include="..\Module1\Module1.csproj" />
   </ItemGroup>

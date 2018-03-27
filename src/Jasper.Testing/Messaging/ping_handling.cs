@@ -17,7 +17,6 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public class ping_handling
     {
         [Fact]
@@ -28,30 +27,41 @@ namespace Jasper.Testing.Messaging
                 TransportLogger.Empty());
 
 
-            using (var runtime = JasperRuntime.For<JasperHttpRegistry>(_ =>
+            var runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
             {
                 _.Http.Transport.EnableListening(true);
-                _.Http.UseUrls("http://localhost:5005");
-                _.Http.UseKestrel();
+                _.Hosting.UseUrls("http://localhost:5005");
+                _.Hosting.UseKestrel();
 
                 _.Services.AddLogging();
 
-                _.Http.Configure(app =>
+                _.Hosting.Configure(app =>
                 {
                     app.AddJasper();
 
                     app.Run(c => c.Response.WriteAsync("Hello"));
                 });
-            }))
+            });
+
+            try
             {
                 await sender.Ping();
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
 
         [Fact]
         public async Task ping_happy_path_with_tcp()
         {
-            using (var runtime = JasperRuntime.For(_ => { _.Transports.LightweightListenerAt(2222); }))
+            var runtime = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Transports.LightweightListenerAt(2222);
+            });
+
+            try
             {
                 var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
                     CancellationToken.None, TransportLogger.Empty());
@@ -59,6 +69,10 @@ namespace Jasper.Testing.Messaging
                 sender.Start(new StubSenderCallback());
 
                 await sender.Ping();
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
 

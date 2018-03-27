@@ -1,4 +1,5 @@
-﻿using Jasper.Http.Testing.ContentHandling;
+﻿using System.Threading.Tasks;
+using Jasper.Http.Testing.ContentHandling;
 using Jasper.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -17,30 +18,42 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         }
 
         [Fact]
-        public void hosting_environment_uses_config()
+        public async Task hosting_environment_uses_config()
         {
-            var registry = new JasperHttpRegistry();
+            var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery(true);
-            registry.EnvironmentName = "Fake";
+            registry.Hosting.UseEnvironment("Fake");
 
-            using (var runtime = JasperRuntime.For(registry))
+            var runtime = await JasperRuntime.ForAsync(registry);
+
+            try
             {
                 runtime.Get<IHostingEnvironment>()
                     .EnvironmentName.ShouldBe("Fake");
             }
+            finally
+            {
+                await runtime.Shutdown();
+            }
         }
 
         [Fact]
-        public void hosting_environment_uses_config_2()
+        public async Task hosting_environment_uses_config_2()
         {
-            var registry = new JasperHttpRegistry();
+            var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery(true);
-            registry.Http.UseEnvironment("Fake2");
+            registry.Hosting.UseEnvironment("Fake2");
 
-            using (var runtime = JasperRuntime.For(registry))
+            var runtime = await JasperRuntime.ForAsync(registry);
+
+            try
             {
                 runtime.Get<IHostingEnvironment>()
                     .EnvironmentName.ShouldBe("Fake2");
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
 

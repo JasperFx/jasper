@@ -8,54 +8,61 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation
 {
-    [Collection("integration")]
     public abstract class CompilationContext: IDisposable
     {
         private Lazy<IContainer> _container;
+        private JasperRuntime _runtime;
 
 
         protected Envelope theEnvelope;
 
 
         public readonly JasperRegistry theRegistry = new JasperRegistry();
-        private Lazy<JasperRuntime> _runtime;
 
         public CompilationContext()
         {
             theRegistry.Handlers.DisableConventionalDiscovery();
-            _runtime = new Lazy<JasperRuntime>(() =>
-            {
-                return JasperRuntime.For(theRegistry);
-            });
         }
-
-
-
-        public IContainer Container => _container.Value;
-
-        public HandlerGraph Graph => _runtime.Value.Get<HandlerGraph>();
 
         [Fact]
-        public void can_compile_all()
+        public Task can_compile_all()
         {
-            AllHandlersCompileSuccessfully();
+            return AllHandlersCompileSuccessfully();
         }
 
-        public void AllHandlersCompileSuccessfully()
+        public async Task AllHandlersCompileSuccessfully()
         {
-            Graph.Chains.Length.ShouldBeGreaterThan(0);
+            var runtime = await JasperRuntime.ForAsync(theRegistry);
+
+            try
+            {
+                runtime.Get<HandlerGraph>().Chains.Length.ShouldBeGreaterThan(0);
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+
+
         }
 
-        public MessageHandler HandlerFor<TMessage>()
+        public async Task<MessageHandler> HandlerFor<TMessage>()
         {
-            return Graph.HandlerFor(typeof(TMessage));
+            if (_runtime == null)
+            {
+                _runtime = await JasperRuntime.ForAsync(theRegistry);
+            }
+
+
+
+            return _runtime.Get<HandlerGraph>().HandlerFor(typeof(TMessage));
         }
 
         public async Task<IMessageContext> Execute<TMessage>(TMessage message)
         {
-            var handler = HandlerFor<TMessage>();
+            var handler = await HandlerFor<TMessage>();
             theEnvelope = new Envelope(message);
-            var context = _runtime.Value.Get<IMessagingRoot>().ContextFor(theEnvelope);
+            var context = _runtime.Get<IMessagingRoot>().ContextFor(theEnvelope);
 
             await handler.Handle(context);
 
@@ -64,10 +71,7 @@ namespace Jasper.Testing.Messaging.Compilation
 
         public void Dispose()
         {
-            if (_runtime.IsValueCreated)
-            {
-                _runtime.Value.Dispose();
-            }
+            _runtime?.Dispose();
         }
     }
 }

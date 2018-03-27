@@ -12,14 +12,18 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public class publish_versus_send_mechanics : IDisposable
     {
         private JasperRuntime theRuntime;
 
-        public publish_versus_send_mechanics()
+        public void Dispose()
         {
-            theRuntime = JasperRuntime.For(_ =>
+            theRuntime?.Dispose();
+        }
+
+        private async Task buildRuntime()
+        {
+            theRuntime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
@@ -31,15 +35,11 @@ namespace Jasper.Testing.Messaging
             });
         }
 
-        public void Dispose()
-        {
-            theRuntime?.Dispose();
-        }
-
 
         [Fact]
         public async Task send_with_known_subscribers()
         {
+            await buildRuntime();
             await theRuntime.Messaging.Send(new Message1());
             await theRuntime.Messaging.Send(new Message2());
 
@@ -51,6 +51,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task send_message_with_no_known_subscribers()
         {
+            await buildRuntime();
             await Exception<NoRoutesException>.ShouldBeThrownByAsync(async () =>
                 await theRuntime.Messaging.Send(new Message3()));
         }
@@ -58,6 +59,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task publish_message_with_no_known_subscribers()
         {
+            await buildRuntime();
             await theRuntime.Messaging.Publish(new Message3());
 
             theRuntime.AllSentThroughTheStubTransport().Any().ShouldBeFalse();
@@ -66,6 +68,8 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task publish_with_known_subscribers()
         {
+            await buildRuntime();
+
             await theRuntime.Messaging.Publish(new Message1());
             await theRuntime.Messaging.Publish(new Message2());
 

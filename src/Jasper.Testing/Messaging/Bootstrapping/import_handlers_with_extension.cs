@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Shouldly;
 using Xunit;
@@ -8,11 +9,11 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     public class import_handlers_with_extension : BootstrappingContext
     {
         [Fact]
-        public void picks_up_on_handlers_from_extension()
+        public async Task picks_up_on_handlers_from_extension()
         {
             theRegistry.Include<MyExtension>();
 
-            var handlerChain = theHandlers.HandlerFor<ExtensionMessage>().Chain;
+            var handlerChain =(await theHandlers()).HandlerFor<ExtensionMessage>().Chain;
             handlerChain.Handlers.Single()
                 .HandlerType.ShouldBe(typeof(ExtensionThing));
         }

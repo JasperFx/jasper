@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Runtime.Subscriptions
 {
-    [Collection("integration")]
+    [Collection("integration")] // Leave this alone
     public class SubscriptionComplianceSpecs : IDisposable
     {
         private readonly IList<IDisposable> _disposables = new List<IDisposable>();

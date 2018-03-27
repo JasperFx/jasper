@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 namespace Jasper.Testing.Samples
 {
     // SAMPLE: AppUsingHttpTransport
-    public class AppUsingHttpTransport : JasperHttpRegistry
+    public class AppUsingHttpTransport : JasperRegistry
     {
         public AppUsingHttpTransport()
         {
@@ -22,7 +22,7 @@ namespace Jasper.Testing.Samples
 
             // You'll have to have Kestrel or some other
             // web server for this to function
-            Http
+            Hosting
                 .UseUrls("http://*:5000")
                 .UseKestrel();
 

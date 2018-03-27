@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
@@ -10,10 +11,9 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Bootstrapping
 {
-    [Collection("integration")]
     public class BootstrappingContext : IDisposable
     {
-        private readonly Lazy<JasperRuntime> _runtime;
+        private JasperRuntime _runtime;
 
         public readonly JasperRegistry theRegistry = new JasperRegistry();
         public readonly Uri Uri1 = new Uri("stub://1");
@@ -23,7 +23,6 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
         public BootstrappingContext()
         {
-            _runtime = new Lazy<JasperRuntime>(() => JasperRuntime.For(theRegistry));
             theRegistry.Services.AddSingleton<ITransport, StubTransport>();
 
             theRegistry.Services.Scan(_ =>
@@ -33,22 +32,25 @@ namespace Jasper.Testing.Messaging.Bootstrapping
             });
         }
 
-        public MessagingSettings theSettings => _runtime.Value.Get<MessagingSettings>();
 
-        public JasperRuntime theRuntime => _runtime.Value;
+        public async Task<JasperRuntime> theRuntime()
+        {
+            if (_runtime == null)
+            {
+                _runtime = await JasperRuntime.ForAsync(theRegistry);
+            }
 
-        public IChannelGraph theChannels => _runtime.Value.Get<IChannelGraph>();
+            return _runtime;
+        }
 
-        public StubTransport theTransport => _runtime.Value.Get<ITransport[]>()
-            .OfType<StubTransport>()
-            .Single();
-
-        public HandlerGraph theHandlers => _runtime.Value.Get<HandlerGraph>();
+        public async Task<HandlerGraph> theHandlers()
+        {
+            return (await theRuntime()).Get<HandlerGraph>();
+        }
 
         public void Dispose()
         {
-            if (_runtime.IsValueCreated)
-                _runtime.Value.Dispose();
+            _runtime?.Dispose();
         }
     }
 }

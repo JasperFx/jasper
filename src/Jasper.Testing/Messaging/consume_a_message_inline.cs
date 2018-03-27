@@ -19,9 +19,9 @@ namespace Jasper.Testing.Messaging
         private readonly WorkTracker theTracker = new WorkTracker();
 
 
-        public consume_a_message_inline()
+        private Task configure()
         {
-            with(_ =>
+            return with(_ =>
             {
                 _.Services.AddSingleton(theTracker);
 
@@ -32,13 +32,13 @@ namespace Jasper.Testing.Messaging
                 _.Handlers.OnException<DivideByZeroException>().Requeue();
                 _.Handlers.DefaultMaximumAttempts = 3;
             });
-
-
         }
 
         [Fact]
         public async Task will_process_inline()
         {
+            await configure();
+
             var message = new Message5
             {
 
@@ -50,21 +50,25 @@ namespace Jasper.Testing.Messaging
         }
 
         [Fact]
-        public Task exceptions_will_be_thrown_to_caller()
+        public async Task exceptions_will_be_thrown_to_caller()
         {
+            await configure();
+
             var message = new Message5
             {
                 FailThisManyTimes = 1
             };
 
 
-            return Testing.Exception<DivideByZeroException>
+            await Exception<DivideByZeroException>
                 .ShouldBeThrownByAsync(() => Bus.Invoke(message));
         }
 
         [Fact]
         public async Task will_send_cascading_messages()
         {
+            await configure();
+
             var message = new Message5
             {
 
@@ -82,6 +86,8 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task will_log_an_exception()
         {
+            await configure();
+
             try
             {
                 await Bus.Invoke(new Message5 {FailThisManyTimes = 1});

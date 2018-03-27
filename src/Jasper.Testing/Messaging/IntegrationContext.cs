@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Configuration;
@@ -6,7 +7,6 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public class IntegrationContext : IDisposable
     {
         public JasperRuntime Runtime { get; private set; }
@@ -15,15 +15,13 @@ namespace Jasper.Testing.Messaging
 
         public IChannelGraph Channels => Runtime.Get<IChannelGraph>();
 
-        public MessagingSettings MessagingSettings => Runtime.Get<MessagingSettings>();
 
-        protected void withAllDefaults()
+        protected Task withAllDefaults()
         {
-            with(new JasperRegistry());
-            Handlers = Runtime.Get<HandlerGraph>();
+            return with(new JasperRegistry());
         }
 
-        protected void with(JasperRegistry registry)
+        protected async Task with(JasperRegistry registry)
         {
             registry.Services.Scan(_ =>
             {
@@ -31,26 +29,23 @@ namespace Jasper.Testing.Messaging
                 _.WithDefaultConventions();
             });
 
-            Runtime = JasperRuntime.For(registry);
-
-
-            Handlers = Runtime.Get<HandlerGraph>();
+            Runtime = await JasperRuntime.ForAsync(registry);
         }
 
-        protected void with(Action<JasperRegistry> configuration)
+        protected Task with(Action<JasperRegistry> configuration)
         {
             var registry = new JasperRegistry();
 
 
             configuration(registry);
 
-            with(registry);
+            return with(registry);
         }
 
-        protected void with<T>() where T : JasperRegistry, new()
+        protected Task with<T>() where T : JasperRegistry, new()
         {
             var registry = new T();
-            with(registry);
+            return with(registry);
         }
 
         public virtual void Dispose()
@@ -63,6 +58,6 @@ namespace Jasper.Testing.Messaging
             return Handlers.ChainFor<T>();
         }
 
-        public HandlerGraph Handlers { get; private set; }
+        public HandlerGraph Handlers => Runtime.Get<HandlerGraph>();
     }
 }

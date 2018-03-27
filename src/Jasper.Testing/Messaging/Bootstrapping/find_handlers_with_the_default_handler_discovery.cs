@@ -8,46 +8,48 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 {
     public class find_handlers_with_the_default_handler_discovery : IntegrationContext
     {
-        public find_handlers_with_the_default_handler_discovery()
-        {
-            withAllDefaults();
-        }
-
 
         [Fact]
-        public void can_find_appropriate_static_method()
+        public async Task can_find_appropriate_static_method()
         {
+            await withAllDefaults();
+
             chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(nameof(NetflixHandler.HandleAsync));
         }
 
         [Fact]
-        public void can_find_handlers_from_static_classes()
+        public async Task can_find_handlers_from_static_classes()
         {
+            await withAllDefaults();
             chainFor<StaticClassMessage>().Handlers.Single().HandlerType
                 .ShouldBe(typeof(StaticClassHandler));
         }
 
         [Fact]
-        public void does_not_find_handlers_that_do_not_match_the_type_naming_convention()
+        public async Task does_not_find_handlers_that_do_not_match_the_type_naming_convention()
         {
+            await withAllDefaults();
             chainFor<MovieAdded>().ShouldNotHaveHandler<MovieWatcher>(x => x.Watch(null));
         }
 
         [Fact]
-        public void finds_classes_suffixed_as_Consumer()
+        public async Task finds_classes_suffixed_as_Consumer()
         {
+            await withAllDefaults();
             chainFor<Event1>().ShouldHaveHandler<EventConsumer>(x => x.Consume(new Event1()));
         }
 
         [Fact]
-        public void finds_classes_suffixed_as_Handler()
+        public async Task finds_classes_suffixed_as_Handler()
         {
+            await withAllDefaults();
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle(new MovieAdded()));
         }
 
         [Fact]
-        public void finds_interface_messages_too()
+        public async Task finds_interface_messages_too()
         {
+            await withAllDefaults();
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Record(null));
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Record2(null));
             chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Record(null));
@@ -55,22 +57,25 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         }
 
         [Fact]
-        public void ignore_class_marked_as_NotHandler()
+        public async Task ignore_class_marked_as_NotHandler()
         {
+            await withAllDefaults();
             chainFor<MovieAdded>()
                 .ShouldNotHaveHandler<BlockbusterHandler>(x => x.Handle(new MovieAdded()));
         }
 
         [Fact]
-        public void ignore_method_marked_as_NotHandler()
+        public async Task ignore_method_marked_as_NotHandler()
         {
+            await withAllDefaults();
             chainFor<MovieAdded>()
                 .ShouldNotHaveHandler<NetflixHandler>(x => x.Handle2(new MovieAdded()));
         }
 
         [Fact]
-        public void will_find_methods_with_parameters_other_than_the_message()
+        public async Task will_find_methods_with_parameters_other_than_the_message()
         {
+            await withAllDefaults();
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle3(null, null));
         }
     }
@@ -78,17 +83,17 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     public class customized_finding : IntegrationContext
     {
         [Fact]
-        public void extra_suffix()
+        public async Task extra_suffix()
         {
-            with(x => x.Handlers.Discovery(d => d.IncludeClassesSuffixedWith("Watcher")));
+            await with(x => x.Handlers.Discovery(d => d.IncludeClassesSuffixedWith("Watcher")));
 
             chainFor<MovieAdded>().ShouldHaveHandler<MovieWatcher>(x => x.Watch(null));
         }
 
         [Fact]
-        public void handler_types_from_a_marker_interface()
+        public async Task handler_types_from_a_marker_interface()
         {
-            with(x => x.Handlers.Discovery(d => d.IncludeTypesImplementing<IMovieThing>()));
+            await with(x => x.Handlers.Discovery(d => d.IncludeTypesImplementing<IMovieThing>()));
 
             chainFor<MovieAdded>().ShouldHaveHandler<EpisodeWatcher>(x => x.Handle(new MovieAdded()));
         }

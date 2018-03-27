@@ -8,6 +8,7 @@ using Xunit;
 
 namespace Jasper.Http.Testing
 {
+    [Collection("aspnetcore")]
     public class JasperWebHostBuilderExtensionsTester
     {
         private readonly IWebHost theHost;
@@ -46,11 +47,11 @@ namespace Jasper.Http.Testing
         public void jasper_runtime_is_disposed_when_the_host_is_disposed()
         {
             var runtime = theHost.Services.GetService<JasperRuntime>();
-            ShouldBeBooleanExtensions.ShouldBeFalse(runtime.IsDisposed);
+            runtime.IsDisposed.ShouldBeFalse();
 
             theHost.Dispose();
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(runtime.IsDisposed);
+            runtime.IsDisposed.ShouldBeTrue();
         }
 
         public interface IService { }
@@ -59,7 +60,7 @@ namespace Jasper.Http.Testing
 
 
 
-    public class BootstrappingApp : JasperHttpRegistry
+    public class BootstrappingApp : JasperRegistry
     {
         public static readonly Guid Id = Guid.NewGuid();
 

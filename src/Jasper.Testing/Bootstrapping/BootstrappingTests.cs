@@ -11,7 +11,6 @@ using Xunit;
 
 namespace Jasper.Testing.Bootstrapping
 {
-    [Collection("integration")]
     public class BootstrappingTests
     {
         [Fact]
@@ -21,8 +20,6 @@ namespace Jasper.Testing.Bootstrapping
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.AddTransient<IFakeStore, FakeStore>();
-                _.Services.For<IWidget>().Use<Widget>();
-                _.Services.For<IFakeService>().Use<FakeService>();
             }))
             {
                 runtime.ApplicationAssembly.ShouldBe(GetType().Assembly);
@@ -67,8 +64,7 @@ namespace Jasper.Testing.Bootstrapping
             theRegistry.Services.AddTransient<IMainService, MainService>();
 
             theRegistry.Services.AddTransient<IFakeStore, FakeStore>();
-            theRegistry.Services.For<IWidget>().Use<Widget>();
-            theRegistry.Services.For<IFakeService>().Use<FakeService>();
+
 
             theRuntime = JasperRuntime.For(theRegistry);
         }
@@ -93,8 +89,7 @@ namespace Jasper.Testing.Bootstrapping
             theRegistry.Services.AddSingleton<IMainService>(mainService);
 
             theRegistry.Services.AddTransient<IFakeStore, FakeStore>();
-            theRegistry.Services.For<IWidget>().Use<Widget>();
-            theRegistry.Services.For<IFakeService>().Use<FakeService>();
+
 
 
             theRuntime = JasperRuntime.For(theRegistry);

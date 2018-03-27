@@ -5,17 +5,14 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    [Collection("integration")]
     public class invoke_message_and_expect_a_response : SendingContext
     {
-        public invoke_message_and_expect_a_response()
-        {
-            StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
-        }
 
         [Fact]
         public async Task invoke_expecting_a_response()
         {
+            await StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
+
             var answer = await theReceiver.Messaging.Invoke<Answer>(new Question {One = 3, Two = 4});
 
             answer.Sum.ShouldBe(7);
@@ -25,6 +22,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task invoke_with_no_known_response_do_not_blow_up()
         {
+            await StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
             (await theReceiver.Messaging.Invoke<Answer>(new QuestionWithNoAnswer()))
                 .ShouldBeNull();
         }
@@ -32,6 +30,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task invoke_with_expected_response_when_there_is_no_receiver()
         {
+            await StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
             await Exception<ArgumentOutOfRangeException>.ShouldBeThrownByAsync(async () =>
             {
                 await theReceiver.Messaging.Invoke<Answer>(new QuestionWithNoHandler());

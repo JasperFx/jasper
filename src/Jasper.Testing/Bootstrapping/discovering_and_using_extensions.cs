@@ -8,7 +8,6 @@ using Xunit;
 
 namespace Jasper.Testing.Bootstrapping
 {
-    [Collection("integration")]
     public class discovering_and_using_extensions : IDisposable
     {
         private JasperRuntime theRuntime;

@@ -11,37 +11,35 @@ using Xunit;
 
 namespace Jasper.Http.Testing.AspNetCoreIntegration
 {
-    public class can_bootstrap_a_bus_plus_aspnetcore_app_through_jasper_registry : IDisposable
+    public class can_bootstrap_a_bus_plus_aspnetcore_app_through_jasper_registry
     {
-        private readonly JasperRuntime theRuntime = JasperRuntime.For<JasperServerApp>();
-
-        public void Dispose()
-        {
-            theRuntime.Dispose();
-        }
 
         [Fact]
         public async Task can_handle_an_http_request_through_Kestrel()
         {
-            using (var client = new HttpClient())
-            {
-                var text = await client.GetStringAsync("http://localhost:3002");
-                text.ShouldContain("Hello from a hybrid Jasper application");
+            var theRuntime = await JasperRuntime.ForAsync<JasperServerApp>();
 
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var text = await client.GetStringAsync("http://localhost:5200");
+                    text.ShouldContain("Hello from a hybrid Jasper application");
+                }
+
+                // has the message context registered
+                theRuntime.Get<IMessageContext>().ShouldNotBeNull();
+
+                // has the registrations from Jasper
+                theRuntime.Get<IFoo>().ShouldBeOfType<Foo>();
+            }
+            finally
+            {
+                await theRuntime.Shutdown();
             }
         }
 
-        [Fact]
-        public void has_the_bus()
-        {
-            theRuntime.Get<IMessageContext>().ShouldNotBeNull();
-        }
 
-        [Fact]
-        public void captures_registrations_from_configure_registry()
-        {
-            theRuntime.Get<IFoo>().ShouldBeOfType<Foo>();
-        }
     }
 
     public class SomeHandler
@@ -58,15 +56,15 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
     }
 
     // SAMPLE: ConfiguringAspNetCoreWithinJasperRegistry
-    public class JasperServerApp : JasperHttpRegistry
+    public class JasperServerApp : JasperRegistry
     {
         public JasperServerApp()
         {
             Handlers.Discovery(x => x.DisableConventionalDiscovery());
 
-            Http
+            Hosting
                 .UseKestrel()
-                .UseUrls("http://localhost:3002")
+                .UseUrls("http://localhost:5200")
                 .UseStartup<Startup>();
 
         }

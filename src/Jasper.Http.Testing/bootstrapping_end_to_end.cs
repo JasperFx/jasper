@@ -3,23 +3,26 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Testing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Http.Testing
 {
+    // TODO -- use a Collection<T> on this one. Or go to ST
     public class bootstrapping_end_to_end : IDisposable
     {
         public bootstrapping_end_to_end()
         {
-            var registry = new JasperHttpRegistry();
+            registry = new JasperRegistry();
             registry.Http.Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
             registry.Include<EndpointExtension>();
@@ -29,7 +32,12 @@ namespace Jasper.Http.Testing
             registry.Services.AddTransient<IWriterRule, CustomWriterRule>();
             registry.Services.AddTransient<IReaderRule, CustomReaderRule>();
 
-            theRuntime = JasperRuntime.For(registry);
+
+        }
+
+        private async Task withApp()
+        {
+            theRuntime = await JasperRuntime.ForAsync(registry);
         }
 
         public void Dispose()
@@ -37,27 +45,34 @@ namespace Jasper.Http.Testing
             theRuntime?.Dispose();
         }
 
-        private readonly JasperRuntime theRuntime;
+        private JasperRuntime theRuntime;
+        private JasperRegistry registry;
 
 
         [Fact]
-        public void can_apply_custom_conneg_rules()
+        public async Task can_apply_custom_conneg_rules()
         {
+            await withApp();
+
             var rules = theRuntime.Container.QuickBuild<ConnegRules>();
             rules.Readers.First().ShouldBeOfType<CustomReaderRule>();
             rules.Writers.First().ShouldBeOfType<CustomWriterRule>();
         }
 
         [Fact]
-        public void can_discover_endpoints_from_static_types()
+        public async Task can_discover_endpoints_from_static_types()
         {
+            await withApp();
+
             theRuntime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(StaticEndpoint))
                 .ShouldBeTrue();
         }
 
         [Fact]
-        public void can_find_and_apply_endpoints_by_type_scanning()
+        public async Task can_find_and_apply_endpoints_by_type_scanning()
         {
+            await withApp();
+
             var routes = theRuntime.Get<RouteGraph>();
 
             routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)).ShouldBeTrue();
@@ -65,18 +80,22 @@ namespace Jasper.Http.Testing
         }
 
         [Fact]
-        public void can_import_endpoints_from_extension_includes()
+        public async Task can_import_endpoints_from_extension_includes()
         {
+            await withApp();
+
             theRuntime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(ExtensionThing))
                 .ShouldBeTrue();
         }
 
         [Fact]
-        public void can_use_custom_hosted_service_without_aspnet()
+        public async Task can_use_custom_hosted_service_without_aspnet()
         {
+            await withApp();
+
             var service = new CustomHostedService();
 
-            var runtime = JasperRuntime.For<JasperHttpRegistry>(_ => _.Services.AddSingleton<IHostedService>(service));
+            var runtime = JasperRuntime.For<JasperRegistry>(_ => _.Services.AddSingleton<IHostedService>(service));
 
             service.WasStarted.ShouldBeTrue();
             service.WasStopped.ShouldBeFalse();
@@ -87,29 +106,37 @@ namespace Jasper.Http.Testing
         }
 
         [Fact]
-        public void reverse_url_lookup_by_input_model()
+        public async Task reverse_url_lookup_by_input_model()
         {
+            await withApp();
+
             var urls = theRuntime.Get<IUrlRegistry>();
             urls.UrlFor<OtherModel>().ShouldBe("/other");
         }
 
         [Fact]
-        public void reverse_url_lookup_by_method()
+        public async Task reverse_url_lookup_by_method()
         {
+            await withApp();
+
             var urls = theRuntime.Get<IUrlRegistry>();
             urls.UrlFor<SimpleEndpoint>(x => x.get_hello()).ShouldBe("/hello");
         }
 
         [Fact]
-        public void route_graph_is_registered()
+        public async Task route_graph_is_registered()
         {
+            await withApp();
+
             theRuntime.Get<RouteGraph>()
                 .Any().ShouldBeTrue();
         }
 
         [Fact]
-        public void url_registry_is_registered()
+        public async Task url_registry_is_registered()
         {
+            await withApp();
+
             theRuntime.Get<IUrlRegistry>().ShouldNotBeNull();
         }
     }
@@ -133,9 +160,9 @@ namespace Jasper.Http.Testing
         }
     }
 
-    public class EndpointExtension : JasperHttpExtension
+    public class EndpointExtension : IJasperExtension
     {
-        public override void Configure(JasperHttpRegistry registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Http.Actions.IncludeType<ExtensionThing>();
         }

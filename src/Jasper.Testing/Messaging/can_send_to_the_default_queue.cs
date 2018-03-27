@@ -11,12 +11,12 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task send_to_the_default_queue()
         {
-            StartTheReceiver(_ =>
+            await StartTheReceiver(_ =>
             {
                 _.Transports.ListenForMessagesFrom("tcp://localhost:2258");
             });
 
-            StartTheSender(_ =>
+            await StartTheSender(_ =>
             {
                 _.Publish.AllMessagesTo("tcp://localhost:2258");
             });
@@ -34,12 +34,12 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task can_still_receive_if_the_queue_does_not_exist()
         {
-            StartTheReceiver(_ =>
+            await StartTheReceiver(_ =>
             {
                 _.Transports.ListenForMessagesFrom("tcp://localhost:2270");
             });
 
-            StartTheSender(_ =>
+            await StartTheSender(_ =>
             {
                 _.Publish.AllMessagesTo("tcp://localhost:2270/unknown");
             });
