@@ -57,7 +57,7 @@ namespace Jasper.Messaging
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return _nodes.UnregisterLocalNode();
         }
     }
 }
