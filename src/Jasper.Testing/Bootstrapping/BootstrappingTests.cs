@@ -6,6 +6,8 @@ using Jasper.Testing.Messaging.Bootstrapping;
 using Jasper.Testing.Messaging.Compilation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -63,6 +65,47 @@ namespace Jasper.Testing.Bootstrapping
                 runtime.Container.DefaultRegistrationIs<IMainService, MainService>();
             }
         }
+
+        [Fact]
+        public async Task starts_and_stops_the_server()
+        {
+            var server = new FakeServer();
+
+            var runtime = await JasperRuntime.ForAsync(x => x.Services.AddSingleton<IServer>(server));
+
+            server.WasStarted.ShouldBeTrue();
+            server.WasStopped.ShouldBeFalse();
+
+            await runtime.Shutdown();
+
+            server.WasStopped.ShouldBeTrue();
+        }
+    }
+
+    public class FakeServer : IServer
+    {
+        public void Dispose()
+        {
+
+        }
+
+        public Task StartAsync<TContext>(IHttpApplication<TContext> application, CancellationToken cancellationToken)
+        {
+            WasStarted = true;
+            return Task.CompletedTask;
+        }
+
+        public bool WasStarted { get; set; }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            WasStopped = true;
+            return Task.CompletedTask;
+        }
+
+        public bool WasStopped { get; set; }
+
+        public IFeatureCollection Features { get; } = new FeatureCollection();
     }
 
     public class when_bootstrapping_a_runtime_with_multiple_features : IDisposable
