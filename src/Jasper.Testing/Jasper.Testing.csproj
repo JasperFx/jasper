@@ -12,6 +12,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
     <ProjectReference Include="..\Jasper.Storyteller\Jasper.Storyteller.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
     <ProjectReference Include="..\Module1\Module1.csproj" />
