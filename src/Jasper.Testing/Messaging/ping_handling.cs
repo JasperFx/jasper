@@ -29,7 +29,7 @@ namespace Jasper.Testing.Messaging
 
             var runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
             {
-                _.Http.Transport.EnableListening(true);
+                _.Transports.Http.EnableListening(true);
                 _.Hosting.UseUrls("http://localhost:5005");
                 _.Hosting.UseKestrel();
 

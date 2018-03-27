@@ -45,6 +45,8 @@ namespace Jasper
         {
             Publish = new PublishingExpression(Messaging);
 
+            Http = new AspNetCoreFeature(Messaging.Settings);
+
             Services = _applicationServices;
 
             establishApplicationAssembly();
@@ -61,6 +63,7 @@ namespace Jasper
             Settings = new JasperSettings(this);
 
             Settings.Replace(Messaging.Settings);
+            Settings.Replace(Messaging.Settings.Http);
 
 
             Hosting = this;
@@ -69,7 +72,6 @@ namespace Jasper
             EnvironmentConfiguration[WebHostDefaults.ApplicationKey] = ApplicationAssembly.FullName;
 
             Settings.Replace(Http.Settings);
-            Settings.Replace(Http.Transport.As<HttpTransportSettings>()); // Hokey, but I'll allow it
 
         }
 
@@ -77,7 +79,7 @@ namespace Jasper
         ///     IWebHostBuilder and other configuration for ASP.net Core usage within a Jasper
         ///     application
         /// </summary>
-        public AspNetCoreFeature Http { get; } = new AspNetCoreFeature();
+        public AspNetCoreFeature Http { get; }
 
         /// <summary>
         /// Configure ASP.Net Core Hosting

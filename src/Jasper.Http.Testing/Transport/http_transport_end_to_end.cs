@@ -25,7 +25,7 @@ namespace Jasper.Http.Testing.Transport
         {
             await StartTheReceiver(_ =>
             {
-                _.Http.Transport.EnableListening(true);
+                _.Transports.Http.EnableListening(true);
 
                 _.Hosting
                     .UseUrls("http://localhost:5002")
@@ -46,7 +46,7 @@ namespace Jasper.Http.Testing.Transport
         {
             await StartTheReceiver(_ =>
             {
-                _.Http.Transport.EnableListening(true);
+                _.Transports.Http.EnableListening(true);
 
                 _.Hosting
                     .UseUrls("http://localhost:5002")

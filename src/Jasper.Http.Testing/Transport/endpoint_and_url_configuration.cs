@@ -38,7 +38,7 @@ namespace Jasper.Http.Testing.Transport
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<TransportEndpoint>();
 
-                _.Http.Transport.EnableListening(true);
+                _.Transports.Http.EnableListening(true);
 
             });
 
@@ -65,7 +65,7 @@ namespace Jasper.Http.Testing.Transport
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<TransportEndpoint>();
-                _.Http.Transport.EnableListening(true);
+                _.Transports.Http.EnableListening(true);
             });
 
             try
@@ -93,7 +93,7 @@ namespace Jasper.Http.Testing.Transport
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<TransportEndpoint>();
 
-                _.Http.Transport.EnableListening(true).RelativeUrl("api");
+                _.Transports.Http.EnableListening(true).RelativeUrl("api");
             });
 
             try

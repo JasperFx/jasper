@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Conneg;
+using Jasper.Http;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
@@ -29,6 +30,10 @@ namespace Jasper.Messaging.Transports.Configuration
         }
 
         public int UniqueNodeId { get; }
+
+        public HttpTransportSettings Http { get; } = new HttpTransportSettings();
+
+        IHttpTransportConfiguration ITransportsExpression.Http => Http;
 
         // Was ChannelGraph.Name
         public string ServiceName

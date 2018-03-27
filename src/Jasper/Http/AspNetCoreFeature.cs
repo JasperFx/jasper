@@ -6,6 +6,7 @@ using Baseline.Dates;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Transport;
+using Jasper.Messaging.Transports.Configuration;
 using Lamar.Codegen;
 using Lamar.Util;
 using Microsoft.AspNetCore.Hosting;
@@ -16,14 +17,15 @@ namespace Jasper.Http
 {
     public class AspNetCoreFeature
     {
-        private readonly HttpTransportSettings _transport = new HttpTransportSettings();
 
         public readonly ActionSource Actions = new ActionSource();
 
         public readonly RouteGraph Routes = new RouteGraph();
+        private readonly HttpTransportSettings _transport;
 
-        public AspNetCoreFeature()
+        public AspNetCoreFeature(MessagingSettings settings)
         {
+            _transport = settings.Http;
             Actions.IncludeClassesSuffixedWithEndpoint();
         }
 
@@ -34,7 +36,6 @@ namespace Jasper.Http
 
         public HttpSettings Settings { get; } = new HttpSettings();
 
-        public IHttpTransportConfiguration Transport => _transport;
 
 
         internal Task FindRoutes(JasperRuntime runtime, JasperRegistry registry, PerfTimer timer)

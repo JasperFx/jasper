@@ -21,16 +21,14 @@ namespace Jasper.Messaging
         private readonly INodeDiscovery _nodes;
         private readonly JasperRuntime _runtime;
         private readonly IMessageLogger _logger;
-        private readonly HttpTransportSettings _httpSettings;
 
         public NodeRegistration(MessagingSettings settings, INodeDiscovery nodes, JasperRuntime runtime,
-            IMessageLogger logger, HttpTransportSettings httpSettings)
+            IMessageLogger logger)
         {
             _settings = settings;
             _nodes = nodes;
             _runtime = runtime;
             _logger = logger;
-            _httpSettings = httpSettings;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -39,7 +37,6 @@ namespace Jasper.Messaging
             {
                 var local = new ServiceNode(_settings)
                 {
-                    MessagesUrl = _httpSettings.RelativeUrl,
                     HttpEndpoints = _runtime.HttpAddresses?.Select(x => x.ToUri().ToMachineUri()).Distinct()
                         .ToArray()
                 };

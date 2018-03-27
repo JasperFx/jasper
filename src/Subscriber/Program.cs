@@ -19,7 +19,7 @@ namespace Subscriber
     {
         public SubscriberApp()
         {
-            Http.Transport.EnableListening(true);
+            Transports.Http.EnableListening(true);
             Subscribe.At("http://loadbalancer/messages");
             Subscribe.ToAllMessages();
 

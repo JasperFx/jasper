@@ -24,10 +24,10 @@ namespace Jasper.Http.Transport
         private readonly IPersistence _persistence;
         private readonly ITransportLogger _logger;
 
-        public HttpTransport(MessagingSettings settings, HttpTransportSettings httpSettings, JasperRuntime runtime, IPersistence persistence, ITransportLogger logger)
+        public HttpTransport(MessagingSettings settings, JasperRuntime runtime, IPersistence persistence, ITransportLogger logger)
         {
             _settings = settings;
-            _httpSettings = httpSettings;
+            _httpSettings = settings.Http;
             _runtime = runtime;
             _persistence = persistence;
             _logger = logger;

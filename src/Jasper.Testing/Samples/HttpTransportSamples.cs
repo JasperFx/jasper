@@ -11,7 +11,7 @@ namespace Jasper.Testing.Samples
         {
             // While *sending* by the HTTP transport is enabled by default,
             // you have to explicitly enable the HTTP transport listening
-            Http.Transport.EnableListening(true)
+            Transports.Http.EnableListening(true)
 
                 // The default is 10 seconds
                 .ConnectionTimeout(2.Seconds())

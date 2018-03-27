@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Http;
 
 namespace Jasper.Messaging.Transports.Configuration
 {
@@ -45,6 +46,10 @@ namespace Jasper.Messaging.Transports.Configuration
         /// </summary>
         /// <param name="protocol"></param>
         void DisableTransport(string protocol);
+
+
+
+        IHttpTransportConfiguration Http { get; }
 
     }
 

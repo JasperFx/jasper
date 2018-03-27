@@ -1,4 +1,5 @@
-﻿using Jasper.Testing;
+﻿using System.Threading.Tasks;
+using Jasper.Testing;
 using Jasper.Testing.Messaging.Lightweight;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
@@ -9,11 +10,11 @@ namespace Jasper.Http.Testing.Transport
 {
     public class better_reading_of_url_configuration : SendingContext
     {
-        private void start(string urlListener)
+        private Task start(string urlListener)
         {
-            StartTheReceiver(_ =>
+            return StartTheReceiver(_ =>
             {
-                _.Http.Transport.EnableListening(true);
+                _.Transports.Http.EnableListening(true);
 
                 _.Hosting
                     .UseUrls(urlListener);
@@ -24,15 +25,15 @@ namespace Jasper.Http.Testing.Transport
         }
 
         [Fact]
-        public void read_by_localhost()
+        public Task read_by_localhost()
         {
-            start("http://localhost:5504");
+            return start("http://localhost:5504");
         }
 
         [Fact]
-        public void read_empty_ip()
+        public Task read_empty_ip()
         {
-            start("http://0.0.0.0:5005");
+            return start("http://0.0.0.0:5005");
         }
 
         [Fact]
@@ -42,9 +43,9 @@ namespace Jasper.Http.Testing.Transport
         }
 
         [Fact]
-        public void read_wildcard()
+        public Task read_wildcard()
         {
-            start("http://*:5006");
+            return start("http://*:5006");
         }
     }
 }
