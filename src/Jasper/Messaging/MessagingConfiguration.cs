@@ -49,11 +49,11 @@ namespace Jasper.Messaging
 
             writer.WriteLine("Handles messages:");
 
-            var longestMessageName = Graph.Chains.Select(x => x.MessageType.FullName.Length).Max() + 2;
+            var longestMessageName = Graph.Chains.Select(x => x.MessageType.NameInCode().Length).Max() + 2;
 
             foreach (var chain in Graph.Chains)
             {
-                var messageName = chain.MessageType.FullName.PadLeft(longestMessageName);
+                var messageName = chain.MessageType.NameInCode().PadLeft(longestMessageName);
                 var handlers = chain.Handlers.Select(x => x.ToString()).Join(", ");
 
 

@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper
 {
@@ -214,6 +215,12 @@ namespace Jasper
             {
                 writer.WriteLine($"Hosting environment: {hosting.EnvironmentName}");
                 writer.WriteLine($"Content root path: {hosting.ContentRootPath}");
+            }
+
+            var hosted = Container.GetAllInstances<IHostedService>();
+            foreach (var hostedService in hosted)
+            {
+                writer.WriteLine("Hosted Service: " + hostedService);
             }
 
             Registry.Describe(this, writer);

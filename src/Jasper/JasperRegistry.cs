@@ -164,9 +164,10 @@ namespace Jasper
             return Task.CompletedTask;
         }
 
-        protected internal virtual void Describe(JasperRuntime runtime, TextWriter writer)
+        protected internal void Describe(JasperRuntime runtime, TextWriter writer)
         {
             Messaging.Describe(runtime, writer);
+            Http.Describe(runtime, writer);
         }
 
     }

@@ -132,7 +132,7 @@ namespace Jasper.Messaging.Model
 
         public override string ToString()
         {
-            return $"{MessageType.Name} handled by {Handlers.Select(x => $"{x.HandlerType.Name}.{x.Method.Name}()").Join(", ")}";
+            return $"{MessageType.NameInCode()} handled by {Handlers.Select(x => $"{x.HandlerType.NameInCode()}.{x.Method.Name}()").Join(", ")}";
         }
 
 
