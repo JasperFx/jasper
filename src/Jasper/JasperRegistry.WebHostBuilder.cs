@@ -151,13 +151,19 @@ namespace Jasper
 
             var configuration = builder.Build();
             Services.AddSingleton<IConfiguration>(configuration);
+            Services.AddSingleton<IConfigurationRoot>(configuration);
+
             context.Configuration = configuration;
 
-            // TODO -- have this push in HostingEnvironment too
-            Settings.Bootstrap(configuration);
+
+            Settings.Bootstrap(new WebHostBuilderContext
+            {
+                HostingEnvironment = _hostingEnvironment,
+                Configuration = configuration
+            });
 
             var listener = new DiagnosticListener("Microsoft.AspNetCore");
-            Services.AddSingleton<DiagnosticListener>(listener);
+            Services.AddSingleton(listener);
             Services.AddSingleton<DiagnosticSource>(listener);
 
             Services.AddTransient<IApplicationBuilderFactory, ApplicationBuilderFactory>();

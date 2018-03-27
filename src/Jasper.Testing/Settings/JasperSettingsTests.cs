@@ -52,7 +52,7 @@ namespace Jasper.Testing.Settings
                 Configuration
                     .AddInMemoryCollection(new Dictionary<string, string> {{"AppName", "WocketInMyPocket"}});
 
-                Settings.WithConfig(c => ServiceName = c["AppName"]);
+                Settings.WithConfig(c => ServiceName = c.Configuration["AppName"]);
             }
         }
 
@@ -69,7 +69,7 @@ namespace Jasper.Testing.Settings
         public Task can_apply_alterations_using_the_config()
         {
             theRegistry.Configuration.AddJsonFile("appsettings.json");
-            theRegistry.Settings.Alter<FakeSettings>((c, x) => { x.SomeSetting = int.Parse(c["SomeSetting"]); });
+            theRegistry.Settings.Alter<FakeSettings>((c, x) => { x.SomeSetting = int.Parse(c.Configuration["SomeSetting"]); });
 
             return with<FakeSettings>(x => x.SomeSetting.ShouldBe(1));
         }

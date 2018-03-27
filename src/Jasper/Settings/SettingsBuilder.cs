@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,27 +9,27 @@ namespace Jasper.Settings
 {
     public interface ISettingsBuilder
     {
-        void Apply(IConfigurationRoot config, JasperRegistry registry);
+        void Apply(WebHostBuilderContext config, JasperRegistry registry);
     }
 
     public class SettingsBuilder<T> : ISettingsBuilder where T : class
     {
-        private Func<IConfigurationRoot, T> _source;
-        private readonly IList<Action<IConfigurationRoot, T>> _alterations
-            = new List<Action<IConfigurationRoot, T>>();
+        private Func<WebHostBuilderContext, T> _source;
+        private readonly IList<Action<WebHostBuilderContext, T>> _alterations
+            = new List<Action<WebHostBuilderContext, T>>();
 
-        private readonly IList<Action<IConfigurationRoot, T>> _packageAlterations
-            = new List<Action<IConfigurationRoot, T>>();
+        private readonly IList<Action<WebHostBuilderContext, T>> _packageAlterations
+            = new List<Action<WebHostBuilderContext, T>>();
 
         private readonly IList<Action<T>> _withs = new List<Action<T>>();
 
 
 
-        public SettingsBuilder(Func<IConfigurationRoot, T> source = null)
+        public SettingsBuilder(Func<WebHostBuilderContext, T> source = null)
         {
             if (source == null)
             {
-                _source = r => r.Get<T>();
+                _source = r => r.Configuration.Get<T>();
             }
             else
             {
@@ -41,7 +42,7 @@ namespace Jasper.Settings
             _source = c => settings;
         }
 
-        public void Replace(Func<IConfigurationRoot, T> source)
+        public void Replace(Func<WebHostBuilderContext, T> source)
         {
             _alterations.Clear();
             _withs.Clear();
@@ -55,12 +56,12 @@ namespace Jasper.Settings
             Replace(_ => settings);
         }
 
-        public void PackageAlter(Action<IConfigurationRoot, T> alteration)
+        public void PackageAlter(Action<WebHostBuilderContext, T> alteration)
         {
             _packageAlterations.Add(alteration);
         }
 
-        public void Alter(Action<IConfigurationRoot, T> alteration)
+        public void Alter(Action<WebHostBuilderContext, T> alteration)
         {
             _alterations.Add(alteration);
         }
@@ -70,7 +71,7 @@ namespace Jasper.Settings
             _withs.Add(alteration);
         }
 
-        public void Apply(IConfigurationRoot config, JasperRegistry registry)
+        public void Apply(WebHostBuilderContext config, JasperRegistry registry)
         {
             var settings = _source(config) ?? Activator.CreateInstance(typeof(T)).As<T>();
 

@@ -3,6 +3,7 @@ using System.Net.Http;
 using Baseline.Dates;
 using Consul;
 using Jasper.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Consul.Testing
@@ -19,8 +20,10 @@ namespace Jasper.Consul.Testing
             Settings.Alter<ConsulSettings>(ConfigureConsul);
         }
 
-        public void ConfigureConsul(IConfigurationRoot config, ConsulSettings settings)
+        public void ConfigureConsul(WebHostBuilderContext context, ConsulSettings settings)
         {
+            var config = context.Configuration;
+
             // Shorthand to use the default Consul setup, but with a different port
             // number retrieved from the application configuration
             settings.Port = config.GetValue<int>("Consul.Port");

@@ -32,9 +32,9 @@ namespace Jasper.Marten.Tests
         {
             Include<MartenBackedSubscriptions>();
 
-            Settings.Alter<MartenSubscriptionSettings>((config, settings) =>
+            Settings.Alter<MartenSubscriptionSettings>((context, settings) =>
             {
-                settings.StoreOptions.Connection(config.GetConnectionString("subscriptions"));
+                settings.StoreOptions.Connection(context.Configuration.GetConnectionString("subscriptions"));
                 settings.StoreOptions.DatabaseSchemaName = "subscriptions";
             });
         }

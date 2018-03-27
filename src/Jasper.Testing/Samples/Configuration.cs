@@ -16,9 +16,9 @@ namespace Jasper.Testing.Samples
             });
 
             // or additionally use IConfiguration
-            Settings.Alter<MyFakeSettings>((config, settings) =>
+            Settings.Alter<MyFakeSettings>((context, settings) =>
             {
-                settings.SomeSetting = int.Parse(config["SomeKey"]);
+                settings.SomeSetting = int.Parse(context.Configuration["SomeKey"]);
             });
 
 

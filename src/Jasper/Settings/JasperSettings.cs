@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Settings
 {
     public class JasperSettings
     {
-        private readonly IList<Action<IConfigurationRoot>> _configActions = new List<Action<IConfigurationRoot>>();
+        private readonly IList<Action<WebHostBuilderContext>> _configActions = new List<Action<WebHostBuilderContext>>();
 
         private readonly JasperRegistry _parent;
 
@@ -24,7 +24,7 @@ namespace Jasper.Settings
 
         internal bool ApplyingExtensions { get; set; }
 
-        private SettingsBuilder<T> forType<T>(Func<IConfigurationRoot, T> source = null) where T : class
+        private SettingsBuilder<T> forType<T>(Func<WebHostBuilderContext, T> source = null) where T : class
         {
             if (_settings.ContainsKey(typeof(T)))
             {
@@ -61,7 +61,7 @@ namespace Jasper.Settings
         /// </summary>
         public void Configure<T>(Func<IConfiguration, IConfiguration> config) where T : class, new()
         {
-            forType(root => config(root).Get<T>());
+            forType(root => config(root.Configuration).Get<T>());
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Jasper.Settings
         }
 
 
-        public void Alter<T>(Action<IConfigurationRoot, T> alteration) where T : class, new()
+        public void Alter<T>(Action<WebHostBuilderContext, T> alteration) where T : class, new()
         {
             var builder = forType<T>();
             if (ApplyingExtensions)
@@ -102,21 +102,19 @@ namespace Jasper.Settings
             forType<T>().With(alteration);
         }
 
-        public void WithConfig(Action<IConfigurationRoot> configuration)
+        public void WithConfig(Action<WebHostBuilderContext> configuration)
         {
             _configActions.Add(configuration);
         }
 
 
-        internal void Bootstrap(IConfigurationRoot config)
+        internal void Bootstrap(WebHostBuilderContext config)
         {
             foreach (var configAction in _configActions)
             {
                 configAction(config);
             }
 
-            _parent.Services.AddSingleton(config);
-            _parent.Services.AddSingleton<IConfiguration>(config);
 
             foreach (var settings in _settings.Values)
                 settings.Apply(config, _parent);
