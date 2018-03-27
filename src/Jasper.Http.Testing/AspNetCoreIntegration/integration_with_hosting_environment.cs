@@ -57,10 +57,29 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
             }
         }
 
+        [Fact]
+        public async Task hosting_environment_app_name_is_the_service_name()
+        {
+            var runtime = await JasperRuntime.ForAsync<MySpecialRegistry>();
+
+            runtime.Get<IHostingEnvironment>().ApplicationName.ShouldBe("MySpecialApp");
+
+            await runtime.Shutdown();
+        }
+
 
         public class FakeSettings
         {
             public string Environment { get; set; }
+        }
+
+        public class MySpecialRegistry : JasperRegistry
+        {
+            public MySpecialRegistry()
+            {
+                Handlers.DisableConventionalDiscovery();
+                ServiceName = "MySpecialApp";
+            }
         }
     }
 }

@@ -120,11 +120,8 @@ namespace Jasper
             var options = new WebHostOptions(EnvironmentConfiguration);
             var contentRootPath = ResolveContentRootPath(options.ContentRootPath, AppContext.BaseDirectory);
 
-            // TODO -- pull this from the ServiceName insteand?
-            var applicationName = options.ApplicationName;
-
             // Initialize the hosting environment
-            _hostingEnvironment.Initialize(applicationName, contentRootPath, options);
+            _hostingEnvironment.Initialize(ServiceName, contentRootPath, options);
 
             var context = new WebHostBuilderContext
             {

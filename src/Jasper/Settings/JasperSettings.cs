@@ -107,11 +107,8 @@ namespace Jasper.Settings
             _configActions.Add(configuration);
         }
 
-        internal T Get<T>() where T : class, new()
-        {
-            throw new NotImplementedException("Used for testing, just do it end to end now");
-        }
 
+        // TODO -- this will need to have the configuration *pushed* into it from now onw
         internal void Bootstrap()
         {
             // Have ISettingsProvider delegate to JasperSettings
