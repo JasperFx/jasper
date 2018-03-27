@@ -45,7 +45,7 @@ namespace Jasper
         {
             Publish = new PublishingExpression(Messaging);
 
-            Http = new AspNetCoreFeature(Messaging.Settings);
+            HttpRoutes = new HttpSettings(Messaging.Settings);
 
             Services = _applicationServices;
 
@@ -71,18 +71,17 @@ namespace Jasper
             // ASP.Net Core will freak out if this isn't there
             EnvironmentConfiguration[WebHostDefaults.ApplicationKey] = ApplicationAssembly.FullName;
 
-            Settings.Replace(Http.Settings);
+            Settings.Replace(HttpRoutes);
 
         }
 
         /// <summary>
-        ///     IWebHostBuilder and other configuration for ASP.net Core usage within a Jasper
-        ///     application
+        /// Configure how HTTP routes are discovered and handled
         /// </summary>
-        public AspNetCoreFeature Http { get; }
+        public HttpSettings HttpRoutes { get; }
 
         /// <summary>
-        /// Configure ASP.Net Core Hosting
+        /// Configure ASP.Net Core hosting for this Jasper application
         /// </summary>
         public IWebHostBuilder Hosting { get; }
 
@@ -169,7 +168,7 @@ namespace Jasper
         protected internal void Describe(JasperRuntime runtime, TextWriter writer)
         {
             Messaging.Describe(runtime, writer);
-            Http.Describe(runtime, writer);
+            HttpRoutes.Describe(runtime, writer);
         }
 
     }

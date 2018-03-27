@@ -17,7 +17,7 @@ namespace Jasper.Testing.CommandLine
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery();
-            registry.Http.Actions.DisableConventionalDiscovery();
+            registry.HttpRoutes.DisableConventionalDiscovery();
 
             var input = new JasperInput
             {
@@ -37,7 +37,7 @@ namespace Jasper.Testing.CommandLine
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery();
-            registry.Http.Actions.DisableConventionalDiscovery();
+            registry.HttpRoutes.DisableConventionalDiscovery();
 
             var input = new JasperInput
             {

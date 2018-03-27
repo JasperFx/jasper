@@ -16,9 +16,9 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public void methods_are_candidate_actions()
         {
-            ActionSource.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue))).ShouldBeTrue();
-            ActionSource.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_dateoffset_time(DateTimeOffset.MaxValue))).ShouldBeTrue();
-            ActionSource.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_number_value(55))).ShouldBeTrue();
+            HttpSettings.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue))).ShouldBeTrue();
+            HttpSettings.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_dateoffset_time(DateTimeOffset.MaxValue))).ShouldBeTrue();
+            HttpSettings.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_number_value(55))).ShouldBeTrue();
         }
 
         [Fact]

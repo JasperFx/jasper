@@ -18,7 +18,7 @@ namespace Jasper.Testing.Storyteller
             using (var system = JasperStorytellerHost.Basic(x =>
             {
                 x.Handlers.DisableConventionalDiscovery();
-                x.Http.Actions.DisableConventionalDiscovery();
+                x.HttpRoutes.DisableConventionalDiscovery();
             }))
             {
                 await system.Warmup();
@@ -124,7 +124,7 @@ namespace Jasper.Testing.Storyteller
         public FakeStorytellerSystem()
         {
             Registry.Services.AddSingleton(DisposableGuy);
-            Registry.Http.Actions.DisableConventionalDiscovery();
+            Registry.HttpRoutes.DisableConventionalDiscovery();
             Registry.Handlers.DisableConventionalDiscovery();
         }
 

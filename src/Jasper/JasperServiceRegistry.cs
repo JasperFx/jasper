@@ -53,9 +53,9 @@ namespace Jasper
             this.AddSingleton<ConnegRules>();
 
             this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
-            this.AddSingleton(parent.Http.Routes.Router);
-            this.AddSingleton(parent.Http.Routes);
-            ForSingletonOf<IUrlRegistry>().Use(parent.Http.Routes.Router.Urls);
+            this.AddSingleton(parent.HttpRoutes.Routes.Router);
+            this.AddSingleton(parent.HttpRoutes.Routes);
+            ForSingletonOf<IUrlRegistry>().Use(parent.HttpRoutes.Routes.Router.Urls);
 
             this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());
         }

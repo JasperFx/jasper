@@ -15,7 +15,7 @@ namespace Jasper.Http.Testing
         {
             var runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
             {
-                _.Http.Actions.DisableConventionalDiscovery();
+                _.HttpRoutes.DisableConventionalDiscovery();
                 _.Hosting.Configure(app => { app.Run(c => c.Response.WriteAsync("Hello")); });
             });
 

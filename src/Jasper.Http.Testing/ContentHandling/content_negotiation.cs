@@ -32,7 +32,7 @@ namespace Jasper.Http.Testing.ContentHandling
             _runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
-                _.Http.Actions.IncludeType<CustomReaderWriterEndpoint>();
+                _.HttpRoutes.IncludeType<CustomReaderWriterEndpoint>();
                 _.Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
                 _.Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
             });

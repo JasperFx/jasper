@@ -67,7 +67,7 @@ namespace Jasper.Http
             {
                 services.AddSingleton(runtime);
 
-                JasperStartup.Register(runtime.Container, services, registry.Http.Routes.Router);
+                JasperStartup.Register(runtime.Container, services, registry.HttpRoutes.Routes.Router);
             });
 
             return builder;

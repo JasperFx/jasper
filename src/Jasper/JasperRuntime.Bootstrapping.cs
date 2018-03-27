@@ -65,8 +65,8 @@ namespace Jasper
             container.DisposalLock = DisposalLock.Ignore;
             runtime.Container = container;
 
-            var routeDiscovery = registry.Http.Enabled
-                ? registry.Http.FindRoutes(runtime, registry, timer)
+            var routeDiscovery = registry.HttpRoutes.Enabled
+                ? registry.HttpRoutes.FindRoutes(runtime, registry, timer)
                 : Task.CompletedTask;
 
             runtime.buildAspNetCoreServer();
@@ -219,7 +219,7 @@ namespace Jasper
 
         private void configureAppBuilder(IApplicationBuilder app, out IStartup[] startups)
         {
-            var router = Registry.Http.Routes.Router;
+            var router = Registry.HttpRoutes.Routes.Router;
             app.StoreRouter(router);
 
             startups = Container.GetAllInstances<IStartup>().ToArray();

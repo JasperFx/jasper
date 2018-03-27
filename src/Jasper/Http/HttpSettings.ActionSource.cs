@@ -12,7 +12,7 @@ using Lamar.Scanning;
 
 namespace Jasper.Http
 {
-    public class ActionSource
+    public partial class HttpSettings
     {
         private readonly List<Assembly> _assemblies = new List<Assembly>();
         private readonly CompositeFilter<MethodCall> _callFilters = new CompositeFilter<MethodCall>();
@@ -21,12 +21,6 @@ namespace Jasper.Http
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
         private bool _disableConventionalDiscovery;
-
-        public ActionSource()
-        {
-            _methodFilters = new ActionMethodFilter();
-            _methodFilters.Excludes += m => m.Name == "Configure";
-        }
 
         public AppliesToExpression Applies { get; } = new AppliesToExpression();
 
@@ -74,9 +68,9 @@ namespace Jasper.Http
         /// <summary>
         ///     Find Actions on classes whose name ends on 'Controller'
         /// </summary>
-        public void IncludeClassesSuffixedWithController()
+        public HttpSettings IncludeClassesSuffixedWithController()
         {
-            IncludeTypesNamed(x => x.EndsWith("Controller"));
+            return IncludeTypesNamed(x => x.EndsWith("Controller"));
         }
 
         /// <summary>
@@ -90,75 +84,81 @@ namespace Jasper.Http
                     x.EndsWith("Endpoints", StringComparison.OrdinalIgnoreCase));
         }
 
-        public void IncludeTypesNamed(Func<string, bool> filter)
+        public HttpSettings IncludeTypesNamed(Func<string, bool> filter)
         {
-            IncludeTypes(type => filter(type.Name));
+            return IncludeTypes(type => filter(type.Name));
         }
 
         /// <summary>
         ///     Find Actions on types that match on the provided filter
         /// </summary>
-        public void IncludeTypes(Func<Type, bool> filter)
+        public HttpSettings IncludeTypes(Func<Type, bool> filter)
         {
             _typeFilters.Includes += filter;
+            return this;
         }
 
         /// <summary>
         ///     Find Actions on concrete types assignable to T
         /// </summary>
-        public void IncludeTypesImplementing<T>()
+        public HttpSettings IncludeTypesImplementing<T>()
         {
-            IncludeTypes(type => !type.IsOpenGeneric() && type.IsConcreteTypeOf<T>());
+            return IncludeTypes(type => !type.IsOpenGeneric() && type.IsConcreteTypeOf<T>());
         }
 
         /// <summary>
         ///     Actions that match on the provided filter will be added to the runtime.
         /// </summary>
-        public void IncludeMethods(Func<MethodInfo, bool> filter)
+        public HttpSettings IncludeMethods(Func<MethodInfo, bool> filter)
         {
             _methodFilters.Includes += filter;
+            return this;
         }
 
         /// <summary>
         ///     Exclude types that match on the provided filter for finding Actions
         /// </summary>
-        public void ExcludeTypes(Func<Type, bool> filter)
+        public HttpSettings ExcludeTypes(Func<Type, bool> filter)
         {
             _typeFilters.Excludes += filter;
+            return this;
         }
 
         /// <summary>
         ///     Actions that match on the provided filter will NOT be added to the runtime.
         /// </summary>
-        public void ExcludeMethods(Func<MethodInfo, bool> filter)
+        public HttpSettings ExcludeMethods(Func<MethodInfo, bool> filter)
         {
             _methodFilters.Excludes += filter;
+            return this;
         }
 
         /// <summary>
         ///     Ignore any methods that are declared by a super type or interface T
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void IgnoreMethodsDeclaredBy<T>()
+        public HttpSettings IgnoreMethodsDeclaredBy<T>()
         {
             _methodFilters.IgnoreMethodsDeclaredBy<T>();
+            return this;
         }
 
         /// <summary>
         ///     Exclude any types that are not concrete
         /// </summary>
-        public void ExcludeNonConcreteTypes()
+        public HttpSettings ExcludeNonConcreteTypes()
         {
             _typeFilters.Excludes += type => !type.IsConcrete();
+            return this;
         }
 
         /// <summary>
         ///     Explicitly add this type as a candidate for HTTP endpoints
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void IncludeType<T>()
+        public HttpSettings IncludeType<T>()
         {
-            IncludeType(typeof(T));
+            return IncludeType(typeof(T));
         }
 
         /// <summary>
@@ -166,18 +166,20 @@ namespace Jasper.Http
         /// </summary>
         /// <param name="type"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void IncludeType(Type type)
+        public HttpSettings IncludeType(Type type)
         {
             _explicitTypes.Fill(type);
+            return this;
         }
 
         /// <summary>
         ///     Disables explicit discovery of HTTP endpoints
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        public void DisableConventionalDiscovery()
+        public HttpSettings DisableConventionalDiscovery()
         {
             _disableConventionalDiscovery = true;
+            return this;
         }
     }
 }

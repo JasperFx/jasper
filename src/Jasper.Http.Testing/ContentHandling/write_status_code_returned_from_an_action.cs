@@ -34,7 +34,7 @@ namespace Jasper.Http.Testing.ContentHandling
             var method = typeof(StatusCodeEndpoint).GetMethod(nameof(StatusCodeEndpoint.get_status1),
                 BindingFlags.Public | BindingFlags.Static);
 
-            ActionSource.IsCandidate(method).ShouldBeTrue();
+            HttpSettings.IsCandidate(method).ShouldBeTrue();
 
         }
 
@@ -43,7 +43,7 @@ namespace Jasper.Http.Testing.ContentHandling
         public void async_int_returning_action_is_action_candidate()
         {
             var method = ReflectionHelper.GetMethod<StatusCodeEndpoint>(x => x.get_status2());
-            ActionSource.IsCandidate(method).ShouldBeTrue();
+            HttpSettings.IsCandidate(method).ShouldBeTrue();
         }
     }
 

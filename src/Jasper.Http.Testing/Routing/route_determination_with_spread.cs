@@ -20,8 +20,8 @@ namespace Jasper.Http.Testing.Routing
         {
             _runtime = JasperRuntime.For<JasperRegistry>(_ =>
             {
-                _.Http.Actions.IncludeType<SpreadHttpActions>();
-                _.Http.Actions.DisableConventionalDiscovery();
+                _.HttpRoutes.IncludeType<SpreadHttpActions>();
+                _.HttpRoutes.DisableConventionalDiscovery();
 
                 _.Handlers.DisableConventionalDiscovery();
 

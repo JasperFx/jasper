@@ -25,7 +25,7 @@ namespace Jasper.Http.Testing.Routing
             _runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
-                _.Http.Actions.IncludeType<RouteEndpoints>();
+                _.HttpRoutes.IncludeType<RouteEndpoints>();
             });
         }
 

@@ -23,7 +23,7 @@ namespace Jasper.Http.Testing
         public bootstrapping_end_to_end()
         {
             registry = new JasperRegistry();
-            registry.Http.Actions.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
+            registry.HttpRoutes.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
             registry.Include<EndpointExtension>();
 
@@ -164,7 +164,7 @@ namespace Jasper.Http.Testing
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Http.Actions.IncludeType<ExtensionThing>();
+            registry.HttpRoutes.IncludeType<ExtensionThing>();
         }
     }
 
