@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Messaging.Bootstrapping;
 using Jasper.Testing.Messaging.Compilation;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -23,6 +25,18 @@ namespace Jasper.Testing.Bootstrapping
             }))
             {
                 runtime.ApplicationAssembly.ShouldBe(GetType().Assembly);
+            }
+        }
+
+        [Fact]
+        public void has_the_hosted_environment()
+        {
+            using (var runtime = JasperRuntime.For(_ =>
+            {
+                _.Handlers.DisableConventionalDiscovery();
+            }))
+            {
+                runtime.Container.ShouldHaveRegistration<IHostingEnvironment, HostingEnvironment>();
             }
         }
 
