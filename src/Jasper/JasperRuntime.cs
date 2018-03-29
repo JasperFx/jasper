@@ -18,6 +18,7 @@ using Lamar.Codegen.Variables;
 using Lamar.Scanning.Conventions;
 using Lamar.Util;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,7 @@ namespace Jasper
     {
         private readonly Lazy<IMessageContext> _bus;
         private bool isDisposing;
-
+        private static ApplicationLifetime _lifetime;
 
 
         private JasperRuntime(JasperRegistry registry, PerfTimer timer)

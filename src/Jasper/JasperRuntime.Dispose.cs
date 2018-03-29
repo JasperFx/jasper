@@ -29,6 +29,7 @@ namespace Jasper
                 return;
             }
 
+            _lifetime.StopApplication();
 
             await shutdownAspNetCoreServer();
 
@@ -41,6 +42,8 @@ namespace Jasper
                 {
                     Get<ILogger<IHostedService>>().LogError(e, "Failure while stopping " + hostedService);
                 }
+
+            _lifetime.NotifyStopped();
 
             isDisposing = true;
 

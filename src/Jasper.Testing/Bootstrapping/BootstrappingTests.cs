@@ -15,71 +15,115 @@ using Xunit;
 
 namespace Jasper.Testing.Bootstrapping
 {
-    public class BootstrappingTests
+    // make collection
+    // test IApplicationLifetime
+
+    public class BootstrappingFixture : IDisposable
     {
-        [Fact]
-        public void can_determine_the_application_assembly()
+        private JasperRuntime _runtime;
+
+        public CustomHostedService theHostedService = new CustomHostedService();
+        public FakeServer Server = new FakeServer();
+
+        public void Dispose()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            _runtime?.Dispose();
+        }
+
+        public async Task<JasperRuntime> WithRuntime()
+        {
+            if (_runtime == null)
             {
-                _.Handlers.DisableConventionalDiscovery();
-                _.Services.AddTransient<IFakeStore, FakeStore>();
-            }))
-            {
-                runtime.ApplicationAssembly.ShouldBe(GetType().Assembly);
+                Server = new FakeServer();
+                theHostedService = new CustomHostedService();
+
+                _runtime = await JasperRuntime.ForAsync(_ =>
+                {
+                    _.Handlers.DisableConventionalDiscovery();
+                    _.Services.AddTransient<IFakeStore, FakeStore>();
+                    _.Services.AddTransient<IMainService, MainService>();
+
+                    _.Services.AddSingleton<IHostedService>(theHostedService);
+
+                    _.Services.AddSingleton<IServer>(Server);
+                });
             }
+
+            return _runtime;
+        }
+
+        public async Task Shutdown()
+        {
+            await _runtime.Shutdown();
+            _runtime = null;
+        }
+    }
+
+    [Collection("aspnet")]
+    public class BootstrappingTests : IClassFixture<BootstrappingFixture>
+    {
+        private BootstrappingFixture theFixture;
+
+        public BootstrappingTests(BootstrappingFixture fixture)
+        {
+            theFixture = fixture;
         }
 
         [Fact]
-        public void has_the_hosted_environment()
+        public async Task can_determine_the_application_assembly()
         {
-            using (var runtime = JasperRuntime.For(_ =>
-            {
-                _.Handlers.DisableConventionalDiscovery();
-            }))
-            {
-                runtime.Container.ShouldHaveRegistration<IHostingEnvironment, HostingEnvironment>();
-            }
+            var runtime = await theFixture.WithRuntime();
+
+            runtime.ApplicationAssembly.ShouldBe(GetType().Assembly);
         }
 
         [Fact]
-        public void can_use_custom_hosted_service_without_aspnet()
+        public async Task has_the_hosted_environment()
         {
-            var service = new CustomHostedService();
+            var runtime = await theFixture.WithRuntime();
 
-            var runtime = JasperRuntime.For(_ => _.Services.AddSingleton<IHostedService>(service));
-
-            service.WasStarted.ShouldBeTrue();
-            service.WasStopped.ShouldBeFalse();
-
-            runtime.Dispose();
-
-            service.WasStopped.ShouldBeTrue();
+            runtime.Container.ShouldHaveRegistration<IHostingEnvironment, HostingEnvironment>();
         }
 
         [Fact]
-        public void registrations_from_the_main_registry_are_applied()
+        public async Task can_use_custom_hosted_service_without_aspnet()
         {
-            using (var runtime = JasperRuntime.For(_ => { _.Services.AddTransient<IMainService, MainService>(); }))
-            {
-                runtime.Container.DefaultRegistrationIs<IMainService, MainService>();
-            }
+            await theFixture.WithRuntime();
+
+            theFixture.theHostedService.WasStarted.ShouldBeTrue();
+            theFixture.theHostedService.WasStopped.ShouldBeFalse();
+
+            await theFixture.Shutdown();
+
+            theFixture.theHostedService.WasStopped.ShouldBeTrue();
+
+        }
+
+        [Fact]
+        public async Task registrations_from_the_main_registry_are_applied()
+        {
+            var runtime = await theFixture.WithRuntime();
+
+            runtime.Container.DefaultRegistrationIs<IMainService, MainService>();
         }
 
         [Fact]
         public async Task starts_and_stops_the_server()
         {
-            var server = new FakeServer();
+            var runtime = await theFixture.WithRuntime();
 
-            var runtime = await JasperRuntime.ForAsync(x => x.Services.AddSingleton<IServer>(server));
+            var server = theFixture.Server;
+
 
             server.WasStarted.ShouldBeTrue();
             server.WasStopped.ShouldBeFalse();
 
-            await runtime.Shutdown();
+            await theFixture.Shutdown();
 
             server.WasStopped.ShouldBeTrue();
         }
+
+
     }
 
     public class FakeServer : IServer

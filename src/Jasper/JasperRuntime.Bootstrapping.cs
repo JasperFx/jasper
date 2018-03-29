@@ -90,6 +90,9 @@ namespace Jasper
                 if (registry.MessagingSettings.ThrowOnValidationErrors) recorder.AssertAllSuccessful();
             });
 
+            _lifetime = container.GetInstance<IApplicationLifetime>().As<ApplicationLifetime>();
+            _lifetime.NotifyStarted();
+
             timer.Stop();
 
             return runtime;
