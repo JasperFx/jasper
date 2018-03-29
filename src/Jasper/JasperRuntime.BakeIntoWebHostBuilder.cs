@@ -61,11 +61,6 @@ namespace Jasper
                 return descriptor.ImplementationFactory(provider).As<IStartup>();
             }
 
-            public static Func<IServiceProvider, IStartup> Build(ServiceDescriptor service)
-            {
-                return sp => Build(sp, service);
-            }
-
 
 
             private readonly JasperRuntime _runtime;
@@ -94,10 +89,7 @@ namespace Jasper
                 combined.AddSingleton(_runtime);
 
                 // TODO -- need to pass in the perf timer here
-                _runtime.Container = new Container(combined)
-                {
-                    DisposalLock = DisposalLock.Ignore
-                };
+                _runtime.Container = new Container(combined);
 
                 _startups = others.Select(x => Build(_runtime.Container, x)).ToArray();
 
