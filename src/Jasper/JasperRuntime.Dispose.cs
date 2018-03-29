@@ -30,7 +30,6 @@ namespace Jasper
             }
 
 
-            // TODO -- might want to parallelize these two
             await shutdownAspNetCoreServer();
 
             foreach (var hostedService in _hostedServices)

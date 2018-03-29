@@ -178,11 +178,7 @@ namespace Jasper
         {
             _baseServices.Insert(0, ServiceDescriptor.Singleton<IHostedService, MessagingActivator>());
 
-
-            // TODO -- partially bail out of here if this is bootstrapped by WebHostBuilder
-
             // Add services
-
             var options = new WebHostOptions(EnvironmentConfiguration);
             var contentRootPath = ResolveContentRootPath(options.ContentRootPath, AppContext.BaseDirectory);
 

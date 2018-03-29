@@ -120,10 +120,6 @@ namespace Jasper
 
         private async Task shutdownAspNetCoreServer()
         {
-            // TODO -- not sure yet where the extension method is for this
-            //_logger?.Shutdown();
-
-            // TODO -- may need a timeout on this thing
             await _server.StopAsync(Registry.MessagingSettings.Cancellation).ConfigureAwait(false);
 
             // Fire IApplicationLifetime.Stopped
@@ -136,13 +132,11 @@ namespace Jasper
 
         private async Task startAspNetCoreServer()
         {
-            // TODO -- don't do anything if bootstrapped by ASP.Net Core
-            // TODO -- don't do anything if aspnet stuff is disabled
+            if (!Registry.HttpRoutes.Enabled || Registry.BootstrappedWithinAspNetCore) return;
 
 
             HostingEventSource.Log.HostStart();
 
-            // TODO -- pick up some tracing here from WebHost
             _logger = Get<ILoggerFactory>().CreateLogger("Jasper");
 
             // TODO -- probably going to vote to parallelize this
@@ -162,9 +156,6 @@ namespace Jasper
 
             // Fire IApplicationLifetime.Started
             _applicationLifetime?.NotifyStarted();
-
-            // TODO -- log that the application started
-            // _logger.Started(); // dunno where this comes from yet
         }
 
         private void buildAspNetCoreServer()
@@ -181,8 +172,6 @@ namespace Jasper
 
         private RequestDelegate buildRequestDelegate(IServer server)
         {
-            // TODO -- don't do this if this is bootstrapped through WebHostBuilder
-
             var factory = new ApplicationBuilderFactory(Container);
             var builder = factory.CreateBuilder(server.Features);
             builder.ApplicationServices = Container;
@@ -246,7 +235,6 @@ namespace Jasper
                 return new NulloServer();
             }
 
-            // TODO -- probably need to test this
             var serverAddressesFeature = server.Features?.Get<IServerAddressesFeature>();
             var addresses = serverAddressesFeature?.Addresses;
             if (addresses != null && !addresses.IsReadOnly && addresses.Count == 0)
@@ -268,4 +256,6 @@ namespace Jasper
 
 
     }
+
+
 }
