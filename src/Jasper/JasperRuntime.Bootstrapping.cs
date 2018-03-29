@@ -53,7 +53,7 @@ namespace Jasper
 
             var buildingServices = Task.Factory.StartNew(() =>
             {
-                return timer.Record("Combining Services and Building Settings", registry.CompileAspNetConfiguration);
+                return timer.Record("Combining Services and Building Settings", registry.CompileConfigurationAndServicesForIdiomaticBootstrapping);
             });
 
 
@@ -120,10 +120,6 @@ namespace Jasper
 
         private async Task shutdownAspNetCoreServer()
         {
-            // TODO -- get out of here if bootstrapped by ASP.Net Core or
-            // aspnet is disabled
-            // or no server
-
             // TODO -- not sure yet where the extension method is for this
             //_logger?.Shutdown();
 

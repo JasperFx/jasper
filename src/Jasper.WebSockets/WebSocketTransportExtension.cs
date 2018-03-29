@@ -26,7 +26,7 @@ namespace Jasper.WebSockets
             registry.As<JasperRegistry>().Hosting.Configure(app => app.UseWebSockets());
 
             registry.Services.AddSingleton<WebSocketTransport>();
-            registry.Services.AddSingleton<ITransport>(x => x.GetService<WebSocketTransport>());
+            registry.Services.AddTransient<ITransport>(x => x.GetService<WebSocketTransport>());
             registry.Services.AddSingleton<IWebSocketSender, WebSocketSender>();
         }
     }

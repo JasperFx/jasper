@@ -9,9 +9,9 @@ namespace Jasper.Messaging.Configuration
     // Only tested through integration tests
     public class ConfigUriLookup : IUriLookup
     {
-        private readonly IConfigurationRoot _configuration;
+        private readonly IConfiguration _configuration;
 
-        public ConfigUriLookup(IConfigurationRoot configuration)
+        public ConfigUriLookup(IConfiguration configuration)
         {
             _configuration = configuration;
         }

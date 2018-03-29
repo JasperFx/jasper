@@ -44,9 +44,6 @@ namespace Jasper
 
         private void aspnetcore(JasperRegistry parent)
         {
-            // This would be overridden by the app to do anything useful
-            For<IServer>().Use<NulloServer>();
-
             For<ITransport>()
                 .Use<HttpTransport>();
 

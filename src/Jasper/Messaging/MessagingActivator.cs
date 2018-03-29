@@ -26,6 +26,8 @@ namespace Jasper.Messaging
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            _runtime.Registry.MessagingSettings.StopAll();
+
             // Nothing right now
             return Task.CompletedTask;
         }

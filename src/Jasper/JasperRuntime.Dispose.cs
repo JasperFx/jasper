@@ -23,12 +23,16 @@ namespace Jasper
             // Because StackOverflowException's are a drag
             if (IsDisposed || isDisposing) return;
 
+            if (Registry.BootstrappedWithinAspNetCore)
+            {
+                IsDisposed = true;
+                return;
+            }
+
 
             // TODO -- might want to parallelize these two
             await shutdownAspNetCoreServer();
 
-
-            // TODO -- need to ignore this if done through ASP.Net Core
             foreach (var hostedService in _hostedServices)
                 try
                 {
@@ -38,9 +42,6 @@ namespace Jasper
                 {
                     Get<ILogger<IHostedService>>().LogError(e, "Failure while stopping " + hostedService);
                 }
-
-            // TODO -- try to move this one up
-            Registry.MessagingSettings.StopAll();
 
             isDisposing = true;
 

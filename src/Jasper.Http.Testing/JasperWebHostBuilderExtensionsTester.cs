@@ -8,6 +8,8 @@ using Xunit;
 
 namespace Jasper.Http.Testing
 {
+
+
     [Collection("aspnetcore")]
     public class JasperWebHostBuilderExtensionsTester
     {
@@ -24,7 +26,7 @@ namespace Jasper.Http.Testing
         }
 
         [Fact]
-        public void is_using_bluemilk_for_the_service_provider()
+        public void is_using_lamar_for_the_service_provider()
         {
             theHost.Services.ShouldBeOfType<Container>();
         }
@@ -43,16 +45,6 @@ namespace Jasper.Http.Testing
                 .Id.ShouldBe(BootstrappingApp.Id);
         }
 
-        [Fact]
-        public void jasper_runtime_is_disposed_when_the_host_is_disposed()
-        {
-            var runtime = theHost.Services.GetService<JasperRuntime>();
-            runtime.IsDisposed.ShouldBeFalse();
-
-            theHost.Dispose();
-
-            runtime.IsDisposed.ShouldBeTrue();
-        }
 
         public interface IService { }
         public class Service : IService { }

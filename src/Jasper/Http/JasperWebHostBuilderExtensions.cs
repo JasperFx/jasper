@@ -62,13 +62,9 @@ namespace Jasper.Http
             builder.UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
 
             registry.BootstrappedWithinAspNetCore = true;
-            var runtime = JasperRuntime.For(registry);
-            builder.ConfigureServices(services =>
-            {
-                services.AddSingleton(runtime);
 
-                JasperStartup.Register(runtime.Container, services, registry.HttpRoutes.Routes.Router);
-            });
+            JasperRuntime.BakeIntoWebHostBuilder(builder, registry);
+
 
             return builder;
         }
