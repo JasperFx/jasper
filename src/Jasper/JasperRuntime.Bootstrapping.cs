@@ -31,7 +31,6 @@ namespace Jasper
         private IServer _server;
         private ApplicationLifetime _applicationLifetime;
         private ILogger _logger;
-        private bool _hasServer;
 
         private async Task startHostedServices()
         {
@@ -67,8 +66,7 @@ namespace Jasper
             services.AddSingleton(runtime);
 
 
-            // TODO -- need to pass in the perf timer here
-            var container = await Lamar.Container.BuildAsync(services);
+            var container = await Lamar.Container.BuildAsync(services, timer);
             container.DisposalLock = DisposalLock.Ignore;
             runtime.Container = container;
 
@@ -142,7 +140,6 @@ namespace Jasper
 
             _logger = Get<ILoggerFactory>().CreateLogger("Jasper");
 
-            // TODO -- probably going to vote to parallelize this
             buildAspNetCoreServer();
 
             _applicationLifetime = Container.GetInstance<IApplicationLifetime>().As<ApplicationLifetime>();
@@ -164,7 +161,6 @@ namespace Jasper
         private void buildAspNetCoreServer()
         {
             _server = buildServer();
-            _hasServer = !(_server is NulloServer);
 
             RequestDelegate = buildRequestDelegate(_server);
 
@@ -180,8 +176,7 @@ namespace Jasper
             builder.ApplicationServices = Container;
 
 
-            // TODO -- use QuickBuild on this
-            var startupFilters = Container.GetAllInstances<IStartupFilter>();
+            var startupFilters = Container.QuickBuildAll<IStartupFilter>();
 
 
             // Hate, hate, hate this code, but I blame the ASP.Net team
@@ -217,7 +212,7 @@ namespace Jasper
             var router = Registry.HttpRoutes.Routes.Router;
             app.StoreRouter(router);
 
-            startups = Container.GetAllInstances<IStartup>().ToArray();
+            startups = Container.QuickBuildAll<IStartup>().ToArray();
 
             foreach (var startup in startups)
             {
