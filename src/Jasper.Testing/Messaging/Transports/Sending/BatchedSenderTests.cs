@@ -42,7 +42,9 @@ namespace Jasper.Testing.Messaging.Transports.Sending
         {
             await theSender.SendBatch(theBatch);
 
+#pragma warning disable 4014
             theProtocol.Received().SendBatch(theSenderCallback, theBatch);
+#pragma warning restore 4014
         }
 
         [Fact]
@@ -52,19 +54,23 @@ namespace Jasper.Testing.Messaging.Transports.Sending
 
             await theSender.SendBatch(theBatch);
 
+#pragma warning disable 4014
             theProtocol.DidNotReceive().SendBatch(theSenderCallback, theBatch);
+#pragma warning restore 4014
         }
 
         [Fact]
         public async Task do_not_call_send_batch_if_latched()
         {
-            theSender.LatchAndDrain();
+            await theSender.LatchAndDrain();
 
             await theSender.SendBatch(theBatch);
 
+#pragma warning disable 4014
             theProtocol.DidNotReceive().SendBatch(theSenderCallback, theBatch);
 
             theSenderCallback.Received().SenderIsLatched(theBatch);
+#pragma warning restore 4014
         }
     }
 }

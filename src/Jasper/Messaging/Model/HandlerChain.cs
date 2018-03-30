@@ -76,6 +76,8 @@ namespace Jasper.Messaging.Model
             return handler;
         }
 
+        private bool hasConfiguredFrames = false;
+
         public List<Frame> DetermineFrames()
         {
             if (!Handlers.Any())
@@ -83,16 +85,21 @@ namespace Jasper.Messaging.Model
                 throw new InvalidOperationException("No method handlers configured for message type " + MessageType.FullName);
             }
 
-            applyAttributesAndConfigureMethods();
-
-            foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyHandlerChainAttribute)).OfType<ModifyHandlerChainAttribute>())
+            if (!hasConfiguredFrames)
             {
-                attribute.Modify(this);
-            }
+                hasConfiguredFrames = true;
 
-            foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute)).OfType<ModifyChainAttribute>())
-            {
-                attribute.Modify(this);
+                applyAttributesAndConfigureMethods();
+
+                foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyHandlerChainAttribute)).OfType<ModifyHandlerChainAttribute>())
+                {
+                    attribute.Modify(this);
+                }
+
+                foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute)).OfType<ModifyChainAttribute>())
+                {
+                    attribute.Modify(this);
+                }
             }
 
             var i = 0;

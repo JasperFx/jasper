@@ -7,6 +7,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Conneg;
+using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Lamar;
 using Lamar.Codegen;
@@ -106,21 +107,28 @@ namespace Jasper.Http.Model
             return $"{Route.HttpMethod}: {Route.Pattern}";
         }
 
-        public void AssemblyType(GeneratedAssembly generatedAssembly)
+        public void AssemblyType(GeneratedAssembly generatedAssembly, ConnegRules rules)
         {
             _generatedType = generatedAssembly.AddType(TypeName, typeof(RouteHandler));
             var handleMethod = _generatedType.MethodFor(nameof(RouteHandler.Handle));
 
-            handleMethod.Frames.AddRange(DetermineFrames());
+            handleMethod.Frames.AddRange(DetermineFrames(rules));
 
             handleMethod.Sources.Add(new ContextVariableSource());
             handleMethod.DerivedVariables.AddRange(HttpContextVariables);
         }
 
 
-        public List<Frame> DetermineFrames()
+        private bool _hasAppliedConfigureAndAttributes;
+        public List<Frame> DetermineFrames(ConnegRules rules)
         {
-            applyAttributesAndConfigureMethods();
+            if (!_hasAppliedConfigureAndAttributes)
+            {
+                rules.Apply(this);
+                _hasAppliedConfigureAndAttributes = true;
+                applyAttributesAndConfigureMethods();
+            }
+
             var list = Middleware.ToList();
 
             list.AddRange(Route.Segments.OfType<IRoutingFrameSource>().Select(x => x.ToParsingFrame(Action)));

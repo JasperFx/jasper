@@ -18,7 +18,6 @@ namespace Jasper.Messaging.Runtime.Invocation
         private readonly object _message;
         private readonly IList<Action<Envelope, Envelope>> _actions = new List<Action<Envelope, Envelope>>();
         private string _description;
-        private bool _sentToSender;
 
 
 
@@ -60,8 +59,6 @@ namespace Jasper.Messaging.Runtime.Invocation
         {
             alter = (old, @new) => @new.Destination = old.ReplyUri;
             _description += "; respond to sender";
-
-            _sentToSender = true;
 
             return this;
         }

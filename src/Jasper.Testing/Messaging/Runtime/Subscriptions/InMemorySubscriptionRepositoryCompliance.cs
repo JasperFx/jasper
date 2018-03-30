@@ -110,7 +110,7 @@ namespace Jasper.Testing.Messaging.Runtime.Subscriptions
             return runtime;
         }
 
-        public void configure(JasperRegistry registry)
+        protected void configure(JasperRegistry registry)
         {
 
         }

@@ -31,6 +31,7 @@ namespace Jasper
             For<ITransportLogger>().Use<TransportLogger>().Singleton();
 
 
+            this.AddSingleton(parent.CodeGeneration);
 
             // Will be overwritten when ASP.Net is in place too,
             // but that's okay

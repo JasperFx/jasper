@@ -4,6 +4,8 @@ using System.Linq;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Http.Model;
+using Jasper.Messaging.Transports.Configuration;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Http.ContentHandling
 {
@@ -116,6 +118,14 @@ namespace Jasper.Http.ContentHandling
             }
 
             return true;
+        }
+
+        public static ConnegRules Empty()
+        {
+            var provider = new DefaultObjectPoolProvider();
+
+            var graph = new HttpSerializationGraph(new HttpSettings(new MessagingSettings()), provider, new Forwarders(), new ISerializerFactory[0], new IMessageDeserializer[0], new IMessageSerializer[0]);
+            return new ConnegRules(graph, new IReaderRule[0], new IWriterRule[0]);
         }
     }
 }

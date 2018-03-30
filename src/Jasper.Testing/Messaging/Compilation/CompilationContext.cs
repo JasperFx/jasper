@@ -10,7 +10,6 @@ namespace Jasper.Testing.Messaging.Compilation
 {
     public abstract class CompilationContext: IDisposable
     {
-        private Lazy<IContainer> _container;
         private JasperRuntime _runtime;
 
 
@@ -30,7 +29,7 @@ namespace Jasper.Testing.Messaging.Compilation
             return AllHandlersCompileSuccessfully();
         }
 
-        public async Task AllHandlersCompileSuccessfully()
+        protected async Task AllHandlersCompileSuccessfully()
         {
             var runtime = await JasperRuntime.ForAsync(theRegistry);
 

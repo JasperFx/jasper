@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Baseline.Reflection;
 using Jasper.Configuration;
+using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Lamar.Codegen;
 using Lamar.Codegen.Frames;
@@ -15,6 +16,8 @@ namespace Jasper.Http.Testing.Model
 {
     public class RouteChainTester
     {
+
+
         private RouteChain chainFor(Expression<Action<RouteChainTarget>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
@@ -33,14 +36,14 @@ namespace Jasper.Http.Testing.Model
         public void determine_input_type_if_there_is_one()
         {
             chainFor(x => x.post_command(null)).InputType.ShouldBe(typeof(Input1));
-            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.get_command()).InputType);
+            chainFor(x => x.get_command()).InputType.ShouldBeNull();
         }
 
         [Fact]
         public void determine_resource_type()
         {
-            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.post_command(null)).ResourceType);
-            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.post_input()).ResourceType);
+            chainFor(x => x.post_command(null)).ResourceType.ShouldBeNull();
+            chainFor(x => x.post_input()).ResourceType.ShouldBeNull();
             chainFor(x => x.get_resource()).ResourceType.ShouldBe(typeof(Resource1));
             chainFor(x => x.get_resource2()).ResourceType.ShouldBe(typeof(Resource2));
         }
@@ -51,7 +54,7 @@ namespace Jasper.Http.Testing.Model
         public void will_apply_generic_chain_attributes()
         {
             var chain = chainFor(x => x.post_select_name(null));
-            var frames = chain.DetermineFrames();
+            var frames = chain.DetermineFrames(ConnegRules.Empty());
 
             chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
             chain.Middleware.Any(x => x is FakeMiddleware2).ShouldBeTrue();

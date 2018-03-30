@@ -38,7 +38,9 @@ namespace Jasper.Testing.Messaging
                 logger.Received().DiscardedEnvelope(envelope);
 
 
+#pragma warning disable 4014
                 envelope.Callback.Received().MarkComplete();
+#pragma warning restore 4014
             }
             finally
             {

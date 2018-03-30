@@ -169,8 +169,5 @@ namespace Jasper.Testing.Messaging.Scheduled
 
         }
 
-        public void Dispose()
-        {
-        }
     }
 }

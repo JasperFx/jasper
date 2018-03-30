@@ -62,7 +62,6 @@ namespace Jasper.Messaging.Model
         public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
 
 
-        private readonly object _locker = new object();
 
         public MessageHandler HandlerFor(Type messageType)
         {

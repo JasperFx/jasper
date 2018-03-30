@@ -20,10 +20,10 @@ namespace Jasper.Http.Model
 
         public RouteHandler Build(RouteChain chain)
         {
-            _rules.Apply(chain);
+
 
             var generatedAssembly = new GeneratedAssembly(_generation);
-            chain.AssemblyType(generatedAssembly);
+            chain.AssemblyType(generatedAssembly, _rules);
 
             _container.CompileWithInlineServices(generatedAssembly);
 

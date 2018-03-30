@@ -44,6 +44,19 @@ namespace Pinger
         }
     }
 
+    public class HomeEndpoint
+    {
+        public string Index()
+        {
+            return "Hello!";
+        }
+
+        public string get_hello()
+        {
+            return "hello.";
+        }
+    }
+
     public class PingSender : BackgroundService
     {
         private readonly IMessageContext _bus;

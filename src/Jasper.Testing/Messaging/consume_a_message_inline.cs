@@ -129,7 +129,7 @@ namespace Jasper.Testing.Messaging
             Exceptions.Add(ex);
         }
 
-        void IMessageLogger.LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        void IMessageLogger.LogException(Exception ex, Guid correlationId, string message)
         {
             Exceptions.Add(ex);
         }

@@ -25,7 +25,6 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
         private readonly int thePort = ++NextPort;
         private Uri destination;
         private OutgoingMessageBatch theMessageBatch;
-        private bool _isDisposed;
         private ListeningAgent _listener;
 
         public ProtocolContext()
@@ -62,7 +61,6 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
 
         public void Dispose()
         {
-            _isDisposed = true;
             _listener.Dispose();
         }
 

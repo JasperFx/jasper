@@ -51,7 +51,7 @@ namespace Jasper
 
             establishApplicationAssembly();
 
-            _baseServices = new JasperServiceRegistry(this);
+
 
 
             deriveServiceName();
@@ -59,6 +59,7 @@ namespace Jasper
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
             CodeGeneration = new GenerationRules($"{name.Replace(".", "_")}_Generated");
 
+            _baseServices = new JasperServiceRegistry(this);
 
             Settings = new JasperSettings(this);
 

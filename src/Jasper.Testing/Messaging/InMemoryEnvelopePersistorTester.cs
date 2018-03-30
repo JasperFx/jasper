@@ -63,7 +63,7 @@ namespace Jasper.Testing.Messaging
 
             thePersistor.Scheduled.ShouldHaveTheSameElementsAs(envelope1, envelope3);
         }
-        
+
         [Fact]
         public async Task copy_to()
         {
@@ -71,10 +71,10 @@ namespace Jasper.Testing.Messaging
             var envelope2 = ObjectMother.Envelope();
             var envelope3 = ObjectMother.Envelope();
 
-            thePersistor.ScheduleJob(envelope1);
-            thePersistor.Persist(envelope2);
-            thePersistor.ScheduleJob(envelope3);
-            thePersistor.ScheduleJob(envelope3);
+            await thePersistor.ScheduleJob(envelope1);
+            await thePersistor.Persist(envelope2);
+            await thePersistor.ScheduleJob(envelope3);
+            await thePersistor.ScheduleJob(envelope3);
 
             var other = new InMemoryEnvelopePersistor();
 

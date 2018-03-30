@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Jasper.Configuration;
+using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Testing.FakeStoreTypes;
 using Lamar.Codegen;
@@ -18,7 +19,7 @@ namespace Jasper.Http.Testing
         {
             var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_configured());
 
-            var frames = chain.DetermineFrames();
+            var frames = chain.DetermineFrames(ConnegRules.Empty());
 
             frames.OfType<FakeTransaction>().Any().ShouldBeTrue();
         }
@@ -28,7 +29,7 @@ namespace Jasper.Http.Testing
         {
             var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_configured());
 
-            var frames = chain.DetermineFrames();
+            var frames = chain.DetermineFrames(ConnegRules.Empty());
 
             frames.OfType<FakeWrapper>().Any().ShouldBeTrue();
         }
@@ -38,7 +39,7 @@ namespace Jasper.Http.Testing
         {
             var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_wrapper2());
 
-            var frames = chain.DetermineFrames();
+            var frames = chain.DetermineFrames(ConnegRules.Empty());
 
             frames.OfType<FakeWrapper2>().Any().ShouldBeTrue();
         }
@@ -48,7 +49,7 @@ namespace Jasper.Http.Testing
         {
             var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_wrapper3());
 
-            var frames = chain.DetermineFrames();
+            var frames = chain.DetermineFrames(ConnegRules.Empty());
 
             frames.OfType<FakeWrapper3>().Any().ShouldBeTrue();
         }
