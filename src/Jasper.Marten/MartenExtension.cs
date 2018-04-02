@@ -32,6 +32,7 @@ namespace Jasper.Marten
                 return documentStore;
             });
 
+            registry.Handlers.GlobalPolicy<FineGrainedSessionCreationPolicy>();
 
 
             registry.Services.AddScoped(c => c.GetService<IDocumentStore>().OpenSession());

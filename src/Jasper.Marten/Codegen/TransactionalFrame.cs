@@ -13,36 +13,45 @@ namespace Jasper.Marten.Codegen
         private Variable _store;
         private Variable _context;
         private bool _isUsingPersistence;
+        private Variable _session;
+        private bool _createsSession;
 
         public TransactionalFrame() : base(true)
         {
-            Session = new Variable(typeof(IDocumentSession), this);
+
         }
 
-        public Variable Session { get; }
+        public Variable Session { get; private set; }
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             _store = chain.FindVariable(typeof(IDocumentStore));
+
+            Session = chain.TryFindVariable(typeof(IDocumentSession), VariableSource.NotServices);
+            if (Session == null)
+            {
+                _createsSession = true;
+                Session = new Variable(typeof(IDocumentSession), this);
+            }
 
             _isUsingPersistence = chain.IsUsingMartenPersistence();
 
             // Inside of messaging. Not sure how this is gonna work for HTTP yet
             _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
 
-            if (_context == null)
-            {
-                return new[] {_store};
-            }
-            else
-            {
-                return new[] {_store, _context};
-            }
+            yield return _store;
+            if (_context != null) yield return _context;
+            if (_session != null) yield return _session;
+
         }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
+            if (_createsSession)
+            {
+                writer.Write($"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
+            }
+
             if (_context != null && _isUsingPersistence)
             {
                 writer.Write($"await {typeof(MessagingExtensions).FullName}.{nameof(MessagingExtensions.EnlistInTransaction)}({_context.Usage}, {Session.Usage});");
@@ -50,7 +59,11 @@ namespace Jasper.Marten.Codegen
 
             Next?.GenerateCode(method, writer);
             writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}();");
-            writer.FinishBlock();
+
+            if (_createsSession)
+            {
+                writer.FinishBlock();
+            }
         }
     }
 }
