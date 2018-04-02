@@ -1,7 +1,6 @@
 ﻿using System;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Messaging.Tracking

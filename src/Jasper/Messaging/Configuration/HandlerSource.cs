@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Messaging.Model;
+using Jasper.Messaging.Sagas;
 using Jasper.Util;
 using Lamar.Scanning;
 
@@ -13,6 +14,8 @@ namespace Jasper.Messaging.Configuration
 {
     public class HandlerSource
     {
+        public readonly string[] ValidMethods = new string[]{"Handle", "Handles", "Consume", "Consumes", "Orchestrate", "Orchestrates", "Start", "Starts"};
+
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
         private readonly IList<Type> _explicitTypes = new List<Type>();
@@ -23,8 +26,12 @@ namespace Jasper.Messaging.Configuration
             _methodFilters = new ActionMethodFilter();
             _methodFilters.Excludes += m => m.HasAttribute<JasperIgnoreAttribute>();
 
+            _methodFilters.Includes += m => ValidMethods.Contains(m.Name);
+
             IncludeClassesSuffixedWith("Handler");
             IncludeClassesSuffixedWith("Consumer");
+
+            IncludeTypes(x => x.Closes(typeof(StatefulSagaOf<>)));
 
         }
 
@@ -64,8 +71,12 @@ namespace Jasper.Messaging.Configuration
         private IEnumerable<HandlerCall> actionsFromType(Type type)
         {
             return type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
+                .Where(x => !x.HasAttribute<JasperIgnoreAttribute>())
+                .Where(x => x.DeclaringType != typeof(object)).ToArray()
+
                 .Where(_methodFilters.Matches)
                 .Where(HandlerCall.IsCandidate)
+
                 .Select(m => buildHandler(type, m));
         }
 

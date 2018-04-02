@@ -55,25 +55,25 @@ namespace Jasper.Testing.Messaging.Compilation
         public static Envelope LastEnvelope;
         public static IMessageContext LastContext;
 
-        public static Task Simple1(Message1 message)
+        public static Task Handle(Message1 message)
         {
             LastMessage1 = message;
             return Task.CompletedTask;
         }
 
-        public Task Simple2(Message2 message)
+        public Task Handles(Message2 message)
         {
             LastMessage2 = message;
             return Task.CompletedTask;
         }
 
-        public Task Simple3(Message3 message, Envelope envelope)
+        public Task Consume(Message3 message, Envelope envelope)
         {
             LastEnvelope = envelope;
             return Task.CompletedTask;
         }
 
-        public static Task Simple4(Message4 message, IMessageContext context)
+        public static Task Consumes(Message4 message, IMessageContext context)
         {
             LastContext = context;
             return Task.CompletedTask;

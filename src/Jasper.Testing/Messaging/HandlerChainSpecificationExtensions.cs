@@ -31,7 +31,7 @@ namespace Jasper.Testing.Messaging
             if (chain == null) return;
 
             var method = ReflectionHelper.GetMethod(expression);
-            chain.Handlers.Any(x => x.Method.Name == method.Name && x.HandlerType == typeof(T)).ShouldBeFalse();
+            chain.Handlers.Any(x => x.Method == method).ShouldBeFalse();
         }
 
         public static void ShouldNotHaveHandler<T>(this HandlerChain chain, string methodName)

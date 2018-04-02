@@ -14,7 +14,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         {
             await withAllDefaults();
 
-            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(nameof(NetflixHandler.HandleAsync));
+            chainFor<MovieRemoved>().Handlers.Any().ShouldBeTrue();
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         public async Task does_not_find_handlers_that_do_not_match_the_type_naming_convention()
         {
             await withAllDefaults();
-            chainFor<MovieAdded>().ShouldNotHaveHandler<MovieWatcher>(x => x.Watch(null));
+            chainFor<MovieAdded>().ShouldNotHaveHandler<MovieWatcher>(x => x.Handle(null));
         }
 
         [Fact]
@@ -43,17 +43,17 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         public async Task finds_classes_suffixed_as_Handler()
         {
             await withAllDefaults();
-            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle(new MovieAdded()));
+            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Consume(new MovieAdded()));
         }
 
         [Fact]
         public async Task finds_interface_messages_too()
         {
             await withAllDefaults();
-            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Record(null));
-            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Record2(null));
-            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Record(null));
-            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Record2(null));
+            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handles((IMovieEvent) null));
+            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handles((MovieEvent) null));
+            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Handles((IMovieEvent) null));
+            chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Handles((MovieEvent) null));
         }
 
         [Fact]
@@ -67,16 +67,17 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         [Fact]
         public async Task ignore_method_marked_as_NotHandler()
         {
-            await withAllDefaults();
+            await with(x => x.Handlers.DisableConventionalDiscovery().IncludeType<NetflixHandler>());
+            //await withAllDefaults();
             chainFor<MovieAdded>()
-                .ShouldNotHaveHandler<NetflixHandler>(x => x.Handle2(new MovieAdded()));
+                .ShouldNotHaveHandler<NetflixHandler>(x => x.Handles(new MovieAdded()));
         }
 
         [Fact]
         public async Task will_find_methods_with_parameters_other_than_the_message()
         {
             await withAllDefaults();
-            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle3(null, null));
+            chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle(null, null));
         }
     }
 
@@ -87,7 +88,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         {
             await with(x => x.Handlers.Discovery(d => d.IncludeClassesSuffixedWith("Watcher")));
 
-            chainFor<MovieAdded>().ShouldHaveHandler<MovieWatcher>(x => x.Watch(null));
+            chainFor<MovieAdded>().ShouldHaveHandler<MovieWatcher>(x => x.Handle(null));
         }
 
         [Fact]
@@ -141,7 +142,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
     public class MovieWatcher
     {
-        public void Watch(MovieAdded added)
+        public void Handle(MovieAdded added)
         {
         }
     }
@@ -164,30 +165,30 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         {
         }
 
-        public void Record(IMovieEvent @event)
+        public void Handles(IMovieEvent @event)
         {
         }
 
-        public void Record2(MovieEvent @event)
+        public void Handles(MovieEvent @event)
         {
         }
 
-        public void Handle(MovieAdded added)
+        public void Consume(MovieAdded added)
         {
         }
 
         // Only this method will be ignored as
         // a handler method
         [JasperIgnore]
-        public void Handle2(MovieAdded added)
+        public void Handles(MovieAdded added)
         {
         }
 
-        public void Handle3(MovieAdded message, IMessageContext context)
+        public void Handle(MovieAdded message, IMessageContext context)
         {
         }
 
-        public static Task HandleAsync(MovieRemoved removed)
+        public static Task Handle(MovieRemoved removed)
         {
             return Task.CompletedTask;
         }

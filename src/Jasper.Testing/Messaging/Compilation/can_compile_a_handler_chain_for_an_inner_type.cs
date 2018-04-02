@@ -23,7 +23,7 @@ namespace Jasper.Testing.Messaging.Compilation
     {
         public class InnerHandler
         {
-            public void Go(Message1 message)
+            public void Handle(Message1 message)
             {
 
             }
