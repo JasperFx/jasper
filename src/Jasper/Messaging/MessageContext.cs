@@ -87,7 +87,6 @@ namespace Jasper.Messaging
 
         public IPersistence Persistence { get; }
         public Envelope Envelope { get; }
-        public int UniqueNodeId => _settings.UniqueNodeId;
 
         private readonly List<Envelope> _outstanding = new List<Envelope>();
 
@@ -155,6 +154,11 @@ namespace Jasper.Messaging
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
             var outgoing = await _router.Route(envelope);
+            foreach (var env in outgoing)
+            {
+                _settings.ApplyMessageTypeSpecificRules(env);
+            }
+
             trackEnvelopeCorrelation(outgoing);
 
 

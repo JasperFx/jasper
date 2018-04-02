@@ -1,6 +1,11 @@
-﻿using Baseline;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Baseline;
+using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -42,6 +47,94 @@ namespace Jasper.Testing.Messaging
             envelope.Headers["rule1"].ShouldBe("true");
             envelope.Headers["rule2"].ShouldBe("true");
 
+        }
+
+        [Fact]
+        public async Task see_the_customizations_happen_inside_of_message_context()
+        {
+            var runtime = await JasperRuntime.BasicAsync();
+
+
+            try
+            {
+                var context = runtime.Get<IMessageContext>();
+
+                // Just to force the message context to pool up the envelope instead
+                // of sending it out
+                await context.EnlistInTransaction(new InMemoryEnvelopePersistor());
+
+                var mySpecialMessage = new MySpecialMessage();
+
+                await context.Send("tcp://localhost:2001".ToUri(), mySpecialMessage);
+
+                var outgoing = context.As<MessageContext>().Outstanding.Single();
+
+                outgoing.Headers["special"].ShouldBe("true");
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+        }
+
+        [Fact]
+        public async Task customize_with_fluent_interface_against_a_specific_type()
+        {
+            var runtime = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Publish.Message<MySpecialMessage>().Customize(e => e.Headers.Add("rule", "true"));
+            });
+
+            try
+            {
+                var context = runtime.Get<IMessageContext>();
+
+                // Just to force the message context to pool up the envelope instead
+                // of sending it out
+                await context.EnlistInTransaction(new InMemoryEnvelopePersistor());
+
+                var mySpecialMessage = new MySpecialMessage();
+
+                await context.Send("tcp://localhost:2001".ToUri(), mySpecialMessage);
+
+                var outgoing = context.As<MessageContext>().Outstanding.Single();
+
+                outgoing.Headers["rule"].ShouldBe("true");
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+        }
+
+        [Fact]
+        public async Task customize_with_fluent_interface_against_a_type_filter()
+        {
+            var runtime = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Publish.MessagesFromNamespace(GetType().Namespace).Customize(e => e.Headers.Add("rule2", "true"));
+            });
+
+            try
+            {
+                var context = runtime.Get<IMessageContext>();
+
+                // Just to force the message context to pool up the envelope instead
+                // of sending it out
+                await context.EnlistInTransaction(new InMemoryEnvelopePersistor());
+
+                var mySpecialMessage = new MySpecialMessage();
+
+                await context.Send("tcp://localhost:2001".ToUri(), mySpecialMessage);
+
+                var outgoing = context.As<MessageContext>().Outstanding.Single();
+
+                outgoing.Headers["rule2"].ShouldBe("true");
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
         }
 
 

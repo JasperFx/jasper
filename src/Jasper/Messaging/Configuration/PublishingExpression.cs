@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
@@ -92,6 +93,21 @@ namespace Jasper.Messaging.Configuration
             public ISubscriberAddress To(string address)
             {
                 return To(address.ToUri());
+            }
+
+            /// <summary>
+            /// Customize how a message of this type is sent by modifying
+            /// the outgoing Envelope
+            /// </summary>
+            /// <param name="customization"></param>
+            /// <returns></returns>
+            /// <exception cref="NotImplementedException"></exception>
+            public MessageTrackExpression Customize(Action<Envelope> customization)
+            {
+                var rule = new MessageTypeRule(type => _routing.Matches(type), customization);
+                _bus.Settings.MessageTypeRules.Add(rule);
+
+                return this;
             }
         }
     }
