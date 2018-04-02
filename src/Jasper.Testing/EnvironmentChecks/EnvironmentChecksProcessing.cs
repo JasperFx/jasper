@@ -7,6 +7,7 @@ using Baseline.Dates;
 using Jasper.EnvironmentChecks;
 using Jasper.Messaging.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.EnvironmentChecks

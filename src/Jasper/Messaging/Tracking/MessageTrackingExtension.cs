@@ -14,7 +14,9 @@ namespace Jasper.Messaging.Tracking
         public void Configure(JasperRegistry registry)
         {
             registry.Services.AddSingleton<MessageHistory>();
-            registry.Services.AddSingleton<IMessageLogger, MessageTrackingLogger>();
+
+
+            registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
         }
     }
 }

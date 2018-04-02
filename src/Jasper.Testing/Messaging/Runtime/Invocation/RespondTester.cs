@@ -66,7 +66,7 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
             var toSend = Respond.With(new Message1()).DelayedBy(5.Minutes())
                 .As<ISendMyself>().CreateEnvelope(Original);
 
-            toSend.ExecutionTime.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
+            toSend.ExecutionTime.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
         }
 
         [Fact]

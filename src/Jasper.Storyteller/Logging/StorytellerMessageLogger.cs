@@ -13,14 +13,16 @@ using Envelope = Jasper.Messaging.Runtime.Envelope;
 
 namespace Jasper.Storyteller.Logging
 {
-    public class StorytellerMessageLogger : MessageTrackingLogger
+    public class StorytellerMessageLogger : IMessageLogger
     {
+        private readonly IMessageLogger _inner;
         private ISpecContext _context;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
         private readonly List<PublisherSubscriberMismatch> _mismatches = new List<PublisherSubscriberMismatch>();
 
-        public StorytellerMessageLogger(MessageHistory history, ILoggerFactory factory) : base(history, factory)
+        public StorytellerMessageLogger(IMessageLogger inner)
         {
+            _inner = inner;
             Errors = new BusErrors();
         }
 
@@ -56,72 +58,77 @@ namespace Jasper.Storyteller.Logging
             _records.Add(new EnvelopeRecord(envelope, _context.Timings.Duration, message, ServiceName));
         }
 
-        public override void Sent(Envelope envelope)
+        public void Sent(Envelope envelope)
         {
             trace(envelope, "Sent");
-            base.Sent(envelope);
+            _inner.Sent(envelope);
         }
 
-        public override void Received(Envelope envelope)
+        public void Received(Envelope envelope)
         {
             trace(envelope, "Received");
-            base.Received(envelope);
+            _inner.Received(envelope);
         }
 
-        public override void ExecutionStarted(Envelope envelope)
+        public void ExecutionStarted(Envelope envelope)
         {
             trace(envelope, "Execution Started");
-            base.ExecutionStarted(envelope);
+            _inner.ExecutionStarted(envelope);
         }
 
-        public override void ExecutionFinished(Envelope envelope)
+        public void ExecutionFinished(Envelope envelope)
         {
             trace(envelope, "Execution Finished");
-            base.ExecutionFinished(envelope);
+            _inner.ExecutionFinished(envelope);
         }
 
-        public override void MessageSucceeded(Envelope envelope)
+        public void MessageSucceeded(Envelope envelope)
         {
             trace(envelope, "Message Succeeded");
-            base.MessageSucceeded(envelope);
+            _inner.MessageSucceeded(envelope);
         }
 
-        public override void MessageFailed(Envelope envelope, Exception ex)
+        public void MessageFailed(Envelope envelope, Exception ex)
         {
             trace(envelope, "Message Failed", ex);
-            base.MessageFailed(envelope, ex);
+            _inner.MessageFailed(envelope, ex);
         }
 
-        public override void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             Errors.Exceptions.Add(ex);
-            base.LogException(ex, correlationId, message);
+            _inner.LogException(ex, correlationId, message);
         }
 
-        public override void NoHandlerFor(Envelope envelope)
+        public void NoHandlerFor(Envelope envelope)
         {
             trace(envelope, "No known message handler");
-            base.NoHandlerFor(envelope);
+            _inner.NoHandlerFor(envelope);
         }
 
-        public override void NoRoutesFor(Envelope envelope)
+        public void NoRoutesFor(Envelope envelope)
         {
             trace(envelope, "No message routes");
-            base.NoRoutesFor(envelope);
+            _inner.NoRoutesFor(envelope);
         }
 
-        public override void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
         {
             _mismatches.Add(mismatch);
-            base.SubscriptionMismatch(mismatch);
+            _inner.SubscriptionMismatch(mismatch);
         }
 
-        public override void MovedToErrorQueue(Envelope envelope, Exception ex)
+        public void MovedToErrorQueue(Envelope envelope, Exception ex)
         {
             trace(envelope, "Was moved to the error queue");
             Errors.Exceptions.Add(ex);
 
-            base.MovedToErrorQueue(envelope, ex);
+            _inner.MovedToErrorQueue(envelope, ex);
+        }
+
+        public void DiscardedEnvelope(Envelope envelope)
+        {
+            _inner.DiscardedEnvelope(envelope);
         }
     }
 }

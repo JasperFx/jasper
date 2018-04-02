@@ -12,9 +12,8 @@ namespace Jasper.Messaging.Tracking
         private static void validateMessageTrackerExists(this JasperRuntime runtime)
         {
             var history = runtime.Container.Model.For<MessageHistory>().Default;
-            var hasLogger = runtime.Container.Model.For<IMessageLogger>().Default.ImplementationType.CanBeCastTo<MessageTrackingLogger>();
 
-            if (history == null || history.Lifetime != ServiceLifetime.Singleton || !hasLogger)
+            if (history == null || history.Lifetime != ServiceLifetime.Singleton)
             {
                 throw new InvalidOperationException($"The {nameof(MessageTrackingExtension)} extension is not applied to this application");
             }

@@ -4,6 +4,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Lamar;
+using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation

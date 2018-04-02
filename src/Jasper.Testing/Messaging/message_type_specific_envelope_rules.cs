@@ -149,7 +149,7 @@ namespace Jasper.Testing.Messaging
 
             settings.ApplyMessageTypeSpecificRules(envelope);
 
-            envelope.DeliverBy.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
+            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
         }
 
 

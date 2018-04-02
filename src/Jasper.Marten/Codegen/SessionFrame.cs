@@ -26,7 +26,7 @@ namespace Jasper.Marten.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.OpenSession)}())");
+            writer.Write($"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
             Next?.GenerateCode(method, writer);
             writer.FinishBlock();
         }

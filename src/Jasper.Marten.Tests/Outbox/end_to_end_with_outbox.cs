@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Testing;
 using Marten;
@@ -52,6 +53,13 @@ namespace Jasper.Marten.Tests.Outbox
         {
             theSender?.Dispose();
             theHandler?.Dispose();
+        }
+
+        [Fact]
+        public void code_generation_includes_the_call_to_enlist_the_transaction()
+        {
+            var code = theSender.Get<HandlerGraph>().ChainFor<ItemOutOfStock>().SourceCode;
+            code.ShouldContain("await Jasper.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]

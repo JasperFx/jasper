@@ -61,7 +61,8 @@ namespace Jasper.Storyteller
 
 
             registry.Services.AddSingleton<MessageHistory>();
-            registry.Services.AddSingleton<IMessageLogger, StorytellerMessageLogger>();
+            registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
+            registry.Services.For<IMessageLogger>().DecorateAllWith<StorytellerMessageLogger>();
 
         }
 

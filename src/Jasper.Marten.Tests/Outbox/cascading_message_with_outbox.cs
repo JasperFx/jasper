@@ -110,10 +110,8 @@ namespace Jasper.Marten.Tests.Outbox
     public class TriggerMessageReceiver
     {
         [MartenTransaction]
-        public async Task<object> Handle(TriggerMessage message, IDocumentSession session, IMessageContext context)
+        public object Handle(TriggerMessage message, IDocumentSession session, IMessageContext context)
         {
-            await context.EnlistInTransaction(session);
-
             var response = new CascadedMessage
             {
                 Name = message.Name

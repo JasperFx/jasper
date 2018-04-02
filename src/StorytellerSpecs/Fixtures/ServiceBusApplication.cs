@@ -26,7 +26,9 @@ namespace StorytellerSpecs.Fixtures
             _registry.Services.AddSingleton(new MessageTracker());
             _registry.Services.AddSingleton(new MessageHistory());
 
-            _registry.Services.AddTransient<IMessageLogger, StorytellerMessageLogger>();
+
+            _registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
+            _registry.Services.For<IMessageLogger>().DecorateAllWith<StorytellerMessageLogger>();
 
         }
 

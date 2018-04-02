@@ -31,7 +31,7 @@ namespace Jasper.Marten.Tests
             var handlerGraph = runtime.Get<HandlerGraph>();
             var messageHandler = handlerGraph.HandlerFor<CreateFakeDoc>();
             messageHandler
-                .Chain.SourceCode.ShouldContain("var documentSession = _documentStore.OpenSession()");
+                .Chain.SourceCode.ShouldContain("var documentSession = _documentStore.LightweightSession()");
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace Jasper.Marten.Tests
                 .Chain
                 .SourceCode;
 
-            sourceCode.ShouldContain("var documentSession = _documentStore.OpenSession()");
+            sourceCode.ShouldContain("var documentSession = _documentStore.LightweightSession()");
             sourceCode.ShouldContain("await documentSession.SaveChangesAsync()");
         }
 

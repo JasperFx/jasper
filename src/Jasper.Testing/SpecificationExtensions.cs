@@ -52,11 +52,6 @@ namespace Jasper.Testing
 
     public static class SpecificationExtensions
     {
-        public static void ShouldContain<T>(this IEnumerable<T> actual, Func<T, bool> expected)
-        {
-            actual.Count().ShouldBeGreaterThan(0);
-            actual.Any(expected).ShouldBeTrue();
-        }
 
 
         public static void ShouldHaveTheSameElementsAs<T>(this IEnumerable<T> actual, IEnumerable<T> expected)
@@ -140,36 +135,6 @@ namespace Jasper.Testing
         }
 
 
-        public static IComparable ShouldBeGreaterThan(this IComparable arg1, IComparable arg2)
-        {
-            (arg1.CompareTo(arg2) > 0).ShouldBeTrue();
-
-            return arg2;
-        }
-
-        public static string ShouldNotBeEmpty(this string aString)
-        {
-            aString.IsNotEmpty().ShouldBeTrue();
-
-            return aString;
-        }
-
-        public static void ShouldContain(this string actual, string expected)
-        {
-            actual.Contains(expected).ShouldBeTrue($"Actual: {actual}{Environment.NewLine}Expected: {expected}");
-        }
-
-        public static string ShouldNotContain(this string actual, string expected)
-        {
-            actual.Contains(expected).ShouldBeFalse($"Actual: {actual}{Environment.NewLine}Expected: {expected}");
-            return actual;
-        }
-
-
-        public static void ShouldStartWith(this string actual, string expected)
-        {
-            actual.StartsWith(expected).ShouldBeTrue();
-        }
 
         public static Exception ShouldBeThrownBy(this Type exceptionType, MethodThatThrows method)
         {

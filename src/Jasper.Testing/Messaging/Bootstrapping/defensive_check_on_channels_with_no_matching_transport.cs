@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Messaging;
+using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Bootstrapping

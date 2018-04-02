@@ -52,12 +52,6 @@ namespace Jasper.Consul.Testing
 
     public static class SpecificationExtensions
     {
-        public static void ShouldContain<T>(this IEnumerable<T> actual, Func<T, bool> expected)
-        {
-            actual.Count().ShouldBeGreaterThan(0);
-            actual.Any(expected).ShouldBeTrue();
-        }
-
 
         public static void ShouldHaveTheSameElementsAs<T>(this IEnumerable<T> actual, IEnumerable<T> expected)
         {

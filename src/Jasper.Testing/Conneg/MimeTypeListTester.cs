@@ -1,4 +1,5 @@
-﻿using Jasper.Conneg;
+﻿using System.Linq;
+using Jasper.Conneg;
 using Jasper.Testing.Messaging;
 using Shouldly;
 using Xunit;
@@ -52,21 +53,21 @@ namespace Jasper.Testing.Conneg
         public void should_ignore_null()
         {
             var list = new MimeTypeList((string)null);
-            list.ShouldHaveCount(0);
+            list.Count().ShouldBe(0);
         }
 
         [Fact]
         public void should_ignore_empty_string()
         {
             var list = new MimeTypeList(string.Empty);
-            list.ShouldHaveCount(0);
+            list.Count().ShouldBe(0);
         }
 
         [Fact]
         public void should_ignore_whitespace_only_string()
         {
             var list = new MimeTypeList("    ");
-            list.ShouldHaveCount(0);
+            list.Count().ShouldBe(0);
         }
 
         [Fact]

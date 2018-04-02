@@ -6,12 +6,19 @@ namespace Jasper.Marten
 {
     public static class MessagingExtensions
     {
-        public static Task EnlistInTransaction(this IMessageContext bus, IDocumentSession session)
+        /// <summary>
+        /// Enlists the current IMessageContext in the Marten session's transaction
+        /// lifecycle
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        public static Task EnlistInTransaction(this IMessageContext context, IDocumentSession session)
         {
-            var persistor = new MartenEnvelopePersistor(session, bus);
-            session.Listeners.Add(new FlushOutgoingMessagesOnCommit(bus));
+            var persistor = new MartenEnvelopePersistor(session, context);
+            session.Listeners.Add(new FlushOutgoingMessagesOnCommit(context));
 
-            return bus.EnlistInTransaction(persistor);
+            return context.EnlistInTransaction(persistor);
         }
     }
 }
