@@ -5,9 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+using Baseline.Reflection;
 using Jasper.Conneg;
 using Jasper.Http;
 using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Newtonsoft.Json;
@@ -216,6 +218,60 @@ namespace Jasper.Messaging.Transports.Configuration
         /// with the related error report
         /// </summary>
         public bool PersistDeadLetterEnvelopes { get; set; } = true;
+
+
+        public readonly IList<MessageTypeRule> MessageTypeRules = new List<MessageTypeRule>();
+
+
+        public void ApplyMessageTypeSpecificRules(Envelope envelope)
+        {
+            if (envelope.Message == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required for this operation");
+            }
+
+            var messageType = envelope.Message.GetType();
+            if (!_messageRules.TryFind(messageType, out var rules))
+            {
+                rules = findMessageTypeCustomizations(messageType).ToArray();
+                _messageRules = _messageRules.AddOrUpdate(messageType, rules);
+            }
+
+            foreach (var action in rules)
+            {
+                action(envelope);
+            }
+        }
+
+        private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
+        {
+            foreach (var att in messageType.GetAllAttributes<ModifyEnvelopeAttribute>())
+            {
+                yield return e => att.Modify(e);
+            }
+
+            foreach (var rule in MessageTypeRules.Where(x => x.Filter(messageType)))
+            {
+                yield return rule.Action;
+            }
+
+
+        }
+
+        private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
+
+    }
+
+    public class MessageTypeRule
+    {
+        public MessageTypeRule(Func<Type, bool> filter, Action<Envelope> action)
+        {
+            Filter = filter;
+            Action = action;
+        }
+
+        public Func<Type, bool> Filter { get; }
+        public Action<Envelope> Action { get; }
 
     }
 }
