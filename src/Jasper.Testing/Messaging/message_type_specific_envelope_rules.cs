@@ -138,6 +138,21 @@ namespace Jasper.Testing.Messaging
         }
 
 
+        [Fact]
+        public void deliver_by_mechanics()
+        {
+            var settings = new MessagingSettings();
+            var envelope = new Envelope
+            {
+                Message = new MySpecialMessage()
+            };
+
+            settings.ApplyMessageTypeSpecificRules(envelope);
+
+            envelope.DeliverBy.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
+        }
+
+
     }
 
     public class SpecialAttribute : ModifyEnvelopeAttribute
@@ -148,7 +163,7 @@ namespace Jasper.Testing.Messaging
         }
     }
 
-    [Special]
+    [Special, DeliverBy(5)]
     public class MySpecialMessage
     {
 
