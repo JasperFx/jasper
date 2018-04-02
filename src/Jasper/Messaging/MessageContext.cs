@@ -322,23 +322,44 @@ namespace Jasper.Messaging
             return envelope.Response as T;
         }
 
-        public Task Enqueue<T>(T message)
+        public Task Enqueue<T>(T message, string workerQueue = null)
         {
             var isDurable = _settings.Workers.ShouldBeDurable(typeof(T));
+            var destination = isDurable ? TransportConstants.DurableLoopbackUri : TransportConstants.LoopbackUri;
 
-            return isDurable
-                ? EnqueueDurably(message)
-                : Send(TransportConstants.LoopbackUri, message);
+            var envelope = new Envelope
+            {
+                Message = message,
+                Destination = destination,
+                Queue = workerQueue
+            };
+
+            return SendEnvelope(envelope);
         }
 
-        public Task EnqueueLightweight<T>(T message)
+        public Task EnqueueLightweight<T>(T message, string workerQueue = null)
         {
-            return Send(TransportConstants.LoopbackUri, message);
+            var envelope = new Envelope
+            {
+                Message = message,
+                Destination = TransportConstants.LoopbackUri,
+                Queue = workerQueue
+
+            };
+
+            return SendEnvelope(envelope);
         }
 
-        public Task EnqueueDurably<T>(T message)
+        public Task EnqueueDurably<T>(T message, string workerQueue = null)
         {
-            return Send(TransportConstants.DurableLoopbackUri, message);
+            var envelope = new Envelope
+            {
+                Message = message,
+                Destination = TransportConstants.DurableLoopbackUri,
+                Queue = workerQueue
+            };
+
+            return SendEnvelope(envelope);
         }
 
         public Task ScheduleSend<T>(T message, DateTime time)

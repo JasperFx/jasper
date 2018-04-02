@@ -96,25 +96,29 @@ namespace Jasper.Messaging
         /// whether or not the message should be durable or fire and forget
         /// </summary>
         /// <param name="message"></param>
+        /// <param name="workerQueue">Optionally designate the name of the local worker queue</param>
         /// <typeparam name="T"></typeparam>
+        ///
         /// <returns></returns>
-        Task Enqueue<T>(T message);
+        Task Enqueue<T>(T message, string workerQueue = null);
 
         /// <summary>
         /// Enqueues the message locally in a durable manner
         /// </summary>
         /// <param name="message"></param>
+        /// <param name="workerQueue">Optionally designate the name of the local worker queue</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task EnqueueDurably<T>(T message);
+        Task EnqueueDurably<T>(T message, string workerQueue = null);
 
         /// <summary>
         /// Enqueues the message locally in a fire and forget manner
         /// </summary>
         /// <param name="message"></param>
+        /// <param name="workerQueue">Optionally designate the name of the local worker queue</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task EnqueueLightweight<T>(T message);
+        Task EnqueueLightweight<T>(T message, string workerQueue = null);
 
         /// <summary>
         /// Send a message that should be executed at the given time
