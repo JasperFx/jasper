@@ -1,0 +1,31 @@
+{
+  "SubscriptionSettings":{
+    "subscriptions": [
+      {
+        "destination": "tcp://localhost:2001",
+        "messageType": "Message1",
+        "serviceName": null,
+        "accept": [
+          "application/json"
+        ]
+      },
+      {
+        "destination": "tcp://localhost:2002",
+        "messageType": "Message2",
+        "serviceName": null,
+        "accept": [
+          "application/json"
+        ]
+      },
+      {
+        "destination": "tcp://localhost:2003",
+        "messageType": "Message3",
+        "serviceName": null,
+        "accept": [
+          "application/json"
+        ]
+      }
+    ]
+
+  }
+}

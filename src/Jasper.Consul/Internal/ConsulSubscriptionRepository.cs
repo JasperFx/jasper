@@ -92,7 +92,7 @@ namespace Jasper.Consul.Internal
     {
         public static string ConsulId(this Subscription subscription)
         {
-            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.Id}";
+            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.GetId()}";
         }
 
         public static string ServiceCapabilityConsulId(this string serviceName)

@@ -171,7 +171,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
     {
         public readonly MessageTracker Tracker = new MessageTracker();
         public readonly MessageHistory History = new MessageHistory();
-        public readonly InMemorySubscriptionsRepository Subscriptions = new InMemorySubscriptionsRepository();
+        public readonly DefaultSubscriptionsRepository Subscriptions = new DefaultSubscriptionsRepository(new SubscriptionSettings());
 
         private readonly IList<JasperRuntime> _runtimes = new List<JasperRuntime>();
 

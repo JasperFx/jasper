@@ -6,9 +6,20 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Subscriptions
 {
-    public class InMemorySubscriptionsRepository : ISubscriptionsRepository
+    public class DefaultSubscriptionsRepository : ISubscriptionsRepository
     {
         private readonly List<ServiceCapabilities> _subscriptions = new List<ServiceCapabilities>();
+
+        public DefaultSubscriptionsRepository(SubscriptionSettings settings)
+        {
+            if (settings.Subscriptions.Any())
+            {
+                _subscriptions.Add(new ServiceCapabilities
+                {
+                    Subscriptions = settings.Subscriptions
+                });
+            }
+        }
 
         public Task RemoveCapabilities(string serviceName)
         {

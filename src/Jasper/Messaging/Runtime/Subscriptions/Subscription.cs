@@ -26,8 +26,7 @@ namespace Jasper.Messaging.Runtime.Subscriptions
         {
         }
 
-        [JsonIgnore]
-        public string Id => $"{MessageType}/{WebUtility.UrlEncode(Destination.ToString())}";
+        public string GetId() => $"{MessageType}/{WebUtility.UrlEncode(Destination.ToString())}";
 
         public Uri Destination { get; set; }
 

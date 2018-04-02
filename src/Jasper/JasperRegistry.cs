@@ -63,6 +63,7 @@ namespace Jasper
 
             Settings = new JasperSettings(this);
 
+            Settings.Require<SubscriptionSettings>();
             Settings.Replace(Messaging.Settings);
             Settings.Replace(Messaging.Settings.Http);
 

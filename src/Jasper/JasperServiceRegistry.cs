@@ -105,7 +105,7 @@ namespace Jasper
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
 
             ForSingletonOf<INodeDiscovery>().UseIfNone(new InMemoryNodeDiscovery(parent.MessagingSettings));
-            ForSingletonOf<ISubscriptionsRepository>().UseIfNone(new InMemorySubscriptionsRepository());
+            ForSingletonOf<ISubscriptionsRepository>().UseIfNone<DefaultSubscriptionsRepository>();
 
 
             For<IUriLookup>().Use<ConfigUriLookup>();
