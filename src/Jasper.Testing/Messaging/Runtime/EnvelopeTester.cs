@@ -91,6 +91,17 @@ namespace Jasper.Testing.Messaging.Runtime
             child.ParentId.ShouldBe(parent.Id);
         }
 
+
+        [Fact]
+        public void for_response_copies_the_saga_id_from_the_parent()
+        {
+            var parent = ObjectMother.Envelope();
+            parent.SagaId = Guid.NewGuid().ToString();
+
+            var response = parent.ForResponse(new Message2());
+            response.SagaId.ShouldBe(parent.SagaId);
+        }
+
         [Fact]
         public void parent_that_is_not_original_creating_child_envelope()
         {

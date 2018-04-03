@@ -102,7 +102,8 @@ namespace Jasper.Messaging.Runtime
             {
                 Message = message,
                 OriginalId = OriginalId.IsEmpty() ? Id : OriginalId,
-                ParentId = Id
+                ParentId = Id,
+                SagaId = SagaId
             };
         }
 

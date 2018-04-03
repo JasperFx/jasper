@@ -203,6 +203,7 @@ namespace Jasper.Messaging
                 {
                     outbound.OriginalId = Envelope.OriginalId;
                     outbound.ParentId = Envelope.Id;
+                    outbound.SagaId = Envelope.SagaId;
                 }
             }
         }
