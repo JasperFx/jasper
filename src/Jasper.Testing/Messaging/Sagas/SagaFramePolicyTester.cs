@@ -31,12 +31,47 @@ namespace Jasper.Testing.Messaging.Sagas
             SagaFramePolicy.IsSagaRelated(chain).ShouldBeTrue();
         }
 
+        [Fact]
+        public void determine_the_saga_state_type()
+        {
+            var chain = HandlerChain.For<FooSaga>(x => x.Handle(null));
+            SagaFramePolicy.DetermineSagaStateType(chain)
+                .ShouldBe(typeof(FooState));
+        }
 
+        [Theory]
+        [InlineData("Handle", SagaStateExistence.Existing)]
+        [InlineData("Start", SagaStateExistence.New)]
+        [InlineData("Starts", SagaStateExistence.New)]
+        [InlineData("Orchestrates", SagaStateExistence.Existing)]
+        public void determine_saga_existence_from_handler_call(string methodName, SagaStateExistence existence)
+        {
+            var method = typeof(FooSaga).GetMethod(methodName);
+            var @call = new HandlerCall(typeof(FooSaga), method);
+
+            SagaFramePolicy.DetermineExistence(@call)
+                .ShouldBe(existence);
+        }
     }
 
     public class FooSaga : StatefulSagaOf<FooState>
     {
         public void Handle(WithIdProp prop)
+        {
+
+        }
+
+        public void Start(WithIdProp prop)
+        {
+
+        }
+
+        public void Starts(WithIdProp prop)
+        {
+
+        }
+
+        public void Orchestrates(WithIdProp prop)
         {
 
         }

@@ -5,6 +5,7 @@ using Baseline;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Lamar.Codegen;
@@ -34,6 +35,8 @@ namespace Jasper.Messaging
         public MessagingConfiguration()
         {
             Handling = new HandlerConfiguration(Settings);
+
+            Handling.GlobalPolicy<SagaFramePolicy>();
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)

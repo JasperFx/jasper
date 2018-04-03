@@ -1,28 +1,101 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Runtime;
-using Lamar.Codegen;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;
-using Lamar.Compilation;
 
 namespace Jasper.Messaging.Sagas
 {
-    public abstract class SagaFramePolicy : IHandlerPolicy
+    public class SagaFramePolicy : IHandlerPolicy
     {
         public static readonly Type[] ValidSagaIdTypes = new Type[]{typeof(Guid), typeof(int), typeof(long), typeof(string)};
 
         public const string SagaIdPropertyName = "SagaId";
+        public const string SagaIdVariableName = "sagaId";
+        public const string IdentityMethodName = "Identity";
 
         public void Apply(HandlerGraph graph)
         {
-            throw new System.NotImplementedException();
+            foreach (var chain in graph.Chains.Where(IsSagaRelated))
+            {
+                Apply(chain, graph.SagaPersistence);
+            }
+        }
+
+        public void Apply(HandlerChain chain, ISagaPersistence persistence)
+        {
+            if (persistence == null)
+            {
+                throw new InvalidOperationException("No saga persistence strategy is registered.");
+            }
+
+            var sagaStateType = DetermineSagaStateType(chain);
+            var sagaIdType = persistence.DetermineSagaIdType(sagaStateType);
+
+            var sagaHandler = chain.Handlers.FirstOrDefault(x => x.HandlerType.Closes(typeof(StatefulSagaOf<>)));
+
+            var existence = DetermineExistence(sagaHandler.As<HandlerCall>());
+
+
+            Variable sagaIdVariable = null;
+            if (existence == SagaStateExistence.Existing)
+            {
+                var identityMethod = sagaHandler
+                    .HandlerType
+                    .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                    .Where(x => x.Name == IdentityMethodName && x.ReturnType == sagaIdType)
+                    .FirstOrDefault(x => x.GetParameters().Any(p => p.ParameterType == chain.MessageType));
+
+                var sagaId = ChooseSagaIdProperty(chain.MessageType);
+
+                sagaIdVariable = createSagaIdVariable(sagaHandler.HandlerType, chain.MessageType, sagaId, identityMethod);
+                chain.Middleware.Add(sagaIdVariable.Creator);
+
+
+            }
+
+            chain.Middleware.Add(persistence.DeterminePersistenceFrame(existence, sagaIdVariable, sagaStateType));
+        }
+
+        private Variable createSagaIdVariable(Type handlerType, Type messageType, PropertyInfo sagaId,
+            MethodInfo identityMethod)
+        {
+            if (sagaId != null)
+            {
+                return new PullSagaIdFromMessageFrame(messageType, sagaId).SagaId;
+            }
+
+            if (identityMethod != null)
+            {
+                var @call = new MethodCall(handlerType, identityMethod);
+                @call.ReturnVariable.OverrideName(SagaIdVariableName);
+
+                return @call.ReturnVariable;
+            }
+
+            return new PullSagaIdFromEnvelopeFrame(sagaId.PropertyType).SagaId;
+        }
+
+        public static SagaStateExistence DetermineExistence(HandlerCall sagaCall)
+        {
+            if (sagaCall.Method.Name == "Start" || sagaCall.Method.Name == "Starts")
+            {
+                return SagaStateExistence.New;
+            }
+
+            return SagaStateExistence.Existing;
+        }
+
+        public static Type DetermineSagaStateType(HandlerChain chain)
+        {
+            var handler = chain.Handlers.FirstOrDefault(x => x.HandlerType.Closes(typeof(StatefulSagaOf<>)));
+            if (handler == null) throw new ArgumentOutOfRangeException(nameof(handler), "This chain is not a stateful saga");
+
+            return handler.HandlerType.BaseType.GetGenericArguments().Single();
         }
 
         public static PropertyInfo ChooseSagaIdProperty(Type messageType)
@@ -38,65 +111,6 @@ namespace Jasper.Messaging.Sagas
             return chain.Handlers.Any(x => x.HandlerType.Closes(typeof(StatefulSagaOf<>)));
         }
 
-        public abstract Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId,
-            Type sagaStateType);
-    }
 
-
-    public enum SagaStateExistence
-    {
-        New,
-        Existing
-    }
-
-    public class PullSagaIdFromMessageFrame : SyncFrame
-    {
-        private readonly Type _messageType;
-        private readonly PropertyInfo _sagaIdProperty;
-        private Variable _message;
-        private Variable _envelope;
-
-        public PullSagaIdFromMessageFrame(Type messageType, PropertyInfo sagaIdProperty)
-        {
-            _messageType = messageType;
-            _sagaIdProperty = sagaIdProperty;
-
-            if (!SagaFramePolicy.ValidSagaIdTypes.Contains(_sagaIdProperty.PropertyType))
-            {
-                throw new ArgumentOutOfRangeException(nameof(messageType), $"SagaId must be one of {SagaFramePolicy.ValidSagaIdTypes.Select(x => x.NameInCode()).Join(", ")}");
-            }
-
-            SagaId = new Variable(_messageType, "sagaId", this);
-        }
-
-        public Variable SagaId { get; }
-
-        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-        {
-            if (_sagaIdProperty.PropertyType == typeof(string))
-            {
-                writer.Write($"{_sagaIdProperty.PropertyType.NameInCode()} sagaId = {_envelope}.{nameof(Envelope.SagaId)} ?? {_message.Usage}.{_sagaIdProperty.Name};");
-            }
-            else
-            {
-                var typeNameInCode = _sagaIdProperty.PropertyType.NameInCode();
-
-                writer.Write($"if (!{typeNameInCode}.TryParse({_envelope.Usage}.{nameof(Envelope.SagaId)}, out {typeNameInCode} sagaId)) sagaId = {_message.Usage}.{_sagaIdProperty.Name};");
-            }
-
-
-            // TODO -- set the SagaId on message context?
-            Next?.GenerateCode(method, writer);
-
-        }
-
-        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
-        {
-            _message = chain.FindVariable(_messageType);
-            yield return _message;
-
-            _envelope = chain.FindVariable(typeof(Envelope));
-            yield return _envelope;
-        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Messaging.ErrorHandling;
+using Jasper.Messaging.Sagas;
 using Jasper.Util;
 using Lamar;
 using Lamar.Codegen;
@@ -86,6 +87,11 @@ namespace Jasper.Messaging.Model
             return null;
 
         }
+
+        /// <summary>
+        /// The currently known strategy for persisting saga state
+        /// </summary>
+        public ISagaPersistence SagaPersistence { get; set; }
 
         internal void Compile(GenerationRules generation, JasperRuntime runtime, PerfTimer timer)
         {
