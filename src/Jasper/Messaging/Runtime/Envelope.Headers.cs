@@ -4,6 +4,7 @@
     {
         private const string SentAttemptsHeaderKey = "sent-attempts";
         private const string OriginalIdKey = "original-id";
+        private const string SagaIdKey = "saga-id";
         private const string IdKey = "id";
         private const string ParentIdKey = "parent-id";
         private const string ContentTypeKey = "content-type";

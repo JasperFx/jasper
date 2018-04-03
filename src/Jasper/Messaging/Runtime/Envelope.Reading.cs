@@ -36,6 +36,10 @@ namespace Jasper.Messaging.Runtime
                         }
                         break;
 
+                    case SagaIdKey:
+                        SagaId = value;
+                        break;
+
                     case ParentIdKey:
                         if (Guid.TryParse(value, out Guid parentId))
                         {

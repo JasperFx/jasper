@@ -37,7 +37,8 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
                 Data = new byte[]{1, 5, 6, 11, 2, 3},
                 Destination = "durable://localhost:2222/incoming".ToUri(),
                 DeliverBy = DateTime.Today.ToUniversalTime(),
-                ReplyUri = "durable://localhost:2221/replies".ToUri()
+                ReplyUri = "durable://localhost:2221/replies".ToUri(),
+                SagaId = Guid.NewGuid().ToString()
             };
 
             sentAttempts = typeof(Envelope).GetProperty("SentAttempts", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -47,6 +48,12 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
             outgoing.Headers.Add("state", "Texas");
 
 
+        }
+
+        [Fact]
+        public void brings_over_the_saga_id()
+        {
+            incoming.SagaId.ShouldBe(outgoing.SagaId);
         }
 
         [Fact]

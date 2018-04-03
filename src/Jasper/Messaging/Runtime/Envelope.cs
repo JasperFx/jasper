@@ -242,6 +242,12 @@ namespace Jasper.Messaging.Runtime
         public Guid OriginalId { get; set; }
 
         /// <summary>
+        /// If this message is part of a stateful saga, this property identifies
+        /// the underlying saga state object
+        /// </summary>
+        public string SagaId { get; set; }
+
+        /// <summary>
         /// Id of the immediate parent of this envelope
         /// </summary>
         public Guid ParentId { get; set; }

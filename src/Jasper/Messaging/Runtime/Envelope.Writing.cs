@@ -130,6 +130,7 @@ namespace Jasper.Messaging.Runtime
             writer.WriteProp(ref count, ParentIdKey, ParentId);
             writer.WriteProp(ref count, ResponseIdKey, ResponseId);
             writer.WriteProp(ref count, DestinationKey, Destination);
+            writer.WriteProp(ref count, SagaIdKey, SagaId);
 
             if (AcceptedContentTypes != null && AcceptedContentTypes.Any())
             {
