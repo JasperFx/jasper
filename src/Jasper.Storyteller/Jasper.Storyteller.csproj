@@ -20,6 +20,6 @@
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="StoryTeller" Version="5.0.0-alpha-2" />
+    <PackageReference Include="StoryTeller" Version="5.0.0" />
   </ItemGroup>
 </Project>

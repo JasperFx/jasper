@@ -7,6 +7,6 @@
     <ProjectReference Include="..\Jasper.Storyteller\Jasper.Storyteller.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-storyteller" Version="5.0.0-alpha-2" />
+    <DotNetCliToolReference Include="dotnet-storyteller" Version="5.0.0" />
   </ItemGroup>
 </Project>

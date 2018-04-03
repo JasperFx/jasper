@@ -2,13 +2,17 @@
 using Jasper.Http;
 using Jasper.Storyteller;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 
 namespace StorytellerSample
 {
     public class MyJasperAppRegistry : JasperRegistry
     {
-
+        public MyJasperAppRegistry()
+        {
+            Services.AddSingleton<IncrementCounter>();
+        }
     }
 
     // SAMPLE: MyJasperStorytellerHarness
@@ -53,6 +57,32 @@ namespace StorytellerSample
     }
     // ENDSAMPLE
 
+    public class IncrementCounter
+    {
+        public int Count { get; set; }
+    }
+
+    public class Increment
+    {
+
+    }
+
+    public class IncrementHandler
+    {
+        private readonly IncrementCounter _counter;
+
+        public IncrementHandler(IncrementCounter counter)
+        {
+            _counter = counter;
+        }
+
+        public void Handle(Increment increment)
+        {
+            _counter.Count++;
+        }
+    }
+
+
     public class SomeStuff
     {
         public void Main(string[] args)
@@ -70,4 +100,6 @@ namespace StorytellerSample
         void LoadTestingData();
         void CleanUpTestRunData();
     }
+
+
 }

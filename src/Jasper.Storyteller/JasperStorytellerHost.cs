@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Http;
+using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
@@ -36,6 +38,8 @@ namespace Jasper.Storyteller
 
     public class JasperStorytellerHost<T> : ISystem where T : JasperRegistry
     {
+        private readonly Dictionary<string, ExternalNode> _nodes = new Dictionary<string, ExternalNode>();
+
         public readonly MessageHistory MessageHistory = new MessageHistory();
 
         private StorytellerMessageLogger _messageLogger;
@@ -66,6 +70,27 @@ namespace Jasper.Storyteller
 
         }
 
+        public ExternalNode AddNode<T>(Action<T> configure = null) where T : JasperRegistry, new()
+        {
+            var registry = new T();
+            configure?.Invoke(registry);
+
+            return AddNode(registry);
+        }
+
+        public ExternalNode AddNode(JasperRegistry registry)
+        {
+            var node = new ExternalNode(registry);
+            _nodes.Add(registry.ServiceName, node);
+
+            return node;
+        }
+
+        public ExternalNode NodeFor(string serviceName)
+        {
+            return _nodes[serviceName];
+        }
+
         public T Registry { get; }
 
         public JasperRuntime Runtime
@@ -88,6 +113,11 @@ namespace Jasper.Storyteller
             {
                 afterAll();
                 _runtime.Dispose();
+
+                foreach (var node in _nodes.Values)
+                {
+                    node.Teardown();
+                }
             }
         }
 
@@ -133,6 +163,12 @@ namespace Jasper.Storyteller
                 _messageLogger.ServiceName = _runtime.ServiceName;
 
                 _messageLogger = _runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>();
+
+                foreach (var node in _nodes.Values)
+                {
+                    node.Bootstrap(_messageLogger);
+                }
+
                 beforeAll();
             });
 
@@ -140,7 +176,8 @@ namespace Jasper.Storyteller
         }
 
 
-        public class JasperContext : IExecutionContext
+
+        public class JasperContext : IExecutionContext, IJasperContext
         {
             private readonly JasperStorytellerHost<T> _parent;
 
@@ -152,6 +189,11 @@ namespace Jasper.Storyteller
             void IDisposable.Dispose()
             {
 
+            }
+
+            public ExternalNode NodeFor(string nodeName)
+            {
+                return _parent.NodeFor(nodeName);
             }
 
             public void BeforeExecution(ISpecContext context)
@@ -175,6 +217,39 @@ namespace Jasper.Storyteller
             {
                 return _parent._runtime.Get<TService>();
             }
+        }
+    }
+
+    public interface IJasperContext
+    {
+        ExternalNode NodeFor(string nodeName);
+    }
+
+    public class ExternalNode
+    {
+        private readonly JasperRegistry _registry;
+
+        public ExternalNode(JasperRegistry registry)
+        {
+            _registry = registry;
+        }
+
+        internal void Bootstrap(IMessageLogger logger)
+        {
+            _registry.Services.AddSingleton(logger);
+            Runtime = JasperRuntime.For(_registry);
+        }
+
+        public JasperRuntime Runtime { get; private set; }
+
+        public Task Send<T>(T message)
+        {
+            return Runtime.Get<IMessageContext>().Send(message);
+        }
+
+        internal void Teardown()
+        {
+            Runtime?.Dispose();
         }
     }
 }

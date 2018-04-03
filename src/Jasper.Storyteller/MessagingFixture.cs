@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Baseline;
 using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
 using StoryTeller;
@@ -23,6 +24,28 @@ namespace Jasper.Storyteller
         protected Task SendMessageAndWaitForCompletion(object message)
         {
             return History.WatchAsync(() => Bus.Send(message));
+        }
+
+        /// <summary>
+        /// Send a message from an external node and wait for all detected activity within the bus
+        /// to complete
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="nodeName">The service name of another, external node</param>
+        /// <returns></returns>
+        protected Task SendMessageAndWaitForCompletion(string nodeName, object message)
+        {
+            return History.WatchAsync(() => NodeFor(nodeName).Send(message));
+        }
+
+        /// <summary>
+        /// Find the
+        /// </summary>
+        /// <param name="nodeName"></param>
+        /// <returns></returns>
+        protected ExternalNode NodeFor(string nodeName)
+        {
+            return Context.As<IJasperContext>().NodeFor(nodeName);
         }
     }
 }
