@@ -6,23 +6,18 @@ namespace StorytellerSample
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            if (args[0] == "try")
-            {
-                using (var runner = StorytellerRunner.For<JasperStorytellerHost<MyJasperAppRegistry>>())
-                {
-                    runner.Run("Recording Messages / Try out the diagnostics");
-                    runner.OpenResultsInBrowser();
-                }
+            var host = new JasperStorytellerHost<MyJasperAppRegistry>();
+            host.AddNode(new OtherApp());
 
+            return StorytellerAgent.Run(args, host);
 
-                return;
-            }
-
+            /*
             // SAMPLE: bootstrapping-storyteller-with-Jasper
             JasperStorytellerHost.Run<MyJasperAppRegistry>(args);
             // ENDSAMPLE
+            */
         }
     }
 }

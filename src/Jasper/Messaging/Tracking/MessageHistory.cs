@@ -45,9 +45,10 @@ namespace Jasper.Messaging.Tracking
             return waiter.Task;
         }
 
-        public async Task<TaskCompletionSource<MessageTrack[]>> WatchAsync(Func<Task> func)
+        public async Task<MessageTrack[]> WatchAsync(Func<Task> func)
         {
             var waiter = new TaskCompletionSource<MessageTrack[]>();
+
 
             lock (_lock)
             {
@@ -61,7 +62,7 @@ namespace Jasper.Messaging.Tracking
 
             await func();
 
-            return waiter;
+            return await waiter.Task;
         }
 
         public void Complete(Envelope envelope, string activity, Exception ex = null)

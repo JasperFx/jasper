@@ -45,7 +45,7 @@ namespace Jasper.Storyteller
         /// <returns></returns>
         protected ExternalNode NodeFor(string nodeName)
         {
-            return Context.As<IJasperContext>().NodeFor(nodeName);
+            return Context.Service<INodes>().NodeFor(nodeName);
         }
     }
 }

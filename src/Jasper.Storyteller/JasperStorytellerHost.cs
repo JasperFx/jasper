@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Http;
@@ -36,7 +37,12 @@ namespace Jasper.Storyteller
         }
     }
 
-    public class JasperStorytellerHost<T> : ISystem where T : JasperRegistry
+    public interface INodes
+    {
+        ExternalNode NodeFor(string serviceName);
+    }
+
+    public class JasperStorytellerHost<T> : ISystem, INodes where T : JasperRegistry
     {
         private readonly Dictionary<string, ExternalNode> _nodes = new Dictionary<string, ExternalNode>();
 
@@ -61,9 +67,7 @@ namespace Jasper.Storyteller
 
             Registry.Services.AddSingleton(MessageHistory);
 
-            Registry.Services.AddSingleton<MessageTrackingLogger>();
-
-
+            registry.Services.AddSingleton<INodes>(this);
             registry.Services.AddSingleton<MessageHistory>();
             registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
             registry.Services.For<IMessageLogger>().DecorateAllWith<StorytellerMessageLogger>();
@@ -88,6 +92,18 @@ namespace Jasper.Storyteller
 
         public ExternalNode NodeFor(string serviceName)
         {
+            if (!_nodes.ContainsKey(serviceName))
+            {
+                if (_nodes.Any())
+                {
+                    throw new ArgumentOutOfRangeException($"Unknown node named '{serviceName}', the available node(s) are {_nodes.Keys.Select(x => "'" + x + "'").Join(", ")}");
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException("There are no known external nodes for this JasperStorytellerHost");
+                }
+            }
+
             return _nodes[serviceName];
         }
 

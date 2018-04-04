@@ -8,7 +8,9 @@ namespace StorytellerSample
         public OtherApp()
         {
             Handlers.Discovery(x => x.DisableConventionalDiscovery().IncludeType<OtherGuyMessages>());
+            ServiceName = "Other";
 
+            Publish.Message<Increment>().To("tcp://localhost:4444");
         }
     }
 

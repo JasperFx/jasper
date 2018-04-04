@@ -15,7 +15,7 @@ namespace StorytellerSample
         [FormatAs("The current count should be {count}")]
         public int TheIncrementCountShouldBe()
         {
-            var counter = NodeFor("Other").Runtime.Get<IncrementCounter>();
+            var counter = Context.Service<IncrementCounter>();
             return counter.Count;
         }
     }

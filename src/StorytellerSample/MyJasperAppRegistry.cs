@@ -1,5 +1,6 @@
 ﻿using Jasper;
 using Jasper.Http;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Storyteller;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ namespace StorytellerSample
         public MyJasperAppRegistry()
         {
             Services.AddSingleton<IncrementCounter>();
+            Transports.LightweightListenerAt(4444);
         }
     }
 
