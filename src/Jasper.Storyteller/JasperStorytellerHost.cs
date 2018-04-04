@@ -69,8 +69,8 @@ namespace Jasper.Storyteller
 
             registry.Services.AddSingleton<INodes>(this);
             registry.Services.AddSingleton<MessageHistory>();
-            registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
-            registry.Services.For<IMessageLogger>().DecorateAllWith<StorytellerMessageLogger>();
+
+            registry.Services.ForSingletonOf<IMessageLogger>().Use<StorytellerMessageLogger>();
 
         }
 

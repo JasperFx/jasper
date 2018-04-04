@@ -8,6 +8,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Storyteller.Logging;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 
@@ -27,8 +28,7 @@ namespace StorytellerSpecs.Fixtures
             _registry.Services.AddSingleton(new MessageHistory());
 
 
-            _registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
-            _registry.Services.For<IMessageLogger>().DecorateAllWith<StorytellerMessageLogger>();
+            _registry.Services.For<IMessageLogger>().Use<StorytellerMessageLogger>().Singleton();
 
         }
 

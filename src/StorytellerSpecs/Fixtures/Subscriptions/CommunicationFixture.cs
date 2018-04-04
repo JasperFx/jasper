@@ -10,6 +10,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Tracking;
 using Jasper.Util;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -183,7 +184,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             registry.Services.For<MessageHistory>().Use(History);
             registry.Services.For<ISubscriptionsRepository>().Use(Subscriptions);
 
-            registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
+            registry.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
             registry.Services.For<IUriLookup>().Add(this);
 
             var runtime = JasperRuntime.For(registry);

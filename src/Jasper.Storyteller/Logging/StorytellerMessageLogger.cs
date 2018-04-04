@@ -13,18 +13,19 @@ using Envelope = Jasper.Messaging.Runtime.Envelope;
 
 namespace Jasper.Storyteller.Logging
 {
-    public class StorytellerMessageLogger : IMessageLogger
+    public class StorytellerMessageLogger : MessageTrackingLogger
     {
-        private readonly IMessageLogger _innerLogger;
+        private readonly MessageHistory _history;
         private ISpecContext _context;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
         private readonly List<PublisherSubscriberMismatch> _mismatches = new List<PublisherSubscriberMismatch>();
 
-        public StorytellerMessageLogger(IMessageLogger innerLogger)
+        public StorytellerMessageLogger(MessageHistory history, ILoggerFactory factory) : base(history, factory)
         {
-            _innerLogger = innerLogger;
+            _history = history;
             Errors = new BusErrors();
         }
+
 
         public void Start(ISpecContext context)
         {
@@ -58,77 +59,77 @@ namespace Jasper.Storyteller.Logging
             _records.Add(new EnvelopeRecord(envelope, _context.Timings.Duration, message, ServiceName));
         }
 
-        public void Sent(Envelope envelope)
+        public override void Sent(Envelope envelope)
         {
             trace(envelope, "Sent");
-            _innerLogger.Sent(envelope);
+            base.Sent(envelope);
         }
 
-        public void Received(Envelope envelope)
+        public override void Received(Envelope envelope)
         {
             trace(envelope, "Received");
-            _innerLogger.Received(envelope);
+            base.Received(envelope);
         }
 
-        public void ExecutionStarted(Envelope envelope)
+        public override void ExecutionStarted(Envelope envelope)
         {
             trace(envelope, "Execution Started");
-            _innerLogger.ExecutionStarted(envelope);
+            base.ExecutionStarted(envelope);
         }
 
-        public void ExecutionFinished(Envelope envelope)
+        public override void ExecutionFinished(Envelope envelope)
         {
             trace(envelope, "Execution Finished");
-            _innerLogger.ExecutionFinished(envelope);
+            base.ExecutionFinished(envelope);
         }
 
-        public void MessageSucceeded(Envelope envelope)
+        public override void MessageSucceeded(Envelope envelope)
         {
             trace(envelope, "Message Succeeded");
-            _innerLogger.MessageSucceeded(envelope);
+            base.MessageSucceeded(envelope);
         }
 
-        public void MessageFailed(Envelope envelope, Exception ex)
+        public override void MessageFailed(Envelope envelope, Exception ex)
         {
             trace(envelope, "Message Failed", ex);
-            _innerLogger.MessageFailed(envelope, ex);
+            base.MessageFailed(envelope, ex);
         }
 
-        public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        public override void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             Errors.Exceptions.Add(ex);
-            _innerLogger.LogException(ex, correlationId, message);
+            base.LogException(ex, correlationId, message);
         }
 
-        public void NoHandlerFor(Envelope envelope)
+        public override void NoHandlerFor(Envelope envelope)
         {
             trace(envelope, "No known message handler");
-            _innerLogger.NoHandlerFor(envelope);
+            base.NoHandlerFor(envelope);
         }
 
-        public void NoRoutesFor(Envelope envelope)
+        public override void NoRoutesFor(Envelope envelope)
         {
             trace(envelope, "No message routes");
-            _innerLogger.NoRoutesFor(envelope);
+            base.NoRoutesFor(envelope);
         }
 
-        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
+        public override void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
         {
             _mismatches.Add(mismatch);
-            _innerLogger.SubscriptionMismatch(mismatch);
+            base.SubscriptionMismatch(mismatch);
         }
 
-        public void MovedToErrorQueue(Envelope envelope, Exception ex)
+        public override void MovedToErrorQueue(Envelope envelope, Exception ex)
         {
             trace(envelope, "Was moved to the error queue");
             Errors.Exceptions.Add(ex);
 
-            _innerLogger.MovedToErrorQueue(envelope, ex);
+            base.MovedToErrorQueue(envelope, ex);
         }
 
-        public void DiscardedEnvelope(Envelope envelope)
+        public override void DiscardedEnvelope(Envelope envelope)
         {
-            _innerLogger.DiscardedEnvelope(envelope);
+            base.DiscardedEnvelope(envelope);
         }
     }
 }

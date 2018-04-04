@@ -10,86 +10,49 @@ namespace Jasper.Messaging.Tracking
     /// Useful for automated testing scenarios against the service bus to "know"
     /// when all outstanding messages are completed. DO NOT USE IN PRODUCTION!!!
     /// </summary>
-    public class MessageTrackingLogger : IMessageLogger
+    public class MessageTrackingLogger : MessageLogger
     {
         public static readonly string Envelope = "Envelope";
         public static readonly string Execution = "Execution";
 
         private readonly MessageHistory _history;
-        private readonly IMessageLogger _inner;
 
 
-        public MessageTrackingLogger(MessageHistory history, IMessageLogger inner)
+        public MessageTrackingLogger(MessageHistory history, ILoggerFactory factory) : base(factory)
         {
             _history = history;
-            _inner = inner;
         }
 
-        public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
-        {
-           _inner.LogException(ex, correlationId, message);
-        }
 
-        public void Sent(Envelope envelope)
+        public override void Sent(Envelope envelope)
         {
             _history.Start(envelope, Envelope);
-            _inner.Sent(envelope);
+            base.Sent(envelope);
         }
 
-        public void Received(Envelope envelope)
-        {
-            _inner.Received(envelope);
-        }
-
-        public void ExecutionStarted(Envelope envelope)
+        public override void ExecutionStarted(Envelope envelope)
         {
             _history.Start(envelope, Execution);
-            _inner.ExecutionStarted(envelope);
+            base.ExecutionStarted(envelope);
         }
 
-        public void ExecutionFinished(Envelope envelope)
+        public override void ExecutionFinished(Envelope envelope)
         {
             _history.Complete(envelope, Execution);
-            _inner.ExecutionFinished(envelope);
+            base.ExecutionFinished(envelope);
         }
 
-        public void MessageSucceeded(Envelope envelope)
+        public override void MessageSucceeded(Envelope envelope)
         {
             _history.Complete(envelope, Envelope);
-            _inner.MessageSucceeded(envelope);
+            base.MessageSucceeded(envelope);
         }
 
-        public void MessageFailed(Envelope envelope, Exception ex)
+        public override void MessageFailed(Envelope envelope, Exception ex)
         {
             _history.Complete(envelope, Envelope, ex);
-            _inner.MessageFailed(envelope, ex);
+            base.MessageFailed(envelope, ex);
         }
-
-        public void NoHandlerFor(Envelope envelope)
-        {
-            _inner.NoHandlerFor(envelope);
-        }
-
-        public void NoRoutesFor(Envelope envelope)
-        {
-            _inner.NoRoutesFor(envelope);
-        }
-
-        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
-        {
-            _inner.SubscriptionMismatch(mismatch);
-        }
-
-        public void MovedToErrorQueue(Envelope envelope, Exception ex)
-        {
-            _inner.MovedToErrorQueue(envelope, ex);
-        }
-
-        public void DiscardedEnvelope(Envelope envelope)
-        {
-            _inner.DiscardedEnvelope(envelope);
-        }
-
     }
 
 

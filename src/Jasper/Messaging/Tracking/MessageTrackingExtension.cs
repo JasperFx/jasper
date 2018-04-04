@@ -1,6 +1,7 @@
 ﻿using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Messaging.Tracking
@@ -16,7 +17,7 @@ namespace Jasper.Messaging.Tracking
             registry.Services.AddSingleton<MessageHistory>();
 
 
-            registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
+            registry.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
         }
     }
 }
