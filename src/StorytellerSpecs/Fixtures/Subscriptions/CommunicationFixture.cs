@@ -183,7 +183,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             registry.Services.For<MessageHistory>().Use(History);
             registry.Services.For<ISubscriptionsRepository>().Use(Subscriptions);
 
-            registry.Services.AddSingleton<IMessageLogger, MessageTrackingLogger>();
+            registry.Services.For<IMessageLogger>().DecorateAllWith<MessageTrackingLogger>();
             registry.Services.For<IUriLookup>().Add(this);
 
             var runtime = JasperRuntime.For(registry);

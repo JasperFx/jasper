@@ -27,7 +27,7 @@ namespace Jasper
         {
             this.AddLogging();
 
-            For<IMessageLogger>().Use<MessageLogger>().Singleton();
+            For<IMessageLogger>().Use<MessageLogger>();
             For<ITransportLogger>().Use<TransportLogger>().Singleton();
 
 

@@ -15,14 +15,14 @@ namespace Jasper.Storyteller.Logging
 {
     public class StorytellerMessageLogger : IMessageLogger
     {
-        private readonly IMessageLogger _inner;
+        private readonly IMessageLogger _innerLogger;
         private ISpecContext _context;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
         private readonly List<PublisherSubscriberMismatch> _mismatches = new List<PublisherSubscriberMismatch>();
 
-        public StorytellerMessageLogger(IMessageLogger inner)
+        public StorytellerMessageLogger(IMessageLogger innerLogger)
         {
-            _inner = inner;
+            _innerLogger = innerLogger;
             Errors = new BusErrors();
         }
 
@@ -61,61 +61,61 @@ namespace Jasper.Storyteller.Logging
         public void Sent(Envelope envelope)
         {
             trace(envelope, "Sent");
-            _inner.Sent(envelope);
+            _innerLogger.Sent(envelope);
         }
 
         public void Received(Envelope envelope)
         {
             trace(envelope, "Received");
-            _inner.Received(envelope);
+            _innerLogger.Received(envelope);
         }
 
         public void ExecutionStarted(Envelope envelope)
         {
             trace(envelope, "Execution Started");
-            _inner.ExecutionStarted(envelope);
+            _innerLogger.ExecutionStarted(envelope);
         }
 
         public void ExecutionFinished(Envelope envelope)
         {
             trace(envelope, "Execution Finished");
-            _inner.ExecutionFinished(envelope);
+            _innerLogger.ExecutionFinished(envelope);
         }
 
         public void MessageSucceeded(Envelope envelope)
         {
             trace(envelope, "Message Succeeded");
-            _inner.MessageSucceeded(envelope);
+            _innerLogger.MessageSucceeded(envelope);
         }
 
         public void MessageFailed(Envelope envelope, Exception ex)
         {
             trace(envelope, "Message Failed", ex);
-            _inner.MessageFailed(envelope, ex);
+            _innerLogger.MessageFailed(envelope, ex);
         }
 
         public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
             Errors.Exceptions.Add(ex);
-            _inner.LogException(ex, correlationId, message);
+            _innerLogger.LogException(ex, correlationId, message);
         }
 
         public void NoHandlerFor(Envelope envelope)
         {
             trace(envelope, "No known message handler");
-            _inner.NoHandlerFor(envelope);
+            _innerLogger.NoHandlerFor(envelope);
         }
 
         public void NoRoutesFor(Envelope envelope)
         {
             trace(envelope, "No message routes");
-            _inner.NoRoutesFor(envelope);
+            _innerLogger.NoRoutesFor(envelope);
         }
 
         public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
         {
             _mismatches.Add(mismatch);
-            _inner.SubscriptionMismatch(mismatch);
+            _innerLogger.SubscriptionMismatch(mismatch);
         }
 
         public void MovedToErrorQueue(Envelope envelope, Exception ex)
@@ -123,12 +123,12 @@ namespace Jasper.Storyteller.Logging
             trace(envelope, "Was moved to the error queue");
             Errors.Exceptions.Add(ex);
 
-            _inner.MovedToErrorQueue(envelope, ex);
+            _innerLogger.MovedToErrorQueue(envelope, ex);
         }
 
         public void DiscardedEnvelope(Envelope envelope)
         {
-            _inner.DiscardedEnvelope(envelope);
+            _innerLogger.DiscardedEnvelope(envelope);
         }
     }
 }
