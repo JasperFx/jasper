@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Marten.Codegen;
 using Jasper.Messaging.Sagas;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;
@@ -8,13 +9,32 @@ using Marten.Util;
 
 namespace Jasper.Marten.Persistence
 {
-    // TODO -- need to get this onto HandlerGraph
     public class MartenSagaPersistence : ISagaPersistence
     {
 
-        public Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType)
+        public Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
+            Variable existingState)
         {
-            throw new NotImplementedException();
+            var frame = new TransactionalFrame();
+            if (existence == SagaStateExistence.Existing)
+            {
+                var doc = frame.LoadDocument(sagaStateType, sagaId);
+
+                if (existingState == null)
+                {
+                    frame.SaveDocument(doc);
+                }
+                else
+                {
+                    frame.SaveDocument(existingState);
+                }
+            }
+            else
+            {
+                frame.SaveDocument(existingState);
+            }
+
+            return frame;
         }
 
         public Type DetermineSagaIdType(Type sagaStateType)

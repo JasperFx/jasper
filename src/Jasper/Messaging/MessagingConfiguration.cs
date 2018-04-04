@@ -34,7 +34,7 @@ namespace Jasper.Messaging
 
         public MessagingConfiguration()
         {
-            Handling = new HandlerConfiguration(Settings);
+            Handling = new HandlerConfiguration(Graph, Settings);
 
             Handling.GlobalPolicy<SagaFramePolicy>();
         }

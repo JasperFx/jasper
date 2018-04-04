@@ -40,7 +40,7 @@ namespace Jasper.Messaging.Sagas
 
             var existence = DetermineExistence(sagaHandler.As<HandlerCall>());
 
-
+            Variable existingState = null;
             Variable sagaIdVariable = null;
             if (existence == SagaStateExistence.Existing)
             {
@@ -58,7 +58,14 @@ namespace Jasper.Messaging.Sagas
 
             }
 
-            chain.Middleware.Add(persistence.DeterminePersistenceFrame(existence, sagaIdVariable, sagaStateType));
+            // TODO -- this will need to change when MethodCall supports
+            // tuples and/or out parameters
+            if (sagaHandler.ReturnVariable.VariableType == sagaStateType)
+            {
+                existingState = sagaHandler.ReturnVariable;
+            }
+
+            chain.Middleware.Add(persistence.DeterminePersistenceFrame(existence, sagaIdVariable, sagaStateType, existingState));
         }
 
         private Variable createSagaIdVariable(Type handlerType, Type messageType, PropertyInfo sagaId,

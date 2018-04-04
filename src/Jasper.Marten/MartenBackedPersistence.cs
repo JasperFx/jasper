@@ -28,6 +28,8 @@ namespace Jasper.Marten
             registry.Services.AddSingleton<IHostedService, SchedulingAgent>();
 
             registry.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
+
+            registry.Handlers.PersistSagasWith(new MartenSagaPersistence());
         }
     }
 

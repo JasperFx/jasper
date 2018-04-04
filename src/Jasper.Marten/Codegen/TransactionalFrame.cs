@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Jasper.Messaging;
 using Lamar.Codegen;
 using Lamar.Codegen.Frames;
@@ -22,6 +23,46 @@ namespace Jasper.Marten.Codegen
         }
 
         public Variable Session { get; private set; }
+
+
+        private readonly IList<Loaded> _loadedDocs = new List<Loaded>();
+
+        public Variable LoadDocument(Type documentType, Variable docId)
+        {
+            var document = new Variable(documentType, this);
+            var loaded = new Loaded(document, documentType, docId);
+            _loadedDocs.Add(loaded);
+
+            return document;
+        }
+
+        private readonly IList<Variable> _saved = new List<Variable>();
+
+        public void SaveDocument(Variable document)
+        {
+            _saved.Add(document);
+        }
+
+        public class Loaded
+        {
+            private readonly Variable _document;
+            private readonly Type _documentType;
+            private readonly Variable _docId;
+
+            public Loaded(Variable document, Type documentType, Variable docId)
+            {
+                _document = document;
+                _documentType = documentType;
+                _docId = docId;
+            }
+
+            public void Write(ISourceWriter writer, Variable session)
+            {
+                writer.Write($"var {_docId.Usage} = await {session.Usage}.{nameof(IDocumentSession.LoadAsync)}<{_documentType.FullNameInCode()}>({_docId.Usage});");
+            }
+        }
+
+
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
@@ -57,7 +98,19 @@ namespace Jasper.Marten.Codegen
                 writer.Write($"await {typeof(MessagingExtensions).FullName}.{nameof(MessagingExtensions.EnlistInTransaction)}({_context.Usage}, {Session.Usage});");
             }
 
+            foreach (var loaded in _loadedDocs)
+            {
+                loaded.Write(writer, Session);
+            }
+
             Next?.GenerateCode(method, writer);
+
+
+            foreach (var saved in _saved)
+            {
+                writer.Write($"{Session.Usage}.{nameof(IDocumentSession.Store)}({saved.Usage});");
+            }
+
             writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}();");
 
             if (_createsSession)

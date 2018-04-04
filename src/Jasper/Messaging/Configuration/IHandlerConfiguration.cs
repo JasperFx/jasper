@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Baseline;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
+using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
@@ -50,16 +51,24 @@ namespace Jasper.Messaging.Configuration
         /// Configure the default local worker queue
         /// </summary>
         IWorkerSettings DefaultWorker { get; }
+
+        /// <summary>
+        /// Register a custom saga persistence mechanism
+        /// </summary>
+        /// <param name="sagaPersistence"></param>
+        void PersistSagasWith(ISagaPersistence sagaPersistence);
     }
 
 
     public class HandlerConfiguration : IHandlerConfiguration
     {
+        private readonly HandlerGraph _graph;
         private readonly MessagingSettings _settings;
         internal readonly HandlerSource Source = new HandlerSource();
 
-        public HandlerConfiguration(MessagingSettings settings)
+        public HandlerConfiguration(HandlerGraph graph, MessagingSettings settings)
         {
+            _graph = graph;
             _settings = settings;
         }
 
@@ -75,6 +84,10 @@ namespace Jasper.Messaging.Configuration
         }
 
         public IWorkerSettings DefaultWorker => _settings.Workers[TransportConstants.Default];
+        public void PersistSagasWith(ISagaPersistence sagaPersistence)
+        {
+            _graph.SagaPersistence = sagaPersistence;
+        }
 
         private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
 
