@@ -19,6 +19,8 @@ namespace Jasper.Messaging.Model
 {
     public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasErrorHandlers
     {
+        public const string NotCascading = "NotCascading";
+
         public static HandlerChain For<T>(Expression<Action<T>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
@@ -103,8 +105,8 @@ namespace Jasper.Messaging.Model
             }
 
             var i = 0;
-            var cascadingHandlers = Handlers.Where(x => x.ReturnVariable != null)
-                .Select(x => new CaptureCascadingMessages(x.ReturnVariable, ++i));
+            var cascadingHandlers = Handlers.SelectMany(x => x.Creates).Where(x => !x.Properties.ContainsKey(NotCascading))
+                .Select(x => new CaptureCascadingMessages(x, ++i));
 
             return Middleware.Concat(Handlers).Concat(cascadingHandlers).ToList();
         }

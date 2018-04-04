@@ -20,6 +20,13 @@ namespace Jasper.Testing.Messaging.Runtime.Subscriptions
 
             try
             {
+                var config = runtime.Get<IConfiguration>();
+
+
+                var all =config.AsEnumerable();
+
+                var stuff = config[nameof(SubscriptionSettings)];
+
                 var repository = runtime.Get<ISubscriptionsRepository>();
                 var subscriptions = await repository.GetSubscriptions();
 

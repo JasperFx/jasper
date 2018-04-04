@@ -1,5 +1,4 @@
 {
-  "SubscriptionSettings":{
     "subscriptions": [
       {
         "destination": "tcp://localhost:2001",
@@ -26,6 +25,4 @@
         ]
       }
     ]
-
-  }
 }

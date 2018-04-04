@@ -54,6 +54,7 @@ namespace Jasper.Testing.Messaging.Sagas
         }
     }
 
+    [JasperIgnore]
     public class FooSaga : StatefulSagaOf<FooState>
     {
         public void Handle(WithIdProp prop)

@@ -91,7 +91,7 @@ namespace Jasper.Messaging.Model
         /// <summary>
         /// The currently known strategy for persisting saga state
         /// </summary>
-        public ISagaPersistence SagaPersistence { get; set; }
+        public ISagaPersistence SagaPersistence { get; set; } = new InMemorySagaPersistence();
 
         internal void Compile(GenerationRules generation, JasperRuntime runtime, PerfTimer timer)
         {

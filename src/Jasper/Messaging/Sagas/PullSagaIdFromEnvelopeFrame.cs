@@ -27,7 +27,7 @@ namespace Jasper.Messaging.Sagas
             }
             else
             {
-                var typeNameInCode = SagaId.VariableType.NameInCode();
+                var typeNameInCode = SagaId.VariableType == typeof(Guid) ? typeof(Guid).FullName : SagaId.VariableType.NameInCode();
                 writer.Write($"var {SagaId.Usage} = {typeNameInCode}.Parse({_envelope.Usage}.{nameof(Envelope.SagaId)});");
             }
 

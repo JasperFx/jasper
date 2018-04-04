@@ -40,7 +40,7 @@ namespace Jasper.Messaging.Sagas
 
             var existence = DetermineExistence(sagaHandler.As<HandlerCall>());
 
-            Variable existingState = null;
+
             Variable sagaIdVariable = null;
             if (existence == SagaStateExistence.Existing)
             {
@@ -52,7 +52,7 @@ namespace Jasper.Messaging.Sagas
 
                 var sagaId = ChooseSagaIdProperty(chain.MessageType);
 
-                sagaIdVariable = createSagaIdVariable(sagaHandler.HandlerType, chain.MessageType, sagaId, identityMethod);
+                sagaIdVariable = createSagaIdVariable(sagaHandler.HandlerType, chain.MessageType, sagaId, identityMethod, sagaIdType);
                 chain.Middleware.Add(sagaIdVariable.Creator);
 
 
@@ -60,16 +60,17 @@ namespace Jasper.Messaging.Sagas
 
             // TODO -- this will need to change when MethodCall supports
             // tuples and/or out parameters
-            if (sagaHandler.ReturnVariable.VariableType == sagaStateType)
-            {
-                existingState = sagaHandler.ReturnVariable;
-            }
+
+            var existingState = sagaHandler.Creates.FirstOrDefault(x => x.VariableType == sagaStateType);
+
+            // Tells the handler chain codegen to not use this as a cascading message
+            existingState?.Properties.Add(HandlerChain.NotCascading, true);
 
             chain.Middleware.Add(persistence.DeterminePersistenceFrame(existence, sagaIdVariable, sagaStateType, existingState));
         }
 
         private Variable createSagaIdVariable(Type handlerType, Type messageType, PropertyInfo sagaId,
-            MethodInfo identityMethod)
+            MethodInfo identityMethod, Type sagaIdType)
         {
             if (sagaId != null)
             {
@@ -84,7 +85,7 @@ namespace Jasper.Messaging.Sagas
                 return @call.ReturnVariable;
             }
 
-            return new PullSagaIdFromEnvelopeFrame(sagaId.PropertyType).SagaId;
+            return new PullSagaIdFromEnvelopeFrame(sagaIdType).SagaId;
         }
 
         public static SagaStateExistence DetermineExistence(HandlerCall sagaCall)

@@ -33,6 +33,8 @@ namespace Jasper.Messaging.Configuration
 
             IncludeTypes(x => x.Closes(typeof(StatefulSagaOf<>)));
 
+            _typeFilters.Excludes += t => t.HasAttribute<JasperIgnoreAttribute>();
+
         }
 
         /// <summary>
