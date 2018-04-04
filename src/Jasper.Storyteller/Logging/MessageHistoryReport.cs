@@ -1,93 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Baseline;
+﻿using System.Linq;
+using Baseline.Expressions;
 using StoryTeller.Model;
 using StoryTeller.Results;
 using StoryTeller.Util;
 
 namespace Jasper.Storyteller.Logging
 {
-    public class EnvelopeHistory
-    {
-        public Guid CorrelationId { get; }
-
-        public EnvelopeHistory(Guid correlationId, IEnumerable<EnvelopeRecord> records)
-        {
-            CorrelationId = correlationId;
-            Records = records.OrderBy(x => x.Time).ToArray();
-        }
-
-        public EnvelopeRecord[] Records { get; set; }
-        public long Time => Records[0].Time;
-        public string MessageType => Records[0].Envelope.MessageType;
-
-        public HtmlTag ToTableDetails()
-        {
-            var div = new HtmlTag("div");
-            var headers = new TableTag();
-
-            div.Add("h5").Text("Headers");
-            div.Append(headers);
-            headers.AddClass("table").AddClass("table-striped");
-            headers.AddHeaderRow(row =>
-            {
-                row.Header("Header Key");
-                row.Header("Header Value");
-            });
-
-            foreach (var pair in Records[0].Envelope.Headers)
-            {
-                headers.AddBodyRow(row =>
-                {
-                    row.Cell(pair.Key);
-                    row.Cell(pair.Value);
-                });
-            }
-
-            var table = new TableTag();
-
-            div.Add("h5").Text("Activity");
-            div.Append(table);
-
-            table.AddClass("table").AddClass("table-striped");
-
-
-            table.AddHeaderRow(row =>
-            {
-                row.Header("Time");
-                row.Header("Service");
-                row.Header("Message");
-            });
-
-            foreach (var record in Records)
-            {
-                table.AddBodyRow(row =>
-                {
-                    row.Cell(record.Time.ToString()).Style("text-align", "right");
-                    row.Cell(record.ServiceName);
-                    row.Cell(record.Message);
-
-                    if (record.ExceptionText.IsNotEmpty())
-                    {
-                        row.AddClass("bg-warning");
-                    }
-                });
-
-                if (record.ExceptionText.IsNotEmpty())
-                {
-                    table.AddBodyRow(row =>
-                    {
-                        row.Attr("colSpan", "3");
-                        row.Add("td/pre").Text(record.ExceptionText);
-                    });
-                }
-            }
-
-            return div;
-        }
-    }
-
     public class MessageHistoryReport : Report
     {
         private readonly EnvelopeHistory[] _envelopes;
