@@ -107,7 +107,7 @@ namespace Jasper.Messaging.Model
 
             var cascadingHandlers = determineCascadingMessages().ToArray();
 
-            return Middleware.Concat(Handlers).Concat(cascadingHandlers).ToList();
+            return Middleware.Concat(Handlers).Concat(Postprocessors).Concat(cascadingHandlers).ToList();
         }
 
         private IEnumerable<CaptureCascadingMessages> determineCascadingMessages()

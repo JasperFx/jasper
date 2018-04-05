@@ -13,7 +13,10 @@ namespace Jasper.Messaging.Sagas
     {
         Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState);
+
         Type DetermineSagaIdType(Type sagaStateType);
+
+        Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType);
     }
 
     public class InMemorySagaPersistence : ISagaPersistence
@@ -30,6 +33,11 @@ namespace Jasper.Messaging.Sagas
             var prop = FindIdProperty(sagaStateType);
 
             return prop.PropertyType;
+        }
+
+        public Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType)
+        {
+            return new CommentFrame("Placeholder for real saga persistence");
         }
 
         private static PropertyInfo FindIdProperty(Type sagaStateType)
