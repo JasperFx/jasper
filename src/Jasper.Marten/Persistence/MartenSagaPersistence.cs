@@ -13,12 +13,15 @@ namespace Jasper.Marten.Persistence
     {
 
         public Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
-            Variable existingState)
+            Variable existingState, out Variable loadedState)
         {
+
+
             var frame = new TransactionalFrame();
             if (existence == SagaStateExistence.Existing)
             {
                 var doc = frame.LoadDocument(sagaStateType, sagaId);
+                loadedState = doc;
 
                 if (existingState == null)
                 {
@@ -31,6 +34,7 @@ namespace Jasper.Marten.Persistence
             }
             else
             {
+                loadedState = existingState;
                 frame.SaveDocument(existingState);
             }
 

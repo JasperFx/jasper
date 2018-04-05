@@ -50,14 +50,17 @@ namespace Jasper.Marten.Codegen
 
             public Loaded(Variable document, Type documentType, Variable docId)
             {
-                _document = document;
+                if (documentType == null) throw new ArgumentNullException(nameof(documentType));
                 _documentType = documentType;
-                _docId = docId;
+
+                _document = document ?? throw new ArgumentNullException(nameof(document));
+
+                _docId = docId ?? throw new ArgumentNullException(nameof(docId));
             }
 
             public void Write(ISourceWriter writer, Variable session)
             {
-                writer.Write($"var {_docId.Usage} = await {session.Usage}.{nameof(IDocumentSession.LoadAsync)}<{_documentType.FullNameInCode()}>({_docId.Usage});");
+                writer.Write($"var {_document.Usage} = await {session.Usage}.{nameof(IDocumentSession.LoadAsync)}<{_documentType.FullNameInCode()}>({_docId.Usage});");
             }
         }
 

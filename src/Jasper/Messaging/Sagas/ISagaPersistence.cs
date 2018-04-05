@@ -12,15 +12,16 @@ namespace Jasper.Messaging.Sagas
     public interface ISagaPersistence
     {
         Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
-            Variable existingState);
+            Variable existingState, out Variable loadedState);
         Type DetermineSagaIdType(Type sagaStateType);
     }
 
     public class InMemorySagaPersistence : ISagaPersistence
     {
         public Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
-            Variable existingState)
+            Variable existingState, out Variable loadedState)
         {
+            loadedState = null;
             return new CommentFrame("Placeholder for real saga persistence");
         }
 

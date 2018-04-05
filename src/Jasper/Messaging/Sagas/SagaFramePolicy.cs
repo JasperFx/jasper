@@ -61,12 +61,13 @@ namespace Jasper.Messaging.Sagas
             // TODO -- this will need to change when MethodCall supports
             // tuples and/or out parameters
 
-            var existingState = sagaHandler.Creates.FirstOrDefault(x => x.VariableType == sagaStateType);
+            var existingState = sagaHandler.Creates.FirstOrDefault(x => x.VariableType == sagaStateType) ;
 
             // Tells the handler chain codegen to not use this as a cascading message
             existingState?.Properties.Add(HandlerChain.NotCascading, true);
 
-            chain.Middleware.Add(persistence.DeterminePersistenceFrame(existence, sagaIdVariable, sagaStateType, existingState));
+            var persistenceFrame = persistence.DeterminePersistenceFrame(existence, sagaIdVariable, sagaStateType, existingState, out existingState);
+            chain.Middleware.Add(persistenceFrame);
         }
 
         private Variable createSagaIdVariable(Type handlerType, Type messageType, PropertyInfo sagaId,

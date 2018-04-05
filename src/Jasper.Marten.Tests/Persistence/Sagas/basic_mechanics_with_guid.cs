@@ -18,6 +18,11 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
                 Name = start.Name
             };
         }
+
+        public void Handles(GuidDoThree message, GuidWorkflowState state)
+        {
+            state.ThreeCompleted = true;
+        }
     }
 
     public class GuidDoThree
