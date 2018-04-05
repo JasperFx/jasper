@@ -38,7 +38,7 @@ namespace Jasper.Messaging.Sagas
         {
             if (_sagaIdProperty.PropertyType == typeof(string))
             {
-                writer.Write($"{_sagaIdProperty.PropertyType.NameInCode()} {SagaFramePolicy.SagaIdVariableName} = {_envelope}.{nameof(Envelope.SagaId)} ?? {_message.Usage}.{_sagaIdProperty.Name};");
+                writer.Write($"{_sagaIdProperty.PropertyType.NameInCode()} {SagaFramePolicy.SagaIdVariableName} = {_envelope.Usage}.{nameof(Envelope.SagaId)} ?? {_message.Usage}.{_sagaIdProperty.Name};");
             }
             else
             {
