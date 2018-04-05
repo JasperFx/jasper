@@ -58,8 +58,7 @@ namespace Jasper.Messaging.Sagas
 
             }
 
-            // TODO -- this will need to change when MethodCall supports
-            // tuples and/or out parameters
+
 
             var existingState = sagaHandler.Creates.FirstOrDefault(x => x.VariableType == sagaStateType) ;
 

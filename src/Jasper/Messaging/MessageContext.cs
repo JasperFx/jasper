@@ -89,6 +89,7 @@ namespace Jasper.Messaging
         public Envelope Envelope { get; }
 
         private readonly List<Envelope> _outstanding = new List<Envelope>();
+        private object _sagaId;
 
         public IEnumerable<Envelope> Outstanding => _outstanding;
 
@@ -197,13 +198,17 @@ namespace Jasper.Messaging
 
         private void trackEnvelopeCorrelation(Envelope[] outgoing)
         {
+            foreach (var envelope in outgoing)
+            {
+                envelope.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? envelope.SagaId;
+            }
+
             if (Envelope != null)
             {
                 foreach (var outbound in outgoing)
                 {
                     outbound.OriginalId = Envelope.OriginalId;
                     outbound.ParentId = Envelope.Id;
-                    outbound.SagaId = Envelope.SagaId;
                 }
             }
         }
@@ -511,6 +516,14 @@ namespace Jasper.Messaging
         }
 
         public IAdvancedMessagingActions Advanced => this;
+        public void EnlistInSaga(object sagaId)
+        {
+            _sagaId = sagaId ?? throw new ArgumentNullException(nameof(sagaId));
+            foreach (var envelope in _outstanding)
+            {
+                envelope.SagaId = sagaId.ToString();
+            }
+        }
     }
 
 

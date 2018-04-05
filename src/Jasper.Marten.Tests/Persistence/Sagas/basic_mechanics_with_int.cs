@@ -18,10 +18,23 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
             };
         }
 
+
+
         public void Handles(IntDoThree message, IntWorkflowState state)
         {
             state.ThreeCompleted = true;
         }
+
+        public (IntWorkflowState, CompleteFour) Start(StartAndDoThings message)
+        {
+            return (new IntWorkflowState {Id = message.Id, Name = message.Name}, new CompleteFour());
+        }
+    }
+
+    public class StartAndDoThings
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "Whisper";
     }
 
     public class IntDoThree

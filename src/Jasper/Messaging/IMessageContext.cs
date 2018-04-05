@@ -222,7 +222,12 @@ namespace Jasper.Messaging
         IAdvancedMessagingActions Advanced { get; }
 
 
-
+        /// <summary>
+        /// Called by Jasper itself to mark this context as being part
+        /// of a stateful saga
+        /// </summary>
+        /// <param name="sagaId"></param>
+        void EnlistInSaga(object sagaId);
     }
 
     public interface IAdvancedMessagingActions
