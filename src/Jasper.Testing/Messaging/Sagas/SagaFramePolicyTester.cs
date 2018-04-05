@@ -39,6 +39,14 @@ namespace Jasper.Testing.Messaging.Sagas
                 .ShouldBe(typeof(FooState));
         }
 
+        [Fact]
+        public void determine_the_saga_state_type_with_multiple_levels_of_abstraction()
+        {
+            var chain = HandlerChain.For<DoubleInherited>(x => x.Handle(null));
+            SagaFramePolicy.DetermineSagaStateType(chain)
+                .ShouldBe(typeof(FooState));
+        }
+
         [Theory]
         [InlineData("Handle", SagaStateExistence.Existing)]
         [InlineData("Start", SagaStateExistence.New)]
@@ -109,5 +117,13 @@ namespace Jasper.Testing.Messaging.Sagas
 
         [SagaIdentity]
         public string Name { get; set; }
+    }
+
+    public abstract class AbstractSaga<T> : StatefulSagaOf<T>{}
+
+    [JasperIgnore]
+    public class DoubleInherited : AbstractSaga<FooState>
+    {
+        public void Handle(WithIdProp prop){}
     }
 }

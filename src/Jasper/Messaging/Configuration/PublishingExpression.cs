@@ -66,7 +66,7 @@ namespace Jasper.Messaging.Configuration
             return AllMessagesTo(uriString.ToUri());
         }
 
-        private ISubscriberAddress AllMessagesTo(Uri uri)
+        public ISubscriberAddress AllMessagesTo(Uri uri)
         {
             return MessagesMatching("all messages", _ => true).To(uri);
         }

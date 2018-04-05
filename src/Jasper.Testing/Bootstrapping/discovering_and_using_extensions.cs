@@ -25,14 +25,6 @@ namespace Jasper.Testing.Bootstrapping
 
 
         [Fact]
-        public void can_inject_services_from_the_extension()
-        {
-            theRuntime.Container.Model.For<IMessageLogger>().Instances.Any(x => x.ImplementationType == typeof(ModuleMessageSink))
-                .ShouldBeTrue();
-
-        }
-
-        [Fact]
         public void application_service_registrations_win()
         {
             theRuntime.Container.DefaultRegistrationIs<IModuleService, AppsModuleService>();

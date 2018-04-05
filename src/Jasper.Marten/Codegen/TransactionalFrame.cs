@@ -14,7 +14,6 @@ namespace Jasper.Marten.Codegen
         private Variable _store;
         private Variable _context;
         private bool _isUsingPersistence;
-        private Variable _session;
         private bool _createsSession;
 
         public TransactionalFrame() : base(true)
@@ -82,7 +81,7 @@ namespace Jasper.Marten.Codegen
 
             yield return _store;
             if (_context != null) yield return _context;
-            if (_session != null) yield return _session;
+            if (Session != null) yield return Session;
 
         }
 

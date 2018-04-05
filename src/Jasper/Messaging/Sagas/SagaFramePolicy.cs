@@ -103,7 +103,17 @@ namespace Jasper.Messaging.Sagas
             var handler = chain.Handlers.FirstOrDefault(x => x.HandlerType.Closes(typeof(StatefulSagaOf<>)));
             if (handler == null) throw new ArgumentOutOfRangeException(nameof(handler), "This chain is not a stateful saga");
 
-            return handler.HandlerType.BaseType.GetGenericArguments().Single();
+            var handlerType = handler.HandlerType;
+            while (handlerType.BaseType != typeof(object))
+            {
+                handlerType = handlerType.BaseType;
+                if (handlerType.IsGenericType && handlerType.GetGenericTypeDefinition() == typeof(StatefulSagaOf<>))
+                {
+                    return handlerType.GetGenericArguments().Single();
+                }
+            }
+
+            throw new ArgumentOutOfRangeException("Unable to determine a SagaState type for handler type " + handler.HandlerType.GetFullName());
         }
 
         public static PropertyInfo ChooseSagaIdProperty(Type messageType)

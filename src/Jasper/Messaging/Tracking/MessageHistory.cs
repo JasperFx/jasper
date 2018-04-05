@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports.Util;
 
 namespace Jasper.Messaging.Tracking
 {
@@ -35,17 +36,17 @@ namespace Jasper.Messaging.Tracking
         }
 
 
-        public Task<MessageTrack> WaitFor<T>()
+        public Task<MessageTrack> WaitFor<T>(int timeoutInMilliseconds = 5000)
         {
             var waiter = new TaskCompletionSource<MessageTrack>();
             lock (_lock)
             {
                 _backgroundWaiters.Add(typeof(T), waiter);
             }
-            return waiter.Task;
+            return waiter.Task.TimeoutAfter(5000);
         }
 
-        public async Task<MessageTrack[]> WatchAsync(Func<Task> func)
+        public async Task<MessageTrack[]> WatchAsync(Func<Task> func, int timeoutInMilliseconds = 5000)
         {
             var waiter = new TaskCompletionSource<MessageTrack[]>();
 
@@ -62,7 +63,7 @@ namespace Jasper.Messaging.Tracking
 
             await func();
 
-            return await waiter.Task;
+            return await waiter.Task.TimeoutAfter(timeoutInMilliseconds);
         }
 
         public void Complete(Envelope envelope, string activity, Exception ex = null)

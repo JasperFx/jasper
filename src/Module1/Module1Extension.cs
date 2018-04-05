@@ -21,7 +21,6 @@ namespace Module1
 
             registry.Services.For<IModuleService>().Use<ServiceFromModule>();
 
-            registry.Services.For<IMessageLogger>().Use<ModuleMessageSink>();
         }
 
         public static JasperRegistry Registry { get; set; }
@@ -30,66 +29,6 @@ namespace Module1
     public interface IModuleService
     {
 
-    }
-
-    public class ModuleMessageSink : IMessageLogger
-    {
-        public void MovedToErrorQueue(Envelope envelope, Exception ex)
-        {
-
-        }
-
-        public void DiscardedEnvelope(Envelope envelope)
-        {
-
-        }
-
-        public void Sent(Envelope envelope)
-        {
-        }
-
-        public void Received(Envelope envelope)
-        {
-        }
-
-        public void ExecutionStarted(Envelope envelope)
-        {
-        }
-
-        public void ExecutionFinished(Envelope envelope)
-        {
-        }
-
-        public void MessageSucceeded(Envelope envelope)
-        {
-        }
-
-        public void MessageFailed(Envelope envelope, Exception ex)
-        {
-        }
-
-        public void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
-        {
-        }
-
-        public void NoHandlerFor(Envelope envelope)
-        {
-        }
-
-        public void NoRoutesFor(Envelope envelope)
-        {
-
-        }
-
-        public void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
-        {
-
-        }
-
-        public void Undeliverable(Envelope envelope)
-        {
-
-        }
     }
 
     public class ModuleSettings
