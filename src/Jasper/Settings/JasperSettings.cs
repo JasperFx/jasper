@@ -19,7 +19,6 @@ namespace Jasper.Settings
         public JasperSettings(JasperRegistry parent)
         {
             _parent = parent;
-            Replace<ILoggerFactory>(new LoggerFactory());
         }
 
         internal bool ApplyingExtensions { get; set; }
