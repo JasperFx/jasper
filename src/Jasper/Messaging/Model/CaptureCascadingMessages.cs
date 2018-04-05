@@ -11,10 +11,9 @@ namespace Jasper.Messaging.Model
             ReflectionHelper.GetMethod<IAdvancedMessagingActions>(x => x.EnqueueCascading(null));
 
 
-        public CaptureCascadingMessages(Variable messages, int position) : base(typeof(IAdvancedMessagingActions),
+        public CaptureCascadingMessages(Variable messages) : base(typeof(IAdvancedMessagingActions),
             _method)
         {
-            messages.OverrideName("outgoing" + position);
             Arguments[0] = messages;
         }
     }

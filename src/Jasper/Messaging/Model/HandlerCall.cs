@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Util;
 using Lamar.Codegen.Frames;
 
 namespace Jasper.Messaging.Model
@@ -33,6 +34,8 @@ namespace Jasper.Messaging.Model
             if (messageType == null) return false;
 
             var hasOutput = method.ReturnType != typeof(void);
+
+            if (method.ReturnType.IsValueTuple()) return true;
 
             return !hasOutput || !method.ReturnType.GetTypeInfo().IsValueType;
         }

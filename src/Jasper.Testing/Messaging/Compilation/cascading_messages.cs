@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -27,6 +28,18 @@ namespace Jasper.Testing.Messaging.Compilation
 //                Console.WriteLine("--------------------------------------");
 
             }
+        }
+    }
+
+    public class Purple{}
+    public class Yellow{}
+    public class Orange{}
+
+    public class TupleReturningHandler
+    {
+        public (Purple, Yellow) Handle(Orange orange)
+        {
+            return (new Purple(), new Yellow());
         }
     }
 

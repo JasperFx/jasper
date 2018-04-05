@@ -109,5 +109,23 @@ namespace Jasper.Util
             return $"application/vnd.{alias}.{version}+{format}";
 
         }
+
+        private static readonly Type[] _tupleTypes = new Type[]
+        {
+            typeof(ValueTuple<>),
+            typeof(ValueTuple<,>),
+            typeof(ValueTuple<,,>),
+            typeof(ValueTuple<,,,>),
+            typeof(ValueTuple<,,,,>),
+            typeof(ValueTuple<,,,,,>),
+            typeof(ValueTuple<,,,,,,>),
+            typeof(ValueTuple<,,,,,,,>)
+
+        };
+
+        public static bool IsValueTuple(this Type type)
+        {
+            return (type != null && type.IsGenericType) && _tupleTypes.Contains(type.GetGenericTypeDefinition());
+        }
     }
 }

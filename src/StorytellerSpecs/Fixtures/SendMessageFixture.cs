@@ -53,7 +53,10 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() => { _runtime.Get<IMessageContext>().Send(message).Wait(); });
+            var waiter = history.Watch(() =>
+            {
+                _runtime.Get<IMessageContext>().Send(message).Wait();
+            });
 
             waiter.Wait(5.Seconds());
 
@@ -250,13 +253,9 @@ namespace StorytellerSpecs.Fixtures
 
     public class Cascader2
     {
-        public object[] Handle(Message2 message)
+        public (Message3, Message4) Handle(Message2 message)
         {
-            return new object[]
-            {
-                new Message3 {Name = message.Name},
-                new Message4 {Name = message.Name}
-            };
+            return (new Message3 {Name = message.Name}, new Message4 {Name = message.Name});
         }
     }
 

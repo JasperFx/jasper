@@ -9,6 +9,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
+using Jasper.Util;
 using Lamar;
 using Lamar.Codegen;
 using Lamar.Codegen.Frames;
@@ -104,11 +105,32 @@ namespace Jasper.Messaging.Model
                 }
             }
 
-            var i = 0;
-            var cascadingHandlers = Handlers.SelectMany(x => x.Creates).Where(x => !x.Properties.ContainsKey(NotCascading))
-                .Select(x => new CaptureCascadingMessages(x, ++i));
+            var cascadingHandlers = determineCascadingMessages().ToArray();
 
             return Middleware.Concat(Handlers).Concat(cascadingHandlers).ToList();
+        }
+
+        private IEnumerable<CaptureCascadingMessages> determineCascadingMessages()
+        {
+            var i = 0;
+
+            foreach (var handler in Handlers)
+            {
+                foreach (var create in handler.Creates)
+                {
+                    if (create.IsNotCascadingMessage()) continue;
+
+                    // FUGLY. Jeremy is very ashamed of this code
+                    if (create.VariableType == typeof(object) || create.VariableType == typeof(object[]) ||
+                        create.VariableType == typeof(IEnumerable<object>))
+                    {
+                        create.OverrideName("outgoing" + ++i);
+                    }
+
+
+                    yield return new CaptureCascadingMessages(create);
+                }
+            }
         }
 
         protected override MethodCall[] handlerCalls()
