@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Sagas;
 using Xunit;
 using Shouldly;

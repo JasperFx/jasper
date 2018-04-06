@@ -207,7 +207,7 @@ namespace Jasper.CommandLine
             var file = input.FileFlag ?? input.DirectoryFlag
                            .AppendPath($"{runtime.ServiceName}.capabilities.json");
 
-            Console.WriteLine("Writing subscriptions to file " + file);
+            Console.WriteLine("Writing subscriptions to file " + file.ToFullPath());
 
             runtime.Capabilities.WriteToFile(file);
 

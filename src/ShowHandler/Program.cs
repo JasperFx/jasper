@@ -19,32 +19,13 @@ namespace ShowHandler
         {
             return JasperAgent.Run(args, _ =>
             {
-                _.MartenConnectionStringIs(Environment.GetEnvironmentVariable("marten_testing_database"));
+                _.MartenConnectionStringIs("Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres");
+                _.Include<MartenBackedPersistence>();
             });
         }
     }
 
 
-    [Description("Show the code for the CreateItemCommand handler", Name = "show")]
-    public class ShowCodeCommand : OaktonCommand<JasperInput>
-    {
-        public override bool Execute(JasperInput input)
-        {
-            using (var runtime = input.BuildRuntime())
-            {
-                var code = runtime.Get<HandlerGraph>().ChainFor<CreateItemCommand>()
-                    .SourceCode;
-
-
-                Console.WriteLine();
-                Console.WriteLine();
-                ConsoleWriter.Write(ConsoleColor.Cyan, "The source code for handling CreateItemCommand is:");
-                Console.WriteLine(code);
-            }
-
-            return true;
-        }
-    }
 
 
     public class CreateItemCommand

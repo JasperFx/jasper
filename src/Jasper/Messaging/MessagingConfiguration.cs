@@ -75,7 +75,7 @@ namespace Jasper.Messaging
                     var calls = t.Result;
 
                     if (calls != null && calls.Any()) Graph.AddRange(calls);
-                    Graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged())));
+                    Graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged(), null)));
 
                     Graph.Group();
                     Handling.ApplyPolicies(Graph);

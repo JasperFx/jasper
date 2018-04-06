@@ -6,6 +6,29 @@ namespace ShowHandler
 {
     public class CreateItemHandler
     {
+        private readonly IDocumentStore _store;
+
+        public CreateItemHandler(IDocumentStore store)
+        {
+            _store = store;
+        }
+
+        public ItemCreatedEvent Handle(CreateItemCommand command)
+        {
+            using (var session = _store.LightweightSession())
+            {
+                var item = new Item {Name = command.Name};
+                session.Store(item);
+                session.SaveChanges();
+
+                return new ItemCreatedEvent {Item = item};
+            }
+        }
+    }
+
+    /*
+    public class CreateItemHandler
+    {
         private readonly IDocumentSession _session;
 
         public CreateItemHandler(IDocumentSession session)
@@ -20,6 +43,7 @@ namespace ShowHandler
             _session.SaveChanges();
         }
     }
+    */
 
 
     /*

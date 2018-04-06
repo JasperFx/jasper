@@ -20,70 +20,35 @@ namespace OutboxInMVCWithMarten.Controllers
             return View();
         }
 
-        /*
 
         [HttpPost]
         public async Task<IActionResult> CreateUser(
             string userId,
             [FromServices] IDocumentStore martenStore,
-            [FromServices] IServiceBus theBus)
+            [FromServices] IMessageContext context)
         {
             // The Marten IDocumentSession represents the unit of work
             using (var session = martenStore.OpenSession())
             {
-                var theUser = new User {Id = userId};
-                session.Store(theUser);
-
-                await theBus.Send(new UserCreated {UserId = userId});
-
-                await session.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> DeleteUser(
-            string userId,
-            [FromServices] IDocumentStore martenStore,
-            [FromServices] IServiceBus theBus)
-        {
-            using (var session = martenStore.OpenSession())
-            {
-                var user = await session.LoadAsync<User>(userId);
-                user.IsDeleted = true;
-
-                await session.SaveChangesAsync();
-
-                await theBus.Send(new UserDeleted {UserId = userId});
-
-                return RedirectToAction(nameof(Index));
-            }
-        }
-        */
-
-        /* With outbox */
-        [HttpPost]
-        public async Task<IActionResult> CreateUser(
-            string userId,
-            [FromServices] IDocumentStore martenStore,
-            [FromServices] IMessageContext bus)
-        {
-            // The Marten IDocumentSession represents the unit of work
-            using (var session = martenStore.OpenSession())
-            {
-                await bus.EnlistInTransaction(session);
+                await context.EnlistInTransaction(session);
 
                 var theUser = new User { Id = userId };
                 session.Store(theUser);
 
-                await bus.Send(new NewUser {UserId = userId});
+                await context.Send(new NewUser {UserId = userId});
 
                 await session.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
         }
+
+
+
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteUser(
