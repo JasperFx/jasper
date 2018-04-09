@@ -14,6 +14,7 @@ namespace ShowHandler
             // Run locally right now
             await context.Invoke(command);
 
+            // Run in the background, let Jasper decide if the message should be durable
             await context.Enqueue(command);
 
             // or fire-and-forget
