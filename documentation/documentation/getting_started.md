@@ -46,11 +46,11 @@ to an idiomatic ASP.Net Core application.
 
 
 <[info]>
-As of Jasper 0.6, the ASP.Net Core integration moved into the Jasper.Http library.
+As of Jasper 0.7, the ASP.Net Core integration was folded right back into the main library with optimized bootstrapping and there is no more "Jasper.Http" library.
 <[/info]>
 
 While you may certainly build headless services with Jasper, it's pretty likely that you will also want to integrate Jasper into
-ASP.Net Core applications. The first step is to add a Nuget dependency on the `Jasper.Http` library to get Jasper's recipes for quick integration.
+ASP.Net Core applications.
 
 If you prefer to use typical ASP.Net Core bootstrapping or want to add Jasper messaging support to an existing project, you can use the `UseJasper<T>()` extension method on ASP.Net Core's `IWebHostBuilder` as shown below:
 
