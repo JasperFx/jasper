@@ -66,7 +66,7 @@ namespace Jasper.Messaging.Sagas
             existingState?.Properties.Add(HandlerChain.NotCascading, true);
 
             var persistenceFrame = persistence.DeterminePersistenceFrame(existence, sagaIdVariable, sagaStateType, existingState, out existingState);
-            chain.Middleware.Add(persistenceFrame);
+            if (persistenceFrame != null) chain.Middleware.Add(persistenceFrame);
 
             var storeOrDeleteFrame = persistence.DetermineStoreOrDeleteFrame(existingState, sagaHandler.HandlerType);
             chain.Postprocessors.Add(storeOrDeleteFrame);

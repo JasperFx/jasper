@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Marten.Persistence.Sagas;
 using Jasper.Messaging.Transports;
 using Lamar.Codegen;
 using Lamar.Codegen.Variables;

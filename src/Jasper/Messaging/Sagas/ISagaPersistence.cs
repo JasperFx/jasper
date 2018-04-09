@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
-using Baseline.Reflection;
 using Lamar.Codegen;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;
@@ -17,35 +14,6 @@ namespace Jasper.Messaging.Sagas
         Type DetermineSagaIdType(Type sagaStateType);
 
         Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType);
-    }
-
-    public class InMemorySagaPersistence : ISagaPersistence
-    {
-        public Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
-            Variable existingState, out Variable loadedState)
-        {
-            loadedState = null;
-            return new CommentFrame("Placeholder for real saga persistence");
-        }
-
-        public Type DetermineSagaIdType(Type sagaStateType)
-        {
-            var prop = FindIdProperty(sagaStateType);
-
-            return prop.PropertyType;
-        }
-
-        public Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType)
-        {
-            return new CommentFrame("Placeholder for real saga persistence");
-        }
-
-        private static PropertyInfo FindIdProperty(Type sagaStateType)
-        {
-            var prop = sagaStateType.GetProperties().FirstOrDefault(x => x.HasAttribute<SagaIdentityAttribute>())
-                       ?? sagaStateType.GetProperties().FirstOrDefault(x => x.Name == "Id");
-            return prop;
-        }
     }
 
     public class CommentFrame : SyncFrame

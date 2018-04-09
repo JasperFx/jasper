@@ -8,6 +8,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Lamar;
@@ -77,6 +78,8 @@ namespace Jasper
 
         private void messaging(JasperRegistry parent)
         {
+            this.AddSingleton<InMemorySagaPersistor>();
+
             this.AddSingleton(parent.Messaging.Graph);
             this.AddSingleton<IChannelGraph>(parent.Messaging.Channels);
             this.AddSingleton<ILocalWorkerSender>(parent.Messaging.LocalWorker);
