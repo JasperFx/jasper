@@ -3,7 +3,7 @@
 <div class="alert alert-info"><b>Note!</b> All of the code snippets shown in this topic apply to the JasperRegistry syntax</div>
 
 For application configuration, Jasper supports both the built in .Net Core configuration and a form of strong typed configuration
-we call the ["Settings" model that was originally used in FubuMVC](https://jeremydmiller.com/2014/11/07/strong_typed_configuration/). 
+we call the ["Settings" model that was originally used in FubuMVC](https://jeremydmiller.com/2014/11/07/strong_typed_configuration/).
 
 ## Quick Start
 
@@ -27,7 +27,7 @@ Application configuration can come from a mix of the built in .Net Core configur
 1. Apply all the `JasperRegistry.Settings.Alter()` or `Replace()` delegates from registered extensions in the order that they were registered
 1. Apply all the `JasperRegistry.Settings.Alter()` or `Replace()` delegates configured in your `JasperRegistry` in the order that they were
    registered to ensure that the application specific options always win out over the base options or options coming from an extension
-1. Finally, apply all the `JasperRegistry.Settings.With()` delegates configured in your `JasperRegistry` to use the final, configured versions of  
+1. Finally, apply all the `JasperRegistry.Settings.With()` delegates configured in your `JasperRegistry` to use the final, configured versions of
    `Settings` objects to alter your application setup
 
 ## Add Configuration Sources
@@ -52,9 +52,6 @@ that to the `ServiceName` for the application:
 
 <[sample:UsingConfigApp]>
 
-Just to show that in action, here is the unit test for that behavior:
-
-<[sample:can_customize_based_on_only_configuration]>
 
 
 ## Modify Settings
