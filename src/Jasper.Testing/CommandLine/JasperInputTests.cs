@@ -12,7 +12,7 @@ namespace Jasper.Testing.CommandLine
 {
     public class JasperInputTests
     {
-        [Fact]
+        //[Fact]
         public void pass_the_environment_flag()
         {
             var registry = new JasperRegistry();
@@ -32,7 +32,7 @@ namespace Jasper.Testing.CommandLine
             }
         }
 
-        [Fact]
+        //[Fact]
         public void set_up_verbose_logging()
         {
             var registry = new JasperRegistry();

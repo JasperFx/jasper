@@ -24,13 +24,16 @@ namespace Jasper.Testing.Conneg
         }
 
         [Fact]
-        public void automatically_discover_forwarding_types_for_known_incoming_messages()
+        public async Task automatically_discover_forwarding_types_for_known_incoming_messages()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Handlers.IncludeType<NewMessageHandler>();
-            }))
+            });
+
+
+            try
             {
                 var modelReader = runtime.Get<MessagingSerializationGraph>().ReaderFor(typeof(NewMessage));
 
@@ -38,6 +41,10 @@ namespace Jasper.Testing.Conneg
                 reader.ShouldNotBeNull();
 
                 modelReader.ContentTypes.OrderBy(x => x).ShouldHaveTheSameElementsAs("application/json", typeof(OriginalMessage).ToContentType("json"), typeof(NewMessage).ToContentType("json"));
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
 
@@ -48,7 +55,8 @@ namespace Jasper.Testing.Conneg
             var tracker = new MessageTracker();
             var channel = "tcp://localhost:2345/incoming".ToUri();
 
-            using (var runtime = JasperRuntime.For(_ =>
+
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Handlers.IncludeType<NewMessageHandler>();
@@ -58,7 +66,9 @@ namespace Jasper.Testing.Conneg
 
                 _.Publish.Message<OriginalMessage>().To(channel);
                 _.Transports.ListenForMessagesFrom(channel);
-            }))
+            });
+
+            try
             {
                 var waiter = tracker.WaitFor<NewMessage>();
 
@@ -72,6 +82,11 @@ namespace Jasper.Testing.Conneg
 
                 waiter.Result.Message.As<NewMessage>().FullName.ShouldBe("James Worthy");
             }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+
         }
     }
 

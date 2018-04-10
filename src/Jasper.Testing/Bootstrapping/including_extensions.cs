@@ -1,4 +1,5 @@
-﻿using Jasper.Configuration;
+﻿using System.Threading.Tasks;
+using Jasper.Configuration;
 using Shouldly;
 using Xunit;
 
@@ -7,31 +8,43 @@ namespace Jasper.Testing.Bootstrapping
     public class including_extensions
     {
         [Fact]
-        public void will_apply_an_extension()
+        public async Task will_apply_an_extension()
         {
             var registry = new JasperRegistry();
             registry.Include<OptionalExtension>();
             registry.Handlers.DisableConventionalDiscovery(true);
 
-            using (var runtime = JasperRuntime.For(registry))
+            var runtime = await JasperRuntime.ForAsync(registry);
+
+            try
             {
                 runtime.Get<IColorService>()
                     .ShouldBeOfType<RedService>();
             }
+            finally
+            {
+                await runtime.Shutdown();
+            }
         }
 
         [Fact]
-        public void the_application_still_wins()
+        public async Task the_application_still_wins()
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery(true);
             registry.Include<OptionalExtension>();
             registry.Services.For<IColorService>().Use<BlueService>();
 
-            using (var runtime = JasperRuntime.For(registry))
+            var runtime = await JasperRuntime.ForAsync(registry);
+
+            try
             {
                 runtime.Get<IColorService>()
                     .ShouldBeOfType<BlueService>();
+            }
+            finally
+            {
+                await runtime.Shutdown();
             }
         }
     }

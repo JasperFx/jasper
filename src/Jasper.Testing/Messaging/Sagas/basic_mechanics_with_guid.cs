@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Sagas
 {
-
+    [JasperIgnore]
     public class GuidBasicWorkflow : BasicWorkflow<GuidWorkflowState, GuidStart, GuidCompleteThree, Guid>
     {
         public GuidWorkflowState Starts(WildcardStart start)
@@ -39,6 +39,8 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task start_1()
         {
+
+
             await send(new GuidStart
             {
                 Id = stateId,

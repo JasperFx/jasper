@@ -28,7 +28,7 @@ namespace Jasper.Testing.Messaging.Sagas
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _runtime?.Shutdown();
         }
 
 

@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using Jasper.Marten.Tests.Persistence.Sagas;
 using Jasper.Messaging.Sagas;
+using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Sagas
 {
+    [JasperIgnore]
     public class IntBasicWorkflow : BasicWorkflow<IntWorkflowState, IntStart, IntCompleteThree, int>
     {
         public IntWorkflowState Starts(WildcardStart start)

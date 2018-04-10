@@ -8,6 +8,7 @@ using Xunit;
 namespace Jasper.Testing.Messaging.Sagas
 {
 
+    [JasperIgnore]
     public class StringBasicWorkflow : BasicWorkflow<StringWorkflowState, StringStart, StringCompleteThree, String>
     {
         public StringWorkflowState Starts(WildcardStart start)
@@ -54,9 +55,6 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task start_2()
         {
-            var code = codeFor<WildcardStart>();
-            //throw new Exception(code);
-
             await send(new WildcardStart
             {
                 Id = stateId.ToString(),

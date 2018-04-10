@@ -7,6 +7,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Sagas
 {
+    [JasperIgnore]
     public class LongBasicWorkflow : BasicWorkflow<LongWorkflowState, LongStart, LongCompleteThree, long>
     {
         public LongWorkflowState Starts(WildcardStart start)
@@ -53,8 +54,6 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task start_2()
         {
-            var code = codeFor<WildcardStart>();
-            //throw new Exception(code);
 
             await send(new WildcardStart
             {

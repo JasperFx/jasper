@@ -59,7 +59,7 @@ namespace Jasper.Testing.Bootstrapping
         }
     }
 
-    [Collection("aspnet")]
+    [Collection("integration")]
     public class BootstrappingTests : IClassFixture<BootstrappingFixture>
     {
         private BootstrappingFixture theFixture;

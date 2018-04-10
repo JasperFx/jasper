@@ -15,32 +15,30 @@ namespace Jasper.Testing.EnvironmentChecks
     public class EnvironmentChecksProcessing
     {
         [Fact]
-        public void do_not_fail_if_advanced_says_not_to_blow_up()
+        public async Task do_not_fail_if_advanced_says_not_to_blow_up()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.EnvironmentCheck<NegativeCheck>();
                 _.Advanced.ThrowOnValidationErrors = false;
-            }))
-            {
-            }
+            });
+
+            await runtime.Shutdown();
         }
 
 
         [Fact]
-        public void fail_on_startup_with_negative_check()
+        public async Task fail_on_startup_with_negative_check()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
             {
-                using (var runtime = JasperRuntime.For(_ =>
+                var runtime = await JasperRuntime.ForAsync(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 
                     _.Services.EnvironmentCheck<NegativeCheck>();
-                }))
-                {
-                }
+                });
             });
 
             aggregate.InnerExceptions.Single().Message
@@ -48,18 +46,16 @@ namespace Jasper.Testing.EnvironmentChecks
         }
 
         [Fact]
-        public void fail_with_lambda_check()
+        public async Task fail_with_lambda_check()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
             {
-                using (var runtime = JasperRuntime.For(_ =>
+                var runtime = await JasperRuntime.ForAsync(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 
                     _.Services.EnvironmentCheck("Bazinga!", () => throw new Exception("Bang"));
-                }))
-                {
-                }
+                });
             });
 
             aggregate.InnerExceptions.Single().Message
@@ -67,77 +63,67 @@ namespace Jasper.Testing.EnvironmentChecks
         }
 
         [Fact]
-        public void fail_with_lambda_check_with_service()
+        public async Task fail_with_lambda_check_with_service()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
             {
-                using (var runtime = JasperRuntime.For(_ =>
+                await JasperRuntime.ForAsync(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 
                     _.Services.EnvironmentCheck<Thing>("Bazinga!", t => t.ThrowUp());
-                }))
-                {
-                }
+                });
             });
         }
 
         [Fact]
-        public void finds_checks_that_were_not_registered_as_environment_check()
+        public async Task finds_checks_that_were_not_registered_as_environment_check()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
             {
-                using (var runtime = JasperRuntime.For(_ =>
+                await JasperRuntime.ForAsync(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
                     _.Services.AddTransient<ISomeService, BadService>();
-                }))
-                {
-                }
+                });
             });
 
             aggregate.InnerExceptions.Single().Message.ShouldContain("I'm bad!");
         }
 
         [Fact]
-        public void succeed_with_lambda_check()
+        public async Task succeed_with_lambda_check()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
                 _.Services.EnvironmentCheck("Bazinga!", () => { });
-            }))
-            {
-            }
+            });
         }
 
         [Fact]
-        public void succeed_with_lambda_check_using_service()
+        public async Task succeed_with_lambda_check_using_service()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            var runtime = await JasperRuntime.ForAsync(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
                 _.Services.EnvironmentCheck<Thing>("Bazinga!", t => t.AllGood());
-            }))
-            {
-            }
+            });
         }
 
         [Fact]
-        public void timeout_on_task()
+        public async Task timeout_on_task()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
             {
-                using (var runtime = JasperRuntime.For(_ =>
+                var runtime = await JasperRuntime.ForAsync(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 
                     _.Services.EnvironmentCheck<Thing>("Bazinga!", t => t.TooLong(), 50.Milliseconds());
-                }))
-                {
-                }
+                });
             });
         }
     }

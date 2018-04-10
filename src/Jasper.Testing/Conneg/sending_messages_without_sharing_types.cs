@@ -24,8 +24,8 @@ namespace Jasper.Testing.Conneg
 
         public void Dispose()
         {
-            greenApp?.Dispose();
-            blueApp?.Dispose();
+            greenApp?.Shutdown();
+            blueApp?.Shutdown();
         }
 
         private JasperRuntime greenApp;

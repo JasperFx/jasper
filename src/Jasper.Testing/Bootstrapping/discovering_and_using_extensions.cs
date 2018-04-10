@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Messaging.Logging;
 using Jasper.Testing.Messaging.Bootstrapping;
 using Module1;
@@ -8,43 +9,37 @@ using Xunit;
 
 namespace Jasper.Testing.Bootstrapping
 {
-    public class discovering_and_using_extensions : IDisposable
+    public class discovering_and_using_extensions
     {
-        private JasperRuntime theRuntime;
-
-        public discovering_and_using_extensions()
-        {
-            theRuntime = JasperRuntime.For<AppWithOverrides>();
-        }
-
-        public void Dispose()
-        {
-            theRuntime.Dispose();
-        }
-
 
 
         [Fact]
-        public void application_service_registrations_win()
+        public async Task application_service_registrations_win()
         {
-            theRuntime.Container.DefaultRegistrationIs<IModuleService, AppsModuleService>();
+            var runtime = await JasperRuntime.ForAsync<AppWithOverrides>();
+
+            try
+            {
+                runtime.Container.DefaultRegistrationIs<IModuleService, AppsModuleService>();
+
+                // application_settings_alterations_win
+                runtime.Get<ModuleSettings>()
+                    .From.ShouldBe("Application");
+
+                // extension_can_alter_settings
+                var moduleSettings = runtime.Get<ModuleSettings>();
+                moduleSettings
+                    .Count.ShouldBe(100);
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+
+
+
         }
 
-        [Fact]
-        public void extension_can_alter_settings()
-        {
-            // This value comes from Module1Extension
-            var moduleSettings = theRuntime.Get<ModuleSettings>();
-            moduleSettings
-                .Count.ShouldBe(100);
-        }
-
-        [Fact]
-        public void application_settings_alterations_win()
-        {
-            theRuntime.Get<ModuleSettings>()
-                .From.ShouldBe("Application");
-        }
     }
 
 
