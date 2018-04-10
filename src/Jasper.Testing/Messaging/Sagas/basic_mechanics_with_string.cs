@@ -143,6 +143,18 @@ namespace Jasper.Testing.Messaging.Sagas
         }
 
         [Fact]
+        public async Task unknown_state()
+        {
+            await Exception<UnknownSagaStateException>.ShouldBeThrownByAsync(async () =>
+            {
+                await invoke(new StringCompleteThree
+                {
+                    SagaId = "unknown"
+                });
+            });
+        }
+
+        [Fact]
         public async Task complete()
         {
             await send(new StringStart
