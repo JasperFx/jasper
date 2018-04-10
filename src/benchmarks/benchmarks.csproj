@@ -6,6 +6,7 @@
   <ItemGroup>
     <ProjectReference Include="..\JasperHttpTesting\JasperHttpTesting.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
+    <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.10.9" />

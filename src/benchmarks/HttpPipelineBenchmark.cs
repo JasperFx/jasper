@@ -7,6 +7,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using Jasper;
 using JasperHttpTesting;
+using TestMessages;
 
 namespace benchmarks
 {

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Baseline;
 
-namespace benchmarks
+namespace TestMessages
 {
     public enum Colors
     {
@@ -73,6 +72,7 @@ namespace benchmarks
             target.Double = _random.NextDouble();
             target.Long = _random.Next() * 10000;
 
+
             target.Date = DateTime.Today.AddDays(_random.Next(-10000, 10000)).ToUniversalTime();
 
             if (deep)
@@ -137,27 +137,5 @@ namespace benchmarks
 
     }
 
-    public class Address
-    {
-        public Address()
-        {
-        }
 
-        public Address(string text)
-        {
-            var parts = text.ToDelimitedArray();
-            Address1 = parts[0];
-            City = parts[1];
-            StateOrProvince = parts[2];
-        }
-
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
-        public string City { get; set; }
-        public string StateOrProvince { get; set; }
-        public string Country { get; set; }
-        public string PostalCode { get; set; }
-
-        public bool Primary { get; set; }
-    }
 }
