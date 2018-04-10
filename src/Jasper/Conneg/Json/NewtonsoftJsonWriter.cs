@@ -39,7 +39,7 @@ namespace Jasper.Conneg.Json
         public byte[] Write(object model)
         {
             var serializer = _serializerPool.Get();
-            var bytes = _bytePool.Rent(1024); // TODO -- should this be configurable?
+            var bytes = _bytePool.Rent(1024 * 8); // TODO -- should this be configurable?
             var stream = new MemoryStream(bytes);
 
             try
@@ -54,7 +54,7 @@ namespace Jasper.Conneg.Json
                 })
                 {
                     serializer.Serialize(jsonWriter, model);
-                    if (stream.Position < 1024)
+                    if (stream.Position < 1024 * 8)
                     {
                         return bytes.Take((int)stream.Position).ToArray();
                     }

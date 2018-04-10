@@ -52,7 +52,7 @@ namespace Jasper.Testing.Settings
                 Configuration
                     .AddInMemoryCollection(new Dictionary<string, string> {{"AppName", "WocketInMyPocket"}});
 
-                Settings.WithConfig(c => ServiceName = c.Configuration["AppName"]);
+                Settings.Configure(c => ServiceName = c.Configuration["AppName"]);
             }
         }
 

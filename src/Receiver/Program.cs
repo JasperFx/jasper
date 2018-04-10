@@ -1,33 +1,50 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper;
+using Jasper.CommandLine;
 using Jasper.Marten;
+using Jasper.Messaging.Transports.Configuration;
 using Marten;
+using Microsoft.AspNetCore.Hosting;
 using TestMessages;
 
 namespace Receiver
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            return JasperAgent.Run<ReceiverApp>(args);
         }
     }
 
-    public class SenderApp : JasperRegistry
+    public class ReceiverApp : JasperRegistry
     {
-        public SenderApp()
+        public ReceiverApp()
         {
-            // TODO -- listener
-            // Marten config
-            // file logging
+            Hosting.UseUrls("http://*:5061").UseKestrel();
+
+            Settings.ConfigureMarten((config, options) =>
+            {
+                options.AutoCreateSchemaObjects = AutoCreate.All;
+                options.Connection(config["marten"]);
+                options.DatabaseSchemaName = "receiver";
+                options.Schema.For<SentTrack>();
+                options.Schema.For<ReceivedTrack>();
+            });
+
+            Include<MartenBackedPersistence>();
+
+            Settings.Configure(c =>
+            {
+                Transports.ListenForMessagesFrom(c.Configuration["listener"]);
+            });
         }
     }
 
     public static class HomeEndpoint
     {
-        public static string Get(JasperRuntime runtime)
+        public static string Index(JasperRuntime runtime)
         {
             return "Hey, I'm here";
         }

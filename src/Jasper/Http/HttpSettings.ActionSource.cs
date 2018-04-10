@@ -31,7 +31,9 @@ namespace Jasper.Http
             if (method.HasAttribute<JasperIgnoreAttribute>()) return false;
             if (method.DeclaringType.HasAttribute<JasperIgnoreAttribute>()) return false;
 
-            return HttpVerbs.All.Any(x => method.Name.StartsWith(x + "_", StringComparison.OrdinalIgnoreCase));
+            if (method.Name.EqualsIgnoreCase("Index")) return true;
+
+            return HttpVerbs.All.Contains(method.Name, StringComparer.OrdinalIgnoreCase) || HttpVerbs.All.Any(x => method.Name.StartsWith(x + "_", StringComparison.OrdinalIgnoreCase));
         }
 
 

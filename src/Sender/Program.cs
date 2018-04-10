@@ -6,7 +6,9 @@ using Jasper;
 using Jasper.CommandLine;
 using Jasper.Marten;
 using Jasper.Messaging;
+using Jasper.Messaging.Transports.Configuration;
 using Marten;
+using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using TestMessages;
 
@@ -24,8 +26,25 @@ namespace Sender
     {
         public SenderApp()
         {
-            // set up marten
-            // set up publishing rules
+            Hosting.UseUrls("http://*:5060").UseKestrel();
+
+            Settings.ConfigureMarten((config, options) =>
+            {
+                options.AutoCreateSchemaObjects = AutoCreate.All;
+                options.Connection(config["marten"]);
+                options.DatabaseSchemaName = "sender";
+
+                options.Schema.For<SentTrack>();
+                options.Schema.For<ReceivedTrack>();
+            });
+
+            Include<MartenBackedPersistence>();
+
+            Settings.Configure(c =>
+            {
+                Transports.ListenForMessagesFrom(c.Configuration["listener"]);
+                Publish.AllMessagesTo(c.Configuration["receiver"]);
+            });
         }
     }
 
@@ -42,7 +61,7 @@ namespace Sender
         }
 
 
-        public static string Get(JasperRuntime runtime)
+        public static string Index(JasperRuntime runtime)
         {
             // TODO -- describe the runtime here?
             return "Hey, I'm the sending application and I'm up and running";
@@ -58,6 +77,8 @@ namespace Sender
         [MartenTransaction]
         public static async Task post_marten_one(IMessageContext context, IDocumentSession session)
         {
+            await context.EnlistInTransaction(session);
+
             var target1 = JsonConvert.DeserializeObject<Target>(_json1);
             target1.Id = Guid.NewGuid();
 
@@ -71,8 +92,10 @@ namespace Sender
         }
 
         [MartenTransaction]
-        public static Task post_marten_two(IMessageContext context, IDocumentSession session)
+        public static async Task post_marten_two(IMessageContext context, IDocumentSession session)
         {
+            await context.EnlistInTransaction(session);
+
             var target2 = JsonConvert.DeserializeObject<Target>(_json2);
             target2.Id = Guid.NewGuid();
 
@@ -82,12 +105,14 @@ namespace Sender
                 MessageType = "Target"
             });
 
-            return context.Send(target2);
+            await context.Send(target2);
         }
 
         [MartenTransaction]
-        public static Task post_marten_three(IMessageContext context, IDocumentSession session)
+        public static async Task post_marten_three(IMessageContext context, IDocumentSession session)
         {
+            await context.EnlistInTransaction(session);
+
             var ping = new PingMessage
             {
                 Name = "Han Solo",
@@ -100,12 +125,14 @@ namespace Sender
                 MessageType = "PingMessage"
             });
 
-            return context.SendAndExpectResponseFor<PongMessage>(ping);
+            await context.SendAndExpectResponseFor<PongMessage>(ping);
         }
 
         [MartenTransaction]
-        public static Task post_marten_four(IMessageContext context, IDocumentSession session)
+        public static async Task post_marten_four(IMessageContext context, IDocumentSession session)
         {
+            await context.EnlistInTransaction(session);
+
             var created = new UserCreated
             {
                 Id = Guid.NewGuid(),
@@ -118,7 +145,7 @@ namespace Sender
                 MessageType = "UserCreated"
             });
 
-            return context.Send(created);
+            await context.Send(created);
         }
     }
 

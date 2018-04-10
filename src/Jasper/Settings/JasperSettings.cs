@@ -101,7 +101,7 @@ namespace Jasper.Settings
             forType<T>().With(alteration);
         }
 
-        public void WithConfig(Action<WebHostBuilderContext> configuration)
+        public void Configure(Action<WebHostBuilderContext> configuration)
         {
             _configActions.Add(configuration);
         }
