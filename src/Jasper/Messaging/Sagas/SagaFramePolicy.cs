@@ -53,6 +53,9 @@ namespace Jasper.Messaging.Sagas
                 var sagaId = ChooseSagaIdProperty(chain.MessageType);
 
                 sagaIdVariable = createSagaIdVariable(sagaHandler.HandlerType, chain.MessageType, sagaId, identityMethod, sagaIdType);
+
+
+
                 chain.Middleware.Add(sagaIdVariable.Creator);
 
 

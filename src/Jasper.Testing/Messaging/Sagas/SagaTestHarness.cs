@@ -52,6 +52,16 @@ namespace Jasper.Testing.Messaging.Sagas
             // nothing
         }
 
+        protected async Task invoke<T>(T message)
+        {
+            if (_history == null)
+            {
+                await withApplication();
+            }
+
+            await _runtime.Messaging.Invoke(message);
+        }
+
         protected async Task send<T>(T message)
         {
             if (_history == null)

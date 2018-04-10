@@ -39,12 +39,25 @@ namespace Jasper.Messaging.Sagas
             if (_sagaIdProperty.PropertyType == typeof(string))
             {
                 writer.Write($"{_sagaIdProperty.PropertyType.NameInCode()} {SagaFramePolicy.SagaIdVariableName} = {_envelope.Usage}.{nameof(Envelope.SagaId)} ?? {_message.Usage}.{_sagaIdProperty.Name};");
+                writer.Write($"if (string.{nameof(string.IsNullOrEmpty)}({SagaFramePolicy.SagaIdVariableName})) throw new {nameof(IndeterminateSagaStateIdException)}({_envelope.Usage});");
             }
             else
             {
                 var typeNameInCode = _sagaIdProperty.PropertyType == typeof(Guid) ? typeof(Guid).FullName : _sagaIdProperty.PropertyType.NameInCode();
 
+
+
+
                 writer.Write($"if (!{typeNameInCode}.TryParse({_envelope.Usage}.{nameof(Envelope.SagaId)}, out {typeNameInCode} sagaId)) sagaId = {_message.Usage}.{_sagaIdProperty.Name};");
+
+                if (_sagaIdProperty.PropertyType == typeof(Guid))
+                {
+                    writer.Write($"if ({SagaId.Usage} == System.Guid.Empty) throw new {nameof(IndeterminateSagaStateIdException)}({_envelope.Usage});");
+                }
+                else
+                {
+                    writer.Write($"if ({SagaId.Usage} == 0) throw new {nameof(IndeterminateSagaStateIdException)}({_envelope.Usage});");
+                }
             }
 
 

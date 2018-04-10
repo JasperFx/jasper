@@ -124,6 +124,26 @@ namespace Jasper.Testing.Messaging.Sagas
         }
 
         [Fact]
+        public async Task update_with_no_saga_id_to_be_on_the_envelope()
+        {
+            await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
+            {
+                await invoke(new CompleteFour());
+            });
+
+        }
+
+        [Fact]
+        public async Task update_with_no_saga_id_to_be_on_the_envelope_or_message()
+        {
+            await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
+            {
+                await invoke(new GuidCompleteThree());
+            });
+
+        }
+
+        [Fact]
         public async Task complete()
         {
             await send(new GuidStart
