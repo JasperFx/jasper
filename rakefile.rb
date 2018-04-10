@@ -82,6 +82,7 @@ task :test => [:compile] do
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
 	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj --no-restore"
+	sh "dotnet test src/Jasper.CommandLine.Testing/Jasper.CommandLine.Testing.csproj --no-restore"
 
 end
 

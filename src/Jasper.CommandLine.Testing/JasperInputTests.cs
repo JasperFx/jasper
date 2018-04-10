@@ -1,18 +1,16 @@
 ﻿using System.Linq;
-using Jasper.CommandLine;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Debug;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.CommandLine
+namespace Jasper.CommandLine.Testing
 {
     public class JasperInputTests
     {
-        //[Fact]
+        [Fact]
         public void pass_the_environment_flag()
         {
             var registry = new JasperRegistry();
@@ -32,7 +30,7 @@ namespace Jasper.Testing.CommandLine
             }
         }
 
-        //[Fact]
+        [Fact]
         public void set_up_verbose_logging()
         {
             var registry = new JasperRegistry();
