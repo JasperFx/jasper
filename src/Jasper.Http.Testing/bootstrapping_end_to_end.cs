@@ -42,7 +42,7 @@ namespace Jasper.Http.Testing
 
         public void Dispose()
         {
-            theRuntime?.Dispose();
+            theRuntime?.Shutdown();
         }
 
         private JasperRuntime theRuntime;
