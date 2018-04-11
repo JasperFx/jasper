@@ -19,6 +19,7 @@ namespace Jasper.Conneg.Json
         private readonly ArrayPool<byte> _bytePool;
         private readonly JsonArrayPool<char> _jsonCharPool;
         private readonly ObjectPool<JsonSerializer> _serializerPool;
+        private int _bufferSize = 1024;
 
         internal NewtonsoftJsonReader(
             Type messageType,
@@ -86,7 +87,7 @@ namespace Jasper.Conneg.Json
 
         private object read(Stream stream, Encoding encoding, Type targetType)
         {
-            using (var streamReader = new HttpRequestStreamReader(stream, encoding, 1024, _bytePool, _charPool))
+            using (var streamReader = new HttpRequestStreamReader(stream, encoding, _bufferSize, _bytePool, _charPool))
             {
                 using (var jsonReader = new JsonTextReader(streamReader))
                 {
