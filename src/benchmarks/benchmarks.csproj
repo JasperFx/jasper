@@ -6,6 +6,8 @@
   <ItemGroup>
     <ProjectReference Include="..\JasperHttpTesting\JasperHttpTesting.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
+    <ProjectReference Include="..\Receiver\Receiver.csproj" />
+    <ProjectReference Include="..\Sender\Sender.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
   <ItemGroup>
