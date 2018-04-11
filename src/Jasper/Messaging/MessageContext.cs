@@ -53,6 +53,9 @@ namespace Jasper.Messaging
             _logger = logger;
 
             Envelope = originalEnvelope;
+            _sagaId = originalEnvelope.SagaId;
+
+
             var persistor = new InMemoryEnvelopePersistor();
             EnlistedInTransaction = true;
             Persistor = persistor;
@@ -73,6 +76,7 @@ namespace Jasper.Messaging
                 ParentId = Envelope.Id,
                 Destination = Envelope.ReplyUri,
                 ResponseId = Envelope.Id,
+                SagaId = Envelope.SagaId,
                 Message = new Acknowledgement {CorrelationId = Envelope.Id},
                 Route = new MessageRoute(typeof(Acknowledgement), Envelope.ReplyUri, "application/json")
                 {
