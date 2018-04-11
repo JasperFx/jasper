@@ -8,7 +8,7 @@ namespace Jasper.Messaging.Sagas
 {
     public interface ISagaPersistence
     {
-        Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
+        Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState);
 
         Type DetermineSagaIdType(Type sagaStateType);

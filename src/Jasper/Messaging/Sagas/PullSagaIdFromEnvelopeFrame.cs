@@ -24,13 +24,13 @@ namespace Jasper.Messaging.Sagas
             if (SagaId.VariableType == typeof(string))
             {
                 writer.Write($"var {SagaId.Usage} = {_envelope.Usage}.{nameof(Envelope.SagaId)};");
-                writer.Write($"if (string.{nameof(string.IsNullOrEmpty)}({SagaFramePolicy.SagaIdVariableName})) throw new {nameof(IndeterminateSagaStateIdException)}({_envelope.Usage});");
+                writer.Write($"if (string.{nameof(string.IsNullOrEmpty)}({SagaFramePolicy.SagaIdVariableName})) throw new {typeof(IndeterminateSagaStateIdException).FullName}({_envelope.Usage});");
             }
             else
             {
                 var typeNameInCode = SagaId.VariableType == typeof(Guid) ? typeof(Guid).FullName : SagaId.VariableType.NameInCode();
 
-                writer.Write($"if (!{typeNameInCode}.TryParse({_envelope.Usage}.{nameof(Envelope.SagaId)}, out {typeNameInCode} sagaId)) throw new {typeof(IndeterminateSagaStateIdException).FullNameInCode()}({_envelope.Usage});");
+                writer.Write($"if (!{typeNameInCode}.TryParse({_envelope.Usage}.{nameof(Envelope.SagaId)}, out {typeNameInCode} sagaId)) throw new {typeof(IndeterminateSagaStateIdException).FullName}({_envelope.Usage});");
             }
 
             Next?.GenerateCode(method, writer);

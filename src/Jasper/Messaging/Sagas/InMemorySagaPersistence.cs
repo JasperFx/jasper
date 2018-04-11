@@ -7,20 +7,30 @@ using ReflectionExtensions = Baseline.Reflection.ReflectionExtensions;
 
 namespace Jasper.Messaging.Sagas
 {
+
+
+
+
     public class InMemorySagaPersistence : ISagaPersistence
     {
-        public Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
+        public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState)
         {
-            if (existence == SagaStateExistence.Existing)
+            loadedState = existingState;
+            if (existence == SagaStateExistence.New)
             {
-                var frame = new LoadDocumentFrame(sagaStateType, sagaId);
-                loadedState = frame.Document;
-                return frame;
+                var prop = FindIdProperty(sagaStateType);
+                sagaId = new Variable(prop.PropertyType, existingState.Usage + "." + prop.Name);
             }
 
-            loadedState = existingState;
-            return null;
+            var frame = new InMemorySagaPersistenceFrame(sagaStateType, sagaId, existence);
+
+            if (existence == SagaStateExistence.Existing)
+            {
+                loadedState = frame.Document;
+            }
+
+            return frame;
 
         }
 

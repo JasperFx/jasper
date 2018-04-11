@@ -33,7 +33,6 @@ namespace Jasper.Testing.Messaging.Sagas
             _history = _runtime.Get<MessageHistory>();
         }
 
-
         protected string codeFor<T>()
         {
 

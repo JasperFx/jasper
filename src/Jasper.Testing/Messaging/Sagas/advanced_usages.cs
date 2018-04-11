@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Testing.Messaging.Sagas;
 using Shouldly;
@@ -10,7 +11,7 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
     {
         private readonly int stateId = new Random().Next();
 
-        //[Fact]
+        [Fact]
         public async Task can_return_the_state_from_a_start_method_as_part_of_a_value_tuple()
         {
             await send(new StartAndDoThings {Id = stateId, Name = "Goblin"});
@@ -20,5 +21,6 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
             state.ShouldNotBeNull();
             state.Name.ShouldBe("Goblin");
         }
+
     }
 }

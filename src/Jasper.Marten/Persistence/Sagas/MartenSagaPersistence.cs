@@ -12,7 +12,7 @@ namespace Jasper.Marten.Persistence.Sagas
     public class MartenSagaPersistence : ISagaPersistence
     {
 
-        public Frame DeterminePersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
+        public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState)
         {
             var frame = new TransactionalFrame();
@@ -23,6 +23,11 @@ namespace Jasper.Marten.Persistence.Sagas
             }
             else
             {
+                var mapping = new DocumentMapping(sagaStateType, new StoreOptions());
+
+                sagaId = new Variable(mapping.IdMember.GetMemberType(), existingState.Usage + "." + mapping.IdMember.Name);
+
+
                 loadedState = existingState;
             }
 

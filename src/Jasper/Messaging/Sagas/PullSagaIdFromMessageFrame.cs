@@ -39,7 +39,7 @@ namespace Jasper.Messaging.Sagas
             if (_sagaIdProperty.PropertyType == typeof(string))
             {
                 writer.Write($"{_sagaIdProperty.PropertyType.NameInCode()} {SagaFramePolicy.SagaIdVariableName} = {_envelope.Usage}.{nameof(Envelope.SagaId)} ?? {_message.Usage}.{_sagaIdProperty.Name};");
-                writer.Write($"if (string.{nameof(string.IsNullOrEmpty)}({SagaFramePolicy.SagaIdVariableName})) throw new {nameof(IndeterminateSagaStateIdException)}({_envelope.Usage});");
+                writer.Write($"if (string.{nameof(string.IsNullOrEmpty)}({SagaFramePolicy.SagaIdVariableName})) throw new {typeof(IndeterminateSagaStateIdException).FullName}({_envelope.Usage});");
             }
             else
             {
@@ -52,11 +52,11 @@ namespace Jasper.Messaging.Sagas
 
                 if (_sagaIdProperty.PropertyType == typeof(Guid))
                 {
-                    writer.Write($"if ({SagaId.Usage} == System.Guid.Empty) throw new {nameof(IndeterminateSagaStateIdException)}({_envelope.Usage});");
+                    writer.Write($"if ({SagaId.Usage} == System.Guid.Empty) throw new {typeof(IndeterminateSagaStateIdException).FullName}({_envelope.Usage});");
                 }
                 else
                 {
-                    writer.Write($"if ({SagaId.Usage} == 0) throw new {nameof(IndeterminateSagaStateIdException)}({_envelope.Usage});");
+                    writer.Write($"if ({SagaId.Usage} == 0) throw new {typeof(IndeterminateSagaStateIdException).FullName}({_envelope.Usage});");
                 }
             }
 

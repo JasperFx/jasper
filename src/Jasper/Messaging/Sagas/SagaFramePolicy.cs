@@ -68,13 +68,17 @@ namespace Jasper.Messaging.Sagas
             // Tells the handler chain codegen to not use this as a cascading message
             existingState?.Properties.Add(HandlerChain.NotCascading, true);
 
-            var persistenceFrame = persistence.DeterminePersistenceFrame(existence, sagaIdVariable, sagaStateType, existingState, out existingState);
+            var persistenceFrame = persistence.DeterminePersistenceFrame(existence, ref sagaIdVariable, sagaStateType, existingState, out existingState);
             if (persistenceFrame != null) chain.Middleware.Add(persistenceFrame);
 
             if (existence == SagaStateExistence.Existing)
             {
                 chain.Middleware.Add(new AssertSagaStateExistsFrame(existingState, sagaIdVariable));
             }
+
+            var enlistInSagaId = MethodCall.For<IMessageContext>(x => x.EnlistInSaga(null));
+            enlistInSagaId.Arguments[0] = sagaIdVariable;
+            chain.Postprocessors.Add(enlistInSagaId);
 
 
             var storeOrDeleteFrame = persistence.DetermineStoreOrDeleteFrame(existingState, sagaHandler.HandlerType);
