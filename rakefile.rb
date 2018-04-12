@@ -4,7 +4,7 @@ APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
-BUILD_VERSION = '1.5.0'
+BUILD_VERSION = '0.7.0'
 
 tc_build_number = ENV["APPVEYOR_BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')
@@ -122,6 +122,7 @@ task :pack do
   sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Storyteller/Jasper.Storyteller.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/JasperHttpTesting/JasperHttpTesting.csproj -o ./../../artifacts --configuration Release --no-restore"
 end
 
 desc "Pushes the Nuget's to MyGet"
