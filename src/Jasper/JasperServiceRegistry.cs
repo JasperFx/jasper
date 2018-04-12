@@ -47,7 +47,7 @@ namespace Jasper
         private void aspnetcore(JasperRegistry parent)
         {
             For<ITransport>()
-                .Use<HttpTransport>();
+                .Use<HttpTransport>().Singleton();
 
 
             this.AddSingleton<ConnegRules>();

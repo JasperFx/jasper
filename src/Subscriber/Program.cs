@@ -3,6 +3,7 @@ using Jasper;
 using Jasper.CommandLine;
 using Jasper.Http;
 using Jasper.Messaging.Transports.Configuration;
+using Microsoft.AspNetCore.Hosting;
 using TestMessages;
 
 namespace Subscriber
@@ -19,6 +20,7 @@ namespace Subscriber
     {
         public SubscriberApp()
         {
+            Hosting.UseUrls("http://localhost:5004");
             Transports.Http.EnableListening(true);
             Subscribe.At("http://loadbalancer/messages");
             Subscribe.ToAllMessages();

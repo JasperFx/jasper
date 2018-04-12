@@ -40,7 +40,7 @@ namespace Jasper.Messaging.Transports
 
             assertNoUnknownTransportsInListeners(settings);
 
-            foreach (var transport in _transports.Values)
+            foreach (var transport in root.Transports)
             {
                 transport.StartListening(root);
             }
