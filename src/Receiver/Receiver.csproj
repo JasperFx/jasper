@@ -11,10 +11,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.0.1" />
-    
   </ItemGroup>
   <ItemGroup>
-    <None Update="appsettings.json">
+    <None Update="appsettings.json;nlog.config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Integrate Marten into JasperFx Applications</Description>
-    <VersionPrefix>0.7.0</VersionPrefix>
+    <VersionPrefix>0.7.1</VersionPrefix>
     <Authors>Jeremy D. Miller;Mark Wuthrich;Jordan Zaerr</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>

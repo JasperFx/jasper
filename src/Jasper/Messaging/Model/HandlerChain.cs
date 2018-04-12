@@ -75,9 +75,12 @@ namespace Jasper.Messaging.Model
         {
             var handler = container.QuickBuild(_generatedType.CompiledType).As<MessageHandler>();
             handler.Chain = this;
+            Handler = handler;
 
             return handler;
         }
+
+        public MessageHandler Handler { get; set; }
 
         private bool hasConfiguredFrames = false;
 

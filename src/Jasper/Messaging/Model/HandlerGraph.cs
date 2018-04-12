@@ -71,13 +71,21 @@ namespace Jasper.Messaging.Model
 
             if (_chains.TryFind(messageType, out var chain))
             {
+                if (chain.Handler != null)
+                {
+                    handler = chain.Handler;
+                }
+                else
+                {
+                    lock (chain)
+                    {
+                        var generatedAssembly = new GeneratedAssembly(_generation);
+                        chain.AssembleType(generatedAssembly);
+                        _container.CompileWithInlineServices(generatedAssembly);
 
-
-                var generatedAssembly = new GeneratedAssembly(_generation);
-                chain.AssembleType(generatedAssembly);
-                _container.CompileWithInlineServices(generatedAssembly);
-
-                handler = chain.CreateHandler(_container);
+                        handler = chain.CreateHandler(_container);
+                    }
+                }
 
                 _handlers = _handlers.AddOrUpdate(messageType, handler);
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Marten;
@@ -151,6 +152,8 @@ namespace Jasper.Marten.Persistence.Resiliency
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
+
             _connection = _store.Tenancy.Default.CreateConnection();
 
 
