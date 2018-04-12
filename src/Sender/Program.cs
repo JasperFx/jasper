@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
@@ -9,7 +10,10 @@ using Jasper.Messaging;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NLog.Extensions.Logging;
 using TestMessages;
 
 namespace Sender
@@ -26,7 +30,15 @@ namespace Sender
     {
         public SenderApp()
         {
+            Configuration.AddJsonFile("appsettings.json");
+
             Hosting.UseUrls("http://*:5060").UseKestrel();
+
+            Hosting.ConfigureLogging(x =>
+            {
+                x.AddNLog();
+                x.SetMinimumLevel(LogLevel.Information);
+            });
 
             Settings.ConfigureMarten((config, options) =>
             {
@@ -63,8 +75,10 @@ namespace Sender
 
         public static string Index(JasperRuntime runtime)
         {
-            // TODO -- describe the runtime here?
-            return "Hey, I'm the sending application and I'm up and running";
+            var writer = new StringWriter();
+            runtime.Describe(writer);
+
+            return writer.ToString();
         }
 
         public static Task post_marten_clear(IDocumentStore store)

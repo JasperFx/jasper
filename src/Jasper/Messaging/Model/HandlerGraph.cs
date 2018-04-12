@@ -71,6 +71,8 @@ namespace Jasper.Messaging.Model
 
             if (_chains.TryFind(messageType, out var chain))
             {
+
+
                 var generatedAssembly = new GeneratedAssembly(_generation);
                 chain.AssembleType(generatedAssembly);
                 _container.CompileWithInlineServices(generatedAssembly);

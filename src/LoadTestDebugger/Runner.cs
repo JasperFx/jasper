@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Alba;
 using Jasper;
@@ -57,6 +58,10 @@ namespace LoadTestDebugger
             _receiver?.Dispose();
         }
 
+
+
+
+
         [Fact]
         public async Task receiver_responds_to_get()
         {
@@ -100,11 +105,18 @@ namespace LoadTestDebugger
         [Fact]
         public async Task sender_shoots_off_the_one_to_marten()
         {
-            await _sender.Scenario(_ =>
+            for (int i = 0; i < 10; i++)
             {
-                _.Post.Url("/marten/one");
-                _.StatusCodeShouldBeOk();
-            });
+                await _sender.Scenario(_ =>
+                {
+                    _.Post.Url("/marten/one");
+                    _.StatusCodeShouldBeOk();
+                });
+            }
+
+
+
+
 
             var store = _sender.Get<IDocumentStore>();
             using (var session = store.QuerySession())

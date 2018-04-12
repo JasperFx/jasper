@@ -43,6 +43,8 @@ namespace Jasper
 
         public JasperRegistry()
         {
+            Configuration.SetBasePath(Directory.GetCurrentDirectory());
+
             Publish = new PublishingExpression(Messaging);
 
             HttpRoutes = new HttpSettings(Messaging.Settings);

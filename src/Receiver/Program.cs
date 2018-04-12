@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.CommandLine;
@@ -6,6 +7,9 @@ using Jasper.Marten;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using TestMessages;
 
 namespace Receiver
@@ -22,7 +26,15 @@ namespace Receiver
     {
         public ReceiverApp()
         {
+            Configuration.AddJsonFile("appsettings.json");
+
             Hosting.UseUrls("http://*:5061").UseKestrel();
+
+            Hosting.ConfigureLogging(x =>
+            {
+                x.AddNLog();
+                x.SetMinimumLevel(LogLevel.Information);
+            });
 
             Settings.ConfigureMarten((config, options) =>
             {
@@ -46,7 +58,10 @@ namespace Receiver
     {
         public static string Index(JasperRuntime runtime)
         {
-            return "Hey, I'm here";
+            var writer = new StringWriter();
+            runtime.Describe(writer);
+
+            return writer.ToString();
         }
 
         public static void post_marten_clear(IDocumentStore store)
