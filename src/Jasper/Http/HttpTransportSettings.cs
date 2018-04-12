@@ -1,19 +1,34 @@
 ﻿using System;
 using Baseline.Dates;
+using Jasper.Messaging.Transports.Configuration;
 
 namespace Jasper.Http
 {
     public class HttpTransportSettings : IHttpTransportConfiguration
     {
+        private readonly MessagingSettings _parent;
+
+        public HttpTransportSettings(MessagingSettings parent)
+        {
+            _parent = parent;
+        }
+
         public TimeSpan ConnectionTimeout { get; set; } = 10.Seconds();
         public string RelativeUrl { get; set; } = "messages";
+        public bool IsEnabled => _parent.StateFor("http") == TransportState.Enabled;
 
-
-        public bool EnableMessageTransport { get; set; }
 
         IHttpTransportConfiguration IHttpTransportConfiguration.EnableListening(bool enabled)
         {
-            EnableMessageTransport = enabled;
+            if (enabled)
+            {
+                _parent.EnableTransport("http");
+            }
+            else
+            {
+                _parent.DisableTransport("http");
+            }
+
             return this;
         }
 

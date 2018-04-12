@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging;
+using Jasper.Messaging.Transports;
 using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
@@ -26,6 +28,9 @@ namespace Jasper.Testing.Messaging
 
             envelope.AcceptedContentTypes.Last().ShouldBe("application/json");
         }
+
+
+
     }
 
     public class Message1TextReader : IMessageDeserializer

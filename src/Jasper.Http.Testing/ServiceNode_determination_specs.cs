@@ -64,7 +64,7 @@ namespace Jasper.Http.Testing
 
             var serviceNode = theServiceNode;
             serviceNode.HttpEndpoints.ShouldContain($"http://{Environment.MachineName}:5003".ToUri());
-            serviceNode.MessagesUrl.ShouldBe(new HttpTransportSettings().RelativeUrl);
+            serviceNode.MessagesUrl.ShouldBe(new MessagingSettings().Http.RelativeUrl);
         }
 
         [Fact]

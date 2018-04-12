@@ -79,11 +79,18 @@ namespace Jasper.Messaging.Model
                 {
                     lock (chain)
                     {
-                        var generatedAssembly = new GeneratedAssembly(_generation);
-                        chain.AssembleType(generatedAssembly);
-                        _container.CompileWithInlineServices(generatedAssembly);
+                        if (chain.Handler == null)
+                        {
+                            var generatedAssembly = new GeneratedAssembly(_generation);
+                            chain.AssembleType(generatedAssembly);
+                            _container.CompileWithInlineServices(generatedAssembly);
 
-                        handler = chain.CreateHandler(_container);
+                            handler = chain.CreateHandler(_container);
+                        }
+                        else
+                        {
+                            handler = chain.Handler;
+                        }
                     }
                 }
 

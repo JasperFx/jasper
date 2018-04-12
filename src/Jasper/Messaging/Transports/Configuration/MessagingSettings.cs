@@ -29,11 +29,14 @@ namespace Jasper.Messaging.Transports.Configuration
             ServiceName = "Jasper";
 
             UniqueNodeId = Guid.NewGuid().ToString().GetHashCode();
+
+            Http = new HttpTransportSettings(this);
+            DisableTransport("http");
         }
 
         public int UniqueNodeId { get; }
 
-        public HttpTransportSettings Http { get; } = new HttpTransportSettings();
+        public HttpTransportSettings Http { get; }
 
         IHttpTransportConfiguration ITransportsExpression.Http => Http;
 

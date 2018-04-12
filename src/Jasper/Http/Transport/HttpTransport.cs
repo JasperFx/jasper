@@ -43,7 +43,7 @@ namespace Jasper.Http.Transport
 
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
-            var batchedSender = new BatchedSender(uri, new HttpSenderProtocol(_settings, _httpSettings), cancellation, _logger);
+            var batchedSender = new BatchedSender(uri, new HttpSenderProtocol(_settings), cancellation, _logger);
 
             ISendingAgent agent;
 
@@ -82,7 +82,7 @@ namespace Jasper.Http.Transport
 
         public void Describe(TextWriter writer)
         {
-            if (_httpSettings.EnableMessageTransport)
+            if (_httpSettings.IsEnabled)
             {
                 writer.WriteLine($"Listening for messages at {LocalReplyUri}");
                 writer.WriteLine($"Listening for messages at {LocalReplyUri.ToString().AppendUrl("durable")}");

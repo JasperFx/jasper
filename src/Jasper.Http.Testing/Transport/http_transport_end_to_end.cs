@@ -36,7 +36,7 @@ namespace Jasper.Http.Testing.Transport
             });
 
             var settings = theReceiver.Get<HttpTransportSettings>();
-            settings.EnableMessageTransport.ShouldBeTrue();
+            settings.IsEnabled.ShouldBeTrue();
 
             theReceiver.Get<IChannelGraph>().ValidTransports.ShouldContain("http");
         }

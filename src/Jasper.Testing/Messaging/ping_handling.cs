@@ -23,7 +23,7 @@ namespace Jasper.Testing.Messaging
         public async Task ping_happy_path_with_http_protocol()
         {
             var sender = new BatchedSender("http://localhost:5005/messages".ToUri(),
-                new HttpSenderProtocol(new MessagingSettings(), new HttpTransportSettings()), CancellationToken.None,
+                new HttpSenderProtocol(new MessagingSettings()), CancellationToken.None,
                 TransportLogger.Empty());
 
 
@@ -80,7 +80,7 @@ namespace Jasper.Testing.Messaging
         public async Task ping_sad_path_with_http_protocol()
         {
             var sender = new BatchedSender("http://localhost:5005/messages".ToUri(),
-                new HttpSenderProtocol(new MessagingSettings(), new HttpTransportSettings()), CancellationToken.None,
+                new HttpSenderProtocol(new MessagingSettings()), CancellationToken.None,
                 TransportLogger.Empty());
 
 

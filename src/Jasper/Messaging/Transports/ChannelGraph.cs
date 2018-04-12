@@ -91,6 +91,8 @@ namespace Jasper.Messaging.Transports
 
         private Uri tryGetReplyUri(string protocol)
         {
+            if (_settings.StateFor(protocol) == TransportState.Disabled) return null;
+
             return _transports.ContainsKey(protocol) ? _transports[protocol].LocalReplyUri : null;
         }
 
