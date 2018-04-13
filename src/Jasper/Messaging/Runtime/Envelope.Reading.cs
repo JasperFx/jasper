@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using Baseline;
 using Jasper.Util;
@@ -7,6 +8,17 @@ namespace Jasper.Messaging.Runtime
 {
     public partial class Envelope
     {
+        public void ReadPropertiesFromDictionary(IDictionary<string, object> dictionary)
+        {
+            foreach (var pair in dictionary)
+            {
+                if (pair.Value is string)
+                {
+                    ReadData(pair.Key, pair.Value.As<string>());
+                }
+            }
+        }
+
         private void ReadData(string key, string value)
         {
             try

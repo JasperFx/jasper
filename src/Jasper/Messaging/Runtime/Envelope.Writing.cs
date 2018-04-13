@@ -118,6 +118,48 @@ namespace Jasper.Messaging.Runtime
 
         }
 
+
+        public void WriteToDictionary(IDictionary<string, object> dictionary)
+        {
+
+            dictionary.WriteProp(SourceKey, Source);
+            dictionary.WriteProp(MessageTypeKey, MessageType);
+            dictionary.WriteProp(ReplyUriKey, ReplyUri);
+            dictionary.WriteProp(ContentTypeKey, ContentType);
+            dictionary.WriteProp(OriginalIdKey, OriginalId);
+            dictionary.WriteProp(ParentIdKey, ParentId);
+            dictionary.WriteProp(ResponseIdKey, ResponseId);
+            dictionary.WriteProp(DestinationKey, Destination);
+            dictionary.WriteProp(SagaIdKey, SagaId);
+
+            if (AcceptedContentTypes != null && AcceptedContentTypes.Any())
+            {
+                dictionary.WriteProp(AcceptedContentTypesKey, AcceptedContentTypes.Join(","));
+            }
+
+            dictionary.WriteProp(IdKey, Id);
+            dictionary.WriteProp(ReplyRequestedKey, ReplyRequested);
+            dictionary.WriteProp(AckRequestedKey, AckRequested);
+
+            if (ExecutionTime.HasValue)
+            {
+                var dateString = ExecutionTime.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+                dictionary.Add(ExecutionTimeKey, dateString);
+            }
+
+
+            dictionary.WriteProp(AttemptsKey, Attempts);
+            dictionary.WriteProp(DeliverByHeader, DeliverBy);
+            dictionary.WriteProp(SentAttemptsHeaderKey, SentAttempts);
+            dictionary.WriteProp(ReceivedAtKey, ReceivedAt);
+
+
+            foreach (var pair in Headers)
+            {
+                dictionary.Add(pair.Key, pair.Value);
+            }
+        }
+
         private int writeHeaders(BinaryWriter writer)
         {
             int count = 0;
@@ -180,6 +222,7 @@ namespace Jasper.Messaging.Runtime
 
             count++;
         }
+
 
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, int value)
         {

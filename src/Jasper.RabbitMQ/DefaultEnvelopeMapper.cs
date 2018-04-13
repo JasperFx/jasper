@@ -7,14 +7,42 @@ namespace Jasper.RabbitMQ
 {
     public class DefaultEnvelopeMapper : IEnvelopeMapper
     {
-        public virtual Envelope From(BasicDeliverEventArgs args)
+        public virtual Envelope ReadEnvelope(BasicDeliverEventArgs args)
         {
-            throw new NotImplementedException();
+            var envelope = new Envelope
+            {
+                Data = args.Body,
+                Source = args.BasicProperties.AppId,
+                ContentType = args.BasicProperties.ContentType,
+                MessageType = args.BasicProperties.Type
+            };
+
+
+            if (args.BasicProperties.Headers != null)
+            {
+                envelope.ReadPropertiesFromDictionary(args.BasicProperties.Headers);
+            }
+
+
+
+            return envelope;
         }
 
-        public virtual void Apply(Envelope envelope, IBasicProperties properties)
+        public virtual void WriteFromEnvelope(Envelope envelope, IBasicProperties properties)
         {
-            throw new NotImplementedException();
+            properties.CorrelationId = envelope.Id.ToString();
+            properties.AppId = envelope.Source;
+            properties.ContentType = envelope.ContentType;
+            properties.Type = envelope.MessageType;
+
+            envelope.WriteToDictionary(properties.Headers);
         }
     }
+
+
+
+
+
+
+
 }
