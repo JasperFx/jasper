@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Baseline;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Jasper.Util;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -41,9 +44,47 @@ namespace Jasper.RabbitMQ
     {
         public const string Protocol = "rabbitmq";
 
+        public RabbitMqAgent(string uriString) : this (uriString.ToUri())
+        {
+        }
+
         public RabbitMqAgent(Uri uri)
         {
-            if (uri.Host != "rabbitmq") throw new ArgumentOutOfRangeException("The protocol must be 'rabbitmq'");
+            if (uri.Scheme != "rabbitmq") throw new ArgumentOutOfRangeException(nameof(uri), "The protocol must be 'rabbitmq'");
+
+            ConnectionFactory.Port = uri.IsDefaultPort ? 5672 : uri.Port;
+
+
+            var segments = uri.Segments.Where(x => x != "/").Select(x => x.TrimEnd('/')).ToArray();
+            if (!segments.Any()) throw new ArgumentOutOfRangeException(nameof(uri), "Unable to determine the routing key / queue for the Uri " + uri);
+
+            if (segments[0] == TransportConstants.Durable)
+            {
+                IsDurable = uri.IsDurable();
+                segments = segments.Skip(1).ToArray();
+            }
+
+            if (!segments.Any()) throw new ArgumentOutOfRangeException(nameof(uri), "Unable to determine the routing key / queue for the Uri " + uri);
+
+
+            if (ExchangeType.TryParse<ExchangeType>(segments[0], out var exchangeType))
+            {
+                ExchangeType = exchangeType;
+                segments = segments.Skip(1).ToArray();
+            }
+
+            if (!segments.Any()) throw new ArgumentOutOfRangeException(nameof(uri), "Unable to determine the routing key / queue for the Uri " + uri);
+
+
+            if (segments.Length > 1)
+            {
+                ExchangeName = segments[0];
+                QueueName = segments.Skip(1).Join("/");
+            }
+            else
+            {
+                QueueName = segments.Single();
+            }
         }
 
         public bool IsDurable { get; }
@@ -51,7 +92,7 @@ namespace Jasper.RabbitMQ
         public ExchangeType ExchangeType { get; private set; } = ExchangeType.direct;
         public string QueueName { get; }
 
-        public ConnectionFactory ConnectionFactory { get; }
+        public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
 
         public IEnvelopeMapper EnvelopeMapping { get; set; } = new DefaultEnvelopeMapper();
 
@@ -110,6 +151,8 @@ namespace Jasper.RabbitMQ
                 var agent = new RabbitMqAgent(uri);
 
                 _connectionFactories.Add(uri, agent);
+
+                return agent;
             }
         }
     }
