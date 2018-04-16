@@ -13,6 +13,7 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMqAgent : IDisposable
     {
+        public Uri Uri { get; }
         public const string Protocol = "rabbitmq";
 
         public RabbitMqAgent(string uriString) : this (uriString.ToUri())
@@ -22,6 +23,7 @@ namespace Jasper.RabbitMQ
         public RabbitMqAgent(Uri uri)
         {
             if (uri.Scheme != "rabbitmq") throw new ArgumentOutOfRangeException(nameof(uri), "The protocol must be 'rabbitmq'");
+            Uri = uri;
 
             ConnectionFactory.Port = uri.IsDefaultPort ? 5672 : uri.Port;
 
@@ -91,6 +93,11 @@ namespace Jasper.RabbitMQ
         }
 
         public IListeningAgent CreateListeningAgent(Uri uri, MessagingSettings settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public PublicationAddress PublicationAddress()
         {
             throw new NotImplementedException();
         }
