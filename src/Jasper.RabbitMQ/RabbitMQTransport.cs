@@ -13,9 +13,9 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMQTransport : TransportBase
     {
-        private readonly RabbitMqSettings _settings;
+        private readonly RabbitMQSettings _settings;
 
-        public RabbitMQTransport(RabbitMqSettings rabbitMqSettings, IPersistence persistence, ITransportLogger logger, MessagingSettings settings)
+        public RabbitMQTransport(RabbitMQSettings rabbitMqSettings, IPersistence persistence, ITransportLogger logger, MessagingSettings settings)
             : base("rabbitmq", persistence, logger, settings)
         {
             _settings = rabbitMqSettings;

@@ -4,7 +4,7 @@ using Jasper.Util;
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMqSettings
+    public class RabbitMQSettings
     {
         private readonly object _locker = new object();
         private readonly Dictionary<Uri, RabbitMqAgent> _connectionFactories = new Dictionary<Uri, RabbitMqAgent>();
