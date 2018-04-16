@@ -18,9 +18,10 @@ namespace Jasper.RabbitMQ
         private readonly RabbitMqAgent _agent;
         private readonly IModel _channel;
         private readonly CancellationToken _cancellation;
-        private ActionBlock<Envelope> _block;
+        private ActionBlock<Envelope> _sending;
         private readonly PublicationAddress _address;
         private ISenderCallback _callback;
+        private ActionBlock<Envelope> _serialization;
 
         public RabbitMQSender(ITransportLogger logger, RabbitMqAgent agent, IModel channel, CancellationToken cancellation)
         {
@@ -63,8 +64,23 @@ namespace Jasper.RabbitMQ
         {
             _callback = callback;
 
-            // TODO -- add a second block for serialization?
-            _block = new ActionBlock<Envelope>(send, new ExecutionDataflowBlockOptions
+            _serialization = new ActionBlock<Envelope>(e =>
+            {
+                try
+                {
+                    e.EnsureData();
+                    _sending.Post(e);
+
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogException(exception, e.Id, "Serialization Failure!");
+
+                }
+
+            });
+
+            _sending = new ActionBlock<Envelope>(send, new ExecutionDataflowBlockOptions
             {
                 CancellationToken = _cancellation,
             });
@@ -72,35 +88,28 @@ namespace Jasper.RabbitMQ
 
         public Task Enqueue(Envelope envelope)
         {
-            try
-            {
-                envelope.EnsureData();
-                _block.Post(envelope);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e, envelope.Id, "Message serialization failure in outgoing RabbitMQ message!");
-
-            }
+            _serialization.Post(envelope);
 
             return Task.CompletedTask;
         }
 
         public Uri Destination { get; }
-        public int QueuedCount => _block.InputCount;
+        public int QueuedCount => _sending.InputCount;
 
         public bool Latched { get; private set; }
-        public Task LatchAndDrain()
+        public async Task LatchAndDrain()
         {
             Latched = true;
 
-            _block.Complete();
+            _sending.Complete();
+            _serialization.Complete();
 
 
             _logger.CircuitBroken(Destination);
 
 
-            return _block.Completion;
+            await _sending.Completion;
+            await _serialization.Completion;
         }
 
         public void Unlatch()

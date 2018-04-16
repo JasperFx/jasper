@@ -253,12 +253,12 @@ namespace Jasper.RabbitMQ.Testing
                 x.AddDebug();
             });
 
-            Transports.ListenForMessagesFrom("rabbitmq://localhost:5672/messages");
+            Transports.ListenForMessagesFrom("rabbitmq://localhost:5672/messages3");
 
             Services.AddSingleton<ColorHistory>();
             Services.AddSingleton<MessageTracker>();
 
-            Publish.AllMessagesTo("rabbitmq://localhost:5672/messages");
+            Publish.AllMessagesTo("rabbitmq://localhost:5672/messages3");
 
             Include<MessageTrackingExtension>();
         }
