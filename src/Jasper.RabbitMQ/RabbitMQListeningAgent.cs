@@ -16,13 +16,15 @@ namespace Jasper.RabbitMQ
         private readonly IEnvelopeMapper _mapper;
         private EventingBasicConsumer _consumer;
         private IReceiverCallback _callback;
+        private string _queue;
 
-        public RabbitMQListeningAgent(Uri address, ITransportLogger logger, IModel channel, IEnvelopeMapper mapper) : base(channel)
+        public RabbitMQListeningAgent(Uri address, ITransportLogger logger, IModel channel, IEnvelopeMapper mapper, RabbitMqAgent agent) : base(channel)
         {
             _logger = logger;
             _channel = channel;
             _mapper = mapper;
             Address = address;
+            _queue = agent.QueueName;
         }
 
         public void Dispose()
@@ -33,6 +35,7 @@ namespace Jasper.RabbitMQ
         public void Start(IReceiverCallback callback)
         {
             _callback = callback;
+            _channel.BasicConsume(this, _queue, autoAck: false);
         }
 
         public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,

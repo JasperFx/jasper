@@ -3,7 +3,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Transports;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly:JasperModule]
+[assembly:JasperModule(typeof(Jasper.RabbitMQ.RabbitMQTransportExtension))]
 
 namespace Jasper.RabbitMQ
 {

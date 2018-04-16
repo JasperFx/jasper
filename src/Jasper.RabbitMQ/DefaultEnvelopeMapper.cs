@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jasper.Messaging.Runtime;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -34,6 +35,8 @@ namespace Jasper.RabbitMQ
             properties.AppId = envelope.Source;
             properties.ContentType = envelope.ContentType;
             properties.Type = envelope.MessageType;
+
+            if (properties.Headers == null) properties.Headers = new Dictionary<string, object>();
 
             envelope.WriteToDictionary(properties.Headers);
         }

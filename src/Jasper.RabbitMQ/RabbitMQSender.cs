@@ -31,8 +31,6 @@ namespace Jasper.RabbitMQ
             _cancellation = cancellation;
             Destination = agent.Uri;
 
-
-
             _address = agent.PublicationAddress();
         }
 

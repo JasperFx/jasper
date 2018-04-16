@@ -82,7 +82,7 @@ namespace Jasper.RabbitMQ
         }
 
         public bool IsDurable { get; }
-        public string ExchangeName { get; }
+        public string ExchangeName { get; } = string.Empty;
         public ExchangeType ExchangeType { get; private set; } = ExchangeType.direct;
         public string QueueName { get; }
 
@@ -115,7 +115,7 @@ namespace Jasper.RabbitMQ
 
         public IListeningAgent CreateListeningAgent(Uri uri, MessagingSettings settings, ITransportLogger logger)
         {
-            return new RabbitMQListeningAgent(uri, logger, _model.Value, EnvelopeMapping);
+            return new RabbitMQListeningAgent(uri, logger, _model.Value, EnvelopeMapping, this);
         }
 
         public PublicationAddress PublicationAddress()
