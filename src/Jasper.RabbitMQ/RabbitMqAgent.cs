@@ -52,6 +52,7 @@ namespace Jasper.RabbitMQ
             {
                 QueueName = segments.Single();
             }
+
         }
 
         public bool IsDurable { get; }
@@ -63,6 +64,8 @@ namespace Jasper.RabbitMQ
 
         public IEnvelopeMapper EnvelopeMapping { get; set; } = new DefaultEnvelopeMapper();
 
+        public Func<IConnectionFactory, IConnection> ConnectionActivator { get; set; } = f => f.CreateConnection();
+
 
         // TODO -- when it initializes, it will need to create the queues
         // TODO -- when it initializes, it may need to create an exchange
@@ -71,7 +74,6 @@ namespace Jasper.RabbitMQ
         // TODO -- method to create a receiver
         // TODO -- method to create a sending agent
 
-        // TODO -- ability to customize the creation of the connection
 
         public void Dispose()
         {

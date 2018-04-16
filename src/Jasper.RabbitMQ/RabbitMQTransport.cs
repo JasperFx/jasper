@@ -2,9 +2,13 @@
 using System.IO;
 using System.Linq.Expressions;
 using System.Threading;
+using System.Threading.Tasks;
 using Jasper.Messaging;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
+using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.RabbitMQ
 {
@@ -33,6 +37,8 @@ namespace Jasper.RabbitMQ
 
         public void StartListening(IMessagingRoot root)
         {
+
+
             throw new NotImplementedException();
         }
 
@@ -40,6 +46,77 @@ namespace Jasper.RabbitMQ
         {
             throw new NotImplementedException();
         }
+    }
+
+    public class RabbitMQSender : ISender
+    {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Start(ISenderCallback callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Enqueue(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Uri Destination { get; }
+        public int QueuedCount { get; }
+        public bool Latched { get; }
+        public Task LatchAndDrain()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unlatch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Ping()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class RabbitMQListeningAgent : IListener
+    {
+        public Task<ReceivedStatus> Received(Uri uri, Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Acknowledged(Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task NotAcknowledged(Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Failed(Exception exception, Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Uri Address { get; }
     }
 
     /*

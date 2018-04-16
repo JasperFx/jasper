@@ -4,7 +4,6 @@ using Jasper.Util;
 
 namespace Jasper.RabbitMQ
 {
-    // TODO -- verify there are no incompatible registrations
     public class RabbitMqSettings
     {
         private readonly object _locker = new object();
@@ -27,10 +26,6 @@ namespace Jasper.RabbitMQ
 
         public RabbitMqAgent For(Uri uri)
         {
-
-
-            // TODO -- get at the root uri, disregard queue names
-
             if (_connectionFactories.ContainsKey(uri)) return _connectionFactories[uri];
 
             lock (_locker)
