@@ -9,14 +9,14 @@ namespace Jasper.RabbitMQ
         private readonly object _locker = new object();
         private readonly Dictionary<Uri, RabbitMqAgent> _connectionFactories = new Dictionary<Uri, RabbitMqAgent>();
 
-        public RabbitMqAgent ForHost(string host)
+        public RabbitMqAgent ForHost(string host, string queueName)
         {
-            return For($"rabbitmq://{host}");
+            return For($"rabbitmq://{host}/{queueName}");
         }
 
-        public RabbitMqAgent ForHostAndPort(string host, int port)
+        public RabbitMqAgent ForHostAndPort(string host, int port, string queueName)
         {
-            return For($"rabbitmq://{host}:{port}");
+            return For($"rabbitmq://{host}:{port}/{queueName}");
         }
 
         public RabbitMqAgent For(string uriString)
