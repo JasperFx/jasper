@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using Baseline;
+using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
@@ -13,8 +14,10 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMqAgent : IDisposable
     {
+        private readonly Lazy<IConnection> _connection;
+        private readonly Lazy<IModel> _model;
+
         public Uri Uri { get; }
-        public const string Protocol = "rabbitmq";
 
         public RabbitMqAgent(string uriString) : this (uriString.ToUri())
         {
@@ -59,6 +62,23 @@ namespace Jasper.RabbitMQ
                 QueueName = segments.Single();
             }
 
+            _connection = new Lazy<IConnection>(() => ConnectionActivator(ConnectionFactory));
+
+            _model = new Lazy<IModel>(() =>
+            {
+                var channel = _connection.Value.CreateModel();
+                channel.CreateBasicProperties().Persistent = IsDurable;
+
+                if (ExchangeName.IsNotEmpty())
+                {
+                    channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString(), IsDurable, false);
+                }
+
+                channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
+
+                return channel;
+            });
+
         }
 
         public bool IsDurable { get; }
@@ -73,33 +93,34 @@ namespace Jasper.RabbitMQ
         public Func<IConnectionFactory, IConnection> ConnectionActivator { get; set; } = f => f.CreateConnection();
 
 
-        // TODO -- when it initializes, it will need to create the queues
-        // TODO -- when it initializes, it may need to create an exchange
-
-
-        // TODO -- method to create a receiver
-        // TODO -- method to create a sending agent
-
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (_model.IsValueCreated)
+            {
+                _model.Value.Dispose();
+            }
+
+            if (_connection.IsValueCreated)
+            {
+                _connection.Value.Dispose();
+            }
         }
 
-        public ISender CreateSender(CancellationToken cancellation)
+        public ISender CreateSender(ITransportLogger logger, CancellationToken cancellation)
         {
             // TODO -- will need to create a reply uri & listener here
-            throw new NotImplementedException();
+            return new RabbitMQSender(logger, this, _model.Value, cancellation);
         }
 
-        public IListeningAgent CreateListeningAgent(Uri uri, MessagingSettings settings)
+        public IListeningAgent CreateListeningAgent(Uri uri, MessagingSettings settings, ITransportLogger logger)
         {
-            throw new NotImplementedException();
+            return new RabbitMQListeningAgent(uri, logger, _model.Value, EnvelopeMapping);
         }
 
         public PublicationAddress PublicationAddress()
         {
-            throw new NotImplementedException();
+            return new PublicationAddress(ExchangeType.ToString(), ExchangeName, QueueName);
         }
     }
 }

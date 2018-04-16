@@ -43,6 +43,7 @@ namespace Jasper.RabbitMQ
             try
             {
                 var props = _channel.CreateBasicProperties();
+                props.Persistent = _agent.IsDurable;
 
                 _mapper.WriteFromEnvelope(envelope, props);
                 _channel.BasicPublish(_address, props, envelope.Data);
@@ -51,7 +52,7 @@ namespace Jasper.RabbitMQ
             }
             catch (Exception e)
             {
-                return _callback.ProcessingFailure(batch, e
+                return _callback.ProcessingFailure(batch, e);
             }
         }
 

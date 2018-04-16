@@ -24,18 +24,18 @@ namespace Jasper.RabbitMQ
         protected override ISender createSender(Uri uri, CancellationToken cancellation)
         {
             var agent = _settings.For(uri);
-            return agent.CreateSender(cancellation);
+            return agent.CreateSender(logger, cancellation);
         }
 
         protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
         {
-            throw new NotImplementedException();
+            return incoming;
         }
 
         protected override IListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings)
         {
             var agent = _settings.For(uri);
-            return agent.CreateListeningAgent(uri, settings);
+            return agent.CreateListeningAgent(uri, settings, logger);
         }
     }
 
