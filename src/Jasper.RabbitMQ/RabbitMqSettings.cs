@@ -40,5 +40,7 @@ namespace Jasper.RabbitMQ
                 return agent;
             }
         }
+
+
     }
 }

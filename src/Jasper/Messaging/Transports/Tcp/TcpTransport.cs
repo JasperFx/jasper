@@ -36,7 +36,7 @@ namespace Jasper.Messaging.Transports.Tcp
         }
 
 
-        protected override SocketListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings)
+        protected override IListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings)
         {
             // check the uri for an ip address to bind to
             if (uri.HostNameType == UriHostNameType.IPv4 || uri.HostNameType == UriHostNameType.IPv6)

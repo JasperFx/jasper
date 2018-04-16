@@ -2,121 +2,41 @@
 using System.IO;
 using System.Linq.Expressions;
 using System.Threading;
-using System.Threading.Tasks;
 using Jasper.Messaging;
-using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
-using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMQTransport : ITransport
+    public class RabbitMQTransport : TransportBase
     {
         private readonly RabbitMqSettings _settings;
 
-        public RabbitMQTransport(RabbitMqSettings settings)
+        public RabbitMQTransport(RabbitMqSettings rabbitMqSettings, IPersistence persistence, ITransportLogger logger, MessagingSettings settings)
+            : base("rabbitmq", persistence, logger, settings)
         {
-            _settings = settings;
+            _settings = rabbitMqSettings;
         }
 
-        public void Dispose()
+        protected override ISender createSender(Uri uri, CancellationToken cancellation)
         {
-            throw new NotImplementedException();
+            var agent = _settings.For(uri);
+            return agent.CreateSender(cancellation);
         }
 
-        public string Protocol { get; } = "rabbitmq";
-
-        public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Uri LocalReplyUri { get; }
-
-        public void StartListening(IMessagingRoot root)
-        {
-
-
-            throw new NotImplementedException();
-        }
-
-        public void Describe(TextWriter writer)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class RabbitMQSender : ISender
-    {
-        public void Dispose()
+        protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
         {
             throw new NotImplementedException();
         }
 
-        public void Start(ISenderCallback callback)
+        protected override IListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings)
         {
-            throw new NotImplementedException();
+            var agent = _settings.For(uri);
+            return agent.CreateListeningAgent(uri, settings);
         }
-
-        public Task Enqueue(Envelope envelope)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Uri Destination { get; }
-        public int QueuedCount { get; }
-        public bool Latched { get; }
-        public Task LatchAndDrain()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Unlatch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Ping()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class RabbitMQListeningAgent : IListener
-    {
-        public Task<ReceivedStatus> Received(Uri uri, Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Acknowledged(Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task NotAcknowledged(Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Failed(Exception exception, Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Start()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Uri Address { get; }
     }
 
     /*

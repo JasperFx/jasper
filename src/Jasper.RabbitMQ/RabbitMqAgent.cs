@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using Baseline;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.Transports.Receiving;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 using RabbitMQ.Client;
 
@@ -76,6 +80,17 @@ namespace Jasper.RabbitMQ
 
 
         public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISender CreateSender(CancellationToken cancellation)
+        {
+            // TODO -- will need to create a reply uri & listener here
+            throw new NotImplementedException();
+        }
+
+        public IListeningAgent CreateListeningAgent(Uri uri, MessagingSettings settings)
         {
             throw new NotImplementedException();
         }

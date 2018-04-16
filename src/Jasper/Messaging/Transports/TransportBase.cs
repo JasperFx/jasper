@@ -16,20 +16,21 @@ namespace Jasper.Messaging.Transports
     public abstract class TransportBase : ITransport
     {
         private readonly IPersistence _persistence;
-        private readonly MessagingSettings _settings;
         private readonly IList<IListener> _listeners = new List<IListener>();
 
         public TransportBase(string protocol, IPersistence persistence, ITransportLogger logger, MessagingSettings settings)
         {
             _persistence = persistence;
             this.logger = logger;
-            _settings = settings;
+            MessagingSettings = settings;
             Protocol = protocol;
         }
 
         public string Protocol { get; }
         public Uri LocalReplyUri { get; protected set; }
         public IWorkerQueue WorkerQueue { get; private set; }
+
+        public MessagingSettings MessagingSettings { get; }
 
         protected ITransportLogger logger { get; }
 
@@ -45,7 +46,7 @@ namespace Jasper.Messaging.Transports
             }
             else
             {
-                agent = new LightweightSendingAgent(uri, batchedSender, logger, _settings);
+                agent = new LightweightSendingAgent(uri, batchedSender, logger, MessagingSettings);
             }
 
             agent.DefaultReplyUri = LocalReplyUri;
@@ -83,7 +84,7 @@ namespace Jasper.Messaging.Transports
         }
 
         protected abstract Uri[] validateAndChooseReplyChannel(Uri[] incoming);
-        protected abstract SocketListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings);
+        protected abstract IListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings);
 
         public void Describe(TextWriter writer)
         {
