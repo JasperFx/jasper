@@ -15,9 +15,12 @@ Jasper comes out of the box with these transports:
 * <[linkto:documentation/messaging/transports/loopback]> associated with the "loopback" scheme in Uri definitions
 * <[linkto:documentation/messaging/transports/http]> associated with the "http" scheme that just accepts message batches through an ASP.Net Core route
 
-Transports based on [RabbitMQ](https://www.rabbitmq.com/) and/or [Azure Service Bus](https://azure.microsoft.com/en-us/services/service-bus/) are part of the Jasper roadmap.
+There is also an addon for a <[linkto:documentation/messaging/transports/rabbitmq]> based on [RabbitMQ](https://www.rabbitmq.com/).
 
-It is important to note that all of the built in transport types can be used in either a lightweight [fire and forget](http://www.enterpriseintegrationpatterns.com/patterns/conversation/FireAndForget.html) with limited retries, or with durable, [store and forward messaging](https://en.wikipedia.org/wiki/Store_and_forward) or [guaranteed delivery](http://www.enterpriseintegrationpatterns.com/patterns/messaging/GuaranteedMessaging.html). For durable messaging.
+Additional transports based on [Azure Service Bus](https://azure.microsoft.com/en-us/services/service-bus/) 
+and possibly [Kafka](https://kafka.apache.org/) are part of the Jasper roadmap.
+
+It is important to note that all of the transport types can be used in either a lightweight [fire and forget](http://www.enterpriseintegrationpatterns.com/patterns/conversation/FireAndForget.html) with limited retries, or with durable, [store and forward messaging](https://en.wikipedia.org/wiki/Store_and_forward) or [guaranteed delivery](http://www.enterpriseintegrationpatterns.com/patterns/messaging/GuaranteedMessaging.html). For durable messaging.
 
 See <[linkto:documentation/messaging/transports/durable]> for more information about durable messaging support in Jasper.
 

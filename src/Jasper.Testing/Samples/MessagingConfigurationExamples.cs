@@ -132,6 +132,9 @@ namespace Jasper.Testing.Samples
 
             // Or, alternatively set up durable listening by Uri
             Transports.ListenForMessagesFrom("durable://localhost:2200");
+
+            // With the RabbitMQ transport
+            Transports.ListenForMessagesFrom("rabbitmq://server1/durable/queue1");
         }
     }
     // ENDSAMPLE
