@@ -14,7 +14,7 @@ If a Jasper system that uses the durable transport goes down before all the mess
 storage and processed when the system is restarted. Jasper does not include any kind of persistence in the core Jasper library, so you'll have to use
 an extension library to add that behavior. Today the options are:
 
-1. A [Marten/Postgresql backed option](documentation/extensions/marten/persistence)
+1. A <[linkto:documentation/extensions/marten/persistence;title=Marten/Postgresql backed option]>   
 
 1. Sql Server-backed message persistence is also planned, with specific "outbox" usage patterns for [Dapper](http://dapper-tutorial.net/dapper) and probably later
    [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/). Follow the [discussion on this planned feature on GitHub](https://github.com/JasperFx/jasper/issues/259).

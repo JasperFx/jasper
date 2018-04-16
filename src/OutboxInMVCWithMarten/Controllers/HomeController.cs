@@ -20,7 +20,7 @@ namespace OutboxInMVCWithMarten.Controllers
             return View();
         }
 
-
+        // SAMPLE: using-outbox-with-marten-in-mvc-action
         [HttpPost]
         public async Task<IActionResult> CreateUser(
             string userId,
@@ -30,6 +30,9 @@ namespace OutboxInMVCWithMarten.Controllers
             // The Marten IDocumentSession represents the unit of work
             using (var session = martenStore.OpenSession())
             {
+                // This directs the current message context
+                // to persist outgoing messages with this
+                // Marten session.
                 await context.EnlistInTransaction(session);
 
                 var theUser = new User { Id = userId };
@@ -37,11 +40,15 @@ namespace OutboxInMVCWithMarten.Controllers
 
                 await context.Send(new NewUser {UserId = userId});
 
+                // The outgoing messages will be persisted
+                // and sent to the outgoing transports
+                // as a result of the transaction succeeding here
                 await session.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
         }
+        // ENDSAMPLE
 
 
 

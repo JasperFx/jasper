@@ -165,6 +165,7 @@ namespace Jasper.Marten.Tests.Sample
 
     public class UserHandler
     {
+        // SAMPLE: UserHandler-handle-CreateUser
         [MartenTransaction]
         public static UserCreated Handle(CreateUser message, IDocumentSession session)
         {
@@ -172,6 +173,7 @@ namespace Jasper.Marten.Tests.Sample
 
             return new UserCreated{UserName = message.Name};
         }
+        // ENDSAMPLE
 
         public static void Handle(UserCreated message, UserNames names)
         {
