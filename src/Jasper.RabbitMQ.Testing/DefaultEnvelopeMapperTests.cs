@@ -33,7 +33,7 @@ namespace Jasper.RabbitMQ.Testing
                 var mapper = new DefaultEnvelopeMapper();
                 mapper.WriteFromEnvelope(theOriginal, theEventArgs.BasicProperties);
 
-                return mapper.ReadEnvelope(theEventArgs);
+                return mapper.ReadEnvelope(theEventArgs.Body, theEventArgs.BasicProperties);
 
 
             });

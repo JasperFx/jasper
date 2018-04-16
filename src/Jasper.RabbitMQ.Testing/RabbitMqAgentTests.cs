@@ -40,11 +40,11 @@ namespace Jasper.RabbitMQ.Testing
 
 
         [Theory]
-        [InlineData("rabbitmq://localhost/one", false, null, ExchangeType.direct, "one")]
-        [InlineData("rabbitmq://localhost/durable/two/", true, null, ExchangeType.direct, "two")]
-        [InlineData("rabbitmq://localhost/durable/durable/", true, null, ExchangeType.direct, "durable")]
-        [InlineData("rabbitmq://localhost/durable/fanout/three", true, null, ExchangeType.fanout, "three")]
-        [InlineData("rabbitmq://localhost/fanout/three", false, null, ExchangeType.fanout, "three")]
+        [InlineData("rabbitmq://localhost/one", false, "", ExchangeType.direct, "one")]
+        [InlineData("rabbitmq://localhost/durable/two/", true, "", ExchangeType.direct, "two")]
+        [InlineData("rabbitmq://localhost/durable/durable/", true, "", ExchangeType.direct, "durable")]
+        [InlineData("rabbitmq://localhost/durable/fanout/three", true, "", ExchangeType.fanout, "three")]
+        [InlineData("rabbitmq://localhost/fanout/three", false, "", ExchangeType.fanout, "three")]
         [InlineData("rabbitmq://localhost/durable/fanout/exchange1/three", true, "exchange1", ExchangeType.fanout, "three")]
         [InlineData("rabbitmq://localhost/fanout/exchange1/three", false, "exchange1", ExchangeType.fanout, "three")]
         public void parse_uri_patterns(

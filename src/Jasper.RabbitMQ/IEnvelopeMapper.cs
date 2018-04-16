@@ -6,7 +6,7 @@ namespace Jasper.RabbitMQ
 {
     public interface IEnvelopeMapper
     {
-        Envelope ReadEnvelope(BasicDeliverEventArgs args);
         void WriteFromEnvelope(Envelope envelope, IBasicProperties properties);
+        Envelope ReadEnvelope(byte[] body, IBasicProperties properties);
     }
 }

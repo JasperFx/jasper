@@ -46,12 +46,7 @@ namespace Jasper.RabbitMQ
             Envelope envelope = null;
             try
             {
-                // TODO -- bypass the BasicDeliverEventArgs thing here
-                // TODO -- add the RabbitMQ exchange & routingKey to the headers
-                var props = new BasicDeliverEventArgs(consumerTag, deliveryTag, redelivered, exchange, routingKey,
-                    properties, body);
-
-                envelope = _mapper.ReadEnvelope(props);
+                envelope = _mapper.ReadEnvelope(body, properties);
             }
             catch (Exception e)
             {

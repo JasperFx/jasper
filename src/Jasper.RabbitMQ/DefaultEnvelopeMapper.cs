@@ -8,20 +8,20 @@ namespace Jasper.RabbitMQ
 {
     public class DefaultEnvelopeMapper : IEnvelopeMapper
     {
-        public virtual Envelope ReadEnvelope(BasicDeliverEventArgs args)
+        public virtual Envelope ReadEnvelope(byte[] data, IBasicProperties props)
         {
             var envelope = new Envelope
             {
-                Data = args.Body,
-                Source = args.BasicProperties.AppId,
-                ContentType = args.BasicProperties.ContentType,
-                MessageType = args.BasicProperties.Type
+                Data = data,
+                Source = props.AppId,
+                ContentType = props.ContentType,
+                MessageType = props.Type
             };
 
 
-            if (args.BasicProperties.Headers != null)
+            if (props.Headers != null)
             {
-                envelope.ReadPropertiesFromDictionary(args.BasicProperties.Headers);
+                envelope.ReadPropertiesFromDictionary(props.Headers);
             }
 
 
