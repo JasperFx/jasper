@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jasper.Marten.Tests\Jasper.Marten.Tests.csproj" />
     <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
   </ItemGroup>
 </Project>

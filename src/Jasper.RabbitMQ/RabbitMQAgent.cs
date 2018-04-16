@@ -72,9 +72,13 @@ namespace Jasper.RabbitMQ
                 if (ExchangeName.IsNotEmpty())
                 {
                     channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString(), IsDurable, false);
+                    channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
+                    channel.QueueBind(QueueName, ExchangeName, "");
                 }
-
-                channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
+                else
+                {
+                    channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
+                }
 
                 return channel;
             });

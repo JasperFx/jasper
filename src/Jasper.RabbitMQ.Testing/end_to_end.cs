@@ -6,8 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+using Jasper.Marten;
+using Jasper.Marten.Persistence;
+using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
+using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,6 +20,16 @@ using Xunit;
 
 namespace Jasper.RabbitMQ.Testing
 {
+    /*
+     * TODO's
+     * 1. Test w/ persistent listener and receiver
+     * 2. fan out
+     *
+     *
+     */
+
+
+
     public class end_to_end
     {
         [Fact]
@@ -46,7 +60,121 @@ namespace Jasper.RabbitMQ.Testing
                 await runtime.Shutdown();
             }
         }
+
+        [Fact]
+        public async Task send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
+        {
+            var uri = "rabbitmq://localhost:5672/durable/messages2";
+
+            var publisher = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Publish.AllMessagesTo(uri);
+                _.Hosting.ConfigureLogging(x => x.AddConsole());
+
+                _.Include<MartenBackedPersistence>();
+
+                _.Settings.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+            });
+
+            publisher.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
+
+            var receiver = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Transports.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+                _.Services.AddSingleton<MessageTracker>();
+                _.Hosting.ConfigureLogging(x => x.AddConsole());
+
+                _.Include<MartenBackedPersistence>();
+
+                _.Settings.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+            });
+
+            var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
+
+            try
+            {
+                await publisher.Messaging.Send(new ColorChosen {Name = "Orange"});
+
+                await wait;
+
+                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
+            }
+            finally
+            {
+                await publisher.Shutdown();
+                await receiver.Shutdown();
+            }
+        }
+
+        [Fact]
+        public async Task use_fan_out_exchange()
+        {
+            var uri = "rabbitmq://localhost:5672/fanout/north/messages";
+
+            var publisher = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Publish.AllMessagesTo(uri);
+                _.Hosting.ConfigureLogging(x => x.AddConsole());
+            });
+
+            var receiver1 = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Transports.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+                _.Services.AddSingleton<MessageTracker>();
+                _.Hosting.ConfigureLogging(x => x.AddConsole());
+            });
+
+            var receiver2 = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Transports.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+                _.Services.AddSingleton<MessageTracker>();
+                _.Hosting.ConfigureLogging(x => x.AddConsole());
+            });
+
+            var receiver3 = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Transports.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+                _.Services.AddSingleton<MessageTracker>();
+                _.Hosting.ConfigureLogging(x => x.AddConsole());
+            });
+
+            var wait1 = receiver1.Get<MessageTracker>().WaitFor<ColorChosen>();
+            var wait2 = receiver2.Get<MessageTracker>().WaitFor<ColorChosen>();
+            var wait3 = receiver3.Get<MessageTracker>().WaitFor<ColorChosen>();
+
+            try
+            {
+                await publisher.Messaging.Send(new ColorChosen {Name = "Purple"});
+
+                await wait1;
+                //await wait2;
+                //await wait3;
+
+                receiver1.Get<ColorHistory>().Name.ShouldBe("Purple");
+                //receiver2.Get<ColorHistory>().Name.ShouldBe("Purple");
+                //receiver3.Get<ColorHistory>().Name.ShouldBe("Purple");
+
+            }
+            finally
+            {
+                await publisher.Shutdown();
+                await receiver1.Shutdown();
+                await receiver2.Shutdown();
+                await receiver3.Shutdown();
+            }
+
+        }
     }
+
+
+
+
+
+
 
     public class MessageTracker
     {
@@ -54,12 +182,6 @@ namespace Jasper.RabbitMQ.Testing
             _waiters = new LightweightCache<Type, List<TaskCompletionSource<Envelope>>>(t => new List<TaskCompletionSource<Envelope>>());
 
         private readonly ConcurrentBag<ITracker> _trackers = new ConcurrentBag<ITracker>();
-
-
-        public MessageTracker()
-        {
-            Debug.WriteLine("What?");
-        }
 
         public void Record(object message, Envelope envelope)
         {
