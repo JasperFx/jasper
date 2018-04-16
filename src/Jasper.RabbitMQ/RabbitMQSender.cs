@@ -37,8 +37,6 @@ namespace Jasper.RabbitMQ
 
         private Task send(Envelope envelope)
         {
-            // TODO -- get rid of this w/ single envelope version of ISenderCallback methods
-            var batch = new OutgoingMessageBatch(Destination, new Envelope[] {envelope});
             try
             {
                 var props = _channel.CreateBasicProperties();
@@ -47,11 +45,11 @@ namespace Jasper.RabbitMQ
                 _mapper.WriteFromEnvelope(envelope, props);
                 _channel.BasicPublish(_address, props, envelope.Data);
 
-                return _callback.Successful(batch);
+                return _callback.Successful(envelope);
             }
             catch (Exception e)
             {
-                return _callback.ProcessingFailure(batch, e);
+                return _callback.ProcessingFailure(envelope, e);
             }
         }
 

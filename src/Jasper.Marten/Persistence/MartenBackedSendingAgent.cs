@@ -114,5 +114,25 @@ namespace Jasper.Marten.Persistence
                 }
             }
         }
+
+        public override async Task Successful(Envelope outgoing)
+        {
+            try
+            {
+                using (var conn = _store.Tenancy.Default.CreateConnection())
+                {
+                    await conn.OpenAsync(_cancellation);
+
+                    await conn.CreateCommand($"delete from {_marker.Outgoing} where id = :id")
+                        .With("id", outgoing.Id, NpgsqlDbType.Uuid)
+                        .ExecuteNonQueryAsync(_cancellation);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e, message:"Error trying to delete outgoing envelopes after a successful batch send");
+                _retries.DeleteOutgoing(outgoing);
+            }
+        }
     }
 }

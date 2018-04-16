@@ -16,7 +16,7 @@ namespace Jasper.RabbitMQ
         private readonly IEnvelopeMapper _mapper;
         private EventingBasicConsumer _consumer;
         private IReceiverCallback _callback;
-        private string _queue;
+        private readonly string _queue;
 
         public RabbitMQListeningAgent(Uri address, ITransportLogger logger, IModel channel, IEnvelopeMapper mapper, RabbitMqAgent agent) : base(channel)
         {
@@ -58,7 +58,6 @@ namespace Jasper.RabbitMQ
 
             _callback.Received(Address, new [] {envelope}).ContinueWith(t =>
             {
-                // TODO -- HARDEN THIS TOO?
                 if (t.IsFaulted)
                 {
                     _logger.LogException(t.Exception, envelope.Id, "Failure to receive an incoming message");

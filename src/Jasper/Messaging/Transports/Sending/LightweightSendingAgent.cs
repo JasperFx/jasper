@@ -42,5 +42,10 @@ namespace Jasper.Messaging.Transports.Sending
         {
             return _retries.MarkSuccess();
         }
+
+        public override Task Successful(Envelope outgoing)
+        {
+            return _retries.MarkSuccess();
+        }
     }
 }

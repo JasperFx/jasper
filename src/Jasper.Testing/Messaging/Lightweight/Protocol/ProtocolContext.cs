@@ -143,6 +143,12 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             return Task.CompletedTask;
         }
 
+        public Task Successful(Envelope outgoing)
+        {
+            Succeeded = true;
+            return Task.CompletedTask;
+        }
+
         public bool Succeeded { get; set; }
 
         Task ISenderCallback.TimedOut(OutgoingMessageBatch outgoing)
@@ -170,6 +176,12 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
         public bool QueueDoesNotExist { get; set; }
 
         Task ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing)
+        {
+            ProcessingFailed = true;
+            return Task.CompletedTask;
+        }
+
+        public Task ProcessingFailure(Envelope outgoing, Exception exception)
         {
             ProcessingFailed = true;
             return Task.CompletedTask;

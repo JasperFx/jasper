@@ -43,6 +43,8 @@ namespace Jasper.Messaging.Transports.Sending
 
         public abstract Task Successful(OutgoingMessageBatch outgoing);
 
+        public abstract Task Successful(Envelope outgoing);
+
         public Task TimedOut(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing);
@@ -69,6 +71,13 @@ namespace Jasper.Messaging.Transports.Sending
         {
             _logger.OutgoingBatchFailed(outgoing);
             return _retries.MarkFailed(outgoing);
+        }
+
+        public Task ProcessingFailure(Envelope outgoing, Exception exception)
+        {
+            var batch = new OutgoingMessageBatch(outgoing.Destination, new []{outgoing});
+            _logger.OutgoingBatchFailed(batch, exception);
+            return _retries.MarkFailed(batch);
         }
 
         public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
