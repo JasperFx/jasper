@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Tests.Persistence;
 using Jasper.Marten.Tests.Persistence.Resiliency;
 using Jasper.Messaging;

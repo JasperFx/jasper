@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Configuration;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Persistence.Sagas;
 using Jasper.Messaging.Transports;

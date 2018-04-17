@@ -2,6 +2,8 @@
 using System.Linq;
 using Baseline.Dates;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.DbObjects;
+using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Conneg;
+using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging;
 using Jasper.Messaging.Logging;

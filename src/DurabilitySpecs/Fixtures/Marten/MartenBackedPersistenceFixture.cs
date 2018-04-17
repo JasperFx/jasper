@@ -8,6 +8,7 @@ using Baseline.Dates;
 using DurabilitySpecs.Fixtures.Marten.App;
 using Jasper;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;

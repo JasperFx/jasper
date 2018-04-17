@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Marten.Persistence.Operations;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;

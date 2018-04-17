@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using Jasper.Messaging.Runtime;
 using Marten;
 using Marten.Storage;
 
-namespace Jasper.Marten.Persistence
+namespace Jasper.Marten.Persistence.DbObjects
 {
     public class PostgresqlEnvelopeStorage : FeatureSchemaBase
     {

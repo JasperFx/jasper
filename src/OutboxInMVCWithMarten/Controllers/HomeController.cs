@@ -12,6 +12,34 @@ using TestMessages;
 
 namespace OutboxInMVCWithMarten.Controllers
 {
+    public class CreateItemCommand{}
+    public class Item{
+        public Guid Id { get; set; }
+    }
+    public class ItemCreated{
+        public Guid Id { get; set; }
+    }
+
+    public class ItemHandler
+    {
+        [MartenTransaction]
+        public static ItemCreated Handle(
+            CreateItemCommand command,
+            IDocumentSession session)
+        {
+            var item = createItem(command);
+
+            session.Store(item);
+            return new ItemCreated{Id = item.Id};
+        }
+
+        private static Item createItem(CreateItemCommand command)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     public class HomeController : Controller
     {
 
@@ -19,6 +47,39 @@ namespace OutboxInMVCWithMarten.Controllers
         {
             return View();
         }
+
+        public async Task<IActionResult> CreateItem(
+            [FromBody] CreateItemCommand command,
+            [FromServices] IDocumentStore martenStore,
+            [FromServices] IMessageContext context)
+        {
+            var item = createItem(command);
+
+
+            using (var session = martenStore.LightweightSession())
+            {
+                // Directs the message context to hold onto
+                // outgoing messages, and persist them
+                // as part of the given Marten document
+                // session when it is committed
+                await context.EnlistInTransaction(session);
+
+                var outgoing = new ItemCreated{Id = item.Id};
+                await context.Send(outgoing);
+
+                session.Store(item);
+
+                await session.SaveChangesAsync();
+            }
+
+            return Ok();
+        }
+
+        private Item createItem(CreateItemCommand command)
+        {
+            throw new NotImplementedException();
+        }
+
 
         // SAMPLE: using-outbox-with-marten-in-mvc-action
         [HttpPost]

@@ -2,7 +2,7 @@
 using Marten.Schema;
 using Marten.Storage;
 
-namespace Jasper.Marten.Persistence
+namespace Jasper.Marten.Persistence.DbObjects
 {
     public class IncomingEnvelopeTable : Table
     {

@@ -8,6 +8,7 @@ using Baseline.Dates;
 using Jasper;
 using Jasper.Marten;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;

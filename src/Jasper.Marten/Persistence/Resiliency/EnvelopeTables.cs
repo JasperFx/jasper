@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Marten;

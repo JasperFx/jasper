@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Marten.Persistence;
+using Jasper.Marten.Persistence.DbObjects;
+using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Logging;

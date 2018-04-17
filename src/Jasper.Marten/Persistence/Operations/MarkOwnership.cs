@@ -7,7 +7,7 @@ using Marten.Services;
 using Marten.Util;
 using NpgsqlTypes;
 
-namespace Jasper.Marten.Persistence.Resiliency
+namespace Jasper.Marten.Persistence.Operations
 {
     public class MarkOwnership : IStorageOperation
     {
