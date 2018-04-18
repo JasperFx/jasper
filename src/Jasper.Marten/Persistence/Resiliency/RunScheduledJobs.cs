@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
@@ -22,11 +23,11 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _marker;
         private readonly ITransportLogger _logger;
-        private readonly MartenRetries _retries;
+        private readonly IRetries _retries;
         public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
         private readonly string _markOwnedIncomingSql;
 
-        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, EnvelopeTables marker, ITransportLogger logger, MartenRetries retries)
+        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, EnvelopeTables marker, ITransportLogger logger, IRetries retries)
         {
             _workers = workers;
             _store = store;

@@ -6,6 +6,7 @@ using Jasper.Conneg;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
@@ -19,11 +20,11 @@ namespace Jasper.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _marker;
         private readonly SerializationGraph _serializers;
-        private readonly MartenRetries _retries;
+        private readonly IRetries _retries;
         private readonly ITransportLogger _logger;
         public Uri Destination { get; }
 
-        public LocalSendingAgent(Uri destination, IWorkerQueue queues, IDocumentStore store, EnvelopeTables marker, SerializationGraph serializers, MartenRetries retries, ITransportLogger logger)
+        public LocalSendingAgent(Uri destination, IWorkerQueue queues, IDocumentStore store, EnvelopeTables marker, SerializationGraph serializers, IRetries retries, ITransportLogger logger)
         {
             _queues = queues;
             _store = store;

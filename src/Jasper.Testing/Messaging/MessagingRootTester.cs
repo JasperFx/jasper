@@ -1,5 +1,6 @@
 ﻿using Baseline;
 using Jasper.Messaging;
+using Jasper.Messaging.Persistence;
 using Shouldly;
 using Xunit;
 

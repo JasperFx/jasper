@@ -6,6 +6,7 @@ using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
@@ -35,7 +36,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private Timer _nodeReassignmentTimer;
         private readonly ReassignFromDormantNodes _nodeReassignment;
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, ITransportLogger logger, StoreOptions storeOptions, MartenRetries retries)
+        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, ITransportLogger logger, StoreOptions storeOptions, IRetries retries)
         {
             _channels = channels;
             _workers = workers;

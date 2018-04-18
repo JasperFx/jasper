@@ -7,6 +7,7 @@ using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Marten;
 using Marten.Services;

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Runtime;
 
-namespace Jasper.Messaging
+namespace Jasper.Messaging.Persistence
 {
     public class InMemoryEnvelopePersistor : IEnvelopePersistor
     {

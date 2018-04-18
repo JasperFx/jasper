@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
 
-namespace Jasper.Messaging
+namespace Jasper.Messaging.Persistence
 {
     public interface IEnvelopePersistor
     {

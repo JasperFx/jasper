@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
@@ -11,6 +13,7 @@ using Marten.Util;
 
 namespace Jasper.Marten.Persistence.Resiliency
 {
+
     public class RecoverIncomingMessages : IMessagingAction
     {
         public static readonly int IncomingMessageLockId = "recover-incoming-messages".GetHashCode();
@@ -35,15 +38,17 @@ namespace Jasper.Marten.Persistence.Resiliency
 
         public async Task Execute(IDocumentSession session)
         {
+            // HERE
             if (!await session.TryGetGlobalTxLock(IncomingMessageLockId))
                 return;
 
-
+            // HERE
             var incoming = await session.Connection.CreateCommand(_findAtLargeEnvelopesSql)
                 .ExecuteToEnvelopes();
 
             if (!incoming.Any()) return;
 
+            // HERE
             session.MarkOwnership(_marker.Incoming, _settings.UniqueNodeId, incoming);
 
             await session.SaveChangesAsync();

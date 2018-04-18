@@ -6,6 +6,7 @@ using Baseline;
 using Baseline.Dates;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Routing;

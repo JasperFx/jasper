@@ -7,6 +7,7 @@ using Baseline.Dates;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Util;
@@ -14,7 +15,7 @@ using Marten;
 
 namespace Jasper.Marten.Persistence
 {
-    public class MartenRetries : IDisposable
+    public class MartenRetries : IDisposable, IRetries
     {
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _tables;

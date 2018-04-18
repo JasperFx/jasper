@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -22,9 +23,9 @@ namespace Jasper.Marten.Persistence
         private readonly ITransportLogger _logger;
         private readonly MessagingSettings _settings;
         private readonly EnvelopeTables _marker;
-        private readonly MartenRetries _retries;
+        private readonly IRetries _retries;
 
-        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, MartenRetries retries)
+        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, IRetries retries)
         {
             _agent = agent;
             _queues = queues;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Sending;
@@ -25,9 +26,9 @@ namespace Jasper.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly MessagingSettings _settings;
         private readonly EnvelopeTables _marker;
-        private readonly MartenRetries _retries;
+        private readonly IRetries _retries;
 
-        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, MartenRetries retries)
+        public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, IRetries retries)
             : base(destination, sender, logger, settings, new MartenBackedRetryAgent(store, sender, settings.Retries, marker, logger))
         {
             _cancellation = cancellation;

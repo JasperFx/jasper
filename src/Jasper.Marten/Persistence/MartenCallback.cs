@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
@@ -19,10 +20,10 @@ namespace Jasper.Marten.Persistence
         private readonly IWorkerQueue _queue;
         private readonly IDocumentStore _store;
         private readonly EnvelopeTables _marker;
-        private readonly MartenRetries _retries;
+        private readonly IRetries _retries;
 
         public MartenCallback(Envelope envelope, IWorkerQueue queue, IDocumentStore store, EnvelopeTables marker,
-            MartenRetries retries)
+            IRetries retries)
         {
             _envelope = envelope;
             _queue = queue;
