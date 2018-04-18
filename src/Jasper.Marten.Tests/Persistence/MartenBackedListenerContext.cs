@@ -9,6 +9,7 @@ using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -96,7 +97,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             var tables = new EnvelopeTables(theSettings, new StoreOptions());
 
-            var retries = new MartenRetries(theStore, tables, TransportLogger.Empty(), theSettings);
+            var retries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, tables), TransportLogger.Empty(), theSettings);
 
 
             theListener = new MartenBackedListener(

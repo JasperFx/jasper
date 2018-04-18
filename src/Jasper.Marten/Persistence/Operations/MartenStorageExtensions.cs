@@ -84,12 +84,6 @@ namespace Jasper.Marten.Persistence.Operations
             session.QueueOperation(operation);
         }
 
-        public static void DeleteEnvelope(this IDocumentSession session, DbObjectName table,
-            Envelope envelope)
-        {
-            var operation = new DeleteEnvelope(table, envelope);
-            session.QueueOperation(operation);
-        }
 
         public static List<Envelope> AllOutgoingEnvelopes(this IQuerySession session)
         {

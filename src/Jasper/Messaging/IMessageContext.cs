@@ -211,9 +211,9 @@ namespace Jasper.Messaging
         /// transaction so that messages are only sent if the transaction succeeds.
         /// Jasper's "Outbox" support
         /// </summary>
-        /// <param name="persistor"></param>
+        /// <param name="transaction"></param>
         /// <returns></returns>
-        Task EnlistInTransaction(IEnvelopePersistor persistor);
+        Task EnlistInTransaction(IEnvelopeTransaction transaction);
 
 
         /// <summary>

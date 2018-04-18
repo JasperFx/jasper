@@ -4,7 +4,7 @@ using Marten;
 
 namespace Jasper.Marten
 {
-    public static class MessagingExtensions
+    public static class MessageContextExtensions
     {
         /// <summary>
         /// Enlists the current IMessageContext in the Marten session's transaction
@@ -15,7 +15,7 @@ namespace Jasper.Marten
         /// <returns></returns>
         public static Task EnlistInTransaction(this IMessageContext context, IDocumentSession session)
         {
-            var persistor = new MartenEnvelopePersistor(session, context);
+            var persistor = new MartenEnvelopeTransaction(session, context);
             session.Listeners.Add(new FlushOutgoingMessagesOnCommit(context));
 
             return context.EnlistInTransaction(persistor);

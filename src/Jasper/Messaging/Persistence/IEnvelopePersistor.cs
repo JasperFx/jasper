@@ -1,15 +1,13 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging.Persistence
 {
     public interface IEnvelopePersistor
     {
-        Task Persist(Envelope envelope);
-        Task Persist(IEnumerable<Envelope> envelopes);
-        Task ScheduleJob(Envelope envelope);
-
-        Task CopyTo(IEnvelopePersistor other);
+        Task DeleteIncomingEnvelopes(Envelope[] envelopes);
+        Task DeleteOutgoingEnvelopes(Envelope[] envelopes);
+        Task MoveToDeadLetterStorage(ErrorReport[] errors);
+        Task ScheduleExecution(Envelope[] envelopes);
     }
 }

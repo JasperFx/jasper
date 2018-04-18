@@ -5,7 +5,7 @@ using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging.Persistence
 {
-    public class InMemoryEnvelopePersistor : IEnvelopePersistor
+    public class InMemoryEnvelopeTransaction : IEnvelopeTransaction
     {
         public readonly IList<Envelope> Queued = new List<Envelope>();
         public readonly IList<Envelope> Scheduled = new List<Envelope>();
@@ -28,7 +28,7 @@ namespace Jasper.Messaging.Persistence
             return Task.CompletedTask;
         }
 
-        public async Task CopyTo(IEnvelopePersistor other)
+        public async Task CopyTo(IEnvelopeTransaction other)
         {
             await other.Persist(Queued);
 

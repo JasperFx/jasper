@@ -62,7 +62,7 @@ namespace Jasper.Testing.Messaging
 
                 // Just to force the message context to pool up the envelope instead
                 // of sending it out
-                await context.EnlistInTransaction(new InMemoryEnvelopePersistor());
+                await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
 
                 var mySpecialMessage = new MySpecialMessage();
 
@@ -92,7 +92,7 @@ namespace Jasper.Testing.Messaging
 
                 // Just to force the message context to pool up the envelope instead
                 // of sending it out
-                await context.EnlistInTransaction(new InMemoryEnvelopePersistor());
+                await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
 
                 var mySpecialMessage = new MySpecialMessage();
 
@@ -122,7 +122,7 @@ namespace Jasper.Testing.Messaging
 
                 // Just to force the message context to pool up the envelope instead
                 // of sending it out
-                await context.EnlistInTransaction(new InMemoryEnvelopePersistor());
+                await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
 
                 var mySpecialMessage = new MySpecialMessage();
 

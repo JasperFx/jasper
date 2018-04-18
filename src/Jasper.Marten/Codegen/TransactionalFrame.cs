@@ -97,7 +97,7 @@ namespace Jasper.Marten.Codegen
 
             if (_context != null && _isUsingPersistence)
             {
-                writer.Write($"await {typeof(MessagingExtensions).FullName}.{nameof(MessagingExtensions.EnlistInTransaction)}({_context.Usage}, {Session.Usage});");
+                writer.Write($"await {typeof(MessageContextExtensions).FullName}.{nameof(MessageContextExtensions.EnlistInTransaction)}({_context.Usage}, {Session.Usage});");
             }
 
             foreach (var loaded in _loadedDocs)

@@ -9,7 +9,6 @@ namespace Jasper.Marten.Persistence.Resiliency
 {
     public class EnvelopeTables
     {
-        private readonly string _markOwnedIncomingSql;
 
         public EnvelopeTables(MessagingSettings settings, StoreOptions storeConfiguration)
         {
@@ -17,10 +16,6 @@ namespace Jasper.Marten.Persistence.Resiliency
                 PostgresqlEnvelopeStorage.IncomingTableName);
             Outgoing = new DbObjectName(storeConfiguration.DatabaseSchemaName,
                 PostgresqlEnvelopeStorage.OutgoingTableName);
-
-
-
-            _markOwnedIncomingSql = $"update {Incoming} set owner_id = :owner where id = ANY(:idlist)";
 
             CurrentNodeId = settings.UniqueNodeId;
 

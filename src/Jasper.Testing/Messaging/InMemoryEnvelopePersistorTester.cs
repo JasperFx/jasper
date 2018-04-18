@@ -10,17 +10,17 @@ namespace Jasper.Testing.Messaging
 {
     public class InMemoryEnvelopePersistorTester
     {
-        public readonly InMemoryEnvelopePersistor thePersistor = new InMemoryEnvelopePersistor();
+        public readonly InMemoryEnvelopeTransaction theTransaction = new InMemoryEnvelopeTransaction();
 
         [Fact]
         public void persist_single()
         {
             var envelope = ObjectMother.Envelope();
 
-            thePersistor.Persist(envelope);
-            thePersistor.Persist(envelope);
+            theTransaction.Persist(envelope);
+            theTransaction.Persist(envelope);
 
-            thePersistor.Queued.Single().ShouldBeSameAs(envelope);
+            theTransaction.Queued.Single().ShouldBeSameAs(envelope);
         }
 
         [Fact]
@@ -30,10 +30,10 @@ namespace Jasper.Testing.Messaging
             var envelope2 = ObjectMother.Envelope();
             var envelope3 = ObjectMother.Envelope();
 
-            thePersistor.Persist(new Envelope[]{envelope1, envelope2, envelope3});
-            thePersistor.Persist(new Envelope[]{envelope1, envelope2, envelope3});
+            theTransaction.Persist(new Envelope[]{envelope1, envelope2, envelope3});
+            theTransaction.Persist(new Envelope[]{envelope1, envelope2, envelope3});
 
-            thePersistor.Queued.ShouldHaveTheSameElementsAs(envelope1, envelope2, envelope3);
+            theTransaction.Queued.ShouldHaveTheSameElementsAs(envelope1, envelope2, envelope3);
         }
 
         [Fact]
@@ -43,11 +43,11 @@ namespace Jasper.Testing.Messaging
             var envelope2 = ObjectMother.Envelope();
             var envelope3 = ObjectMother.Envelope();
 
-            thePersistor.Persist(envelope1);
-            thePersistor.Persist(envelope2);
-            thePersistor.Persist(envelope3);
+            theTransaction.Persist(envelope1);
+            theTransaction.Persist(envelope2);
+            theTransaction.Persist(envelope3);
 
-            thePersistor.Queued.ShouldHaveTheSameElementsAs(envelope1, envelope2, envelope3);
+            theTransaction.Queued.ShouldHaveTheSameElementsAs(envelope1, envelope2, envelope3);
         }
 
         [Fact]
@@ -57,12 +57,12 @@ namespace Jasper.Testing.Messaging
             var envelope2 = ObjectMother.Envelope();
             var envelope3 = ObjectMother.Envelope();
 
-            thePersistor.ScheduleJob(envelope1);
-            thePersistor.Persist(envelope2);
-            thePersistor.ScheduleJob(envelope3);
-            thePersistor.ScheduleJob(envelope3);
+            theTransaction.ScheduleJob(envelope1);
+            theTransaction.Persist(envelope2);
+            theTransaction.ScheduleJob(envelope3);
+            theTransaction.ScheduleJob(envelope3);
 
-            thePersistor.Scheduled.ShouldHaveTheSameElementsAs(envelope1, envelope3);
+            theTransaction.Scheduled.ShouldHaveTheSameElementsAs(envelope1, envelope3);
         }
 
         [Fact]
@@ -72,17 +72,17 @@ namespace Jasper.Testing.Messaging
             var envelope2 = ObjectMother.Envelope();
             var envelope3 = ObjectMother.Envelope();
 
-            await thePersistor.ScheduleJob(envelope1);
-            await thePersistor.Persist(envelope2);
-            await thePersistor.ScheduleJob(envelope3);
-            await thePersistor.ScheduleJob(envelope3);
+            await theTransaction.ScheduleJob(envelope1);
+            await theTransaction.Persist(envelope2);
+            await theTransaction.ScheduleJob(envelope3);
+            await theTransaction.ScheduleJob(envelope3);
 
-            var other = new InMemoryEnvelopePersistor();
+            var other = new InMemoryEnvelopeTransaction();
 
-            await thePersistor.CopyTo(other);
+            await theTransaction.CopyTo(other);
 
-            thePersistor.Queued.ShouldHaveTheSameElementsAs(envelope2);
-            thePersistor.Scheduled.ShouldHaveTheSameElementsAs(envelope1, envelope3);
+            theTransaction.Queued.ShouldHaveTheSameElementsAs(envelope2);
+            theTransaction.Scheduled.ShouldHaveTheSameElementsAs(envelope1, envelope3);
         }
     }
 }

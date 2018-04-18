@@ -57,9 +57,9 @@ namespace Jasper.Messaging
             _sagaId = originalEnvelope.SagaId;
 
 
-            var persistor = new InMemoryEnvelopePersistor();
+            var persistor = new InMemoryEnvelopeTransaction();
             EnlistedInTransaction = true;
-            Persistor = persistor;
+            Transaction = persistor;
 
             if (Envelope.AckRequested)
             {
@@ -100,13 +100,13 @@ namespace Jasper.Messaging
 
         public bool EnlistedInTransaction { get; private set; }
 
-        public Task EnlistInTransaction(IEnvelopePersistor persistor)
+        public Task EnlistInTransaction(IEnvelopeTransaction transaction)
         {
-            var original = Persistor;
-            Persistor = persistor;
+            var original = Transaction;
+            Transaction = transaction;
             EnlistedInTransaction = true;
 
-            return original?.CopyTo(persistor) ?? Task.CompletedTask;
+            return original?.CopyTo(transaction) ?? Task.CompletedTask;
         }
 
         public async Task SendAllQueuedOutgoingMessages()
@@ -123,7 +123,7 @@ namespace Jasper.Messaging
         {
             if (EnlistedInTransaction)
             {
-                await Persistor.Persist(outgoing.Where(x => x.Route.Channel.IsDurable));
+                await Transaction.Persist(outgoing.Where(x => x.Route.Channel.IsDurable));
 
                 _outstanding.AddRange(outgoing);
             }
@@ -261,7 +261,7 @@ namespace Jasper.Messaging
             envelope.OwnerId = TransportConstants.AnyNode;
 
             return EnlistedInTransaction
-                ? Persistor.ScheduleJob(envelope).ContinueWith(_ => envelope.Id)
+                ? Transaction.ScheduleJob(envelope).ContinueWith(_ => envelope.Id)
                 : Persistence.ScheduleJob(envelope).ContinueWith(_ => envelope.Id);
         }
 
@@ -428,7 +428,7 @@ namespace Jasper.Messaging
             return Publish(envelope);
         }
 
-        public IEnvelopePersistor Persistor { get; private set; }
+        public IEnvelopeTransaction Transaction { get; private set; }
 
 
 

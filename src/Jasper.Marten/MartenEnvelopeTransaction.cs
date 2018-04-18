@@ -14,13 +14,13 @@ using Marten.Services;
 
 namespace Jasper.Marten
 {
-    public class MartenEnvelopePersistor : IEnvelopePersistor
+    public class MartenEnvelopeTransaction : IEnvelopeTransaction
     {
         private readonly IDocumentSession _session;
         private readonly int _nodeId;
         private readonly EnvelopeTables _tables;
 
-        public MartenEnvelopePersistor(IDocumentSession session, IMessageContext bus)
+        public MartenEnvelopeTransaction(IDocumentSession session, IMessageContext bus)
         {
             if (!(bus.Advanced.Persistence is MartenBackedMessagePersistence))
             {
@@ -58,7 +58,7 @@ namespace Jasper.Marten
             return Task.CompletedTask;
         }
 
-        public Task CopyTo(IEnvelopePersistor other)
+        public Task CopyTo(IEnvelopeTransaction other)
         {
             throw new NotSupportedException();
         }

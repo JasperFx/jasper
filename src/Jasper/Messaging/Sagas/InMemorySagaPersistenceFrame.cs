@@ -21,7 +21,7 @@ namespace Jasper.Messaging.Sagas
             _existence = existence;
             Document = new Variable(documentType, this);
 
-            Persistor = new Variable(typeof(InMemoryEnvelopePersistor), this);
+            Persistor = new Variable(typeof(InMemoryEnvelopeTransaction), this);
         }
 
         public Variable Persistor { get;  }
@@ -30,7 +30,7 @@ namespace Jasper.Messaging.Sagas
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"var {Persistor.Usage} = new {typeof(InMemoryEnvelopePersistor).FullNameInCode()}();");
+            writer.Write($"var {Persistor.Usage} = new {typeof(InMemoryEnvelopeTransaction).FullNameInCode()}();");
             writer.Write($"await {_context.Usage}.{nameof(IMessageContext.EnlistInTransaction)}({Persistor.Usage});");
 
 

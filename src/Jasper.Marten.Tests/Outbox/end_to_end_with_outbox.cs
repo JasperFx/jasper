@@ -59,7 +59,8 @@ namespace Jasper.Marten.Tests.Outbox
         public void code_generation_includes_the_call_to_enlist_the_transaction()
         {
             var code = theSender.Get<HandlerGraph>().ChainFor<ItemOutOfStock>().SourceCode;
-            code.ShouldContain("await Jasper.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
+
+            code.ShouldContain("await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]

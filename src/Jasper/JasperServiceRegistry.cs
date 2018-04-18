@@ -7,6 +7,7 @@ using Jasper.Http.Transport;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
@@ -84,6 +85,7 @@ namespace Jasper
             this.AddSingleton<IChannelGraph>(parent.Messaging.Channels);
             this.AddSingleton<ILocalWorkerSender>(parent.Messaging.LocalWorker);
 
+            this.AddSingleton<IRetries, EnvelopeRetries>();
 
             For<ITransport>()
                 .Use<LoopbackTransport>();

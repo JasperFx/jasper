@@ -38,15 +38,16 @@ namespace Jasper.Marten.Tests
             var code = codeFor<SessionUsingBlock1, Message1>();
 
             code.ShouldContain("using (var documentSession = _documentStore.LightweightSession())");
-            code.ShouldNotContain("await Jasper.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
+            code.ShouldNotContain("await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]
         public void default_session_construction_with_transaction()
         {
             var code = codeFor<SessionUsingBlock1, Message2>();
+
             code.ShouldContain("using (var documentSession = _documentStore.LightweightSession())");
-            code.ShouldContain("await Jasper.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
+            code.ShouldContain("await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
 
         }
 
@@ -67,7 +68,7 @@ namespace Jasper.Marten.Tests
 
             code.ShouldNotContain("using (var documentSession = _documentStore.LightweightSession())");
             code.ShouldContain("using (var documentSession = sessionUsingBlock2.OpenSession(_documentStore))");
-            code.ShouldContain("await Jasper.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
+            code.ShouldContain("await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
 

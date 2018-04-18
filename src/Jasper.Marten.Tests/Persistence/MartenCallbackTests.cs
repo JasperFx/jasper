@@ -8,6 +8,7 @@ using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -27,7 +28,7 @@ namespace Jasper.Marten.Tests.Persistence
         private IDocumentStore theStore;
         private Envelope theEnvelope;
         private MartenCallback theCallback;
-        private MartenRetries theRetries;
+        private EnvelopeRetries theRetries;
 
         public MartenCallbackTests()
         {
@@ -60,7 +61,7 @@ namespace Jasper.Marten.Tests.Persistence
 
 
             var logger = TransportLogger.Empty();
-            theRetries = new MartenRetries(theStore, marker, logger, new MessagingSettings());
+            theRetries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, marker), logger, new MessagingSettings());
 
             theCallback = new MartenCallback(theEnvelope, Substitute.For<IWorkerQueue>(), theStore, marker, theRetries);
         }

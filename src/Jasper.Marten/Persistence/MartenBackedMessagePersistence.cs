@@ -6,6 +6,7 @@ using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -20,7 +21,7 @@ namespace Jasper.Marten.Persistence
     {
         private readonly IDocumentStore _store;
         private readonly ITransportLogger _logger;
-        private readonly MartenRetries _retries;
+        private readonly EnvelopeRetries _retries;
 
         public MartenBackedMessagePersistence(IDocumentStore store, ITransportLogger logger,
             MessagingSettings settings, EnvelopeTables tables)
@@ -30,7 +31,7 @@ namespace Jasper.Marten.Persistence
             Settings = settings;
             Tables = tables;
 
-            _retries = new MartenRetries(_store, tables, _logger, Settings);
+            _retries = new EnvelopeRetries(new MartenEnvelopePersistor(_store, tables), _logger, Settings);
         }
 
         public MessagingSettings Settings { get; }

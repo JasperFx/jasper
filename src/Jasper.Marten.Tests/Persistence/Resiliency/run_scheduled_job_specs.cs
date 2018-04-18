@@ -7,6 +7,7 @@ using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Marten;
@@ -25,7 +26,7 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
         {
             var logger = TransportLogger.Empty();
             var envelopeTables = new EnvelopeTables(theSettings, new StoreOptions());
-            var retries = new MartenRetries(theStore, envelopeTables, logger, theSettings);
+            var retries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, envelopeTables), logger, theSettings);
 
             theScheduledJob = new RunScheduledJobs(theWorkerQueue, theStore, envelopeTables, logger, retries);
         }
