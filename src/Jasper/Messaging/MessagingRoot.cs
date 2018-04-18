@@ -27,14 +27,14 @@ namespace Jasper.Messaging
         // bouncing through this makes the mock root easier
         public static IMessageContext BusFor(Envelope envelope, IMessagingRoot root)
         {
-            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings, root.Channels, root.Persistence, root.Logger, envelope);
+            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings, root.Channels, root.Factory, root.Logger, envelope);
 
         }
 
         // bouncing through this makes the mock root easier
         public static IMessageContext BusFor(IMessagingRoot root)
         {
-            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings, root.Channels, root.Persistence, root.Logger);
+            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings, root.Channels, root.Factory, root.Logger);
         }
 
         private readonly HandlerGraph _handlers;
@@ -44,7 +44,7 @@ namespace Jasper.Messaging
             MessagingSettings settings,
             HandlerGraph handlers,
             Forwarders forwarders,
-            IPersistence persistence,
+            IDurableMessagingFactory factory,
             IChannelGraph channels,
             ISubscriptionsRepository subscriptions,
             IMessageLogger messageLogger,
@@ -58,7 +58,7 @@ namespace Jasper.Messaging
             Settings = settings;
             _handlers = handlers;
             Replies = new ReplyWatcher();
-            Persistence = persistence;
+            Factory = factory;
             Channels = channels;
             Transports = transports;
 
@@ -80,9 +80,9 @@ namespace Jasper.Messaging
             Router = new MessageRouter(Serialization, channels, subscriptions, handlers, Logger, Lookup, settings);
 
             // TODO -- ZOMG this is horrible, and I admit it.
-            if (Persistence is NulloPersistence)
+            if (Factory is NulloDurableMessagingFactory)
             {
-                Persistence.As<NulloPersistence>().ScheduledJobs = ScheduledJobs;
+                Factory.As<NulloDurableMessagingFactory>().ScheduledJobs = ScheduledJobs;
             }
         }
 
@@ -108,7 +108,7 @@ namespace Jasper.Messaging
 
         public MessagingSerializationGraph Serialization { get; }
 
-        public IPersistence Persistence { get; }
+        public IDurableMessagingFactory Factory { get; }
 
         public IMessageContext NewContext()
         {

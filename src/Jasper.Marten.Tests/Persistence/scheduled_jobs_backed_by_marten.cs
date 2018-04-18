@@ -24,7 +24,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             theRuntime.Get<IDocumentStore>().Advanced.Clean.DeleteAllDocuments();
             theRuntime.Get<IDocumentStore>().Tenancy.Default.EnsureStorageExists(typeof(Envelope));
-            theRuntime.Get<MartenBackedMessagePersistence>().ClearAllStoredMessages();
+            theRuntime.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
 
 
         }

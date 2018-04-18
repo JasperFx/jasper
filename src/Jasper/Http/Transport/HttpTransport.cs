@@ -21,15 +21,15 @@ namespace Jasper.Http.Transport
         private readonly MessagingSettings _settings;
         private readonly HttpTransportSettings _httpSettings;
         private readonly JasperRuntime _runtime;
-        private readonly IPersistence _persistence;
+        private readonly IDurableMessagingFactory _durableMessagingFactory;
         private readonly ITransportLogger _logger;
 
-        public HttpTransport(MessagingSettings settings, JasperRuntime runtime, IPersistence persistence, ITransportLogger logger)
+        public HttpTransport(MessagingSettings settings, JasperRuntime runtime, IDurableMessagingFactory factory, ITransportLogger logger)
         {
             _settings = settings;
             _httpSettings = settings.Http;
             _runtime = runtime;
-            _persistence = persistence;
+            _durableMessagingFactory = factory;
             _logger = logger;
         }
 
@@ -49,7 +49,7 @@ namespace Jasper.Http.Transport
 
             if (uri.IsDurable())
             {
-                agent = _persistence.BuildSendingAgent(uri, batchedSender, cancellation);
+                agent = _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation);
             }
             else
             {

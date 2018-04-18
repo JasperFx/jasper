@@ -236,7 +236,7 @@ namespace Jasper.Messaging
         /// <summary>
         /// Current message persistence
         /// </summary>
-        IPersistence Persistence { get; }
+        IDurableMessagingFactory Factory { get; }
 
         /// <summary>
         /// Send a failure acknowledgement back to the original

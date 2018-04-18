@@ -29,7 +29,7 @@ namespace Jasper.Messaging
         private readonly IMessageLogger _logger;
 
         // TODO -- just pull in MessagingRoot?
-        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IPersistence persistence, IMessageLogger logger)
+        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IDurableMessagingFactory factory, IMessageLogger logger)
         {
             _router = router;
             _watcher = watcher;
@@ -37,12 +37,12 @@ namespace Jasper.Messaging
             _serialization = serialization;
             _settings = settings;
             _channels = channels;
-            Persistence = persistence;
+            Factory = factory;
             _logger = logger;
         }
 
         // TODO -- just pull in MessagingRoot?
-        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IPersistence persistence, IMessageLogger logger, Envelope originalEnvelope)
+        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IDurableMessagingFactory factory, IMessageLogger logger, Envelope originalEnvelope)
         {
             _router = router;
             _watcher = watcher;
@@ -50,7 +50,7 @@ namespace Jasper.Messaging
             _serialization = serialization;
             _settings = settings;
             _channels = channels;
-            Persistence = persistence;
+            Factory = factory;
             _logger = logger;
 
             Envelope = originalEnvelope;
@@ -90,7 +90,7 @@ namespace Jasper.Messaging
             return ack;
         }
 
-        public IPersistence Persistence { get; }
+        public IDurableMessagingFactory Factory { get; }
         public Envelope Envelope { get; }
 
         private readonly List<Envelope> _outstanding = new List<Envelope>();
@@ -262,7 +262,7 @@ namespace Jasper.Messaging
 
             return EnlistedInTransaction
                 ? Transaction.ScheduleJob(envelope).ContinueWith(_ => envelope.Id)
-                : Persistence.ScheduleJob(envelope).ContinueWith(_ => envelope.Id);
+                : Factory.ScheduleJob(envelope).ContinueWith(_ => envelope.Id);
         }
 
         public Task<Guid> Schedule<T>(T message, TimeSpan delay)

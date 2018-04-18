@@ -167,7 +167,7 @@ namespace Jasper
 
             combined.Insert(0, ServiceDescriptor.Singleton<IHostedService, MessagingActivator>());
 
-            combined.For<IPersistence>().UseIfNone<NulloPersistence>();
+            combined.For<IDurableMessagingFactory>().UseIfNone<NulloDurableMessagingFactory>();
 
             combined.For<IServer>().UseIfNone<NulloServer>();
 
@@ -242,7 +242,7 @@ namespace Jasper
             var combined = new ServiceRegistry();
             combined.AddRange(all);
 
-            combined.For<IPersistence>().UseIfNone<NulloPersistence>();
+            combined.For<IDurableMessagingFactory>().UseIfNone<NulloDurableMessagingFactory>();
             combined.For<IServer>().UseIfNone<NulloServer>();
 
             return combined;

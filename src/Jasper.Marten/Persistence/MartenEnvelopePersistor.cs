@@ -61,6 +61,14 @@ namespace Jasper.Marten.Persistence
             }
         }
 
+        public async Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
+        {
+            using (var session = _store.QuerySession())
+            {
+                return await session.LoadAsync<ErrorReport>(id);
+            }
+        }
+
 
     }
 }

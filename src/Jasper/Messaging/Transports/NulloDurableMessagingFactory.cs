@@ -10,12 +10,12 @@ using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging.Transports
 {
-    public class NulloPersistence : IPersistence
+    public class NulloDurableMessagingFactory : IDurableMessagingFactory
     {
         private readonly ITransportLogger _logger;
         private readonly MessagingSettings _settings;
 
-        public NulloPersistence(ITransportLogger logger, MessagingSettings settings)
+        public NulloDurableMessagingFactory(ITransportLogger logger, MessagingSettings settings)
         {
             _logger = logger;
             _settings = settings;

@@ -40,7 +40,7 @@ namespace Jasper.Marten.Tests.Persistence
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
 
-            theRuntime.Get<MartenBackedMessagePersistence>().ScheduleJob(theEnvelope).Wait(3.Seconds());
+            theRuntime.Get<MartenBackedDurableMessagingFactory>().ScheduleJob(theEnvelope).Wait(3.Seconds());
 
 
 

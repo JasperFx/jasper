@@ -23,7 +23,7 @@ namespace Jasper.Marten
         public void Configure(JasperRegistry registry)
         {
             registry.Services.AddTransient<IEnvelopePersistor, MartenEnvelopePersistor>();
-            registry.Services.AddSingleton<IPersistence, MartenBackedMessagePersistence>();
+            registry.Services.AddSingleton<IDurableMessagingFactory, MartenBackedDurableMessagingFactory>();
             registry.Settings.Alter<StoreOptions>(options =>
             {
                 options.Storage.Add<PostgresqlEnvelopeStorage>();
@@ -54,7 +54,7 @@ namespace Jasper.Marten
 
         public Variable Create(Type type)
         {
-            return Variable.For<MartenBackedMessagePersistence>();
+            return Variable.For<MartenBackedDurableMessagingFactory>();
         }
     }
 }

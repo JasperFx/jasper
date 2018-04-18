@@ -17,13 +17,13 @@ using Marten.Util;
 
 namespace Jasper.Marten.Persistence
 {
-    public class MartenBackedMessagePersistence : IPersistence
+    public class MartenBackedDurableMessagingFactory : IDurableMessagingFactory
     {
         private readonly IDocumentStore _store;
         private readonly ITransportLogger _logger;
         private readonly EnvelopeRetries _retries;
 
-        public MartenBackedMessagePersistence(IDocumentStore store, ITransportLogger logger,
+        public MartenBackedDurableMessagingFactory(IDocumentStore store, ITransportLogger logger,
             MessagingSettings settings, EnvelopeTables tables)
         {
             _store = store;
@@ -89,12 +89,6 @@ namespace Jasper.Marten.Persistence
             }
         }
 
-        public async Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
-        {
-            using (var session = _store.QuerySession())
-            {
-                return await session.LoadAsync<ErrorReport>(id);
-            }
-        }
+
     }
 }

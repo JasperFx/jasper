@@ -22,12 +22,12 @@ namespace Jasper.Marten
 
         public MartenEnvelopeTransaction(IDocumentSession session, IMessageContext bus)
         {
-            if (!(bus.Advanced.Persistence is MartenBackedMessagePersistence))
+            if (!(bus.Advanced.Factory is MartenBackedDurableMessagingFactory))
             {
                 throw new InvalidOperationException("This Jasper application is not using Marten as the backing message persistence");
             }
 
-            var martenPersistence = bus.Advanced.Persistence.As<MartenBackedMessagePersistence>();
+            var martenPersistence = bus.Advanced.Factory.As<MartenBackedDurableMessagingFactory>();
 
             _nodeId = martenPersistence.Settings.UniqueNodeId;
             _tables = martenPersistence.Tables;

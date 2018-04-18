@@ -27,7 +27,7 @@ namespace Jasper.Messaging
         IReplyWatcher Replies { get; }
         IChannelGraph Channels { get; }
         MessagingSettings Settings { get; }
-        IPersistence Persistence { get; }
+        IDurableMessagingFactory Factory { get; }
         ITransport[] Transports { get; }
 
         IMessageContext NewContext();

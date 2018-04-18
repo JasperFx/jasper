@@ -29,7 +29,7 @@ namespace Jasper.Testing.Messaging
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
         public IReplyWatcher Replies { get; } = new ReplyWatcher();
         public MessagingSettings Settings { get; } = new MessagingSettings();
-        public IPersistence Persistence { get; } = Substitute.For<IPersistence>();
+        public IDurableMessagingFactory Factory { get; } = Substitute.For<IDurableMessagingFactory>();
 
         public ITransport[] Transports { get; } = new ITransport[]{Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
 

@@ -119,7 +119,9 @@ namespace Jasper.Marten.Tests.Persistence
 
             theRetries.ErrorReportLogged.WaitOne(500);
 
-            var persistence = theRuntime.Get<MartenBackedMessagePersistence>();
+
+
+            var persistence = theRuntime.Get<MartenEnvelopePersistor>();
 
             var report = await persistence.LoadDeadLetterEnvelope(theEnvelope.Id);
 

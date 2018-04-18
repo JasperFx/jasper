@@ -84,7 +84,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
             });
 
-            _runtime.Get<MartenBackedMessagePersistence>().ClearAllStoredMessages();
+            _runtime.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
 
             _marker = _runtime.Get<EnvelopeTables>();
             _serializers = _runtime.Get<MessagingSerializationGraph>();

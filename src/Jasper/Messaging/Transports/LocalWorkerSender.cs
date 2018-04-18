@@ -12,7 +12,7 @@ namespace Jasper.Messaging.Transports
 
         public void Start(IMessagingRoot root)
         {
-            _durable = root.Persistence.BuildLocalAgent(TransportConstants.DurableLoopbackUri, root);
+            _durable = root.Factory.BuildLocalAgent(TransportConstants.DurableLoopbackUri, root);
             _lightweight = new LoopbackSendingAgent(TransportConstants.LoopbackUri, root.Workers);
         }
 

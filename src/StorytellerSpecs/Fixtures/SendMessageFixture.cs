@@ -35,7 +35,7 @@ namespace StorytellerSpecs.Fixtures
                     _runtime = c.State.Retrieve<JasperRuntime>();
                     try
                     {
-                        _runtime.Get<IPersistence>().ClearAllStoredMessages();
+                        _runtime.Get<IDurableMessagingFactory>().ClearAllStoredMessages();
                     }
                     catch (Exception)
                     {
