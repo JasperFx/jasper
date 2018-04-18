@@ -17,5 +17,7 @@ namespace Jasper.Messaging.Durability
 
         Task StoreIncoming(Envelope envelope);
         Task StoreIncoming(IEnumerable<Envelope> envelopes);
+
+        Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
     }
 }

@@ -8,11 +8,11 @@ namespace Jasper.Messaging.Transports.Sending
     {
         private readonly ISender _sender;
         private readonly TimeSpan _cooldown;
-        private readonly Action _callback;
+        private readonly Func<Task> _callback;
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
         private Task _task;
 
-        public Pinger(ISender sender, TimeSpan cooldown, Action callback)
+        public Pinger(ISender sender, TimeSpan cooldown, Func<Task> callback)
         {
             _sender = sender;
             _cooldown = cooldown;
@@ -31,7 +31,7 @@ namespace Jasper.Messaging.Transports.Sending
                 {
                     await _sender.Ping();
 
-                    _callback();
+                    await _callback();
                     return;
                 }
                 catch (Exception)

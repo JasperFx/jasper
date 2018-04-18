@@ -106,5 +106,16 @@ namespace Jasper.Marten.Persistence
                 await session.SaveChangesAsync();
             }
         }
+
+        public async Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
+        {
+            using (var session = _store.LightweightSession())
+            {
+                session.DeleteEnvelopes(_tables.Outgoing, discards);
+                session.MarkOwnership(_tables.Outgoing, nodeId, reassigned);
+
+                await session.SaveChangesAsync();
+            }
+        }
     }
 }

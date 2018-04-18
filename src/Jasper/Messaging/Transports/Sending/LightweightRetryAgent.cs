@@ -28,7 +28,7 @@ namespace Jasper.Messaging.Transports.Sending
             return Task.CompletedTask;
         }
 
-        protected override void afterRestarting(ISender sender)
+        protected override Task afterRestarting(ISender sender)
         {
             var toRetry = Queued.Where(x => !x.IsExpired()).ToArray();
             Queued.Clear();
@@ -38,6 +38,8 @@ namespace Jasper.Messaging.Transports.Sending
                 // It's perfectly okay to not wait on the task here
                 _sender.Enqueue(envelope);
             }
+
+            return Task.CompletedTask;
         }
 
         public IList<Envelope> Queued { get; private set; } = new List<Envelope>();

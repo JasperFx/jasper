@@ -18,7 +18,11 @@ namespace Jasper.Testing.Messaging.Transports.Sending
         {
             var completed = new ManualResetEvent(false);
 
-            using (var pinger = new Pinger(new StubSender(5), 50.Milliseconds(), () => completed.Set()))
+            using (var pinger = new Pinger(new StubSender(5), 50.Milliseconds(), () =>
+            {
+                completed.Set();
+                return Task.CompletedTask;
+            }))
             {
                 completed.WaitOne(1.Seconds())
                     .ShouldBeTrue();

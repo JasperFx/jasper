@@ -52,17 +52,17 @@ namespace Jasper.Messaging.Transports.Sending
 
         public abstract Task EnqueueForRetry(OutgoingMessageBatch batch);
 
-        private void restartSending()
+        private Task restartSending()
         {
             _pinger.Dispose();
             _pinger = null;
 
             _sender.Unlatch();
 
-            afterRestarting(_sender);
+            return afterRestarting(_sender);
         }
 
-        protected abstract void afterRestarting(ISender sender);
+        protected abstract Task afterRestarting(ISender sender);
 
         public Task MarkSuccess()
         {

@@ -29,7 +29,7 @@ namespace Jasper.Marten.Persistence
         private readonly IRetries _retries;
 
         public MartenBackedSendingAgent(Uri destination, IDocumentStore store, ISender sender, CancellationToken cancellation, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, IRetries retries)
-            : base(destination, sender, logger, settings, new MartenBackedRetryAgent(store, sender, settings.Retries, marker, logger))
+            : base(destination, sender, logger, settings, new DurableRetryAgent(sender, settings.Retries, logger, new MartenEnvelopePersistor(store, marker)))
         {
             _cancellation = cancellation;
             _logger = logger;
