@@ -73,7 +73,7 @@ namespace Jasper.Marten.Tests.Persistence
         protected readonly DocumentStore theStore;
         protected IWorkerQueue theWorkerQueue;
         protected MessagingSettings theSettings;
-        protected MartenBackedListener theListener;
+        protected DurableListener theListener;
 
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
 
@@ -100,11 +100,10 @@ namespace Jasper.Marten.Tests.Persistence
             var retries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, tables), TransportLogger.Empty(), theSettings);
 
 
-            theListener = new MartenBackedListener(
+            theListener = new DurableListener(
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
-                theStore,
-                TransportLogger.Empty(), theSettings, tables, retries);
+                TransportLogger.Empty(), theSettings, retries, new MartenEnvelopePersistor(theStore, tables));
         }
 
         public void Dispose()

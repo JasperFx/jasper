@@ -56,7 +56,7 @@ namespace Jasper.Marten.Persistence
         public IListener BuildListener(IListeningAgent agent, IMessagingRoot root)
         {
             _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
-            return new MartenBackedListener(agent, root.Workers, _store, _logger, Settings, Tables, _retries);
+            return new DurableListener(agent, root.Workers, _logger, Settings, _retries, _persistor);
         }
 
         public void ClearAllStoredMessages()

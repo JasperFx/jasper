@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Persistence.Resiliency;
-using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -11,32 +8,27 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
-using Marten;
 
-namespace Jasper.Marten.Persistence
+namespace Jasper.Messaging.Durability
 {
-    public class MartenBackedListener : IListener
+    public class DurableListener : IListener
     {
         private readonly IListeningAgent _agent;
-        private readonly IWorkerQueue _queues;
-        private readonly IDocumentStore _store;
         private readonly ITransportLogger _logger;
-        private readonly MessagingSettings _settings;
-        private readonly EnvelopeTables _marker;
+        private readonly IEnvelopePersistor _persistor;
+        private readonly IWorkerQueue _queues;
         private readonly IRetries _retries;
-        private MartenEnvelopePersistor _persistor;
+        private readonly MessagingSettings _settings;
 
-        public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, IRetries retries)
+        public DurableListener(IListeningAgent agent, IWorkerQueue queues, ITransportLogger logger,
+            MessagingSettings settings, IRetries retries, IEnvelopePersistor persistor)
         {
             _agent = agent;
             _queues = queues;
-            _store = store;
             _logger = logger;
             _settings = settings;
-            _marker = marker;
             _retries = retries;
-
-            _persistor = new MartenEnvelopePersistor(_store, _marker);
+            _persistor = persistor;
         }
 
         public Uri Address => _agent.Address;
@@ -46,6 +38,32 @@ namespace Jasper.Marten.Persistence
             var now = DateTime.UtcNow;
 
             return await ProcessReceivedMessages(now, uri, messages);
+        }
+
+        public Task Acknowledged(Envelope[] messages)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task NotAcknowledged(Envelope[] messages)
+        {
+            return _persistor.DeleteIncomingEnvelopes(messages);
+        }
+
+        public Task Failed(Exception exception, Envelope[] messages)
+        {
+            _logger.LogException(new MessageFailureException(messages, exception));
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            // nothing
+        }
+
+        public void Start()
+        {
+            _agent.Start(this);
         }
 
         // Separated for testing here.
@@ -73,11 +91,8 @@ namespace Jasper.Marten.Persistence
                         : TransportConstants.Incoming;
                 }
 
-                using (var session = _store.LightweightSession())
-                {
-                    session.StoreIncoming(_marker, messages);
-                    await session.SaveChangesAsync();
-                }
+                await _persistor.StoreIncoming(messages);
+
 
                 foreach (var message in messages.Where(x => x.Status == TransportConstants.Incoming))
                 {
@@ -94,36 +109,6 @@ namespace Jasper.Marten.Persistence
                 _logger.LogException(e);
                 return ReceivedStatus.ProcessFailure;
             }
-        }
-
-        public Task Acknowledged(Envelope[] messages)
-        {
-            return Task.CompletedTask;
-        }
-
-        public async Task NotAcknowledged(Envelope[] messages)
-        {
-            using (var session = _store.LightweightSession())
-            {
-                session.Delete(messages);
-                await session.SaveChangesAsync();
-            }
-        }
-
-        public Task Failed(Exception exception, Envelope[] messages)
-        {
-            _logger.LogException(new MessageFailureException(messages, exception));
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            // nothing
-        }
-
-        public void Start()
-        {
-            _agent.Start(this);
         }
     }
 }
