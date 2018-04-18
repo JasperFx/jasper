@@ -9,6 +9,7 @@ namespace Jasper.Messaging.Durability
     {
         Task DeleteIncomingEnvelopes(Envelope[] envelopes);
         Task DeleteOutgoingEnvelopes(Envelope[] envelopes);
+        Task DeleteOutgoingEnvelope(Envelope envelope);
         Task MoveToDeadLetterStorage(ErrorReport[] errors);
         Task ScheduleExecution(Envelope[] envelopes);
 
@@ -19,5 +20,9 @@ namespace Jasper.Messaging.Durability
         Task StoreIncoming(IEnumerable<Envelope> envelopes);
 
         Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
+
+        Task StoreOutgoing(Envelope envelope, int ownerId);
+
+        Task StoreOutgoing(Envelope[] envelopes, int ownerId);
     }
 }

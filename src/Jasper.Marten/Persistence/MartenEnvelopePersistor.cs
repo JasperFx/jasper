@@ -41,6 +41,18 @@ namespace Jasper.Marten.Persistence
             }
         }
 
+        public async Task DeleteOutgoingEnvelope(Envelope envelope)
+        {
+            using (var conn = _store.Tenancy.Default.CreateConnection())
+            {
+                await conn.OpenAsync();
+
+                await conn.CreateCommand($"delete from {_tables.Outgoing} where id = :id")
+                    .With("id", envelope.Id, NpgsqlDbType.Uuid)
+                    .ExecuteNonQueryAsync();
+            }
+        }
+
         public async Task MoveToDeadLetterStorage(ErrorReport[] errors)
         {
             using (var session = _store.LightweightSession())
@@ -113,6 +125,29 @@ namespace Jasper.Marten.Persistence
             {
                 session.DeleteEnvelopes(_tables.Outgoing, discards);
                 session.MarkOwnership(_tables.Outgoing, nodeId, reassigned);
+
+                await session.SaveChangesAsync();
+            }
+        }
+
+        public async Task StoreOutgoing(Envelope envelope, int ownerId)
+        {
+            using (var session = _store.LightweightSession())
+            {
+                session.StoreOutgoing(_tables, envelope, ownerId);
+
+                await session.SaveChangesAsync();
+            }
+        }
+
+        public async Task StoreOutgoing(Envelope[] envelopes, int ownerId)
+        {
+            using (var session = _store.LightweightSession())
+            {
+                foreach (var envelope in envelopes)
+                {
+                    session.StoreOutgoing(_tables, envelope, ownerId);
+                }
 
                 await session.SaveChangesAsync();
             }

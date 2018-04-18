@@ -44,7 +44,7 @@ namespace Jasper.Marten.Persistence
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
         {
             _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
-            return new MartenBackedSendingAgent(destination, _store, sender, cancellation, _logger, Settings, Tables, _retries);
+            return new DurableSendingAgent(destination, sender, _logger, Settings, _retries, _persistor);
         }
 
         public ISendingAgent BuildLocalAgent(Uri destination, IMessagingRoot root)
