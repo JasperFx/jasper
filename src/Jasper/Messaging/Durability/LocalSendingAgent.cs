@@ -1,37 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Conneg;
-using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Persistence.Resiliency;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
-using Marten;
 
-namespace Jasper.Marten.Persistence
+namespace Jasper.Messaging.Durability
 {
     public class LocalSendingAgent : ISendingAgent
     {
         private readonly IWorkerQueue _queues;
-        private readonly IDocumentStore _store;
-        private readonly EnvelopeTables _marker;
         private readonly SerializationGraph _serializers;
         private readonly IRetries _retries;
-        private readonly ITransportLogger _logger;
+        private readonly IEnvelopePersistor _persistor;
         public Uri Destination { get; }
 
-        public LocalSendingAgent(Uri destination, IWorkerQueue queues, IDocumentStore store, EnvelopeTables marker, SerializationGraph serializers, IRetries retries, ITransportLogger logger)
+        public LocalSendingAgent(Uri destination, IWorkerQueue queues, IEnvelopePersistor persistor,
+            SerializationGraph serializers, IRetries retries)
         {
             _queues = queues;
-            _store = store;
-            _marker = marker;
             _serializers = serializers;
             _retries = retries;
-            _logger = logger;
+
+            _persistor = persistor;
+
             Destination = destination;
         }
 
@@ -48,42 +41,32 @@ namespace Jasper.Marten.Persistence
 
         public Task EnqueueOutgoing(Envelope envelope)
         {
-            envelope.Callback = new MartenCallback(envelope, _queues, _store, _marker, _retries);
+            envelope.Callback = new DurableCallback(envelope, _queues, _persistor, _retries);
 
             return _queues.Enqueue(envelope);
         }
 
         public async Task StoreAndForward(Envelope envelope)
         {
-            using (var session = _store.LightweightSession())
-            {
-                writeMessageData(envelope);
-                session.StoreIncoming(_marker, envelope);
-                await session.SaveChangesAsync();
-            }
+            writeMessageData(envelope);
+
+            await _persistor.StoreIncoming(envelope);
 
             await EnqueueOutgoing(envelope);
         }
 
         public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
         {
-            using (var session = _store.LightweightSession())
+            foreach (var envelope in envelopes)
             {
-                foreach (var envelope in envelopes)
-                {
-                    writeMessageData(envelope);
+                writeMessageData(envelope);
+            }
 
-                    session.StoreIncoming(_marker, envelope);
-                }
+            await _persistor.StoreIncoming(envelopes);
 
-
-
-                await session.SaveChangesAsync();
-
-                foreach (var envelope in envelopes)
-                {
-                    await EnqueueOutgoing(envelope);
-                }
+            foreach (var envelope in envelopes)
+            {
+                await EnqueueOutgoing(envelope);
             }
         }
 

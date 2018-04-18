@@ -4,8 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
@@ -26,6 +26,7 @@ namespace Jasper.Marten.Persistence.Resiliency
         private readonly IRetries _retries;
         public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
         private readonly string _markOwnedIncomingSql;
+        private MartenEnvelopePersistor _persistor;
 
         public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, EnvelopeTables marker, ITransportLogger logger, IRetries retries)
         {
@@ -34,6 +35,8 @@ namespace Jasper.Marten.Persistence.Resiliency
             _marker = marker;
             _logger = logger;
             _retries = retries;
+
+            _persistor = new MartenEnvelopePersistor(_store, _marker);
 
             _findReadyToExecuteJobs = $"select body from {marker.Incoming} where status = '{TransportConstants.Scheduled}' and execution_time <= :time";
             _markOwnedIncomingSql = $"update {marker.Incoming} set owner_id = :owner, status = '{TransportConstants.Incoming}' where id = ANY(:idlist)";
@@ -76,7 +79,7 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             foreach (var envelope in readyToExecute)
             {
-                envelope.Callback = new MartenCallback(envelope, _workers, _store, _marker, _retries);
+                envelope.Callback = new DurableCallback(envelope, _workers, _persistor, _retries);
 
                 await _workers.Enqueue(envelope);
             }

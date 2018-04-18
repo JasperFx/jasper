@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Runtime;
 
-namespace Jasper.Messaging.Persistence
+namespace Jasper.Messaging.Durability
 {
     public class InMemoryEnvelopeTransaction : IEnvelopeTransaction
     {

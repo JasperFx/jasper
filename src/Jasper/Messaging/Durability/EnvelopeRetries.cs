@@ -8,7 +8,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Util;
 
-namespace Jasper.Messaging.Persistence
+namespace Jasper.Messaging.Durability
 {
     public class EnvelopeRetries : IDisposable, IRetries
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
 
-namespace Jasper.Messaging.Persistence
+namespace Jasper.Messaging.Durability
 {
     public interface IEnvelopeTransaction
     {

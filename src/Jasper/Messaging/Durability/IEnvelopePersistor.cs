@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
 
-namespace Jasper.Messaging.Persistence
+namespace Jasper.Messaging.Durability
 {
     public interface IEnvelopePersistor
     {
@@ -12,5 +13,9 @@ namespace Jasper.Messaging.Persistence
         Task ScheduleExecution(Envelope[] envelopes);
 
         Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
+        Task IncrementIncomingEnvelopeAttempts(Envelope envelope);
+
+        Task StoreIncoming(Envelope envelope);
+        Task StoreIncoming(IEnumerable<Envelope> envelopes);
     }
 }

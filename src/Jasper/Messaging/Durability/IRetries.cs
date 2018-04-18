@@ -1,6 +1,6 @@
 ﻿using Jasper.Messaging.Runtime;
 
-namespace Jasper.Messaging.Persistence
+namespace Jasper.Messaging.Durability
 {
     public interface IRetries
     {

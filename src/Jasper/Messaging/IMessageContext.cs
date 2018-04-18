@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 

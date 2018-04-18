@@ -1,34 +1,24 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Marten.Persistence.Resiliency;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
-using Marten;
-using Marten.Events;
-using Marten.Util;
-using NpgsqlTypes;
 
-namespace Jasper.Marten.Persistence
+namespace Jasper.Messaging.Durability
 {
-    public class MartenCallback : IMessageCallback
+    public class DurableCallback : IMessageCallback
     {
         private readonly Envelope _envelope;
+        private readonly IEnvelopePersistor _persistor;
         private readonly IWorkerQueue _queue;
-        private readonly IDocumentStore _store;
-        private readonly EnvelopeTables _marker;
         private readonly IRetries _retries;
 
-        public MartenCallback(Envelope envelope, IWorkerQueue queue, IDocumentStore store, EnvelopeTables marker,
+        public DurableCallback(Envelope envelope, IWorkerQueue queue, IEnvelopePersistor persistor,
             IRetries retries)
         {
             _envelope = envelope;
             _queue = queue;
-            _store = store;
-            _marker = marker;
+            _persistor = persistor;
             _retries = retries;
         }
 
@@ -49,20 +39,11 @@ namespace Jasper.Marten.Persistence
         {
             try
             {
-                using (var conn = _store.Tenancy.Default.CreateConnection())
-                {
-                    await conn.OpenAsync();
-
-                    await conn.CreateCommand($"update {_marker.Incoming} set attempts = :attempts where id = :id")
-                        .With("attempts", envelope.Attempts, NpgsqlDbType.Integer)
-                        .With("id", envelope.Id, NpgsqlDbType.Uuid)
-                        .ExecuteNonQueryAsync();
-                }
+                await _persistor.IncrementIncomingEnvelopeAttempts(envelope);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Not going to worry about a failure here
-
             }
 
             await _queue.Enqueue(envelope);
@@ -77,6 +58,5 @@ namespace Jasper.Marten.Persistence
 
             return Task.CompletedTask;
         }
-
     }
 }

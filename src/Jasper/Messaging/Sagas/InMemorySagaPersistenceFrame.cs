@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Messaging.Persistence;
+using Jasper.Messaging.Durability;
 using Lamar.Codegen;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;

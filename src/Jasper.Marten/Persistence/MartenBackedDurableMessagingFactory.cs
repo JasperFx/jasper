@@ -5,8 +5,8 @@ using Jasper.Conneg;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Messaging;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -22,6 +22,7 @@ namespace Jasper.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly ITransportLogger _logger;
         private readonly EnvelopeRetries _retries;
+        private MartenEnvelopePersistor _persistor;
 
         public MartenBackedDurableMessagingFactory(IDocumentStore store, ITransportLogger logger,
             MessagingSettings settings, EnvelopeTables tables)
@@ -30,6 +31,8 @@ namespace Jasper.Marten.Persistence
             _logger = logger;
             Settings = settings;
             Tables = tables;
+
+            _persistor = new MartenEnvelopePersistor(_store, tables);
 
             _retries = new EnvelopeRetries(new MartenEnvelopePersistor(_store, tables), _logger, Settings);
         }
@@ -47,7 +50,7 @@ namespace Jasper.Marten.Persistence
         public ISendingAgent BuildLocalAgent(Uri destination, IMessagingRoot root)
         {
             _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
-            return new LocalSendingAgent(destination, root.Workers, _store, Tables, root.Serialization, _retries, _logger);
+            return new LocalSendingAgent(destination, root.Workers, _persistor, root.Serialization, _retries);
         }
 
         public IListener BuildListener(IListeningAgent agent, IMessagingRoot root)

@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -24,6 +24,7 @@ namespace Jasper.Marten.Persistence
         private readonly MessagingSettings _settings;
         private readonly EnvelopeTables _marker;
         private readonly IRetries _retries;
+        private MartenEnvelopePersistor _persistor;
 
         public MartenBackedListener(IListeningAgent agent, IWorkerQueue queues, IDocumentStore store, ITransportLogger logger, MessagingSettings settings, EnvelopeTables marker, IRetries retries)
         {
@@ -34,6 +35,8 @@ namespace Jasper.Marten.Persistence
             _settings = settings;
             _marker = marker;
             _retries = retries;
+
+            _persistor = new MartenEnvelopePersistor(_store, _marker);
         }
 
         public Uri Address => _agent.Address;
@@ -78,7 +81,7 @@ namespace Jasper.Marten.Persistence
 
                 foreach (var message in messages.Where(x => x.Status == TransportConstants.Incoming))
                 {
-                    message.Callback = new MartenCallback(message, _queues, _store, _marker, _retries);
+                    message.Callback = new DurableCallback(message, _queues, _persistor, _retries);
                     await _queues.Enqueue(message);
                 }
 

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging;
-using Jasper.Messaging.Persistence;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Shouldly;
 using Xunit;

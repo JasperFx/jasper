@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
-using Jasper.Messaging.Persistence;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Marten;
+using Marten.Util;
+using NpgsqlTypes;
 
 namespace Jasper.Marten.Persistence
 {
@@ -69,6 +72,39 @@ namespace Jasper.Marten.Persistence
             }
         }
 
+        public async Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
+        {
+            using (var conn = _store.Tenancy.Default.CreateConnection())
+            {
+                await conn.OpenAsync();
 
+                await conn.CreateCommand($"update {_tables.Incoming} set attempts = :attempts where id = :id")
+                    .With("attempts", envelope.Attempts, NpgsqlDbType.Integer)
+                    .With("id", envelope.Id, NpgsqlDbType.Uuid)
+                    .ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task StoreIncoming(Envelope envelope)
+        {
+            using (var session = _store.LightweightSession())
+            {
+                session.StoreIncoming(_tables, envelope);
+                await session.SaveChangesAsync();
+            }
+        }
+
+        public async Task StoreIncoming(IEnumerable<Envelope> envelopes)
+        {
+            using (var session = _store.LightweightSession())
+            {
+                foreach (var envelope in envelopes)
+                {
+                    session.StoreIncoming(_tables, envelope);
+                }
+
+                await session.SaveChangesAsync();
+            }
+        }
     }
 }
