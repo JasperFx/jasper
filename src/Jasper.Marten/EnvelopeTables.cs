@@ -3,7 +3,7 @@ using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Marten.Schema;
 
-namespace Jasper.Marten.Resiliency
+namespace Jasper.Marten
 {
     public class EnvelopeTables
     {
