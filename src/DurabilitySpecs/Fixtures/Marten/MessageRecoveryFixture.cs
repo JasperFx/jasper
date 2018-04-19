@@ -12,6 +12,7 @@ using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
@@ -29,7 +30,7 @@ using StoryTeller.Grammars.Tables;
 
 namespace DurabilitySpecs.Fixtures.Marten
 {
-    public class MessageRecoveryFixture : Fixture
+    public class MessageRecoveryFixture : Fixture, ISchedulingAgent
     {
         private readonly IList<Envelope> _envelopes = new List<Envelope>();
         private int _currentNodeId;
@@ -246,7 +247,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             {
                 try
                 {
-                    await action.Execute(session);
+                    await action.Execute(session, this);
                 }
                 catch (Exception e)
                 {
@@ -273,6 +274,14 @@ namespace DurabilitySpecs.Fixtures.Marten
             return runAction<RecoverOutgoingMessages>();
         }
 
+        void ISchedulingAgent.RescheduleOutgoingRecovery()
+        {
+
+        }
+
+        void ISchedulingAgent.RescheduleIncomingRecovery()
+        {
+        }
     }
 
     public class NodeLocker : IDisposable

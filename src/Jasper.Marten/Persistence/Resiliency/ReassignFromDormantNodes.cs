@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Marten.Util;
@@ -36,7 +37,7 @@ where
 ";
         }
 
-        public async Task Execute(IDocumentSession session)
+        public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
         {
             if (!await session.TryGetGlobalTxLock(ReassignmentLockId))
             {

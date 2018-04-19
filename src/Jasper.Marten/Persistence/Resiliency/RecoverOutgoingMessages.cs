@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Messaging;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -21,19 +22,18 @@ namespace Jasper.Marten.Persistence.Resiliency
         public static readonly int OutgoingMessageLockId = "recover-outgoing-messages".GetHashCode();
         private readonly IChannelGraph _channels;
         private readonly EnvelopeTables _marker;
-        private readonly ISchedulingAgent _schedulingAgent;
         private readonly ITransportLogger _logger;
         private readonly MessagingSettings _settings;
         private readonly string _findUniqueDestinations;
         private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
 
-        public RecoverOutgoingMessages(IChannelGraph channels, MessagingSettings settings, EnvelopeTables marker, ISchedulingAgent schedulingAgent, ITransportLogger logger)
+        public RecoverOutgoingMessages(IChannelGraph channels, MessagingSettings settings, EnvelopeTables marker,
+            ITransportLogger logger)
         {
             _channels = channels;
             _settings = settings;
             _marker = marker;
-            _schedulingAgent = schedulingAgent;
             _logger = logger;
 
             _findUniqueDestinations = $"select distinct destination from {_marker.Outgoing}";
@@ -59,7 +59,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             return list;
         }
 
-        public async Task Execute(IDocumentSession session)
+        public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
         {
             if (!await session.TryGetGlobalTxLock(OutgoingMessageLockId))
                 return;
@@ -77,7 +77,7 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             if (wasMaxedOut)
             {
-                _schedulingAgent.RescheduleOutgoingRecovery();
+                agent.RescheduleOutgoingRecovery();
             }
         }
 

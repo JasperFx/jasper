@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -19,24 +20,22 @@ namespace Jasper.Marten.Persistence.Resiliency
         public static readonly int IncomingMessageLockId = "recover-incoming-messages".GetHashCode();
         private readonly ITransportLogger _logger;
         private readonly EnvelopeTables _marker;
-        private readonly ISchedulingAgent _schedulingAgent;
         private readonly MessagingSettings _settings;
         private readonly IWorkerQueue _workers;
         private readonly string _findAtLargeEnvelopesSql;
 
         public RecoverIncomingMessages(IWorkerQueue workers, MessagingSettings settings, EnvelopeTables marker,
-            ISchedulingAgent schedulingAgent, ITransportLogger logger)
+            ITransportLogger logger)
         {
             _workers = workers;
             _settings = settings;
             _marker = marker;
-            _schedulingAgent = schedulingAgent;
             _logger = logger;
 
             _findAtLargeEnvelopesSql = $"select body from {marker.Incoming} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}' limit {settings.Retries.RecoveryBatchSize}";
         }
 
-        public async Task Execute(IDocumentSession session)
+        public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
         {
             // HERE
             if (!await session.TryGetGlobalTxLock(IncomingMessageLockId))
@@ -64,7 +63,7 @@ namespace Jasper.Marten.Persistence.Resiliency
             if (incoming.Count == _settings.Retries.RecoveryBatchSize &&
                 _workers.QueuedCount < _settings.MaximumLocalEnqueuedBackPressureThreshold)
             {
-                _schedulingAgent.RescheduleIncomingRecovery();
+                agent.RescheduleIncomingRecovery();
             }
         }
     }

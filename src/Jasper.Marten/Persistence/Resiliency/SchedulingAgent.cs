@@ -19,64 +19,34 @@ using NpgsqlTypes;
 
 namespace Jasper.Marten.Persistence.Resiliency
 {
-    public class SchedulingAgent : IHostedService, IDisposable, ISchedulingAgent
+    public class SchedulingAgent : SchedulingAgentBase<IMessagingAction>
     {
-        private readonly IChannelGraph _channels;
-        private readonly IWorkerQueue _workers;
         private readonly IDocumentStore _store;
-        private readonly MessagingSettings _settings;
-        private readonly ITransportLogger _logger;
-        private readonly StoreOptions _storeOptions;
-        private readonly ActionBlock<IMessagingAction> _worker;
+
         private NpgsqlConnection _connection;
-        private readonly RunScheduledJobs _scheduledJobs;
-        private readonly RecoverIncomingMessages _incomingMessages;
-        private readonly RecoverOutgoingMessages _outgoingMessages;
-        private Timer _scheduledJobTimer;
-        private Timer _nodeReassignmentTimer;
-        private readonly ReassignFromDormantNodes _nodeReassignment;
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, ITransportLogger logger, StoreOptions storeOptions, IRetries retries)
+
+        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, ITransportLogger logger, StoreOptions storeOptions, IRetries retries, EnvelopeTables tables)
+            : base(settings, logger,
+                new RunScheduledJobs(workers, store, tables, logger, retries),
+                new RecoverIncomingMessages(workers, settings, tables, logger),
+                new RecoverOutgoingMessages(channels, settings, tables, logger),
+                new ReassignFromDormantNodes(tables, settings)
+
+
+                )
         {
-            _channels = channels;
-            _workers = workers;
             _store = store;
-            _settings = settings;
-            _logger = logger;
-            _storeOptions = storeOptions;
 
-            _worker = new ActionBlock<IMessagingAction>(processAction, new ExecutionDataflowBlockOptions
-            {
-                MaxDegreeOfParallelism = 1
-            });
-
-            var marker = new EnvelopeTables(_settings, _storeOptions);
-            _scheduledJobs = new RunScheduledJobs(_workers, _store, marker, logger, retries);
-            _incomingMessages = new RecoverIncomingMessages(_workers, _settings, marker, this, _logger);
-            _outgoingMessages = new RecoverOutgoingMessages(_channels, _settings, marker, this, _logger);
-
-            _nodeReassignment = new ReassignFromDormantNodes(marker, settings);
-        }
-
-        public void RescheduleOutgoingRecovery()
-        {
-            _worker.Post(_outgoingMessages);
-        }
-
-        public void RescheduleIncomingRecovery()
-        {
-            _worker.Post(_incomingMessages);
         }
 
 
-        public void Dispose()
+        protected override void disposeConnection()
         {
             _connection?.Dispose();
-            _scheduledJobTimer?.Dispose();
-            _nodeReassignmentTimer?.Dispose();
         }
 
-        private async Task processAction(IMessagingAction action)
+        protected override async Task processAction(IMessagingAction action)
         {
             await tryRestartConnection();
 
@@ -93,13 +63,13 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             try
             {
-                await action.Execute(session);
+                await action.Execute(session, this);
 
 
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                logger.LogException(e);
             }
             finally
             {
@@ -128,7 +98,7 @@ namespace Jasper.Marten.Persistence.Resiliency
                 }
                 catch (Exception e)
                 {
-                    _logger.LogException(e);
+                    logger.LogException(e);
                 }
             }
 
@@ -137,13 +107,13 @@ namespace Jasper.Marten.Persistence.Resiliency
 
             try
             {
-                await _connection.OpenAsync(_settings.Cancellation);
+                await _connection.OpenAsync(settings.Cancellation);
 
                 await retrieveLockForThisNode();
             }
             catch (Exception e)
             {
-                _logger.LogException(e);
+                logger.LogException(e);
 
                 _connection.Dispose();
                 _connection = null;
@@ -151,49 +121,31 @@ namespace Jasper.Marten.Persistence.Resiliency
 
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+
+
+        protected override async Task openConnectionAndAttainNodeLock()
         {
             _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
 
             _connection = _store.Tenancy.Default.CreateConnection();
 
-
-            await _connection.OpenAsync(_settings.Cancellation);
+            await _connection.OpenAsync(settings.Cancellation);
 
             await retrieveLockForThisNode();
-
-            _scheduledJobTimer = new Timer(s =>
-            {
-                _worker.Post(_scheduledJobs);
-                _worker.Post(_incomingMessages);
-                _worker.Post(_outgoingMessages);
-
-            }, _settings, _settings.FirstScheduledJobExecution, _settings.ScheduledJobPollingTime);
-
-            _nodeReassignmentTimer = new Timer(s =>
-            {
-                _worker.Post(_nodeReassignment);
-
-
-            }, _settings, _settings.FirstNodeReassignmentExecution, _settings.NodeReassignmentPollingTime);
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+
+
+        protected override async Task releaseNodeLockAndClose()
         {
-            _worker.Complete();
-
-            await _worker.Completion;
-
             await _connection.CreateCommand().Sql("SELECT pg_advisory_unlock(:id)")
                 .Sql("SELECT pg_advisory_lock(:id)")
-                .With("id", _settings.UniqueNodeId, NpgsqlDbType.Integer)
+                .With("id", settings.UniqueNodeId, NpgsqlDbType.Integer)
                 .ExecuteNonQueryAsync(CancellationToken.None);
 
             _connection.Close();
             _connection.Dispose();
             _connection = null;
-
-
         }
 
 
@@ -202,8 +154,8 @@ namespace Jasper.Marten.Persistence.Resiliency
             return _connection
                 .CreateCommand()
                 .Sql("SELECT pg_advisory_lock(:id)")
-                .With("id", _settings.UniqueNodeId, NpgsqlDbType.Integer)
-                .ExecuteNonQueryAsync(_settings.Cancellation);
+                .With("id", settings.UniqueNodeId, NpgsqlDbType.Integer)
+                .ExecuteNonQueryAsync(settings.Cancellation);
         }
 
     }

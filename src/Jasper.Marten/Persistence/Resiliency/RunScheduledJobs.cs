@@ -43,7 +43,7 @@ namespace Jasper.Marten.Persistence.Resiliency
 
         }
 
-        public async Task Execute(IDocumentSession session)
+        public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
         {
             var utcNow = DateTimeOffset.UtcNow;;
 

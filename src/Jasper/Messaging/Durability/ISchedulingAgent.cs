@@ -1,4 +1,4 @@
-﻿namespace Jasper.Marten.Persistence.Resiliency
+﻿namespace Jasper.Messaging.Durability
 {
     public interface ISchedulingAgent
     {
