@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Marten.Resiliency;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Marten;

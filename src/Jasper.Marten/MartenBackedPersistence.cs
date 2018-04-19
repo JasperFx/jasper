@@ -2,8 +2,8 @@
 using Jasper.Configuration;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.DbObjects;
-using Jasper.Marten.Persistence.Resiliency;
 using Jasper.Marten.Persistence.Sagas;
+using Jasper.Marten.Resiliency;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports;
 using Lamar.Codegen;

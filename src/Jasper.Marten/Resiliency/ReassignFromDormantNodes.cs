@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Marten.Util;
 
-namespace Jasper.Marten.Persistence.Resiliency
+namespace Jasper.Marten.Resiliency
 {
     public class ReassignFromDormantNodes : IMessagingAction
     {

@@ -1,11 +1,9 @@
-﻿using System.Threading.Tasks;
-using Jasper.Marten.Persistence.DbObjects;
+﻿using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Util;
 using Marten;
 using Marten.Schema;
 
-namespace Jasper.Marten.Persistence.Resiliency
+namespace Jasper.Marten.Resiliency
 {
     public class EnvelopeTables
     {

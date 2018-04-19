@@ -2,8 +2,6 @@
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -13,11 +11,10 @@ using Jasper.Messaging.WorkerQueues;
 using Marten;
 using Marten.Services;
 using Marten.Util;
-using Microsoft.Extensions.Hosting;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace Jasper.Marten.Persistence.Resiliency
+namespace Jasper.Marten.Resiliency
 {
     public class SchedulingAgent : SchedulingAgentBase<IMessagingAction>
     {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Marten.Resiliency;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;

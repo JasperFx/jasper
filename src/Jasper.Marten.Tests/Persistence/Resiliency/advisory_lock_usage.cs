@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Marten.Persistence.Resiliency;
+using Jasper.Marten.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Npgsql;
 using Shouldly;
