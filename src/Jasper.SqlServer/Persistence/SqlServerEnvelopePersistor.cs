@@ -122,7 +122,10 @@ namespace Jasper.SqlServer.Persistence
             var cmd = new SqlCommand();
             var builder = new CommandBuilder(cmd);
 
-            builder.AddNamedParameter("IDLIST", table).SqlDbType = SqlDbType.Structured;
+            var list = builder.AddNamedParameter("IDLIST", table);
+            list.SqlDbType = SqlDbType.Structured;
+            list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
+
             builder.Append($"EXEC {_settings.SchemaName}.uspDeleteIncomingEnvelopes @IDLIST;");
 
             foreach (var error in errors)
@@ -144,7 +147,7 @@ namespace Jasper.SqlServer.Persistence
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
                 await conn.OpenAsync();
-
+                cmd.Connection = conn;
                 await cmd.ExecuteNonQueryAsync();
             }
         }
@@ -165,7 +168,7 @@ namespace Jasper.SqlServer.Persistence
             {
                 await conn.OpenAsync();
 
-                var cmd = conn.CreateCommand($"select body, explanation, exception_text, exception_type, exception_message, source, message_type from {_settings.SchemaName}.{DeadLetterTable} where id = @id");
+                var cmd = conn.CreateCommand($"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {_settings.SchemaName}.{DeadLetterTable} where id = @id");
                 cmd.AddNamedParameter("id", id, SqlDbType.UniqueIdentifier);
 
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -181,7 +184,8 @@ namespace Jasper.SqlServer.Persistence
                         ExceptionType = await reader.GetFieldValueAsync<string>(3),
                         ExceptionMessage = await reader.GetFieldValueAsync<string>(4),
                         Source = await reader.GetFieldValueAsync<string>(5),
-                        MessageType = await reader.GetFieldValueAsync<string>(6)
+                        MessageType = await reader.GetFieldValueAsync<string>(6),
+                        Id = await reader.GetFieldValueAsync<Guid>(7)
                     };
 
                     return report;

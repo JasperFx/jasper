@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -20,8 +21,6 @@ namespace Jasper.SqlServer.Tests.Persistence
 
 
         /*
-         * DeleteIncomingEnvelopes
-         * DeleteOutgoingEnvelopes
          * MoveToDeadLetterStorage
          * ScheduleExecution
          * LoadDeadLetterEnvelope
@@ -183,6 +182,82 @@ namespace Jasper.SqlServer.Tests.Persistence
             stored.Any(x => x.Id == list[3].Id).ShouldBeFalse();
             stored.Any(x => x.Id == list[7].Id).ShouldBeFalse();
 
+        }
+
+        [Fact]
+        public async Task move_to_dead_letter_storage()
+        {
+            var list = new List<Envelope>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var envelope = ObjectMother.Envelope();
+                envelope.Status = TransportConstants.Incoming;
+
+                list.Add(envelope);
+            }
+
+            await thePersistor.StoreIncoming(list.ToArray());
+
+
+            var ex = new DivideByZeroException("Kaboom!");
+
+            var report2 = new ErrorReport(list[2], ex);
+            var report3 = new ErrorReport(list[3], ex);
+            var report4 = new ErrorReport(list[4], ex);
+
+            await thePersistor.MoveToDeadLetterStorage(new ErrorReport[] {report2, report3, report4});
+
+            var stored = thePersistor.AllIncomingEnvelopes();
+
+            stored.Count.ShouldBe(7);
+
+            stored.Any(x => x.Id == list[2].Id).ShouldBeFalse();
+            stored.Any(x => x.Id == list[3].Id).ShouldBeFalse();
+            stored.Any(x => x.Id == list[4].Id).ShouldBeFalse();
+
+
+
+
+        }
+
+        [Fact]
+        public async Task load_dead_letter_envelope()
+        {
+            var list = new List<Envelope>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var envelope = ObjectMother.Envelope();
+                envelope.Status = TransportConstants.Incoming;
+
+                list.Add(envelope);
+            }
+
+            await thePersistor.StoreIncoming(list.ToArray());
+
+
+            var ex = new DivideByZeroException("Kaboom!");
+
+            var report2 = new ErrorReport(list[2], ex);
+            var report3 = new ErrorReport(list[3], ex);
+            var report4 = new ErrorReport(list[4], ex);
+
+            await thePersistor.MoveToDeadLetterStorage(new ErrorReport[] {report2, report3, report4});
+
+
+            var stored = await thePersistor.LoadDeadLetterEnvelope(report2.Id);
+
+            stored.ShouldNotBeNull();
+
+            stored.ExceptionMessage.ShouldBe(report2.ExceptionMessage);
+            stored.Id.ShouldBe(report2.Id);
+            stored.ExceptionText.ShouldBe(report2.ExceptionText);
+            stored.ExceptionType.ShouldBe(report2.ExceptionType);
+            stored.Explanation.ShouldBe(report2.Explanation);
+            stored.MessageType.ShouldBe(report2.MessageType);
+            stored.RawData.ShouldBe(report2.RawData);
+            stored.Source.ShouldBe(report2.Source);
         }
     }
 }

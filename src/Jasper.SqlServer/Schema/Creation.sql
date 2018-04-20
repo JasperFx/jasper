@@ -24,12 +24,12 @@ create table %SCHEMA%.jasper_dead_letters
 	id uniqueidentifier not null
 		primary key,
 
-  source VARCHAR,
-  message_type VARCHAR,
-  explanation VARCHAR,
-  exception_text VARCHAR,
-  exception_type VARCHAR,
-  exception_message VARCHAR,
+  source VARCHAR(100),
+  message_type VARCHAR(250),
+  explanation VARCHAR(250),
+  exception_text VARCHAR(MAX),
+  exception_type VARCHAR(250),
+  exception_message VARCHAR(250),
 
 	body varbinary(max) not null
 );
