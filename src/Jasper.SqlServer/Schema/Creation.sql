@@ -34,6 +34,15 @@ create table %SCHEMA%.jasper_dead_letters
 	body varbinary(max) not null
 );
 
+IF NOT EXISTS(SELECT * FROM sys.table_types WHERE name = 'EnvelopeIdList')
+BEGIN
+    CREATE TYPE %SCHEMA%.EnvelopeIdList AS TABLE(ID UNIQUEIDENTIFIER)
+END
+
+
+
+
+
 
 
 

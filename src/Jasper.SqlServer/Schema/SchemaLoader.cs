@@ -19,6 +19,7 @@ namespace Jasper.SqlServer.Schema
 
         public static string ToCreationScript(string schema)
         {
+            // TODO -- more here
             return toScript("Creation.sql", schema);
         }
 
@@ -37,37 +38,51 @@ namespace Jasper.SqlServer.Schema
 
         public void DropAll()
         {
-            var sql = ToDropScript(SchemaName);
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
 
+                execute(conn, "Drop.sql");
+            }
+        }
+
+        private void execute(SqlConnection conn, string filename)
+        {
+            var sql = toScript(filename, SchemaName);
+
+            try
+            {
                 conn.CreateCommand(sql).ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("Failure trying to execute:\n\n" + sql, e);
             }
         }
 
         public void CreateAll()
         {
-            var sql = ToCreationScript(SchemaName);
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
 
-                conn.CreateCommand(sql).ExecuteNonQuery();
+                execute(conn, "Creation.sql");
+                execute(conn, "Functions.sql");
+
             }
         }
 
         public void RecreateAll()
         {
-            var drop = ToDropScript(SchemaName);
-            var create = ToCreationScript(SchemaName);
-            var sql = drop + create;
-
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
 
-                conn.CreateCommand(sql).ExecuteNonQuery();
+                execute(conn, "Drop.sql");
+                execute(conn, "Creation.sql");
+                execute(conn, "uspDeleteIncomingEnvelopes.sql");
+                execute(conn, "uspDeleteOutgoingEnvelopes.sql");
+                execute(conn, "uspDiscardAndReassignOutgoing.sql");
             }
         }
     }

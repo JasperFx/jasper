@@ -32,7 +32,7 @@ namespace Jasper.SqlServer.Util
             }
         }
 
-        public static SqlParameter AddParameter(this SqlCommand command, object value, DbType? dbType = null)
+        public static SqlParameter AddParameter(this SqlCommand command, object value, SqlDbType? dbType = null)
         {
             var name = "arg" + command.Parameters.Count;
 
@@ -40,18 +40,24 @@ namespace Jasper.SqlServer.Util
             parameter.ParameterName = name;
             parameter.Value = value ?? DBNull.Value;
 
-            if (dbType.HasValue) parameter.DbType = dbType.Value;
+            if (dbType.HasValue) parameter.SqlDbType = dbType.Value;
 
             command.Parameters.Add(parameter);
 
             return parameter;
         }
 
-        public static SqlParameter AddNamedParameter(this SqlCommand command, string name, object value)
+        public static SqlParameter AddNamedParameter(this SqlCommand command, string name, object value, SqlDbType? type = null)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
             parameter.Value = value ?? DBNull.Value;
+
+            if (type.HasValue)
+            {
+                parameter.SqlDbType = type.Value;
+            }
+
             command.Parameters.Add(parameter);
 
             return parameter;
@@ -122,62 +128,6 @@ namespace Jasper.SqlServer.Util
             cmd.CommandText = command;
 
             return cmd;
-        }
-    }
-
-    public class DbObjectName
-    {
-        /// <summary>
-        ///     Create a DbObjectName with Schema = "public"
-        /// </summary>
-        /// <param name="name"></param>
-        public DbObjectName(string name) : this("public", name)
-        {
-        }
-
-        public DbObjectName(string schema, string name)
-        {
-            Schema = schema;
-            Name = name;
-            QualifiedName = $"{Schema}.{Name}";
-        }
-
-        public string OwnerName => Schema == "dbo" ? Name : QualifiedName;
-
-        public string Schema { get; }
-        public string Name { get; }
-        public string QualifiedName { get; }
-
-        public DbObjectName ToTempCopyTable()
-        {
-            return new DbObjectName(Schema, Name + "_temp");
-        }
-
-        public override string ToString()
-        {
-            return QualifiedName;
-        }
-
-        protected bool Equals(DbObjectName other)
-        {
-            return GetType() == other.GetType() &&
-                   string.Equals(QualifiedName, other.QualifiedName, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((DbObjectName) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (GetType().GetHashCode() * 397) ^ (QualifiedName?.GetHashCode() ?? 0);
-            }
         }
     }
 }

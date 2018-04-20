@@ -29,11 +29,8 @@ namespace Jasper.Messaging.Runtime
             MessageType = envelope.MessageType;
             Source = envelope.Source;
             Id = envelope.Id;
-            ContentType = envelope.ContentType;
-
         }
 
-        public string ContentType { get; set; }
 
         public Guid Id { get; set; }
 

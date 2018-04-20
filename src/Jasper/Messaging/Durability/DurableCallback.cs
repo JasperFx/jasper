@@ -39,6 +39,7 @@ namespace Jasper.Messaging.Durability
         {
             try
             {
+                envelope.Attempts++;
                 await _persistor.IncrementIncomingEnvelopeAttempts(envelope);
             }
             catch (Exception)
