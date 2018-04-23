@@ -154,11 +154,27 @@ namespace Jasper.SqlServer.Persistence
 
         public async Task ScheduleExecution(Envelope[] envelopes)
         {
+            var cmd = new SqlCommand();
+            var builder = new CommandBuilder(cmd);
+
+            foreach (var envelope in envelopes)
+            {
+                var id = builder.AddParameter(envelope.Id, SqlDbType.UniqueIdentifier);
+                var time = builder.AddParameter(envelope.ExecutionTime.Value, SqlDbType.DateTimeOffset);
+                var attempts = builder.AddParameter(envelope.Attempts, SqlDbType.Int);
+
+                builder.Append($"update {_settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName} where id = @{id.ParameterName};");
+            }
+
+            builder.Apply();
+
+
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
                 await conn.OpenAsync();
 
-                throw new NotImplementedException();
+                cmd.Connection = conn;
+                await cmd.ExecuteNonQueryAsync();
             }
         }
 

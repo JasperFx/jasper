@@ -21,9 +21,6 @@ namespace Jasper.SqlServer.Tests.Persistence
 
 
         /*
-         * MoveToDeadLetterStorage
-         * ScheduleExecution
-         * LoadDeadLetterEnvelope
          * IncrementIncomingEnvelopeAttempts
          * DiscardAndReassignOutgoing
          */
@@ -258,6 +255,38 @@ namespace Jasper.SqlServer.Tests.Persistence
             stored.MessageType.ShouldBe(report2.MessageType);
             stored.RawData.ShouldBe(report2.RawData);
             stored.Source.ShouldBe(report2.Source);
+        }
+
+        [Fact]
+        public async Task schedule_execution()
+        {
+            var list = new List<Envelope>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var envelope = ObjectMother.Envelope();
+                envelope.Status = TransportConstants.Incoming;
+
+                list.Add(envelope);
+            }
+
+            await thePersistor.StoreIncoming(list.ToArray());
+
+
+            list[5].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
+
+            list[7].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
+            list[9].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
+
+            await thePersistor.ScheduleExecution(new Envelope[] {list[5], list[7], list[9]});
+
+            var stored = thePersistor.AllIncomingEnvelopes();
+            stored.Count(x => x.Status == TransportConstants.Incoming).ShouldBe(7);
+            stored.Count(x => x.Status == TransportConstants.Scheduled).ShouldBe(3);
+
+            stored.Single(x => x.Id == list[5].Id).ExecutionTime.HasValue.ShouldBeTrue();
+            stored.Single(x => x.Id == list[7].Id).ExecutionTime.HasValue.ShouldBeTrue();
+            stored.Single(x => x.Id == list[9].Id).ExecutionTime.HasValue.ShouldBeTrue();
         }
     }
 }

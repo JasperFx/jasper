@@ -42,7 +42,7 @@ namespace Jasper.SqlServer.Persistence
 
                     if (!reader.IsDBNull(3))
                     {
-                        var raw = reader.GetFieldValue<DateTime>(3);
+                        var raw = reader.GetFieldValue<DateTimeOffset>(3);
 
 
                         envelope.ExecutionTime = raw.ToUniversalTime();
