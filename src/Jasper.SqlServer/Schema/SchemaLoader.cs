@@ -60,14 +60,26 @@ namespace Jasper.SqlServer.Schema
             }
         }
 
+        private readonly string[] _creationOrder = new string[]
+        {
+            "Creation.sql",
+            "uspDeleteIncomingEnvelopes.sql",
+            "uspDeleteOutgoingEnvelopes.sql",
+            "uspDiscardAndReassignOutgoing.sql",
+            "uspMarkIncomingOwnership.sql",
+            "uspMarkOutgoingOwnership.sql"
+        };
+
         public void CreateAll()
         {
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
 
-                execute(conn, "Creation.sql");
-                execute(conn, "Functions.sql");
+                foreach (var file in _creationOrder)
+                {
+                    execute(conn, file);
+                }
 
             }
         }
@@ -79,10 +91,13 @@ namespace Jasper.SqlServer.Schema
                 conn.Open();
 
                 execute(conn, "Drop.sql");
-                execute(conn, "Creation.sql");
-                execute(conn, "uspDeleteIncomingEnvelopes.sql");
-                execute(conn, "uspDeleteOutgoingEnvelopes.sql");
-                execute(conn, "uspDiscardAndReassignOutgoing.sql");
+
+                foreach (var file in _creationOrder)
+                {
+                    execute(conn, file);
+                }
+
+
             }
         }
     }

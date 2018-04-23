@@ -67,7 +67,7 @@ namespace Jasper.SqlServer.Persistence
             }
         }
 
-        public static DataTable BuildIdTable(Envelope[] envelopes)
+        public static DataTable BuildIdTable(IEnumerable<Envelope> envelopes)
         {
             var table = new DataTable();
             table.Columns.Add(new DataColumn("ID", typeof(Guid)));
