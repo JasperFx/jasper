@@ -358,5 +358,16 @@ values
             builder.Apply();
             return cmd;
         }
+
+        public void ClearAllStoredMessages()
+        {
+            using (var conn = new SqlConnection(_settings.ConnectionString))
+            {
+                conn.Open();
+
+                conn.CreateCommand(
+                    $"delete from {_settings.SchemaName}.{IncomingTable};delete from {_settings.SchemaName}.{OutgoingTable};delete from {_settings.SchemaName}.{DeadLetterTable}");
+            }
+        }
     }
 }
