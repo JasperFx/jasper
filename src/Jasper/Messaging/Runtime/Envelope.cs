@@ -39,7 +39,7 @@ namespace Jasper.Messaging.Runtime
         /// Number of times that Jasper has tried to process this message. Will
         /// reflect the current attempt number
         /// </summary>
-        public int Attempts { get; internal set; }
+        public int Attempts { get; set; }
 
         public Envelope()
         {

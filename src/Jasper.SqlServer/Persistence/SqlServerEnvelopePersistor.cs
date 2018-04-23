@@ -30,7 +30,7 @@ namespace Jasper.SqlServer.Persistence
                 conn.Open();
 
                 return conn
-                    .CreateCommand($"select body, status, owner_id, execution_time from {_settings.SchemaName}.{IncomingTable}")
+                    .CreateCommand($"select body, status, owner_id, execution_time, attempts from {_settings.SchemaName}.{IncomingTable}")
                     .LoadEnvelopes();
 
             }

@@ -24,7 +24,7 @@ create table %SCHEMA%.jasper_dead_letters
 	id uniqueidentifier not null
 		primary key,
 
-  source VARCHAR(100),
+  source VARCHAR(250),
   message_type VARCHAR(250),
   explanation VARCHAR(250),
   exception_text VARCHAR(MAX),

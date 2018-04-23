@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Reflection;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Persistence;
@@ -24,6 +25,23 @@ namespace Jasper.SqlServer.Tests.Persistence
          * IncrementIncomingEnvelopeAttempts
          * DiscardAndReassignOutgoing
          */
+
+        [Fact]
+        public async Task increment_the_attempt_count_of_incoming_envelope()
+        {
+            var envelope = ObjectMother.Envelope();
+            envelope.Status = TransportConstants.Incoming;
+
+            await thePersistor.StoreIncoming(envelope);
+
+            var prop = ReflectionHelper.GetProperty<Envelope>(x => x.Attempts);
+            prop.SetValue(envelope, 3);
+
+            await thePersistor.IncrementIncomingEnvelopeAttempts(envelope);
+
+            var stored = thePersistor.AllIncomingEnvelopes().Single();
+            stored.Attempts.ShouldBe(3);
+        }
 
         [Fact]
         public async Task store_a_single_incoming_envelope()

@@ -40,6 +40,8 @@ namespace Jasper.SqlServer.Persistence
                     envelope.OwnerId = reader.GetFieldValue<int>(2);
 
 
+
+
                     if (!reader.IsDBNull(3))
                     {
                         var raw = reader.GetFieldValue<DateTimeOffset>(3);
@@ -48,8 +50,9 @@ namespace Jasper.SqlServer.Persistence
                         envelope.ExecutionTime = raw.ToUniversalTime();
                     }
 
-                    // Attempts will come in from the Envelope.Read
-                    //envelope.Attempts = reader.GetFieldValue<int>(4);
+                    if (reader.FieldCount >= 5)
+                        envelope.Attempts = reader.GetFieldValue<int>(4);
+
 
                     list.Add(envelope);
                 }
