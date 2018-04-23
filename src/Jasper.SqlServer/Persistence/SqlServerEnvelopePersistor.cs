@@ -297,8 +297,8 @@ values
 
                 await conn.CreateCommand(
                         $"EXEC {_settings.SchemaName}.uspDiscardAndReassignOutgoing @discards, @reassigned, @owner")
-                    .With("discards", discardTable, SqlDbType.Structured)
-                    .With("reassigned", discardTable, SqlDbType.Structured)
+                    .With("discards", discardTable, SqlDbType.Structured, $"{_settings.SchemaName}.EnvelopeIdList")
+                    .With("reassigned", reassignedTable, SqlDbType.Structured,$"{_settings.SchemaName}.EnvelopeIdList")
                     .With("owner", nodeId, SqlDbType.Int).ExecuteNonQueryAsync();
 
 

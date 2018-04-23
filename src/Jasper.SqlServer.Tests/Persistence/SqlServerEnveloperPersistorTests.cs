@@ -21,11 +21,6 @@ namespace Jasper.SqlServer.Tests.Persistence
             });
 
 
-        /*
-         * IncrementIncomingEnvelopeAttempts
-         * DiscardAndReassignOutgoing
-         */
-
         [Fact]
         public async Task increment_the_attempt_count_of_incoming_envelope()
         {
@@ -168,6 +163,39 @@ namespace Jasper.SqlServer.Tests.Persistence
             stored.Any(x => x.Id == list[2].Id).ShouldBeFalse();
             stored.Any(x => x.Id == list[3].Id).ShouldBeFalse();
             stored.Any(x => x.Id == list[7].Id).ShouldBeFalse();
+
+        }
+
+        [Fact]
+        public async Task discard_and_reassign_outgoing()
+        {
+            var list = new List<Envelope>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                var envelope = ObjectMother.Envelope();
+                envelope.Status = TransportConstants.Outgoing;
+
+                list.Add(envelope);
+            }
+
+            await thePersistor.StoreOutgoing(list.ToArray(), 111);
+
+            var toDiscard = new Envelope[] {list[2], list[3], list[7]};
+            var toReassign = new Envelope[] {list[1], list[4], list[6]};
+
+            await thePersistor.DiscardAndReassignOutgoing(toDiscard, toReassign, 444);
+
+            var stored = thePersistor.AllOutgoingEnvelopes();
+            stored.Count.ShouldBe(7);
+
+            stored.Any(x => x.Id == list[2].Id).ShouldBeFalse();
+            stored.Any(x => x.Id == list[3].Id).ShouldBeFalse();
+            stored.Any(x => x.Id == list[7].Id).ShouldBeFalse();
+
+            stored.Single(x => x.Id == list[1].Id).OwnerId.ShouldBe(444);
+            stored.Single(x => x.Id == list[4].Id).OwnerId.ShouldBe(444);
+            stored.Single(x => x.Id == list[6].Id).OwnerId.ShouldBe(444);
 
         }
 

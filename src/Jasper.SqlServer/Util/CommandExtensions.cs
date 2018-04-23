@@ -73,13 +73,18 @@ namespace Jasper.SqlServer.Util
             return command;
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, object value, SqlDbType dbType)
+        public static SqlCommand With(this SqlCommand command, string name, object value, SqlDbType dbType, string parameterTypeName = null)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
             parameter.Value = value ?? DBNull.Value;
             parameter.SqlDbType = dbType;
             command.Parameters.Add(parameter);
+
+            if (parameterTypeName.IsNotEmpty())
+            {
+                parameter.TypeName = parameterTypeName;
+            }
 
             return command;
         }
