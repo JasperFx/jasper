@@ -7,7 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Settings
 {
-    public class JasperSettings
+    public interface IHasRegistryParent
+    {
+        JasperRegistry Parent { get; }
+    }
+
+    public class JasperSettings : IHasRegistryParent
     {
         private readonly IList<Action<WebHostBuilderContext>> _configActions = new List<Action<WebHostBuilderContext>>();
 
@@ -19,6 +24,11 @@ namespace Jasper.Settings
         public JasperSettings(JasperRegistry parent)
         {
             _parent = parent;
+        }
+
+        JasperRegistry IHasRegistryParent.Parent
+        {
+            get { return _parent; }
         }
 
         internal bool ApplyingExtensions { get; set; }

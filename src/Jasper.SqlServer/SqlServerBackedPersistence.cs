@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Configuration;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Persistence;
 using Jasper.SqlServer.Resiliency;
@@ -20,7 +21,7 @@ namespace Jasper.SqlServer
             registry.Settings.Require<SqlServerSettings>();
 
             registry.Services.AddSingleton<IDurableMessagingFactory, SqlServerBackedDurableMessagingFactory>();
-
+            registry.Services.AddTransient<IEnvelopePersistor, SqlServerEnvelopePersistor>();
 
             registry.Services.AddSingleton<IHostedService, SchedulingAgent>();
 

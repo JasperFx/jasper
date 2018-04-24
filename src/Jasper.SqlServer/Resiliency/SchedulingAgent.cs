@@ -103,27 +103,18 @@ namespace Jasper.SqlServer.Resiliency
         }
 
 
-        // TODO -- use MSSQL syntax for advisory lock
         protected override async Task releaseNodeLockAndClose()
         {
-            await _connection.CreateCommand().Sql("SELECT pg_advisory_unlock(:id)")
-                .Sql("SELECT pg_advisory_lock(:id)")
-                .With("id", settings.UniqueNodeId, SqlDbType.Int)
-                .ExecuteNonQueryAsync(CancellationToken.None);
+            await _connection.ReleaseGlobalLock(settings.UniqueNodeId);
 
             _connection.Close();
             _connection.Dispose();
             _connection = null;
         }
 
-        // TODO -- use MSSQL syntax for advisory lock
         private Task retrieveLockForThisNode()
         {
-            return _connection
-                .CreateCommand()
-                .Sql("SELECT pg_advisory_lock(:id)")
-                .With("id", settings.UniqueNodeId, SqlDbType.Int)
-                .ExecuteNonQueryAsync(settings.Cancellation);
+            return _connection.GetGlobalLock(settings.UniqueNodeId);
         }
     }
 }
