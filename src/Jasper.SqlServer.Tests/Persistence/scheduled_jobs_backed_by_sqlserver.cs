@@ -26,7 +26,8 @@ namespace Jasper.SqlServer.Tests.Persistence
             theRuntime?.Dispose();
         }
 
-        [Fact]
+        [Fact] // This thing is not super, duper reliable because of the timing. Needs tlove to watch
+        // it in a smarter way
         public async Task run_scheduled_job_locally()
         {
             var message1 = new ScheduledMessage{Id = 1};

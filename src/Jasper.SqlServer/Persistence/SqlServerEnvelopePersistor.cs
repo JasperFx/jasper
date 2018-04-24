@@ -163,7 +163,7 @@ namespace Jasper.SqlServer.Persistence
                 var time = builder.AddParameter(envelope.ExecutionTime.Value, SqlDbType.DateTimeOffset);
                 var attempts = builder.AddParameter(envelope.Attempts, SqlDbType.Int);
 
-                builder.Append($"update {_settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName} where id = @{id.ParameterName};");
+                builder.Append($"update {_settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
             }
 
             builder.Apply();

@@ -52,6 +52,7 @@ namespace Jasper.Messaging.Durability
 
         public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
         {
+            envelope.OwnerId = TransportConstants.AnyNode;
             envelope.ExecutionTime = time;
             envelope.Status = TransportConstants.Scheduled;
             _retries.ScheduleExecution(envelope);

@@ -51,6 +51,7 @@ namespace Jasper.SqlServer.Persistence
 
         public Task ScheduleJob(Envelope envelope)
         {
+            envelope.OwnerId = TransportConstants.AnyNode;
             envelope.Status = TransportConstants.Scheduled;
 
             if (envelope.Message == null)
