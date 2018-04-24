@@ -39,19 +39,19 @@ namespace Jasper.Messaging.Durability
 
             _deleteIncoming = new ActionBlock<Envelope[]>(deleteIncoming);
             _deleteIncomingBatching =
-                new BatchingBlock<Envelope>(250.Milliseconds(), _deleteIncoming, settings.Cancellation);
+                new BatchingBlock<Envelope>(100.Milliseconds(), _deleteIncoming, settings.Cancellation);
 
             _deleteOutgoing = new ActionBlock<Envelope[]>(deleteOutgoing);
             _deleteOutgoingBatching =
-                new BatchingBlock<Envelope>(250.Milliseconds(), _deleteOutgoing, settings.Cancellation);
+                new BatchingBlock<Envelope>(100.Milliseconds(), _deleteOutgoing, settings.Cancellation);
 
             _logErrorReport = new ActionBlock<ErrorReport[]>(logErrorReports);
             _logErrorReportBatching =
-                new BatchingBlock<ErrorReport>(250.Milliseconds(), _logErrorReport, settings.Cancellation);
+                new BatchingBlock<ErrorReport>(100.Milliseconds(), _logErrorReport, settings.Cancellation);
 
             _scheduleIncoming = new ActionBlock<Envelope[]>(scheduleIncoming);
             _scheduleIncomingBatching =
-                new BatchingBlock<Envelope>(250.Milliseconds(), _scheduleIncoming, settings.Cancellation);
+                new BatchingBlock<Envelope>(100.Milliseconds(), _scheduleIncoming, settings.Cancellation);
         }
 
         public void Dispose()

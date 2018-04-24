@@ -1,4 +1,6 @@
 ﻿using System;
+using Jasper.Configuration;
+using Jasper.SqlServer.Persistence;
 
 namespace Jasper.SqlServer
 {
@@ -6,8 +8,11 @@ namespace Jasper.SqlServer
     /// Marks this handler or http action method as using
     /// a Jasper-handled transaction lifecycle
     /// </summary>
-    public class SqlTransactionAttribute : Attribute
+    public class SqlTransactionAttribute : ModifyChainAttribute
     {
-
+        public override void Modify(IChain chain)
+        {
+            chain.Middleware.Add(new SqlTransactionFrame());
+        }
     }
 }

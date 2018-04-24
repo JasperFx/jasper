@@ -127,6 +127,15 @@ namespace Jasper.SqlServer.Util
             return command;
         }
 
+        public static SqlCommand CreateCommand(this SqlConnection conn, SqlTransaction tx, string command)
+        {
+            var cmd = conn.CreateCommand();
+            cmd.Transaction = tx;
+            cmd.CommandText = command;
+
+            return cmd;
+        }
+
         public static SqlCommand CreateCommand(this SqlConnection conn, string command)
         {
             var cmd = conn.CreateCommand();
