@@ -34,9 +34,25 @@ namespace Jasper.SqlServer.Tests
         }
 
         [Fact]
+        public void drop_then_create_different_schema()
+        {
+            var loader = new SchemaLoader(ConnectionSource.ConnectionString, "receiver");
+            loader.DropAll();
+
+            loader.CreateAll();
+        }
+
+        [Fact]
         public void recreate_all_tables()
         {
             var loader = new SchemaLoader(ConnectionSource.ConnectionString);
+            loader.RecreateAll();
+        }
+
+        [Fact]
+        public void recreate_all_tables_in_a_different_schema()
+        {
+            var loader = new SchemaLoader(ConnectionSource.ConnectionString, "sender");
             loader.RecreateAll();
         }
     }

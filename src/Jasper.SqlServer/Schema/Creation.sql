@@ -34,7 +34,7 @@ create table %SCHEMA%.jasper_dead_letters
 	body varbinary(max) not null
 );
 
-IF NOT EXISTS(SELECT * FROM sys.table_types WHERE name = 'EnvelopeIdList')
+IF NOT EXISTS(SELECT * FROM sys.table_types t INNER JOIN sys.schemas s ON s.schema_id = t.schema_id WHERE t.name = 'EnvelopeIdList' AND s.name = '%SCHEMA%' )
 BEGIN
     CREATE TYPE %SCHEMA%.EnvelopeIdList AS TABLE(ID UNIQUEIDENTIFIER)
 END

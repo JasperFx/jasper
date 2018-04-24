@@ -15,6 +15,12 @@ namespace Jasper.SqlServer.Schema
             _connectionString = connectionString;
         }
 
+        public SchemaLoader(string connectionString, string schemaName)
+        {
+            _connectionString = connectionString;
+            SchemaName = schemaName;
+        }
+
         public string SchemaName { get; set; } = "dbo";
 
         public static string ToCreationScript(string schema)
@@ -76,6 +82,8 @@ namespace Jasper.SqlServer.Schema
             {
                 conn.Open();
 
+                buildSchemaIfNotExists(conn);
+
                 foreach (var file in _creationOrder)
                 {
                     execute(conn, file);
@@ -92,12 +100,25 @@ namespace Jasper.SqlServer.Schema
 
                 execute(conn, "Drop.sql");
 
+                buildSchemaIfNotExists(conn);
+
                 foreach (var file in _creationOrder)
                 {
                     execute(conn, file);
                 }
 
 
+            }
+        }
+
+        private void buildSchemaIfNotExists(SqlConnection conn)
+        {
+            var count = conn.CreateCommand("select count(*) from sys.schemas where name = @name")
+                .With("name", SchemaName).ExecuteScalar().As<int>();
+
+            if (count == 0)
+            {
+                conn.CreateCommand($"CREATE SCHEMA [{SchemaName}] AUTHORIZATION [dbo]").ExecuteNonQuery();
             }
         }
     }

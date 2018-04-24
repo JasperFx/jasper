@@ -1,5 +1,5 @@
 CREATE PROCEDURE %SCHEMA%.uspMarkOutgoingOwnership
-    @IDLIST EnvelopeIdList READONLY,
+    @IDLIST %SCHEMA%.EnvelopeIdList READONLY,
     @owner INT
 AS
 

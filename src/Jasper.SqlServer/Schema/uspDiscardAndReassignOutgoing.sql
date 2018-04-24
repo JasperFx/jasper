@@ -1,6 +1,6 @@
 CREATE PROCEDURE %SCHEMA%.uspDiscardAndReassignOutgoing
-    @DISCARDS EnvelopeIdList READONLY,
-    @REASSIGNED EnvelopeIdList READONLY,
+    @DISCARDS %SCHEMA%.EnvelopeIdList READONLY,
+    @REASSIGNED %SCHEMA%.EnvelopeIdList READONLY,
     @OWNERID INT
 
 AS
