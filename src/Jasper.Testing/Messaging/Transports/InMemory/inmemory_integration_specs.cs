@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging;
+using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Testing.Messaging.Runtime;
 using Microsoft.Extensions.DependencyInjection;

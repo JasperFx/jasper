@@ -7,6 +7,7 @@ using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging;
 using Marten;
 using Shouldly;

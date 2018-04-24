@@ -1,4 +1,5 @@
 ﻿using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Testing.Messaging;
 using Marten;

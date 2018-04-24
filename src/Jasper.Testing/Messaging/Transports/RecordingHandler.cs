@@ -1,4 +1,5 @@
 ﻿using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging.Runtime;
 
 namespace Jasper.Testing.Messaging.Transports

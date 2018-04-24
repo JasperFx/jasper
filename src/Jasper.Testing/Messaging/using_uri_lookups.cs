@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Runtime.Routing;
+using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;

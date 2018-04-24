@@ -9,6 +9,7 @@ using Jasper.Marten.Tests.Persistence;
 using Jasper.Marten.Tests.Persistence.Resiliency;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Testing.Messaging;
 using Jasper.Util;

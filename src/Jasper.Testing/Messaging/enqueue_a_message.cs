@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Messaging;
+using Jasper.Messaging.Tracking;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Messaging.Compilation;
 using Jasper.Testing.Messaging.Runtime;

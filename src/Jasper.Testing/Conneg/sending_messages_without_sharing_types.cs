@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;

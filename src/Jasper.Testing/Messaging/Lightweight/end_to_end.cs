@@ -6,6 +6,7 @@ using Baseline.Dates;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
+using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Testing.Messaging.Runtime;
@@ -196,37 +197,5 @@ namespace Jasper.Testing.Messaging.Lightweight
         }
     }
 
-    public interface ITracker
-    {
-        void Check(Envelope envelope, object message);
-    }
 
-    public class CountTracker<T> : ITracker
-    {
-        private readonly int _expected;
-        private readonly List<ITracker> _trackers;
-        private readonly TaskCompletionSource<bool> _completion = new TaskCompletionSource<bool>();
-        private int _count = 0;
-
-        public CountTracker(int expected, List<ITracker> trackers)
-        {
-            _expected = expected;
-            _trackers = trackers;
-        }
-
-        public Task<bool> Completion => _completion.Task;
-        public void Check(Envelope envelope, object message)
-        {
-            if (message is T)
-            {
-                Interlocked.Increment(ref _count);
-
-                if (_count >= _expected)
-                {
-                    _completion.TrySetResult(true);
-                    _trackers.Remove(this);
-                }
-            }
-        }
-    }
 }

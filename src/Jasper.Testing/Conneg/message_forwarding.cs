@@ -6,6 +6,7 @@ using Jasper.Conneg;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Serializers;
+using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;

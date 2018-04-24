@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Http;
+using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging.Lightweight;
 using Xunit;
 

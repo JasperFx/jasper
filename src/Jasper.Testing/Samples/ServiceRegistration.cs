@@ -1,4 +1,5 @@
-﻿using Jasper.Testing.Messaging;
+﻿using Jasper.Messaging.Tracking;
+using Jasper.Testing.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

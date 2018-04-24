@@ -5,6 +5,7 @@ using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
+using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Testing;
 using Jasper.Testing.Messaging;
