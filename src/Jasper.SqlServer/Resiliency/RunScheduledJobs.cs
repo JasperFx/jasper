@@ -45,10 +45,10 @@ namespace Jasper.SqlServer.Resiliency
         {
             var utcNow = DateTimeOffset.UtcNow;;
 
-            await ExecuteAtTime(conn, utcNow, tx);
+            await ExecuteAtTime(conn, tx, utcNow);
         }
 
-        public async Task<List<Envelope>> ExecuteAtTime(SqlConnection conn, DateTimeOffset utcNow, SqlTransaction tx)
+        public async Task<List<Envelope>> ExecuteAtTime(SqlConnection conn, SqlTransaction tx, DateTimeOffset utcNow)
         {
             if (!await conn.TryGetGlobalTxLock(tx, ScheduledJobLockId))
             {
@@ -58,11 +58,11 @@ namespace Jasper.SqlServer.Resiliency
             var readyToExecute = await conn
                 .CreateCommand(_findReadyToExecuteJobs)
                 .With("time", utcNow, SqlDbType.DateTimeOffset)
-                .ExecuteToEnvelopes();
+                .ExecuteToEnvelopes(tx);
 
             if (!readyToExecute.Any()) return readyToExecute;
 
-            await markOwnership(conn, readyToExecute);
+            await markOwnership(conn, tx, readyToExecute);
 
             tx.Commit();
 
@@ -78,14 +78,17 @@ namespace Jasper.SqlServer.Resiliency
             return readyToExecute;
         }
 
-        private async Task markOwnership(SqlConnection conn, List<Envelope> incoming)
+        private async Task markOwnership(SqlConnection conn, SqlTransaction tx, List<Envelope> incoming)
         {
             var cmd = conn.CreateCommand($"{_mssqlSettings.SchemaName}.uspMarkIncomingOwnership");
+            cmd.Transaction = tx;
             cmd.CommandType = CommandType.StoredProcedure;
             var list = cmd.Parameters.AddWithValue("IDLIST", SqlServerEnvelopePersistor.BuildIdTable(incoming));
             list.SqlDbType = SqlDbType.Structured;
             list.TypeName = $"{_mssqlSettings.SchemaName}.EnvelopeIdList";
             cmd.Parameters.AddWithValue("owner", _settings.UniqueNodeId).SqlDbType = SqlDbType.Int;
+
+
 
             await cmd.ExecuteNonQueryAsync();
         }

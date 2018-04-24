@@ -3,4 +3,4 @@ CREATE PROCEDURE %SCHEMA%.uspMarkIncomingOwnership
     @owner INT
 AS
 
-    UPDATE %SCHEMA%.jasper_incoming_envelopes SET owner_id = @owner WHERE id IN (SELECT ID FROM @IDLIST);
+    UPDATE %SCHEMA%.jasper_incoming_envelopes SET owner_id = @owner, status = 'Incoming' WHERE id IN (SELECT ID FROM @IDLIST);

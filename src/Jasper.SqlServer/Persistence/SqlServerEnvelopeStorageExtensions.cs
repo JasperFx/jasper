@@ -8,8 +8,9 @@ namespace Jasper.SqlServer.Persistence
 {
     public static class SqlServerEnvelopeStorageExtensions
     {
-        public static async Task<List<Envelope>> ExecuteToEnvelopes(this SqlCommand command)
+        public static async Task<List<Envelope>> ExecuteToEnvelopes(this SqlCommand command, SqlTransaction tx = null)
         {
+            if (tx != null) command.Transaction = tx;
             using (var reader = await command.ExecuteReaderAsync())
             {
                 var list = new List<Envelope>();
@@ -26,8 +27,9 @@ namespace Jasper.SqlServer.Persistence
             }
         }
 
-        public static List<Envelope> LoadEnvelopes(this SqlCommand command)
+        public static List<Envelope> LoadEnvelopes(this SqlCommand command, SqlTransaction tx = null)
         {
+            if (tx != null) command.Transaction = tx;
             using (var reader = command.ExecuteReader())
             {
                 var list = new List<Envelope>();

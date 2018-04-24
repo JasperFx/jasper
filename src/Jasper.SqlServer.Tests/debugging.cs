@@ -1,8 +1,7 @@
 ﻿using System.Data.SqlClient;
-using Jasper.SqlServer.Tests;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Setup
+namespace Jasper.SqlServer.Tests
 {
     public class debugging
     {
