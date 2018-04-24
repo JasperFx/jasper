@@ -50,7 +50,7 @@ namespace Jasper.SqlServer.Resiliency
 
         public async Task<List<Envelope>> ExecuteAtTime(SqlConnection conn, DateTimeOffset utcNow, SqlTransaction tx)
         {
-            if (!await conn.TryGetGlobalTxLock(ScheduledJobLockId))
+            if (!await conn.TryGetGlobalTxLock(tx, ScheduledJobLockId))
             {
                 return null;
             }

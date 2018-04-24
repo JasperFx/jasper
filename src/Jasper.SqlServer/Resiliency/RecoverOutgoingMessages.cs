@@ -61,7 +61,7 @@ namespace Jasper.SqlServer.Resiliency
 
         public async Task Execute(SqlConnection conn, ISchedulingAgent agent, SqlTransaction tx)
         {
-            if (!await conn.TryGetGlobalTxLock(OutgoingMessageLockId))
+            if (!await conn.TryGetGlobalTxLock(tx, OutgoingMessageLockId))
                 return;
 
 

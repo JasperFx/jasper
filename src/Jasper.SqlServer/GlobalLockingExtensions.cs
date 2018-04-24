@@ -3,24 +3,50 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Jasper.SqlServer.Util;
 
 namespace Jasper.SqlServer
 {
     public static class GlobalLockingExtensions
     {
-        public static Task GetGlobalTxLock(this SqlConnection conn, int lockId)
+        public static Task GetGlobalTxLock(this SqlConnection conn, SqlTransaction tx, int lockId)
         {
-            throw new NotImplementedException();
-            //return conn.CreateCommand("SELECT pg_advisory_xact_lock(:id);").With("id", lockId, DbType.Integer).ExecuteNonQueryAsync();
+            return getLock(conn, lockId, "Transaction", tx);
         }
 
-        public static async Task<bool> TryGetGlobalTxLock(this SqlConnection conn, int lockId)
+        private static async Task getLock(SqlConnection conn, int lockId, string owner, SqlTransaction tx)
         {
-            throw new NotImplementedException();
-//            var c = await conn.CreateCommand("SELECT pg_try_advisory_xact_lock(:id);").With("id", lockId, NpgsqlDbType.Integer)
-//                .ExecuteScalarAsync();
-//
-//            return (bool)c;
+            var returnValue = await tryGetLock(conn, lockId, owner, tx);
+
+            if ((int) returnValue < 0)
+            {
+                throw new Exception(String.Format("sp_getapplock failed with errorCode '{0}'",
+                    returnValue));
+            }
+        }
+
+        private static async Task<int> tryGetLock(SqlConnection conn, int lockId, string owner, SqlTransaction tx)
+        {
+            var cmd = conn.CreateCommand("sp_getapplock");
+            cmd.Transaction = tx;
+
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("Resource", lockId.ToString()).SqlDbType = SqlDbType.VarChar;
+            cmd.Parameters.AddWithValue("LockMode", "Exclusive").SqlDbType = SqlDbType.VarChar;
+
+            cmd.Parameters.AddWithValue("LockOwner", owner).SqlDbType = SqlDbType.VarChar;
+            cmd.Parameters.AddWithValue("LockTimeout", 1000);
+
+            SqlParameter returnValue = cmd.Parameters.Add("ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            await cmd.ExecuteNonQueryAsync();
+
+            return (int) returnValue.Value;
+        }
+
+        public static async Task<bool> TryGetGlobalTxLock(this SqlConnection conn, SqlTransaction tx, int lockId)
+        {
+            return (await tryGetLock(conn, lockId, "Transaction", tx)) >= 0;
         }
 
         public class AdvisoryLock
@@ -37,57 +63,28 @@ namespace Jasper.SqlServer
             }
         }
 
-        public static async Task<IList<AdvisoryLock>> GetOpenLocks(this SqlConnection conn)
-        {
-            var sql = @"
-
-select pg_locks.granted,
-       pg_stat_activity.query,
-       pg_stat_activity.query_start
-       from pg_locks
-  JOIN pg_stat_activity
-    on pg_locks.pid = pg_stat_activity.pid
-  WHERE pg_locks.locktype = 'advisory';
-";
-
-            var list = new List<AdvisoryLock>();
-//            using (var reader = await conn.CreateCommand(sql).ExecuteReaderAsync())
-//            {
-//                while (await reader.ReadAsync())
-//                {
-//                    var granted = await reader.GetFieldValueAsync<bool>(0);
-//                    var grant = await reader.GetFieldValueAsync<string>(1);
-//                    var start = await reader.GetFieldValueAsync<DateTime>(2);
-//                    var advisoryLock = new AdvisoryLock(granted, grant, start);
-//
-//                    list.Add(advisoryLock);
-//                }
-//            }
-
-            return list;
-        }
 
         public static Task GetGlobalLock(this SqlConnection conn, int lockId)
         {
-            throw new NotImplementedException();
-//            return conn.CreateCommand("SELECT pg_advisory_lock(:id);").With("id", lockId, NpgsqlDbType.Integer)
-//                .ExecuteNonQueryAsync();
+            return getLock(conn, lockId, "Session", null);
         }
 
         public static async Task<bool> TryGetGlobalLock(this SqlConnection conn, int lockId)
         {
-            throw new NotImplementedException();
-//            var c = await conn.CreateCommand("SELECT pg_try_advisory_lock(:id);").With("id", lockId, DbType.Integer)
-//                .ExecuteScalarAsync();
-//
-//            return (bool)c;
+            return (await tryGetLock(conn, lockId, "Session", null)) >= 0;
         }
 
         public static Task ReleaseGlobalLock(this SqlConnection conn, int lockId)
         {
-            throw new NotImplementedException();
-//            return conn.CreateCommand("SELECT pg_advisory_unlock(:id);").With("id", lockId, DbType.Integer)
-//                .ExecuteNonQueryAsync();
+            var sqlCommand = new SqlCommand("sp_releaseapplock", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            sqlCommand.Parameters.AddWithValue("Resource", lockId.ToString());
+            sqlCommand.Parameters.AddWithValue("LockOwner", "Session");
+
+            return sqlCommand.ExecuteNonQueryAsync();
         }
     }
 }
