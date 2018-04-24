@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.Common;
+using System.Data.SqlClient;
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports;
@@ -26,6 +28,13 @@ namespace Jasper.SqlServer
             registry.Services.AddSingleton<IHostedService, SchedulingAgent>();
 
             registry.CodeGeneration.Sources.Add(new SqlServerBackedPersistenceMarker());
+
+            // TODO -- use a custom Instance here for a wee bit of optimization
+            registry.Services.AddScoped<SqlConnection>(s =>
+                new SqlConnection(s.GetService<SqlServerSettings>().ConnectionString));
+
+            registry.Services.AddScoped<DbConnection>(s =>
+                new SqlConnection(s.GetService<SqlServerSettings>().ConnectionString));
         }
     }
 
