@@ -269,6 +269,8 @@ values
 
             foreach (var envelope in envelopes)
             {
+                envelope.EnsureData();
+
                 var id = builder.AddParameter(envelope.Id, SqlDbType.UniqueIdentifier);
                 var status = builder.AddParameter(envelope.Status, SqlDbType.VarChar);
                 var owner = builder.AddParameter(envelope.OwnerId, SqlDbType.Int);
@@ -307,6 +309,8 @@ values
 
         public async Task StoreOutgoing(Envelope envelope, int ownerId)
         {
+            envelope.EnsureData();
+
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
                 await conn.OpenAsync();
@@ -346,6 +350,8 @@ values
 
             foreach (var envelope in envelopes)
             {
+                envelope.EnsureData();
+
                 var id = builder.AddParameter(envelope.Id, SqlDbType.UniqueIdentifier);
                 var destination = builder.AddParameter(envelope.Destination.ToString(), SqlDbType.VarChar);
                 var deliverBy = builder.AddParameter(envelope.DeliverBy, SqlDbType.DateTimeOffset);

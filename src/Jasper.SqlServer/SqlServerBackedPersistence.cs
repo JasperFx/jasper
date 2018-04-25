@@ -40,7 +40,7 @@ namespace Jasper.SqlServer
 
     internal static class MethodVariablesExtensions
     {
-        internal static bool IsUsingMartenPersistence(this IMethodVariables method)
+        internal static bool IsUsingSqlServerPersistence(this IMethodVariables method)
         {
             return method.TryFindVariable(typeof(SqlServerBackedPersistenceMarker), VariableSource.NotServices) != null;
         }

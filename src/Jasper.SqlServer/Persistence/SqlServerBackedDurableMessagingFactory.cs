@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging;
@@ -16,6 +18,7 @@ namespace Jasper.SqlServer.Persistence
     public class SqlServerBackedDurableMessagingFactory : IDurableMessagingFactory
     {
         public MessagingSettings Settings { get; }
+        private readonly SqlServerSettings _sqlServerSettings;
         private readonly ITransportLogger _logger;
         private readonly SqlServerEnvelopePersistor _persistor;
         private readonly EnvelopeRetries _retries;
@@ -23,6 +26,7 @@ namespace Jasper.SqlServer.Persistence
         public SqlServerBackedDurableMessagingFactory(SqlServerSettings sqlServerSettings, ITransportLogger logger, MessagingSettings settings)
         {
             Settings = settings;
+            _sqlServerSettings = sqlServerSettings;
             _logger = logger;
             _persistor = new SqlServerEnvelopePersistor(sqlServerSettings);
 
@@ -47,6 +51,22 @@ namespace Jasper.SqlServer.Persistence
         public void ClearAllStoredMessages()
         {
             _persistor.ClearAllStoredMessages();
+        }
+
+        public Task StoreOutgoing(SqlTransaction tx, IEnumerable<Envelope> envelopes)
+        {
+            var cmd = SqlServerEnvelopePersistor.BuildOutgoingStorageCommand(envelopes.ToArray(), Settings.UniqueNodeId, _sqlServerSettings);
+            cmd.Transaction = tx;
+            cmd.Connection = tx.Connection;
+            return cmd.ExecuteNonQueryAsync();
+        }
+
+        public Task StoreIncoming(SqlTransaction tx, IEnumerable<Envelope> envelopes)
+        {
+            var cmd = SqlServerEnvelopePersistor.BuildIncomingStorageCommand(envelopes.ToArray(), _sqlServerSettings);
+            cmd.Transaction = tx;
+            cmd.Connection = tx.Connection;
+            return cmd.ExecuteNonQueryAsync();
         }
 
         public Task ScheduleJob(Envelope envelope)

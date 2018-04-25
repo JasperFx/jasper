@@ -14,16 +14,13 @@ namespace Jasper.SqlServer.Resiliency
 
         public ReassignFromDormantNodes(SqlServerSettings marker, MessagingSettings settings)
         {
-
-
-            // TODO -- use Sql Server syntax for advisory locks
             _reassignDormantNodeSql = $@"
 update {marker.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable}
   set owner_id = 0
 where
   owner_id in (
     select distinct owner_id from {marker.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable}
-    where owner_id != 0 AND owner_id != {settings.UniqueNodeId} AND pg_try_advisory_xact_lock(owner_id)
+    where owner_id != 0 AND owner_id != {settings.UniqueNodeId} AND APPLOCK_TEST ( '{marker.DatabasePrincipal}' , owner_id , 'Exclusive' , 'Transaction' ) = 1
   );
 
 update {marker.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}
@@ -31,7 +28,7 @@ update {marker.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}
 where
   owner_id in (
     select distinct owner_id from {marker.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}
-    where owner_id != 0 AND owner_id != {settings.UniqueNodeId} AND pg_try_advisory_xact_lock(owner_id)
+    where owner_id != 0 AND owner_id != {settings.UniqueNodeId} AND APPLOCK_TEST ( '{marker.DatabasePrincipal}' , owner_id , 'Exclusive' , 'Transaction' ) = 1
   );
 ";
         }
@@ -43,7 +40,7 @@ where
                 return;
             }
 
-            await conn.CreateCommand(_reassignDormantNodeSql).ExecuteNonQueryAsync();
+            await conn.CreateCommand(tx, _reassignDormantNodeSql).ExecuteNonQueryAsync();
 
             tx.Commit();
         }
