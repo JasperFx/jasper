@@ -1,11 +1,10 @@
 ﻿using System;
 using Jasper;
-using Jasper.Marten;
-using Jasper.Marten.Tests.Setup;
+using Jasper.SqlServer;
 using Jasper.Testing;
 using Jasper.Util;
 
-namespace DurabilitySpecs.Fixtures.Marten.App
+namespace DurabilitySpecs.Fixtures.SqlServer.App
 {
     public class ReceiverApp : JasperRegistry
     {
@@ -16,14 +15,7 @@ namespace DurabilitySpecs.Fixtures.Marten.App
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<TraceHandler>();
 
-            Settings.ConfigureMarten(_ =>
-            {
-                _.Connection(ConnectionSource.ConnectionString);
-                _.DatabaseSchemaName = "receiver";
-
-            });
-
-            Include<MartenBackedPersistence>();
+            Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString, "receiver");
 
             Transports.ListenForMessagesFrom(Listener);
         }

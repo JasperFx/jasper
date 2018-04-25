@@ -121,27 +121,34 @@ namespace Jasper.Messaging.Model
             _container = runtime.Container;
         }
 
+        private readonly object _groupingLock = new object();
+
         public void Group()
         {
-            assertNotGrouped();
+            lock (_groupingLock)
+            {
+                if (_hasGrouped) return;
 
-            _calls.Where(x => x.MessageType.IsConcrete())
-                .GroupBy(x => x.MessageType)
-                .Select(group => new HandlerChain(@group))
-                .Each(chain =>
-                {
-                    _chains = _chains.AddOrUpdate(chain.MessageType, chain);
-                });
+                _calls.Where(x => x.MessageType.IsConcrete())
+                    .GroupBy(x => x.MessageType)
+                    .Select(group => new HandlerChain(@group))
+                    .Each(chain =>
+                    {
+                        _chains = _chains.AddOrUpdate(chain.MessageType, chain);
+                    });
 
-            _calls.Where(x => !x.MessageType.IsConcrete())
-                .Each(call =>
-                {
-                    Chains
-                        .Where(c => call.CouldHandleOtherMessageType(c.MessageType))
-                        .Each(c => { c.AddAbstractedHandler(call); });
-                });
+                _calls.Where(x => !x.MessageType.IsConcrete())
+                    .Each(call =>
+                    {
+                        Chains
+                            .Where(c => call.CouldHandleOtherMessageType(c.MessageType))
+                            .Each(c => { c.AddAbstractedHandler(call); });
+                    });
 
-            _hasGrouped = true;
+                _hasGrouped = true;
+            }
+
+
         }
 
         public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
