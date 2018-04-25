@@ -14,6 +14,7 @@ namespace DurabilitySpecs.Fixtures.Marten.App
 
         public ReceiverApp()
         {
+            Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<TraceHandler>();
 
             Settings.ConfigureMarten(_ =>

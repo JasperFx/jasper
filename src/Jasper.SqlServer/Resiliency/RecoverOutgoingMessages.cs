@@ -37,16 +37,16 @@ namespace Jasper.SqlServer.Resiliency
             _logger = logger;
 
             _findUniqueDestinations = $"select distinct destination from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}";
-            _findOutgoingEnvelopesSql = $"select body from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination limit {settings.Retries.RecoveryBatchSize}";
+            _findOutgoingEnvelopesSql = $"select top {settings.Retries.RecoveryBatchSize} body from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
             _deleteOutgoingSql = $"delete from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable} where owner_id = :owner and destination = @destination";
 
         }
 
-        public async Task<List<Uri>> FindAllOutgoingDestinations(SqlConnection conn)
+        public async Task<List<Uri>> FindAllOutgoingDestinations(SqlConnection conn, SqlTransaction tx)
         {
             var list = new List<Uri>();
 
-            var cmd = conn.CreateCommand(_findUniqueDestinations);
+            var cmd = conn.CreateCommand(tx, _findUniqueDestinations);
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
@@ -65,12 +65,18 @@ namespace Jasper.SqlServer.Resiliency
                 return;
 
 
-            var destinations = await FindAllOutgoingDestinations(conn);
+            var destinations = await FindAllOutgoingDestinations(conn, tx);
 
             var count = 0;
             foreach (var destination in destinations)
             {
-                count += await recoverFrom(destination, conn, tx);
+                var found = await recoverFrom(destination, conn, tx);
+                if (found > 0)
+                {
+                    tx = conn.BeginTransaction();
+                }
+
+                count += found;
             }
 
             var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
@@ -89,18 +95,21 @@ namespace Jasper.SqlServer.Resiliency
 
                 if (channel.Latched) return 0;
 
-                var outgoing = await conn.CreateCommand(_findOutgoingEnvelopesSql)
+                var outgoing = await conn.CreateCommand(tx, _findOutgoingEnvelopesSql)
                     .With("destination", destination.ToString(), SqlDbType.VarChar)
                     .ExecuteToEnvelopes();
 
-                var filtered = filterExpired(conn, outgoing);
+                var filtered = await filterExpired(conn, tx, outgoing);
 
                 // Might easily try to do this in the time between starting
                 // and having the data fetched. Was able to make that happen in
                 // (contrived) testing
-                if (channel.Latched || !filtered.Any()) return 0;
+                if (channel.Latched || !filtered.Any())
+                {
+                    return 0;
+                }
 
-                await markOwnership(conn, filtered);
+                await markOwnership(conn, tx, filtered);
 
 
                 tx.Commit();
@@ -133,9 +142,9 @@ namespace Jasper.SqlServer.Resiliency
             }
         }
 
-        private async Task markOwnership(SqlConnection conn, Envelope[] outgoing)
+        private async Task markOwnership(SqlConnection conn, SqlTransaction tx, Envelope[] outgoing)
         {
-            var cmd = conn.CreateCommand($"{_mssqlSettings.SchemaName}.uspMarkOutgoingOwnership");
+            var cmd = conn.CreateCommand(tx, $"{_mssqlSettings.SchemaName}.uspMarkOutgoingOwnership");
             cmd.CommandType = CommandType.StoredProcedure;
             var list = cmd.Parameters.AddWithValue("IDLIST", SqlServerEnvelopePersistor.BuildIdTable(outgoing));
             list.SqlDbType = SqlDbType.Structured;
@@ -153,16 +162,18 @@ namespace Jasper.SqlServer.Resiliency
         }
 
 
-        private Envelope[] filterExpired(SqlConnection conn, IEnumerable<Envelope> outgoing)
+        private async Task<Envelope[]> filterExpired(SqlConnection conn, SqlTransaction tx, IEnumerable<Envelope> outgoing)
         {
             var expiredMessages = outgoing.Where(x => x.IsExpired()).ToArray();
             _logger.DiscardedExpired(expiredMessages);
 
-            var cmd = conn.CreateCommand($"{_mssqlSettings.SchemaName}.uspDeleteOutgoingEnvelopes");
+            var cmd = conn.CreateCommand(tx, $"{_mssqlSettings.SchemaName}.uspDeleteOutgoingEnvelopes");
             cmd.CommandType = CommandType.StoredProcedure;
             var list = cmd.Parameters.AddWithValue("IDLIST", SqlServerEnvelopePersistor.BuildIdTable(expiredMessages));
             list.SqlDbType = SqlDbType.Structured;
             list.TypeName = $"{_mssqlSettings.SchemaName}.EnvelopeIdList";
+
+            await cmd.ExecuteNonQueryAsync();
 
             return outgoing.Where(x => !x.IsExpired()).ToArray();
         }

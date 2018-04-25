@@ -1,4 +1,8 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports.Configuration;
@@ -11,25 +15,25 @@ namespace Jasper.SqlServer.Resiliency
     {
         public readonly int ReassignmentLockId = "jasper-reassign-envelopes".GetHashCode();
         private readonly string _reassignDormantNodeSql;
+        private readonly string _fetchOwnersSql;
 
         public ReassignFromDormantNodes(SqlServerSettings marker, MessagingSettings settings)
         {
+            _fetchOwnersSql = $@"
+select distinct owner_id from {marker.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable}
+union
+select distinct owner_id from {marker.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}";
+
             _reassignDormantNodeSql = $@"
 update {marker.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable}
   set owner_id = 0
 where
-  owner_id in (
-    select distinct owner_id from {marker.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable}
-    where owner_id != 0 AND owner_id != {settings.UniqueNodeId} AND APPLOCK_TEST ( '{marker.DatabasePrincipal}' , owner_id , 'Exclusive' , 'Transaction' ) = 1
-  );
+  owner_id = @owner;
 
 update {marker.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}
   set owner_id = 0
 where
-  owner_id in (
-    select distinct owner_id from {marker.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}
-    where owner_id != 0 AND owner_id != {settings.UniqueNodeId} AND APPLOCK_TEST ( '{marker.DatabasePrincipal}' , owner_id , 'Exclusive' , 'Transaction' ) = 1
-  );
+  owner_id = @owner;
 ";
         }
 
@@ -40,9 +44,34 @@ where
                 return;
             }
 
-            await conn.CreateCommand(tx, _reassignDormantNodeSql).ExecuteNonQueryAsync();
+            var owners = await fetchOwners(tx);
+
+            foreach (var owner in owners.Distinct())
+            {
+                if (await conn.TryGetGlobalTxLock(tx, owner))
+                {
+                    await conn.CreateCommand(tx, _reassignDormantNodeSql)
+                        .With("owner", owner, SqlDbType.Int)
+                        .ExecuteNonQueryAsync();
+                }
+            }
 
             tx.Commit();
+        }
+
+        private async Task<List<int>> fetchOwners(SqlTransaction tx)
+        {
+            var list = new List<int>();
+            using (var reader = (await tx.Connection.CreateCommand(tx, _fetchOwnersSql).ExecuteReaderAsync()))
+            {
+                while (await reader.ReadAsync())
+                {
+                    var id = await reader.GetFieldValueAsync<int>(0);
+                    list.Add(id);
+                }
+            }
+
+            return list;
         }
     }
 }

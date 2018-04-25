@@ -56,7 +56,7 @@ namespace Jasper.SqlServer.Resiliency
             }
 
             var readyToExecute = await conn
-                .CreateCommand(_findReadyToExecuteJobs)
+                .CreateCommand(tx, _findReadyToExecuteJobs)
                 .With("time", utcNow, SqlDbType.DateTimeOffset)
                 .ExecuteToEnvelopes(tx);
 

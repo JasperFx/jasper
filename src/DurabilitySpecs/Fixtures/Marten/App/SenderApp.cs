@@ -3,6 +3,7 @@ using Jasper;
 using Jasper.Marten;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Testing;
 using Marten;
 
 namespace DurabilitySpecs.Fixtures.Marten.App
@@ -11,6 +12,8 @@ namespace DurabilitySpecs.Fixtures.Marten.App
     {
         public SenderApp()
         {
+            Handlers.DisableConventionalDiscovery();
+
             Publish.Message<TraceMessage>().To(ReceiverApp.Listener);
 
             Settings.ConfigureMarten(_ =>

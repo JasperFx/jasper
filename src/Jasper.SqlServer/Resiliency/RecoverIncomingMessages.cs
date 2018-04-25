@@ -32,7 +32,7 @@ namespace Jasper.SqlServer.Resiliency
             _mssqlSettings = mssqlSettings;
             _logger = logger;
 
-            _findAtLargeEnvelopesSql = $"select body from {mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}' limit {settings.Retries.RecoveryBatchSize}";
+            _findAtLargeEnvelopesSql = $"select top {settings.Retries.RecoveryBatchSize} body from {mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
         }
 
         public async Task Execute(SqlConnection conn, ISchedulingAgent agent, SqlTransaction tx)
@@ -40,12 +40,12 @@ namespace Jasper.SqlServer.Resiliency
             if (!await conn.TryGetGlobalTxLock(tx, IncomingMessageLockId))
                 return;
 
-            var incoming = await conn.CreateCommand(_findAtLargeEnvelopesSql)
+            var incoming = await conn.CreateCommand(tx, _findAtLargeEnvelopesSql)
                 .ExecuteToEnvelopes();
 
             if (!incoming.Any()) return;
 
-            await markOwnership(conn, incoming);
+            await markOwnership(conn, tx, incoming);
 
             tx.Commit();
 
@@ -64,9 +64,9 @@ namespace Jasper.SqlServer.Resiliency
             }
         }
 
-        private async Task markOwnership(SqlConnection conn, List<Envelope> incoming)
+        private async Task markOwnership(SqlConnection conn, SqlTransaction tx, List<Envelope> incoming)
         {
-            var cmd = conn.CreateCommand($"{_mssqlSettings.SchemaName}.uspMarkIncomingOwnership");
+            var cmd = conn.CreateCommand(tx, $"{_mssqlSettings.SchemaName}.uspMarkIncomingOwnership");
             cmd.CommandType = CommandType.StoredProcedure;
             var list = cmd.Parameters.AddWithValue("IDLIST", SqlServerEnvelopePersistor.BuildIdTable(incoming));
             list.SqlDbType = SqlDbType.Structured;

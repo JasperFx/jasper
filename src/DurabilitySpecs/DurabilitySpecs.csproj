@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jasper.SqlServer\Jasper.SqlServer.csproj" />
     <ProjectReference Include="..\Jasper.Storyteller\Jasper.Storyteller.csproj" />
     <ProjectReference Include="..\Jasper.Marten.Tests\Jasper.Marten.Tests.csproj" />
   </ItemGroup>

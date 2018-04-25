@@ -67,6 +67,8 @@ namespace DurabilitySpecs.Fixtures.Marten
 
             _runtime = JasperRuntime.For(_ =>
             {
+
+
                 _.MartenConnectionStringIs(ConnectionSource.ConnectionString);
                 _.Services.AddSingleton<ITransport, StubTransport>();
 
