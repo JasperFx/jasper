@@ -12,6 +12,7 @@ using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Tracking;
 using Jasper.Storyteller.Logging;
 using Marten;
 using Marten.Util;
@@ -42,6 +43,9 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public override void SetUp()
         {
+
+            _messageLogger = new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory());
+
             _messageLogger.Start(Context);
 
             _senderWatcher = new SenderLatchDetected(new LoggerFactory());
