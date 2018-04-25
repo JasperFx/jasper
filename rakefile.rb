@@ -120,6 +120,7 @@ task :pack do
   sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.SqlServer/Jasper.SqlServer.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Storyteller/Jasper.Storyteller.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.RabbitMQ/Jasper.RabbitMQ.csproj -o ./../../artifacts --configuration Release --no-restore"
