@@ -9,8 +9,10 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
 using Jasper.Storyteller.Logging;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using StoryTeller;
 using StoryTeller.Engine;
 
@@ -71,6 +73,12 @@ namespace Jasper.Storyteller
             registry.Services.AddSingleton<MessageHistory>();
 
             registry.Services.ForSingletonOf<IMessageLogger>().Use<StorytellerMessageLogger>();
+
+            registry.Hosting.ConfigureLogging(x =>
+            {
+                x.AddConsole();
+                x.AddDebug();
+            });
 
         }
 

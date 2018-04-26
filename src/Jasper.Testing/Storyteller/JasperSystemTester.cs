@@ -1,9 +1,13 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Http;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Storyteller;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Logging.Debug;
 using Shouldly;
 using StoryTeller;
 using Xunit;
@@ -12,6 +16,32 @@ namespace Jasper.Testing.Storyteller
 {
     public class JasperSystemTester
     {
+        [Fact]
+        public async Task adds_console_and_debug_logging()
+        {
+            using (var system = JasperStorytellerHost.Basic(x =>
+            {
+                x.Handlers.DisableConventionalDiscovery();
+                x.HttpRoutes.DisableConventionalDiscovery();
+            }))
+            {
+                await system.Warmup();
+
+                var providerTypes = system
+                    .Runtime
+                    .Container
+                    .Model
+                    .For<ILoggerProvider>()
+                    .Instances
+                    .Select(x => x.ImplementationType)
+                    .ToArray();
+
+                providerTypes.ShouldContain(typeof(ConsoleLoggerProvider));
+                providerTypes.ShouldContain(typeof(DebugLoggerProvider));
+            }
+        }
+
+
         [Fact]
         public async Task bootstraps_the_runtime()
         {
