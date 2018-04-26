@@ -6,8 +6,10 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Persistence;
 using Jasper.SqlServer.Resiliency;
+using Jasper.SqlServer.Util;
 using Lamar.Codegen;
 using Lamar.Codegen.Variables;
+using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -29,12 +31,11 @@ namespace Jasper.SqlServer
 
             registry.CodeGeneration.Sources.Add(new SqlServerBackedPersistenceMarker());
 
-            // TODO -- use a custom Instance here for a wee bit of optimization
-            registry.Services.AddScoped<SqlConnection>(s =>
-                new SqlConnection(s.GetService<SqlServerSettings>().ConnectionString));
 
-            registry.Services.AddScoped<DbConnection>(s =>
-                new SqlConnection(s.GetService<SqlServerSettings>().ConnectionString));
+            registry.Services.For<SqlConnection>().Use<SqlConnection>();
+
+            registry.Services.Add(new SqlConnectionInstance(typeof(SqlConnection)));
+            registry.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
         }
     }
 
