@@ -7,6 +7,8 @@ using Jasper.Messaging.Transports.Util;
 
 namespace Jasper.Messaging.Tracking
 {
+
+
     public class MessageHistory
     {
         private readonly object _lock = new object();
@@ -26,6 +28,8 @@ namespace Jasper.Messaging.Tracking
 
                 _completed.Clear();
                 _outstanding.Clear();
+
+                _exceptions.Clear();
 
                 _waiters.Add(waiter);
             }
@@ -57,6 +61,8 @@ namespace Jasper.Messaging.Tracking
 
                 _completed.Clear();
                 _outstanding.Clear();
+
+                _exceptions.Clear();
 
                 _waiters.Add(waiter);
             }
@@ -115,7 +121,7 @@ namespace Jasper.Messaging.Tracking
         {
             if (_outstanding.Count == 0 && _completed.Count > 0)
             {
-                var tracks = _completed.ToArray();
+                var tracks = _completed.Distinct().ToArray();
 
                 foreach (var waiter in _waiters)
                 {
@@ -126,5 +132,18 @@ namespace Jasper.Messaging.Tracking
             }
         }
 
+        private readonly IList<Exception> _exceptions = new List<Exception>();
+        public void LogException(Exception exception)
+        {
+            _exceptions.Add(exception);
+        }
+
+        public void AssertNoExceptions()
+        {
+            if (_exceptions.Any())
+            {
+                throw new AggregateException(_exceptions);
+            }
+        }
     }
 }

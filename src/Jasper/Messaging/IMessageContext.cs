@@ -233,6 +233,7 @@ namespace Jasper.Messaging
 
     public interface IAdvancedMessagingActions
     {
+
         /// <summary>
         /// Current message persistence
         /// </summary>

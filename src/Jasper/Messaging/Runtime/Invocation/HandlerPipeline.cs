@@ -173,6 +173,8 @@ namespace Jasper.Messaging.Runtime.Invocation
             catch (Exception e)
             {
                 Logger.LogException(e, context.Envelope.Id, "Failure during message processing execution");
+                Logger.ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
+
                 if (context.Envelope.Attempts >= handler.Chain.MaximumAttempts) return new MoveToErrorQueue(e);
 
                 return handler.Chain.DetermineContinuation(context.Envelope, e)

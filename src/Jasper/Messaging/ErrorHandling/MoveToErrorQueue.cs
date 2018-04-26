@@ -17,10 +17,13 @@ namespace Jasper.Messaging.ErrorHandling
         {
             var envelope = context.Envelope;
 
+
+
             await context.Advanced.SendFailureAcknowledgement($"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
 
             await envelope.Callback.MoveToErrors(envelope, Exception);
 
+            context.Advanced.Logger.MessageFailed(envelope, Exception);
             context.Advanced.Logger.MovedToErrorQueue(envelope, Exception);
 
         }

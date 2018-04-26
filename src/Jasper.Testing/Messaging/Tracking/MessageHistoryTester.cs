@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Tracking;
+using Jasper.Messaging.Transports;
 using Shouldly;
 using Xunit;
 
@@ -22,6 +23,20 @@ namespace Jasper.Testing.Messaging.Tracking
 
             });
         }
+
+
+        [Fact]
+        public void assert_exceptions()
+        {
+            // Nothing happens
+            history.AssertNoExceptions();
+
+            history.LogException(new DivideByZeroException());
+
+            Exception<AggregateException>.ShouldBeThrownBy(() => history.AssertNoExceptions())
+                .InnerExceptions.Single().ShouldBeOfType<DivideByZeroException>();
+        }
+
 
         [Fact]
         public void knows_when_stuff_is_finished_starting_from_scratch()
@@ -74,6 +89,50 @@ namespace Jasper.Testing.Messaging.Tracking
 
             watch.Result.Single().ExceptionText.ShouldBe(ex.ToString());
 
+        }
+    }
+
+    public class end_to_end_watching_with_a_failure
+    {
+        [Fact]
+        public async Task history_can_still_do_the_watch()
+        {
+            var runtime = await JasperRuntime.ForAsync(_ =>
+            {
+                _.Handlers.DisableConventionalDiscovery().IncludeType<MessageThatFailsHandler>();
+                _.Include<MessageTrackingExtension>();
+                _.Publish.AllMessagesTo(TransportConstants.LoopbackUri);
+            });
+
+            try
+            {
+                var history = runtime.Get<MessageHistory>();
+
+                await history.WatchAsync(() => runtime.Messaging.Send(new MessageThatFails()));
+
+                var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() => history.AssertNoExceptions());
+                aggregate
+                    .InnerExceptions.Single().ShouldBeOfType<DivideByZeroException>();
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+        }
+
+    }
+
+    public class MessageThatFails
+    {
+
+    }
+
+    [JasperIgnore]
+    public class MessageThatFailsHandler
+    {
+        public void Handle(MessageThatFails message)
+        {
+            throw new DivideByZeroException();
         }
     }
 }

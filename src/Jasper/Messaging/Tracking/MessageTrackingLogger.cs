@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,12 @@ namespace Jasper.Messaging.Tracking
         public MessageTrackingLogger(MessageHistory history, ILoggerFactory factory) : base(factory)
         {
             _history = history;
+        }
+
+        public override void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        {
+            _history.LogException(ex);
+            base.LogException(ex, correlationId, message);
         }
 
 
