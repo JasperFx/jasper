@@ -27,12 +27,14 @@ namespace Jasper.Messaging.Tracking
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Task SendMessageAndWait<T>(this JasperRuntime runtime, T message)
+        public static async Task SendMessageAndWait<T>(this JasperRuntime runtime, T message, int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
 
             var history = runtime.Get<MessageHistory>();
-            return history.WatchAsync(() => runtime.Messaging.Send(message));
+            await history.WatchAsync(() => runtime.Messaging.Send(message), timeoutInMilliseconds);
+
+            if (assertNoExceptions) history.AssertNoExceptions();
         }
 
 
@@ -44,12 +46,14 @@ namespace Jasper.Messaging.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static Task ExecuteAndWait(this JasperRuntime runtime, Func<Task> action)
+        public static async Task ExecuteAndWait(this JasperRuntime runtime, Func<Task> action, int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
 
             var history = runtime.Get<MessageHistory>();
-            return history.WatchAsync(action);
+            await history.WatchAsync(action, timeoutInMilliseconds);
+
+            if (assertNoExceptions) history.AssertNoExceptions();
         }
 
         /// <summary>
@@ -59,12 +63,32 @@ namespace Jasper.Messaging.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static Task ExecuteAndWait(this JasperRuntime runtime, Action action)
+        public static async Task ExecuteAndWait(this JasperRuntime runtime, Action action, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
 
             var history = runtime.Get<MessageHistory>();
-            return history.Watch(action);
+            await history.Watch(action);
+
+            if (assertNoExceptions) history.AssertNoExceptions();
+        }
+
+        /// <summary>
+        /// Executes an action and waits until the execution and all cascading messages
+        /// have completed
+        /// </summary>
+        /// <param name="runtime"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static async Task ExecuteAndWait(this JasperRuntime runtime, Func<IMessageContext, Task> action, bool assertNoExceptions = false)
+        {
+            runtime.validateMessageTrackerExists();
+
+            var history = runtime.Get<MessageHistory>();
+            var context = runtime.Get<IMessageContext>();
+            await history.WatchAsync(() => action(context));
+
+            if (assertNoExceptions) history.AssertNoExceptions();
         }
 
         /// <summary>
@@ -74,12 +98,14 @@ namespace Jasper.Messaging.Tracking
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Task InvokeMessageAndWait<T>(this JasperRuntime runtime, T message)
+        public static async Task InvokeMessageAndWait<T>(this JasperRuntime runtime, T message, int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
 
             var history = runtime.Get<MessageHistory>();
-            return history.WatchAsync(() => runtime.Messaging.Invoke(message));
+            await history.WatchAsync(() => runtime.Messaging.Invoke(message));
+
+            if (assertNoExceptions) history.AssertNoExceptions();
         }
     }
 }

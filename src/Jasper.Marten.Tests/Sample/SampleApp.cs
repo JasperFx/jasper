@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Tracking;
+using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Marten.Schema;
 using Microsoft.Extensions.DependencyInjection;
@@ -103,11 +104,10 @@ namespace Jasper.Marten.Tests.Sample
     }
     // ENDSAMPLE
 
-        /*
+
     public class tests_against_AppUsingMessageTracking
     {
         // SAMPLE: invoke_a_message_with_tracking
-        [Fact]
         public async Task invoke_a_message()
         {
             using (var runtime = JasperRuntime.For<AppUsingMessageTracking>())
@@ -126,25 +126,38 @@ namespace Jasper.Marten.Tests.Sample
         {
             using (var runtime = JasperRuntime.For<AppUsingMessageTracking>())
             {
-                // Call IServiceBus.Invoke() and wait for all activity to finish
+                // Call IMessageContext.Invoke() and wait for all activity to finish
                 await runtime.InvokeMessageAndWait(new Message1());
+
+                // Configurable timeouts
+                await runtime.InvokeMessageAndWait(new Message1(),
+                    timeoutInMilliseconds:10000);
 
                 // More general usage
                 await runtime.ExecuteAndWait(() =>
                 {
-                    return runtime.Bus.Send(new Message1());
+                    return runtime.Messaging.Send(new Message1());
                 });
 
                 // More general usage, but synchronously
                 await runtime.ExecuteAndWait(() =>
                 {
-                    runtime.Bus.Send(new Message1());
+                    runtime.Messaging.Send(new Message1());
                 });
+
+                // Using an isolated message context
+                await runtime.ExecuteAndWait(c => c.Send(new Message1()));
+
+                // Assert that there were no exceptions during the processing
+                // If there are, this will throw an AggregateException of
+                // all encountered exceptions in the message processing
+                await runtime.ExecuteAndWait(c => c.Send(new Message1()),
+                    assertNoExceptions:true);
             }
         }
         // ENDSAMPLE
     }
-    */
+
 
     public class SampleApp : JasperRegistry
     {
