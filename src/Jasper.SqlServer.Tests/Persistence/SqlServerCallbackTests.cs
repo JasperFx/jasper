@@ -46,7 +46,7 @@ namespace Jasper.SqlServer.Tests.Persistence
 
 
 
-            theCallback = new DurableCallback(theEnvelope, Substitute.For<IWorkerQueue>(), thePersistor, theRetries);
+            theCallback = new DurableCallback(theEnvelope, Substitute.For<IWorkerQueue>(), thePersistor, theRetries, logger);
         }
 
         public void Dispose()

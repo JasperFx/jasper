@@ -40,7 +40,7 @@ namespace Jasper.SqlServer.Persistence
 
         public ISendingAgent BuildLocalAgent(Uri destination, IMessagingRoot root)
         {
-            return new LocalSendingAgent(destination, root.Workers, _persistor, root.Serialization, _retries);
+            return new LocalSendingAgent(destination, root.Workers, _persistor, root.Serialization, _retries, _logger);
         }
 
         public IListener BuildListener(IListeningAgent agent, IMessagingRoot root)

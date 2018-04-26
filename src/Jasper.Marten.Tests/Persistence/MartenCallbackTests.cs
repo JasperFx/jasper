@@ -66,7 +66,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             var persistor = new MartenEnvelopePersistor(theStore, marker);
 
-            theCallback = new DurableCallback(theEnvelope, Substitute.For<IWorkerQueue>(), persistor, theRetries);
+            theCallback = new DurableCallback(theEnvelope, Substitute.For<IWorkerQueue>(), persistor, theRetries, logger);
         }
 
         public void Dispose()

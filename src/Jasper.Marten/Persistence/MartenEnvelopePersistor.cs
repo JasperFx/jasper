@@ -32,6 +32,11 @@ namespace Jasper.Marten.Persistence
             }
         }
 
+        public Task DeleteIncomingEnvelope(Envelope envelope)
+        {
+            return DeleteIncomingEnvelopes(new Envelope[] {envelope});
+        }
+
         public async Task DeleteOutgoingEnvelopes(Envelope[] envelopes)
         {
             using (var session = _store.LightweightSession())

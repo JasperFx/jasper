@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Conneg;
+using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
@@ -13,15 +14,17 @@ namespace Jasper.Messaging.Durability
         private readonly IWorkerQueue _queues;
         private readonly SerializationGraph _serializers;
         private readonly IRetries _retries;
+        private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistor _persistor;
         public Uri Destination { get; }
 
         public LocalSendingAgent(Uri destination, IWorkerQueue queues, IEnvelopePersistor persistor,
-            SerializationGraph serializers, IRetries retries)
+            SerializationGraph serializers, IRetries retries, ITransportLogger logger)
         {
             _queues = queues;
             _serializers = serializers;
             _retries = retries;
+            _logger = logger;
 
             _persistor = persistor;
 
@@ -41,7 +44,7 @@ namespace Jasper.Messaging.Durability
 
         public Task EnqueueOutgoing(Envelope envelope)
         {
-            envelope.Callback = new DurableCallback(envelope, _queues, _persistor, _retries);
+            envelope.Callback = new DurableCallback(envelope, _queues, _persistor, _retries, _logger);
 
             return _queues.Enqueue(envelope);
         }

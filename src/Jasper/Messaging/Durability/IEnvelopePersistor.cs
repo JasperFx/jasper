@@ -8,6 +8,7 @@ namespace Jasper.Messaging.Durability
     public interface IEnvelopePersistor
     {
         Task DeleteIncomingEnvelopes(Envelope[] envelopes);
+        Task DeleteIncomingEnvelope(Envelope envelope);
         Task DeleteOutgoingEnvelopes(Envelope[] envelopes);
         Task DeleteOutgoingEnvelope(Envelope envelope);
         Task MoveToDeadLetterStorage(ErrorReport[] errors);

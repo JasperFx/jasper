@@ -70,7 +70,7 @@ namespace Jasper.SqlServer.Resiliency
 
             foreach (var envelope in readyToExecute)
             {
-                envelope.Callback = new DurableCallback(envelope, _workers, _persistor, _retries);
+                envelope.Callback = new DurableCallback(envelope, _workers, _persistor, _retries, _logger);
 
                 await _workers.Enqueue(envelope);
             }

@@ -96,7 +96,7 @@ namespace Jasper.Messaging.Durability
 
                 foreach (var message in messages.Where(x => x.Status == TransportConstants.Incoming))
                 {
-                    message.Callback = new DurableCallback(message, _queues, _persistor, _retries);
+                    message.Callback = new DurableCallback(message, _queues, _persistor, _retries, _logger);
                     await _queues.Enqueue(message);
                 }
 

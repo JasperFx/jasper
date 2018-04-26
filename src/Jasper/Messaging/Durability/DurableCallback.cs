@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
@@ -12,27 +13,44 @@ namespace Jasper.Messaging.Durability
         private readonly IEnvelopePersistor _persistor;
         private readonly IWorkerQueue _queue;
         private readonly IRetries _retries;
+        private readonly ITransportLogger _logger;
 
         public DurableCallback(Envelope envelope, IWorkerQueue queue, IEnvelopePersistor persistor,
-            IRetries retries)
+            IRetries retries, ITransportLogger logger)
         {
             _envelope = envelope;
             _queue = queue;
             _persistor = persistor;
             _retries = retries;
+            _logger = logger;
         }
 
-        public Task MarkComplete()
+        public async Task MarkComplete()
         {
-            _retries.DeleteIncoming(_envelope);
-
-            return Task.CompletedTask;
+            try
+            {
+                await _persistor.DeleteIncomingEnvelope(_envelope);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                _retries.DeleteIncoming(_envelope);
+            }
         }
 
-        public Task MoveToErrors(Envelope envelope, Exception exception)
+        public async Task MoveToErrors(Envelope envelope, Exception exception)
         {
-            _retries.LogErrorReport(new ErrorReport(envelope, exception));
-            return Task.CompletedTask;
+            var errorReport = new ErrorReport(envelope, exception);
+
+            try
+            {
+                await _persistor.MoveToDeadLetterStorage(new[] {errorReport});
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                _retries.LogErrorReport(errorReport);
+            }
         }
 
         public async Task Requeue(Envelope envelope)
@@ -50,15 +68,21 @@ namespace Jasper.Messaging.Durability
             await _queue.Enqueue(envelope);
         }
 
-        public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
+        public async Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
         {
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.ExecutionTime = time;
             envelope.Status = TransportConstants.Scheduled;
-            _retries.ScheduleExecution(envelope);
 
-
-            return Task.CompletedTask;
+            try
+            {
+                await _persistor.ScheduleExecution(new Envelope[] {envelope});
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+                _retries.ScheduleExecution(envelope);
+            }
         }
     }
 }

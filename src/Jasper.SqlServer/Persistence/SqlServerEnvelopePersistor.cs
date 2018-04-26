@@ -67,6 +67,18 @@ namespace Jasper.SqlServer.Persistence
             }
         }
 
+        public async Task DeleteIncomingEnvelope(Envelope envelope)
+        {
+            using (var conn = new SqlConnection(_settings.ConnectionString))
+            {
+                await conn.OpenAsync();
+
+                await conn.CreateCommand($"delete from {_settings.SchemaName}.{IncomingTable} where id = @id")
+                    .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
+                    .ExecuteNonQueryAsync();
+            }
+        }
+
         public static DataTable BuildIdTable(IEnumerable<Envelope> envelopes)
         {
             var table = new DataTable();
