@@ -28,6 +28,7 @@ namespace Jasper
         public JasperServiceRegistry(JasperRegistry parent)
         {
             For<IMetrics>().Use<NulloMetrics>();
+            For<IHostedService>().Use<MetricsCollector>();
 
             this.AddLogging();
 
@@ -80,6 +81,7 @@ namespace Jasper
 
         private void messaging(JasperRegistry parent)
         {
+            For<IEnvelopePersistor>().Use<NulloEnvelopePersistor>();
             this.AddSingleton<InMemorySagaPersistor>();
 
             this.AddSingleton(parent.Messaging.Graph);

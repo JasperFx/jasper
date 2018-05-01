@@ -29,4 +29,78 @@ namespace Jasper.Messaging.Durability
 
         Task<PersistedCounts> GetPersistedCounts();
     }
+
+    public class NulloEnvelopePersistor : IEnvelopePersistor
+    {
+        public Task DeleteIncomingEnvelopes(Envelope[] envelopes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteIncomingEnvelope(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteOutgoingEnvelopes(Envelope[] envelopes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteOutgoingEnvelope(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task MoveToDeadLetterStorage(ErrorReport[] errors)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ScheduleExecution(Envelope[] envelopes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StoreIncoming(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StoreIncoming(IEnumerable<Envelope> envelopes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StoreOutgoing(Envelope envelope, int ownerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StoreOutgoing(Envelope[] envelopes, int ownerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PersistedCounts> GetPersistedCounts()
+        {
+            // Nothing to do, but keeps the metrics from blowing up
+            return Task.FromResult(new PersistedCounts());
+        }
+    }
 }

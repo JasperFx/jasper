@@ -21,7 +21,7 @@ namespace Jasper.Messaging.Logging
         /// <param name="destination"></param>
         void CircuitResumed(Uri destination);
 
-        void LogLocalWorkerQueueDepth(int count); // delegated from MetricsCollector
+        void LogLocalWorkerQueueDepth(int count);
 
         void LogPersistedCounts(PersistedCounts counts);
     }

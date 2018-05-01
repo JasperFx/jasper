@@ -207,6 +207,10 @@ namespace Jasper.Messaging.Transports.Configuration
         public TimeSpan NodeReassignmentPollingTime { get; set; } = 1.Minutes();
         public TimeSpan FirstNodeReassignmentExecution{ get; set; } = 0.Seconds();
 
+        /// <summary>
+        /// Interval between collecting persisted and queued message metrics
+        /// </summary>
+        public TimeSpan MetricsCollectionSamplingInterval { get; set; } = 5.Seconds();
 
         /// <summary>
         /// Used to govern the incoming and outgoing message recovery process by making slowing down
