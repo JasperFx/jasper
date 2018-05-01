@@ -221,6 +221,13 @@ namespace Jasper.Messaging.Transports.Configuration
         /// </summary>
         public bool PersistDeadLetterEnvelopes { get; set; } = true;
 
+        /// <summary>
+        /// Polling interval for applying back pressure checking. Default is 2 seconds
+        /// </summary>
+        public TimeSpan BackPressurePollingInterval { get; set; } = 2.Seconds();
+
+
+
 
         public readonly IList<MessageTypeRule> MessageTypeRules = new List<MessageTypeRule>();
 

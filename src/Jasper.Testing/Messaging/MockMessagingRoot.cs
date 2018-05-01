@@ -32,7 +32,22 @@ namespace Jasper.Testing.Messaging
         public IDurableMessagingFactory Factory { get; } = Substitute.For<IDurableMessagingFactory>();
 
         public ITransport[] Transports { get; } = new ITransport[]{Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
-        public ListeningStatus ListeningStatus { get; set; } = ListeningStatus.Accepting;
+
+        private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
+        public ListeningStatus ListeningStatus
+        {
+            get => _listeningStatus;
+            set {
+
+                _listeningStatus = value;
+
+
+                foreach (var transport in Transports)
+                {
+                    transport.ListeningStatus = value;
+                }
+            }
+        }
 
         public IChannelGraph Channels { get; } = Substitute.For<IChannelGraph>();
 

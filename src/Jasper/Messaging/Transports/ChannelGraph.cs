@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Jasper.Http.Transport;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Subscriptions;
@@ -92,6 +93,8 @@ namespace Jasper.Messaging.Transports
         private Uri tryGetReplyUri(string protocol)
         {
             if (_settings.StateFor(protocol) == TransportState.Disabled) return null;
+
+            if (protocol == "http" && !_settings.Http.ListeningEnabled) return null;
 
             return _transports.ContainsKey(protocol) ? _transports[protocol].LocalReplyUri : null;
         }

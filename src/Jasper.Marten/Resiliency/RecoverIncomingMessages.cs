@@ -34,17 +34,16 @@ namespace Jasper.Marten.Resiliency
 
         public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
         {
-            // HERE
+            if (_workers.QueuedCount > _settings.MaximumLocalEnqueuedBackPressureThreshold) return;
+
             if (!await session.TryGetGlobalTxLock(IncomingMessageLockId))
                 return;
 
-            // HERE
             var incoming = await session.Connection.CreateCommand(_findAtLargeEnvelopesSql)
                 .ExecuteToEnvelopes();
 
             if (!incoming.Any()) return;
 
-            // HERE
             session.MarkOwnership(_marker.Incoming, _settings.UniqueNodeId, incoming);
 
             await session.SaveChangesAsync();

@@ -35,9 +35,8 @@ namespace Jasper
 
             this.AddSingleton(parent.CodeGeneration);
 
-            // Will be overwritten when ASP.Net is in place too,
-            // but that's okay
             For<IHostedService>().Use<NodeRegistration>();
+            For<IHostedService>().Use<BackPressureAgent>();
 
             conneg(parent);
             messaging(parent);

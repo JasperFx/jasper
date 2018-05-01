@@ -30,6 +30,8 @@ namespace Jasper.Testing.Messaging
         {
             await with(r =>
             {
+
+
                 r.Hosting.UseUrls("http://*:5066");
 
                 r.Transports.LightweightListenerAt(4356);

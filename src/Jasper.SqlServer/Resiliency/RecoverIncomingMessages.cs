@@ -37,6 +37,8 @@ namespace Jasper.SqlServer.Resiliency
 
         public async Task Execute(SqlConnection conn, ISchedulingAgent agent, SqlTransaction tx)
         {
+            if (_workers.QueuedCount > _settings.MaximumLocalEnqueuedBackPressureThreshold) return;
+
             if (!await conn.TryGetGlobalTxLock(tx, IncomingMessageLockId))
                 return;
 
