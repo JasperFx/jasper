@@ -87,12 +87,15 @@ namespace Jasper.Messaging.Runtime.Invocation
             }
             else
             {
+                envelope.StartTiming();
+
                 try
                 {
                     deserialize(envelope);
                 }
                 catch (Exception e)
                 {
+                    envelope.MarkCompletion(false);
                     Logger.MessageFailed(envelope, e);
                     await envelope.Callback.MoveToErrors(envelope, e);
                     return;
@@ -117,16 +120,23 @@ namespace Jasper.Messaging.Runtime.Invocation
                 throw new ArgumentOutOfRangeException(nameof(envelope), $"No known handler for message type {envelope.Message.GetType().FullName}");
             }
 
+
+
             var context = _root.ContextFor(envelope);
+            envelope.StartTiming();
+
             try
             {
                 await handler.Handle(context);
 
                 // TODO -- what do we do here if this fails? Compensating actions?
                 await context.SendAllQueuedOutgoingMessages();
+
+                envelope.MarkCompletion(true);
             }
             catch (Exception e)
             {
+                envelope.MarkCompletion(false);
                 Logger.LogException(e, message:$"Invocation of {envelope} failed!");
                 throw;
             }
@@ -149,6 +159,7 @@ namespace Jasper.Messaging.Runtime.Invocation
             if (handler == null)
             {
                 await processNoHandlerLogic(envelope, context);
+                envelope.MarkCompletion(false);
             }
             else
             {
@@ -168,10 +179,13 @@ namespace Jasper.Messaging.Runtime.Invocation
 
                 Logger.ExecutionFinished(context.Envelope);
 
+                context.Envelope.MarkCompletion(true);
+
                 return MessageSucceededContinuation.Instance;
             }
             catch (Exception e)
             {
+                context.Envelope.MarkCompletion(false);
                 Logger.LogException(e, context.Envelope.Id, "Failure during message processing execution");
                 Logger.ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
 
