@@ -6,27 +6,31 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging
 {
-    public class BackPressureAgent : IHostedService
+    public class BackPressureAgent : BackgroundService
     {
         private readonly IMessagingRoot _root;
-        private Timer _timer;
 
         public BackPressureAgent(IMessagingRoot root)
         {
             _root = root;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _timer = new Timer(s => ApplyBackPressure(), null, _root.Settings.BackPressurePollingInterval, _root.Settings.BackPressurePollingInterval);
-            return Task.CompletedTask;
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await Task.Delay(_root.Settings.BackPressurePollingInterval, stoppingToken);
+                try
+                {
+                    ApplyBackPressure();
+                }
+                catch (Exception e)
+                {
+                    _root.Logger.LogException(e);
+                }
+            }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _timer?.Dispose();
-            return Task.CompletedTask;
-        }
 
         public void ApplyBackPressure()
         {
