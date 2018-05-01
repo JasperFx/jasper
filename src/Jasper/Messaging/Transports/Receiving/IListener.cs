@@ -6,5 +6,6 @@ namespace Jasper.Messaging.Transports.Receiving
     {
         void Start();
         Uri Address { get; }
+        ListeningStatus Status { get; set; }
     }
 }

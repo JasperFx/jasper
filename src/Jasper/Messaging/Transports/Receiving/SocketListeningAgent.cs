@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Messaging.Transports.Tcp;
+using Jasper.Messaging.Transports.Util;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Receiving
@@ -36,7 +38,7 @@ namespace Jasper.Messaging.Transports.Receiving
             {
                 using (var stream = new NetworkStream(s, true))
                 {
-                    await WireProtocol.Receive(stream, callback, Address);
+                    await HandleStream(callback, stream);
                 }
             });
 
@@ -52,6 +54,16 @@ namespace Jasper.Messaging.Transports.Receiving
             }, _cancellationToken);
         }
 
+        public Task HandleStream(IReceiverCallback callback, Stream stream)
+        {
+            if (Status == ListeningStatus.TooBusy)
+            {
+                return stream.SendBuffer(WireProtocol.ProcessingFailureBuffer);
+            }
+
+            return WireProtocol.Receive(stream, callback, Address);
+        }
+
         public Uri Address { get; }
 
         public void Dispose()
@@ -60,5 +72,7 @@ namespace Jasper.Messaging.Transports.Receiving
             _listener?.Stop();
             _listener?.Server.Dispose();
         }
+
+        public ListeningStatus Status { get; set; } = ListeningStatus.Accepting;
     }
 }

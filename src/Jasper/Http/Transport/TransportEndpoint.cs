@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Messaging;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -12,8 +13,11 @@ namespace Jasper.Http.Transport
     {
         public const string EnvelopeSenderHeader = "x-jasper-envelope-sender";
 
-        public async Task<int> put__messages(HttpRequest request, ILocalWorkerSender workers, IMessageLogger logger)
+        public static async Task<int> put__messages(HttpRequest request, ILocalWorkerSender workers, IMessageLogger logger,
+            IMessagingRoot root)
         {
+            if (root.ListeningStatus == ListeningStatus.TooBusy) return 503;
+
             try
             {
                 // TODO -- optimize the reading here to reduce allocations
@@ -33,8 +37,11 @@ namespace Jasper.Http.Transport
             }
         }
 
-        public async Task<int> put__messages_durable(HttpRequest request, ILocalWorkerSender workers, IMessageLogger logger)
+        public static async Task<int> put__messages_durable(HttpRequest request, ILocalWorkerSender workers,
+            IMessageLogger logger, IMessagingRoot root)
         {
+            if (root.ListeningStatus == ListeningStatus.TooBusy) return 503;
+
             try
             {
                 // TODO -- optimize the reading here to reduce allocations

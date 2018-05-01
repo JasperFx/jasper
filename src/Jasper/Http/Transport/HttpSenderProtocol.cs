@@ -47,7 +47,12 @@ namespace Jasper.Http.Transport
             try
             {
                 var response = await _client.SendAsync(request);
-                if (response.StatusCode != HttpStatusCode.OK)
+
+                if (response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                {
+                    throw new Exception("The server returned 503, service too busy");
+                }
+                else if (response.StatusCode != HttpStatusCode.OK)
                 {
                     throw new Exception($"Unable to send message batch to " + batch.Destination);
                 }

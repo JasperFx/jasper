@@ -188,10 +188,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             throw new NotImplementedException();
         }
 
-        public Uri LocalReplyUri
-        {
-            get { return TransportConstants.RepliesUri; }
-        }
+        public Uri LocalReplyUri => TransportConstants.RepliesUri;
 
         public void StartListening(IMessagingRoot root)
         {
@@ -201,5 +198,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public void Describe(TextWriter writer)
         {
         }
+
+        public ListeningStatus ListeningStatus { get; set; }
     }
 }

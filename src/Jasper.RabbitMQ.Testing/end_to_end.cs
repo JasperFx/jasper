@@ -9,8 +9,10 @@ using Baseline.Dates;
 using Jasper.Marten;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Tests.Setup;
+using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
+using Jasper.Messaging.Transports;
 using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,15 +22,6 @@ using Xunit;
 
 namespace Jasper.RabbitMQ.Testing
 {
-    /*
-     * TODO's
-     * 1. Test w/ persistent listener and receiver
-     * 2. fan out
-     *
-     *
-     */
-
-
 
     public class end_to_end
     {
@@ -38,6 +31,37 @@ namespace Jasper.RabbitMQ.Testing
             var runtime = await JasperRuntime.ForAsync<RabbitMqUsingApp>();
 
 
+
+            try
+            {
+                var tracker = runtime.Get<MessageTracker>();
+
+                var watch = tracker.WaitFor<ColorChosen>();
+
+                await runtime.Messaging.Send(new ColorChosen {Name = "Red"});
+
+                await watch;
+
+                var colors = runtime.Get<ColorHistory>();
+
+                colors.Name.ShouldBe("Red");
+
+                // TODO -- let's look at the envelope too
+            }
+            finally
+            {
+                await runtime.Shutdown();
+            }
+        }
+
+        [Fact]
+        public async Task can_stop_and_start()
+        {
+            var runtime = await JasperRuntime.ForAsync<RabbitMqUsingApp>();
+
+            var root = runtime.Get<IMessagingRoot>();
+            root.ListeningStatus = ListeningStatus.TooBusy;
+            root.ListeningStatus = ListeningStatus.Accepting;
 
             try
             {

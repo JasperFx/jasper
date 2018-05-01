@@ -20,6 +20,12 @@ namespace Jasper.Messaging.Transports.Receiving
             _agent = agent;
         }
 
+        public ListeningStatus Status
+        {
+            get => _agent.Status;
+            set => _agent.Status = value;
+        }
+
         public Uri Address => _agent.Address;
 
         async Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)

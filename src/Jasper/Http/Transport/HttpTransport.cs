@@ -88,6 +88,9 @@ namespace Jasper.Http.Transport
                 writer.WriteLine($"Listening for messages at {LocalReplyUri.ToString().AppendUrl("durable")}");
             }
         }
+
+        // Ignored, we evaluate this one in the TransportEndpoints
+        public ListeningStatus ListeningStatus { get; set; } = ListeningStatus.Accepting;
     }
 
 }

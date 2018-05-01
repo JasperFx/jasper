@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +20,7 @@ namespace Jasper.Messaging.Logging
         public const int RecoveredOutgoingEventId = 207;
         public const int DiscardedExpiredEventId = 208;
         public const int DiscardedUnknownTransportEventId = 209;
+        public const int ListeningStatusChangedEventId = 210;
 
         private readonly ILogger _logger;
         private readonly Action<ILogger, int, Uri, Exception> _outgoingBatchSucceeded;
@@ -30,7 +32,8 @@ namespace Jasper.Messaging.Logging
         private readonly Action<ILogger, int, Exception> _recoveredIncoming;
         private readonly Action<ILogger, int, Exception> _recoveredOutgoing;
         private readonly Action<ILogger, Envelope, Exception> _discardedExpired;
-        private Action<ILogger, Envelope, Exception> _discardedUnknownTransport;
+        private readonly Action<ILogger, Envelope, Exception> _discardedUnknownTransport;
+        private readonly Action<ILogger, ListeningStatus, Exception> _listeningStatusChanged;
 
 
         public TransportLogger(ILoggerFactory factory)
@@ -68,6 +71,9 @@ namespace Jasper.Messaging.Logging
             _discardedUnknownTransport =
                 LoggerMessage.Define<Envelope>(LogLevel.Information, DiscardedUnknownTransportEventId,
                     "Discarded {envelope} with unknown transport");
+
+            _listeningStatusChanged = LoggerMessage.Define<ListeningStatus>(LogLevel.Information,
+                ListeningStatusChangedEventId, "ListeningStatus changed to {status}");
         }
 
         public virtual void OutgoingBatchSucceeded(OutgoingMessageBatch batch)
@@ -127,6 +133,11 @@ namespace Jasper.Messaging.Logging
             {
                 _discardedUnknownTransport(_logger, envelope, null);
             }
+        }
+
+        public void ListeningStatusChange(ListeningStatus status)
+        {
+            _listeningStatusChanged(_logger, status, null);
         }
 
         public virtual void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")

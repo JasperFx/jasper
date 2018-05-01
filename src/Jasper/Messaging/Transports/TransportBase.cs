@@ -72,6 +72,7 @@ namespace Jasper.Messaging.Transports
             foreach (var uri in incoming)
             {
                 var agent = buildListeningAgent(uri, settings);
+                agent.Status = _status;
 
                 var listener = uri.IsDurable()
                     ? _durableMessagingFactory.BuildListener(agent, root)
@@ -91,6 +92,21 @@ namespace Jasper.Messaging.Transports
             foreach (var listener in _listeners)
             {
                 writer.WriteLine($"Listening at {listener.Address}");
+            }
+        }
+
+        private ListeningStatus _status = ListeningStatus.Accepting;
+
+        public ListeningStatus ListeningStatus
+        {
+            get => _status;
+            set
+            {
+                _status = value;
+                foreach (var listener in _listeners)
+                {
+                    listener.Status = value;
+                }
             }
         }
 

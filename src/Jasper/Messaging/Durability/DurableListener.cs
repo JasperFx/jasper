@@ -33,6 +33,12 @@ namespace Jasper.Messaging.Durability
 
         public Uri Address => _agent.Address;
 
+        public ListeningStatus Status
+        {
+            get => _agent.Status;
+            set => _agent.Status = value;
+        }
+
         public async Task<ReceivedStatus> Received(Uri uri, Envelope[] messages)
         {
             var now = DateTime.UtcNow;

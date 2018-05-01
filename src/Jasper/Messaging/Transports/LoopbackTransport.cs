@@ -34,5 +34,8 @@ namespace Jasper.Messaging.Transports
         {
             writer.WriteLine("Listening for loopback messages");
         }
+
+        // Ignored
+        public ListeningStatus ListeningStatus { get; set; } = ListeningStatus.Accepting;
     }
 }

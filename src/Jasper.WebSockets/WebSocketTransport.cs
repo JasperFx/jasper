@@ -63,6 +63,9 @@ namespace Jasper.WebSockets
             writer.WriteLine("WebSocket transport is active");
         }
 
+        // Ignored
+        public ListeningStatus ListeningStatus { get; set; }
+
         public Task Accept(WebSocket socket)
         {
             return _sockets.Accept(socket);

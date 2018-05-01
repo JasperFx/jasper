@@ -18,10 +18,10 @@ namespace Jasper.Http.Testing.Transport
             {
                 var routes = runtime.Get<RouteGraph>();
 
-                routes.ChainForAction<TransportEndpoint>(x => x.put__messages(null, null, null))
+                routes.ChainForAction<TransportEndpoint>(nameof(TransportEndpoint.put__messages))
                     .ShouldBeNull();
 
-                routes.ChainForAction<TransportEndpoint>(x => x.put__messages_durable(null, null, null))
+                routes.ChainForAction<TransportEndpoint>(nameof(TransportEndpoint.put__messages_durable))
                     .ShouldBeNull();
             }
             finally
@@ -46,10 +46,10 @@ namespace Jasper.Http.Testing.Transport
             {
                 var routes = runtime.Get<RouteGraph>();
 
-                routes.ChainForAction<TransportEndpoint>(x => x.put__messages(null, null, null))
+                routes.ChainForAction<TransportEndpoint>(nameof(TransportEndpoint.put__messages))
                     .ShouldNotBeNull();
 
-                routes.ChainForAction<TransportEndpoint>(x => x.put__messages_durable(null, null, null))
+                routes.ChainForAction<TransportEndpoint>(nameof(TransportEndpoint.put__messages_durable))
                     .ShouldNotBeNull();
             }
             finally
@@ -72,10 +72,10 @@ namespace Jasper.Http.Testing.Transport
             {
                 var routes = runtime.Get<RouteGraph>();
 
-                routes.ChainForAction<TransportEndpoint>(x => x.put__messages(null, null, null))
+                routes.ChainForAction<TransportEndpoint>(nameof(TransportEndpoint.put__messages))
                     .Route.Pattern.ShouldBe("messages");
 
-                routes.ChainForAction<TransportEndpoint>(x => x.put__messages_durable(null, null, null))
+                routes.ChainForAction<TransportEndpoint>(nameof(TransportEndpoint.put__messages_durable))
                     .Route.Pattern.ShouldBe("messages/durable");
             }
             finally
@@ -100,10 +100,10 @@ namespace Jasper.Http.Testing.Transport
             {
                 var routes = runtime.Get<RouteGraph>();
 
-                routes.ChainForAction<TransportEndpoint>(x => x.put__messages(null, null, null))
+                routes.ChainForAction<TransportEndpoint>(nameof(TransportEndpoint.put__messages))
                     .Route.Pattern.ShouldBe("api");
 
-                routes.ChainForAction<TransportEndpoint>(x => x.put__messages_durable(null, null, null))
+                routes.ChainForAction<TransportEndpoint>(nameof(TransportEndpoint.put__messages_durable))
                     .Route.Pattern.ShouldBe("api/durable");
             }
             finally

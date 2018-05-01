@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.Messaging.Logging
@@ -77,6 +78,14 @@ namespace Jasper.Messaging.Logging
         /// </summary>
         /// <param name="envelopes"></param>
         void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes);
+
+
+        /// <summary>
+        /// Called whenever the current node changes its listening status
+        /// to either accepting or too busy
+        /// </summary>
+        /// <param name="status"></param>
+        void ListeningStatusChange(ListeningStatus status);
     }
     // ENDSAMPLE
 }

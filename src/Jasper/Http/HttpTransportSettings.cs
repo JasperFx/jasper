@@ -20,17 +20,12 @@ namespace Jasper.Http
 
         IHttpTransportConfiguration IHttpTransportConfiguration.EnableListening(bool enabled)
         {
-            if (enabled)
-            {
-                _parent.EnableTransport("http");
-            }
-            else
-            {
-                _parent.DisableTransport("http");
-            }
+            ListeningEnabled = enabled;
 
             return this;
         }
+
+        public bool ListeningEnabled { get; set; }
 
         IHttpTransportConfiguration IHttpTransportConfiguration.RelativeUrl(string url)
         {

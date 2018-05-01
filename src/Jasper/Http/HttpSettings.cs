@@ -49,14 +49,14 @@ namespace Jasper.Http
                     var actions = t.Result;
                     foreach (var methodCall in actions) Routes.AddRoute(methodCall);
 
-                    if (_transport.IsEnabled)
+                    if (_transport.ListeningEnabled)
                     {
 #pragma warning disable 4014
-                        Routes.AddRoute<TransportEndpoint>(x => x.put__messages(null, null, null),
+                        Routes.AddRoute<TransportEndpoint>(nameof(TransportEndpoint.put__messages),
                             _transport.RelativeUrl).Route.HttpMethod = "PUT";
 
 
-                        Routes.AddRoute<TransportEndpoint>(x => x.put__messages_durable(null, null, null),
+                        Routes.AddRoute<TransportEndpoint>(nameof(TransportEndpoint.put__messages_durable),
                             _transport.RelativeUrl.AppendUrl("durable")).Route.HttpMethod = "PUT";
 
 #pragma warning restore 4014

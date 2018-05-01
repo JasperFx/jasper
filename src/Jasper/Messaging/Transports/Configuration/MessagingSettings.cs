@@ -31,7 +31,6 @@ namespace Jasper.Messaging.Transports.Configuration
             UniqueNodeId = Guid.NewGuid().ToString().GetHashCode();
 
             Http = new HttpTransportSettings(this);
-            DisableTransport("http");
         }
 
         public int UniqueNodeId { get; }

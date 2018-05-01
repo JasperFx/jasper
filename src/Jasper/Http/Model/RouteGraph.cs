@@ -27,6 +27,14 @@ namespace Jasper.Http.Model
             return AddRoute(methodCall, url);
         }
 
+        public RouteChain AddRoute<T>(string methodName, string url = null)
+        {
+            var method = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+            if (method == null) throw new ArgumentOutOfRangeException(nameof(method), "Could not find the designated method");
+
+            return AddRoute(typeof(T), method, url);
+        }
+
         public RouteChain AddRoute<T>(Expression<Action<T>> expression, string url = null)
         {
             var method = ReflectionHelper.GetMethod(expression);
@@ -44,6 +52,14 @@ namespace Jasper.Http.Model
         public RouteChain ChainForAction<T>(Expression<Action<T>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
+
+            return _chains.FirstOrDefault(x => x.Action.HandlerType == typeof(T) && Equals(x.Action.Method, method));
+        }
+
+        public RouteChain ChainForAction<T>(string methodName)
+        {
+            var method = typeof(T).GetMethod(methodName,
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
 
             return _chains.FirstOrDefault(x => x.Action.HandlerType == typeof(T) && Equals(x.Action.Method, method));
         }

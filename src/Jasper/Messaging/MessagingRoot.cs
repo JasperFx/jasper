@@ -38,9 +38,10 @@ namespace Jasper.Messaging
         }
 
         private readonly HandlerGraph _handlers;
+        private readonly ITransportLogger _transportLogger;
+        private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
-        public MessagingRoot(
-            ObjectPoolProvider pooling,
+        public MessagingRoot(ObjectPoolProvider pooling,
             MessagingSettings settings,
             HandlerGraph handlers,
             Forwarders forwarders,
@@ -53,10 +54,11 @@ namespace Jasper.Messaging
             IEnumerable<IMessageSerializer> writers,
             ITransport[] transports,
             IEnumerable<IMissingHandler> missingHandlers,
-            IEnumerable<IUriLookup> lookups)
+            IEnumerable<IUriLookup> lookups, ITransportLogger transportLogger)
         {
             Settings = settings;
             _handlers = handlers;
+            _transportLogger = transportLogger;
             Replies = new ReplyWatcher();
             Factory = factory;
             Channels = channels;
@@ -83,6 +85,22 @@ namespace Jasper.Messaging
             if (Factory is NulloDurableMessagingFactory)
             {
                 Factory.As<NulloDurableMessagingFactory>().ScheduledJobs = ScheduledJobs;
+            }
+        }
+
+        public ListeningStatus ListeningStatus
+        {
+            get => _listeningStatus;
+            set {
+
+                _transportLogger.ListeningStatusChange(value);
+                _listeningStatus = value;
+
+
+                foreach (var transport in Transports)
+                {
+                    transport.ListeningStatus = value;
+                }
             }
         }
 

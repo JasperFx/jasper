@@ -76,6 +76,9 @@ namespace Jasper.Messaging.Transports.Stub
             writer.WriteLine("'Stub' transport is active");
         }
 
+        // Not really used here
+        public ListeningStatus ListeningStatus { get; set; } = ListeningStatus.Accepting;
+
         public StubMessageCallback LastCallback()
         {
             return Callbacks.LastOrDefault();

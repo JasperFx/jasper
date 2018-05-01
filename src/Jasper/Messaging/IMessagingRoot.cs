@@ -29,6 +29,7 @@ namespace Jasper.Messaging
         MessagingSettings Settings { get; }
         IDurableMessagingFactory Factory { get; }
         ITransport[] Transports { get; }
+        ListeningStatus ListeningStatus { get; set; }
 
         IMessageContext NewContext();
         IMessageContext ContextFor(Envelope envelope);

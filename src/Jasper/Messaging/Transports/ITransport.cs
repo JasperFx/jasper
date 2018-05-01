@@ -16,5 +16,7 @@ namespace Jasper.Messaging.Transports
         void StartListening(IMessagingRoot root);
 
         void Describe(TextWriter writer);
+
+        ListeningStatus ListeningStatus { get; set; }
     }
 }

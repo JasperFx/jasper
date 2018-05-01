@@ -197,6 +197,11 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             throw new NotImplementedException();
         }
 
+        public Task StopSending()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool ProcessingFailed { get; set; }
     }
 }
