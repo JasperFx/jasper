@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging.Logging
@@ -22,7 +23,7 @@ namespace Jasper.Messaging.Logging
         void CircuitResumed(Uri destination);
 
         void LogLocalWorkerQueueDepth(int count);
-
         void LogPersistedCounts(PersistedCounts counts);
+        void MessagesReceived(IEnumerable<Envelope> envelopes);
     }
 }

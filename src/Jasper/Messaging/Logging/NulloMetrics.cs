@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging.Logging
@@ -35,6 +36,9 @@ namespace Jasper.Messaging.Logging
 
         }
 
+        public void MessagesReceived(IEnumerable<Envelope> envelopes)
+        {
 
+        }
     }
 }

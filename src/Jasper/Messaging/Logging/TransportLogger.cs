@@ -90,6 +90,8 @@ namespace Jasper.Messaging.Logging
 
         public virtual void IncomingBatchReceived(IEnumerable<Envelope> envelopes)
         {
+            _metrics.MessagesReceived(envelopes);
+
             _incomingBatchReceived(_logger, envelopes.Count(), envelopes.FirstOrDefault()?.ReplyUri, null);
         }
 

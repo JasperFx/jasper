@@ -81,7 +81,6 @@ namespace Jasper.Messaging.Logging
 
         public virtual void Received(Envelope envelope)
         {
-            _metrics.MessageReceived(envelope);
             _received(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.Destination,
                 envelope.ReplyUri, null);
         }
