@@ -161,6 +161,7 @@ namespace Jasper.Messaging.Runtime
             set => _queue = value;
         }
 
+        [Obsolete("Use SentTime instead")]
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
         // This is purely for backwards compatibility in wire format

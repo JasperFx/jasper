@@ -124,6 +124,7 @@ task :pack do
   sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Storyteller/Jasper.Storyteller.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.RabbitMQ/Jasper.RabbitMQ.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.ApplicationInsights/Jasper.ApplicationInsights.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/JasperHttpTesting/JasperHttpTesting.csproj -o ./../../artifacts --configuration Release --no-restore"
 end
 
