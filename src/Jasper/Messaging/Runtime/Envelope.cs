@@ -41,6 +41,11 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public int Attempts { get; set; }
 
+        /// <summary>
+        /// Time when this envelope was "sent" to a messaging context
+        /// </summary>
+        public DateTimeOffset? SentTime { internal set; get; }
+
         public Envelope()
         {
         }
