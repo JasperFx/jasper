@@ -203,9 +203,12 @@ namespace Jasper.Messaging
 
         private void trackEnvelopeCorrelation(Envelope[] outgoing)
         {
+            var now = DateTimeOffset.UtcNow;
+
             foreach (var envelope in outgoing)
             {
                 envelope.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? envelope.SagaId;
+                envelope.SentTime = now;
             }
 
             if (Envelope != null)
