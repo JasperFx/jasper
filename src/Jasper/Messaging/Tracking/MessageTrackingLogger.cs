@@ -18,7 +18,7 @@ namespace Jasper.Messaging.Tracking
         private readonly MessageHistory _history;
 
 
-        public MessageTrackingLogger(MessageHistory history, ILoggerFactory factory) : base(factory)
+        public MessageTrackingLogger(MessageHistory history, ILoggerFactory factory, IMetrics metrics) : base(factory, metrics)
         {
             _history = history;
         }

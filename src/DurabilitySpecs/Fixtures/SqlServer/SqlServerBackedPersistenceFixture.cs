@@ -35,7 +35,7 @@ namespace DurabilitySpecs.Fixtures.SqlServer
 
         public override void SetUp()
         {
-            _messageLogger = new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory());
+            _messageLogger = new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory(), new NulloMetrics());
 
             _messageLogger.Start(Context);
 
@@ -211,7 +211,7 @@ create table receiver.trace_doc
     {
         public TaskCompletionSource<bool> Waiter = new TaskCompletionSource<bool>();
 
-        public SenderLatchDetected(ILoggerFactory factory) : base(factory)
+        public SenderLatchDetected(ILoggerFactory factory) : base(factory, new NulloMetrics())
         {
         }
 

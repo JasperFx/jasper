@@ -20,7 +20,7 @@ namespace Jasper.Storyteller.Logging
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
         private readonly List<PublisherSubscriberMismatch> _mismatches = new List<PublisherSubscriberMismatch>();
 
-        public StorytellerMessageLogger(MessageHistory history, ILoggerFactory factory) : base(history, factory)
+        public StorytellerMessageLogger(MessageHistory history, ILoggerFactory factory, IMetrics metrics) : base(history, factory, metrics)
         {
             _history = history;
             Errors = new BusErrors();

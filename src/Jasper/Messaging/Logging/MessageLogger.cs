@@ -7,6 +7,7 @@ namespace Jasper.Messaging.Logging
 {
     public class MessageLogger : IMessageLogger
     {
+        private readonly IMetrics _metrics;
         public const int SentEventId = 100;
         public const int ReceivedEventId = 101;
         public const int ExecutionStartedEventId = 102;
@@ -32,8 +33,9 @@ namespace Jasper.Messaging.Logging
         private readonly Action<ILogger, Envelope, Exception> _movedToErrorQueue;
         private readonly Action<ILogger, Envelope, Exception> _undeliverable;
 
-        public MessageLogger(ILoggerFactory factory)
+        public MessageLogger(ILoggerFactory factory, IMetrics metrics)
         {
+            _metrics = metrics;
             _logger = factory.CreateLogger("Jasper.Messages");
 
             _sent = LoggerMessage.Define<string, Guid, Uri>(LogLevel.Debug, SentEventId,
@@ -79,6 +81,7 @@ namespace Jasper.Messaging.Logging
 
         public virtual void Received(Envelope envelope)
         {
+            _metrics.MessageReceived(envelope);
             _received(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.Destination,
                 envelope.ReplyUri, null);
         }
@@ -95,11 +98,13 @@ namespace Jasper.Messaging.Logging
 
         public virtual void MessageSucceeded(Envelope envelope)
         {
+            _metrics.MessageExecuted(envelope);
             _messageSucceeded(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.ReplyUri, null);
         }
 
         public virtual void MessageFailed(Envelope envelope, Exception ex)
         {
+            _metrics.MessageExecuted(envelope);
             _messageFailed(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.ReplyUri, ex);
         }
 
@@ -130,6 +135,7 @@ namespace Jasper.Messaging.Logging
 
         public virtual void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
+            _metrics.LogException(ex);
             _logger.LogError(ex, message);
         }
 

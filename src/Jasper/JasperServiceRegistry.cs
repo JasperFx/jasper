@@ -27,6 +27,8 @@ namespace Jasper
     {
         public JasperServiceRegistry(JasperRegistry parent)
         {
+            For<IMetrics>().Use<NulloMetrics>();
+
             this.AddLogging();
 
             For<IMessageLogger>().Use<MessageLogger>().Singleton();

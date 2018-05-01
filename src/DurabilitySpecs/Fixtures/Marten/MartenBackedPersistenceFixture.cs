@@ -44,7 +44,7 @@ namespace DurabilitySpecs.Fixtures.Marten
         public override void SetUp()
         {
 
-            _messageLogger = new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory());
+            _messageLogger = new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory(), new NulloMetrics());
 
             _messageLogger.Start(Context);
 
@@ -231,7 +231,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public Task<bool> Received => Waiter.Task;
 
-        public SenderLatchDetected(ILoggerFactory factory) : base(factory)
+        public SenderLatchDetected(ILoggerFactory factory) : base(factory, new NulloMetrics())
         {
         }
 

@@ -10,6 +10,7 @@ namespace Jasper.Messaging.Logging
 {
     public class TransportLogger : ITransportLogger
     {
+        private readonly IMetrics _metrics;
         public const int OutgoingBatchSucceededEventId = 200;
         public const int OutgoingBatchFailedEventId = 201;
         public const int IncomingBatchReceivedEventId = 202;
@@ -36,8 +37,9 @@ namespace Jasper.Messaging.Logging
         private readonly Action<ILogger, ListeningStatus, Exception> _listeningStatusChanged;
 
 
-        public TransportLogger(ILoggerFactory factory)
+        public TransportLogger(ILoggerFactory factory, IMetrics metrics)
         {
+            _metrics = metrics;
             _logger = factory.CreateLogger("Jasper.Transports");
 
             _outgoingBatchSucceeded = LoggerMessage.Define<int, Uri>(LogLevel.Debug, OutgoingBatchSucceededEventId,
@@ -93,11 +95,13 @@ namespace Jasper.Messaging.Logging
 
         public virtual void CircuitBroken(Uri destination)
         {
+            _metrics.CircuitBroken(destination);
             _circuitBroken(_logger, destination, null);
         }
 
         public virtual void CircuitResumed(Uri destination)
         {
+            _metrics.CircuitResumed(destination);
             _circuitResumed(_logger, destination, null);
         }
 
@@ -142,12 +146,13 @@ namespace Jasper.Messaging.Logging
 
         public virtual void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
         {
+            _metrics.LogException(ex);
             _logger.LogError(correlationId == Guid.Empty ? message : message + correlationId, ex);
         }
 
         public static ITransportLogger Empty()
         {
-            return new TransportLogger(new LoggerFactory());
+            return new TransportLogger(new LoggerFactory(), new NulloMetrics());
         }
     }
 }
