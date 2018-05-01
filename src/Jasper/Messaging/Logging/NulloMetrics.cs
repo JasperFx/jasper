@@ -30,16 +30,11 @@ namespace Jasper.Messaging.Logging
         {
         }
 
-        public void LogPersistedIncomingMessages(int count)
+        public void LogPersistedCounts(PersistedCounts counts)
         {
+
         }
 
-        public void LogPersistedScheduledMessages(int count)
-        {
-        }
 
-        public void LogPersistedOutgoingMessages(int count, Uri destination)
-        {
-        }
     }
 }

@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
+using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Util;
@@ -350,6 +351,46 @@ values
 
                 await cmd.ExecuteNonQueryAsync();
             }
+        }
+
+        public async Task<PersistedCounts> GetPersistedCounts()
+        {
+            var counts = new PersistedCounts();
+
+            using (var conn = new SqlConnection(_settings.ConnectionString))
+            {
+                await conn.OpenAsync();
+
+
+
+                using (var reader = await conn
+                    .CreateCommand(
+                        $"select status, count(*) from {_settings.SchemaName}.{IncomingTable} group by status")
+                    .ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var status = await reader.GetFieldValueAsync<string>(0);
+                        var count = await reader.GetFieldValueAsync<int>(1);
+
+                        if (status == TransportConstants.Incoming)
+                        {
+                            counts.Incoming = count;
+                        }
+                        else if (status == TransportConstants.Scheduled)
+                        {
+                            counts.Scheduled = count;
+                        }
+                    }
+                }
+
+                counts.Outgoing = (int)await conn
+                        .CreateCommand($"select count(*) from {_settings.SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
+            }
+
+
+
+            return counts;
         }
 
         public static SqlCommand BuildOutgoingStorageCommand(Envelope[] envelopes, int ownerId,

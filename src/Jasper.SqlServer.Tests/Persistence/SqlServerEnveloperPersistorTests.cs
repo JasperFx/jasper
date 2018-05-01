@@ -334,5 +334,55 @@ namespace Jasper.SqlServer.Tests.Persistence
             stored.Single(x => x.Id == list[7].Id).ExecutionTime.HasValue.ShouldBeTrue();
             stored.Single(x => x.Id == list[9].Id).ExecutionTime.HasValue.ShouldBeTrue();
         }
+
+        [Fact]
+        public async Task get_counts()
+        {
+            var list = new List<Envelope>();
+
+            // 10 incoming
+            for (int i = 0; i < 10; i++)
+            {
+                var envelope = ObjectMother.Envelope();
+                envelope.Status = TransportConstants.Incoming;
+
+                list.Add(envelope);
+            }
+
+            await thePersistor.StoreIncoming(list.ToArray());
+
+
+
+            // 7 scheduled
+            list.Clear();
+            for (int i = 0; i < 7; i++)
+            {
+                var envelope = ObjectMother.Envelope();
+                envelope.Status = TransportConstants.Scheduled;
+
+                list.Add(envelope);
+            }
+
+            await thePersistor.StoreIncoming(list.ToArray());
+
+
+            // 3 outgoing
+            list.Clear();
+            for (int i = 0; i < 3; i++)
+            {
+                var envelope = ObjectMother.Envelope();
+                envelope.Status = TransportConstants.Outgoing;
+
+                list.Add(envelope);
+            }
+
+            await thePersistor.StoreOutgoing(list.ToArray(), 0);
+
+            var counts = await thePersistor.GetPersistedCounts();
+
+            counts.Incoming.ShouldBe(10);
+            counts.Scheduled.ShouldBe(7);
+            counts.Outgoing.ShouldBe(3);
+        }
     }
 }

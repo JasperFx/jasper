@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging.Durability
@@ -25,5 +26,7 @@ namespace Jasper.Messaging.Durability
         Task StoreOutgoing(Envelope envelope, int ownerId);
 
         Task StoreOutgoing(Envelope[] envelopes, int ownerId);
+
+        Task<PersistedCounts> GetPersistedCounts();
     }
 }

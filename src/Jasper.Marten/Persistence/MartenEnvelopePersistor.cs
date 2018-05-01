@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Resiliency;
 using Jasper.Messaging.Durability;
+using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Marten;
 using Marten.Util;
 using NpgsqlTypes;
@@ -156,6 +158,43 @@ namespace Jasper.Marten.Persistence
 
                 await session.SaveChangesAsync();
             }
+        }
+
+        public async Task<PersistedCounts> GetPersistedCounts()
+        {
+            var counts = new PersistedCounts();
+
+            using (var session = _store.QuerySession())
+            {
+
+                using (var reader = await session.Connection
+                    .CreateCommand(
+                        $"select status, count(*) from {_tables.Incoming} group by status")
+                    .ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var status = await reader.GetFieldValueAsync<string>(0);
+                        var count = await reader.GetFieldValueAsync<int>(1);
+
+                        if (status == TransportConstants.Incoming)
+                        {
+                            counts.Incoming = count;
+                        }
+                        else if (status == TransportConstants.Scheduled)
+                        {
+                            counts.Scheduled = count;
+                        }
+                    }
+                }
+
+                counts.Outgoing = (int)(long)await session.Connection
+                    .CreateCommand($"select count(*) from {_tables.Outgoing}").ExecuteScalarAsync();
+            }
+
+
+
+            return counts;
         }
     }
 }

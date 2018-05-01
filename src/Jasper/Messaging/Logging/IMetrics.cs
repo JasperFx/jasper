@@ -23,8 +23,6 @@ namespace Jasper.Messaging.Logging
 
         void LogLocalWorkerQueueDepth(int count); // delegated from MetricsCollector
 
-        void LogPersistedIncomingMessages(int count); // delegated from MetricsCollector
-        void LogPersistedScheduledMessages(int count); // delegated from MetricsCollector
-        void LogPersistedOutgoingMessages(int count, Uri destination); // delegated from MetricsCollector
+        void LogPersistedCounts(PersistedCounts counts);
     }
 }
