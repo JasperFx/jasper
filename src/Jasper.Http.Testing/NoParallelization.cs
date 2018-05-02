@@ -1,5 +1,4 @@
 ﻿using Xunit;
 
-#if RELEASE
-    [assembly: CollectionBehavior(CollectionBehavior.CollectionPerAssembly)]
-#endif
+[assembly: CollectionBehavior(CollectionBehavior.CollectionPerAssembly)]
+
