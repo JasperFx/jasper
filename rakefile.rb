@@ -80,9 +80,9 @@ desc 'Run the unit tests'
 task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
-	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
-	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj --no-restore"
-	sh "dotnet test src/Jasper.CommandLine.Testing/Jasper.CommandLine.Testing.csproj --no-restore"
+	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --configuration Release --no-restore"
+	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj --configuration Release --no-restore"
+	sh "dotnet test src/Jasper.CommandLine.Testing/Jasper.CommandLine.Testing.csproj --configuration Release --no-restore"
 
 end
 
@@ -125,6 +125,7 @@ task :pack do
   sh "dotnet pack src/Jasper.Storyteller/Jasper.Storyteller.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.RabbitMQ/Jasper.RabbitMQ.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.ApplicationInsights/Jasper.ApplicationInsights.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.JsonCommands/Jasper.JsonCommands.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/JasperHttpTesting/JasperHttpTesting.csproj -o ./../../artifacts --configuration Release --no-restore"
 end
 
