@@ -13,7 +13,7 @@ BUILD_NUMBER = build_number
 
 CI = ENV["CI"].nil? ? false : true
 
-task :ci => [:test, :storyteller, :commands, :integrationtests, :pack, :appVeyorPush]
+task :ci => [:storyteller, :commands, :integrationtests, :pack, :appVeyorPush]
 
 
 task :default => [:test, :storyteller]
