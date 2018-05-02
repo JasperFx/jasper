@@ -7,10 +7,6 @@ using Jasper.Conneg;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
-using Jasper.Testing;
-using Jasper.Testing.Messaging;
-using Jasper.Testing.Messaging.Lightweight;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -78,15 +74,14 @@ namespace Jasper.Http.Testing.Transport
             waiter1.Result.Message.As<Message1>()
                 .Id.ShouldBe(message1.Id);
         }
-
     }
 
     public abstract class SendingContext : IDisposable
     {
-        private readonly JasperRegistry senderRegistry = new JasperRegistry();
         private readonly JasperRegistry receiverRegistry = new JasperRegistry();
-        protected JasperRuntime theSender;
+        private readonly JasperRegistry senderRegistry = new JasperRegistry();
         protected JasperRuntime theReceiver;
+        protected JasperRuntime theSender;
         protected MessageTracker theTracker;
 
         public SendingContext()
@@ -97,7 +92,13 @@ namespace Jasper.Http.Testing.Transport
                 .IncludeType<MessageConsumer>();
 
             receiverRegistry.Services.For<MessageTracker>().Use(theTracker);
+        }
 
+
+        public void Dispose()
+        {
+            theSender?.Dispose();
+            theReceiver?.Dispose();
         }
 
         protected async Task StartTheSender(Action<JasperRegistry> configure)
@@ -112,13 +113,6 @@ namespace Jasper.Http.Testing.Transport
             configure(receiverRegistry);
             theReceiver = await JasperRuntime.ForAsync(receiverRegistry);
         }
-
-
-        public void Dispose()
-        {
-            theSender?.Dispose();
-            theReceiver?.Dispose();
-        }
     }
 
     public class RequestReplyHandler
@@ -127,7 +121,7 @@ namespace Jasper.Http.Testing.Transport
         {
             return new Reply1
             {
-                Sum = request.One + request.Two,
+                Sum = request.One + request.Two
             };
         }
     }
@@ -141,9 +135,11 @@ namespace Jasper.Http.Testing.Transport
 
     public class Reply1Reader : IMessageDeserializer
     {
+        public static bool WasUsed { get; set; }
         public string MessageType { get; } = typeof(Reply1).ToMessageAlias();
         public Type DotNetType { get; } = typeof(Reply1);
         public string ContentType { get; } = "text/plain";
+
         public object ReadFromData(byte[] data)
         {
             WasUsed = true;
@@ -155,8 +151,6 @@ namespace Jasper.Http.Testing.Transport
             };
         }
 
-        public static bool WasUsed { get; set; }
-
         public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             throw new NotSupportedException();
@@ -165,16 +159,16 @@ namespace Jasper.Http.Testing.Transport
 
     public class Reply1Writer : IMessageSerializer
     {
+        public static bool WasUsed { get; set; }
         public Type DotNetType { get; } = typeof(Reply1);
         public string ContentType { get; } = "text/plain";
+
         public byte[] Write(object model)
         {
             WasUsed = true;
             var text = model.As<Reply1>().Sum.ToString();
             return Encoding.UTF8.GetBytes(text);
         }
-
-        public static bool WasUsed { get; set; }
 
         public Task WriteToStream(object model, HttpResponse response)
         {
@@ -185,5 +179,45 @@ namespace Jasper.Http.Testing.Transport
     public class Reply1
     {
         public int Sum { get; set; }
+    }
+    
+    public class MessageConsumer
+    {
+        private readonly MessageTracker _tracker;
+
+        public MessageConsumer(MessageTracker tracker)
+        {
+            _tracker = tracker;
+        }
+
+        public void Consume(Envelope envelope, Message1 message)
+        {
+            _tracker.Record(message, envelope);
+        }
+
+        public void Consume(Envelope envelope, Message2 message)
+        {
+            if (envelope.Attempts < 2)
+            {
+                throw new DivideByZeroException();
+            }
+
+            _tracker.Record(message, envelope);
+        }
+
+        public void Consume(Envelope envelope, TimeoutsMessage message)
+        {
+            if (envelope.Attempts < 2)
+            {
+                throw new TimeoutException();
+            }
+
+            _tracker.Record(message, envelope);
+        }
+    }
+    
+    public class TimeoutsMessage
+    {
+
     }
 }

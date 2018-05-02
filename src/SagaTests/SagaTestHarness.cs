@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Jasper;
+using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
-using Xunit;
 
-
-namespace Jasper.Testing.Messaging.Sagas
+namespace SagaTests
 {
     public abstract class SagaTestHarness<TSagaHandler, TSagaState> : IDisposable
         where TSagaHandler : StatefulSagaOf<TSagaState> where TSagaState : class
@@ -79,6 +77,37 @@ namespace Jasper.Testing.Messaging.Sagas
         protected TSagaState LoadState(object id)
         {
             return _runtime.Get<InMemorySagaPersistor>().Load<TSagaState>(id);
+        }
+    }
+
+    public static class HandlerConfigurationExtensions
+    {
+        public static IHandlerConfiguration DisableConventionalDiscovery(this IHandlerConfiguration handlers, bool disabled = true)
+        {
+            if (disabled)
+            {
+                handlers.Discovery(x => x.DisableConventionalDiscovery());
+            }
+
+            return handlers;
+        }
+
+        public static IHandlerConfiguration OnlyType<T>(this IHandlerConfiguration handlers)
+        {
+            handlers.Discovery(x =>
+            {
+                x.DisableConventionalDiscovery();
+                x.IncludeType<T>();
+            });
+
+            return handlers;
+        }
+
+        public static IHandlerConfiguration IncludeType<T>(this IHandlerConfiguration handlers)
+        {
+            handlers.Discovery(x => x.IncludeType<T>());
+
+            return handlers;
         }
     }
 }

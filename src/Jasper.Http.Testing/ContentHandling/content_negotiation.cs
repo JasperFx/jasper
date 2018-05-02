@@ -4,7 +4,6 @@ using System.Xml.Serialization;
 using Alba;
 using Baseline;
 using Jasper.Conneg;
-using Jasper.Testing;
 using Jasper.Util;
 using JasperHttpTesting;
 using Microsoft.AspNetCore.Http;

@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Testing.Messaging.Sagas;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Persistence.Sagas
+namespace SagaTests
 {
     public class advanced_usages : SagaTestHarness<IntBasicWorkflow, IntWorkflowState>
     {

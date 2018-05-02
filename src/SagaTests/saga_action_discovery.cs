@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
-using Jasper.Testing.Messaging.Runtime;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Sagas
+namespace SagaTests
 {
 
     public class SagaFixture : IDisposable
@@ -107,5 +108,37 @@ namespace Jasper.Testing.Messaging.Sagas
     public class MySagaState
     {
         public Guid Id { get; set; }
+    }
+
+    [MessageAlias("Message1")]
+    public class Message1
+    {
+        public Guid Id = Guid.NewGuid();
+    }
+
+    [MessageAlias("Message2")]
+    public class Message2
+    {
+        public Guid Id = Guid.NewGuid();
+    }
+
+    [MessageAlias("Message3")]
+    public class Message3
+    {
+
+    }
+
+    [MessageAlias("Message4")]
+    public class Message4
+    {
+
+    }
+
+    [MessageAlias("Message5")]
+    public class Message5
+    {
+        public Guid Id = Guid.NewGuid();
+
+        public int FailThisManyTimes = 0;
     }
 }

@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Http;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Storyteller;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
@@ -12,7 +10,7 @@ using Shouldly;
 using StoryTeller;
 using Xunit;
 
-namespace Jasper.Testing.Storyteller
+namespace Jasper.Storyteller.Tests
 {
     [Collection("integration")]
     public class JasperSystemTester
@@ -22,7 +20,6 @@ namespace Jasper.Testing.Storyteller
         {
             using (var system = JasperStorytellerHost.Basic(x =>
             {
-                x.Handlers.DisableConventionalDiscovery();
                 x.HttpRoutes.DisableConventionalDiscovery();
             }))
             {
@@ -48,7 +45,6 @@ namespace Jasper.Testing.Storyteller
         {
             using (var system = JasperStorytellerHost.Basic(x =>
             {
-                x.Handlers.DisableConventionalDiscovery();
                 x.HttpRoutes.DisableConventionalDiscovery();
             }))
             {
@@ -139,7 +135,7 @@ namespace Jasper.Testing.Storyteller
 
                 using (var context = system.CreateContext())
                 {
-                    context.GetService<MessagingSettings>().ShouldBeTheSameAs(system.Runtime.Get<MessagingSettings>());
+                    context.GetService<MessagingSettings>().ShouldBeSameAs(system.Runtime.Get<MessagingSettings>());
                 }
 
             }
@@ -156,7 +152,6 @@ namespace Jasper.Testing.Storyteller
         {
             Registry.Services.AddSingleton(DisposableGuy);
             Registry.HttpRoutes.DisableConventionalDiscovery();
-            Registry.Handlers.DisableConventionalDiscovery();
         }
 
         protected override void beforeAll()

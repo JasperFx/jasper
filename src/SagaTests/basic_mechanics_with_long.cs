@@ -1,46 +1,45 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Marten.Tests.Persistence.Sagas;
+using Jasper;
 using Jasper.Messaging.Sagas;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Sagas
+namespace SagaTests
 {
-
     [JasperIgnore]
-    public class StringBasicWorkflow : BasicWorkflow<StringWorkflowState, StringStart, StringCompleteThree, String>
+    public class LongBasicWorkflow : BasicWorkflow<LongWorkflowState, LongStart, LongCompleteThree, long>
     {
-        public StringWorkflowState Starts(WildcardStart start)
+        public LongWorkflowState Starts(WildcardStart start)
         {
-            var sagaId = start.Id;
-            return new StringWorkflowState
+            var sagaId = long.Parse(start.Id);
+            return new LongWorkflowState
             {
                 Id = sagaId,
                 Name = start.Name
             };
         }
 
-        public void Handles(StringDoThree message, StringWorkflowState state)
+        public void Handles(LongDoThree message, LongWorkflowState state)
         {
             state.ThreeCompleted = true;
         }
     }
 
-    public class StringDoThree
+    public class LongDoThree
     {
         [SagaIdentity]
-        public String TheSagaId { get; set; }
+        public long TheSagaId { get; set; }
     }
 
-    public class basic_mechanics_with_String : SagaTestHarness<StringBasicWorkflow, StringWorkflowState>
+    public class basic_mechanics_with_Long : SagaTestHarness<LongBasicWorkflow, LongWorkflowState>
     {
-        private readonly String stateId = Guid.NewGuid().ToString();
+        private readonly long stateId = new Random().Next();
 
         [Fact]
         public async Task start_1()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -55,6 +54,7 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task start_2()
         {
+
             await send(new WildcardStart
             {
                 Id = stateId.ToString(),
@@ -65,61 +65,6 @@ namespace Jasper.Testing.Messaging.Sagas
 
             state.ShouldNotBeNull();
             state.Name.ShouldBe("One Eye");
-        }
-
-        [Fact]
-        public async Task straight_up_update_with_the_saga_id_on_the_message()
-        {
-            await send(new StringStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            var message = new StringCompleteThree
-            {
-                SagaId = stateId
-            };
-
-            await send(message);
-
-            var state = LoadState(stateId);
-            state.ThreeCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task update_with_message_that_uses_saga_identity_attributed_property()
-        {
-            await send(new StringStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            var message = new StringDoThree
-            {
-                TheSagaId = stateId
-            };
-
-            await send(message);
-
-            var state = LoadState(stateId);
-            state.ThreeCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
-        {
-            await send(new StringStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new CompleteFour(), stateId);
-
-            var state = LoadState(stateId);
-            state.FourCompleted.ShouldBeTrue();
         }
 
         [Fact]
@@ -137,27 +82,70 @@ namespace Jasper.Testing.Messaging.Sagas
         {
             await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
             {
-                await invoke(new StringCompleteThree());
+                await invoke(new LongCompleteThree());
             });
 
         }
 
         [Fact]
-        public async Task unknown_state()
+        public async Task straight_up_update_with_the_saga_id_on_the_message()
         {
-            await Exception<UnknownSagaStateException>.ShouldBeThrownByAsync(async () =>
+            await send(new LongStart
             {
-                await invoke(new StringCompleteThree
-                {
-                    SagaId = "unknown"
-                });
+                Id = stateId,
+                Name = "Croaker"
             });
+
+            var message = new LongCompleteThree
+            {
+                SagaId = stateId
+            };
+
+            await send(message);
+
+            var state = LoadState(stateId);
+            state.ThreeCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task update_with_message_that_uses_saga_identity_attributed_property()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            var message = new LongDoThree
+            {
+                TheSagaId = stateId
+            };
+
+            await send(message);
+
+            var state = LoadState(stateId);
+            state.ThreeCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new CompleteFour(), stateId);
+
+            var state = LoadState(stateId);
+            state.FourCompleted.ShouldBeTrue();
         }
 
         [Fact]
         public async Task complete()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -171,7 +159,7 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"

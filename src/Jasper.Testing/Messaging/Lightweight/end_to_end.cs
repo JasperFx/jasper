@@ -4,11 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging.ErrorHandling;
-using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Messaging.WorkerQueues;
 using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
@@ -105,97 +103,4 @@ namespace Jasper.Testing.Messaging.Lightweight
             env.Source.ShouldBe(theSender.Get<MessagingSettings>().NodeId);
         }
     }
-
-
-    public class TimeoutsMessage
-    {
-
-    }
-
-    public class FakeScheduledJobProcessor : IScheduledJobProcessor
-    {
-        private readonly TaskCompletionSource<Envelope> _envelope = new TaskCompletionSource<Envelope>();
-
-        public Task<Envelope> Envelope()
-        {
-            return _envelope.Task;
-        }
-
-        public void Enqueue(DateTimeOffset executionTime, Envelope envelope)
-        {
-            envelope.ExecutionTime = executionTime;
-            _envelope.SetResult(envelope);
-        }
-
-        public Task PlayAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task PlayAt(DateTime executionTime)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task EmptyAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public int Count()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ScheduledJob[] QueuedJobs()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Start(IWorkerQueue workerQueue)
-        {
-
-        }
-
-        public void Dispose()
-        {
-        }
-    }
-
-    public class MessageConsumer
-    {
-        private readonly MessageTracker _tracker;
-
-        public MessageConsumer(MessageTracker tracker)
-        {
-            _tracker = tracker;
-        }
-
-        public void Consume(Envelope envelope, Message1 message)
-        {
-            _tracker.Record(message, envelope);
-        }
-
-        public void Consume(Envelope envelope, Message2 message)
-        {
-            if (envelope.Attempts < 2)
-            {
-                throw new DivideByZeroException();
-            }
-
-            _tracker.Record(message, envelope);
-        }
-
-        public void Consume(Envelope envelope, TimeoutsMessage message)
-        {
-            if (envelope.Attempts < 2)
-            {
-                throw new TimeoutException();
-            }
-
-            _tracker.Record(message, envelope);
-        }
-    }
-
-
 }

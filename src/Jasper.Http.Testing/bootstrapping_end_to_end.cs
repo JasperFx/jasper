@@ -7,7 +7,6 @@ using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
-using Jasper.Testing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders.Physical;

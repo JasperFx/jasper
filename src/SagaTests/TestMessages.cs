@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Sagas;
 
-namespace Jasper.Testing.Messaging.Sagas
+namespace SagaTests
 {
     public abstract class WorkflowState<T>
     {

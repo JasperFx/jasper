@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Http.Model;
 using Jasper.Http.Transport;
-using Jasper.Testing;
 using Shouldly;
 using Xunit;
 

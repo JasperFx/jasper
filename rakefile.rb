@@ -13,7 +13,7 @@ BUILD_NUMBER = build_number
 
 CI = ENV["CI"].nil? ? false : true
 
-task :ci => [:default, :commands, :integrationtests, :pack, :appVeyorPush]
+task :ci => [:test, :storyteller, :commands, :integrationtests, :pack, :appVeyorPush]
 
 
 task :default => [:test, :storyteller]
@@ -81,8 +81,21 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
+	sh "dotnet test src/SagaTests/SagaTests.csproj --no-restore"
 	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj --no-restore"
 	sh "dotnet test src/Jasper.CommandLine.Testing/Jasper.CommandLine.Testing.csproj --no-restore"
+	sh "dotnet test src/Jasper.Storyteller.Tests/Jasper.Storyteller.Tests.csproj --no-restore"
+
+end
+
+desc 'Run the appveyor unit tests'
+task :appveyortests => [:compile] do
+  FileUtils.mkdir_p RESULTS_DIR
+
+	sh "dotnet test src/AppVeyorTests/AppVeyorTests.csproj --no-restore"
+	sh "dotnet test src/SagaTests/SagaTests.csproj --no-restore"
+	sh "dotnet test src/Jasper.CommandLine.Testing/Jasper.CommandLine.Testing.csproj --no-restore"
+	sh "dotnet test src/Jasper.Storyteller.Tests/Jasper.Storyteller.Tests.csproj --no-restore"
 
 end
 

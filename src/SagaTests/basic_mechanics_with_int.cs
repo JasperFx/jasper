@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Marten.Tests.Persistence.Sagas;
+using Jasper;
 using Jasper.Messaging.Sagas;
-using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Sagas
+namespace SagaTests
 {
     [JasperIgnore]
     public class IntBasicWorkflow : BasicWorkflow<IntWorkflowState, IntStart, IntCompleteThree, int>

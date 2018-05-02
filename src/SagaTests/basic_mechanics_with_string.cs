@@ -1,47 +1,46 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Marten.Tests.Persistence.Sagas;
+using Jasper;
 using Jasper.Messaging.Sagas;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Sagas
+namespace SagaTests
 {
+
     [JasperIgnore]
-    public class GuidBasicWorkflow : BasicWorkflow<GuidWorkflowState, GuidStart, GuidCompleteThree, Guid>
+    public class StringBasicWorkflow : BasicWorkflow<StringWorkflowState, StringStart, StringCompleteThree, String>
     {
-        public GuidWorkflowState Starts(WildcardStart start)
+        public StringWorkflowState Starts(WildcardStart start)
         {
-            var sagaId = Guid.Parse(start.Id);
-            return new GuidWorkflowState
+            var sagaId = start.Id;
+            return new StringWorkflowState
             {
                 Id = sagaId,
                 Name = start.Name
             };
         }
 
-        public void Handles(GuidDoThree message, GuidWorkflowState state)
+        public void Handles(StringDoThree message, StringWorkflowState state)
         {
             state.ThreeCompleted = true;
         }
     }
 
-    public class GuidDoThree
+    public class StringDoThree
     {
         [SagaIdentity]
-        public Guid TheSagaId { get; set; }
+        public String TheSagaId { get; set; }
     }
 
-    public class basic_mechanics_with_guid : SagaTestHarness<GuidBasicWorkflow, GuidWorkflowState>
+    public class basic_mechanics_with_String : SagaTestHarness<StringBasicWorkflow, StringWorkflowState>
     {
-        private readonly Guid stateId = Guid.NewGuid();
+        private readonly String stateId = Guid.NewGuid().ToString();
 
         [Fact]
         public async Task start_1()
         {
-
-
-            await send(new GuidStart
+            await send(new StringStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -71,13 +70,13 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task straight_up_update_with_the_saga_id_on_the_message()
         {
-            await send(new GuidStart
+            await send(new StringStart
             {
                 Id = stateId,
                 Name = "Croaker"
             });
 
-            var message = new GuidCompleteThree
+            var message = new StringCompleteThree
             {
                 SagaId = stateId
             };
@@ -91,13 +90,13 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task update_with_message_that_uses_saga_identity_attributed_property()
         {
-            await send(new GuidStart
+            await send(new StringStart
             {
                 Id = stateId,
                 Name = "Croaker"
             });
 
-            var message = new GuidDoThree
+            var message = new StringDoThree
             {
                 TheSagaId = stateId
             };
@@ -111,7 +110,7 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
         {
-            await send(new GuidStart
+            await send(new StringStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -138,15 +137,27 @@ namespace Jasper.Testing.Messaging.Sagas
         {
             await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
             {
-                await invoke(new GuidCompleteThree());
+                await invoke(new StringCompleteThree());
             });
 
         }
 
         [Fact]
+        public async Task unknown_state()
+        {
+            await Exception<UnknownSagaStateException>.ShouldBeThrownByAsync(async () =>
+            {
+                await invoke(new StringCompleteThree
+                {
+                    SagaId = "unknown"
+                });
+            });
+        }
+
+        [Fact]
         public async Task complete()
         {
-            await send(new GuidStart
+            await send(new StringStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -160,7 +171,7 @@ namespace Jasper.Testing.Messaging.Sagas
         [Fact]
         public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
         {
-            await send(new GuidStart
+            await send(new StringStart
             {
                 Id = stateId,
                 Name = "Croaker"

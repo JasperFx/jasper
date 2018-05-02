@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Alba;
 using Baseline;
 using Jasper.Http.Routing;
-using Jasper.Testing;
 using JasperHttpTesting;
 using Shouldly;
 using Xunit;

@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Testing;
-using Jasper.Testing.Messaging.Lightweight;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Shouldly;
@@ -19,7 +17,6 @@ namespace Jasper.Http.Testing.Transport
                 _.Hosting
                     .UseUrls(urlListener);
 
-                _.Handlers.IncludeType<MessageConsumer>();
                 _.Handlers.IncludeType<RequestReplyHandler>();
             });
         }
