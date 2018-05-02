@@ -22,9 +22,9 @@ install:
   - ruby --version
   - bundle config --local path vendor/bundle
   - bundle install
+  - ps: Install-Product node LTS
   - npm install -g npm
   - npm --version
-  - ps: Install-Product node LTS
   - node --version
   - dotnet --version
   - set PATH=%POSTGRES_PATH%\bin;%PATH%
