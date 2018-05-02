@@ -74,7 +74,7 @@ namespace Jasper
                 ? registry.HttpRoutes.FindRoutes(runtime, registry, timer)
                 : Task.CompletedTask;
 
-            runtime.buildAspNetCoreServer();
+            runtime.buildAspNetCoreServer(services);
 
             await routeDiscovery;
 
@@ -140,8 +140,6 @@ namespace Jasper
 
             _logger = Get<ILoggerFactory>().CreateLogger("Jasper");
 
-            buildAspNetCoreServer();
-
             _applicationLifetime = Container.GetInstance<IApplicationLifetime>().As<ApplicationLifetime>();
 
             var httpContextFactory = Container.QuickBuild<HttpContextFactory>();
@@ -158,18 +156,18 @@ namespace Jasper
             _applicationLifetime?.NotifyStarted();
         }
 
-        private void buildAspNetCoreServer()
+        private void buildAspNetCoreServer(ServiceRegistry originalServices)
         {
             _server = buildServer();
 
-            RequestDelegate = buildRequestDelegate(_server);
+            RequestDelegate = buildRequestDelegate(_server, originalServices);
 
             HttpAddresses = Registry.HttpAddresses?.Split(';').ToArray() ??
                             new string[0];
 
         }
 
-        private RequestDelegate buildRequestDelegate(IServer server)
+        private RequestDelegate buildRequestDelegate(IServer server, ServiceRegistry originalServices)
         {
             var factory = new ApplicationBuilderFactory(Container);
             var builder = factory.CreateBuilder(server.Features);
@@ -181,20 +179,7 @@ namespace Jasper
 
             // Hate, hate, hate this code, but I blame the ASP.Net team
             // some how
-            Action<IApplicationBuilder> configure = app =>
-            {
-                configureAppBuilder(app, out var startups);
-                if (startups.Any())
-                {
-                    var services = new ServiceCollection();
-                    foreach (var startup in startups)
-                    {
-                        startup.ConfigureServices(services);
-                    }
-
-                    Container.Configure(services);
-                }
-            };
+            Action<IApplicationBuilder> configure = app => configureAppBuilder(app, originalServices);
 
             foreach (var filter in startupFilters.Reverse())
             {
@@ -207,19 +192,41 @@ namespace Jasper
             return builder.Build();
         }
 
-        private void configureAppBuilder(IApplicationBuilder app, out IStartup[] startups)
+        private void configureAppBuilder(IApplicationBuilder app, ServiceRegistry originalServices)
         {
             var router = Registry.HttpRoutes.Routes.Router;
             app.StoreRouter(router);
 
-            startups = Container.QuickBuildAll<IStartup>().ToArray();
+            var startups = Container.QuickBuildAll<IStartup>().ToArray();
+
+            if (startups.Any())
+            {
+                var services = new ServiceCollection();
+
+                // MVC wants to reach into the ServiceCollection to pick out
+                // things like the IHostedEnvironment, so we have to temporarily
+                // copy stuff in, then pull it out before it gets double registered
+                services.AddRange(originalServices);
+
+                foreach (var startup in startups)
+                {
+                    startup.ConfigureServices(services);
+                }
+
+                // See snarky comment above
+                services.RemoveAll(originalServices.Contains);
+
+                Container.Configure(services);
+            }
 
             foreach (var startup in startups)
             {
                 startup.Configure(app);
             }
 
-            if (!app.HasJasperBeenApplied() && router.HasAnyRoutes())
+            // There's a race condition now between the router being completely "found"
+            // and this, so we no longer check for the existence of any routes
+            if (!app.HasJasperBeenApplied())
             {
                 app.Run(router.Invoke);
             }

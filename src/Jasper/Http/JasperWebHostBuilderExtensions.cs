@@ -31,7 +31,7 @@ namespace Jasper.Http
             return builder.Properties.ContainsKey(JasperHasBeenApplied);
         }
 
-        public static IApplicationBuilder AddJasper(this IApplicationBuilder app)
+        public static IApplicationBuilder UseJasper(this IApplicationBuilder app)
         {
             if (app.HasJasperBeenApplied())
             {

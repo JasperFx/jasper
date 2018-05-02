@@ -94,10 +94,20 @@ namespace Jasper
                 _startups = others.Select(x => Build(_runtime.Container, x)).ToArray();
 
                 var additional = new ServiceCollection();
+
+                // I know this is goofy as all hell, but there is code
+                // in MVC that tries to pick things out of the service collection
+                // during bootstrapping
+                additional.AddRange(services);
+
+
                 foreach (var startup in _startups)
                 {
                     startup.ConfigureServices(additional);
                 }
+
+                // See the rant-y comment above
+                additional.RemoveAll(services.Contains);
 
                 _runtime.Container.Configure(additional);
 

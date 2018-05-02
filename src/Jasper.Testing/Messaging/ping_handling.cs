@@ -37,7 +37,7 @@ namespace Jasper.Testing.Messaging
 
                 _.Hosting.Configure(app =>
                 {
-                    app.AddJasper();
+                    app.UseJasper();
 
                     app.Run(c => c.Response.WriteAsync("Hello"));
                 });

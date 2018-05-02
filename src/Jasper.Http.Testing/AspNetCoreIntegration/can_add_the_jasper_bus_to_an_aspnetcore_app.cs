@@ -5,6 +5,7 @@ using Jasper.Messaging;
 using Lamar;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -22,7 +23,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
             builder
                 .UseKestrel()
                 .UseUrls("http://localhost:3003")
-                .UseStartup<Startup>()
+                .UseStartup<Startup>() //;
                 .UseJasper<SimpleJasperBusApp>();
 
 
@@ -41,17 +42,18 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
             builder
                 .UseKestrel()
                 .UseUrls("http://localhost:3003")
+                .ConfigureServices(s => s.AddMvc())
                 .Configure(app =>
                 {
                     app.UseMiddleware<CustomMiddleware>();
 
                     // Add the Jasper middleware
-                    app.AddJasper();
+                    app.UseJasper();
 
                     // Nothing stopping you from using Jasper *and*
                     // MVC, NancyFx, or any other ASP.Net Core
                     // compatible framework
-                    app.AddMvc();
+                    app.UseMvc();
                 })
                 .UseJasper<SimpleJasperBusApp>();
 
@@ -74,6 +76,17 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
             {
                 var text = await client.GetStringAsync("http://localhost:3003");
                 text.ShouldContain("Hello from a hybrid Jasper application");
+
+            }
+        }
+
+        [Fact]
+        public async Task can_handle_an_http_request_through_Kestrel_to_MVC_route()
+        {
+            using (var client = new HttpClient())
+            {
+                var text = await client.GetStringAsync("http://localhost:3003/values");
+                text.ShouldContain("Hello from MVC Core");
 
             }
         }
@@ -108,13 +121,6 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         }
     }
 
-    public static class FakeExtensions
-    {
-        public static IApplicationBuilder AddMvc(this IApplicationBuilder app)
-        {
-            return app;
-        }
-    }
 
     public class CustomMiddleware
     {

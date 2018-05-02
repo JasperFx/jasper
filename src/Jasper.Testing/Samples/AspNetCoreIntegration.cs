@@ -19,7 +19,7 @@ namespace Jasper.Testing.Samples
             {
                 app.UseMiddleware<CustomMiddleware>();
 
-                app.AddJasper();
+                app.UseJasper();
 
                 // Just to show how you can configure ASP.Net Core
                 // middleware that runs after Jasper's RequestDelegate,

@@ -113,7 +113,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         {
             theRegistry.Hosting.Configure(app =>
             {
-                app.AddJasper();
+                app.UseJasper();
 
                 app.Run(c =>
                 {
@@ -152,7 +152,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
                     };
                 });
 
-                app.AddJasper();
+                app.UseJasper();
 
                 app.Run(c =>
                 {

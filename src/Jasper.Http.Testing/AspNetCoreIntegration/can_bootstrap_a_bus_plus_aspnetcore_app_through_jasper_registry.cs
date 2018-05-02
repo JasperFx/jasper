@@ -39,6 +39,25 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
             }
         }
 
+        [Fact]
+        public async Task can_delegate_to_mvc_route_through_Kestrel()
+        {
+            var theRuntime = await JasperRuntime.ForAsync<JasperServerApp>();
+
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var text = await client.GetStringAsync("http://localhost:5200/values/5");
+                    text.ShouldContain("5");
+                }
+            }
+            finally
+            {
+                await theRuntime.Shutdown();
+            }
+        }
 
     }
 
@@ -75,11 +94,14 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
     {
         public void Configure(IApplicationBuilder app)
         {
+            app.UseJasper();
+            app.UseMvc();
             app.Run(c => c.Response.WriteAsync("Hello from a hybrid Jasper application"));
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
             services.AddTransient<IFoo, Foo>();
         }
     }
