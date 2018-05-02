@@ -82,7 +82,7 @@ namespace Jasper.Http.Transport
 
         public void Describe(TextWriter writer)
         {
-            if (_httpSettings.IsEnabled)
+            if (_httpSettings.IsEnabled && LocalReplyUri != null)
             {
                 writer.WriteLine($"Listening for messages at {LocalReplyUri}");
                 writer.WriteLine($"Listening for messages at {LocalReplyUri.ToString().AppendUrl("durable")}");
