@@ -184,6 +184,7 @@ namespace Jasper
 
             // Initialize the hosting environment
             _hostingEnvironment.Initialize(ServiceName, contentRootPath, options);
+            _hostingEnvironment.ApplicationName = ApplicationAssembly.FullName;
 
             var context = new WebHostBuilderContext
             {

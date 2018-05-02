@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Threading.Tasks;
 using Jasper.Http.Testing.ContentHandling;
 using Jasper.Testing;
 using Microsoft.AspNetCore.Hosting;
@@ -58,11 +59,12 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         }
 
         [Fact]
-        public async Task hosting_environment_app_name_is_the_service_name()
+        public async Task hosting_environment_app_name_is_application_assembly_name()
         {
             var runtime = await JasperRuntime.ForAsync<MySpecialRegistry>();
 
-            runtime.Get<IHostingEnvironment>().ApplicationName.ShouldBe("MySpecialApp");
+            // This is important for the MVC and ASP.Net Core integration to work correctly
+            runtime.Get<IHostingEnvironment>().ApplicationName.ShouldBe(Assembly.GetExecutingAssembly().FullName);
 
             await runtime.Shutdown();
         }
