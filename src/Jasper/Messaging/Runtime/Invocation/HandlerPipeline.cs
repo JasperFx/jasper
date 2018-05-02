@@ -160,6 +160,11 @@ namespace Jasper.Messaging.Runtime.Invocation
             {
                 await processNoHandlerLogic(envelope, context);
                 envelope.MarkCompletion(false);
+
+                // These two lines are important to make the message tracking work
+                // if there is no handler
+                Logger.ExecutionFinished(envelope);
+                Logger.MessageSucceeded(envelope);
             }
             else
             {

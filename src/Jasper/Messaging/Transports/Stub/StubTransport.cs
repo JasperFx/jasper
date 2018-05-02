@@ -12,16 +12,30 @@ namespace Jasper.Messaging.Transports.Stub
 {
     public static class StubTransportExtensions
     {
+        /// <summary>
+        /// Retrieves the instance of the StubTransport within this application
+        /// </summary>
+        /// <param name="runtime"></param>
+        /// <returns></returns>
         public static StubTransport GetStubTransport(this JasperRuntime runtime)
         {
-            return runtime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
+            return runtime.Get<IMessagingRoot>().Transports.OfType<StubTransport>().Single();
         }
 
+        /// <summary>
+        /// Clears all record of messages sent to the stub transport
+        /// </summary>
+        /// <param name="runtime"></param>
         public static void ClearStubTransportSentList(this JasperRuntime runtime)
         {
             runtime.GetStubTransport().Channels.Each(x => x.Sent.Clear());
         }
 
+        /// <summary>
+        /// Retrieves an array of all the envelopes sent through the stub transport
+        /// </summary>
+        /// <param name="runtime"></param>
+        /// <returns></returns>
         public static Envelope[] AllSentThroughTheStubTransport(this JasperRuntime runtime)
         {
             return runtime.GetStubTransport().Channels.SelectMany(x => x.Sent).ToArray();
