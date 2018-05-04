@@ -19,3 +19,10 @@ The `InvoiceCreated` message above will be enqueued locally in the application's
 Today that pretty well means using the loopback transport, but before too long the <[linkto:documentation/messaging/transports/durable]> will be usable locally as well for persistent queueing in this case. See [this GitHub issue](https://github.com/JasperFx/jasper/issues/179) to track the progress.
 
 
+## Enqueue to a Specific Worker Queue
+
+If you want to enqueue a message locally to a specific worker queue, you can use this syntax:
+
+<[sample:IServiceBus.Enqueue-to-specific-worker-queue]>
+
+See <[linkto:documentation/messaging/handling/workerqueues]> for more information about worker queues.

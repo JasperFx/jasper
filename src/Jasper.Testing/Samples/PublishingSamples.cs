@@ -74,6 +74,23 @@ namespace Jasper.Testing.Samples
         }
         // ENDSAMPLE
 
+        // SAMPLE: IServiceBus.Enqueue-to-specific-worker-queue
+        public Task EnqueueToQueue(IMessageContext bus)
+        {
+            var @event = new InvoiceCreated
+            {
+                Time = DateTime.UtcNow,
+                Purchaser = "Guy Fieri",
+                Amount = 112.34,
+                Item = "Cookbook"
+            };
+
+            // Put this message in a local worker
+            // queue named 'highpriority'
+            return bus.Enqueue(@event, "highpriority");
+        }
+        // ENDSAMPLE
+
         // SAMPLE: send-delayed-message
         public async Task SendScheduledMessage(IMessageContext bus, Guid invoiceId)
         {
