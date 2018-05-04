@@ -23,6 +23,10 @@ namespace Jasper.CommandLine
 
         public JasperRuntime BuildRuntime()
         {
+            // SAMPLE: what-the-cli-is-doing
+            
+            // The --log-level flag value overrides your application's
+            // LogLevel
             if (LogLevelFlag.HasValue)
             {
                 Registry.ConfigureLogging(x => x.SetMinimumLevel(LogLevelFlag.Value));
@@ -32,6 +36,9 @@ namespace Jasper.CommandLine
             {
                 Console.WriteLine("Verbose flag is on.");
 
+                // The --verbose flag adds console and
+                // debug logging, as well as setting
+                // the minimum logging level down to debug
                 Registry.ConfigureLogging(x =>
                 {
                     x.SetMinimumLevel(LogLevel.Debug);
@@ -41,10 +48,13 @@ namespace Jasper.CommandLine
                 });
             }
 
+            // The --environment flag is used to set the environment
+            // property on the IHostedEnvironment within your system
             if (EnvironmentFlag.IsNotEmpty())
             {
                 Registry.UseEnvironment(EnvironmentFlag);
             }
+            // ENDSAMPLE
 
             return JasperRuntime.For(Registry);
         }

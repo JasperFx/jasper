@@ -56,6 +56,17 @@ or
 MyApp run -v
 ```
 
+The `-v / --verbose` flags add console and debug logging to your system. It's the equivalent to calling:
+
+## Overriding the LogLevel
+
+You can also override the log level of your application to any valid value of the [LogLevel enumeration](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.loglevel?view=aspnetcore-2.0) like this:
+
+```
+MyApp run --log-level Information
+```
+
+
 ## Validating the Configured Application
 
 You may want to simply try to bootstrap the application and run all the <[linkto:documentation/bootstrapping/environment_tests;title=environment tests]> and report out the results. That syntax is:
