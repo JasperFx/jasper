@@ -76,6 +76,20 @@ namespace Jasper.Http.Testing.Transport
         }
     }
 
+    // SAMPLE: HttpTransportUsingApp
+    public class HttpTransportUsingApp : JasperRegistry
+    {
+        public HttpTransportUsingApp()
+        {
+            Publish.AllMessagesTo("http://server1/messages");
+
+            // Or
+
+            Publish.AllMessagesTo("http://server1/messages/durable");
+        }
+    }
+    // ENDSAMPLE
+
     public abstract class SendingContext : IDisposable
     {
         private readonly JasperRegistry receiverRegistry = new JasperRegistry();
@@ -180,7 +194,7 @@ namespace Jasper.Http.Testing.Transport
     {
         public int Sum { get; set; }
     }
-    
+
     public class MessageConsumer
     {
         private readonly MessageTracker _tracker;
@@ -215,7 +229,7 @@ namespace Jasper.Http.Testing.Transport
             _tracker.Record(message, envelope);
         }
     }
-    
+
     public class TimeoutsMessage
     {
 
