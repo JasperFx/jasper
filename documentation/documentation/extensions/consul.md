@@ -23,6 +23,10 @@ by applying the `ConsulBackedSubscriptions` extension as shown below:
 
 The subscriptions are stored in Consul's key/value store using the pattern `jasper/subscription/[message-type]/[url encoded destination]`, and the value is a Json document reflecting the valid message representations for the subscriber.
 
+## Node Discovery
+
+<[linkto:documentation/messaging/nodes]> with Consul is automatically enabled if you have Jasper.Consul installed in your system.
+
 ## Customizing Consul Setup
 
 By default, Jasper.Consul will connect to Consul at port 8500, but you can completely configure how the underlying ConsulDotNet `ConsulClient` will be built out like this:
