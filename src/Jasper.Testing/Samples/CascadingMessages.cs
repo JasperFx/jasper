@@ -128,6 +128,16 @@ namespace Jasper.Testing.Samples.CascadingMessages
     }
     // ENDSAMPLE
 
+    // SAMPLE: TupleResponseHandler
+    public class TupleResponseHandler
+    {
+        public (GoNorth, ScheduledResponse) Consume(MyMessage message)
+        {
+            return (new GoNorth(), new ScheduledResponse(new GoWest(), TimeSpan.FromHours(1)));
+        }
+    }
+    // ENDSAMPLE
+
 
     // SAMPLE: BackToSenderHandler
     public class BackToSenderHandler

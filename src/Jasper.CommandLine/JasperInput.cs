@@ -24,7 +24,7 @@ namespace Jasper.CommandLine
         public JasperRuntime BuildRuntime()
         {
             // SAMPLE: what-the-cli-is-doing
-            
+
             // The --log-level flag value overrides your application's
             // LogLevel
             if (LogLevelFlag.HasValue)

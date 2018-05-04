@@ -106,3 +106,21 @@ Finally, you can create your own custom response behavior by creating your own i
 <[sample:ISendMyself-Specially]>
 
 `DelayedResponse`, `RespondToSender`, and `SendDirectlyTo` are implementations of `ISendMyself`.
+
+
+## Using C# Tuples as Return Values
+
+Sometimes you may well need to return multiple cascading messages from your original message action. In FubuMVC, Jasper's forebear, you had to return either `object[]` or `IEnumerable<object>` as the return type of your action -- which had the unfortunate side effect of partially obfuscating your code by making it less clear what message types were being cascaded from your handler without carefully
+reading the message body. In Jasper, we still support the "mystery meat" `object` return value signatures, but now you can also use
+C# tuples to better denote the cascading message types.
+
+This handler cascading a pair of messages:
+
+<[sample:MultipleResponseHandler]>
+
+can be rewritten with C# 7 tuples to:
+
+<[sample:TupleResponseHandler]>
+
+The sample above still treats both `GoNorth` and the `ScheduledResponse` as cascading messages. The Jasper team thinks that the
+tuple-ized signature makes the code more self-documenting and easier to unit test.

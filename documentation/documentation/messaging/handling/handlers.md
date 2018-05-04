@@ -97,3 +97,4 @@ argument like this:
 <[sample:HandlerUsingEnvelope]>
 
 See <[linkto:documentation/messaging/publishing/customizing_envelopes]> for more information on interacting with `Envelope` objects.
+
