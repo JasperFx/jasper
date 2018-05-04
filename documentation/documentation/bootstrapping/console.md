@@ -69,11 +69,7 @@ build scripting tool you're using know that the validation failed.
 
 ## List Registered Services
 
-**This is in flight**
-
-As of right now (Dec 2017), Jasper only supports the [StructureMap](http://structuremap.github.io) container, but is somewhat likely to transition to, um, something else (or a streamlined, faster StructureMap) to be named later before it hits 1.0. Regardless, we expect this command will live on.
-
-To bootstrap the application and list out all the services registered to the system's IoC container, use this command:
+Jasper only supports the [Lamar container](https://github.com/jasperfx/lamar) (the replacement for the venerable [StructureMap](http://structuremap.github.io) container). To query the current state of service registrations, use this command:
 
 ```
 MyApp services
@@ -85,6 +81,45 @@ And again, this command respects both the `--environment` and `--verbose` flags
 
 See <[linkto:documentation/messaging/routing/subscriptions]> for information about the `subscriptions` command and related workflow for exporting, updating, or validating dynamic
 subscriptions.
+
+
+## Preview Generated Code
+
+One of the easiest ways to debug message or HTTP handlers -- or just to understand their behavior -- is to read the generated code
+that Jasper is using to actually handle a specific message type or HTTP route. You can preview that code by using this command:
+
+```
+dotnet run -- code
+```
+
+Or to only see the code for message handlers:
+
+```
+dotnet run -- code messages
+```
+
+Or to only see the code for any HTTP handlers:
+
+```
+dotnet run -- code routes
+```
+
+Finally, to dump the results to a file, use the `--file` flag like this:
+
+```
+dotnet run -- code --file generated.cs
+```
+
+or 
+
+```
+dotnet run -- code -f generated.cs
+```
+
+As usual, this command also respects both the `--environment` and `--verbose` flags
+
+
+
 
 ## Custom Commands
 
