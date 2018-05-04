@@ -35,6 +35,19 @@ namespace Pinger
         }
     }
 
+    // SAMPLE: AppThatUsesPingHandler
+    public class AppThatUsesPingHandler : JasperRegistry
+    {
+        public AppThatUsesPingHandler()
+        {
+            // Just register your custom hosted service
+            // as a singleton in the IoC container
+            // against the IHostedService interface
+            Services.AddSingleton<IHostedService, PingSender>();
+        }
+    }
+    // ENDSAMPLE
+
     public class PongHandler
     {
         public void Handle(PongMessage message)
@@ -57,6 +70,13 @@ namespace Pinger
         }
     }
 
+    // SAMPLE: PingSender
+    // In this case, BackgroundService is a base class
+    // for the IHostedService that is *supposed* to be
+    // in a future version of ASP.Net Core that I shoved
+    // into Jasper so we could use it now. The one in Jasper
+    // will be removed later when the real one exists in
+    // ASP.Net Core itself
     public class PingSender : BackgroundService
     {
         private readonly IMessageContext _bus;
@@ -74,7 +94,7 @@ namespace Pinger
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    Thread.Sleep(1000);
+                    await Task.Delay(1000, stoppingToken);
 
                     await _bus.Send(new PingMessage
                     {
@@ -84,4 +104,5 @@ namespace Pinger
             }, stoppingToken);
         }
     }
+    // ENDSAMPLE
 }
