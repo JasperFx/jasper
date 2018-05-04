@@ -6,10 +6,16 @@ using Jasper.SqlServer.Util;
 
 namespace Jasper.SqlServer.Tests.Persistence
 {
+    // SAMPLE: UsingSqlTransaction
     public class ItemCreatedHandler
     {
         [SqlTransaction]
-        public static async Task Handle(ItemCreated created, SqlConnection conn, SqlTransaction tx, MessageTracker tracker, Envelope envelope)
+        public static async Task Handle(
+            ItemCreated created,
+            SqlConnection conn,      // the connection for the container scope
+            SqlTransaction tx,       // the current transaction
+            MessageTracker tracker,
+            Envelope envelope)
         {
             await conn.CreateCommand(tx, "insert into receiver.item_created (id, name) values (@id, @name)")
                 .With("id", created.Id)
@@ -19,4 +25,5 @@ namespace Jasper.SqlServer.Tests.Persistence
             tracker.Record(created, envelope);
         }
     }
+    // ENDSAMPLE
 }

@@ -25,12 +25,14 @@ namespace Jasper.SqlServer.Tests.Persistence
 
         public SqlServerCallbackTests()
         {
+            // SAMPLE: SqlServer-RebuildMessageStorage
             theRuntime = JasperRuntime.For(_ =>
             {
                 _.Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString);
             });
 
             theRuntime.RebuildMessageStorage();
+            // ENDSAMPLE
 
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Status = TransportConstants.Incoming;

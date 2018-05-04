@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
@@ -156,6 +157,8 @@ namespace Jasper.Testing.Messaging
 
             waiter.Result.ReplyUri.ShouldBe("tcp://balancer:7010".ToUri());
         }
+
+
 
         [Fact]
         public async Task without_a_global_reply_uri_using_global_request_reply()

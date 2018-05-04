@@ -7,6 +7,7 @@ Jasper supports a couple different patterns of messaging:
 
 * <[linkto:documentation/messaging/publishing/pubsub]> - sends a message to one or more subscribers
 * <[linkto:documentation/messaging/publishing/requestreply]> - send a message to another system while expecting a response from that system
+* <[linkto:documentation/messaging/publishing/expected_reply]> - send a message to another system while expecting an eventual response from the other system
 * <[linkto:documentation/messaging/publishing/invoke]> - handle a message locally either inline or by enqueueing the message locally
 * <[linkto:documentation/messaging/publishing/delayed]> - publish a message with the expectation that it be processed at a later time
-* <[linkto:documentation/messaging/publishing/customizing_envelopes]> - take full control about how or where a message is sent 
+* <[linkto:documentation/messaging/publishing/customizing_envelopes]> - take full control about how or where a message is sent

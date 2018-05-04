@@ -151,7 +151,7 @@ create table receiver.item_created
         [Fact]
         public async Task basic_send()
         {
-            var bus = theSender.Get<IMessageContext>();
+            var messaging = theSender.Get<IMessageContext>();
 
             var item = new ItemCreated
             {
@@ -161,19 +161,7 @@ create table receiver.item_created
 
             var waiter = theTracker.WaitFor<ItemCreated>();
 
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
-            {
-                await conn.OpenAsync();
-
-                var tx = conn.BeginTransaction();
-                await bus.EnlistInTransaction(tx);
-
-                await bus.Send(item);
-
-                tx.Commit();
-
-                await bus.SendAllQueuedOutgoingMessages();
-            }
+            await outbox_sample(messaging, item);
 
 
             waiter.Wait(5.Seconds());
@@ -204,6 +192,34 @@ create table receiver.item_created
                 theSender.Get<SqlServerEnvelopePersistor>().AllOutgoingEnvelopes().Any().ShouldBeFalse();
             }
         }
+
+        // SAMPLE: basic-sql-server-outbox-sample
+        private static async Task outbox_sample(IMessageContext messaging, ItemCreated item)
+        {
+            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            {
+                await conn.OpenAsync();
+
+                // Start your transaction
+                var tx = conn.BeginTransaction();
+
+                // enlist the current IMessageContext to persist
+                // outgoing messages with the current transaction
+                await messaging.EnlistInTransaction(tx);
+
+                // enqueue outgoing messages
+                await messaging.Send(item);
+
+                tx.Commit();
+
+                // Flush the outgoing messages into Jasper's outgoing
+                // sending loops, but don't worry, the messages are
+                // persisted where they can be recovered by other nodes
+                // in case something goes wrong here
+                await messaging.SendAllQueuedOutgoingMessages();
+            }
+        }
+        // ENDSAMPLE
 
         [Fact]
         public async Task send_with_receiver_down_to_see_the_persisted_envelopes()
@@ -278,6 +294,50 @@ create table receiver.item_created
 
             scheduled.MessageType.ShouldBe(typeof(ItemCreated).ToMessageAlias());
             scheduled.Status.ShouldBe(TransportConstants.Scheduled);
+        }
+
+
+
+    }
+
+    public class CreateItemHandler
+    {
+        // SAMPLE: SqlServerOutboxWithSqlTransaction
+        [SqlTransaction]
+        public async Task<ItemCreatedEvent> Handle(CreateItemCommand command, SqlTransaction tx)
+        {
+            var item = new Item {Name = command.Name};
+
+            // persist the new Item with the
+            // current transaction
+            await persist(tx, item);
+
+            return new ItemCreatedEvent {Item = item};
+        }
+        // ENDSAMPLE
+
+        private Task persist(SqlTransaction tx, Item item)
+        {
+            // whatever you do to write the new item
+            // to your sql server application database
+            return Task.CompletedTask;
+        }
+
+
+        public class CreateItemCommand
+        {
+            public string Name { get; set; }
+        }
+
+        public class ItemCreatedEvent
+        {
+            public Item Item { get; set; }
+        }
+
+        public class Item
+        {
+            public Guid Id;
+            public string Name;
         }
     }
 }
