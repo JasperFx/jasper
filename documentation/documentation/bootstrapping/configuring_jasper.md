@@ -16,14 +16,17 @@ any "JasperRegistry" or "Registry" suffix. For diagnostic purposes and for the <
 <[sample:CustomServiceRegistry]>
 
 
-## Environment Name
+## Hosting Environment
 
 Jasper exposes the [ASP.Net Core Environment name](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/environments) with this usage:
 
 <[sample:EnvironmentNameRegistry]>
 
-You can use the `EnvironmentName` property within the constructor function of your `JasperRegistry` to do conditional configuration based on environment.
+You can use the `EnvironmentName` property within the constructor function of your `JasperRegistry` to do conditional configuration based on environment just like you would in an ASP.Net Core application:
 
+<[sample:UsingEnvironmentName]>
+
+You can also access the current application directory and other information from the `IHostedEnvironment` property on the context object in both signatures.
 
 ## Service Registrations
 
