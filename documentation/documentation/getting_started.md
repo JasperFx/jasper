@@ -11,6 +11,13 @@ To create a new Jasper application, start by building a new console application:
 
 <pre>dotnet new console -n MyApp</pre>
 
+Then, go get Jasper from Nuget:
+
+PM> Install-Package Jasper
+Or, using paket:
+
+paket add nuget Jasper
+
 While this isn't expressly necessary, you probably want to create a new `JasperRegistry` that will define the active options and configuration for your application:
 
 <[sample:MyAppRegistry]>
