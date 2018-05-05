@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Settings;
 using Marten;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Marten
@@ -27,9 +28,9 @@ namespace Jasper.Marten
             settings.Alter(configuration);
         }
 
-        public static void ConfigureMarten(this JasperSettings settings, Action<IConfiguration, StoreOptions> configuration)
+        public static void ConfigureMarten(this JasperSettings settings, Action<WebHostBuilderContext, StoreOptions> configuration)
         {
-            settings.Alter<StoreOptions>((c, o) => configuration(c.Configuration, o));
+            settings.Alter<StoreOptions>(configuration);
         }
     }
 }

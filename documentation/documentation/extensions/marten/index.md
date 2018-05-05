@@ -7,6 +7,8 @@ Marten's `StoreOptions` object like this:
 
 <[sample:AppWithMarten]>
 
+Note that `ConfigureMarten()` is an extension method in Jasper.Marten.
+
 Once that's done, you will be able to inject the following Marten services as either constructor
 arguments or method parameters in message or HTTP handlers:
 

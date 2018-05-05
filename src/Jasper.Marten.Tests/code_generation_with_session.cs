@@ -88,12 +88,18 @@ namespace Jasper.Marten.Tests
         }
     }
 
+    // SAMPLE: custom-marten-session-creation
     public class SessionUsingBlock2
     {
+        // This method will be used to create the IDocumentSession
+        // that will be used by the two Consume() methods below
         public IDocumentSession OpenSession(IDocumentStore store)
         {
+            // Here I'm opting to use the heavier,
+            // automatic dirty state checking
             return store.DirtyTrackedSession();
         }
+
 
         public void Consume(Message1 message, IDocumentSession session)
         {
@@ -106,6 +112,7 @@ namespace Jasper.Marten.Tests
 
         }
     }
+    // ENDSAMPLE
 
 
 

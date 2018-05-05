@@ -18,3 +18,15 @@ with a handler policy like this:
 Then add the policy to your application like this:
 
 <[sample:Using-CommandsAreTransactional]>
+
+## Customizing How the Session is Created
+
+By default, using `[MartenTransaction]` or just injecting an `IDocumentSession` with the Marten integration will create a lightweight session in Marten using the `IDocumentStore.LightweightSession()`
+call. However, [Marten](http://jasperfx.github.io/marten) has many other options to create sessions
+with different transaction levels, heavier identity map behavior, or by attaching custom listeners. To allow you to use the full range of Marten behavior, you can choose to override the mechanics of how
+a session is opened for any given message handler by just placing a method called `OpenSession()` on 
+your handler class that returns an `IDocumentSession`. If Jasper sees that method exists, it will call that method to create your session. 
+
+Here's an example from the tests:
+
+<[sample:custom-marten-session-creation]>

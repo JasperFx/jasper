@@ -10,7 +10,7 @@ namespace Jasper.Marten.Tests
         {
             // StoreOptions is a Marten object that fulfills the same
             // role as JasperRegistry
-            Settings.Alter<StoreOptions>((context, marten) =>
+            Settings.ConfigureMarten((context, marten) =>
             {
                 // At the simplest, you would just need to tell Marten
                 // the connection string to the application database
