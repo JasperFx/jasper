@@ -14,9 +14,9 @@ namespace Jasper.Marten.Tests
 
             // "config" is the ASP.Net Core IConfiguration for the application
             // "options" is the Marten StoreOptions configuration object
-            Settings.ConfigureMarten((config, options) =>
+            Settings.ConfigureMarten((context, options) =>
             {
-                options.Connection(config["marten_database"]);
+                options.Connection(context.Configuration["marten_database"]);
 
                 // Other Marten configuration
             });

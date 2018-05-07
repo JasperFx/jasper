@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
-using Jasper.Marten;
 using Jasper.Messaging;
-using Marten;
+using Jasper.Messaging.Durability;
+using Jasper.SqlServer;
+using Jasper.SqlServer.Persistence;
 using Newtonsoft.Json;
 using TestMessages;
 
-namespace Sender
+namespace SqlSender
 {
     public class HomeEndpoint
     {
@@ -33,51 +35,42 @@ namespace Sender
             return writer.ToString();
         }
 
-        public static Task post_clear(IDocumentStore store)
+        public static void post_marten_clear(SqlServerEnvelopePersistor persistor)
         {
-            store.Advanced.Clean.DeleteAllDocuments();
+            persistor.ClearAllStoredMessages();
 
-            return Task.CompletedTask;
         }
 
-        [MartenTransaction]
-        public static async Task post_one(IMessageContext context, IDocumentSession session)
+        [SqlTransaction]
+        public static async Task post_one(IMessageContext context, SqlTransaction tx)
         {
-            await context.EnlistInTransaction(session);
+            await context.EnlistInTransaction(tx);
 
             var target1 = JsonConvert.DeserializeObject<Target>(_json1);
             target1.Id = Guid.NewGuid();
 
-            session.Store(new SentTrack
-            {
-                Id = target1.Id,
-                MessageType = "Target"
-            });
+            await tx.StoreSent(target1.Id, "Target");
 
             await context.Send(target1);
         }
 
-        [MartenTransaction]
-        public static async Task post_two(IMessageContext context, IDocumentSession session)
+        [SqlTransaction]
+        public static async Task post_two(IMessageContext context, SqlTransaction tx)
         {
-            await context.EnlistInTransaction(session);
+            await context.EnlistInTransaction(tx);
 
             var target2 = JsonConvert.DeserializeObject<Target>(_json2);
             target2.Id = Guid.NewGuid();
 
-            session.Store(new SentTrack
-            {
-                Id = target2.Id,
-                MessageType = "Target"
-            });
+            await tx.StoreSent(target2.Id, "Target");
 
             await context.Send(target2);
         }
 
-        [MartenTransaction]
-        public static async Task post_three(IMessageContext context, IDocumentSession session)
+        [SqlTransaction]
+        public static async Task post_three(IMessageContext context, SqlTransaction tx)
         {
-            await context.EnlistInTransaction(session);
+            await context.EnlistInTransaction(tx);
 
             var ping = new PingMessage
             {
@@ -85,19 +78,15 @@ namespace Sender
                 Id = Guid.NewGuid()
             };
 
-            session.Store(new SentTrack
-            {
-                Id = ping.Id,
-                MessageType = "PingMessage"
-            });
+            await tx.StoreSent(ping.Id, "PingMessage");
 
             await context.SendAndExpectResponseFor<PongMessage>(ping);
         }
 
-        [MartenTransaction]
-        public static async Task post_four(IMessageContext context, IDocumentSession session)
+        [SqlTransaction]
+        public static async Task post_four(IMessageContext context, SqlTransaction tx)
         {
-            await context.EnlistInTransaction(session);
+            await context.EnlistInTransaction(tx);
 
             var created = new UserCreated
             {
@@ -105,11 +94,7 @@ namespace Sender
                 UserId = "Chewbacca"
             };
 
-            session.Store(new SentTrack
-            {
-                Id = created.Id,
-                MessageType = "UserCreated"
-            });
+            await tx.StoreSent(created.Id, "UserCreated");
 
             await context.Send(created);
         }

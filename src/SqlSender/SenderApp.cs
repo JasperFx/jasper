@@ -1,21 +1,19 @@
 ﻿using Jasper;
-using Jasper.Marten;
-using Marten;
+using Jasper.SqlServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using TestMessages;
 
-namespace Receiver
+namespace SqlSender
 {
-    public class ReceiverApp : JasperRegistry
+    public class SenderApp : JasperRegistry
     {
-        public ReceiverApp()
+        public SenderApp()
         {
             Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
-            Hosting.UseUrls("http://*:5061").UseKestrel();
+            Hosting.UseUrls("http://*:5060").UseKestrel();
 
             Hosting.ConfigureLogging(x =>
             {
@@ -23,23 +21,17 @@ namespace Receiver
                 x.SetMinimumLevel(LogLevel.Information);
             });
 
-            Settings.ConfigureMarten((config, options) =>
+            Settings.PersistMessagesWithSqlServer((context, settings) =>
             {
-                options.PLV8Enabled = false;
-                options.AutoCreateSchemaObjects = AutoCreate.All;
-                options.Connection(config.Configuration["marten"]);
-                options.DatabaseSchemaName = "receiver";
-                options.Schema.For<SentTrack>();
-                options.Schema.For<ReceivedTrack>();
+                settings.ConnectionString = context.Configuration["mssql"];
+                settings.SchemaName = "sender";
             });
-
-            Include<MartenBackedPersistence>();
-
 
 
             Settings.Configure(c =>
             {
                 Transports.ListenForMessagesFrom(c.Configuration["listener"]);
+                Publish.AllMessagesTo(c.Configuration["receiver"]);
             });
 
             Hosting.ConfigureLogging(x => x.AddConsole());

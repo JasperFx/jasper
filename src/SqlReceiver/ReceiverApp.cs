@@ -1,13 +1,12 @@
 ﻿using Jasper;
-using Jasper.Marten;
-using Marten;
+using Jasper.SqlServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using TestMessages;
 
-namespace Receiver
+namespace SqlReceiver
 {
     public class ReceiverApp : JasperRegistry
     {
@@ -23,18 +22,11 @@ namespace Receiver
                 x.SetMinimumLevel(LogLevel.Information);
             });
 
-            Settings.ConfigureMarten((config, options) =>
+            Settings.PersistMessagesWithSqlServer((context, settings) =>
             {
-                options.PLV8Enabled = false;
-                options.AutoCreateSchemaObjects = AutoCreate.All;
-                options.Connection(config.Configuration["marten"]);
-                options.DatabaseSchemaName = "receiver";
-                options.Schema.For<SentTrack>();
-                options.Schema.For<ReceivedTrack>();
+                settings.SchemaName = "receiver";
+                settings.ConnectionString = context.Configuration["mssql"];
             });
-
-            Include<MartenBackedPersistence>();
-
 
 
             Settings.Configure(c =>

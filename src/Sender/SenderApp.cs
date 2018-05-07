@@ -26,8 +26,9 @@ namespace Sender
             Settings.ConfigureMarten((config, options) =>
             {
                 options.AutoCreateSchemaObjects = AutoCreate.All;
-                options.Connection(config["marten"]);
+                options.Connection(config.Configuration["marten"]);
                 options.DatabaseSchemaName = "sender";
+                options.PLV8Enabled = false;
 
                 options.Schema.For<SentTrack>();
                 options.Schema.For<ReceivedTrack>();

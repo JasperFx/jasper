@@ -24,10 +24,10 @@ namespace RunLoadTests
 
                 for (int i = 0; i < 20; i++)
                 {
-                    tasks.Add(client.PostAsync("http://localhost:5060/marten/one", new StringContent(string.Empty)));
-                    tasks.Add(client.PostAsync("http://localhost:5060/marten/two", new StringContent(string.Empty)));
-                    tasks.Add(client.PostAsync("http://localhost:5060/marten/three", new StringContent(string.Empty)));
-                    tasks.Add(client.PostAsync("http://localhost:5060/marten/four", new StringContent(string.Empty)));
+                    tasks.Add(client.PostAsync("http://localhost:5060/one", new StringContent(string.Empty)));
+                    tasks.Add(client.PostAsync("http://localhost:5060/two", new StringContent(string.Empty)));
+                    tasks.Add(client.PostAsync("http://localhost:5060/three", new StringContent(string.Empty)));
+                    tasks.Add(client.PostAsync("http://localhost:5060/four", new StringContent(string.Empty)));
 
                 }
 
