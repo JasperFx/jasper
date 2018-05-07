@@ -19,14 +19,14 @@ namespace Receiver
 
             Hosting.ConfigureLogging(x =>
             {
-                x.AddNLog();
+                //x.AddConsole();
                 x.SetMinimumLevel(LogLevel.Information);
             });
 
             Settings.ConfigureMarten((config, options) =>
             {
                 options.PLV8Enabled = false;
-                options.AutoCreateSchemaObjects = AutoCreate.All;
+                options.AutoCreateSchemaObjects = AutoCreate.None;
                 options.Connection(config.Configuration["marten"]);
                 options.DatabaseSchemaName = "receiver";
                 options.Schema.For<SentTrack>();
@@ -42,7 +42,6 @@ namespace Receiver
                 Transports.ListenForMessagesFrom(c.Configuration["listener"]);
             });
 
-            Hosting.ConfigureLogging(x => x.AddConsole());
         }
     }
 }

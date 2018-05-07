@@ -40,7 +40,7 @@ namespace Jasper.Messaging
             {
                 _root.ListeningStatus = ListeningStatus.TooBusy;
             }
-            else if (_root.ListeningStatus == ListeningStatus.TooBusy && ratio < 0.9)
+            else if (_root.ListeningStatus == ListeningStatus.TooBusy && ratio < 0.8)
             {
                 _root.ListeningStatus = ListeningStatus.Accepting;
             }

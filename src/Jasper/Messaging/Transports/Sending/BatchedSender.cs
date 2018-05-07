@@ -42,6 +42,15 @@ namespace Jasper.Messaging.Transports.Sending
                 CancellationToken = _cancellation
             });
 
+            _sender.Completion.ContinueWith(x =>
+            {
+                if (x.IsFaulted)
+                {
+                    // TODO -- need to restart things!!!
+                    _logger.LogException(x.Exception);
+                }
+            }, _cancellation);
+
             _serializing = new ActionBlock<Envelope>(e =>
             {
                 try
@@ -59,6 +68,15 @@ namespace Jasper.Messaging.Transports.Sending
                 CancellationToken = _cancellation
             });
 
+            _serializing.Completion.ContinueWith(x =>
+            {
+                if (x.IsFaulted)
+                {
+                    // TODO -- need to restart things!!!
+                    _logger.LogException(x.Exception);
+                }
+            }, _cancellation);
+
 
             _batchWriting = new TransformBlock<Envelope[], OutgoingMessageBatch>(
                 envelopes =>
@@ -68,17 +86,33 @@ namespace Jasper.Messaging.Transports.Sending
                     return batch;
                 });
 
+            _batchWriting.Completion.ContinueWith(x =>
+            {
+                if (x.IsFaulted)
+                {
+                    // TODO -- need to restart things!!!
+                    _logger.LogException(x.Exception);
+                }
+            }, _cancellation);
+
             _batchWriting.LinkTo(_sender);
 
             _batching = new BatchingBlock<Envelope>(200, _batchWriting, _cancellation);
-
+            _batching.Completion.ContinueWith(x =>
+            {
+                if (x.IsFaulted)
+                {
+                    // TODO -- need to restart things!!!
+                    _logger.LogException(x.Exception);
+                }
+            }, _cancellation);
 
         }
 
         public int QueuedCount => _queued + _batching.ItemCount;
 
         public bool Latched { get; private set; }
-        public async Task LatchAndDrain()
+        public Task LatchAndDrain()
         {
             Latched = true;
 
@@ -87,15 +121,9 @@ namespace Jasper.Messaging.Transports.Sending
             _batchWriting.Complete();
             _batching.Complete();
 
-
             _logger.CircuitBroken(Destination);
 
-
-            await _sender.Completion;
-            await _serializing.Completion;
-            await _batchWriting.Completion;
-            await _batching.Completion;
-
+            return Task.CompletedTask;
         }
 
         public void Unlatch()

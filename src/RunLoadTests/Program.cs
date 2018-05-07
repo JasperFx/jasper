@@ -32,6 +32,7 @@ namespace RunLoadTests
                 x.Connection(ConnectionFlag);
                 x.PLV8Enabled = false;
                 x.AutoCreateSchemaObjects = AutoCreate.All;
+                x.DatabaseSchemaName = schemaName;
 
                 x.Storage.Add<PostgresqlEnvelopeStorage>();
                 x.Schema.For<SentTrack>();

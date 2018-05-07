@@ -14,7 +14,7 @@ namespace RunLoadTests
             var receivedAtSender = 0;
 
 
-            using (var store = input.StoreForSchema("receiver"))
+            using (var store = input.StoreForSchema("sender"))
             {
                 using (var session = store.QuerySession())
                 {
@@ -27,7 +27,7 @@ namespace RunLoadTests
             var sentFromReceiver = 0;
             var receivedAtReceiver = 0;
 
-            using (var store = input.StoreForSchema("sender"))
+            using (var store = input.StoreForSchema("receiver"))
             {
                 using (var session = store.QuerySession())
                 {
@@ -55,6 +55,11 @@ namespace RunLoadTests
                 ConsoleWriter.Write(ConsoleColor.Yellow, $"{sentFromReceiver} responses sent from Receiver");
                 ConsoleWriter.Write(ConsoleColor.Yellow, $"{receivedAtSender} responses received at Sender");
             }
+
+            Console.WriteLine($"      Sent from Sender: {sentFromSender}");
+            Console.WriteLine($"  Received by Receiver: {receivedAtReceiver}");
+            Console.WriteLine($"    Sent from Receiver: {sentFromReceiver}");
+            Console.WriteLine($"    Received by Sender: {receivedAtSender}");
 
 
             return true;

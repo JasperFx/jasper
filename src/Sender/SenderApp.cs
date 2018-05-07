@@ -19,13 +19,12 @@ namespace Sender
 
             Hosting.ConfigureLogging(x =>
             {
-                x.AddNLog();
-                x.SetMinimumLevel(LogLevel.Information);
+                x.SetMinimumLevel(LogLevel.Error);
             });
 
             Settings.ConfigureMarten((config, options) =>
             {
-                options.AutoCreateSchemaObjects = AutoCreate.All;
+                options.AutoCreateSchemaObjects = AutoCreate.None;
                 options.Connection(config.Configuration["marten"]);
                 options.DatabaseSchemaName = "sender";
                 options.PLV8Enabled = false;
@@ -42,7 +41,6 @@ namespace Sender
                 Publish.AllMessagesTo(c.Configuration["receiver"]);
             });
 
-            Hosting.ConfigureLogging(x => x.AddConsole());
         }
     }
 }

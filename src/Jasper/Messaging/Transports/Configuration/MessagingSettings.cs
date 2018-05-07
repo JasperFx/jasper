@@ -217,7 +217,7 @@ namespace Jasper.Messaging.Transports.Configuration
         /// the recovery process when the local worker queues have this many enqueued
         /// messages
         /// </summary>
-        public int MaximumLocalEnqueuedBackPressureThreshold { get; set; } = 2000;
+        public int MaximumLocalEnqueuedBackPressureThreshold { get; set; } = 10000;
 
         /// <summary>
         /// Used to control whether or not envelopes being moved to the dead letter queue are permanently stored

@@ -22,7 +22,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         public WorkersGraph()
         {
-            _workers[TransportConstants.Default].Parallelization = 5;
+            _workers[TransportConstants.Default].Parallelization = 10;
             _workers[TransportConstants.Replies].Parallelization = 5;
             _workers[TransportConstants.Retries].Parallelization = 5;
         }

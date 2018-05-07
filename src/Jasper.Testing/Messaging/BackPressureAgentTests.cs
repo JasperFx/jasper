@@ -80,7 +80,7 @@ namespace Jasper.Testing.Messaging
         public void status_is_too_busy_and_below_10_percent_of_the_threshold()
         {
             theRoot.Settings.MaximumLocalEnqueuedBackPressureThreshold = 2000;
-            theRoot.Workers.QueuedCount.Returns(1799);
+            theRoot.Workers.QueuedCount.Returns(1599);
             theRoot.ListeningStatus = ListeningStatus.TooBusy;
 
             theAgent.ApplyBackPressure();

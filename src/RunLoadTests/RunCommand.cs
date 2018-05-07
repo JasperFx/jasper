@@ -40,6 +40,9 @@ namespace RunLoadTests
                 {
                     tasks.Add(postInLoop(client, input, cancellation.Token));
                 }
+
+
+                Task.WaitAll(tasks.ToArray());
             }
 
             return true;
@@ -49,10 +52,10 @@ namespace RunLoadTests
         {
             while (!token.IsCancellationRequested)
             {
-                await client.PostAsync(input.Url + "one", new StringContent(string.Empty), token);
-                await client.PostAsync(input.Url + "two", new StringContent(string.Empty), token);
-                await client.PostAsync(input.Url + "three", new StringContent(string.Empty), token);
-                await client.PostAsync(input.Url + "four", new StringContent(string.Empty), token);
+                await client.PostAsync(input.Url + "/one", new StringContent(string.Empty));
+                await client.PostAsync(input.Url + "/two", new StringContent(string.Empty));
+                await client.PostAsync(input.Url + "/three", new StringContent(string.Empty));
+                await client.PostAsync(input.Url + "/four", new StringContent(string.Empty));
             }
         }
     }

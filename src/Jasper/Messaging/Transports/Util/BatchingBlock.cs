@@ -8,9 +8,9 @@ namespace Jasper.Messaging.Transports.Util
 {
     public class BatchingBlock<T> : IDisposable
     {
+        private readonly TimeSpan _timeSpan;
         private readonly BatchBlock<T> _batchBlock;
         private readonly Timer _trigger;
-        private readonly TransformBlock<T, T> _transformer;
 
         public BatchingBlock(int milliseconds, ITargetBlock<T[]> processor,
             CancellationToken cancellation = default(CancellationToken))
@@ -21,24 +21,32 @@ namespace Jasper.Messaging.Transports.Util
 
         public BatchingBlock(TimeSpan timeSpan, ITargetBlock<T[]> processor, CancellationToken cancellation = default(CancellationToken))
         {
+            _timeSpan = timeSpan;
             _batchBlock = new BatchBlock<T>(25, new GroupingDataflowBlockOptions
             {
                 CancellationToken = cancellation
             });
 
-            _trigger = new Timer(o => _batchBlock.TriggerBatch(), null, Timeout.Infinite, Timeout.Infinite);
-
-
-            _transformer = new TransformBlock<T, T>(v =>
+            _batchBlock.Completion.ContinueWith(x =>
             {
-                _trigger.Change(timeSpan, Timeout.InfiniteTimeSpan);
-                return v;
-            }, new ExecutionDataflowBlockOptions
-            {
-                CancellationToken = cancellation
+                if (x.IsFaulted)
+                {
+                    Console.WriteLine(x.Exception);
+                }
             });
 
-            _transformer.LinkTo(_batchBlock);
+            _trigger = new Timer(o => {
+                try
+                {
+                    _batchBlock.TriggerBatch();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }, null, Timeout.Infinite, Timeout.Infinite);
+
+
 
             _batchBlock.LinkTo(processor);
         }
@@ -47,22 +55,30 @@ namespace Jasper.Messaging.Transports.Util
 
         public void Post(T item)
         {
-            _transformer.Post(item);
+            try
+            {
+                _trigger.Change(_timeSpan, Timeout.InfiniteTimeSpan);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            _batchBlock.Post(item);
         }
 
         public void Complete()
         {
-            _transformer.Complete();
+            _batchBlock.Complete();
         }
 
-        public Task Completion => _transformer.Completion;
+        public Task Completion => _batchBlock.Completion;
 
 
         public void Dispose()
         {
             _trigger?.Dispose();
             _batchBlock?.Complete();
-            _transformer?.Complete();
         }
     }
 }

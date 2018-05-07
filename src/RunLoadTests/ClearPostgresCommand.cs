@@ -8,11 +8,13 @@ namespace RunLoadTests
     {
         public override bool Execute(PostgresInput input)
         {
+            Console.WriteLine("Clearing documents out of the receiver schema");
             using (var store = input.StoreForSchema("receiver"))
             {
                 store.Advanced.Clean.CompletelyRemoveAll();
             }
 
+            Console.WriteLine("Clearing documents out of the sender schema");
             using (var store = input.StoreForSchema("sender"))
             {
                 store.Advanced.Clean.CompletelyRemoveAll();
