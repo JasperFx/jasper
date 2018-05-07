@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jasper.ApplicationInsights\Jasper.ApplicationInsights.csproj" />
     <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
     <ProjectReference Include="..\Jasper.Marten\Jasper.Marten.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />

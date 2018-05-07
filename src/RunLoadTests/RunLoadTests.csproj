@@ -4,4 +4,17 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Oakton" Version="1.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Marten, Version=2.5.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\.nuget\packages\marten\2.5.0\lib\netstandard2.0\Marten.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jasper.Marten\Jasper.Marten.csproj" />
+    <ProjectReference Include="..\Jasper.SqlServer\Jasper.SqlServer.csproj" />
+    <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
+  </ItemGroup>
 </Project>

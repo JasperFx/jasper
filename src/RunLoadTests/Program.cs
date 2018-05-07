@@ -2,37 +2,49 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Jasper.Marten.Persistence.DbObjects;
+using Marten;
+using Oakton;
+using TestMessages;
 
 namespace RunLoadTests
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static Task<int> Main(string[] args)
         {
-            Console.WriteLine("About to start hammering on the sender and receiver");
-
-
-            using (var client = new HttpClient())
+            return CommandExecutor.For(x =>
             {
-                Console.WriteLine("Clearing out existing persisted messages");
-                await client.PostAsync("http://localhost:5060/marten/clear", new StringContent(string.Empty));
-                await client.PostAsync("http://localhost:5061/marten/clear", new StringContent(string.Empty));
-
-
-                var tasks = new List<Task>();
-
-
-                for (int i = 0; i < 20; i++)
-                {
-                    tasks.Add(client.PostAsync("http://localhost:5060/one", new StringContent(string.Empty)));
-                    tasks.Add(client.PostAsync("http://localhost:5060/two", new StringContent(string.Empty)));
-                    tasks.Add(client.PostAsync("http://localhost:5060/three", new StringContent(string.Empty)));
-                    tasks.Add(client.PostAsync("http://localhost:5060/four", new StringContent(string.Empty)));
-
-                }
-
-                await Task.WhenAll(tasks);
-            }
+                x.RegisterCommands(typeof(Program).Assembly);
+            }).ExecuteAsync(args);
         }
+    }
+
+    public class PostgresInput
+    {
+        public string ConnectionFlag { get; set; } =
+            "Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres";
+
+        public IDocumentStore StoreForSchema(string schemaName)
+        {
+            return DocumentStore.For(x =>
+            {
+                x.Connection(ConnectionFlag);
+                x.PLV8Enabled = false;
+                x.AutoCreateSchemaObjects = AutoCreate.All;
+
+                x.Storage.Add<PostgresqlEnvelopeStorage>();
+                x.Schema.For<SentTrack>();
+                x.Schema.For<ReceivedTrack>();
+            });
+        }
+    }
+
+    public class SqlInput
+    {
+        public string ConnectionFlag { get; set; } =
+            "Server=localhost;Database=jasper_testing;User Id=sa;Password=P@55w0rd";
+
+
     }
 }
