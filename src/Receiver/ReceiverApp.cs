@@ -13,7 +13,7 @@ namespace Receiver
     {
         public ReceiverApp()
         {
-            Configuration.AddJsonFile("appsettings.json");
+            Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
             Hosting.UseUrls("http://*:5061").UseKestrel();
 
@@ -38,6 +38,8 @@ namespace Receiver
             {
                 Transports.ListenForMessagesFrom(c.Configuration["listener"]);
             });
+
+            Hosting.ConfigureLogging(x => x.AddConsole());
         }
     }
 }

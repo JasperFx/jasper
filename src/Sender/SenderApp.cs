@@ -13,7 +13,7 @@ namespace Sender
     {
         public SenderApp()
         {
-            Configuration.AddJsonFile("appsettings.json");
+            Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
 
             Hosting.UseUrls("http://*:5060").UseKestrel();
 
@@ -40,6 +40,8 @@ namespace Sender
                 Transports.ListenForMessagesFrom(c.Configuration["listener"]);
                 Publish.AllMessagesTo(c.Configuration["receiver"]);
             });
+
+            Hosting.ConfigureLogging(x => x.AddConsole());
         }
     }
 }
