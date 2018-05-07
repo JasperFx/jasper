@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
+    <ProjectReference Include="..\Jasper.SqlServer\Jasper.SqlServer.csproj" />
+    <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
+    <ProjectReference Include="..\Jasper.ApplicationInsights\Jasper.ApplicationInsights.csproj" />
+    <EmbeddedResource Include="target1.json;target2.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json;nlog.config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
