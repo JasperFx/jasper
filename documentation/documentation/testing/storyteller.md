@@ -36,3 +36,21 @@ look like this:
 
 <[img:content/storyteller-messaging-log.png]>
 
+
+## External Nodes
+
+<[warning]>
+This isn't super duper mature yet. We had a similar feature in FubuMVC that we'd like to have back, so look for more here later.
+<[/warning]>
+
+It's not for the feint of heart, but it's also possible to write automated tests using Storyteller against additional
+systems for true integration testing.
+
+To bootstrap an additional Jasper application in the same Storyteller host, use the "external nodes" feature like this:
+
+<[sample:adding-external-node]>
+
+If you're using `MessagingFixture`, you'll have access to the external nodes as shown in this fixture:
+
+<[sample:IncrementFixture]>
+

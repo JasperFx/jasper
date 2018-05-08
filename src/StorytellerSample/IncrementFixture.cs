@@ -1,14 +1,25 @@
 ﻿using System.Threading.Tasks;
+using Jasper.Http.Routing;
 using Jasper.Storyteller;
 using StoryTeller;
 
 namespace StorytellerSample
 {
+    // SAMPLE: IncrementFixture
     public class IncrementFixture : MessagingFixture
     {
+
         [FormatAs("Send increment message from the other application")]
         public Task SendIncrementMessage()
         {
+            // Just to show the functionality, you can get at the JasperRuntime
+            // -- and therefore everything about the other app -- by
+            // using the NodeFor() method as shown below:
+            var node = NodeFor("other");
+            var otherRuntime = node.Runtime;
+
+
+            // This sends a message from the external node named "Other"
             return SendMessageAndWaitForCompletion("Other", new Increment());
         }
 
@@ -19,4 +30,5 @@ namespace StorytellerSample
             return counter.Count;
         }
     }
+    // ENDSAMPLE
 }
