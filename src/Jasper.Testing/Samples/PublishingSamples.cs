@@ -33,6 +33,15 @@ namespace Jasper.Testing.Samples
 
                 // Probably easier to use this extension method though
                 e.ReplyRequested = typeof(Message2).ToMessageAlias();
+
+                // This envelope should be discarded if not processed
+                // successfully within 5 days
+                e.DeliverBy = DateTimeOffset.UtcNow.AddDays(5);
+
+
+                // Discard the message after 20 seconds if
+                // not successfully processed before then
+                e.DeliverWithin(20.Seconds());
             });
             // ENDSAMPLE
         }
