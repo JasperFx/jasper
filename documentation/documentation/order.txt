@@ -1,8 +1,8 @@
 getting_started
 bootstrapping
+ioc
 messaging
 http
-ioc
 middleware_and_codegen
 conventions
 extensions
