@@ -105,8 +105,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunLoadTests", "src\RunLoad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.ApplicationInsights", "src\Jasper.ApplicationInsights\Jasper.ApplicationInsights.csproj", "{D2D04C6C-F7F1-4D67-B182-7C6A8668242D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppVeyorTests", "src\AppVeyorTests\AppVeyorTests.csproj", "{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.Storyteller.Tests", "src\Jasper.Storyteller.Tests\Jasper.Storyteller.Tests.csproj", "{D988F715-41AE-42B6-A105-147420B10FD4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SagaTests", "src\SagaTests\SagaTests.csproj", "{01EF9283-1596-4747-8393-EEFFA8F350F6}"
@@ -619,18 +617,6 @@ Global
 		{D2D04C6C-F7F1-4D67-B182-7C6A8668242D}.Release|x64.Build.0 = Release|Any CPU
 		{D2D04C6C-F7F1-4D67-B182-7C6A8668242D}.Release|x86.ActiveCfg = Release|Any CPU
 		{D2D04C6C-F7F1-4D67-B182-7C6A8668242D}.Release|x86.Build.0 = Release|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Debug|x64.Build.0 = Debug|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Debug|x86.Build.0 = Debug|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Release|x64.ActiveCfg = Release|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Release|x64.Build.0 = Release|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Release|x86.ActiveCfg = Release|Any CPU
-		{F83F051A-986A-4E6A-8AEB-FD0118AC2BB3}.Release|x86.Build.0 = Release|Any CPU
 		{D988F715-41AE-42B6-A105-147420B10FD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D988F715-41AE-42B6-A105-147420B10FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D988F715-41AE-42B6-A105-147420B10FD4}.Debug|x64.ActiveCfg = Debug|Any CPU
