@@ -154,8 +154,6 @@ namespace Jasper.Messaging.Transports.Sending
             return _protocol.SendBatch(_callback,batch);
         }
 
-
-        private int _number = 1;
         public async Task SendBatch(OutgoingMessageBatch batch)
         {
             if (_cancellation.IsCancellationRequested) return;
@@ -170,7 +168,6 @@ namespace Jasper.Messaging.Transports.Sending
                 {
                     await _protocol.SendBatch(_callback, batch);
 
-                    Console.WriteLine($"Batch Succeeded {_number++} !");
                     _logger.OutgoingBatchSucceeded(batch);
                 }
 
