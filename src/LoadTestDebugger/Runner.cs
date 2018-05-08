@@ -97,7 +97,7 @@ namespace LoadTestDebugger
         {
             await _sender.Scenario(_ =>
             {
-                _.Post.Url("/marten/clear");
+                _.Post.Url("/clear");
                 _.StatusCodeShouldBeOk();
             });
         }
@@ -109,7 +109,7 @@ namespace LoadTestDebugger
             {
                 await _sender.Scenario(_ =>
                 {
-                    _.Post.Url("/marten/one");
+                    _.Post.Url("/one");
                     _.StatusCodeShouldBeOk();
                 });
             }
@@ -130,7 +130,7 @@ namespace LoadTestDebugger
         {
             await _sender.Scenario(_ =>
             {
-                _.Post.Url("/marten/two");
+                _.Post.Url("/two");
                 _.StatusCodeShouldBeOk();
             });
 
@@ -146,7 +146,7 @@ namespace LoadTestDebugger
         {
             await _sender.Scenario(_ =>
             {
-                _.Post.Url("/marten/three");
+                _.Post.Url("/three");
                 _.StatusCodeShouldBeOk();
             });
 
@@ -163,7 +163,7 @@ namespace LoadTestDebugger
         {
             await _sender.Scenario(_ =>
             {
-                _.Post.Url("/marten/four");
+                _.Post.Url("/four");
                 _.StatusCodeShouldBeOk();
             });
 

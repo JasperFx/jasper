@@ -90,7 +90,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task ping_sad_path_with_tcp()
         {
-            var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
+            var sender = new BatchedSender("tcp://localhost:3322".ToUri(), new SocketSenderProtocol(),
                 CancellationToken.None, TransportLogger.Empty());
 
             await Exception<InvalidOperationException>.ShouldBeThrownByAsync(async () => { await sender.Ping(); });
