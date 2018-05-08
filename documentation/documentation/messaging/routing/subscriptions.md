@@ -19,8 +19,43 @@ The subscriptions support consists of a few pieces and concepts:
 
 ## Subscription Storage
 
-The default subscription storage is just an in memory model, so you'll almost certainly want to replace that with some sort of
-durable storage mechanism if you're going to use subscriptions. To use a different subscription storage, you need an implementation
+The default subscription storage is to look in the application configuration in the *subscriptions* key. The JSON data should follow this
+format:
+
+```
+{
+    "subscriptions": [
+      {
+        "destination": "tcp://localhost:2001",
+        "messageType": "Message1",
+        "serviceName": null,
+        "accept": [
+          "application/json"
+        ]
+      },
+      {
+        "destination": "tcp://localhost:2002",
+        "messageType": "Message2",
+        "serviceName": null,
+        "accept": [
+          "application/json"
+        ]
+      },
+      {
+        "destination": "tcp://localhost:2003",
+        "messageType": "Message3",
+        "serviceName": null,
+        "accept": [
+          "application/json"
+        ]
+      }
+    ]
+}
+```
+
+
+That functionality depends on you editing and deploying the subscription information for other applications in your own application, so you might want to replace that with some sort of
+durable, shared storage mechanism if you're going to use subscriptions. To use a different subscription storage, you need an implementation
 of the `ISubscriptionsRepository` interface that you can plug into the application services like so:
 
 <[sample:SubscriptionStorageOverride]>
