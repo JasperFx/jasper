@@ -9,7 +9,7 @@ transport that the message arrived from on the first attempt.
 Today, JasperBus has the ability to:
 
 * Enforce a maximum number of attempts to short circuit retries, with the default number being 1
-* Selectively apply remediation actions for a given type of `Exception` 
+* Selectively apply remediation actions for a given type of `Exception`
 * Choose to re-execute the message immediately
 * Choose to re-execute the message later
 * Just bail out and move the message out to the error queues
@@ -18,7 +18,7 @@ Today, JasperBus has the ability to:
 
 ## Configuring Global Error Handling Rules
 
-To establish global error handling policies that apply to all message types, use the 
+To establish global error handling policies that apply to all message types, use the
 `JasperBusRegistry.ErrorHandling` syntax as shown below:
 
 <[sample:GlobalErrorHandlingConfiguration]>
@@ -64,12 +64,12 @@ the error handling filtering:
 
 ## Built in Error Handling Actions
 
-<div class="alert alert-warning">Delayed message processing is not yet supported in Jasper.</div>
-
 
 The most common exception handling actions are shown below:
 
 <[sample:continuation-actions]>
+
+The `RetryLater()` function uses <[linkto:documentation/messaging/scheduled]>.
 
 
 ## Raise Other Messages
