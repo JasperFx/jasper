@@ -54,7 +54,7 @@ namespace RunLoadTests
             {
                 await client.PostAsync(input.Url + "/one", new StringContent(string.Empty));
                 await client.PostAsync(input.Url + "/two", new StringContent(string.Empty));
-                await client.PostAsync(input.Url + "/three", new StringContent(string.Empty));
+                //await client.PostAsync(input.Url + "/three", new StringContent(string.Empty));
                 await client.PostAsync(input.Url + "/four", new StringContent(string.Empty));
             }
         }

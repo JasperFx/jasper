@@ -58,5 +58,10 @@ namespace Jasper.Messaging.Transports.Configuration
                 Uri = real;
             }
         }
+
+        public override string ToString()
+        {
+            return $"SubscriberAddress: {Uri}";
+        }
     }
 }

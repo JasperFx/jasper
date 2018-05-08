@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
+    <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
     <ProjectReference Include="..\Jasper.SqlServer\Jasper.SqlServer.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
     <ProjectReference Include="..\Jasper.ApplicationInsights\Jasper.ApplicationInsights.csproj" />

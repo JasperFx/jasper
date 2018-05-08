@@ -19,7 +19,7 @@ namespace SqlReceiver
             Hosting.ConfigureLogging(x =>
             {
                 x.SetMinimumLevel(LogLevel.Information);
-                //x.AddConsole();
+                x.AddConsole();
             });
 
             Settings.PersistMessagesWithSqlServer((context, settings) =>
