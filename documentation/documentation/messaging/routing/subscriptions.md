@@ -1,4 +1,4 @@
-<!--Title:Dynamic Subscriptions-->
+eli<!--Title:Dynamic Subscriptions-->
 <!--Url:subscriptions-->
 
 In more advanced usages of the Jasper service bus, you may want your application to be able to

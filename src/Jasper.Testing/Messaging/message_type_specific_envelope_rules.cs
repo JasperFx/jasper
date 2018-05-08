@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -164,9 +165,36 @@ namespace Jasper.Testing.Messaging
         }
     }
 
-    [Special, DeliverBy(5)]
+    [Special, DeliverWithin(5)]
     public class MySpecialMessage
     {
 
     }
+
+    // SAMPLE: StatusMessageSendingApp
+    public class StatusMessageSendingApp : JasperRegistry
+    {
+        public StatusMessageSendingApp()
+        {
+            // Any time StatusMessage is published,
+            // set the deliver within limit on the outgoing Envelope
+            Publish.Message<StatusMessage>()
+                .Customize(envelope => envelope.DeliverWithin(10.Seconds()));
+
+            // Use a criteria against the message type to say
+            // that all messages contained in the "MyApp.Status" namespace
+            // would be published with the deliver within rule
+            Publish.MessagesFromNamespace("MyApp.Status")
+                .Customize(envelope => envelope.DeliverWithin(10.Seconds()));
+        }
+    }
+
+    // ENDSAMPLE
+
+    // SAMPLE: UsingDeliverWithinAttribute
+    // Any message of this type should be successfully
+    // delivered within 10 seconds or discarded
+    [DeliverWithin(10)]
+    public class StatusMessage{}
+    // ENDSAMPLE
 }
