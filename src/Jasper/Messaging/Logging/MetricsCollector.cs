@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 
@@ -15,7 +17,8 @@ namespace Jasper.Messaging.Logging
         private readonly MessagingSettings _settings;
         private readonly IWorkerQueue _workers;
 
-        public MetricsCollector(IMetrics metrics, IEnvelopePersistor persistor, IMessageLogger logger, MessagingSettings settings, IWorkerQueue workers)
+        public MetricsCollector(IMetrics metrics, IEnvelopePersistor persistor, IMessageLogger logger,
+            MessagingSettings settings, IWorkerQueue workers)
         {
             _metrics = metrics;
             _persistor = persistor;

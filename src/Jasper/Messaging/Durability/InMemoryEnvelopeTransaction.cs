@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Runtime;
@@ -16,7 +17,7 @@ namespace Jasper.Messaging.Durability
             return Task.CompletedTask;
         }
 
-        public Task Persist(IEnumerable<Envelope> envelopes)
+        public Task Persist(Envelope[] envelopes)
         {
             Queued.Fill(envelopes);
             return Task.CompletedTask;
@@ -30,7 +31,7 @@ namespace Jasper.Messaging.Durability
 
         public async Task CopyTo(IEnvelopeTransaction other)
         {
-            await other.Persist(Queued);
+            await other.Persist(Queued.ToArray());
 
             foreach (var envelope in Scheduled)
             {

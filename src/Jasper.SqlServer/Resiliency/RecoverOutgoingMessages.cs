@@ -42,11 +42,11 @@ namespace Jasper.SqlServer.Resiliency
 
         }
 
-        public async Task<List<Uri>> FindAllOutgoingDestinations(SqlConnection conn, SqlTransaction tx)
+        public async Task<List<Uri>> FindAllOutgoingDestinations(SqlConnection conn)
         {
             var list = new List<Uri>();
 
-            var cmd = conn.CreateCommand(tx, _findUniqueDestinations);
+            var cmd = conn.CreateCommand(_findUniqueDestinations);
             using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
@@ -59,60 +59,80 @@ namespace Jasper.SqlServer.Resiliency
             return list;
         }
 
-        public async Task Execute(SqlConnection conn, ISchedulingAgent agent, SqlTransaction tx)
+        public async Task Execute(SqlConnection conn, ISchedulingAgent agent)
         {
-            if (!await conn.TryGetGlobalTxLock(tx, OutgoingMessageLockId))
-                return;
-
-
-            var destinations = await FindAllOutgoingDestinations(conn, tx);
-
-            var count = 0;
-            foreach (var destination in destinations)
+            if (!await conn.TryGetGlobalLock(OutgoingMessageLockId))
             {
-                var found = await recoverFrom(destination, conn, tx);
-                if (found > 0)
-                {
-                    tx = conn.BeginTransaction();
-                }
-
-                count += found;
+                return;
             }
 
-            var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
 
-            if (wasMaxedOut)
+            try
             {
-                agent.RescheduleOutgoingRecovery();
+                var destinations = await FindAllOutgoingDestinations(conn);
+
+                var count = 0;
+                foreach (var destination in destinations)
+                {
+                    var found = await recoverFrom(destination, conn);
+
+                    count += found;
+                }
+
+                var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
+
+                if (wasMaxedOut)
+                {
+                    agent.RescheduleOutgoingRecovery();
+                }
+            }
+            finally
+            {
+                await conn.ReleaseGlobalLock(OutgoingMessageLockId);
             }
         }
 
-        private async Task<int> recoverFrom(Uri destination, SqlConnection conn, SqlTransaction tx)
+        private async Task<int> recoverFrom(Uri destination, SqlConnection conn)
         {
+
+
             try
             {
-                var channel = _channels.GetOrBuildChannel(destination);
 
-                if (channel.Latched) return 0;
+                Envelope[] filtered = null;
+                List<Envelope> outgoing = null;
 
-                var outgoing = await conn.CreateCommand(tx, _findOutgoingEnvelopesSql)
-                    .With("destination", destination.ToString(), SqlDbType.VarChar)
-                    .ExecuteToEnvelopes();
+                if (_channels.GetOrBuildChannel(destination).Latched) return 0;
 
-                var filtered = await filterExpired(conn, tx, outgoing);
+                var tx = conn.BeginTransaction();
 
-                // Might easily try to do this in the time between starting
-                // and having the data fetched. Was able to make that happen in
-                // (contrived) testing
-                if (channel.Latched || !filtered.Any())
+                try
                 {
-                    return 0;
+                    outgoing = await conn.CreateCommand(tx, _findOutgoingEnvelopesSql)
+                        .With("destination", destination.ToString(), SqlDbType.VarChar)
+                        .ExecuteToEnvelopes();
+
+                    filtered = await filterExpired(conn, tx, outgoing);
+
+                    // Might easily try to do this in the time between starting
+                    // and having the data fetched. Was able to make that happen in
+                    // (contrived) testing
+                    if (_channels.GetOrBuildChannel(destination).Latched || !filtered.Any())
+                    {
+                        tx.Rollback();
+                        return 0;
+                    }
+
+                    await markOwnership(conn, tx, filtered);
+
+
+                    tx.Commit();
                 }
-
-                await markOwnership(conn, tx, filtered);
-
-
-                tx.Commit();
+                catch (Exception)
+                {
+                    tx.Rollback();
+                    throw;
+                }
 
                 _logger.RecoveredOutgoing(filtered);
 
@@ -120,7 +140,7 @@ namespace Jasper.SqlServer.Resiliency
                 {
                     try
                     {
-                        await channel.QuickSend(envelope);
+                        await _channels.GetOrBuildChannel(destination).QuickSend(envelope);
                     }
                     catch (Exception e)
                     {
@@ -135,7 +155,8 @@ namespace Jasper.SqlServer.Resiliency
             {
                 _logger.LogException(e, message: $"Could not resolve a channel for {destination}");
 
-                await DeleteFromOutgoingEnvelopes(conn, TransportConstants.AnyNode, destination);
+                var tx = conn.BeginTransaction();
+                await DeleteFromOutgoingEnvelopes(conn, TransportConstants.AnyNode, destination, tx);
                 tx.Commit();
 
                 return 0;
@@ -154,9 +175,9 @@ namespace Jasper.SqlServer.Resiliency
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public Task DeleteFromOutgoingEnvelopes(SqlConnection conn, int ownerId, Uri destination)
+        public Task DeleteFromOutgoingEnvelopes(SqlConnection conn, int ownerId, Uri destination, SqlTransaction tx)
         {
-            return conn.CreateCommand(_deleteOutgoingSql)
+            return conn.CreateCommand(tx, _deleteOutgoingSql)
                 .With("destination", destination.ToString(), SqlDbType.VarChar)
                 .With("owner", ownerId, SqlDbType.Int).ExecuteNonQueryAsync();
         }

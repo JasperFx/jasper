@@ -50,9 +50,8 @@ namespace Jasper.Messaging.WorkerQueues
 
             var receiver = determineReceiver(envelope);
 
-            receiver.Post(envelope);
+            return receiver.SendAsync(envelope, _cancellationToken);
 
-            return Task.CompletedTask;
         }
 
         private ActionBlock<Envelope> determineReceiver(Envelope envelope)

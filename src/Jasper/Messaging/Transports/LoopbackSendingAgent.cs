@@ -65,5 +65,7 @@ namespace Jasper.Messaging.Transports
         {
             // nothing
         }
+
+        public int QueuedCount { get; } = 0;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -35,21 +36,42 @@ namespace Jasper.SqlServer.Resiliency
             _findAtLargeEnvelopesSql = $"select top {settings.Retries.RecoveryBatchSize} body from {mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
         }
 
-        public async Task Execute(SqlConnection conn, ISchedulingAgent agent, SqlTransaction tx)
+        public async Task Execute(SqlConnection conn, ISchedulingAgent agent)
         {
             if (_workers.QueuedCount > _settings.MaximumLocalEnqueuedBackPressureThreshold) return;
 
-            if (!await conn.TryGetGlobalTxLock(tx, IncomingMessageLockId))
-                return;
+            var tx = conn.BeginTransaction();
 
-            var incoming = await conn.CreateCommand(tx, _findAtLargeEnvelopesSql)
-                .ExecuteToEnvelopes();
 
-            if (!incoming.Any()) return;
+            List<Envelope> incoming = null;
+            try
+            {
+                if (!await conn.TryGetGlobalTxLock(tx, IncomingMessageLockId))
+                {
+                    tx.Rollback();
+                    return;
+                }
 
-            await markOwnership(conn, tx, incoming);
+                incoming = await conn.CreateCommand(tx, _findAtLargeEnvelopesSql)
+                    .ExecuteToEnvelopes();
 
-            tx.Commit();
+                if (!incoming.Any())
+                {
+                    tx.Rollback();
+                    return;
+                }
+
+                await markOwnership(conn, tx, incoming);
+
+                tx.Commit();
+
+
+            }
+            catch (Exception)
+            {
+                tx.Rollback();
+                throw;
+            }
 
             _logger.RecoveredIncoming(incoming);
 

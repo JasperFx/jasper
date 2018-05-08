@@ -33,7 +33,6 @@ namespace Jasper.SqlServer.Persistence
                 return conn
                     .CreateCommand($"select body, status, owner_id, execution_time, attempts from {_settings.SchemaName}.{IncomingTable}")
                     .LoadEnvelopes();
-
             }
         }
 
@@ -261,7 +260,7 @@ values
             }
         }
 
-        public async Task StoreIncoming(IEnumerable<Envelope> envelopes)
+        public async Task StoreIncoming(Envelope[] envelopes)
         {
             var cmd = BuildIncomingStorageCommand(envelopes, _settings);
 

@@ -22,9 +22,10 @@ namespace Jasper.Messaging.Transports.Util
         public BatchingBlock(TimeSpan timeSpan, ITargetBlock<T[]> processor, CancellationToken cancellation = default(CancellationToken))
         {
             _timeSpan = timeSpan;
-            _batchBlock = new BatchBlock<T>(25, new GroupingDataflowBlockOptions
+            _batchBlock = new BatchBlock<T>(100, new GroupingDataflowBlockOptions
             {
-                CancellationToken = cancellation
+                CancellationToken = cancellation,
+                BoundedCapacity = DataflowBlockOptions.Unbounded
             });
 
             _batchBlock.Completion.ContinueWith(x =>
@@ -53,7 +54,7 @@ namespace Jasper.Messaging.Transports.Util
 
         public int ItemCount => _batchBlock.OutputCount;
 
-        public void Post(T item)
+        public Task SendAsync(T item)
         {
             try
             {
@@ -64,7 +65,7 @@ namespace Jasper.Messaging.Transports.Util
                 // ignored
             }
 
-            _batchBlock.Post(item);
+            return _batchBlock.SendAsync(item);
         }
 
         public void Complete()

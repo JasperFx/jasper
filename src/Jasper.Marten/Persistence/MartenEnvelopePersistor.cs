@@ -113,7 +113,7 @@ namespace Jasper.Marten.Persistence
             }
         }
 
-        public async Task StoreIncoming(IEnumerable<Envelope> envelopes)
+        public async Task StoreIncoming(Envelope[] envelopes)
         {
             using (var session = _store.LightweightSession())
             {

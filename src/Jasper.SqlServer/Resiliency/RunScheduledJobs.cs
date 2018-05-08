@@ -24,7 +24,6 @@ namespace Jasper.SqlServer.Resiliency
         private readonly IRetries _retries;
         private readonly MessagingSettings _settings;
         public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
-        private readonly string _markOwnedIncomingSql;
         private readonly IEnvelopePersistor _persistor;
 
         public RunScheduledJobs(IWorkerQueue workers, SqlServerSettings mssqlSettings, ITransportLogger logger, IRetries retries, MessagingSettings settings)
@@ -41,41 +40,66 @@ namespace Jasper.SqlServer.Resiliency
 
         }
 
-        public async Task Execute(SqlConnection conn, ISchedulingAgent agent, SqlTransaction tx)
+        public async Task Execute(SqlConnection conn, ISchedulingAgent agent)
         {
             var utcNow = DateTimeOffset.UtcNow;;
 
-            await ExecuteAtTime(conn, tx, utcNow);
+            await ExecuteAtTime(conn, utcNow);
         }
 
-        public async Task<List<Envelope>> ExecuteAtTime(SqlConnection conn, SqlTransaction tx, DateTimeOffset utcNow)
+        public async Task<List<Envelope>> ExecuteAtTime(SqlConnection conn, DateTimeOffset utcNow)
         {
-            if (!await conn.TryGetGlobalTxLock(tx, ScheduledJobLockId))
+            if (!await conn.TryGetGlobalLock(ScheduledJobLockId))
             {
                 return null;
             }
 
-            var readyToExecute = await conn
-                .CreateCommand(tx, _findReadyToExecuteJobs)
-                .With("time", utcNow, SqlDbType.DateTimeOffset)
-                .ExecuteToEnvelopes(tx);
+            var tx = conn.BeginTransaction();
 
-            if (!readyToExecute.Any()) return readyToExecute;
-
-            await markOwnership(conn, tx, readyToExecute);
-
-            tx.Commit();
-
-            _logger.ScheduledJobsQueuedForExecution(readyToExecute);
-
-            foreach (var envelope in readyToExecute)
+            try
             {
-                envelope.Callback = new DurableCallback(envelope, _workers, _persistor, _retries, _logger);
 
-                await _workers.Enqueue(envelope);
+
+                List<Envelope> readyToExecute = null;
+
+                try
+                {
+                    readyToExecute = await conn
+                        .CreateCommand(tx, _findReadyToExecuteJobs)
+                        .With("time", utcNow, SqlDbType.DateTimeOffset)
+                        .ExecuteToEnvelopes(tx);
+
+                    if (!readyToExecute.Any())
+                    {
+                        tx.Rollback();
+                        return readyToExecute;
+                    }
+
+                    await markOwnership(conn, tx, readyToExecute);
+
+                    tx.Commit();
+                }
+                catch (Exception)
+                {
+                    tx.Rollback();
+                    throw;
+                }
+
+                _logger.ScheduledJobsQueuedForExecution(readyToExecute);
+
+                foreach (var envelope in readyToExecute)
+                {
+                    envelope.Callback = new DurableCallback(envelope, _workers, _persistor, _retries, _logger);
+
+                    await _workers.Enqueue(envelope);
+                }
+
+                return readyToExecute;
             }
-
-            return readyToExecute;
+            finally
+            {
+                await conn.ReleaseGlobalLock(ScheduledJobLockId);
+            }
         }
 
         private async Task markOwnership(SqlConnection conn, SqlTransaction tx, List<Envelope> incoming)

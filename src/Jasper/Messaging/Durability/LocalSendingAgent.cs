@@ -65,7 +65,7 @@ namespace Jasper.Messaging.Durability
                 writeMessageData(envelope);
             }
 
-            await _persistor.StoreIncoming(envelopes);
+            await _persistor.StoreIncoming((Envelope[]) envelopes);
 
             foreach (var envelope in envelopes)
             {
@@ -87,5 +87,7 @@ namespace Jasper.Messaging.Durability
         {
             // Nothing
         }
+
+        public int QueuedCount { get; } = 0;
     }
 }

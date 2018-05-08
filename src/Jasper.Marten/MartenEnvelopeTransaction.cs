@@ -42,7 +42,7 @@ namespace Jasper.Marten
             return Task.CompletedTask;
         }
 
-        public Task Persist(IEnumerable<Envelope> envelopes)
+        public Task Persist(Envelope[] envelopes)
         {
             foreach (var envelope in envelopes)
             {

@@ -26,7 +26,7 @@ namespace Jasper.Messaging.Transports.Receiving
 
         public ListeningAgent(IReceiverCallback callback, IPAddress ipaddr, int port, string protocol, CancellationToken cancellationToken)
         {
-            
+
             Port = port;
             _callback = callback;
             _cancellationToken = cancellationToken;
@@ -55,7 +55,7 @@ namespace Jasper.Messaging.Transports.Receiving
                 while (!_cancellationToken.IsCancellationRequested)
                 {
                     var socket = await _listener.AcceptSocketAsync();
-                    _socketHandling.Post(socket);
+                    await _socketHandling.SendAsync(socket, _cancellationToken);
                 }
             }, _cancellationToken);
         }

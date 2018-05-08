@@ -40,5 +40,10 @@ namespace Jasper.Messaging.Logging
         {
 
         }
+
+        public void LogLocalSendingQueueDepth(int sendingCount)
+        {
+            
+        }
     }
 }

@@ -233,7 +233,7 @@ namespace DurabilitySpecs.Fixtures.SqlServer
 
                 try
                 {
-                    await action.Execute(conn, this, tx);
+                    await action.Execute(conn, this);
                 }
                 catch (Exception e)
                 {

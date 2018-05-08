@@ -19,6 +19,8 @@ namespace Jasper.SqlServer.Persistence
             Transaction = new Variable(typeof(SqlTransaction), this);
         }
 
+        public bool ShouldFlushOutgoingMessages { get; set; }
+
         public Variable Transaction { get; }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
@@ -35,6 +37,14 @@ namespace Jasper.SqlServer.Persistence
 
             Next?.GenerateCode(method, writer);
             writer.Write($"{Transaction.Usage}.{nameof(SqlTransaction.Commit)}();");
+
+
+            if (ShouldFlushOutgoingMessages)
+            {
+                writer.Write($"await {_context.Usage}.{nameof(IMessageContext.SendAllQueuedOutgoingMessages)}();");
+            }
+
+            writer.Write($"{_connection.Usage}.{nameof(SqlConnection.Close)}();");
         }
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
@@ -45,8 +55,17 @@ namespace Jasper.SqlServer.Persistence
             yield return _connection;
 
 
-            // Inside of messaging. Not sure how this is gonna work for HTTP yet
-            _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
+            if (ShouldFlushOutgoingMessages)
+            {
+                _context = chain.FindVariable(typeof(IMessageContext));
+            }
+            else
+            {
+                // Inside of messaging. Not sure how this is gonna work for HTTP yet
+                _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
+            }
+
+
 
             if (_context != null) yield return _context;
         }

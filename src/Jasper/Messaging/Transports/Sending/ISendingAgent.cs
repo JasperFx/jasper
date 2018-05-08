@@ -25,5 +25,7 @@ namespace Jasper.Messaging.Transports.Sending
         Task StoreAndForwardMany(IEnumerable<Envelope> envelopes);
 
         void Start();
+
+        int QueuedCount { get; }
     }
 }

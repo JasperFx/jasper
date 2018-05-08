@@ -74,5 +74,7 @@ namespace Jasper.Messaging.Transports.Stub
         {
 
         }
+
+        public int QueuedCount { get; } = 0;
     }
 }

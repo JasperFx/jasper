@@ -1,4 +1,6 @@
-﻿using Jasper;
+﻿using Baseline.Dates;
+using Jasper;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.SqlServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,9 +19,11 @@ namespace SqlSender
 
             Hosting.ConfigureLogging(x =>
             {
-                x.AddNLog();
-                x.SetMinimumLevel(LogLevel.Information);
+                x.SetMinimumLevel(LogLevel.Error);
+                x.AddConsole();
             });
+
+            Settings.Alter<MessagingSettings>(x => x.NodeReassignmentPollingTime = 5.Seconds());
 
             Settings.PersistMessagesWithSqlServer((context, settings) =>
             {
@@ -34,7 +38,6 @@ namespace SqlSender
                 Publish.AllMessagesTo(c.Configuration["receiver"]);
             });
 
-            Hosting.ConfigureLogging(x => x.AddConsole());
         }
     }
 }

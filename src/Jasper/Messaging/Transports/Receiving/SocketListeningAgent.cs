@@ -49,7 +49,7 @@ namespace Jasper.Messaging.Transports.Receiving
                 while (!_cancellationToken.IsCancellationRequested)
                 {
                     var socket = await _listener.AcceptSocketAsync();
-                    _socketHandling.Post(socket);
+                    await _socketHandling.SendAsync(socket, _cancellationToken);
                 }
             }, _cancellationToken);
         }

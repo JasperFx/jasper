@@ -29,11 +29,10 @@ namespace Jasper.SqlServer.Tests.Resiliency
         {
             var connection = new SqlConnection(ConnectionSource.ConnectionString);
             await connection.OpenAsync();
-            var tx = connection.BeginTransaction();
 
             try
             {
-                return await theScheduledJob.ExecuteAtTime(connection, tx, time);
+                return await theScheduledJob.ExecuteAtTime(connection, time);
 
             }
             finally

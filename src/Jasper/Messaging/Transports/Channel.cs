@@ -63,6 +63,7 @@ namespace Jasper.Messaging.Transports
         }
 
         public bool IsDurable => _agent.IsDurable;
+        public int QueuedCount => _agent.QueuedCount;
 
         public async Task QuickSend(Envelope envelope)
         {

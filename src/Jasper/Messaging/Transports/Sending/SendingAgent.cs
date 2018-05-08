@@ -41,6 +41,9 @@ namespace Jasper.Messaging.Transports.Sending
             _sender.Start(this);
         }
 
+        public int QueuedCount => _sender.QueuedCount;
+
+
         public abstract Task Successful(OutgoingMessageBatch outgoing);
 
         public abstract Task Successful(Envelope outgoing);

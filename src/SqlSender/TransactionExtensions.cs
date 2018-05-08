@@ -9,7 +9,7 @@ namespace SqlSender
     {
         public static Task StoreSent(this SqlTransaction tx, Guid id, string messageType)
         {
-            return tx.Connection.CreateCommand("insert into sender.sent_track (id, message_type) values (@id, @type)")
+            return tx.Connection.CreateCommand(tx, "insert into sender.sent_track (id, message_type) values (@id, @type)")
                 .With("id", id)
                 .With("type", messageType)
                 .ExecuteNonQueryAsync();
@@ -17,7 +17,7 @@ namespace SqlSender
 
         public static Task StoreReceived(this SqlTransaction tx, Guid id, string messageType)
         {
-            return tx.Connection.CreateCommand("insert into sender.received_track (id, message_type) values (@id, @type)")
+            return tx.Connection.CreateCommand(tx, "insert into sender.received_track (id, message_type) values (@id, @type)")
                 .With("id", id)
                 .With("type", messageType)
                 .ExecuteNonQueryAsync();

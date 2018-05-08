@@ -35,7 +35,7 @@ namespace SqlSender
             return writer.ToString();
         }
 
-        public static void post_marten_clear(SqlServerEnvelopePersistor persistor)
+        public static void post_clear(SqlServerEnvelopePersistor persistor)
         {
             persistor.ClearAllStoredMessages();
 
@@ -44,8 +44,6 @@ namespace SqlSender
         [SqlTransaction]
         public static async Task post_one(IMessageContext context, SqlTransaction tx)
         {
-            await context.EnlistInTransaction(tx);
-
             var target1 = JsonConvert.DeserializeObject<Target>(_json1);
             target1.Id = Guid.NewGuid();
 
@@ -57,8 +55,6 @@ namespace SqlSender
         [SqlTransaction]
         public static async Task post_two(IMessageContext context, SqlTransaction tx)
         {
-            await context.EnlistInTransaction(tx);
-
             var target2 = JsonConvert.DeserializeObject<Target>(_json2);
             target2.Id = Guid.NewGuid();
 
@@ -70,8 +66,6 @@ namespace SqlSender
         [SqlTransaction]
         public static async Task post_three(IMessageContext context, SqlTransaction tx)
         {
-            await context.EnlistInTransaction(tx);
-
             var ping = new PingMessage
             {
                 Name = "Han Solo",
@@ -86,8 +80,6 @@ namespace SqlSender
         [SqlTransaction]
         public static async Task post_four(IMessageContext context, SqlTransaction tx)
         {
-            await context.EnlistInTransaction(tx);
-
             var created = new UserCreated
             {
                 Id = Guid.NewGuid(),

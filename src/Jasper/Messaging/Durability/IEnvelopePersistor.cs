@@ -19,7 +19,7 @@ namespace Jasper.Messaging.Durability
         Task IncrementIncomingEnvelopeAttempts(Envelope envelope);
 
         Task StoreIncoming(Envelope envelope);
-        Task StoreIncoming(IEnumerable<Envelope> envelopes);
+        Task StoreIncoming(Envelope[] envelopes);
 
         Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
 
@@ -77,7 +77,7 @@ namespace Jasper.Messaging.Durability
             throw new NotImplementedException();
         }
 
-        public Task StoreIncoming(IEnumerable<Envelope> envelopes)
+        public Task StoreIncoming(Envelope[] envelopes)
         {
             throw new NotImplementedException();
         }

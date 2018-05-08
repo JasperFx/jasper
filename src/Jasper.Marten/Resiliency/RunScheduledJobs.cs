@@ -19,23 +19,21 @@ namespace Jasper.Marten.Resiliency
     {
         private readonly string _findReadyToExecuteJobs;
         private readonly IWorkerQueue _workers;
-        private readonly IDocumentStore _store;
         private readonly EnvelopeTables _marker;
         private readonly ITransportLogger _logger;
         private readonly IRetries _retries;
         public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
         private readonly string _markOwnedIncomingSql;
-        private MartenEnvelopePersistor _persistor;
+        private readonly MartenEnvelopePersistor _persistor;
 
         public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, EnvelopeTables marker, ITransportLogger logger, IRetries retries)
         {
             _workers = workers;
-            _store = store;
             _marker = marker;
             _logger = logger;
             _retries = retries;
 
-            _persistor = new MartenEnvelopePersistor(_store, _marker);
+            _persistor = new MartenEnvelopePersistor(store, _marker);
 
             _findReadyToExecuteJobs = $"select body from {marker.Incoming} where status = '{TransportConstants.Scheduled}' and execution_time <= :time";
             _markOwnedIncomingSql = $"update {marker.Incoming} set owner_id = :owner, status = '{TransportConstants.Incoming}' where id = ANY(:idlist)";

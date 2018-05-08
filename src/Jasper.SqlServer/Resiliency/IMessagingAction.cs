@@ -6,6 +6,6 @@ namespace Jasper.SqlServer.Resiliency
 {
     public interface IMessagingAction
     {
-        Task Execute(SqlConnection conn, ISchedulingAgent agent, SqlTransaction tx);
+        Task Execute(SqlConnection conn, ISchedulingAgent agent);
     }
 }

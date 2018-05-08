@@ -1,5 +1,11 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
+using Baseline;
 using Jasper.Configuration;
+using Jasper.Http.Model;
+using Jasper.Http.Routing;
+using Jasper.Messaging;
 using Jasper.SqlServer.Persistence;
 
 namespace Jasper.SqlServer
@@ -12,7 +18,17 @@ namespace Jasper.SqlServer
     {
         public override void Modify(IChain chain)
         {
-            chain.Middleware.Add(new SqlTransactionFrame());
+            var shouldFlushOutgoingMessages = false;
+            if (chain is RouteChain)
+            {
+                shouldFlushOutgoingMessages = chain.As<RouteChain>().Action.Method.GetParameters()
+                    .Any(x => x.ParameterType == typeof(IMessageContext));
+            }
+
+
+            var frame = new SqlTransactionFrame {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};
+
+            chain.Middleware.Add(frame);
         }
     }
 }

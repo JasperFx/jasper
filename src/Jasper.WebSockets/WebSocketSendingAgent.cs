@@ -51,5 +51,7 @@ namespace Jasper.WebSockets
         {
             // nothing
         }
+
+        public int QueuedCount { get; } = 0;
     }
 }

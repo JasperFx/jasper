@@ -42,17 +42,22 @@ namespace Jasper.SqlServer.Resiliency
 
             if (_connection == null) return;
 
-            var tx = _connection.BeginTransaction();
-
-
             try
             {
-                await action.Execute(_connection, this, tx);
+                try
+                {
+                    await action.Execute(_connection, this);
+                }
+                catch (Exception e)
+                {
+                    logger.LogException(e, message:"Running " + action);
+                }
             }
             catch (Exception e)
             {
-                logger.LogException(e);
-                tx.Rollback();
+                logger.LogException(e, message:"Error trying to run " + action);
+                _connection?.Dispose();
+                _connection = null;
             }
 
             await tryRestartConnection();
@@ -63,6 +68,7 @@ namespace Jasper.SqlServer.Resiliency
             if (_connection?.State == ConnectionState.Open) return;
 
             if (_connection != null)
+            {
                 try
                 {
                     _connection.Close();
@@ -74,11 +80,12 @@ namespace Jasper.SqlServer.Resiliency
                     logger.LogException(e);
                 }
 
-
-            _connection = new SqlConnection(_mssqlSettings.ConnectionString);
+            }
 
             try
             {
+                _connection = new SqlConnection(_mssqlSettings.ConnectionString);
+
                 await _connection.OpenAsync(settings.Cancellation);
 
                 await retrieveLockForThisNode();
@@ -87,7 +94,7 @@ namespace Jasper.SqlServer.Resiliency
             {
                 logger.LogException(e);
 
-                _connection.Dispose();
+                _connection?.Dispose();
                 _connection = null;
             }
         }

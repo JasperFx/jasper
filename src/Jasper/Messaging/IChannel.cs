@@ -28,6 +28,8 @@ namespace Jasper.Messaging
         void ApplyModifications(Envelope envelope);
 
         bool IsDurable { get; }
+
+        int QueuedCount { get; }
     }
 
 }

@@ -123,7 +123,7 @@ namespace Jasper.Messaging
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(x => x.Route.Channel.IsDurable));
+                await Transaction.Persist(outgoing.Where(x => x.Route.Channel.IsDurable).ToArray());
 
                 _outstanding.AddRange(outgoing);
             }

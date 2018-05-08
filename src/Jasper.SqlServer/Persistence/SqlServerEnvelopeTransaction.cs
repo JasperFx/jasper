@@ -13,14 +13,12 @@ namespace Jasper.SqlServer.Persistence
 {
     public class SqlServerEnvelopeTransaction : IEnvelopeTransaction, IDisposable
     {
-        private readonly IMessageContext _context;
         private readonly SqlTransaction _tx;
         private readonly SqlServerBackedDurableMessagingFactory _persistence;
 
         public SqlServerEnvelopeTransaction(IMessageContext context, SqlTransaction tx)
         {
             _persistence = context.Advanced.Factory as SqlServerBackedDurableMessagingFactory ?? throw new InvalidOperationException("This message context is not using Sql Server-backed messaging persistence");
-            _context = context;
             _tx = tx;
 
 
@@ -31,7 +29,7 @@ namespace Jasper.SqlServer.Persistence
             return Persist(new Envelope[] {envelope});
         }
 
-        public Task Persist(IEnumerable<Envelope> envelopes)
+        public Task Persist(Envelope[] envelopes)
         {
             if (!envelopes.Any()) return Task.CompletedTask;
 
@@ -48,7 +46,9 @@ namespace Jasper.SqlServer.Persistence
 
         public Task CopyTo(IEnvelopeTransaction other)
         {
-            throw new NotSupportedException();
+
+
+            throw new NotSupportedException($"Cannot copy data from an existing Sql Server envelope transaction to {other}. You may have erroneously enlisted an IMessageContext in a transaction twice.");
         }
 
         public void Dispose()

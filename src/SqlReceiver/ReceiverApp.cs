@@ -18,8 +18,8 @@ namespace SqlReceiver
 
             Hosting.ConfigureLogging(x =>
             {
-                x.AddNLog();
                 x.SetMinimumLevel(LogLevel.Information);
+                //x.AddConsole();
             });
 
             Settings.PersistMessagesWithSqlServer((context, settings) =>
@@ -34,7 +34,6 @@ namespace SqlReceiver
                 Transports.ListenForMessagesFrom(c.Configuration["listener"]);
             });
 
-            Hosting.ConfigureLogging(x => x.AddConsole());
         }
     }
 }

@@ -73,23 +73,23 @@ namespace Jasper.Messaging.Durability
 
         public void DeleteIncoming(Envelope envelope)
         {
-            _deleteIncomingBatching.Post(envelope);
+            _deleteIncomingBatching.SendAsync(envelope);
         }
 
         public void DeleteOutgoing(Envelope envelope)
         {
-            _deleteOutgoingBatching.Post(envelope);
+            _deleteOutgoingBatching.SendAsync(envelope);
         }
 
         public void LogErrorReport(ErrorReport report)
         {
             if (!_settings.PersistDeadLetterEnvelopes) return;
-            _logErrorReportBatching.Post(report);
+            _logErrorReportBatching.SendAsync(report);
         }
 
         public void ScheduleExecution(Envelope envelope)
         {
-            _scheduleIncomingBatching.Post(envelope);
+            _scheduleIncomingBatching.SendAsync(envelope);
         }
 
         private async Task scheduleIncoming(Envelope[] envelopes)
