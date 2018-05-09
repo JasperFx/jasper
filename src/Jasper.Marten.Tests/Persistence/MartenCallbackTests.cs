@@ -41,6 +41,7 @@ namespace Jasper.Marten.Tests.Persistence
                     x.Storage.Add<PostgresqlEnvelopeStorage>();
                     x.PLV8Enabled = false;
                 });
+
             });
 
             theStore = theRuntime.Get<IDocumentStore>();

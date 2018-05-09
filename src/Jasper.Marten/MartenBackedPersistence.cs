@@ -5,6 +5,7 @@ using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Persistence.Sagas;
 using Jasper.Marten.Resiliency;
 using Jasper.Messaging.Durability;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Lamar.Codegen;
 using Lamar.Codegen.Variables;
@@ -27,6 +28,7 @@ namespace Jasper.Marten
             registry.Settings.Alter<StoreOptions>(options =>
             {
                 options.Storage.Add<PostgresqlEnvelopeStorage>();
+                options.Schema.For<ErrorReport>().Duplicate(x => x.MessageType).Duplicate(x => x.ExceptionType);
             });
 
             registry.Services.AddSingleton<IHostedService, SchedulingAgent>();
