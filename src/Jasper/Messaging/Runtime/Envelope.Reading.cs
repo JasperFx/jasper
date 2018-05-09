@@ -59,10 +59,6 @@ namespace Jasper.Messaging.Runtime
                         }
                         break;
 
-                    case SentTimeHeader:
-                        SentTime = XmlConvert.ToDateTime(value, XmlDateTimeSerializationMode.Utc);
-                        break;
-
                     case ResponseIdKey:
                         if (Guid.TryParse(value, out Guid responseId))
                         {

@@ -77,20 +77,6 @@ namespace Jasper.Testing.Messaging
             outgoing.OriginalId.ShouldBe(theBus.Envelope.OriginalId);
         }
 
-        [Fact]
-        public async Task adds_a_value_to_the_sent_time()
-        {
-            var envelope = ObjectMother.Envelope();
-            envelope.Message = new Message1();
-
-            routedTo(envelope, "tcp://server1:2222");
-
-            await theBus.SendEnvelope(envelope);
-
-            var outgoing = theBus.Outstanding.Single();
-
-            outgoing.SentTime.HasValue.ShouldBeTrue();
-        }
 
         [Fact]
         public async Task publish_with_original_response()

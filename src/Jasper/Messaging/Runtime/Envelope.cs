@@ -41,11 +41,6 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public int Attempts { get; set; }
 
-        /// <summary>
-        /// Time when this envelope was "sent" to a messaging context
-        /// </summary>
-        public DateTimeOffset? SentTime { internal set; get; }
-
         public Envelope()
         {
         }
@@ -161,7 +156,6 @@ namespace Jasper.Messaging.Runtime
             set => _queue = value;
         }
 
-        [Obsolete("Use SentTime instead")]
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
         // This is purely for backwards compatibility in wire format

@@ -42,9 +42,6 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
                 SagaId = Guid.NewGuid().ToString()
             };
 
-            var sentTime = typeof(Envelope).GetProperty(nameof(Envelope.SentTime));
-            today = new DateTimeOffset(DateTime.Today);
-            sentTime.SetValue(outgoing, today);
 
             sentAttempts = typeof(Envelope).GetProperty("SentAttempts", BindingFlags.Instance | BindingFlags.NonPublic);
             sentAttempts.SetValue(outgoing, 2);
@@ -55,11 +52,6 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
 
         }
 
-        [Fact]
-        public void brings_over_the_sent_time()
-        {
-            incoming.SentTime.Value.ShouldBe(today);
-        }
 
         [Fact]
         public void brings_over_the_saga_id()

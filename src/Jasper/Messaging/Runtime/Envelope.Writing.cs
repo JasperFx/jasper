@@ -153,9 +153,6 @@ namespace Jasper.Messaging.Runtime
             dictionary.WriteProp(SentAttemptsHeaderKey, SentAttempts);
             dictionary.WriteProp(ReceivedAtKey, ReceivedAt);
 
-            dictionary.WriteProp(SentTimeHeader, SentTime);
-
-
             foreach (var pair in Headers)
             {
                 dictionary.Add(pair.Key, pair.Value);
@@ -198,9 +195,6 @@ namespace Jasper.Messaging.Runtime
             writer.WriteProp(ref count, DeliverByHeader, DeliverBy);
             writer.WriteProp(ref count, SentAttemptsHeaderKey, SentAttempts);
             writer.WriteProp(ref count, ReceivedAtKey, ReceivedAt);
-
-            writer.WriteProp(ref count, SentTimeHeader, SentTime);
-
 
             foreach (var pair in Headers)
             {

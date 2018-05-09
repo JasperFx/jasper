@@ -208,7 +208,6 @@ namespace Jasper.Messaging
             foreach (var envelope in outgoing)
             {
                 envelope.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? envelope.SagaId;
-                envelope.SentTime = now;
             }
 
             if (Envelope != null)

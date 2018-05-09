@@ -21,7 +21,6 @@
         public const string MessageTypeKey = "message-type";
         public const string AcceptedContentTypesKey = "accepted-content-types";
         public const string DeliverByHeader = "deliver-by";
-        public const string SentTimeHeader = "sent-time";
 
     }
 }

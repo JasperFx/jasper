@@ -36,7 +36,7 @@ namespace Jasper.ApplicationInsights
                 Name = envelope.MessageType,
                 Source = envelope.Source,
                 Id = envelope.Id.ToString(),
-                Timestamp = envelope.SentTime ?? DateTimeOffset.UtcNow,
+                Timestamp = envelope.SentAt,
 
             });
         }
@@ -63,7 +63,7 @@ namespace Jasper.ApplicationInsights
                 Name = "WorkerQueueCount",
                 Properties = { {"Node", _settings.NodeId}},
                 Count = count,
-                
+
             });
         }
 
@@ -75,14 +75,14 @@ namespace Jasper.ApplicationInsights
                 Properties = { {"Node", _settings.NodeId}},
                 Count = counts.Incoming
             });
-            
+
             _client.TrackMetric(new MetricTelemetry
             {
                 Name = "PersistedScheduledCount",
                 Properties = { {"Node", _settings.NodeId}},
                 Count = counts.Scheduled
             });
-            
+
             _client.TrackMetric(new MetricTelemetry
             {
                 Name = "PersistedOutgoingCount",
@@ -102,7 +102,7 @@ namespace Jasper.ApplicationInsights
                     Count = group.Count()
                 });
             }
-            
+
 
         }
     }
