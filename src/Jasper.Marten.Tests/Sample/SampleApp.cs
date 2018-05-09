@@ -7,12 +7,31 @@ using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Marten.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Marten.Tests.Sample
 {
+    // SAMPLE: MartenUsingApp
+    public class MartenUsingApp : JasperRegistry
+    {
+        public MartenUsingApp()
+        {
+            // This registers the message persistence as well as
+            // configuring Marten inside your application
+            Settings.PersistMessagesWithMarten((context, options) =>
+            {
+                // Configure the Marten StoreOptions
+                options.Connection(context.Configuration.GetConnectionString("database"));
+            });
+        }
+    }
+    // ENDSAMPLE
+
+
+
     public class MessageInvocationTests : IDisposable
     {
         private readonly JasperRuntime theRuntime;

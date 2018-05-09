@@ -113,18 +113,19 @@ namespace Jasper.Marten.Tests.Outbox
         public OrdersApp(int senderPort)
         {
             var receiverPort = senderPort + 1;
-            Include<MartenBackedPersistence>();
+
+
+            Settings.PersistMessagesWithMarten((c, options) =>
+            {
+                options.Connection(ConnectionSource.ConnectionString);
+                options.DatabaseSchemaName = "orders";
+            });
+
 
             // Whether or not our event is destined for a durable queue, it will be stored durably in the outbox because of the usage of an outbox when sending it.
             Publish.Message<ProcessOrder>().To($"tcp://localhost:{receiverPort}/durable");
 
             Transports.DurableListenerAt(senderPort);
-
-            Settings.Alter<StoreOptions>(_ =>
-            {
-                _.Connection(ConnectionSource.ConnectionString);
-                _.DatabaseSchemaName = "orders";
-            });
 
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<OrderStatusHandler>();

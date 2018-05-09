@@ -1,12 +1,16 @@
 <!--title:Marten Backed Message Persistence -->
 
-To use Jasper's version of <[linkto:documentation/messaging/transports/durable;title=guaranteed delivery with store and forward messaging]> backed by 
+To use Jasper's version of <[linkto:documentation/messaging/transports/durable;title=guaranteed delivery with store and forward messaging]> backed by
 [Marten](https://jasperfx.github.io/marten) and the [Postgresql database](https://www.postgresql.org/):
 
 1. Install the `Jasper.Marten` library via Nuget
 1. Import the `MartenBackedPersistence` extension in your `JasperRegistry` as shown in the code below
 
 <[sample:AppUsingMartenMessagePersistence]>
+
+There's also a shorthand method now that does the equivalent:
+
+<[sample:MartenUsingApp]>
 
 ## "Outbox" Pattern Usage
 
