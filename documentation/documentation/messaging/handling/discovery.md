@@ -6,7 +6,7 @@ be disabled or customized as well.
 
 ## Default Conventional Discovery
 
-Jasper uses [StructureMap 4.0's type scanning support](http://structuremap.github.io/registration/auto-registration-and-conventions/) to find 
+Jasper uses Lamar's type scanning (based on [StructureMap 4.0's type scanning support](http://structuremap.github.io/registration/auto-registration-and-conventions/)) to find
 handler classes and candidate methods from known assemblies based on naming conventions.
 
 By default, Jasper is looking for public classes in the main application assembly with names matching these rules:
@@ -14,12 +14,26 @@ By default, Jasper is looking for public classes in the main application assembl
 * Type name ends with "Handler"
 * Type name ends with "Consumer"
 
-From the types, FubuMVC looks for any public instance method that either accepts a single parameter that is assumed to be the message type, or **one** parameter with one of these names: *message*, *input*, *command*, or *@event*. In addition, 
+From the types, Jasper looks for any public instance method that either accepts a single parameter that is assumed to be the message type, or **one** parameter with one of these names: *message*, *input*, *command*, or *@event*. In addition,
 Jasper will also pick the first parameter as the input type regardless of parameter name if it is concrete, not a "simple" type like a string, date, or number, and not a "Settings" type.
 
 To make that concrete, here are some valid handler method signatures:
 
 <[sample:ValidMessageHandlers]>
+
+The valid method names are:
+
+1. Handle
+1. Handles
+1. Consume
+1. Consumes
+1. Start
+1. Starts
+1. Orchestrate
+1. Orchestrates
+
+With the last two options being horrendously awkward to type, but backwards compatible with the naming
+conventions in the older FubuMVC messaging that Jasper replaces.
 
 ## Disabling Conventional Discovery
 
@@ -66,5 +80,5 @@ You can also create a handler for `IMessage` like this one:
 <[sample:Handlers-GenericMessageHandler]>
 
 When Jasper handles the `MessageOne` message, it first calls all the specific handlers for that message type,
-then will call any handlers that handle a more generic message type (interface or abstract class most likely) where 
+then will call any handlers that handle a more generic message type (interface or abstract class most likely) where
 the specific type can be cast to the generic type. You can clearly see this behavior by examining the <[linkto:documentation/diagnostics;title=handler chain diagnostics]>.
