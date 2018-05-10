@@ -20,8 +20,8 @@ namespace Jasper.Testing.Messaging.Runtime.Routing
         public void negative_test()
         {
             var rule = AssemblyRule.For<NewUser>();
-            ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(typeof(Runtime.Message1)));
-            ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(typeof(Runtime.Message2)));
+            ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(typeof(Message1)));
+            ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(typeof(Message2)));
             ShouldBeBooleanExtensions.ShouldBeFalse(rule.Matches(GetType()));
         }
     }

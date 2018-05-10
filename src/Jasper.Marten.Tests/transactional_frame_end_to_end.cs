@@ -5,6 +5,7 @@ using Baseline;
 using Jasper.Marten.Codegen;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
+using Jasper.Testing;
 using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Shouldly;

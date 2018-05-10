@@ -7,6 +7,7 @@ using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Testing;
 using Jasper.Testing.Messaging;
 using Jasper.Testing.Messaging.Runtime;
 using Marten;

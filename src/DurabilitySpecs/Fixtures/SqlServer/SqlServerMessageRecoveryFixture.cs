@@ -19,6 +19,7 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.SqlServer;
 using Jasper.SqlServer.Persistence;
 using Jasper.SqlServer.Resiliency;
+using Jasper.Testing;
 using Jasper.Testing.Messaging.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;

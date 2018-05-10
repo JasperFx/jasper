@@ -9,33 +9,33 @@ namespace Jasper.Testing.Messaging.Runtime.Routing
         [Fact]
         public void positive_test()
         {
-            var rule = NamespaceRule.For<Red.Message1>();
-            rule.Matches(typeof(Red.Message1)).ShouldBeTrue();
-            rule.Matches(typeof(Red.Message2)).ShouldBeTrue();
-            rule.Matches(typeof(Red.Message3)).ShouldBeTrue();
+            var rule = NamespaceRule.For<Red.RedMessage1>();
+            rule.Matches(typeof(Red.RedMessage1)).ShouldBeTrue();
+            rule.Matches(typeof(Red.RedMessage2)).ShouldBeTrue();
+            rule.Matches(typeof(Red.RedMessage3)).ShouldBeTrue();
         }
 
         [Fact]
         public void negative_test()
         {
-            var rule = NamespaceRule.For<Red.Message1>();
-            rule.Matches(typeof(Green.Message1)).ShouldBeFalse();
-            rule.Matches(typeof(Green.Message2)).ShouldBeFalse();
-            rule.Matches(typeof(Green.Message3)).ShouldBeFalse();
+            var rule = NamespaceRule.For<Red.RedMessage1>();
+            rule.Matches(typeof(Green.GreenMessage1)).ShouldBeFalse();
+            rule.Matches(typeof(Green.GreenMessage2)).ShouldBeFalse();
+            rule.Matches(typeof(Green.GreenMessage3)).ShouldBeFalse();
         }
     }
 
     namespace Red
     {
-        public class Message1{}
-        public class Message2{}
-        public class Message3{}
+        public class RedMessage1{}
+        public class RedMessage2{}
+        public class RedMessage3{}
     }
 
     namespace Green
     {
-    public class Message1 { }
-    public class Message2 { }
-    public class Message3 { }
+        public class GreenMessage1 { }
+        public class GreenMessage2 { }
+        public class GreenMessage3 { }
     }
 }

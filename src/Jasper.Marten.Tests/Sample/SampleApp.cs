@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Tracking;
+using Jasper.Testing;
 using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Marten.Schema;

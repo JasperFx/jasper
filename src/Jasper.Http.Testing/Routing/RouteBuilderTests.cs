@@ -81,10 +81,6 @@ namespace Jasper.Http.Testing.Routing
         }
     }
 
-    public class Message1
-    {
-
-    }
 
 
 }

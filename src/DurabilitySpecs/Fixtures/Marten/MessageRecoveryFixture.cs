@@ -20,6 +20,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Testing;
 using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Marten.Util;

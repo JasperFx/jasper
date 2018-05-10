@@ -2,10 +2,8 @@
 using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Transports.Configuration;
-using Xunit;
 
-namespace Jasper.Testing.Messaging
+namespace Jasper.Testing
 {
     public class IntegrationContext : IDisposable
     {
