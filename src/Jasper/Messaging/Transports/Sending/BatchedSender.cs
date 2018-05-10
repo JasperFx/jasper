@@ -46,8 +46,6 @@ namespace Jasper.Messaging.Transports.Sending
 
             _sender.Completion.ContinueWith(x =>
             {
-                Console.WriteLine("BatchedSender.Sender Completed");
-
                 if (x.IsFaulted)
                 {
                     // TODO -- need to restart things!!!
@@ -76,8 +74,6 @@ namespace Jasper.Messaging.Transports.Sending
 
             _serializing.Completion.ContinueWith(x =>
             {
-                Console.WriteLine("BatchedSender.Serializing Completed");
-
                 if (x.IsFaulted)
                 {
                     // TODO -- need to restart things!!!
@@ -96,8 +92,6 @@ namespace Jasper.Messaging.Transports.Sending
 
             _batchWriting.Completion.ContinueWith(x =>
             {
-                Console.WriteLine("BatchedSender.BatchWriting Completed");
-
                 if (x.IsFaulted)
                 {
                     // TODO -- need to restart things!!!
@@ -110,8 +104,6 @@ namespace Jasper.Messaging.Transports.Sending
             _batching = new BatchingBlock<Envelope>(200, _batchWriting, _cancellation);
             _batching.Completion.ContinueWith(x =>
             {
-                Console.WriteLine("BatchedSender.Batching Completed");
-
                 if (x.IsFaulted)
                 {
                     // TODO -- need to restart things!!!
@@ -126,8 +118,6 @@ namespace Jasper.Messaging.Transports.Sending
         public bool Latched { get; private set; }
         public Task LatchAndDrain()
         {
-            Console.WriteLine("BatchedSender LatchAndDrain");
-
             Latched = true;
 
             _sender.Complete();

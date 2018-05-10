@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Testing.FakeStoreTypes;
 using Jasper.Testing.Messaging.Bootstrapping;
-using Jasper.Testing.Messaging.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing
+namespace Jasper.Testing.Bootstrapping
 {
     public class JasperRegistryTests
     {

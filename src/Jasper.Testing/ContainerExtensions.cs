@@ -6,7 +6,7 @@ using Lamar.IoC;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
-namespace Jasper.Testing.Messaging.Bootstrapping
+namespace Jasper.Testing
 {
     public static class ContainerExtensions
     {
