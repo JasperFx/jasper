@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Alba;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Messaging;
@@ -13,6 +14,7 @@ using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Persistence;
 using Jasper.SqlServer.Util;
 using Jasper.Util;
+using JasperHttpTesting;
 using Shouldly;
 using Xunit;
 
@@ -87,6 +89,8 @@ create table receiver.item_created
             theSender?.Dispose();
             theReceiver?.Dispose();
         }
+
+
 
         [Fact]
         public async Task send_and_await_still_works()
@@ -191,6 +195,29 @@ create table receiver.item_created
                 Thread.Sleep(500);
                 theSender.Get<SqlServerEnvelopePersistor>().AllOutgoingEnvelopes().Any().ShouldBeFalse();
             }
+        }
+
+        [Fact]
+        public async Task usage_within_http_route()
+        {
+            var item = new ItemCreated
+            {
+                Name = "Shoe",
+                Id = Guid.NewGuid()
+            };
+
+            var waiter = theTracker.WaitFor<ItemCreated>();
+
+            await theSender.Scenario(_ =>
+            {
+                _.Post.Json(item).ToUrl("/send/item");
+                _.StatusCodeShouldBeOk();
+            });
+
+
+            waiter.Wait(5.Seconds());
+
+            waiter.IsCompleted.ShouldBeTrue();
         }
 
         // SAMPLE: basic-sql-server-outbox-sample

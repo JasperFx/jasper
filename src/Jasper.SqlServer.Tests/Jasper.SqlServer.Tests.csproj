@@ -12,5 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Jasper.SqlServer\Jasper.SqlServer.csproj" />
     <ProjectReference Include="..\Jasper.SqlServer\Jasper.SqlServer.csproj" />
+    <ProjectReference Include="..\JasperHttpTesting\JasperHttpTesting.csproj" />
   </ItemGroup>
 </Project>
