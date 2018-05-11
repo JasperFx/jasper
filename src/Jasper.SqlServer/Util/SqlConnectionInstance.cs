@@ -32,7 +32,7 @@ namespace Jasper.SqlServer.Util
             return new SqlConnection(scope.GetInstance<SqlServerSettings>().ConnectionString);
         }
 
-
+        public override bool RequiresServiceProvider => false;
 
         public override Variable CreateVariable(BuildMode mode, ResolverVariables variables, bool isRoot)
         {

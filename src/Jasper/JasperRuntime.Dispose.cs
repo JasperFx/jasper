@@ -33,15 +33,10 @@ namespace Jasper
 
             await shutdownAspNetCoreServer();
 
-            foreach (var hostedService in _hostedServices)
-                try
-                {
-                    await hostedService.StopAsync(CancellationToken.None);
-                }
-                catch (Exception e)
-                {
-                    Get<ILogger<IHostedService>>().LogError(e, "Failure while stopping " + hostedService);
-                }
+            if (Registry.MessagingSettings.HostedServicesEnabled)
+            {
+                await shutdownHostedServices();
+            }
 
             _lifetime.NotifyStopped();
 
@@ -51,6 +46,21 @@ namespace Jasper
             Container.Dispose();
 
             IsDisposed = true;
+        }
+
+        private async Task shutdownHostedServices()
+        {
+            foreach (var hostedService in _hostedServices)
+            {
+                try
+                {
+                    await hostedService.StopAsync(CancellationToken.None);
+                }
+                catch (Exception e)
+                {
+                    Get<ILogger<IHostedService>>().LogError(e, "Failure while stopping " + hostedService);
+                }
+            }
         }
     }
 }

@@ -33,6 +33,12 @@ namespace Jasper.Messaging.Transports.Configuration
             Http = new HttpTransportSettings(this);
         }
 
+        /// <summary>
+        /// Use carefully! Setting this to "false" will disable the execution
+        /// and start up of any registered IHostedService agents
+        /// </summary>
+        public bool HostedServicesEnabled { get; set; } = true;
+
         public int UniqueNodeId { get; }
 
         public HttpTransportSettings Http { get; }

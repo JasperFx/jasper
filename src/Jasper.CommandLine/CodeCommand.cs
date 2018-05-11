@@ -3,6 +3,7 @@ using Baseline;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Messaging.Model;
+using Jasper.Messaging.Transports.Configuration;
 using Lamar.Codegen;
 using Lamar.Compilation;
 using Oakton;
@@ -24,6 +25,7 @@ namespace Jasper.CommandLine
             Console.WriteLine();
             Console.WriteLine();
 
+            input.Registry.Settings.Alter<MessagingSettings>(x => x.HostedServicesEnabled = false);
             var runtime = input.BuildRuntime();
 
             var rules = runtime.Get<GenerationRules>();

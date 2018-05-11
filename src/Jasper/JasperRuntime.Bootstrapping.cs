@@ -34,6 +34,8 @@ namespace Jasper
 
         private async Task startHostedServices()
         {
+            if (!Registry.MessagingSettings.HostedServicesEnabled) return;
+
             _hostedServices = Container.GetAllInstances<IHostedService>().ToArray();
 
             foreach (var hostedService in _hostedServices)

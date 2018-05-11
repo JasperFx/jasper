@@ -1,4 +1,6 @@
-﻿using Jasper.Conneg;
+﻿using System;
+using System.Linq.Expressions;
+using Jasper.Conneg;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
 using Jasper.Http.ContentHandling;
@@ -101,14 +103,16 @@ namespace Jasper
 
             ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());
 
-            this.AddSingleton(s => s.GetService<MessagingRoot>().Workers);
-            this.AddSingleton(s => s.GetService<IMessagingRoot>().Pipeline);
-            this.AddSingleton(s => s.GetService<IMessagingRoot>().Serialization);
-            this.AddTransient(s => s.GetService<IMessagingRoot>().NewContext());
-            this.AddSingleton(s => s.GetService<IMessagingRoot>().Router);
-            this.AddSingleton(s => s.GetService<IMessagingRoot>().Lookup);
-            this.AddSingleton(s => s.GetService<IMessagingRoot>().ScheduledJobs);
 
+
+            MessagingRootService(x => x.Workers);
+            MessagingRootService(x => x.Pipeline);
+            MessagingRootService(x => x.Serialization);
+            MessagingRootService(x => x.Router);
+            MessagingRootService(x => x.Lookup);
+            MessagingRootService(x => x.ScheduledJobs);
+
+            For<IMessageContext>().Use(new MessageContextInstance());
 
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
 
@@ -119,6 +123,11 @@ namespace Jasper
             For<IUriLookup>().Use<ConfigUriLookup>();
 
             For<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
+        }
+
+        public void MessagingRootService<T>(Expression<Func<IMessagingRoot, T>> expression) where T : class
+        {
+            For<T>().Use(new MessagingRootInstance<T>(expression));
         }
     }
 }
