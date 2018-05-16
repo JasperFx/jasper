@@ -68,8 +68,9 @@ namespace Jasper.SqlServer.Util
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"{_instance.ServiceType.FullNameInCode()} {Connection.Usage} = new {typeof(SqlConnection).FullName}({_settings.Usage}.{nameof(SqlServerSettings.ConnectionString)});");
+            writer.Write($"BLOCK:using ({_instance.ServiceType.FullNameInCode()} {Connection.Usage} = new {typeof(SqlConnection).FullName}({_settings.Usage}.{nameof(SqlServerSettings.ConnectionString)}))");
             Next?.GenerateCode(method, writer);
+            writer.FinishBlock();
         }
 
 
