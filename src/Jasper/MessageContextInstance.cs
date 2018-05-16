@@ -18,7 +18,10 @@ namespace Jasper
         private IMessagingRoot _root;
         private Instance _rootInstance;
 
-        public MessageContextInstance() : base(typeof(IMessageContext), typeof(MessageContext), ServiceLifetime.Transient)
+        public MessageContextInstance() : base(
+            typeof(IMessageContext),
+            typeof(MessageContext),
+            ServiceLifetime.Transient)
         {
             Name = Variable.DefaultArgName<IMessageContext>();
         }
@@ -60,6 +63,7 @@ namespace Jasper
             {
                 _root = root;
                 Variable = new ServiceVariable(instance, this);
+                uses.Add(root);
             }
 
             public Variable Variable { get;  }
