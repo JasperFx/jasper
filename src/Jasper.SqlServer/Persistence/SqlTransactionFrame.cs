@@ -65,8 +65,6 @@ namespace Jasper.SqlServer.Persistence
                 _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
             }
 
-
-
             if (_context != null) yield return _context;
         }
     }

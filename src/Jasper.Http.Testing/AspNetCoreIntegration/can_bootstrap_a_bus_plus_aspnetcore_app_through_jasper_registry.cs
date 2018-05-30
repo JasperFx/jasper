@@ -5,6 +5,7 @@ using Jasper.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -19,19 +20,26 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         {
             var theRuntime = await JasperRuntime.ForAsync<JasperServerApp>();
 
+            var options = theRuntime.Container.GetInstance<DbContextOptions<ApplicationDbContext>>();
+
+            theRuntime.Container.GetInstance<DbContextOptions<ApplicationDbContext>>("options").ShouldNotBeNull();
+
+
             try
             {
+                // has the message context registered
+                theRuntime.Get<IMessageContext>().ShouldNotBeNull();
+
+                // has the registrations from Jasper
+                theRuntime.Get<IFoo>().ShouldBeOfType<Foo>();
+
                 using (var client = new HttpClient())
                 {
                     var text = await client.GetStringAsync("http://localhost:5200");
                     text.ShouldContain("Hello from a hybrid Jasper application");
                 }
 
-                // has the message context registered
-                theRuntime.Get<IMessageContext>().ShouldNotBeNull();
 
-                // has the registrations from Jasper
-                theRuntime.Get<IFoo>().ShouldBeOfType<Foo>();
             }
             finally
             {
@@ -102,10 +110,33 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddDbContext<ApplicationDbContext>(opts => { opts.UseSqlServer("some connection string"); });
             services.AddTransient<IFoo, Foo>();
         }
     }
 
     public interface IFoo{}
-    public class Foo : IFoo{}
+
+    public class Foo : IFoo
+    {
+        public ApplicationDbContext Context { get; }
+
+        public Foo(ApplicationDbContext context)
+        {
+            Context = context;
+        }
+    }
+
+    public class ApplicationDbContext : DbContext
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
+
+    }
 }

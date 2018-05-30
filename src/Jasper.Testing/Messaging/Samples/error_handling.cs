@@ -46,27 +46,27 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
     // SAMPLE: GlobalErrorHandlingConfiguration
-    public class GlobalRetryApp : JasperRegistry
+public class GlobalRetryApp : JasperRegistry
+{
+    public GlobalRetryApp()
     {
-        public GlobalRetryApp()
-        {
-            Handlers
-                .OnException<TimeoutException>()
-                .RetryLater(5.Seconds());
+        Handlers
+            .OnException<TimeoutException>()
+            .RetryLater(5.Seconds());
 
-            Handlers
-                .OnException<SecurityException>()
-                .MoveToErrorQueue();
+        Handlers
+            .OnException<SecurityException>()
+            .MoveToErrorQueue();
 
-            // You can also apply an additional filter on the
-            // exception type for finer grained policies
-            Handlers
-                .OnException<SocketException>(ex => ex.Message.Contains("not responding"))
-                .RetryLater(5.Seconds());
+        // You can also apply an additional filter on the
+        // exception type for finer grained policies
+        Handlers
+            .OnException<SocketException>(ex => ex.Message.Contains("not responding"))
+            .RetryLater(5.Seconds());
 
 
-        }
     }
+}
     // ENDSAMPLE
 
 

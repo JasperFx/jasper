@@ -37,24 +37,26 @@ namespace Jasper.Http.Testing.Routing
     [JasperIgnore]
     public class HomeEndpoint
     {
+        // Responds to GET: /
         public string Index()
         {
             return "Hello, world";
         }
 
+        // Responds to GET: /
         public string Get()
         {
             return "Hello, world";
         }
 
-        public string Put()
+        // Responds to PUT: /
+        public void Put()
         {
-            return "Hello, world";
         }
 
-        public string Delete()
+        // Responds to DELETE: /
+        public void Delete()
         {
-            return "Hello, world";
         }
     }
 

@@ -14,7 +14,7 @@ namespace Jasper.Http.Testing.Model
 
         private void matchesAndCanCreate<T>()
         {
-            ShouldBeBooleanExtensions.ShouldBeTrue(theSource.Matches(typeof(T)));
+            theSource.Matches(typeof(T)).ShouldBeTrue();
             theSource.Create(typeof(T)).VariableType.ShouldBe(typeof(T));
         }
 

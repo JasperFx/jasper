@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Baseline" Version="1.4.0" />
     <PackageReference Include="Ben.Demystifier" Version="0.1.1" />
-    <PackageReference Include="Lamar" Version="0.9.7" />
+    <PackageReference Include="Lamar" Version="0.9.9" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
