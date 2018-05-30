@@ -6,7 +6,6 @@ using Baseline;
 using Jasper.Util;
 using Oakton;
 
-[assembly:JasperFeature]
 
 namespace Jasper.CommandLine
 {

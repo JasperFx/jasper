@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Baseline;
 using Jasper.Http;
 using Jasper.Messaging;
@@ -18,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Jasper
 {
@@ -34,7 +34,7 @@ namespace Jasper
             .AddEnvironmentVariables(prefix: "ASPNETCORE_")
             .Build();
 
-        private List<Action<WebHostBuilderContext, IConfigurationBuilder>> _configureAppConfigurationBuilderDelegates
+        private readonly List<Action<WebHostBuilderContext, IConfigurationBuilder>> _configureAppConfigurationBuilderDelegates
             = new List<Action<WebHostBuilderContext, IConfigurationBuilder>>();
 
 
@@ -183,7 +183,8 @@ namespace Jasper
             var contentRootPath = ResolveContentRootPath(options.ContentRootPath, AppContext.BaseDirectory);
 
             // Initialize the hosting environment
-            _hostingEnvironment.Initialize(ServiceName, contentRootPath, options);
+            // TODO -- Watch this, if there are bugs in bootstrapping!!!!!!
+            _hostingEnvironment.Initialize(contentRootPath, options);
             _hostingEnvironment.ApplicationName = ApplicationAssembly.FullName;
 
             var context = new WebHostBuilderContext
@@ -227,7 +228,7 @@ namespace Jasper
             Services.AddOptions();
             Services.AddLogging();
 
-            Services.AddSingleton<IApplicationLifetime, ApplicationLifetime>();
+            Services.AddSingleton<Microsoft.AspNetCore.Hosting.IApplicationLifetime, ApplicationLifetime>();
 
             // Conjure up a RequestServices
             // TODO -- want this to be optional

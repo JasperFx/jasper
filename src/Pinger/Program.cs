@@ -3,8 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.CommandLine;
-using Jasper.Diagnostics;
-using Jasper.Http;
 using Jasper.Messaging;
 using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;

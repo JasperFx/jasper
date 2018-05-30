@@ -6,6 +6,7 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Logging
 {

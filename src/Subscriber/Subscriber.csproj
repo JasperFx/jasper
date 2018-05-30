@@ -7,6 +7,5 @@
     <ProjectReference Include="..\Jasper.JsonCommands\Jasper.JsonCommands.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
-    <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
   </ItemGroup>
 </Project>

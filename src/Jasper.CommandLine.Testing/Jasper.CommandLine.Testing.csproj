@@ -11,6 +11,6 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
+    <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
 </Project>

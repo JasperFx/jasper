@@ -17,7 +17,7 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
+    <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NJsonSchema" Version="9.10.32" />

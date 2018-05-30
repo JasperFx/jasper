@@ -12,10 +12,6 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.CommandLine\Jasper.CommandLine.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Oakton" Version="1.4.0" />
   </ItemGroup>
 </Project>

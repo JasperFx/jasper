@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Jasper.Testing.Bootstrapping
 {

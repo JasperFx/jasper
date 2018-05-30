@@ -21,7 +21,5 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="StoryTeller" Version="5.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
   </ItemGroup>
 </Project>
