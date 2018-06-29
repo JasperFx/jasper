@@ -25,7 +25,7 @@ namespace Jasper.Testing
 
         public static IContainer DefaultRegistrationIs<T>(this IContainer container, T value) where T : class
         {
-            container.Model.For<T>().Default.Resolve(container.As<Scope>()).ShouldBeTheSameAs(value);
+            container.Model.For<T>().Default.Instance.Resolve(container.As<Scope>()).ShouldBeTheSameAs(value);
 
             return container;
         }
