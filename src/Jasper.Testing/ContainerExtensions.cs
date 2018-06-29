@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using Baseline;
 using Lamar;
-using Lamar.IoC;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
@@ -25,7 +23,7 @@ namespace Jasper.Testing
 
         public static IContainer DefaultRegistrationIs<T>(this IContainer container, T value) where T : class
         {
-            container.Model.For<T>().Default.Resolve(container.As<Scope>()).ShouldBeTheSameAs(value);
+            container.Model.For<T>().Default.Resolve().ShouldBeTheSameAs(value);
 
             return container;
         }
