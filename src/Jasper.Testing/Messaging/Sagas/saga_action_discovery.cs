@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace SagaTests
+namespace Jasper.Testing.Messaging.Sagas
 {
 
     public class SagaFixture : IDisposable
@@ -54,21 +53,21 @@ namespace SagaTests
         {
             await _fixture.withRuntime();
 
-            chainFor<SagaMessage2>().ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaMessage2>());
         }
 
         [Fact]
         public async Task finds_actions_on_saga_state_orchestrates_methods()
         {
             await _fixture.withRuntime();
-            chainFor<SagaMessage1>().ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaMessage1>());
         }
 
         [Fact]
         public async Task finds_actions_on_saga_state_start_methods()
         {
             await _fixture.withRuntime();
-            chainFor<SagaStarter>().ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaStarter>());
         }
     }
 

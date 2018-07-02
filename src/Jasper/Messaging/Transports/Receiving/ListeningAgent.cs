@@ -48,10 +48,10 @@ namespace Jasper.Messaging.Transports.Receiving
 
         public void Start()
         {
+            _listener.Start();
+
             _receivingLoop = Task.Run(async () =>
             {
-                _listener.Start();
-
                 while (!_cancellationToken.IsCancellationRequested)
                 {
                     var socket = await _listener.AcceptSocketAsync();

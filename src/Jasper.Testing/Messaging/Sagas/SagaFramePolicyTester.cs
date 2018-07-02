@@ -1,11 +1,10 @@
 ﻿using System;
-using Jasper;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Shouldly;
 using Xunit;
 
-namespace SagaTests
+namespace Jasper.Testing.Messaging.Sagas
 {
     public class SagaFramePolicyTester
     {

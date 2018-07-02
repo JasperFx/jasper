@@ -17,7 +17,7 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
     [Collection("protocol")]
     public abstract class ProtocolContext : IDisposable
     {
-        protected static int NextPort = 6000;
+        protected static int NextPort = 6005;
 
 
         protected StubReceiverCallback theReceiver = new StubReceiverCallback();

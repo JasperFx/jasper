@@ -67,13 +67,13 @@ task :version do
 end
 
 desc 'Compile the code'
-task :compile => [:clean, :npm_install] do
+task :compile => [:clean] do
 	sh "dotnet restore Jasper.sln"
 
-  Dir.chdir("src/Jasper.Diagnostics") do
-    sh "yarn build:prod"
-  end
-  sh "dotnet build src/Jasper.Diagnostics/Jasper.Diagnostics.csproj"
+  #Dir.chdir("src/Jasper.Diagnostics") do
+  #  sh "yarn build:prod"
+  #end
+  #sh "dotnet build src/Jasper.Diagnostics/Jasper.Diagnostics.csproj"
 end
 
 desc 'Run the unit tests'
@@ -81,19 +81,7 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
-	sh "dotnet test src/SagaTests/SagaTests.csproj --no-restore"
 	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj --no-restore"
-	sh "dotnet test src/Jasper.CommandLine.Testing/Jasper.CommandLine.Testing.csproj --no-restore"
-	sh "dotnet test src/Jasper.Storyteller.Tests/Jasper.Storyteller.Tests.csproj --no-restore"
-
-end
-
-desc 'Run the appveyor unit tests'
-task :appveyortests => [:compile] do
-  FileUtils.mkdir_p RESULTS_DIR
-
-	sh "dotnet test src/AppVeyorTests/AppVeyorTests.csproj --no-restore"
-	sh "dotnet test src/SagaTests/SagaTests.csproj --no-restore"
 	sh "dotnet test src/Jasper.CommandLine.Testing/Jasper.CommandLine.Testing.csproj --no-restore"
 	sh "dotnet test src/Jasper.Storyteller.Tests/Jasper.Storyteller.Tests.csproj --no-restore"
 
@@ -142,12 +130,6 @@ task :pack do
   sh "dotnet pack src/JasperHttpTesting/JasperHttpTesting.csproj -o ./../../artifacts --configuration Release --no-restore"
 end
 
-desc "Pushes the Nuget's to MyGet"
-task :push do
-	#sh "nuget.exe push -ApiKey #{APIKEY} -NonInteractive -Source https://www.myget.org/F/storyteller/ artifacts/Storyteller.4.0.0.nupkg"
-	#sh "nuget.exe push -ApiKey #{APIKEY} -NonInteractive -Source https://www.myget.org/F/storyteller/ artifacts/Storyteller.AspNetCore.1.0.0.nupkg"
-end
-
 desc "Pushes the Nuget's to AppVeyor"
 task :appVeyorPush do
   if !CI
@@ -177,7 +159,7 @@ task :storyteller => [:compile] do
   end
 end
 
-desc "Run the storyteller specifications"
+desc "Open the storyteller specification editor"
 task :open_st do
   sh "dotnet restore Jasper.sln"
 

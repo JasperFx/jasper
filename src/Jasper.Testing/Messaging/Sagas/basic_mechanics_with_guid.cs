@@ -1,45 +1,46 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper;
 using Jasper.Messaging.Sagas;
 using Shouldly;
 using Xunit;
 
-namespace SagaTests
+namespace Jasper.Testing.Messaging.Sagas
 {
     [JasperIgnore]
-    public class LongBasicWorkflow : BasicWorkflow<LongWorkflowState, LongStart, LongCompleteThree, long>
+    public class GuidBasicWorkflow : BasicWorkflow<GuidWorkflowState, GuidStart, GuidCompleteThree, Guid>
     {
-        public LongWorkflowState Starts(WildcardStart start)
+        public GuidWorkflowState Starts(WildcardStart start)
         {
-            var sagaId = long.Parse(start.Id);
-            return new LongWorkflowState
+            var sagaId = Guid.Parse(start.Id);
+            return new GuidWorkflowState
             {
                 Id = sagaId,
                 Name = start.Name
             };
         }
 
-        public void Handles(LongDoThree message, LongWorkflowState state)
+        public void Handles(GuidDoThree message, GuidWorkflowState state)
         {
             state.ThreeCompleted = true;
         }
     }
 
-    public class LongDoThree
+    public class GuidDoThree
     {
         [SagaIdentity]
-        public long TheSagaId { get; set; }
+        public Guid TheSagaId { get; set; }
     }
 
-    public class basic_mechanics_with_Long : SagaTestHarness<LongBasicWorkflow, LongWorkflowState>
+    public class basic_mechanics_with_guid : SagaTestHarness<GuidBasicWorkflow, GuidWorkflowState>
     {
-        private readonly long stateId = new Random().Next();
+        private readonly Guid stateId = Guid.NewGuid();
 
         [Fact]
         public async Task start_1()
         {
-            await send(new LongStart
+
+
+            await send(new GuidStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -54,7 +55,6 @@ namespace SagaTests
         [Fact]
         public async Task start_2()
         {
-
             await send(new WildcardStart
             {
                 Id = stateId.ToString(),
@@ -65,6 +65,61 @@ namespace SagaTests
 
             state.ShouldNotBeNull();
             state.Name.ShouldBe("One Eye");
+        }
+
+        [Fact]
+        public async Task straight_up_update_with_the_saga_id_on_the_message()
+        {
+            await send(new GuidStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            var message = new GuidCompleteThree
+            {
+                SagaId = stateId
+            };
+
+            await send(message);
+
+            var state = LoadState(stateId);
+            state.ThreeCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task update_with_message_that_uses_saga_identity_attributed_property()
+        {
+            await send(new GuidStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            var message = new GuidDoThree
+            {
+                TheSagaId = stateId
+            };
+
+            await send(message);
+
+            var state = LoadState(stateId);
+            state.ThreeCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
+        {
+            await send(new GuidStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new CompleteFour(), stateId);
+
+            var state = LoadState(stateId);
+            state.FourCompleted.ShouldBeTrue();
         }
 
         [Fact]
@@ -82,70 +137,15 @@ namespace SagaTests
         {
             await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
             {
-                await invoke(new LongCompleteThree());
+                await invoke(new GuidCompleteThree());
             });
 
-        }
-
-        [Fact]
-        public async Task straight_up_update_with_the_saga_id_on_the_message()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            var message = new LongCompleteThree
-            {
-                SagaId = stateId
-            };
-
-            await send(message);
-
-            var state = LoadState(stateId);
-            state.ThreeCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task update_with_message_that_uses_saga_identity_attributed_property()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            var message = new LongDoThree
-            {
-                TheSagaId = stateId
-            };
-
-            await send(message);
-
-            var state = LoadState(stateId);
-            state.ThreeCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new CompleteFour(), stateId);
-
-            var state = LoadState(stateId);
-            state.FourCompleted.ShouldBeTrue();
         }
 
         [Fact]
         public async Task complete()
         {
-            await send(new LongStart
+            await send(new GuidStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -159,7 +159,7 @@ namespace SagaTests
         [Fact]
         public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
         {
-            await send(new LongStart
+            await send(new GuidStart
             {
                 Id = stateId,
                 Name = "Croaker"

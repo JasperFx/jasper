@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
-namespace SagaTests
+namespace Jasper.Testing.Messaging.Sagas
 {
     public class advanced_usages : SagaTestHarness<IntBasicWorkflow, IntWorkflowState>
     {

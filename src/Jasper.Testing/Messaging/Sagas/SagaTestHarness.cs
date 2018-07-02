@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 
-namespace SagaTests
+namespace Jasper.Testing.Messaging.Sagas
 {
     public abstract class SagaTestHarness<TSagaHandler, TSagaState> : IDisposable
         where TSagaHandler : StatefulSagaOf<TSagaState> where TSagaState : class
