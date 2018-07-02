@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.EnvironmentChecks;
@@ -11,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
+using TypeExtensions = Baseline.TypeExtensions;
 
 namespace Jasper
 {
@@ -50,15 +50,15 @@ namespace Jasper
             {
                 if (descriptor.ImplementationInstance != null)
                 {
-                    return descriptor.ImplementationInstance.As<IStartup>();
+                    return TypeExtensions.As<IStartup>(descriptor.ImplementationInstance);
                 }
 
                 if (descriptor.ImplementationType != null)
                 {
-                    return provider.GetService(descriptor.ServiceType).As<IStartup>();
+                    return TypeExtensions.As<IStartup>(provider.GetService(descriptor.ServiceType));
                 }
 
-                return descriptor.ImplementationFactory(provider).As<IStartup>();
+                return TypeExtensions.As<IStartup>(descriptor.ImplementationFactory(provider));
             }
 
 

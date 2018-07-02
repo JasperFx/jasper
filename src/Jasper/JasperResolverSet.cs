@@ -1,9 +1,21 @@
-﻿using Lamar.IoC.Exports;
+﻿using System;
+using Baseline;
+using Lamar.IoC.Exports;
+using Lamar.IoC.Instances;
 
 namespace Jasper
 {
-    public class JasperResolverSet : CachedResolverSet
+    internal class CacheResolverAttribute : Attribute
     {
 
+    }
+
+    public class JasperResolverSet : CachedResolverSet
+    {
+        public override bool Include(GeneratedInstance instance)
+        {
+            return instance.ServiceType.HasAttribute<CacheResolverAttribute>()
+                   || instance.ImplementationType.HasAttribute<CacheResolverAttribute>();
+        }
     }
 }

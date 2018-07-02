@@ -9,6 +9,7 @@ using Lamar;
 using Lamar.Codegen;
 using Lamar.Compilation;
 using Lamar.Util;
+using TypeExtensions = Baseline.TypeExtensions;
 
 namespace Jasper.Messaging.Model
 {
@@ -129,7 +130,7 @@ namespace Jasper.Messaging.Model
             {
                 if (_hasGrouped) return;
 
-                _calls.Where(x => x.MessageType.IsConcrete())
+                _calls.Where(x => TypeExtensions.IsConcrete(x.MessageType))
                     .GroupBy(x => x.MessageType)
                     .Select(group => new HandlerChain(@group))
                     .Each(chain =>
@@ -137,7 +138,7 @@ namespace Jasper.Messaging.Model
                         _chains = _chains.AddOrUpdate(chain.MessageType, chain);
                     });
 
-                _calls.Where(x => !x.MessageType.IsConcrete())
+                _calls.Where(x => !TypeExtensions.IsConcrete(x.MessageType))
                     .Each(call =>
                     {
                         Chains

@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
+using Xunit;
 
 namespace Jasper.Testing
 {
+    [Collection("integration")]
     public class IntegrationContext : IDisposable
     {
         public JasperRuntime Runtime { get; private set; }

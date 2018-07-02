@@ -6,6 +6,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Subscriptions
 {
+    [CacheResolver]
     public class DefaultSubscriptionsRepository : ISubscriptionsRepository
     {
         private readonly List<ServiceCapabilities> _subscriptions = new List<ServiceCapabilities>();

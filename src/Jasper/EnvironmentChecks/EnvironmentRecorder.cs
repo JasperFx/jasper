@@ -5,6 +5,7 @@ using Jasper.Util;
 
 namespace Jasper.EnvironmentChecks
 {
+    [CacheResolver]
     public class EnvironmentRecorder : IEnvironmentRecorder
     {
         private readonly IList<Exception> _exceptions = new List<Exception>();

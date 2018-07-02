@@ -8,6 +8,7 @@ using Xunit;
 
 namespace Jasper.Testing.Settings
 {
+
     public class JasperSettingsTests
     {
         public JasperSettingsTests()

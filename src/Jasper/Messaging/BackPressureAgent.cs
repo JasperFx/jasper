@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging
 {
+    [CacheResolver]
     public class BackPressureAgent : BackgroundService
     {
         private readonly IMessagingRoot _root;

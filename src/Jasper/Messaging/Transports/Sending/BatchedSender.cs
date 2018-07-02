@@ -185,7 +185,7 @@ namespace Jasper.Messaging.Transports.Sending
             return _serializing.SendAsync(message, _cancellation).ContinueWith(x =>
             {
                 if (x.IsCompleted && !x.Result) Console.WriteLine("SendAsync rejected an outgoing message");
-            });
+            }, _cancellation);
         }
 
         public void Dispose()

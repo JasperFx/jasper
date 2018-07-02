@@ -6,6 +6,7 @@ using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.Messaging.Logging
 {
+    [CacheResolver]
     // SAMPLE: ITransportLogger
     public interface ITransportLogger
     {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace Jasper.Http
 {
+    [CacheResolver]
     public class NulloServer : IServer
     {
         public void Dispose()

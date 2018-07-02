@@ -162,6 +162,7 @@ namespace StorytellerSpecs.Fixtures
         {
             var bytes = Encoding.UTF8.GetBytes("<garbage/>");
             var envelope = Envelope.ForData(bytes, null);
+            envelope.Message = new Garbled();
             envelope.ContentType = "text/xml";
 
             envelope.Destination = address;
@@ -175,19 +176,25 @@ namespace StorytellerSpecs.Fixtures
         {
             var bytes = Encoding.UTF8.GetBytes("<garbage/>");
             var envelope = Envelope.ForData(bytes, null);
+            envelope.Message = new Garbled();
 
             envelope.ContentType = "application/json";
 
             envelope.Destination = address;
 
             var sender = _runtime.Get<IMessageContext>();
-            await sender.Send(envelope);
+            await sender.Publish(envelope);
         }
 
         public override void TearDown()
         {
             _runtime.Dispose();
         }
+    }
+
+    public class Garbled
+    {
+
     }
 
     [MessageAlias("ErrorMessage")]

@@ -43,6 +43,7 @@ namespace Jasper.Messaging.Transports.Stub
 
     }
 
+    [CacheResolver]
     public class StubTransport : ITransport
     {
         public LightweightCache<Uri, StubChannel> Channels;

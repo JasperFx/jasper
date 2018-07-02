@@ -10,6 +10,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
@@ -29,6 +30,8 @@ namespace Jasper
     {
         public JasperServiceRegistry(JasperRegistry parent)
         {
+            Policies.Add<JasperResolverSet>();
+
             For<IMetrics>().Use<NulloMetrics>();
             For<IHostedService>().Use<MetricsCollector>();
 
@@ -83,6 +86,8 @@ namespace Jasper
 
         private void messaging(JasperRegistry parent)
         {
+            ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
+
             For<IEnvelopePersistor>().Use<NulloEnvelopePersistor>();
             this.AddSingleton<InMemorySagaPersistor>();
 
@@ -107,7 +112,7 @@ namespace Jasper
 
             MessagingRootService(x => x.Workers);
             MessagingRootService(x => x.Pipeline);
-            MessagingRootService(x => x.Serialization);
+
             MessagingRootService(x => x.Router);
             MessagingRootService(x => x.Lookup);
             MessagingRootService(x => x.ScheduledJobs);

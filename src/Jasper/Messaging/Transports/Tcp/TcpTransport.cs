@@ -10,6 +10,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Tcp
 {
+    [CacheResolver]
     public class TcpTransport : TransportBase
     {
         public TcpTransport(IDurableMessagingFactory factory, ITransportLogger logger, MessagingSettings settings) : base("tcp", factory, logger, settings)

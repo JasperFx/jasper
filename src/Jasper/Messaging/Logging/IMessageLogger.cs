@@ -4,7 +4,7 @@ using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Messaging.Logging
 {
-
+    [CacheResolver]
     // SAMPLE: IMessageLogger
     public interface IMessageLogger
     {

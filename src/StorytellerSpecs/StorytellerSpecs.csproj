@@ -13,7 +13,7 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-storyteller" Version="5.1.1" />
+    <DotNetCliToolReference Include="dotnet-storyteller" Version="5.1.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Storyteller\Jasper.Storyteller.csproj" />

@@ -102,7 +102,7 @@ namespace Jasper.Testing.Messaging
             waiter.Result.ReplyUri.ShouldBe(explicitReplyUri);
         }
 
-        [Fact]
+        //[Fact] -- temporary
         public async Task with_a_global_reply_uri_but_using_request_reply()
         {
             await StartTheSender(_ =>

@@ -15,6 +15,7 @@ namespace Jasper.Messaging
     /// Used by Jasper to register and unregister the current running node
     /// on startup and shutdown
     /// </summary>
+    [CacheResolver]
     public class NodeRegistration : IHostedService
     {
         private readonly MessagingSettings _settings;

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging
 {
+    [CacheResolver]
     public class MessagingActivator : IHostedService
     {
         private readonly JasperRuntime _runtime;

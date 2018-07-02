@@ -19,7 +19,7 @@ namespace Jasper.Testing
             _output = output;
         }
 
-        //[Fact]
+        [Fact]
         public void try_out_resolver_cache()
         {
             using (var runtime = JasperRuntime.Basic())

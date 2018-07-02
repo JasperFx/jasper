@@ -8,7 +8,6 @@ using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
-using Jasper.Messaging;
 using Lamar;
 using Lamar.Scanning.Conventions;
 using Lamar.Util;
@@ -23,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
+using TypeExtensions = Baseline.TypeExtensions;
 
 namespace Jasper
 {
@@ -91,7 +91,7 @@ namespace Jasper
                 if (registry.MessagingSettings.ThrowOnValidationErrors) recorder.AssertAllSuccessful();
             });
 
-            _lifetime = container.GetInstance<IApplicationLifetime>().As<ApplicationLifetime>();
+            _lifetime = TypeExtensions.As<ApplicationLifetime>(container.GetInstance<IApplicationLifetime>());
             _lifetime.NotifyStarted();
 
             timer.Stop();
@@ -108,7 +108,7 @@ namespace Jasper
             var extensions = assemblies
                 .Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
                 .Where(x => x != null)
-                .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
+                .Select(x => TypeExtensions.As<IJasperExtension>(Activator.CreateInstance(x)))
                 .ToArray();
 
             registry.ApplyExtensions(extensions);
@@ -143,7 +143,7 @@ namespace Jasper
 
             _logger = Get<ILoggerFactory>().CreateLogger("Jasper");
 
-            _applicationLifetime = Container.GetInstance<IApplicationLifetime>().As<ApplicationLifetime>();
+            _applicationLifetime = TypeExtensions.As<ApplicationLifetime>(Container.GetInstance<IApplicationLifetime>());
 
             var httpContextFactory = Container.QuickBuild<HttpContextFactory>();
 

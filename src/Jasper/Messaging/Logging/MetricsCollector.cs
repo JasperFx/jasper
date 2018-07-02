@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Logging
 {
+    [CacheResolver]
     public class MetricsCollector : BackgroundService
     {
         private readonly IMetrics _metrics;

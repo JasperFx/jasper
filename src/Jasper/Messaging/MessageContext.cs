@@ -138,7 +138,7 @@ namespace Jasper.Messaging
 
         public async Task Publish(Envelope envelope)
         {
-            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
+            if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
             if (envelope.RequiresLocalReply) throw new ArgumentOutOfRangeException(nameof(envelope), "Cannot 'Publish' and envelope that requires a local reply");
 
             var outgoing = await _router.Route(envelope);
@@ -293,7 +293,8 @@ namespace Jasper.Messaging
 
         public Task Send<T>(T message)
         {
-            return SendEnvelope(new Envelope {Message = message});
+            var envelope = message as Envelope ?? new Envelope {Message = message};
+            return SendEnvelope(envelope);
         }
 
         public Task Send<T>(T message, Action<Envelope> customize)

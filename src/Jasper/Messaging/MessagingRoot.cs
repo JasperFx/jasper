@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Conneg;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
@@ -18,10 +16,10 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Lamar.Codegen;
 using Lamar.Util;
-using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Messaging
 {
+    [CacheResolver]
     public class MessagingRoot : IDisposable, IMessagingRoot
     {
         // bouncing through this makes the mock root easier
@@ -41,20 +39,16 @@ namespace Jasper.Messaging
         private readonly ITransportLogger _transportLogger;
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
-        public MessagingRoot(ObjectPoolProvider pooling,
+        public MessagingRoot(
+            MessagingSerializationGraph serialization,
             MessagingSettings settings,
             HandlerGraph handlers,
-            Forwarders forwarders,
             IDurableMessagingFactory factory,
             IChannelGraph channels,
             ISubscriptionsRepository subscriptions,
             IMessageLogger messageLogger,
-            IEnumerable<ISerializerFactory> serializers,
-            IEnumerable<IMessageDeserializer> readers,
-            IEnumerable<IMessageSerializer> writers,
-            ITransport[] transports,
-            IEnumerable<IMissingHandler> missingHandlers,
-            IEnumerable<IUriLookup> lookups, ITransportLogger transportLogger)
+            Lamar.IContainer container,
+            ITransportLogger transportLogger)
         {
             Settings = settings;
             _handlers = handlers;
@@ -62,19 +56,18 @@ namespace Jasper.Messaging
             Replies = new ReplyWatcher();
             Factory = factory;
             Channels = channels;
-            Transports = transports;
+            Transports = container.QuickBuildAll<ITransport>().ToArray();
 
 
 
-            Lookup = new UriAliasLookup(lookups);
+            Lookup = new UriAliasLookup(container.QuickBuildAll<IUriLookup>());
 
 
-            Serialization = new MessagingSerializationGraph(pooling, settings, handlers, forwarders, serializers,
-                readers, writers);
+            Serialization = serialization;
 
             Logger = messageLogger;
 
-            Pipeline = new HandlerPipeline(Serialization, handlers, Replies, Logger, missingHandlers,
+            Pipeline = new HandlerPipeline(Serialization, handlers, Replies, Logger, container.QuickBuildAll<IMissingHandler>(),
                 this);
 
             Workers = new WorkerQueue(Logger, Pipeline, settings);
@@ -82,9 +75,9 @@ namespace Jasper.Messaging
             Router = new MessageRouter(Serialization, channels, subscriptions, handlers, Logger, Lookup, settings);
 
             // TODO -- ZOMG this is horrible, and I admit it.
-            if (Factory is NulloDurableMessagingFactory)
+            if (Factory is NulloDurableMessagingFactory f)
             {
-                Factory.As<NulloDurableMessagingFactory>().ScheduledJobs = ScheduledJobs;
+                f.ScheduledJobs = ScheduledJobs;
             }
         }
 
@@ -174,7 +167,7 @@ namespace Jasper.Messaging
 
 
                 timer.Record("ChannelGraph.Start",
-                    () => { Channels.As<ChannelGraph>().Start(this, capabilities); });
+                    () => { ((ChannelGraph)Channels).Start(this, capabilities); });
 
             }
 

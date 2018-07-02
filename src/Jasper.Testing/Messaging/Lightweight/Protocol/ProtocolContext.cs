@@ -14,6 +14,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Lightweight.Protocol
 {
+    [Collection("protocol")]
     public abstract class ProtocolContext : IDisposable
     {
         protected static int NextPort = 6000;
