@@ -1,7 +1,8 @@
-﻿using Jasper.Messaging.Configuration;
+﻿using Jasper.CommandLine;
+using Jasper.Messaging.Configuration;
 using Xunit;
 
-namespace Jasper.CommandLine.Testing
+namespace Jasper.Testing.CommandLine
 {
     public class CodeCommand_smoke_tester
     {
