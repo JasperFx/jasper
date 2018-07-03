@@ -109,6 +109,25 @@ namespace Jasper.Messaging.Configuration
 
                 return this;
             }
+
+            /// <summary>
+            /// Publishes the matching messages locally in addition to any other subscriber rules
+            /// </summary>
+            public void Locally()
+            {
+                _bus.Settings.LocalPublishing.Add(_routing);
+            }
+        }
+
+        /// <summary>
+        /// Directs Jasper to try to publish all messages locally even if there are other
+        /// subscribers for the message type
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public void AllMessagesLocally()
+        {
+            var rule = new LambdaRoutingRule("Everything", t => true);
+            _bus.Settings.LocalPublishing.Add(rule);
         }
     }
 }

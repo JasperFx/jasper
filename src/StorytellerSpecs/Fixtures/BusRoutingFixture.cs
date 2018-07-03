@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Baseline;
 using Jasper;
 using Jasper.Conneg;
@@ -11,16 +12,49 @@ using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using StoryTeller;
+using StoryTeller.Engine;
 using StoryTeller.Grammars.Tables;
 
 namespace StorytellerSpecs.Fixtures
 {
+    public class Handler<T>
+    {
+        public void Handle(T message)
+        {
+
+        }
+    }
+
     public class BusRoutingFixture : BusFixture, ISubscriptionsRepository
     {
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
         private JasperRegistry _registry;
         private MessageRoute[] _tracks;
         private JasperRuntime _runtime;
+
+        [FormatAs("The application has a handler for {MessageType}")]
+        public void Handles([SelectionList("MessageTypes")] string MessageType)
+        {
+            var messageType = messageTypeFor(MessageType);
+            var handlerType = typeof(Handler<>).MakeGenericType(messageType);
+            _registry.Handlers.IncludeType(handlerType);
+        }
+
+
+
+
+        [FormatAs("The application is configured to publish all messages locally")]
+        public void PublishAllLocally()
+        {
+            _registry.Publish.AllMessagesLocally();
+        }
+
+        [FormatAs("The application is configured to publish the message {MessageType} locally")]
+        public void PublishLocally([SelectionList("MessageTypes")] string MessageType)
+        {
+            var messageType = messageTypeFor(MessageType);
+            _registry.Publish.Message(messageType).Locally();
+        }
 
         [ExposeAsTable("The subscriptions are")]
         public void SubscriptionsAre([SelectionList("MessageTypes")]string MessageType, [SelectionList("Channels")] Uri Destination, string[] Accepts)
@@ -78,6 +112,17 @@ namespace StorytellerSpecs.Fixtures
             _tracks = await router.Route(messageType);
         }
 
+        [FormatAs("There should be no routes")]
+        public bool NoRoutesFor()
+        {
+            StoryTellerAssert.Fail(_tracks.Any(), () =>
+            {
+                return "Found message routes:\n" + _tracks.Select(x => x.ToString()).Join("\n");
+            });
+
+            return true;
+        }
+
 
         public IGrammar TheRoutesShouldBe()
         {
@@ -90,6 +135,8 @@ namespace StorytellerSpecs.Fixtures
         {
             _registry = new JasperRegistry();
             _registry.Services.For<ISubscriptionsRepository>().Use(this);
+
+            _registry.Handlers.DisableConventionalDiscovery();
         }
 
         public override void TearDown()

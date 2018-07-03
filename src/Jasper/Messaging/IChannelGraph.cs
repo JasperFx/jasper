@@ -5,8 +5,6 @@ namespace Jasper.Messaging
 
     public interface IChannelGraph
     {
-        IChannel DefaultChannel { get; }
-
         string[] ValidTransports { get;}
 
         IChannel GetOrBuildChannel(Uri address);

@@ -114,5 +114,10 @@ namespace Jasper.Messaging.Runtime.Routing
                               ?? matchingContentTypes.FirstOrDefault();
             return contentType;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(MessageType)}: {MessageType}, {nameof(DotNetType)}: {DotNetType}, {nameof(Destination)}: {Destination}, {nameof(ContentType)}: {ContentType}";
+        }
     }
 }

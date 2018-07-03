@@ -12,9 +12,8 @@ As an alternative, you can enqueue a message to a local queue to be handled late
 
 <[sample:IServiceBus.Enqueue]>
 
-The `InvoiceCreated` message above will be enqueued locally in the application's default channel. By default, that's one of the <[linkto:documentation/messaging/transports/loopback]> channels, but you can override that to any channel Uri that supports local enqueuing like so:
+The `InvoiceCreated` message above will be enqueued locally using the application's rules for worker queue routing and durability. See <[linkto:documentation/messaging/handling/workerqueues]> for information about how to control these factors to give certain message types more or less priority and to tell Jasper which message types should be durable.
 
-<[sample:SetDefaultChannel]>
 
 Today that pretty well means using the loopback transport, but before too long the <[linkto:documentation/messaging/transports/durable]> will be usable locally as well for persistent queueing in this case. See [this GitHub issue](https://github.com/JasperFx/jasper/issues/179) to track the progress.
 

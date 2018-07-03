@@ -10,6 +10,7 @@ using Jasper.Conneg;
 using Jasper.Http;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Newtonsoft.Json;
@@ -70,35 +71,6 @@ namespace Jasper.Messaging.Transports.Configuration
 
 
             }
-        }
-
-        public Uri DefaultChannelAddress
-        {
-            get => _defaultChannelAddress;
-            set
-            {
-                if (value != null && value.Scheme == TransportConstants.Loopback)
-                {
-                    ListenForMessagesFrom(value);
-                }
-
-                _defaultChannelAddress = value;
-            }
-        }
-
-        void ITransportsExpression.DefaultIs(string uriString)
-        {
-            DefaultChannelAddress = uriString.ToUri();
-        }
-
-        void ITransportsExpression.DefaultIs(Uri uri)
-        {
-            DefaultChannelAddress = uri;
-        }
-
-        public void ExecuteAllMessagesLocally()
-        {
-            DefaultChannelAddress = "loopback://default".ToUri();
         }
 
         public bool DisableAllTransports { get; set; }
@@ -279,6 +251,8 @@ namespace Jasper.Messaging.Transports.Configuration
 
         private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
+
+        public readonly IList<IRoutingRule> LocalPublishing = new List<IRoutingRule>();
     }
 
     public class MessageTypeRule

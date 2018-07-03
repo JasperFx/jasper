@@ -4,7 +4,7 @@ APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
-BUILD_VERSION = '0.8.2'
+BUILD_VERSION = '0.9.0'
 
 tc_build_number = ENV["APPVEYOR_BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')

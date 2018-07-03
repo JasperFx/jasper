@@ -46,11 +46,6 @@ namespace Jasper.Messaging.Transports
                 transport.StartListening(root);
             }
 
-            if (settings.DefaultChannelAddress != null)
-            {
-                DefaultChannel = GetOrBuildChannel(settings.DefaultChannelAddress);
-            }
-
             buildInitialSendingAgents(root);
 
 
@@ -118,7 +113,6 @@ namespace Jasper.Messaging.Transports
             return new Channel(_logger, agent, transport.LocalReplyUri);
         }
 
-        public IChannel DefaultChannel { get; private set; }
 
         public void Dispose()
         {

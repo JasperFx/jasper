@@ -11,6 +11,7 @@ using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Routing
@@ -24,10 +25,14 @@ namespace Jasper.Messaging.Runtime.Routing
         private readonly IMessageLogger _logger;
         private readonly UriAliasLookup _lookup;
         private readonly MessagingSettings _settings;
+        private readonly WorkersGraph _workers;
 
         private ImHashMap<Type, MessageRoute[]> _routes = ImHashMap<Type, MessageRoute[]>.Empty;
 
-        public MessageRouter(MessagingSerializationGraph serializers, IChannelGraph channels, ISubscriptionsRepository subscriptions, HandlerGraph handlers, IMessageLogger logger, UriAliasLookup lookup, MessagingSettings settings)
+        // TODO -- take in MessagingRoot instead?
+        public MessageRouter(MessagingSerializationGraph serializers, IChannelGraph channels,
+            ISubscriptionsRepository subscriptions, HandlerGraph handlers, IMessageLogger logger, UriAliasLookup lookup,
+            MessagingSettings settings)
         {
             _serializers = serializers;
             _channels = channels;
@@ -36,6 +41,7 @@ namespace Jasper.Messaging.Runtime.Routing
             _logger = logger;
             _lookup = lookup;
             _settings = settings;
+            _workers = _settings.Workers;
         }
 
         public void ClearAll()
@@ -129,16 +135,25 @@ namespace Jasper.Messaging.Runtime.Routing
             var modelWriter = _serializers.WriterFor(messageType);
             var supported = modelWriter.ContentTypes;
 
-            foreach (var channel in _channels.AllKnownChannels().Where(x => x.ShouldSendMessage(messageType)))
-            {
-                var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
+            applyLocalPublishingRules(messageType, list);
 
-                if (contentType.IsNotEmpty())
+            applyStaticPublishingRules(messageType, supported, list, modelWriter);
+
+            await applyDynamicSubscriptions(messageType, modelWriter, list);
+
+            if (!list.Any())
+            {
+                if (_handlers.CanHandle(messageType))
                 {
-                    list.Add(new MessageRoute(messageType, modelWriter, channel, contentType){});
+                    list.Add(createLocalRoute(messageType));
                 }
             }
 
+            return list;
+        }
+
+        private async Task applyDynamicSubscriptions(Type messageType, ModelWriter modelWriter, List<MessageRoute> list)
+        {
             var subscriptions = await _subscriptions.GetSubscribersFor(messageType);
             if (subscriptions.Any())
             {
@@ -158,19 +173,41 @@ namespace Jasper.Messaging.Runtime.Routing
                     {
                         _logger.SubscriptionMismatch(mismatch);
                     }
-
                 }
             }
+        }
 
-            if (!list.Any())
+        private void applyStaticPublishingRules(Type messageType, string[] supported, List<MessageRoute> list, ModelWriter modelWriter)
+        {
+            foreach (var channel in _channels.AllKnownChannels().Where(x => x.ShouldSendMessage(messageType)))
             {
-                if (_handlers.HandlerFor(messageType) != null && _channels.DefaultChannel != null)
+                var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
+
+                if (contentType.IsNotEmpty())
                 {
-                    list.Add(new MessageRoute(messageType, modelWriter, _channels.DefaultChannel, "application/json"));
+                    list.Add(new MessageRoute(messageType, modelWriter, channel, contentType) { });
                 }
             }
+        }
 
-            return list;
+        private void applyLocalPublishingRules(Type messageType, List<MessageRoute> list)
+        {
+            if (_handlers.CanHandle(messageType) && _settings.LocalPublishing.Any(x => x.Matches(messageType)))
+            {
+                var route = createLocalRoute(messageType);
+
+                list.Add(route);
+            }
+        }
+
+        private MessageRoute createLocalRoute(Type messageType)
+        {
+            var destination = _workers.LoopbackUriFor(messageType);
+            var route = new MessageRoute(messageType, destination, "application/json")
+            {
+                Channel = _channels.GetOrBuildChannel(destination)
+            };
+            return route;
         }
     }
 }

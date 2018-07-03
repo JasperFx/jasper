@@ -1,4 +1,5 @@
-﻿using Jasper.Messaging.Configuration;
+﻿using System;
+using Jasper.Messaging.Configuration;
 
 namespace StorytellerSpecs.Fixtures
 {
@@ -25,6 +26,13 @@ namespace StorytellerSpecs.Fixtures
         public static IHandlerConfiguration IncludeType<T>(this IHandlerConfiguration handlers)
         {
             handlers.Discovery(x => x.IncludeType<T>());
+
+            return handlers;
+        }
+
+        public static IHandlerConfiguration IncludeType(this IHandlerConfiguration handlers, Type handlerType)
+        {
+            handlers.Discovery(x => x.IncludeType(handlerType));
 
             return handlers;
         }
