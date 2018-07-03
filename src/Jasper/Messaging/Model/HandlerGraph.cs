@@ -113,11 +113,6 @@ namespace Jasper.Messaging.Model
 
         internal void Compile(GenerationRules generation, JasperRuntime runtime, PerfTimer timer)
         {
-            if (!_hasGrouped)
-            {
-                Group();
-            }
-
             _generation = generation;
             _container = runtime.Container;
         }

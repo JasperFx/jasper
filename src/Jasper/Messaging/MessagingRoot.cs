@@ -143,11 +143,6 @@ namespace Jasper.Messaging
 
 
 
-
-
-            var transports = Transports.Where(x => Settings.StateFor(x.Protocol) != TransportState.Disabled)
-                .ToArray();
-
             timer.Record("WorkersGraph.Compile", () =>
             {
                 Settings.Workers.Compile(_handlers.Chains.Select(x => x.MessageType));
