@@ -117,7 +117,7 @@ end
 desc 'Build Nuspec packages'
 task :pack do
 	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --no-restore"
+  #sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.CommandLine/Jasper.CommandLine.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.SqlServer/Jasper.SqlServer.csproj -o ./../../artifacts --configuration Release --no-restore"
