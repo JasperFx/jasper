@@ -36,6 +36,23 @@ namespace Jasper.Messaging.WorkerQueues
 
         public WorkerSettings this[string queueName] => _workers[queueName.ToLower()];
 
+        public Uri LoopbackUriFor(Type messageType)
+        {
+            if (!_durableAssignmentsByType.ContainsKey(messageType))
+            {
+                analyzeMessageType(messageType);
+            }
+
+            var workerName = WorkerFor(messageType);
+
+            var uriString = ShouldBeDurable(messageType)
+                ? $"loopback://{workerName}/durable"
+                : $"loopback://{workerName}";
+
+
+            return uriString.ToUri();
+        }
+
         public string WorkerFor(Type messageType)
         {
             return _workerAssignmentsByType.ContainsKey(messageType)

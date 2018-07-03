@@ -166,6 +166,33 @@ namespace Jasper.Testing.Messaging.WorkerQueues
 
         }
 
+        [Theory]
+        [InlineData(typeof(DurableDefault), "loopback://default/durable")]
+        [InlineData(typeof(NamedDurable), "loopback://important/durable")]
+        [InlineData(typeof(NotDurableDefault), "loopback://default")]
+        [InlineData(typeof(NotDurableNamed), "loopback://low")]
+        public void select_the_loopback_uri_for_message_type(Type messageType, string uriString)
+        {
+            theWorkers.LoopbackUriFor(messageType).ShouldBe(uriString.ToUri());
+        }
+
+
+    }
+
+    public class NotDurableDefault{}
+
+    [Worker("low")]
+    public class NotDurableNamed{}
+
+    [Durable]
+    public class DurableDefault
+    {
+
+    }
+
+    [Durable, Worker("important")]
+    public class NamedDurable
+    {
 
     }
 
