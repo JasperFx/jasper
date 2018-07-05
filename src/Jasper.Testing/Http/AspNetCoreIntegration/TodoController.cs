@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Jasper.Http.Testing.AspNetCoreIntegration
+namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
     public class ValuesController : Controller
     {

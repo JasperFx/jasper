@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.AspNetCoreIntegration
+namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
     public class integration_with_hosting_environment
     {

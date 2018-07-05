@@ -1,37 +1,57 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Alba;
-using JasperHttpTesting;
+using Jasper.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace Jasper.Http.Testing.AspNetCoreIntegration
+namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
-    public class composing_request_delegate_order : IDisposable
+    public class EmptyStartup
     {
-        private readonly JasperRegistry theRegistry = new JasperRegistry();
-        private JasperRuntime _runtime;
+        public void Configure()
+        {
+
+        }
+    }
+
+    public class composing_request_delegate_order_within_aspnetcore_bootstrapping : IDisposable
+    {
+        private SystemUnderTest _alba;
+
+        private void theAppIs(Action<IApplicationBuilder> configure)
+        {
+            var registry = new JasperRegistry();
+            registry.Handlers.DisableConventionalDiscovery(true);
+
+            _alba = new SystemUnderTest();
+            _alba.UseStartup<EmptyStartup>();
+            _alba.Configure(builder =>
+            {
+                builder
+                    .UseServer(new NulloServer())
+                    .Configure(configure)
+                    .UseJasper(registry);
+            });
 
 
+        }
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _alba?.Dispose();
         }
 
-        private async Task<IScenarioResult> scenario(Action<Scenario> configure)
+        private Task<IScenarioResult> scenario(Action<Scenario> configure)
         {
-            theRegistry.Handlers.DisableConventionalDiscovery(true);
-
-            if (_runtime == null)
+            if (_alba == null)
             {
-                _runtime = await JasperRuntime.ForAsync(theRegistry);
+                theAppIs(_ => {});
             }
 
-
-            return await _runtime.Scenario(configure);
+            return _alba.Scenario(configure);
         }
 
         [Fact]
@@ -59,7 +79,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         [Fact]
         public Task use_middleware_in_front()
         {
-            theRegistry.Hosting.Configure(app =>
+            theAppIs(app =>
             {
                 app.Use(next =>
                 {
@@ -84,7 +104,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         [Fact]
         public Task default_404_behavior_with_middleware_in_front()
         {
-            theRegistry.Hosting.Configure(app =>
+            theAppIs(app =>
             {
                 app.Use(next =>
                 {
@@ -96,6 +116,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
                     };
                 });
             });
+
 
             return scenario(_ =>
             {
@@ -110,7 +131,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         [Fact]
         public async Task use_middleware_behind_jasper()
         {
-            theRegistry.Hosting.Configure(app =>
+            theAppIs(app =>
             {
                 app.UseJasper();
 
@@ -139,7 +160,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         [Fact]
         public async Task put_jasper_in_the_middle()
         {
-            theRegistry.Hosting.Configure(app =>
+            theAppIs(app =>
             {
                 app.Use(next =>
                 {
@@ -182,13 +203,5 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         }
     }
 
-    public class TracingEndpoint
-    {
-        public static Task get_jasper_trace(HttpContext context)
-        {
-            context.Response.ContentType = "text/plain";
-            context.Response.StatusCode = 200;
-            return context.Response.WriteAsync("jasper was called");
-        }
-    }
+
 }

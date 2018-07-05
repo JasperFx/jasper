@@ -1,18 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Jasper.Http;
 using Jasper.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.AspNetCoreIntegration
+namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
 
 
@@ -33,7 +31,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
             try
             {
                 // has the message context registered
-                theRuntime.Get<IMessageContext>().ShouldNotBeNull();
+                ShouldBeNullExtensions.ShouldNotBeNull(theRuntime.Get<IMessageContext>());
 
                 // has the registrations from Jasper
                 theRuntime.Get<IFoo>().ShouldBeOfType<Foo>();

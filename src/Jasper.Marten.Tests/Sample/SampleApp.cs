@@ -188,7 +188,7 @@ namespace Jasper.Marten.Tests.Sample
                 _.Connection(ConnectionSource.ConnectionString);
             });
 
-            Transports.ExecuteAllMessagesLocally();
+            Publish.AllMessagesLocally();
             Services.AddSingleton<UserNames>();
 
 

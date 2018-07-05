@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.AspNetCoreIntegration
+namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
     public class service_registrations_with_aspnet_core_abstractions
     {
@@ -38,8 +38,8 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
             var runtime = await JasperRuntime.ForAsync(registry);
             try
             {
-                runtime.Get<IServiceProvider>().ShouldNotBeNull();
-                runtime.Get<IServiceScopeFactory>().ShouldNotBeNull();
+                ShouldBeNullExtensions.ShouldNotBeNull(runtime.Get<IServiceProvider>());
+                ShouldBeNullExtensions.ShouldNotBeNull(runtime.Get<IServiceScopeFactory>());
             }
             finally
             {

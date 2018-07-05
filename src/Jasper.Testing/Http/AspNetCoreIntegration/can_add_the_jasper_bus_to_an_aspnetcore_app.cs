@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Jasper.Http;
 using Jasper.Messaging;
 using Lamar;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.AspNetCoreIntegration
+namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
 
     public class AspNetCombinedFixture : IDisposable
@@ -106,8 +107,7 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         [Fact]
         public void has_the_bus()
         {
-            theHost.Services.GetService(typeof(IMessageContext))
-                .ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(theHost.Services.GetService(typeof(IMessageContext)));
         }
 
         [Fact]
