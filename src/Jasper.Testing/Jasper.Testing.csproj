@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Storyteller\Jasper.Storyteller.csproj" />
+    <ProjectReference Include="..\JasperHttpTesting\JasperHttpTesting.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
     <ProjectReference Include="..\Module1\Module1.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
