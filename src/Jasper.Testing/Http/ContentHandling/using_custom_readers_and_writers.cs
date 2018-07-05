@@ -5,18 +5,22 @@ using Alba;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Util;
-using JasperHttpTesting;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace Jasper.Http.Testing.ContentHandling
+namespace Jasper.Testing.Http.ContentHandling
 {
-    public class using_custom_readers_and_writers
+    public class using_custom_readers_and_writers : RegistryContext<HttpTestingApp>
     {
+        public using_custom_readers_and_writers(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public Task discovers_and_opts_into_the_one_reader_and_writer()
         {
-            return HttpTesting.Scenario(_ =>
+
+            return scenario(_ =>
             {
                 _.Post.Text("Tamba Hali").ToUrl("/special/output");
                 _.ContentShouldBe("Tamba Hali");
@@ -32,10 +36,25 @@ namespace Jasper.Http.Testing.ContentHandling
             return new SpecialOutput{Value = input.Name};
         }
 
+        public XmlOutput post_xml_output(XmlInput input)
+        {
+            return new XmlOutput(){Value = input.Name};
+        }
+
         public void Dispose()
         {
             // nothing, just wanna test the codegen
         }
+    }
+
+    public class XmlInput
+    {
+        public string Name { get; set; }
+    }
+
+    public class XmlOutput
+    {
+        public string Value { get; set; }
     }
 
     public class SpecialInput

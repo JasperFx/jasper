@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Http.Testing.ContentHandling;
 using Shouldly;
 using Xunit;
 

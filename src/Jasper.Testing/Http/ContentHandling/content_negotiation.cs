@@ -10,33 +10,23 @@ using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.ContentHandling
+namespace Jasper.Testing.Http.ContentHandling
 {
-    public class content_negotiation : IDisposable
+    public class ConnegRegistry : JasperRegistry
     {
-        public content_negotiation()
+        public ConnegRegistry()
         {
-
+            Handlers.DisableConventionalDiscovery(true);
+            HttpRoutes.IncludeType<CustomReaderWriterEndpoint>();
+            Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
+            Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
         }
+    }
 
-        public void Dispose()
+    public class content_negotiation : RegistryContext<ConnegRegistry>
+    {
+        public content_negotiation(RegistryFixture<ConnegRegistry> fixture) : base(fixture)
         {
-            _runtime?.Dispose();
-        }
-
-        private JasperRuntime _runtime;
-
-        private async Task<IScenarioResult> scenario(Action<Scenario> configure)
-        {
-            _runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
-            {
-                _.Handlers.DisableConventionalDiscovery(true);
-                _.HttpRoutes.IncludeType<CustomReaderWriterEndpoint>();
-                _.Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
-                _.Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
-            });
-
-            return await _runtime.Scenario(configure);
         }
 
         [Fact]

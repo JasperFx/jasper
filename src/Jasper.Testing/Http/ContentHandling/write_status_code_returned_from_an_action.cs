@@ -1,17 +1,18 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
 using Baseline.Reflection;
+using Jasper.Http;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.ContentHandling
+namespace Jasper.Testing.Http.ContentHandling
 {
-    public class write_status_code_returned_from_an_action
+    public class write_status_code_returned_from_an_action : RegistryContext<HttpTestingApp>
     {
         [Fact]
         public Task set_status_from_sync_action()
         {
-            return HttpTesting.Scenario(_ =>
+            return scenario(_ =>
             {
                 _.Get.Url("/status1");
                 _.StatusCodeShouldBe(201);
@@ -21,7 +22,7 @@ namespace Jasper.Http.Testing.ContentHandling
         [Fact]
         public Task set_status_from_async_action()
         {
-            return HttpTesting.Scenario(_ =>
+            return scenario(_ =>
             {
                 _.Get.Url("/status2");
                 _.StatusCodeShouldBe(203);
@@ -44,6 +45,10 @@ namespace Jasper.Http.Testing.ContentHandling
         {
             var method = ReflectionHelper.GetMethod<StatusCodeEndpoint>(x => x.get_status2());
             HttpSettings.IsCandidate(method).ShouldBeTrue();
+        }
+
+        public write_status_code_returned_from_an_action(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
+        {
         }
     }
 

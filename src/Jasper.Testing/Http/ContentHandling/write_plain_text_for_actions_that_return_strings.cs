@@ -1,16 +1,19 @@
 ﻿using System.Threading.Tasks;
 using Alba;
-using JasperHttpTesting;
 using Xunit;
 
-namespace Jasper.Http.Testing.ContentHandling
+namespace Jasper.Testing.Http.ContentHandling
 {
-    public class write_plain_text_for_actions_that_return_strings
+    public class write_plain_text_for_actions_that_return_strings : RegistryContext<HttpTestingApp>
     {
+        public write_plain_text_for_actions_that_return_strings(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public Task write_as_text()
         {
-            return HttpTesting.Scenario(_ =>
+            return scenario(_ =>
             {
                 _.Get.Url("/string");
                 _.ContentShouldBe("some string");

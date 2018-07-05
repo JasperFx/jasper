@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Alba;
-using JasperHttpTesting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.ContentHandling
+namespace Jasper.Testing.Http.ContentHandling
 {
-    public class read_and_write_json_content
+    public class read_and_write_json_content : RegistryContext<HttpTestingApp>
     {
         [Fact]
         public async Task read_and_write()
@@ -16,7 +15,7 @@ namespace Jasper.Http.Testing.ContentHandling
                 X = 3, Y = 5
             };
 
-            var result = await HttpTesting.Scenario(_ =>
+            var result = await scenario(_ =>
             {
                 _.Post.Json(numbers).ToUrl("/sum");
                 _.StatusCodeShouldBeOk();
@@ -26,6 +25,10 @@ namespace Jasper.Http.Testing.ContentHandling
             var sum = result.ResponseBody.ReadAsJson<SumValue>();
 
             sum.Sum.ShouldBe(8);
+        }
+
+        public read_and_write_json_content(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
+        {
         }
     }
 
