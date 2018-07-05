@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace Jasper.Http.Testing
+namespace Jasper.Testing.Http
 {
     public class bootstrap_with_no_routes
     {

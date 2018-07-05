@@ -9,51 +9,41 @@ using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing
+namespace Jasper.Testing.Http
 {
-    // TODO -- use a Collection<T> on this one. Or go to ST
-    public class bootstrapping_end_to_end : IDisposable
+
+    public class HttpBootstrappedApp : JasperRegistry
     {
-        public bootstrapping_end_to_end()
+        public HttpBootstrappedApp()
         {
-            registry = new JasperRegistry();
-            registry.HttpRoutes.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
+            HttpRoutes.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
-            registry.Include<EndpointExtension>();
+            Include<EndpointExtension>();
 
-            registry.Handlers.DisableConventionalDiscovery();
+            Handlers.DisableConventionalDiscovery();
 
-            registry.Services.AddTransient<IWriterRule, CustomWriterRule>();
-            registry.Services.AddTransient<IReaderRule, CustomReaderRule>();
-
+            Services.AddTransient<IWriterRule, CustomWriterRule>();
+            Services.AddTransient<IReaderRule, CustomReaderRule>();
 
         }
+    }
 
-        private async Task withApp()
+    public class bootstrapping_end_to_end : RegistryContext<HttpBootstrappedApp>
+    {
+        public bootstrapping_end_to_end(RegistryFixture<HttpBootstrappedApp> fixture) : base(fixture)
         {
-            theRuntime = await JasperRuntime.ForAsync(registry);
         }
-
-        public void Dispose()
-        {
-            theRuntime?.Shutdown();
-        }
-
-        private JasperRuntime theRuntime;
-        private JasperRegistry registry;
-
 
         [Fact]
         public async Task can_apply_custom_conneg_rules()
         {
             await withApp();
 
-            var rules = theRuntime.Container.QuickBuild<ConnegRules>();
+            var rules = Runtime.Container.QuickBuild<ConnegRules>();
             rules.Readers.First().ShouldBeOfType<CustomReaderRule>();
             rules.Writers.First().ShouldBeOfType<CustomWriterRule>();
         }
@@ -63,7 +53,7 @@ namespace Jasper.Http.Testing
         {
             await withApp();
 
-            theRuntime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(StaticEndpoint))
+            Runtime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(StaticEndpoint))
                 .ShouldBeTrue();
         }
 
@@ -72,7 +62,7 @@ namespace Jasper.Http.Testing
         {
             await withApp();
 
-            var routes = theRuntime.Get<RouteGraph>();
+            var routes = Runtime.Get<RouteGraph>();
 
             routes.Any(x => x.Action.HandlerType == typeof(SimpleEndpoint)).ShouldBeTrue();
             routes.Any(x => x.Action.HandlerType == typeof(OtherEndpoint)).ShouldBeTrue();
@@ -83,7 +73,7 @@ namespace Jasper.Http.Testing
         {
             await withApp();
 
-            theRuntime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(ExtensionThing))
+            Runtime.Get<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(ExtensionThing))
                 .ShouldBeTrue();
         }
 
@@ -109,7 +99,7 @@ namespace Jasper.Http.Testing
         {
             await withApp();
 
-            var urls = theRuntime.Get<IUrlRegistry>();
+            var urls = Runtime.Get<IUrlRegistry>();
             urls.UrlFor<OtherModel>().ShouldBe("/other");
         }
 
@@ -118,7 +108,7 @@ namespace Jasper.Http.Testing
         {
             await withApp();
 
-            var urls = theRuntime.Get<IUrlRegistry>();
+            var urls = Runtime.Get<IUrlRegistry>();
             urls.UrlFor<SimpleEndpoint>(x => x.get_hello()).ShouldBe("/hello");
         }
 
@@ -127,7 +117,7 @@ namespace Jasper.Http.Testing
         {
             await withApp();
 
-            theRuntime.Get<RouteGraph>()
+            Runtime.Get<RouteGraph>()
                 .Any().ShouldBeTrue();
         }
 
@@ -136,7 +126,7 @@ namespace Jasper.Http.Testing
         {
             await withApp();
 
-            theRuntime.Get<IUrlRegistry>().ShouldNotBeNull();
+            Runtime.Get<IUrlRegistry>().ShouldNotBeNull();
         }
     }
 
