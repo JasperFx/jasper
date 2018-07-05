@@ -13,7 +13,7 @@ using Lamar.Compilation;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing
+namespace Jasper.Testing.Http
 {
     public class explicit_configuration_of_routes
     {
