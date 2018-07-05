@@ -200,7 +200,7 @@ namespace Jasper.Testing.Http
             text.ShouldBe("got this from jasper route");
         }
 
-        [Fact]
+*        [Fact]
         public void apply_changes_to_settings_with_combined_configuration_and_host()
         {
             var settings = theContainer.GetInstance<BootstrappingSetting>();
