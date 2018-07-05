@@ -2,7 +2,7 @@
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public class special_routing_determination_rules
     {

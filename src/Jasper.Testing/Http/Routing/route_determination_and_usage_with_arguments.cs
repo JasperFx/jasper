@@ -8,29 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.Routing
+namespace Jasper.Testing.Http.Routing
 {
-    public class route_determination_and_usage_with_arguments : IDisposable
+    public class route_determination_and_usage_with_arguments : RegistryContext<RoutingApp>
     {
-        private JasperRuntime _runtime;
 
-        public route_determination_and_usage_with_arguments()
+        public route_determination_and_usage_with_arguments(RegistryFixture<RoutingApp> fixture) : base(fixture)
         {
-
-        }
-
-        private async Task withApp()
-        {
-            _runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
-            {
-                _.Handlers.DisableConventionalDiscovery();
-                _.HttpRoutes.IncludeType<RouteEndpoints>();
-            });
-        }
-
-        public void Dispose()
-        {
-            _runtime.Dispose();
         }
 
         private Route routeFor(Expression<Action<RouteEndpoints>> expression)
@@ -42,13 +26,11 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task int_argument()
         {
-            await withApp();
-
             var route = routeFor(x => x.get_int_number(5));
             route.HttpMethod.ShouldBe("GET");
             route.Pattern.ShouldBe("int/:number");
 
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/int/5");
                 _.ContentShouldBe("5");
@@ -58,9 +40,7 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task long_argument()
         {
-            await withApp();
-
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/long/11");
                 _.ContentShouldBe("11");
@@ -70,9 +50,7 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task double_argument()
         {
-            await withApp();
-
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/double/1.23");
                 _.ContentShouldBe("1.23");
@@ -82,9 +60,7 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task char_arguments()
         {
-            await withApp();
-
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/letters/f/to/k");
                 _.ContentShouldBe("f-k");
@@ -94,15 +70,13 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task bool_arguments()
         {
-            await withApp();
-
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/bool/true");
                 _.ContentShouldBe("blue");
             });
 
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/bool/false");
                 _.ContentShouldBe("green");
@@ -112,11 +86,9 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task guid_argument()
         {
-            await withApp();
-
             var id = Guid.NewGuid().ToString();
 
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/guid/" + id);
                 _.ContentShouldBe($"*{id}*");

@@ -8,28 +8,12 @@ using JasperHttpTesting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.Routing
+namespace Jasper.Testing.Http.Routing
 {
-    [Collection("integration")]
-    public class route_determination_with_spread : IDisposable
+    public class route_determination_with_spread : RegistryContext<RoutingApp>
     {
-        private readonly JasperRuntime _runtime;
-
-        public route_determination_with_spread()
+        public route_determination_with_spread(RegistryFixture<RoutingApp> fixture) : base(fixture)
         {
-            _runtime = JasperRuntime.For<JasperRegistry>(_ =>
-            {
-                _.HttpRoutes.IncludeType<SpreadHttpActions>();
-                _.HttpRoutes.DisableConventionalDiscovery();
-
-                _.Handlers.DisableConventionalDiscovery();
-
-            });
-        }
-
-        public void Dispose()
-        {
-            _runtime.Dispose();
         }
 
         [Fact]
@@ -52,13 +36,13 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task end_to_end_with_relative_path()
         {
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/folder/a/b/c");
                 _.ContentShouldBe("a/b/c");
             });
 
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/folder/a/b/c/123");
                 _.ContentShouldBe("a/b/c/123");
@@ -68,13 +52,13 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public async Task end_to_end_with_path_segments()
         {
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/file/abc.txt");
                 _.ContentShouldBe("abc.txt");
             });
 
-            await _runtime.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/file/1/2/3/abc.txt");
                 _.ContentShouldBe("1-2-3-abc.txt");

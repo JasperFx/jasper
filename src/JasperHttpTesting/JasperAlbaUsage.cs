@@ -18,7 +18,7 @@ namespace JasperHttpTesting
 
         public JasperAlbaUsage(JasperRuntime runtime)
         {
-            _runtime = runtime;
+            _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
             Urls = new JasperUrlLookup(_runtime.Get<IUrlRegistry>());
             Features = _runtime.Get<IServer>().Features;
             Services = _runtime.Container;

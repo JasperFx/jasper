@@ -7,7 +7,7 @@ using Jasper.Http.Routing.Codegen;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.Routing
+namespace Jasper.Testing.Http.Routing
 {
     public class RouteArgumentTests
     {

@@ -2,17 +2,20 @@
 using System.Threading.Tasks;
 using Alba;
 using Baseline.Reflection;
+using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
-using Jasper.Http.Testing.ContentHandling;
-using JasperHttpTesting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.Routing
+namespace Jasper.Testing.Http.Routing
 {
-    public class route_parameter_usage
+    public class route_parameter_usage : RegistryContext<HttpTestingApp>
     {
+        public route_parameter_usage(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public void methods_are_candidate_actions()
         {
@@ -27,7 +30,7 @@ namespace Jasper.Http.Testing.Routing
             RoutedEndpoint.LastTime = DateTime.MinValue;
             var time = DateTime.Today.AddHours(3);
 
-            await HttpTesting.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/with/date/" + time.ToString("o"));
                 _.StatusCodeShouldBeOk();
@@ -44,7 +47,7 @@ namespace Jasper.Http.Testing.Routing
             RoutedEndpoint.LastTimeOffset = DateTimeOffset.MinValue;;
             var time = new DateTimeOffset(2017, 8, 15, 8, 0, 0, 0, TimeSpan.Zero);
 
-            await HttpTesting.Scenario(_ =>
+            await scenario(_ =>
             {
                 _.Get.Url("/with/dateoffset/" + time.ToString("o"));
                 _.StatusCodeShouldBeOk();
@@ -58,12 +61,7 @@ namespace Jasper.Http.Testing.Routing
         [Fact]
         public Task use_integer_route_argument()
         {
-            var route = RouteBuilder.Build<RoutedEndpoint>(x => x.get_with_number_value(55));
-
-            var routes = HttpTesting.Runtime.Get<RouteGraph>();
-
-
-            return HttpTesting.Scenario(_ =>
+            return scenario(_ =>
             {
                 _.Get.Url("/with/number/55");
                 _.ContentShouldBe("55");
