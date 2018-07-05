@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.Model
+namespace Jasper.Testing.Http.Model
 {
     public class ContextVariableSourceTester
     {

@@ -12,7 +12,7 @@ using Lamar.Compilation;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing.Model
+namespace Jasper.Testing.Http.Model
 {
     public class RouteChainTester
     {
@@ -36,14 +36,14 @@ namespace Jasper.Http.Testing.Model
         public void determine_input_type_if_there_is_one()
         {
             chainFor(x => x.post_command(null)).InputType.ShouldBe(typeof(Input1));
-            chainFor(x => x.get_command()).InputType.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.get_command()).InputType);
         }
 
         [Fact]
         public void determine_resource_type()
         {
-            chainFor(x => x.post_command(null)).ResourceType.ShouldBeNull();
-            chainFor(x => x.post_input()).ResourceType.ShouldBeNull();
+            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.post_command(null)).ResourceType);
+            ShouldBeNullExtensions.ShouldBeNull(chainFor(x => x.post_input()).ResourceType);
             chainFor(x => x.get_resource()).ResourceType.ShouldBe(typeof(Resource1));
             chainFor(x => x.get_resource2()).ResourceType.ShouldBe(typeof(Resource2));
         }
