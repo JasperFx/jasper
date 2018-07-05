@@ -213,6 +213,7 @@ namespace Jasper.Testing.Http
             theCheck.DidAssert.ShouldBeTrue();
         }
 
+        /*
         [Fact]
         public async Task gets_app_builder_configuration_from_aspnet_startup()
         {
@@ -220,13 +221,15 @@ namespace Jasper.Testing.Http
             text.ShouldBe("from startup route");
         }
 
-/*
+
+
         [Fact]
         public async Task gets_app_builder_configuration_from_jasper_registry_host_calls()
         {
             var text = await theClient.GetStringAsync("http://localhost:3456/host");
             text.ShouldBe("from jasperregistry host");
         }
+        */
 
         [Fact]
         public void gets_configuration_from_JasperRegistry_Configuration()
@@ -305,7 +308,7 @@ namespace Jasper.Testing.Http
                 .Any(x => x.ImplementationType == typeof(GreenService))
                 .ShouldBeTrue();
         }
-        */
+
     }
 
     public class Service : IService
