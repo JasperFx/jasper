@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing
+namespace Jasper.Testing.Http
 {
     public class ServiceNode_determination_specs : IDisposable
     {
