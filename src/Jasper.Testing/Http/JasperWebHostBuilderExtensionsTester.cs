@@ -190,17 +190,15 @@ namespace Jasper.Testing.Http
         private readonly IContainer theContainer;
         private readonly HttpClient theClient;
         private readonly RecordingEnvironmentCheck theCheck;
-/*
+
         [Fact]
         public async Task applies_jasper_router_too()
         {
-            var server = theContainer.GetInstance<IServer>();
-
             var text = await theClient.GetStringAsync("http://localhost:3456/check");
             text.ShouldBe("got this from jasper route");
         }
 
-*        [Fact]
+        [Fact]
         public void apply_changes_to_settings_with_combined_configuration_and_host()
         {
             var settings = theContainer.GetInstance<BootstrappingSetting>();
@@ -208,7 +206,7 @@ namespace Jasper.Testing.Http
             settings.City.ShouldBe("Austin");
             settings.Environment.ShouldBe("Green");
         }
-
+/*
         [Fact]
         public void environment_checks_run()
         {
