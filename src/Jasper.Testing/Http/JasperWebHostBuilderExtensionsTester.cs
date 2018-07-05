@@ -206,7 +206,7 @@ namespace Jasper.Testing.Http
             settings.City.ShouldBe("Austin");
             settings.Environment.ShouldBe("Green");
         }
-/*
+
         [Fact]
         public void environment_checks_run()
         {
@@ -220,7 +220,7 @@ namespace Jasper.Testing.Http
             text.ShouldBe("from startup route");
         }
 
-
+/*
         [Fact]
         public async Task gets_app_builder_configuration_from_jasper_registry_host_calls()
         {
