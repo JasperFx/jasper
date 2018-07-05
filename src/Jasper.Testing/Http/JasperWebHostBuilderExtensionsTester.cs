@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.EnvironmentChecks;
+using Jasper.Http;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Lamar;
@@ -19,7 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing
+namespace Jasper.Testing.Http
 {
     public class AspNetCoreAppFixture : IDisposable
     {
@@ -102,7 +103,7 @@ namespace Jasper.Http.Testing
 
         public void Assert(JasperRuntime runtime)
         {
-            runtime.ShouldNotBeNull();
+            ShouldBeNullExtensions.ShouldNotBeNull(runtime);
             DidAssert = true;
         }
 
