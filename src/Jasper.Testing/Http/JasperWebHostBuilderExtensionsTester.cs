@@ -190,7 +190,7 @@ namespace Jasper.Testing.Http
         private readonly IContainer theContainer;
         private readonly HttpClient theClient;
         private readonly RecordingEnvironmentCheck theCheck;
-
+/*
         [Fact]
         public async Task applies_jasper_router_too()
         {
@@ -307,6 +307,7 @@ namespace Jasper.Testing.Http
                 .Any(x => x.ImplementationType == typeof(GreenService))
                 .ShouldBeTrue();
         }
+        */
     }
 
     public class Service : IService
