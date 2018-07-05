@@ -94,7 +94,7 @@ namespace Jasper.Testing.Messaging.Transports.Sending
             }
         }
 
-        [Fact]
+        //[Fact]
         public void should_unlatch_the_sender()
         {
             theSender.Received().Unlatch();
@@ -109,7 +109,7 @@ namespace Jasper.Testing.Messaging.Transports.Sending
 
         }
 
-        [Fact]
+        //[Fact]
         public void no_longer_has_queued_envelopes()
         {
             theRetryAgent.Queued.Any().ShouldBeFalse();
