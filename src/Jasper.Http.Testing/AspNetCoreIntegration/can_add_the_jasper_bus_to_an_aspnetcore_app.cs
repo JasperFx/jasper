@@ -11,12 +11,12 @@ using Xunit;
 
 namespace Jasper.Http.Testing.AspNetCoreIntegration
 {
-    [Collection("aspnetcore")]
-    public class can_add_the_jasper_bus_to_an_aspnetcore_app : IDisposable
-    {
-        private IWebHost theHost;
 
-        public can_add_the_jasper_bus_to_an_aspnetcore_app()
+    public class AspNetCombinedFixture : IDisposable
+    {
+        public IWebHost theHost;
+
+        public AspNetCombinedFixture()
         {
             // SAMPLE: adding-jasper-to-aspnetcore-app
             var builder = new WebHostBuilder();
@@ -31,6 +31,22 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
 
             theHost.Start();
             // ENDSAMPLE
+        }
+
+        public void Dispose()
+        {
+            theHost?.Dispose();
+        }
+    }
+
+    public class can_add_the_jasper_bus_to_an_aspnetcore_app : IClassFixture<AspNetCombinedFixture>
+    {
+        private readonly IWebHost theHost;
+
+
+        public can_add_the_jasper_bus_to_an_aspnetcore_app(AspNetCombinedFixture fixture)
+        {
+            theHost = fixture.theHost;
 
         }
 
@@ -58,16 +74,12 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
                 .UseJasper<SimpleJasperBusApp>();
 
 
-            theHost = builder.Build();
+            var host = builder.Build();
 
-            theHost.Start();
+            host.Start();
             // ENDSAMPLE
         }
 
-        public void Dispose()
-        {
-            theHost?.Dispose();
-        }
 
         [Fact]
         public async Task can_handle_an_http_request_through_Kestrel()

@@ -10,13 +10,6 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
     public class integration_with_hosting_environment
     {
         [Fact]
-        public void IHostingEnvironment_is_in_container()
-        {
-            HttpTesting.Runtime.Get<IHostingEnvironment>()
-                .ShouldBeOfType<HostingEnvironment>();
-        }
-
-        [Fact]
         public async Task hosting_environment_uses_config()
         {
             var registry = new JasperRegistry();

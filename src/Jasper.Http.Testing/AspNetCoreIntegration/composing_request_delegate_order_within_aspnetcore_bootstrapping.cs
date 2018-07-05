@@ -17,7 +17,6 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
         }
     }
 
-    [Collection("aspnetcore")]
     public class composing_request_delegate_order_within_aspnetcore_bootstrapping : IDisposable
     {
         private SystemUnderTest _alba;

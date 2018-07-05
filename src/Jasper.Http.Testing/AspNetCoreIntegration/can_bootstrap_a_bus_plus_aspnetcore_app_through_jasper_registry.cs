@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Jasper.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -12,6 +14,9 @@ using Xunit;
 
 namespace Jasper.Http.Testing.AspNetCoreIntegration
 {
+
+
+
     public class can_bootstrap_a_bus_plus_aspnetcore_app_through_jasper_registry
     {
 
@@ -109,7 +114,10 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc()
+                .AddApplicationPart(GetType().Assembly);
+
+
             services.AddDbContext<ApplicationDbContext>(opts => { opts.UseSqlServer("some connection string"); });
             services.AddTransient<IFoo, Foo>();
         }
