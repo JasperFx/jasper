@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.Loader;
-using System.Threading;
 using System.Threading.Tasks;
 using Alba;
+using Jasper.Http.Testing.ContentHandling;
 using JasperHttpTesting;
 
-namespace Jasper.Http.Testing.ContentHandling
+namespace Jasper.Http.Testing
 {
     public static class HttpTesting
     {
