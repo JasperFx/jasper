@@ -10,7 +10,7 @@ namespace Jasper.Testing.Http
         public now_parameter_bindings(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
         {
         }
-
+/*
         [Fact]
         public async Task use_datetime_argument()
         {
@@ -40,7 +40,7 @@ namespace Jasper.Testing.Http
             var seconds = dateTimeOffset.Subtract(time).Seconds;
             Math.Abs(seconds).ShouldBeLessThan(30);
         }
-        
+        */
     }
 
     public class TimeEndpoint
