@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Alba;
 using Baseline;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
@@ -22,18 +23,20 @@ using Xunit;
 
 namespace Jasper.Testing.Http
 {
-    public class AspNetCoreAppFixture : IDisposable
+    public class AspNetCoreAppFixture : SystemUnderTest, IDisposable
     {
         public readonly HttpClient client = new HttpClient();
         public RecordingEnvironmentCheck theCheck;
 
         public AspNetCoreAppFixture()
         {
+
+
             theCheck = new RecordingEnvironmentCheck();
 
             var builder = new WebHostBuilder();
             builder.UseUrls("http://localhost:3456");
-            builder.UseKestrel();
+            //builder.UseKestrel();
             builder.ConfigureServices(x =>
             {
                 x.AddSingleton<IService, Service>();
@@ -55,6 +58,11 @@ namespace Jasper.Testing.Http
         }
 
         public IWebHost theHost { get; }
+
+        protected override IWebHost buildHost()
+        {
+            return theHost;
+        }
 
         public void Dispose()
         {
@@ -180,6 +188,7 @@ namespace Jasper.Testing.Http
     {
         public JasperWebHostBuilderExtensionsTester(AspNetCoreAppFixture fixture)
         {
+            theFixture = fixture;
             theHost = fixture.theHost;
             theContainer = theHost.Services.As<IContainer>();
             theClient = fixture.client;
@@ -190,7 +199,7 @@ namespace Jasper.Testing.Http
         private readonly IContainer theContainer;
         private readonly HttpClient theClient;
         private readonly RecordingEnvironmentCheck theCheck;
-
+        private AspNetCoreAppFixture theFixture;
 
 
         [Fact]
@@ -208,32 +217,41 @@ namespace Jasper.Testing.Http
             theCheck.DidAssert.ShouldBeTrue();
         }
 
-        /*
+
 
         [Fact]
-        public async Task applies_jasper_router_too()
+        public Task applies_jasper_router_too()
         {
-            var text = await theClient.GetStringAsync("http://localhost:3456/check");
-            text.ShouldBe("got this from jasper route");
+            return theFixture.Scenario(x =>
+            {
+                x.Get.Url("/check");
+                x.ContentShouldContain("got this from jasper route");
+            });
         }
 
 
         [Fact]
-        public async Task gets_app_builder_configuration_from_aspnet_startup()
+        public Task gets_app_builder_configuration_from_aspnet_startup()
         {
-            var text = await theClient.GetStringAsync("http://localhost:3456/startup");
-            text.ShouldBe("from startup route");
+            return theFixture.Scenario(x =>
+            {
+                x.Get.Url("/startup");
+                x.ContentShouldContain("from startup route");
+            });
         }
 
 
 
         [Fact]
-        public async Task gets_app_builder_configuration_from_jasper_registry_host_calls()
+        public Task gets_app_builder_configuration_from_jasper_registry_host_calls()
         {
-            var text = await theClient.GetStringAsync("http://localhost:3456/host");
-            text.ShouldBe("from jasperregistry host");
+            return theFixture.Scenario(x =>
+            {
+                x.Get.Url("/host");
+                x.ContentShouldContain("from jasperregistry host");
+            });
         }
-        */
+
 
         [Fact]
         public void gets_configuration_from_JasperRegistry_Configuration()
