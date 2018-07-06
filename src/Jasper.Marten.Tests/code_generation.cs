@@ -8,11 +8,25 @@ namespace Jasper.Marten.Tests
 {
     public class code_generation : IDisposable
     {
-        private JasperRuntime runtime;
-
         public code_generation()
         {
             runtime = JasperRuntime.For<MartenUsingApp>();
+        }
+
+        public void Dispose()
+        {
+            runtime?.Dispose();
+        }
+
+        private readonly JasperRuntime runtime;
+
+        [Fact]
+        public void codegen_document_session_creation()
+        {
+            var handlerGraph = runtime.Get<HandlerGraph>();
+            var messageHandler = handlerGraph.HandlerFor<CreateFakeDoc>();
+            messageHandler
+                .Chain.SourceCode.ShouldContain("var documentSession = _documentStore.LightweightSession()");
         }
 
 
@@ -23,15 +37,6 @@ namespace Jasper.Marten.Tests
             var messageHandler = handlerGraph.HandlerFor<LookupFakeDoc>();
             messageHandler
                 .Chain.SourceCode.ShouldContain("var querySession = _documentStore.QuerySession()");
-        }
-
-        [Fact]
-        public void codegen_document_session_creation()
-        {
-            var handlerGraph = runtime.Get<HandlerGraph>();
-            var messageHandler = handlerGraph.HandlerFor<CreateFakeDoc>();
-            messageHandler
-                .Chain.SourceCode.ShouldContain("var documentSession = _documentStore.LightweightSession()");
         }
 
         [Fact]
@@ -46,33 +51,27 @@ namespace Jasper.Marten.Tests
             sourceCode.ShouldContain("var documentSession = _documentStore.LightweightSession()");
             sourceCode.ShouldContain("await documentSession.SaveChangesAsync()");
         }
-
-        public void Dispose()
-        {
-            runtime?.Dispose();
-        }
     }
 
     public class FakeDocEventHandler
     {
         public void Handle(LookupFakeDoc message, IQuerySession session)
         {
-
         }
 
         public void Handle(CreateFakeDoc message, IDocumentSession session)
         {
-
         }
 
         [MartenTransaction]
         public void Handle(Command message, IDocumentSession session)
         {
-
         }
     }
 
-    public class Command{}
+    public class Command
+    {
+    }
 
     public class LookupFakeDoc
     {

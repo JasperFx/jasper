@@ -5,7 +5,6 @@ using Baseline.Dates;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -13,9 +12,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
-using Jasper.Testing.Messaging;
 using Marten;
-using Marten.Schema;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -24,12 +21,6 @@ namespace Jasper.Marten.Tests.Persistence
 {
     public class MartenCallbackTests : IDisposable
     {
-        private JasperRuntime theRuntime;
-        private IDocumentStore theStore;
-        private Envelope theEnvelope;
-        private DurableCallback theCallback;
-        private EnvelopeRetries theRetries;
-
         public MartenCallbackTests()
         {
             theRuntime = JasperRuntime.For(_ =>
@@ -41,7 +32,6 @@ namespace Jasper.Marten.Tests.Persistence
                     x.Storage.Add<PostgresqlEnvelopeStorage>();
                     x.PLV8Enabled = false;
                 });
-
             });
 
             theStore = theRuntime.Get<IDocumentStore>();
@@ -62,17 +52,40 @@ namespace Jasper.Marten.Tests.Persistence
 
 
             var logger = TransportLogger.Empty();
-            theRetries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, marker), logger, new MessagingSettings());
+            theRetries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, marker), logger,
+                new MessagingSettings());
 
 
             var persistor = new MartenEnvelopePersistor(theStore, marker);
 
-            theCallback = new DurableCallback(theEnvelope, Substitute.For<IWorkerQueue>(), persistor, theRetries, logger);
+            theCallback =
+                new DurableCallback(theEnvelope, Substitute.For<IWorkerQueue>(), persistor, theRetries, logger);
         }
 
         public void Dispose()
         {
             theRuntime?.Dispose();
+        }
+
+        private readonly JasperRuntime theRuntime;
+        private readonly IDocumentStore theStore;
+        private readonly Envelope theEnvelope;
+        private readonly DurableCallback theCallback;
+        private readonly EnvelopeRetries theRetries;
+
+        [Fact]
+        public async Task can_reload_the_error_report()
+        {
+            await theCallback.MoveToErrors(theEnvelope, new Exception("Boom!"));
+
+            theRetries.ErrorReportLogged.WaitOne(500);
+
+
+            var persistence = theRuntime.Get<MartenEnvelopePersistor>();
+
+            var report = await persistence.LoadDeadLetterEnvelope(theEnvelope.Id);
+
+            report.ExceptionMessage.ShouldBe("Boom!");
         }
 
         [Fact]
@@ -89,8 +102,24 @@ namespace Jasper.Marten.Tests.Persistence
 
                 persisted.ShouldBeNull();
             }
+        }
 
+        [Fact]
+        public async Task move_to_delayed_until()
+        {
+            var time = DateTime.Today.ToUniversalTime().AddDays(1);
 
+            await theCallback.MoveToScheduledUntil(time, theEnvelope);
+
+            theRetries.Scheduled.WaitOne(1.Seconds());
+
+            using (var session = theStore.QuerySession())
+            {
+                var persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
+                persisted.Status.ShouldBe(TransportConstants.Scheduled);
+                persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
+                persisted.ExecutionTime.ShouldBe(time);
+            }
         }
 
         [Fact]
@@ -112,24 +141,6 @@ namespace Jasper.Marten.Tests.Persistence
 
                 report.ExceptionMessage.ShouldBe("Boom!");
             }
-
-
-        }
-
-        [Fact]
-        public async Task can_reload_the_error_report()
-        {
-            await theCallback.MoveToErrors(theEnvelope, new Exception("Boom!"));
-
-            theRetries.ErrorReportLogged.WaitOne(500);
-
-
-
-            var persistence = theRuntime.Get<MartenEnvelopePersistor>();
-
-            var report = await persistence.LoadDeadLetterEnvelope(theEnvelope.Id);
-
-            report.ExceptionMessage.ShouldBe("Boom!");
         }
 
         [Fact]
@@ -142,24 +153,6 @@ namespace Jasper.Marten.Tests.Persistence
                 var persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
 
                 persisted.ShouldNotBeNull();
-            }
-        }
-
-        [Fact]
-        public async Task move_to_delayed_until()
-        {
-            var time = DateTime.Today.ToUniversalTime().AddDays(1);
-
-            await theCallback.MoveToScheduledUntil(time, theEnvelope);
-
-            theRetries.Scheduled.WaitOne(1.Seconds());
-
-            using (var session = theStore.QuerySession())
-            {
-                var persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
-                persisted.Status.ShouldBe(TransportConstants.Scheduled);
-                persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
-                persisted.ExecutionTime.ShouldBe(time);
             }
         }
     }

@@ -1,9 +1,9 @@
 ﻿using Baseline.Dates;
 using Jasper;
 using Jasper.Marten;
+using Jasper.Marten.Tests;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Testing;
 using Marten;
 
 namespace DurabilitySpecs.Fixtures.Marten.App

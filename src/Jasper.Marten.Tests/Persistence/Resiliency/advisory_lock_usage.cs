@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Marten.Resiliency;
 using Jasper.Marten.Tests.Setup;
@@ -49,7 +48,6 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
                     await conn1.ReleaseGlobalLock(1);
                 }
             }
-
         }
 
         //[Fact] - too slow
@@ -77,56 +75,12 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
 
                     // Cannot get the lock here
                     (await conn2.TryGetGlobalLock(2)).ShouldBeFalse();
-
-
                 }
                 finally
                 {
                     await conn1.ReleaseGlobalLock(1);
                 }
             }
-
-        }
-
-        [Fact]
-        public async Task explicitly_release_global_tx_session_locks()
-        {
-            using (var conn1 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            {
-                await conn1.OpenAsync();
-                await conn2.OpenAsync();
-                await conn3.OpenAsync();
-
-                var tx1 = conn1.BeginTransaction();
-                await conn1.GetGlobalTxLock(1);
-
-
-                // Cannot get the lock here
-                var tx2 = conn2.BeginTransaction();
-                (await conn2.TryGetGlobalTxLock(1)).ShouldBeFalse();
-
-
-
-                await tx1.RollbackAsync();
-
-
-                for (int j = 0; j < 5; j++)
-                {
-                    if ((await conn2.TryGetGlobalTxLock(1)))
-                    {
-                        await tx2.RollbackAsync();
-                        return;
-                    }
-
-                    await Task.Delay(250);
-                }
-
-                throw new Exception("Advisory lock was not released");
-
-            }
-
         }
 
 
@@ -149,14 +103,48 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
                 (await conn2.TryGetGlobalLock(1)).ShouldBeFalse();
 
 
-
                 await conn1.ReleaseGlobalLock(1);
 
 
-                for (int j = 0; j < 5; j++)
+                for (var j = 0; j < 5; j++)
                 {
-                    if ((await conn2.TryGetGlobalLock(1)))
+                    if (await conn2.TryGetGlobalLock(1)) return;
+
+                    await Task.Delay(250);
+                }
+
+                throw new Exception("Advisory lock was not released");
+            }
+        }
+
+        [Fact]
+        public async Task explicitly_release_global_tx_session_locks()
+        {
+            using (var conn1 = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn2 = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn3 = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            {
+                await conn1.OpenAsync();
+                await conn2.OpenAsync();
+                await conn3.OpenAsync();
+
+                var tx1 = conn1.BeginTransaction();
+                await conn1.GetGlobalTxLock(1);
+
+
+                // Cannot get the lock here
+                var tx2 = conn2.BeginTransaction();
+                (await conn2.TryGetGlobalTxLock(1)).ShouldBeFalse();
+
+
+                await tx1.RollbackAsync();
+
+
+                for (var j = 0; j < 5; j++)
+                {
+                    if (await conn2.TryGetGlobalTxLock(1))
                     {
+                        await tx2.RollbackAsync();
                         return;
                     }
 
@@ -164,11 +152,7 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
                 }
 
                 throw new Exception("Advisory lock was not released");
-
             }
-
         }
-
-
     }
 }

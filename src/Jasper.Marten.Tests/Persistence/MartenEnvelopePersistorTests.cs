@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Jasper.Marten.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Testing.Messaging;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -13,8 +12,6 @@ namespace Jasper.Marten.Tests.Persistence
 {
     public class MartenEnvelopePersistorTests : IDisposable
     {
-        public JasperRuntime theRuntime = JasperRuntime.For<ItemReceiver>();
-
         public MartenEnvelopePersistorTests()
         {
             var store = theRuntime.Get<IDocumentStore>();
@@ -27,6 +24,8 @@ namespace Jasper.Marten.Tests.Persistence
             theRuntime?.Dispose();
         }
 
+        public JasperRuntime theRuntime = JasperRuntime.For<ItemReceiver>();
+
         [Fact]
         public async Task get_counts()
         {
@@ -35,7 +34,7 @@ namespace Jasper.Marten.Tests.Persistence
             var list = new List<Envelope>();
 
             // 10 incoming
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
                 envelope.Status = TransportConstants.Incoming;
@@ -46,10 +45,9 @@ namespace Jasper.Marten.Tests.Persistence
             await thePersistor.StoreIncoming(list.ToArray());
 
 
-
             // 7 scheduled
             list.Clear();
-            for (int i = 0; i < 7; i++)
+            for (var i = 0; i < 7; i++)
             {
                 var envelope = ObjectMother.Envelope();
                 envelope.Status = TransportConstants.Scheduled;
@@ -62,7 +60,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             // 3 outgoing
             list.Clear();
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 var envelope = ObjectMother.Envelope();
                 envelope.Status = TransportConstants.Outgoing;

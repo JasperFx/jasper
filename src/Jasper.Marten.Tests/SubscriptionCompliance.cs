@@ -6,7 +6,6 @@ using Jasper.Marten.Subscriptions;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Testing;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -15,14 +14,6 @@ namespace Jasper.Marten.Tests
 {
     public class SubscriptionComplianceSpecs : IDisposable
     {
-        private readonly IList<IDisposable> _disposables = new List<IDisposable>();
-        private readonly JasperRuntime _coolColors1;
-        private readonly JasperRuntime _coolColors2;
-        private readonly JasperRuntime _warmColors;
-        private readonly JasperRuntime _primaryColors;
-        private readonly JasperRuntime _otherWarm;
-
-
         public SubscriptionComplianceSpecs()
         {
             using (var runtime = JasperRuntime.For(configure))
@@ -73,19 +64,20 @@ namespace Jasper.Marten.Tests
             });
 
 
-            _otherWarm = app("OtherWarm", _ =>
-            {
-                _.Handles<RedMessage>();
-            });
+            _otherWarm = app("OtherWarm", _ => { _.Handles<RedMessage>(); });
         }
 
         public void Dispose()
         {
-            foreach (var disposable in _disposables)
-            {
-                disposable.Dispose();
-            }
+            foreach (var disposable in _disposables) disposable.Dispose();
         }
+
+        private readonly IList<IDisposable> _disposables = new List<IDisposable>();
+        private readonly JasperRuntime _coolColors1;
+        private readonly JasperRuntime _coolColors2;
+        private readonly JasperRuntime _warmColors;
+        private readonly JasperRuntime _primaryColors;
+        private readonly JasperRuntime _otherWarm;
 
         protected JasperRuntime app(string name, Action<ColorsApp> configureApp)
         {
@@ -114,56 +106,12 @@ namespace Jasper.Marten.Tests
         }
 
         /// <summary>
-        /// Clean off any existing state
+        ///     Clean off any existing state
         /// </summary>
         /// <param name="runtime"></param>
         protected void beforeEach(JasperRuntime runtime)
         {
             runtime.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
-        }
-
-
-
-        [Fact]
-        public virtual async Task persist_and_load_capabilities()
-        {
-            var repository = _coolColors1.Get<ISubscriptionsRepository>();
-            await repository.PersistCapabilities(_coolColors1.Capabilities);
-
-            var persisted = await repository.CapabilitiesFor(_coolColors1.ServiceName);
-
-            persisted.ShouldNotBeSameAs(_coolColors1.Capabilities);
-
-            persisted.Subscriptions.ShouldBe(_coolColors1.Capabilities.Subscriptions);
-            persisted.Published.ShouldBe(_coolColors1.Capabilities.Published);
-        }
-
-        [Fact]
-        public virtual async Task persist_replace_then_load_capabilities()
-        {
-            var repository = _coolColors1.Get<ISubscriptionsRepository>();
-            await repository.PersistCapabilities(_coolColors1.Capabilities);
-            await repository.PersistCapabilities(_coolColors2.Capabilities);
-
-            var persisted = await repository.CapabilitiesFor(_coolColors2.ServiceName);
-
-            persisted.ShouldNotBeSameAs(_coolColors2.Capabilities);
-
-            persisted.Subscriptions.ShouldBe(_coolColors2.Capabilities.Subscriptions);
-            persisted.Published.ShouldBe(_coolColors2.Capabilities.Published);
-        }
-
-        [Fact]
-        public virtual async Task persist_and_remove_capabilities()
-        {
-            var repository = _coolColors1.Get<ISubscriptionsRepository>();
-            await repository.PersistCapabilities(_coolColors1.Capabilities);
-            await repository.PersistCapabilities(_warmColors.Capabilities);
-
-            await repository.RemoveCapabilities(_coolColors1.ServiceName);
-
-            (await repository.AllCapabilities()).Single().ServiceName
-                .ShouldBe(_warmColors.ServiceName);
         }
 
         [Fact]
@@ -176,7 +124,7 @@ namespace Jasper.Marten.Tests
 
 
             (await repository.AllCapabilities()).Select(x => x.ServiceName)
-                .ShouldBe(new string[]{_coolColors1.ServiceName, _warmColors.ServiceName, _primaryColors.ServiceName});
+                .ShouldBe(new[] {_coolColors1.ServiceName, _warmColors.ServiceName, _primaryColors.ServiceName});
         }
 
 
@@ -197,6 +145,48 @@ namespace Jasper.Marten.Tests
             (await repository.GetSubscriptions()).ShouldBe(all);
         }
 
+
+        [Fact]
+        public virtual async Task persist_and_load_capabilities()
+        {
+            var repository = _coolColors1.Get<ISubscriptionsRepository>();
+            await repository.PersistCapabilities(_coolColors1.Capabilities);
+
+            var persisted = await repository.CapabilitiesFor(_coolColors1.ServiceName);
+
+            persisted.ShouldNotBeSameAs(_coolColors1.Capabilities);
+
+            persisted.Subscriptions.ShouldBe(_coolColors1.Capabilities.Subscriptions);
+            persisted.Published.ShouldBe(_coolColors1.Capabilities.Published);
+        }
+
+        [Fact]
+        public virtual async Task persist_and_remove_capabilities()
+        {
+            var repository = _coolColors1.Get<ISubscriptionsRepository>();
+            await repository.PersistCapabilities(_coolColors1.Capabilities);
+            await repository.PersistCapabilities(_warmColors.Capabilities);
+
+            await repository.RemoveCapabilities(_coolColors1.ServiceName);
+
+            (await repository.AllCapabilities()).Single().ServiceName
+                .ShouldBe(_warmColors.ServiceName);
+        }
+
+        [Fact]
+        public virtual async Task persist_replace_then_load_capabilities()
+        {
+            var repository = _coolColors1.Get<ISubscriptionsRepository>();
+            await repository.PersistCapabilities(_coolColors1.Capabilities);
+            await repository.PersistCapabilities(_coolColors2.Capabilities);
+
+            var persisted = await repository.CapabilitiesFor(_coolColors2.ServiceName);
+
+            persisted.ShouldNotBeSameAs(_coolColors2.Capabilities);
+
+            persisted.Subscriptions.ShouldBe(_coolColors2.Capabilities.Subscriptions);
+            persisted.Published.ShouldBe(_coolColors2.Capabilities.Published);
+        }
     }
 
     public class ColorsApp : JasperRegistry
@@ -204,7 +194,7 @@ namespace Jasper.Marten.Tests
         public ColorsApp(string name)
         {
             ServiceName = name;
-            Handlers.DisableConventionalDiscovery(true);
+            Handlers.DisableConventionalDiscovery();
         }
 
         public void Handles<T>()
@@ -213,17 +203,30 @@ namespace Jasper.Marten.Tests
         }
     }
 
-    public class PurpleMessage{}
-    public class YellowMessage{}
-    public class MagentaMessage{}
-    public class CyanMessage{}
-    public class ChartreuseMessage{}
+    public class PurpleMessage
+    {
+    }
+
+    public class YellowMessage
+    {
+    }
+
+    public class MagentaMessage
+    {
+    }
+
+    public class CyanMessage
+    {
+    }
+
+    public class ChartreuseMessage
+    {
+    }
 
     public class Handler<T>
     {
         public void Handle(T message)
         {
-
         }
     }
 }

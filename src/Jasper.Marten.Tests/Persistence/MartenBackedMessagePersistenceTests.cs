@@ -7,21 +7,14 @@ using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Testing;
-using Jasper.Testing.Messaging;
-using Jasper.Testing.Messaging.Runtime;
 using Marten;
-using Xunit;
 using Shouldly;
+using Xunit;
 
 namespace Jasper.Marten.Tests.Persistence
 {
     public class MartenBackedMessagePersistenceTests : IDisposable
     {
-        private JasperRuntime theRuntime;
-        private Envelope theEnvelope;
-        private Envelope persisted;
-
         public MartenBackedMessagePersistenceTests()
         {
             theRuntime = JasperRuntime.For(_ =>
@@ -32,7 +25,6 @@ namespace Jasper.Marten.Tests.Persistence
                     x.Storage.Add<PostgresqlEnvelopeStorage>();
                     x.PLV8Enabled = false;
                 });
-
             });
 
             theRuntime.Get<IDocumentStore>().Schema.ApplyAllConfiguredChangesToDatabase();
@@ -44,18 +36,20 @@ namespace Jasper.Marten.Tests.Persistence
             theRuntime.Get<MartenBackedDurableMessagingFactory>().ScheduleJob(theEnvelope).Wait(3.Seconds());
 
 
-
             using (var session = theRuntime.Get<IDocumentStore>().LightweightSession())
             {
                 persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
             }
         }
 
-        [Fact]
-        public void should_persist_the_scheduled_envelope()
+        public void Dispose()
         {
-            persisted.ShouldNotBeNull();
+            theRuntime.Dispose();
         }
+
+        private readonly JasperRuntime theRuntime;
+        private readonly Envelope theEnvelope;
+        private readonly Envelope persisted;
 
         [Fact]
         public void should_be_in_scheduled_status()
@@ -69,9 +63,10 @@ namespace Jasper.Marten.Tests.Persistence
             persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
         }
 
-        public void Dispose()
+        [Fact]
+        public void should_persist_the_scheduled_envelope()
         {
-            theRuntime.Dispose();
+            persisted.ShouldNotBeNull();
         }
     }
 }

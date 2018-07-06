@@ -5,8 +5,6 @@ using Baseline;
 using Jasper.Marten.Codegen;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Testing;
-using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -44,7 +42,7 @@ namespace Jasper.Marten.Tests
         [MartenTransaction]
         public void Handle(CreateDocCommand message, IDocumentSession session)
         {
-            session.Store(new FakeDoc{Id = message.Id});
+            session.Store(new FakeDoc {Id = message.Id});
         }
     }
     // ENDSAMPLE
@@ -60,7 +58,6 @@ namespace Jasper.Marten.Tests
         // Take in IDocumentSession as an argument
         public void Handle(Message1 message, IDocumentSession session)
         {
-
         }
     }
     // ENDSAMPLE
@@ -89,6 +86,6 @@ namespace Jasper.Marten.Tests
             Handlers.GlobalPolicy<CommandsAreTransactional>();
         }
     }
-    // ENDSAMPLE
 
+    // ENDSAMPLE
 }

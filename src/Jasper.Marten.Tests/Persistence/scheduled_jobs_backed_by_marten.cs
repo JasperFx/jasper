@@ -15,8 +15,6 @@ namespace Jasper.Marten.Tests.Persistence
 {
     public class scheduled_jobs_backed_by_marten : IDisposable
     {
-        private JasperRuntime theRuntime;
-
         public scheduled_jobs_backed_by_marten()
         {
             ScheduledMessageHandler.Reset();
@@ -25,8 +23,6 @@ namespace Jasper.Marten.Tests.Persistence
             theRuntime.Get<IDocumentStore>().Advanced.Clean.DeleteAllDocuments();
             theRuntime.Get<IDocumentStore>().Tenancy.Default.EnsureStorageExists(typeof(Envelope));
             theRuntime.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
-
-
         }
 
         public void Dispose()
@@ -34,38 +30,14 @@ namespace Jasper.Marten.Tests.Persistence
             theRuntime?.Dispose();
         }
 
-        [Fact]
-        public async Task run_scheduled_job_locally()
-        {
-            var message1 = new ScheduledMessage{Id = 1};
-            var message2 = new ScheduledMessage{Id = 2};
-            var message3 = new ScheduledMessage{Id = 3};
-
-
-            await theRuntime.Messaging.Schedule(message1, 2.Hours());
-
-            var id = await theRuntime.Messaging.Schedule(message2, 5.Seconds());
-
-            await theRuntime.Messaging.Schedule(message3, 2.Hours());
-
-            ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);
-
-
-
-
-            ScheduledMessageHandler.Received.Wait(10.Seconds());
-
-            ScheduledMessageHandler.ReceivedMessages.Single()
-                .Id.ShouldBe(2);
-
-        }
+        private readonly JasperRuntime theRuntime;
 
         [Fact]
         public async Task run_scheduled_job_after_being_sent()
         {
-            var message1 = new ScheduledMessage{Id = 1};
-            var message2 = new ScheduledMessage{Id = 22};
-            var message3 = new ScheduledMessage{Id = 3};
+            var message1 = new ScheduledMessage {Id = 1};
+            var message2 = new ScheduledMessage {Id = 22};
+            var message3 = new ScheduledMessage {Id = 3};
 
             using (var sender = JasperRuntime.For<SenderApp>())
             {
@@ -80,12 +52,29 @@ namespace Jasper.Marten.Tests.Persistence
                 ScheduledMessageHandler.ReceivedMessages.Single()
                     .Id.ShouldBe(22);
             }
+        }
+
+        [Fact]
+        public async Task run_scheduled_job_locally()
+        {
+            var message1 = new ScheduledMessage {Id = 1};
+            var message2 = new ScheduledMessage {Id = 2};
+            var message3 = new ScheduledMessage {Id = 3};
 
 
+            await theRuntime.Messaging.Schedule(message1, 2.Hours());
+
+            var id = await theRuntime.Messaging.Schedule(message2, 5.Seconds());
+
+            await theRuntime.Messaging.Schedule(message3, 2.Hours());
+
+            ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);
 
 
+            ScheduledMessageHandler.Received.Wait(10.Seconds());
 
-
+            ScheduledMessageHandler.ReceivedMessages.Single()
+                .Id.ShouldBe(2);
         }
     }
 
@@ -103,7 +92,7 @@ namespace Jasper.Marten.Tests.Persistence
 
     public class ScheduledMessageApp : JasperRegistry
     {
-        public ScheduledMessageApp() : base()
+        public ScheduledMessageApp()
         {
             Transports.LightweightListenerAt(2777);
 
@@ -124,6 +113,8 @@ namespace Jasper.Marten.Tests.Persistence
 
         private static TaskCompletionSource<ScheduledMessage> _source;
 
+        public static Task<ScheduledMessage> Received { get; private set; }
+
         public void Consume(ScheduledMessage message)
         {
             _source?.TrySetResult(message);
@@ -137,7 +128,5 @@ namespace Jasper.Marten.Tests.Persistence
             Received = _source.Task;
             ReceivedMessages.Clear();
         }
-
-        public static Task<ScheduledMessage> Received { get; private set; }
     }
 }

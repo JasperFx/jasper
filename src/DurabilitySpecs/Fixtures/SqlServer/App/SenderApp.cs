@@ -1,8 +1,8 @@
 ﻿using Baseline.Dates;
 using Jasper;
+using Jasper.Marten.Tests;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.SqlServer;
-using Jasper.Testing;
 
 namespace DurabilitySpecs.Fixtures.SqlServer.App
 {

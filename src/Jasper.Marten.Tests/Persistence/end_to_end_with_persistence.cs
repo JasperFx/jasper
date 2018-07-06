@@ -3,12 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
-using Jasper.Testing.Messaging;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -17,10 +14,6 @@ namespace Jasper.Marten.Tests.Persistence
 {
     public class end_to_end_with_persistence : IDisposable
     {
-        private JasperRuntime theSender;
-        private JasperRuntime theReceiver;
-        private MessageTracker theTracker;
-
         public end_to_end_with_persistence()
         {
             theSender = JasperRuntime.For<ItemSender>();
@@ -34,8 +27,6 @@ namespace Jasper.Marten.Tests.Persistence
             var receiverStore = theReceiver.Get<IDocumentStore>();
             receiverStore.Advanced.Clean.CompletelyRemoveAll();
             receiverStore.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
-
-
         }
 
         public void Dispose()
@@ -44,8 +35,9 @@ namespace Jasper.Marten.Tests.Persistence
             theReceiver?.Dispose();
         }
 
-
-
+        private readonly JasperRuntime theSender;
+        private readonly JasperRuntime theReceiver;
+        private readonly MessageTracker theTracker;
 
 
         [Fact]
@@ -75,11 +67,9 @@ namespace Jasper.Marten.Tests.Persistence
                 }
 
 
-
                 item2.Name.ShouldBe("Shoe");
 
                 session.AllIncomingEnvelopes().Any().ShouldBeFalse();
-
             }
         }
 
@@ -110,7 +100,6 @@ namespace Jasper.Marten.Tests.Persistence
                 }
 
 
-
                 item2.Name.ShouldBe("Shoe");
 
                 var deleted = session.AllIncomingEnvelopes().Any();
@@ -119,8 +108,6 @@ namespace Jasper.Marten.Tests.Persistence
                     Thread.Sleep(500);
                     session.AllIncomingEnvelopes().Any().ShouldBeFalse();
                 }
-
-
             }
         }
 
@@ -149,7 +136,6 @@ namespace Jasper.Marten.Tests.Persistence
                     Thread.Sleep(500);
                     item2 = session.Load<ItemCreated>(item.Id);
                 }
-
 
 
                 item2.Name.ShouldBe("Hat");

@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper;
+using Jasper.Marten.Tests;
 using Jasper.SqlServer;
-using Jasper.Testing;
 using Jasper.Util;
 
 namespace DurabilitySpecs.Fixtures.SqlServer.App

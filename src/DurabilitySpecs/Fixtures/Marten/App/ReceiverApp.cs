@@ -1,8 +1,8 @@
 ﻿using System;
 using Jasper;
 using Jasper.Marten;
+using Jasper.Marten.Tests;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Testing;
 using Jasper.Util;
 
 namespace DurabilitySpecs.Fixtures.Marten.App

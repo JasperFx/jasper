@@ -16,7 +16,6 @@ using Jasper.Messaging.Tracking;
 using Jasper.Storyteller.Logging;
 using Marten;
 using Marten.Util;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StoryTeller;

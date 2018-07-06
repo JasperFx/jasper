@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Configuration;
 
-namespace StorytellerSpecs.Fixtures
+namespace Jasper.Marten.Tests
 {
     public static class HandlerConfigurationExtensions
     {

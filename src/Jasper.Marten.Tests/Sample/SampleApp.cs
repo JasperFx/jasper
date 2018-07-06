@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Tracking;
-using Jasper.Testing;
-using Jasper.Testing.Messaging.Runtime;
 using Marten;
 using Marten.Schema;
 using Microsoft.Extensions.Configuration;
@@ -32,11 +30,8 @@ namespace Jasper.Marten.Tests.Sample
     // ENDSAMPLE
 
 
-
     public class MessageInvocationTests : IDisposable
     {
-        private readonly JasperRuntime theRuntime;
-
         public MessageInvocationTests()
         {
             theRuntime = JasperRuntime.For<SampleApp>();
@@ -47,6 +42,39 @@ namespace Jasper.Marten.Tests.Sample
         public void Dispose()
         {
             theRuntime?.Dispose();
+        }
+
+        private readonly JasperRuntime theRuntime;
+
+        //[Fact] -- unreliable. May not actually be useful.
+        public async Task using_ExecuteAndWait()
+        {
+            await theRuntime.ExecuteAndWait(
+                () => { return theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"}); });
+
+
+            using (var session = theRuntime.Get<IDocumentStore>().QuerySession())
+            {
+                session.Load<User>("Tom").ShouldNotBeNull();
+            }
+
+            theRuntime.Get<UserNames>()
+                .Names.Single().ShouldBe("Tom");
+        }
+
+        [Fact]
+        public async Task using_ExecuteAndWaitSync()
+        {
+            await theRuntime.ExecuteAndWait(() => { theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"}); });
+
+
+            using (var session = theRuntime.Get<IDocumentStore>().QuerySession())
+            {
+                session.Load<User>("Tom").ShouldNotBeNull();
+            }
+
+            theRuntime.Get<UserNames>()
+                .Names.Single().ShouldBe("Tom");
         }
 
 
@@ -63,42 +91,6 @@ namespace Jasper.Marten.Tests.Sample
             theRuntime.Get<UserNames>()
                 .Names.Single().ShouldBe("Bill");
         }
-
-        //[Fact] -- unreliable. May not actually be useful.
-        public async Task using_ExecuteAndWait()
-        {
-            await theRuntime.ExecuteAndWait(() =>
-            {
-                return theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"});
-            });
-
-
-            using (var session = theRuntime.Get<IDocumentStore>().QuerySession())
-            {
-                session.Load<User>("Tom").ShouldNotBeNull();
-            }
-
-            theRuntime.Get<UserNames>()
-                .Names.Single().ShouldBe("Tom");
-        }
-
-        [Fact]
-        public async Task using_ExecuteAndWaitSync()
-        {
-            await theRuntime.ExecuteAndWait(() =>
-            {
-                theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"});
-            });
-
-
-            using (var session = theRuntime.Get<IDocumentStore>().QuerySession())
-            {
-                session.Load<User>("Tom").ShouldNotBeNull();
-            }
-
-            theRuntime.Get<UserNames>()
-                .Names.Single().ShouldBe("Tom");
-        }
     }
 
     // SAMPLE: AppUsingMessageTracking
@@ -111,15 +103,8 @@ namespace Jasper.Marten.Tests.Sample
             {
                 var environment = context.HostingEnvironment.EnvironmentName;
 
-                if (environment == "Development" || environment == "Testing")
-                {
-                    // Don't use this in production because it'd
-                    // cause a memory leak issue
-                    Include<MessageTrackingExtension>();
-                }
+                if (environment == "Development" || environment == "Testing") Include<MessageTrackingExtension>();
             });
-
-
         }
     }
     // ENDSAMPLE
@@ -151,19 +136,13 @@ namespace Jasper.Marten.Tests.Sample
 
                 // Configurable timeouts
                 await runtime.InvokeMessageAndWait(new Message1(),
-                    timeoutInMilliseconds:10000);
+                    10000);
 
                 // More general usage
-                await runtime.ExecuteAndWait(() =>
-                {
-                    return runtime.Messaging.Send(new Message1());
-                });
+                await runtime.ExecuteAndWait(() => { return runtime.Messaging.Send(new Message1()); });
 
                 // More general usage, but synchronously
-                await runtime.ExecuteAndWait(() =>
-                {
-                    runtime.Messaging.Send(new Message1());
-                });
+                await runtime.ExecuteAndWait(() => { runtime.Messaging.Send(new Message1()); });
 
                 // Using an isolated message context
                 await runtime.ExecuteAndWait(c => c.Send(new Message1()));
@@ -172,9 +151,10 @@ namespace Jasper.Marten.Tests.Sample
                 // If there are, this will throw an AggregateException of
                 // all encountered exceptions in the message processing
                 await runtime.ExecuteAndWait(c => c.Send(new Message1()),
-                    assertNoExceptions:true);
+                    true);
             }
         }
+
         // ENDSAMPLE
     }
 
@@ -183,10 +163,7 @@ namespace Jasper.Marten.Tests.Sample
     {
         public SampleApp()
         {
-            Settings.Alter<StoreOptions>(_ =>
-            {
-                _.Connection(ConnectionSource.ConnectionString);
-            });
+            Settings.Alter<StoreOptions>(_ => { _.Connection(ConnectionSource.ConnectionString); });
 
             Publish.AllMessagesLocally();
             Services.AddSingleton<UserNames>();
@@ -202,9 +179,9 @@ namespace Jasper.Marten.Tests.Sample
         [MartenTransaction]
         public static UserCreated Handle(CreateUser message, IDocumentSession session)
         {
-            session.Store(new User{Name = message.Name});
+            session.Store(new User {Name = message.Name});
 
-            return new UserCreated{UserName = message.Name};
+            return new UserCreated {UserName = message.Name};
         }
         // ENDSAMPLE
 
@@ -231,8 +208,6 @@ namespace Jasper.Marten.Tests.Sample
 
     public class User
     {
-        [Identity]
-        public string Name;
-
+        [Identity] public string Name;
     }
 }

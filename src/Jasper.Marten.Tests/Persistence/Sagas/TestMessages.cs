@@ -1,8 +1,5 @@
 ﻿using System;
-using Baseline;
 using Jasper.Messaging.Sagas;
-using Marten.Util;
-using Remotion.Linq.Clauses;
 
 namespace Jasper.Marten.Tests.Persistence.Sagas
 {
@@ -16,13 +13,23 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
         public bool FourCompleted { get; set; }
 
         public string Name { get; set; }
-
     }
 
-    public class GuidWorkflowState : WorkflowState<Guid>{}
-    public class IntWorkflowState : WorkflowState<int>{}
-    public class LongWorkflowState : WorkflowState<long>{}
-    public class StringWorkflowState : WorkflowState<string>{}
+    public class GuidWorkflowState : WorkflowState<Guid>
+    {
+    }
+
+    public class IntWorkflowState : WorkflowState<int>
+    {
+    }
+
+    public class LongWorkflowState : WorkflowState<long>
+    {
+    }
+
+    public class StringWorkflowState : WorkflowState<string>
+    {
+    }
 
     public abstract class Start<T>
     {
@@ -30,10 +37,21 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
         public string Name { get; set; }
     }
 
-    public class GuidStart : Start<Guid>{}
-    public class IntStart : Start<int>{}
-    public class LongStart : Start<long>{}
-    public class StringStart : Start<string>{}
+    public class GuidStart : Start<Guid>
+    {
+    }
+
+    public class IntStart : Start<int>
+    {
+    }
+
+    public class LongStart : Start<long>
+    {
+    }
+
+    public class StringStart : Start<string>
+    {
+    }
 
 
     public abstract class CompleteThree<T>
@@ -41,17 +59,38 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
         public T SagaId { get; set; }
     }
 
-    public class GuidCompleteThree : CompleteThree<Guid>{}
-    public class IntCompleteThree : CompleteThree<int>{}
-    public class LongCompleteThree : CompleteThree<long>{}
-    public class StringCompleteThree : CompleteThree<string>{}
+    public class GuidCompleteThree : CompleteThree<Guid>
+    {
+    }
+
+    public class IntCompleteThree : CompleteThree<int>
+    {
+    }
+
+    public class LongCompleteThree : CompleteThree<long>
+    {
+    }
+
+    public class StringCompleteThree : CompleteThree<string>
+    {
+    }
 
 
-    public class CompleteOne{}
-    public class CompleteTwo{}
-    public class CompleteFour{}
+    public class CompleteOne
+    {
+    }
 
-    public class FinishItAll{}
+    public class CompleteTwo
+    {
+    }
+
+    public class CompleteFour
+    {
+    }
+
+    public class FinishItAll
+    {
+    }
 
 
     public class WildcardStart
@@ -66,7 +105,6 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
         where TState : WorkflowState<TId>, new()
 
     {
-
         public TState Start(TStart starting)
         {
             var state = new TState {Id = starting.Id, Name = starting.Name};
@@ -91,7 +129,6 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
         }
 
 
-
         public void Handle(TCompleteThree three, TState state)
         {
             state.ThreeCompleted = true;
@@ -101,8 +138,5 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
         {
             MarkCompleted();
         }
-
     }
-
-
 }

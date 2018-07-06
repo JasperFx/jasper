@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Resiliency;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -20,16 +19,17 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
 {
     public class run_scheduled_job_specs : MartenBackedListenerContext
     {
-        private RunScheduledJobs theScheduledJob;
-
         public run_scheduled_job_specs()
         {
             var logger = TransportLogger.Empty();
             var envelopeTables = new EnvelopeTables(theSettings, new StoreOptions());
-            var retries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, envelopeTables), logger, theSettings);
+            var retries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, envelopeTables), logger,
+                theSettings);
 
             theScheduledJob = new RunScheduledJobs(theWorkerQueue, theStore, envelopeTables, logger, retries);
         }
+
+        private readonly RunScheduledJobs theScheduledJob;
 
         protected async Task<IReadOnlyList<Envelope>> afterExecutingAt(DateTimeOffset time)
         {
@@ -43,15 +43,12 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
                 Tracking = DocumentTracking.None
             }))
             {
-
                 var envelopes = await theScheduledJob.ExecuteAtTime(session, time);
 
                 await tx.CommitAsync();
 
                 return envelopes;
             }
-
-
         }
 
         [Fact]
@@ -89,9 +86,5 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
                 persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
             }
         }
-
-
     }
-
-
 }

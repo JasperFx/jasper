@@ -6,7 +6,6 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
-using Jasper.Testing;
 using Marten;
 
 namespace Jasper.Marten.Tests.Persistence.Sagas
@@ -46,14 +45,14 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
             store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
         }
 
-        protected string codeFor<T>()
-        {
-            return _runtime.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
-        }
-
         public void Dispose()
         {
             _runtime?.Dispose();
+        }
+
+        protected string codeFor<T>()
+        {
+            return _runtime.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
         }
 
         protected virtual void configure(JasperRegistry registry)
@@ -68,7 +67,8 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _runtime.Messaging.Send(message, e => e.SagaId = sagaId.ToString()), 10000);
+            return _history.WatchAsync(() => _runtime.Messaging.Send(message, e => e.SagaId = sagaId.ToString()),
+                10000);
         }
 
         protected async Task<TSagaState> LoadState(Guid id)

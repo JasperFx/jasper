@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
@@ -8,31 +6,23 @@ using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Testing;
 using Marten;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Marten.Tests.Outbox
 {
-    ///<summary>
-    /// In this example, the OrdersApp would be running in an
-    /// ASP.Net Core app which receives an HTTP request to create an order.
-    ///
-    /// While processing the HTTP request, it creates the order in its
-    /// database and sends a ProcessOrder command message.
-    ///
-    /// A WarehouseApp consumes that command, and its handler
-    /// creates a picklist in its own database and publishes an
-    /// ItemOutOfStock event which is delivered back to the OrdersApp.
+    /// <summary>
+    ///     In this example, the OrdersApp would be running in an
+    ///     ASP.Net Core app which receives an HTTP request to create an order.
+    ///     While processing the HTTP request, it creates the order in its
+    ///     database and sends a ProcessOrder command message.
+    ///     A WarehouseApp consumes that command, and its handler
+    ///     creates a picklist in its own database and publishes an
+    ///     ItemOutOfStock event which is delivered back to the OrdersApp.
     /// </summary>
     public class end_to_end_with_outbox : IDisposable
     {
-        private JasperRuntime theSender;
-        private JasperRuntime theHandler;
-
-        private static int portCounter = 2222;
-
         public end_to_end_with_outbox()
         {
             using (var store = DocumentStore.For(ConnectionSource.ConnectionString))
@@ -55,12 +45,18 @@ namespace Jasper.Marten.Tests.Outbox
             theHandler?.Dispose();
         }
 
+        private readonly JasperRuntime theSender;
+        private readonly JasperRuntime theHandler;
+
+        private static int portCounter = 2222;
+
         [Fact]
         public void code_generation_includes_the_call_to_enlist_the_transaction()
         {
             var code = theSender.Get<HandlerGraph>().ChainFor<ItemOutOfStock>().SourceCode;
 
-            code.ShouldContain("await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+            code.ShouldContain(
+                "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]
@@ -87,11 +83,13 @@ namespace Jasper.Marten.Tests.Outbox
                 //TODO: assert that at this point, the sending agent should have been told to deliver the message
             }
 
-            TestSynch.HandledProcessOrderCommand.WaitOne(5.Seconds()).ShouldBe(true, "Waited too long for ProcessOrder event to be handled");
+            TestSynch.HandledProcessOrderCommand.WaitOne(5.Seconds())
+                .ShouldBe(true, "Waited too long for ProcessOrder event to be handled");
             //TODO: at this point, the warehouse app's sending agent should _not_ have been told to deliver the message
             TestSynch.WarehouseHandlerShouldContinueEvent.Set();
 
-            TestSynch.ProcessedItemOutOfStockEvent.WaitOne(5.Seconds()).ShouldBe(true, "Waited too long for ItemOutOfStock event to be handled");
+            TestSynch.ProcessedItemOutOfStockEvent.WaitOne(5.Seconds())
+                .ShouldBe(true, "Waited too long for ItemOutOfStock event to be handled");
         }
     }
 
@@ -101,11 +99,6 @@ namespace Jasper.Marten.Tests.Outbox
         public static AutoResetEvent WarehouseHandlerShouldContinueEvent = new AutoResetEvent(false);
         public static AutoResetEvent ProcessedItemOutOfStockEvent = new AutoResetEvent(false);
     }
-
-
-
-
-
 
 
     public class OrdersApp : JasperRegistry
@@ -153,7 +146,6 @@ namespace Jasper.Marten.Tests.Outbox
     }
 
 
-
     public class WarehouseApp<THandler> : JasperRegistry
     {
         public WarehouseApp(int senderPort)
@@ -162,10 +154,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             Include<MartenBackedPersistence>();
 
-            Settings.Alter<StoreOptions>(_ =>
-            {
-                _.Connection(ConnectionSource.ConnectionString);
-            });
+            Settings.Alter<StoreOptions>(_ => { _.Connection(ConnectionSource.ConnectionString); });
 
             //Note: whether or not our event is destined for a durable queue, it will be stored durably in the outbox because of the implementation of the handlers.
             Publish.Message<ItemOutOfStock>().To($"tcp://localhost:{senderPort}/durable");
@@ -186,15 +175,15 @@ namespace Jasper.Marten.Tests.Outbox
     /* Two different alternatives for handler implementations that make use of the outbox */
 
     /// <summary>
-    /// By using MartenTransaction and cascading messages, I expect the cascading messages to be stored
-    /// to the outgoing table in the same document session as the one supplied to the handler.
+    ///     By using MartenTransaction and cascading messages, I expect the cascading messages to be stored
+    ///     to the outgoing table in the same document session as the one supplied to the handler.
     /// </summary>
     public class WarehouseHandler1
     {
         [MartenTransaction]
         public object Handle(ProcessOrder processOrder, IDocumentSession session)
         {
-            session.Store(new PickList { Id = processOrder.Id});
+            session.Store(new PickList {Id = processOrder.Id});
             var outOfStockEvent = new ItemOutOfStock {OrderId = processOrder.Id, ItemName = processOrder.ItemName};
 
             // wait here for the test to inspect state.
@@ -206,8 +195,8 @@ namespace Jasper.Marten.Tests.Outbox
     }
 
     /// <summary>
-    /// By taking a dependency on the document store and enlisting the bus to it, all messages sent through that bus
-    /// will be tracked in that session.
+    ///     By taking a dependency on the document store and enlisting the bus to it, all messages sent through that bus
+    ///     will be tracked in that session.
     /// </summary>
     public class WarehouseHandler2
     {
@@ -218,7 +207,7 @@ namespace Jasper.Marten.Tests.Outbox
                 await bus.EnlistInTransaction(session);
 
                 session.Store(new PickList {Id = processOrder.Id});
-                var outOfStockEvent = new ItemOutOfStock { OrderId = processOrder.Id, ItemName = processOrder.ItemName };
+                var outOfStockEvent = new ItemOutOfStock {OrderId = processOrder.Id, ItemName = processOrder.ItemName};
 
                 await bus.Publish(outOfStockEvent);
 

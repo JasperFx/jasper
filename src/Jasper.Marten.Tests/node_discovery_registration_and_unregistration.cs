@@ -5,7 +5,6 @@ using Jasper.Marten.Subscriptions;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Testing;
 using Jasper.Util;
 using Marten;
 using Shouldly;
@@ -15,9 +14,6 @@ namespace Jasper.Marten.Tests
 {
     public class node_discovery_registration_and_unregistration : IDisposable
     {
-        private JasperRuntime _runtime;
-        private ISubscriptionsRepository theRepository;
-
         public node_discovery_registration_and_unregistration()
         {
             using (var store = DocumentStore.For(ConnectionSource.ConnectionString))
@@ -29,25 +25,19 @@ namespace Jasper.Marten.Tests
             {
                 _.Handlers.DisableConventionalDiscovery();
 
-                _.Settings.Alter<MartenSubscriptionSettings>(x => x.StoreOptions.Connection(ConnectionSource.ConnectionString));
+                _.Settings.Alter<MartenSubscriptionSettings>(x =>
+                    x.StoreOptions.Connection(ConnectionSource.ConnectionString));
 
                 _.Include<MartenBackedSubscriptions>();
 
                 _.ServiceName = "MartenSampleApp";
 
-                _.Settings.Alter<MessagingSettings>(x =>
-                {
-                    x.MachineName = "MyBox";
-                });
+                _.Settings.Alter<MessagingSettings>(x => { x.MachineName = "MyBox"; });
 
-                _.Settings.Alter<StoreOptions>(x =>
-                {
-                    x.Connection(ConnectionSource.ConnectionString);
-                });
+                _.Settings.Alter<StoreOptions>(x => { x.Connection(ConnectionSource.ConnectionString); });
 
                 _.Transports.LightweightListenerAt(2345);
             });
-
 
 
             theRepository = _runtime.Get<ISubscriptionsRepository>();
@@ -57,6 +47,9 @@ namespace Jasper.Marten.Tests
         {
             _runtime?.Dispose();
         }
+
+        private JasperRuntime _runtime;
+        private ISubscriptionsRepository theRepository;
 
         [Fact]
         public async Task find_all_nodes()
@@ -105,7 +98,6 @@ namespace Jasper.Marten.Tests
             {
                 session.Load<ServiceNode>("MartenSampleApp@MyBox")
                     .TcpEndpoints.ShouldContain($"tcp://{Environment.MachineName}:2345".ToUri());
-
             }
         }
 
@@ -123,7 +115,6 @@ namespace Jasper.Marten.Tests
                         .ShouldBe(0);
                 }
             }
-
         }
     }
 }

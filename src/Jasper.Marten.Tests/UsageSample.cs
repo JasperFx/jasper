@@ -1,5 +1,4 @@
-﻿using Marten;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Marten.Tests
 {
@@ -18,5 +17,6 @@ namespace Jasper.Marten.Tests
             });
         }
     }
+
     // ENDSAMPLE
 }

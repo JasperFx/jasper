@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Tests.Persistence;
 using Jasper.Marten.Tests.Persistence.Resiliency;
@@ -11,22 +10,15 @@ using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
-using Jasper.Testing.Messaging;
 using Jasper.Util;
 using Marten;
 using Shouldly;
 using Xunit;
-using Answer = Jasper.Marten.Tests.Persistence.Resiliency.Answer;
-using Question = Jasper.Marten.Tests.Persistence.Resiliency.Question;
 
 namespace Jasper.Marten.Tests.Outbox
 {
     public class outbox_usage : IDisposable
     {
-        private JasperRuntime theSender;
-        private JasperRuntime theReceiver;
-        private MessageTracker theTracker;
-
         public outbox_usage()
         {
             theSender = JasperRuntime.For<ItemSender>();
@@ -40,8 +32,6 @@ namespace Jasper.Marten.Tests.Outbox
             var receiverStore = theReceiver.Get<IDocumentStore>();
             receiverStore.Advanced.Clean.CompletelyRemoveAll();
             receiverStore.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
-
-
         }
 
         public void Dispose()
@@ -50,62 +40,9 @@ namespace Jasper.Marten.Tests.Outbox
             theReceiver?.Dispose();
         }
 
-        [Fact]
-        public async Task send_and_await_still_works()
-        {
-            var bus = theSender.Get<IMessageContext>();
-            var senderStore = theSender.Get<IDocumentStore>();
-
-            var item = new ItemCreated
-            {
-                Name = "Hat",
-                Id = Guid.NewGuid()
-            };
-
-            using (var session = senderStore.LightweightSession())
-            {
-                await bus.EnlistInTransaction(session);
-
-                await bus.SendAndWait(item);
-
-            }
-
-            using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
-            {
-                var item2 = session.Load<ItemCreated>(item.Id);
-
-                item2.Name.ShouldBe("Hat");
-
-                var deleted = session.AllIncomingEnvelopes().Any();
-                if (!deleted)
-                {
-                    Thread.Sleep(500);
-                    session.AllIncomingEnvelopes().Any().ShouldBeFalse();
-                }
-
-            }
-        }
-
-        [Fact]
-        public async Task request_reply_still_works()
-        {
-            var bus = theSender.Get<IMessageContext>();
-            var senderStore = theSender.Get<IDocumentStore>();
-
-            var question = new Question
-            {
-                X = 3,
-                Y = 4
-            };
-
-            using (var session = senderStore.LightweightSession())
-            {
-                await bus.EnlistInTransaction(session);
-
-                var answer = await bus.Request<Answer>(question);
-                answer.Sum.ShouldBe(7);
-            }
-        }
+        private readonly JasperRuntime theSender;
+        private JasperRuntime theReceiver;
+        private readonly MessageTracker theTracker;
 
         [Fact]
         public async Task basic_send()
@@ -144,7 +81,6 @@ namespace Jasper.Marten.Tests.Outbox
                 }
 
 
-
                 item2.Name.ShouldBe("Shoe");
 
                 var allGone = session.AllIncomingEnvelopes().Any();
@@ -153,8 +89,6 @@ namespace Jasper.Marten.Tests.Outbox
                     Thread.Sleep(500);
                     session.AllIncomingEnvelopes().Any().ShouldBeFalse();
                 }
-
-
             }
 
             using (var session = senderStore.QuerySession())
@@ -164,6 +98,91 @@ namespace Jasper.Marten.Tests.Outbox
                 {
                     Thread.Sleep(500);
                     session.AllOutgoingEnvelopes().Any().ShouldBeFalse();
+                }
+            }
+        }
+
+        [Fact]
+        public async Task request_reply_still_works()
+        {
+            var bus = theSender.Get<IMessageContext>();
+            var senderStore = theSender.Get<IDocumentStore>();
+
+            var question = new Question
+            {
+                X = 3,
+                Y = 4
+            };
+
+            using (var session = senderStore.LightweightSession())
+            {
+                await bus.EnlistInTransaction(session);
+
+                var answer = await bus.Request<Answer>(question);
+                answer.Sum.ShouldBe(7);
+            }
+        }
+
+        [Fact]
+        public async Task schedule_local_job_durably()
+        {
+            var bus = theSender.Get<IMessageContext>();
+            var senderStore = theSender.Get<IDocumentStore>();
+
+            var item = new ItemCreated
+            {
+                Name = "Shoe",
+                Id = Guid.NewGuid()
+            };
+
+            using (var session = senderStore.LightweightSession())
+            {
+                await bus.EnlistInTransaction(session);
+
+                await bus.Schedule(item, 1.Hours());
+
+                await session.SaveChangesAsync();
+            }
+
+            using (var session = senderStore.LightweightSession())
+            {
+                var scheduled = session.AllIncomingEnvelopes().Single();
+
+                scheduled.MessageType.ShouldBe(typeof(ItemCreated).ToMessageAlias());
+                scheduled.Status.ShouldBe(TransportConstants.Scheduled);
+            }
+        }
+
+        [Fact]
+        public async Task send_and_await_still_works()
+        {
+            var bus = theSender.Get<IMessageContext>();
+            var senderStore = theSender.Get<IDocumentStore>();
+
+            var item = new ItemCreated
+            {
+                Name = "Hat",
+                Id = Guid.NewGuid()
+            };
+
+            using (var session = senderStore.LightweightSession())
+            {
+                await bus.EnlistInTransaction(session);
+
+                await bus.SendAndWait(item);
+            }
+
+            using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
+            {
+                var item2 = session.Load<ItemCreated>(item.Id);
+
+                item2.Name.ShouldBe("Hat");
+
+                var deleted = session.AllIncomingEnvelopes().Any();
+                if (!deleted)
+                {
+                    Thread.Sleep(500);
+                    session.AllIncomingEnvelopes().Any().ShouldBeFalse();
                 }
             }
         }
@@ -200,36 +219,6 @@ namespace Jasper.Marten.Tests.Outbox
                 var outgoing = session.AllOutgoingEnvelopes().SingleOrDefault();
 
                 outgoing.MessageType.ShouldBe(typeof(ItemCreated).ToMessageAlias());
-            }
-        }
-
-        [Fact]
-        public async Task schedule_local_job_durably()
-        {
-            var bus = theSender.Get<IMessageContext>();
-            var senderStore = theSender.Get<IDocumentStore>();
-
-            var item = new ItemCreated
-            {
-                Name = "Shoe",
-                Id = Guid.NewGuid()
-            };
-
-            using (var session = senderStore.LightweightSession())
-            {
-                await bus.EnlistInTransaction(session);
-
-                await bus.Schedule(item, 1.Hours());
-
-                await session.SaveChangesAsync();
-            }
-
-            using (var session = senderStore.LightweightSession())
-            {
-                var scheduled = session.AllIncomingEnvelopes().Single();
-
-                scheduled.MessageType.ShouldBe(typeof(ItemCreated).ToMessageAlias());
-                scheduled.Status.ShouldBe(TransportConstants.Scheduled);
             }
         }
     }

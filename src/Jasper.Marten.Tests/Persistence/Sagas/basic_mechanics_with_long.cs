@@ -26,13 +26,42 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
 
     public class LongDoThree
     {
-        [SagaIdentity]
-        public long TheSagaId { get; set; }
+        [SagaIdentity] public long TheSagaId { get; set; }
     }
 
     public class basic_mechanics_with_Long : SagaTestHarness<LongBasicWorkflow, LongWorkflowState>
     {
         private readonly long stateId = new Random().Next();
+
+        [Fact]
+        public async Task complete()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new FinishItAll(), stateId);
+
+            (await LoadState(stateId)).ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new CompleteOne(), stateId);
+
+            var state = await LoadState(stateId);
+            state.OneCompleted.ShouldBeTrue();
+            state.TwoCompleted.ShouldBeTrue();
+        }
 
         [Fact]
         public async Task start_1()
@@ -88,6 +117,21 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
         }
 
         [Fact]
+        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new CompleteFour(), stateId);
+
+            var state = await LoadState(stateId);
+            state.FourCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
         public async Task update_with_message_that_uses_saga_identity_attributed_property()
         {
             await send(new LongStart
@@ -105,52 +149,6 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
 
             var state = await LoadState(stateId);
             state.ThreeCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new CompleteFour(), stateId);
-
-            var state = await LoadState(stateId);
-            state.FourCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task complete()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new FinishItAll(), stateId);
-
-            (await LoadState(stateId)).ShouldBeNull();
-        }
-
-        [Fact]
-        public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new CompleteOne(), stateId);
-
-            var state = await LoadState(stateId);
-            state.OneCompleted.ShouldBeTrue();
-            state.TwoCompleted.ShouldBeTrue();
-
         }
     }
 }

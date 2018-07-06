@@ -1,14 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Baseline;
-using Jasper.Marten.Subscriptions;
-using Jasper.Marten.Tests.Setup;
-using Jasper.Util;
-using Marten;
+﻿using Jasper.Marten.Subscriptions;
 using Microsoft.Extensions.Configuration;
-using Shouldly;
-using Xunit;
 
 namespace Jasper.Marten.Tests
 {
@@ -44,18 +35,17 @@ namespace Jasper.Marten.Tests
 
     public class GreenMessage
     {
-
     }
 
     public class BlueMessage
     {
-
     }
 
     public class RedMessage
     {
-
     }
 
-    public class OrangeMessage{}
+    public class OrangeMessage
+    {
+    }
 }

@@ -7,8 +7,6 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Testing;
-using Jasper.Testing.Messaging;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -20,7 +18,6 @@ namespace Jasper.Marten.Tests.Outbox
     {
         public OutboxSender(MessageTracker tracker)
         {
-
             Handlers.DisableConventionalDiscovery().IncludeType<CascadeReceiver>();
             Services.AddSingleton(tracker);
             Publish.Message<TriggerMessage>().To("durable://localhost:2337");
@@ -40,7 +37,6 @@ namespace Jasper.Marten.Tests.Outbox
     {
         public OutboxReceiver()
         {
-
             Handlers.DisableConventionalDiscovery().IncludeType<TriggerMessageReceiver>();
             Settings.ConfigureMarten(marten =>
             {

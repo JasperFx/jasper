@@ -8,5 +8,6 @@
             Include<MartenBackedPersistence>();
         }
     }
+
     // ENDSAMPLE
 }

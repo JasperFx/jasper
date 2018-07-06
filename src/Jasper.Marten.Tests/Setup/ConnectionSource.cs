@@ -10,7 +10,8 @@ namespace Jasper.Marten.Tests.Setup
             ? "Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres"
             : "Host=localhost;Port=5432;Database=postgres;Username=postgres;password=postgres";
 
-        public static readonly string ConnectionString = Environment.GetEnvironmentVariable("marten_testing_database") ?? Default;
+        public static readonly string ConnectionString =
+            Environment.GetEnvironmentVariable("marten_testing_database") ?? Default;
 
         static ConnectionSource()
         {

@@ -1,6 +1,5 @@
 ﻿using System;
 using Jasper.Marten.Tests.Setup;
-using Jasper.Testing.Binding;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -14,7 +13,7 @@ namespace Jasper.Marten.Tests
         {
             using (var runtime = JasperRuntime.For<MartenUsingApp>())
             {
-                var doc = new FakeDoc{Id = Guid.NewGuid()};
+                var doc = new FakeDoc {Id = Guid.NewGuid()};
 
 
                 using (var session = runtime.Get<IDocumentSession>())
@@ -28,8 +27,6 @@ namespace Jasper.Marten.Tests
                     query.Load<FakeDoc>(doc.Id).ShouldNotBeNull();
                 }
             }
-
-
         }
     }
 

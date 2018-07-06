@@ -6,7 +6,6 @@ using Baseline.Dates;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Resiliency;
 using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -24,7 +23,6 @@ using Xunit;
 
 namespace Jasper.Marten.Tests.Persistence
 {
-
     public class MartenBackedListenerTests : MartenBackedListenerContext
     {
         [Fact]
@@ -69,13 +67,12 @@ namespace Jasper.Marten.Tests.Persistence
 
     public class MartenBackedListenerContext : IDisposable
     {
-        protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
-        protected readonly DocumentStore theStore;
-        protected IWorkerQueue theWorkerQueue;
-        protected MessagingSettings theSettings;
-        protected DurableListener theListener;
-
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
+        protected readonly DocumentStore theStore;
+        protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
+        protected DurableListener theListener;
+        protected MessagingSettings theSettings;
+        protected IWorkerQueue theWorkerQueue;
 
 
         public MartenBackedListenerContext()
@@ -97,7 +94,8 @@ namespace Jasper.Marten.Tests.Persistence
 
             var tables = new EnvelopeTables(theSettings, new StoreOptions());
 
-            var retries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, tables), TransportLogger.Empty(), theSettings);
+            var retries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, tables), TransportLogger.Empty(),
+                theSettings);
 
 
             theListener = new DurableListener(
@@ -108,7 +106,6 @@ namespace Jasper.Marten.Tests.Persistence
 
         public void Dispose()
         {
-
             theStore?.Dispose();
         }
 
@@ -116,8 +113,7 @@ namespace Jasper.Marten.Tests.Persistence
         {
             var env = new Envelope
             {
-                Data = new byte[]{1,2,3,4}
-
+                Data = new byte[] {1, 2, 3, 4}
             };
 
             theEnvelopes.Add(env);
@@ -129,9 +125,8 @@ namespace Jasper.Marten.Tests.Persistence
         {
             var env = new Envelope
             {
-                Data = new byte[]{1,2,3,4},
+                Data = new byte[] {1, 2, 3, 4},
                 ExecutionTime = DateTime.UtcNow.Add(1.Hours())
-
             };
 
             theEnvelopes.Add(env);
@@ -143,9 +138,8 @@ namespace Jasper.Marten.Tests.Persistence
         {
             var env = new Envelope
             {
-                Data = new byte[]{1,2,3,4},
+                Data = new byte[] {1, 2, 3, 4},
                 ExecutionTime = DateTime.UtcNow.Add(-1.Hours())
-
             };
 
             theEnvelopes.Add(env);
@@ -174,8 +168,5 @@ namespace Jasper.Marten.Tests.Persistence
         {
             theWorkerQueue.DidNotReceive().Enqueue(envelope);
         }
-
-
-
     }
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using Jasper.Marten.Tests.Setup;
+﻿using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Model;
-using Jasper.Testing;
-using Jasper.Testing.Messaging.Runtime;
 using Marten;
-using Marten.Services;
 using Shouldly;
 using Xunit;
 
@@ -38,7 +34,8 @@ namespace Jasper.Marten.Tests
             var code = codeFor<SessionUsingBlock1, Message1>();
 
             code.ShouldContain("using (var documentSession = _documentStore.LightweightSession())");
-            code.ShouldNotContain("await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+            code.ShouldNotContain(
+                "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]
@@ -47,8 +44,8 @@ namespace Jasper.Marten.Tests
             var code = codeFor<SessionUsingBlock1, Message2>();
 
             code.ShouldContain("using (var documentSession = _documentStore.LightweightSession())");
-            code.ShouldContain("await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
-
+            code.ShouldContain(
+                "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]
@@ -58,7 +55,8 @@ namespace Jasper.Marten.Tests
 
             code.ShouldNotContain("using (var documentSession = _documentStore.LightweightSession())");
             code.ShouldContain("using (var documentSession = sessionUsingBlock2.OpenSession(_documentStore))");
-            code.ShouldNotContain("await Jasper.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
+            code.ShouldNotContain(
+                "await Jasper.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]
@@ -68,23 +66,20 @@ namespace Jasper.Marten.Tests
 
             code.ShouldNotContain("using (var documentSession = _documentStore.LightweightSession())");
             code.ShouldContain("using (var documentSession = sessionUsingBlock2.OpenSession(_documentStore))");
-            code.ShouldContain("await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+            code.ShouldContain(
+                "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
-
-
     }
 
     public class SessionUsingBlock1
     {
         public void Consume(Message1 message, IDocumentSession session)
         {
-
         }
 
         [MartenTransaction]
         public void Consume(Message2 message, IDocumentSession session)
         {
-
         }
     }
 
@@ -103,17 +98,13 @@ namespace Jasper.Marten.Tests
 
         public void Consume(Message1 message, IDocumentSession session)
         {
-
         }
 
         [MartenTransaction]
         public void Consume(Message2 message, IDocumentSession session)
         {
-
         }
     }
+
     // ENDSAMPLE
-
-
-
 }
