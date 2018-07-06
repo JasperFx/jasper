@@ -191,12 +191,7 @@ namespace Jasper.Testing.Http
         private readonly HttpClient theClient;
         private readonly RecordingEnvironmentCheck theCheck;
 
-        [Fact]
-        public async Task applies_jasper_router_too()
-        {
-            var text = await theClient.GetStringAsync("http://localhost:3456/check");
-            text.ShouldBe("got this from jasper route");
-        }
+
 
         [Fact]
         public void apply_changes_to_settings_with_combined_configuration_and_host()
@@ -214,6 +209,15 @@ namespace Jasper.Testing.Http
         }
 
         /*
+
+        [Fact]
+        public async Task applies_jasper_router_too()
+        {
+            var text = await theClient.GetStringAsync("http://localhost:3456/check");
+            text.ShouldBe("got this from jasper route");
+        }
+
+
         [Fact]
         public async Task gets_app_builder_configuration_from_aspnet_startup()
         {
