@@ -218,7 +218,7 @@ namespace Jasper.Testing.Http
             theCheck.DidAssert.ShouldBeTrue();
         }
 
-
+/*
 
         [Fact]
         public void applies_jasper_router_too()
@@ -252,6 +252,7 @@ namespace Jasper.Testing.Http
                 x.ContentShouldContain("from jasperregistry host");
             }).Wait(3.Seconds());
         }
+        */
 
 
         [Fact]
