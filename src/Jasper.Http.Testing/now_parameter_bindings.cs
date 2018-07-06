@@ -7,7 +7,7 @@ namespace Jasper.Http.Testing
 {
     public class now_parameter_bindings
     {
-        //[Fact]
+        [Fact]
         public async Task use_datetime_argument()
         {
             var result = await HttpTesting.Scenario(_ =>
@@ -18,10 +18,10 @@ namespace Jasper.Http.Testing
             var time = DateTime.Parse(result.ResponseBody.ReadAsText());
 
             var seconds = DateTime.UtcNow.Subtract(time).Seconds;
-            Math.Abs(seconds).ShouldBeLessThan(1);
+            Math.Abs(seconds).ShouldBeLessThan(30);
         }
 
-        //[Fact] -- Cruelly, this doesn't play well from the console
+        [Fact]
         public async Task use_datetimeoffset_argument()
         {
             var dateTimeOffset = DateTimeOffset.UtcNow;
@@ -34,7 +34,7 @@ namespace Jasper.Http.Testing
 
 
             var seconds = dateTimeOffset.Subtract(time).Seconds;
-            Math.Abs(seconds).ShouldBeLessThan(1);
+            Math.Abs(seconds).ShouldBeLessThan(30);
         }
     }
 

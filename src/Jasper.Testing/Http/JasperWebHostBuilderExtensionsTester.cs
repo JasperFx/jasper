@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Alba;
 using Baseline;
+using Baseline.Dates;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
 using Jasper.Messaging;
@@ -220,36 +221,36 @@ namespace Jasper.Testing.Http
 
 
         [Fact]
-        public Task applies_jasper_router_too()
+        public void applies_jasper_router_too()
         {
-            return theFixture.Scenario(x =>
+            theFixture.Scenario(x =>
             {
                 x.Get.Url("/check");
                 x.ContentShouldContain("got this from jasper route");
-            });
+            }).Wait(3.Seconds());
         }
 
 
         [Fact]
-        public Task gets_app_builder_configuration_from_aspnet_startup()
+        public void gets_app_builder_configuration_from_aspnet_startup()
         {
-            return theFixture.Scenario(x =>
+            theFixture.Scenario(x =>
             {
                 x.Get.Url("/startup");
                 x.ContentShouldContain("from startup route");
-            });
+            }).Wait(3.Seconds());
         }
 
 
 
         [Fact]
-        public Task gets_app_builder_configuration_from_jasper_registry_host_calls()
+        public void gets_app_builder_configuration_from_jasper_registry_host_calls()
         {
-            return theFixture.Scenario(x =>
+            theFixture.Scenario(x =>
             {
                 x.Get.Url("/host");
                 x.ContentShouldContain("from jasperregistry host");
-            });
+            }).Wait(3.Seconds());
         }
 
 
