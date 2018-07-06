@@ -3,14 +3,18 @@ using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Http.Testing
+namespace Jasper.Testing.Http
 {
-    public class now_parameter_bindings
+    public class now_parameter_bindings : RegistryContext<HttpTestingApp>
     {
+        public now_parameter_bindings(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task use_datetime_argument()
         {
-            var result = await HttpTesting.Scenario(_ =>
+            var result = await scenario(_ =>
             {
                 _.Get.Url("/current/time");
             });
@@ -25,7 +29,7 @@ namespace Jasper.Http.Testing
         public async Task use_datetimeoffset_argument()
         {
             var dateTimeOffset = DateTimeOffset.UtcNow;
-            var result = await HttpTesting.Scenario(_ =>
+            var result = await scenario(_ =>
             {
                 _.Get.Url("/current/offset/time");
             });
