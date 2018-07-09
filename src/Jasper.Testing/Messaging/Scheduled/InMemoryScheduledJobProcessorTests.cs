@@ -14,7 +14,7 @@ using Xunit;
 namespace Jasper.Testing.Messaging.Scheduled
 {
     [Collection("integration")]
-    public class in_memory_scheduled_jobs : IWorkerQueue
+    public class InMemoryScheduledJobProcessorTests : IWorkerQueue
     {
         private readonly InMemoryScheduledJobProcessor theScheduledJobs;
         private readonly IList<Envelope> sent = new List<Envelope>();
@@ -22,7 +22,7 @@ namespace Jasper.Testing.Messaging.Scheduled
             _callbacks = new Dictionary<Guid, TaskCompletionSource<Envelope>>();
 
 
-        public in_memory_scheduled_jobs()
+        public InMemoryScheduledJobProcessorTests()
         {
             theScheduledJobs = new InMemoryScheduledJobProcessor(this);
         }
