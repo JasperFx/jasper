@@ -100,7 +100,7 @@ namespace Jasper.Messaging.Transports.Configuration
         }
 
         public readonly IList<SubscriberAddress> KnownSubscribers = new List<SubscriberAddress>();
-        private Uri _defaultChannelAddress = TransportConstants.RepliesUri;
+
         private string _machineName;
         private string _serviceName = "Jasper";
 
