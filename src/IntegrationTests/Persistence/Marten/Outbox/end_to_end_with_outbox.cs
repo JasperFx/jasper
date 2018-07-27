@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Configuration;
@@ -11,7 +12,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Outbox
+namespace IntegrationTests.Persistence.Marten.Outbox
 {
     /// <summary>
     ///     In this example, the OrdersApp would be running in an

@@ -1,7 +1,6 @@
 ﻿using Baseline.Dates;
+using IntegrationTests.Persistence.Marten;
 using Jasper;
-using Jasper.Marten;
-using Jasper.Marten.Tests;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 using Servers;

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using IntegrationTests.Persistence.SqlServer.Persistence;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer.Resiliency;
-using Jasper.SqlServer.Tests.Persistence;
 using NSubstitute;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests.Resiliency
+namespace IntegrationTests.Persistence.SqlServer.Resiliency
 {
     public class run_scheduled_job_specs : SqlServerBackedListenerContext
     {

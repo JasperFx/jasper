@@ -6,7 +6,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests
+namespace IntegrationTests.Persistence.SqlServer
 {
     public class advisory_lock_usage : SqlServerContext
     {

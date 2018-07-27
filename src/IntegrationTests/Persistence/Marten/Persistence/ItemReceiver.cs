@@ -1,11 +1,12 @@
-﻿using Jasper.Messaging.Tracking;
+﻿using Jasper;
+using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Servers;
 
-namespace Jasper.Marten.Tests.Persistence
+namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class ItemReceiver : JasperRegistry
     {

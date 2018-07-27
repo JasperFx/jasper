@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jasper.Marten.Tests.Persistence
+namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class ItemCreated
     {

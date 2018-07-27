@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
+using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.SqlServer;
 using Servers;
 
-namespace Jasper.SqlServer.Tests.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class ItemSender : JasperRegistry
     {

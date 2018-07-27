@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Sagas;
 
-namespace Jasper.Marten.Tests.Persistence.Sagas
+namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 {
     public abstract class WorkflowState<T>
     {

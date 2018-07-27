@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten.Persistence.Operations;
@@ -11,7 +12,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Persistence
+namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class end_to_end_with_persistence : MartenContext, IDisposable
     {

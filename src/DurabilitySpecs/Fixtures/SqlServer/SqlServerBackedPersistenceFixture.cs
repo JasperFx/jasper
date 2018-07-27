@@ -11,7 +11,6 @@ using Jasper.Messaging.Tracking;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
-using Jasper.SqlServer.Persistence;
 using Jasper.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

@@ -2,7 +2,6 @@
 using Jasper;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Util;
-using Jasper.SqlServer;
 
 
 namespace DurabilitySpecs.Fixtures.SqlServer.App

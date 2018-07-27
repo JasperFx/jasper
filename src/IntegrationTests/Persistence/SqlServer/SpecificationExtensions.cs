@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Shouldly;
 
-namespace Jasper.SqlServer.Tests
+namespace IntegrationTests.Persistence.SqlServer
 {
     public static class Exception<T> where T : Exception
     {

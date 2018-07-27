@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
+using Jasper;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
-using Jasper.SqlServer.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests
+namespace IntegrationTests.Persistence.SqlServer
 {
     public class configuration_extension_methods: SqlServerContext
     {

@@ -3,8 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Marten.Tests.Persistence;
-using Jasper.Marten.Tests.Persistence.Resiliency;
+using IntegrationTests.Persistence.Marten.Persistence;
+using IntegrationTests.Persistence.Marten.Persistence.Resiliency;
+using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
@@ -17,7 +18,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Outbox
+namespace IntegrationTests.Persistence.Marten.Outbox
 {
     public class outbox_usage : MartenContext, IDisposable
     {

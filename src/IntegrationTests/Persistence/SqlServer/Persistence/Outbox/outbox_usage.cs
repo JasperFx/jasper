@@ -6,22 +6,20 @@ using System.Threading.Tasks;
 using Alba;
 using Baseline;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
-using Jasper.SqlServer.Persistence;
 using Jasper.Util;
 using JasperHttpTesting;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests.Persistence.Outbox
+namespace IntegrationTests.Persistence.SqlServer.Persistence.Outbox
 {
     public class outbox_usage : SqlServerContext, IDisposable
     {

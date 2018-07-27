@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Sagas;
@@ -9,7 +10,7 @@ using Jasper.Persistence.Marten;
 using Marten;
 using Servers;
 
-namespace Jasper.Marten.Tests.Persistence.Sagas
+namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 {
     public abstract class SagaTestHarness<TSagaHandler, TSagaState> : MartenContext, IDisposable
         where TSagaHandler : StatefulSagaOf<TSagaState>

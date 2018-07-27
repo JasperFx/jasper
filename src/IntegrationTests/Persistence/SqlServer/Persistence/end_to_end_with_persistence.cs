@@ -5,18 +5,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
-using Jasper.Messaging.Runtime;
+using Jasper;
 using Jasper.Messaging.Tracking;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
-using Jasper.SqlServer.Tests;
-using Jasper.SqlServer.Tests.Persistence;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class end_to_end_with_persistence : SqlServerContext, IDisposable
     {

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten;
@@ -10,7 +11,7 @@ using Marten;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     public class transactional_frame_end_to_end
     {

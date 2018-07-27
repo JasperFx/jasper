@@ -1,10 +1,11 @@
-﻿using Jasper.Marten.Tests.Persistence.Resiliency;
+﻿using IntegrationTests.Persistence.Marten.Persistence.Resiliency;
+using Jasper;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 using Marten;
 using Servers;
 
-namespace Jasper.Marten.Tests.Persistence
+namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class ItemSender : JasperRegistry
     {

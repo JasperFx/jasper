@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.SqlServer;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class scheduled_jobs_backed_by_sqlserver : SqlServerContext, IDisposable
     {

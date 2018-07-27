@@ -1,11 +1,12 @@
-﻿using Jasper.Messaging;
+﻿using Jasper;
+using Jasper.Messaging;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     public class channel_is_durable : MartenContext
     {

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
-using Jasper.SqlServer.Persistence;
 using Jasper.Util;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     [MessageAlias("Message1")]
     public class Message1

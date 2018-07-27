@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Runtime;
@@ -13,7 +14,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests.Persistence.Outbox
+namespace IntegrationTests.Persistence.SqlServer.Persistence.Outbox
 {
     public class OutboxSender : JasperRegistry
     {

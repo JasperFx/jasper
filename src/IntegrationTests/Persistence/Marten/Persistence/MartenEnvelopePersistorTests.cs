@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten.Persistence;
@@ -9,7 +10,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Persistence
+namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class MartenEnvelopePersistorTests : MartenContext, IDisposable
     {

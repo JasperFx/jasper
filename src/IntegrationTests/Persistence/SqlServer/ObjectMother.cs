@@ -2,7 +2,7 @@
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 
-namespace Jasper.SqlServer.Tests
+namespace IntegrationTests.Persistence.SqlServer
 {
     public static class ObjectMother
     {

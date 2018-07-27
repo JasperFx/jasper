@@ -1,6 +1,7 @@
-﻿using Jasper.Persistence.Marten;
+﻿using Jasper;
+using Jasper.Persistence.Marten;
 
-namespace Jasper.Marten.Tests.Persistence.Sagas
+namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 {
     // SAMPLE: SagaApp-with-Marten
     public class MartenSagaApp : JasperRegistry

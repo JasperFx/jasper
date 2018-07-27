@@ -1,10 +1,11 @@
 ﻿using System;
+using Jasper;
 using Marten;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     public class service_registrations : MartenContext
     {

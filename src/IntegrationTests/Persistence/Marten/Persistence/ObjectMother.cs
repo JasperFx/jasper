@@ -2,7 +2,7 @@
 using Jasper.Messaging.Transports;
 using NSubstitute;
 
-namespace Jasper.Marten.Tests.Persistence
+namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public static class ObjectMother
     {

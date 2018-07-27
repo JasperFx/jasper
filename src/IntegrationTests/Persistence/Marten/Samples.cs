@@ -1,7 +1,8 @@
-﻿using Jasper.Messaging.Transports.Configuration;
+﻿using Jasper;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     // SAMPLE: AppUsingMartenMessagePersistence
     public class AppUsingMartenMessagePersistence : JasperRegistry

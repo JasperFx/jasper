@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Messaging.Runtime;
+using Jasper.RabbitMQ;
 using Jasper.Util;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -8,7 +9,7 @@ using RabbitMQ.Client.Framing;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.RabbitMQ.Testing
+namespace IntegrationTests.RabbitMQ
 {
     public class DefaultEnvelopeMapperTests
     {

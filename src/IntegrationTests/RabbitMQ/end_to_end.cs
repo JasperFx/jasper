@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Marten;
+using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,7 +19,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.RabbitMQ.Testing
+namespace IntegrationTests.RabbitMQ
 {
 
     public class end_to_end

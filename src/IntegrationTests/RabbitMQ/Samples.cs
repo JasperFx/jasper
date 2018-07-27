@@ -1,8 +1,10 @@
 ﻿using System;
+using Jasper;
 using Jasper.Messaging.Runtime;
+using Jasper.RabbitMQ;
 using RabbitMQ.Client;
 
-namespace Jasper.RabbitMQ.Testing
+namespace IntegrationTests.RabbitMQ
 {
     // SAMPLE: AppListeningToRabbitMQ
     public class AppListeningToRabbitMQ : JasperRegistry

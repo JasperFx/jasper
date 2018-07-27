@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
@@ -11,7 +12,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     public class node_discovery_registration_and_unregistration : MartenContext, IDisposable
     {

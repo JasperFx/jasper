@@ -1,9 +1,8 @@
 ﻿using Jasper.Persistence.SqlServer.Schema;
 using Servers;
-using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests
+namespace IntegrationTests.Persistence.SqlServer
 {
     public class SchemaLoaderTests : SqlServerContext
     {

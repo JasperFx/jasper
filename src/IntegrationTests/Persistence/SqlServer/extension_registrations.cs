@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
+using Jasper;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests
+namespace IntegrationTests.Persistence.SqlServer
 {
     public class extension_registrations : SqlServerContext
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Configuration;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     public static class HandlerConfigurationExtensions
     {

@@ -1,11 +1,12 @@
-﻿using Jasper.Messaging.Model;
+﻿using Jasper;
+using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten;
 using Marten;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     public class code_generation_with_session : MartenContext
     {

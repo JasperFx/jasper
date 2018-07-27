@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jasper.SqlServer.Tests.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class ItemCreated
     {

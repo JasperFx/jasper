@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Shouldly;
 
-namespace Jasper.RabbitMQ.Testing
+namespace IntegrationTests.RabbitMQ
 {
     public static class Exception<T> where T : Exception
     {

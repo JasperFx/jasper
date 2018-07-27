@@ -17,7 +17,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Persistence.Resiliency
+namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
 {
     public class run_scheduled_job_specs : MartenBackedListenerContext
     {

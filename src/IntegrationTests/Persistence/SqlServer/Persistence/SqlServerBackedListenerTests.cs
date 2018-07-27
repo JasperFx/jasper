@@ -5,7 +5,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class SqlServerBackedListenerTests : SqlServerBackedListenerContext
     {

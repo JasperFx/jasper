@@ -5,7 +5,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Util;
 
-namespace Jasper.SqlServer.Tests.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     // SAMPLE: UsingSqlTransaction
     public class ItemCreatedHandler

@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Util;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     [MessageAlias("Message1")]
     public class Message1

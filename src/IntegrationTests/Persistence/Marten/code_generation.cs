@@ -1,11 +1,12 @@
 ﻿using System;
+using Jasper;
 using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten;
 using Marten;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     public class code_generation : IDisposable
     {

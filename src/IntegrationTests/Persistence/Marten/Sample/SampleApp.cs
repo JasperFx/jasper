@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten;
 using Marten;
@@ -12,7 +13,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Sample
+namespace IntegrationTests.Persistence.Marten.Sample
 {
     // SAMPLE: MartenUsingApp
     public class MartenUsingApp : JasperRegistry

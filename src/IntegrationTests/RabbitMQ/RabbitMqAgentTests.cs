@@ -1,8 +1,9 @@
 ﻿using System;
+using Jasper.RabbitMQ;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.RabbitMQ.Testing
+namespace IntegrationTests.RabbitMQ
 {
     public class RabbitMqAgentTests
     {

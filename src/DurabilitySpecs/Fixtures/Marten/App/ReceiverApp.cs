@@ -1,7 +1,6 @@
 ﻿using System;
+using IntegrationTests.Persistence.Marten;
 using Jasper;
-using Jasper.Marten;
-using Jasper.Marten.Tests;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
 using Servers;

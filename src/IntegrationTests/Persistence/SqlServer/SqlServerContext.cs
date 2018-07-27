@@ -2,7 +2,7 @@
 using Servers;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests
+namespace IntegrationTests.Persistence.SqlServer
 {
     public abstract class SqlServerContext : IClassFixture<DockerFixture<SqlServerContainer>>
     {

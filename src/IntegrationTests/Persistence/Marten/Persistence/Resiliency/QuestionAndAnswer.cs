@@ -1,4 +1,4 @@
-﻿namespace Jasper.Marten.Tests.Persistence.Resiliency
+﻿namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
 {
     public class QuestionHandler
     {

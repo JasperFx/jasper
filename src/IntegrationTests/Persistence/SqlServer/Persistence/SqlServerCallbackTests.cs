@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -10,13 +11,12 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
-using Jasper.SqlServer.Persistence;
 using NSubstitute;
 using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.SqlServer.Tests.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class SqlServerCallbackTests : SqlServerContext, IDisposable
     {

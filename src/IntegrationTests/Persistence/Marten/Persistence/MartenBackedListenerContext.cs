@@ -22,7 +22,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Persistence
+namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class MartenBackedListenerTests : MartenBackedListenerContext
     {

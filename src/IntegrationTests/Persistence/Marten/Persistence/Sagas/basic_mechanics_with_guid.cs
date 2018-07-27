@@ -5,7 +5,7 @@ using Servers;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Marten.Tests.Persistence.Sagas
+namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 {
     public class GuidBasicWorkflow : BasicWorkflow<GuidWorkflowState, GuidStart, GuidCompleteThree, Guid>
     {

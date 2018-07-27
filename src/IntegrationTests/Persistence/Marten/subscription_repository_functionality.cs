@@ -1,8 +1,9 @@
-﻿using Jasper.Persistence.Marten;
+﻿using Jasper;
+using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Subscriptions;
 using Microsoft.Extensions.Configuration;
 
-namespace Jasper.Marten.Tests
+namespace IntegrationTests.Persistence.Marten
 {
     // SAMPLE: AppWithMartenBackedSubscriptions
     public class AppWithMartenBackedSubscriptions : JasperRegistry

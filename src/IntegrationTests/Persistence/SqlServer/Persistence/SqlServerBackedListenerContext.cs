@@ -13,13 +13,12 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
-using Jasper.SqlServer.Persistence;
 using Jasper.Util;
 using NSubstitute;
 using Servers;
 using Shouldly;
 
-namespace Jasper.SqlServer.Tests.Persistence
+namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class SqlServerBackedListenerContext : SqlServerContext
     {
