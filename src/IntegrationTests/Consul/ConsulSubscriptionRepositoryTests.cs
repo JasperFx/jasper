@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Consul;
+using Jasper;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Consul.Testing
+namespace IntegrationTests.Consul
 {
     [Collection("Consul")]
     public class ConsulSubscriptionRepositoryTests : IDisposable

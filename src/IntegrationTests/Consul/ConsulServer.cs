@@ -5,10 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+using Jasper.Consul;
 using Jasper.Consul.Internal;
 using Xunit;
 
-namespace Jasper.Consul.Testing
+namespace IntegrationTests.Consul
 {
     [CollectionDefinition("Consul")]
     public class DatabaseCollection : ICollectionFixture<ConsulServer>

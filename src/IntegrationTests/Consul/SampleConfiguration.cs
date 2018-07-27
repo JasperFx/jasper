@@ -1,12 +1,12 @@
 ﻿using System.Net;
-using System.Net.Http;
 using Baseline.Dates;
-using Consul;
+using Jasper;
+using Jasper.Consul;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace Jasper.Consul.Testing
+namespace IntegrationTests.Consul
 {
     // SAMPLE: configuring-consul-in-jasperregistry
     public class AppUsingConsul : JasperRegistry

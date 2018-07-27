@@ -4,12 +4,14 @@ using System.Net;
 using System.Threading.Tasks;
 using Baseline;
 using Consul;
+using Jasper;
+using Jasper.Consul;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Consul.Testing
+namespace IntegrationTests.Consul
 {
     [Collection("Consul")]
     public class ConsulNodeDiscoveryTests : IDisposable

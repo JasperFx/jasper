@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Shouldly;
 
-namespace Jasper.Consul.Testing
+namespace IntegrationTests.Consul
 {
     public static class Exception<T> where T : Exception
     {
