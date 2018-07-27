@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Storyteller;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
@@ -10,7 +12,7 @@ using Shouldly;
 using StoryTeller;
 using Xunit;
 
-namespace Jasper.Storyteller.Tests
+namespace IntegrationTests.Storyteller
 {
     [Collection("integration")]
     public class JasperSystemTester
