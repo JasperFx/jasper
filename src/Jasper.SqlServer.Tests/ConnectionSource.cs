@@ -5,7 +5,7 @@ namespace Jasper.SqlServer.Tests
 {
     public static class ConnectionSource
     {
-        public static readonly string Default = "Server=localhost;Database=jasper_testing;User Id=sa;Password=P@55w0rd";
+        public static readonly string Default = "Server=localhost;User Id=sa;Password=P@55w0rd";
 
         public static readonly string ConnectionString = Environment.GetEnvironmentVariable("sqlserver_testing_database") ?? Default;
 

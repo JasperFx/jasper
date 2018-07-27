@@ -93,6 +93,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlSender", "src\SqlSender\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlReceiver", "src\SqlReceiver\SqlReceiver.csproj", "{D899ECA0-DFA1-4200-9ED6-5D0A05F47279}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Servers", "src\Servers\Servers.csproj", "{24A244E7-950B-4837-9FF6-8FE5DA45FA47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -547,6 +549,18 @@ Global
 		{D899ECA0-DFA1-4200-9ED6-5D0A05F47279}.Release|x64.Build.0 = Release|Any CPU
 		{D899ECA0-DFA1-4200-9ED6-5D0A05F47279}.Release|x86.ActiveCfg = Release|Any CPU
 		{D899ECA0-DFA1-4200-9ED6-5D0A05F47279}.Release|x86.Build.0 = Release|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Debug|x64.Build.0 = Debug|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Debug|x86.Build.0 = Debug|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Release|x64.ActiveCfg = Release|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Release|x64.Build.0 = Release|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Release|x86.ActiveCfg = Release|Any CPU
+		{24A244E7-950B-4837-9FF6-8FE5DA45FA47}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
