@@ -1,13 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>Jasper.Marten.Tests</AssemblyName>
-    <PackageId>Jasper.Marten.Tests</PackageId>
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RuntimeFrameworkVersion>2.0.5</RuntimeFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Marten\Jasper.Marten.csproj" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Messaging.Sagas;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -149,6 +150,10 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
 
             var state = await LoadState(stateId);
             state.ThreeCompleted.ShouldBeTrue();
+        }
+
+        public basic_mechanics_with_String(DockerFixture<MartenContainer> fixture) : base(fixture)
+        {
         }
     }
 }

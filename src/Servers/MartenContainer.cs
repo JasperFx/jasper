@@ -45,7 +45,7 @@ namespace Servers
                         {
                             new PortBinding
                             {
-                                HostPort = $"5432",
+                                HostPort = $"5433",
                                 HostIP = "127.0.0.1"
                             }
                         }

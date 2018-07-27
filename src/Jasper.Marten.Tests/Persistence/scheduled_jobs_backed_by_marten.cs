@@ -7,14 +7,15 @@ using Jasper.Marten.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Marten.Tests.Persistence
 {
-    public class scheduled_jobs_backed_by_marten : IDisposable
+    public class scheduled_jobs_backed_by_marten : MartenContext, IDisposable
     {
-        public scheduled_jobs_backed_by_marten()
+        public scheduled_jobs_backed_by_marten(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             ScheduledMessageHandler.Reset();
             theRuntime = JasperRuntime.For<ScheduledMessageApp>();

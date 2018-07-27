@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Jasper.Marten.Tests.Persistence.Resiliency
 {
-    public class advisory_lock_usage
+    public class advisory_lock_usage : MartenContext
     {
         //[Fact] -- too slow
         public async Task tx_session_locks()
@@ -153,6 +153,10 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
 
                 throw new Exception("Advisory lock was not released");
             }
+        }
+
+        public advisory_lock_usage(DockerFixture<MartenContainer> fixture) : base(fixture)
+        {
         }
     }
 }

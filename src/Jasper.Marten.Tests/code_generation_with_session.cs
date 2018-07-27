@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Jasper.Marten.Tests
 {
-    public class code_generation_with_session
+    public class code_generation_with_session : MartenContext
     {
         private string codeFor<THandler, TMessage>()
         {
@@ -68,6 +68,10 @@ namespace Jasper.Marten.Tests
             code.ShouldContain("using (var documentSession = sessionUsingBlock2.OpenSession(_documentStore))");
             code.ShouldContain(
                 "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+        }
+
+        public code_generation_with_session(DockerFixture<MartenContainer> fixture) : base(fixture)
+        {
         }
     }
 

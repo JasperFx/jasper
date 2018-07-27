@@ -8,7 +8,6 @@ using Baseline;
 using Baseline.Dates;
 using Jasper.Marten;
 using Jasper.Marten.Persistence;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
@@ -17,6 +16,7 @@ using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Servers;
 using Shouldly;
 using Xunit;
 

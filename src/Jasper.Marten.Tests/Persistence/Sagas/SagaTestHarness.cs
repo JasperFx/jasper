@@ -10,13 +10,13 @@ using Servers;
 
 namespace Jasper.Marten.Tests.Persistence.Sagas
 {
-    public abstract class SagaTestHarness<TSagaHandler, TSagaState> : IDisposable
+    public abstract class SagaTestHarness<TSagaHandler, TSagaState> : MartenContext, IDisposable
         where TSagaHandler : StatefulSagaOf<TSagaState>
     {
         private readonly MessageHistory _history;
         private readonly JasperRuntime _runtime;
 
-        public SagaTestHarness()
+        protected SagaTestHarness(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             _runtime = JasperRuntime.For(_ =>
             {

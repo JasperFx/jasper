@@ -11,7 +11,6 @@ using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.Operations;
 using Jasper.Marten.Resiliency;
 using Jasper.Marten.Tests;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;

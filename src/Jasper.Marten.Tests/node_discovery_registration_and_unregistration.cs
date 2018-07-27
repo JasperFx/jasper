@@ -12,10 +12,11 @@ using Xunit;
 
 namespace Jasper.Marten.Tests
 {
-    public class node_discovery_registration_and_unregistration : IDisposable
+    public class node_discovery_registration_and_unregistration : MartenContext, IDisposable
     {
-        public node_discovery_registration_and_unregistration()
+        public node_discovery_registration_and_unregistration(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
+
             using (var store = DocumentStore.For(MartenContainer.ConnectionString))
             {
                 store.Advanced.Clean.CompletelyRemoveAll();

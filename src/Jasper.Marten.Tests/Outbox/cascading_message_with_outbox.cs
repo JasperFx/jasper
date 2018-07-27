@@ -51,9 +51,9 @@ namespace Jasper.Marten.Tests.Outbox
     }
 
 
-    public class cascading_message_with_outbox : IDisposable
+    public class cascading_message_with_outbox : MartenContext, IDisposable
     {
-        public cascading_message_with_outbox()
+        public cascading_message_with_outbox(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             theSender = JasperRuntime.For(new OutboxSender(theTracker));
             theReceiver = JasperRuntime.For<OutboxReceiver>();

@@ -1,11 +1,12 @@
 ﻿using System;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Marten.Tests
 {
-    public class service_registrations
+    public class service_registrations : MartenContext
     {
         [Fact]
         public void registers_document_store_in_a_usable_way()
@@ -26,6 +27,10 @@ namespace Jasper.Marten.Tests
                     query.Load<FakeDoc>(doc.Id).ShouldNotBeNull();
                 }
             }
+        }
+
+        public service_registrations(DockerFixture<MartenContainer> fixture) : base(fixture)
+        {
         }
     }
 

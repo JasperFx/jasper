@@ -12,6 +12,7 @@ using Jasper.Messaging.Transports;
 using Marten;
 using Marten.Services;
 using NSubstitute;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
 {
     public class run_scheduled_job_specs : MartenBackedListenerContext
     {
-        public run_scheduled_job_specs()
+        public run_scheduled_job_specs(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             var logger = TransportLogger.Empty();
             var envelopeTables = new EnvelopeTables(theSettings, new StoreOptions());

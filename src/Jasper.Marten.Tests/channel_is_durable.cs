@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Jasper.Marten.Tests
 {
-    public class channel_is_durable
+    public class channel_is_durable : MartenContext
     {
         [Fact]
         public void channels_that_are_or_are_not_durable()
@@ -24,6 +24,10 @@ namespace Jasper.Marten.Tests
                 channels.GetOrBuildChannel("tcp://server1".ToUri()).IsDurable.ShouldBeFalse();
                 channels.GetOrBuildChannel("tcp://server2/durable".ToUri()).IsDurable.ShouldBeTrue();
             }
+        }
+
+        public channel_is_durable(DockerFixture<MartenContainer> fixture) : base(fixture)
+        {
         }
     }
 }

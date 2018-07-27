@@ -13,9 +13,9 @@ using Xunit;
 
 namespace Jasper.Marten.Tests.Persistence
 {
-    public class MartenBackedMessagePersistenceTests : IDisposable
+    public class MartenBackedMessagePersistenceTests : MartenContext, IDisposable
     {
-        public MartenBackedMessagePersistenceTests()
+        public MartenBackedMessagePersistenceTests(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             theRuntime = JasperRuntime.For(_ =>
             {

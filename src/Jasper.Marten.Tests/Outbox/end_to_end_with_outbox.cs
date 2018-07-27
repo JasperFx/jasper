@@ -21,9 +21,9 @@ namespace Jasper.Marten.Tests.Outbox
     ///     creates a picklist in its own database and publishes an
     ///     ItemOutOfStock event which is delivered back to the OrdersApp.
     /// </summary>
-    public class end_to_end_with_outbox : IDisposable
+    public class end_to_end_with_outbox : MartenContext, IDisposable
     {
-        public end_to_end_with_outbox()
+        public end_to_end_with_outbox(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             using (var store = DocumentStore.For(MartenContainer.ConnectionString))
             {

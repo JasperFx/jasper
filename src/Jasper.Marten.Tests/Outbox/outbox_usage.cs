@@ -12,14 +12,15 @@ using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Marten.Tests.Outbox
 {
-    public class outbox_usage : IDisposable
+    public class outbox_usage : MartenContext, IDisposable
     {
-        public outbox_usage()
+        public outbox_usage(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             theSender = JasperRuntime.For<ItemSender>();
             theReceiver = JasperRuntime.For<ItemReceiver>();

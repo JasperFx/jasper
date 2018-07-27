@@ -17,6 +17,7 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Marten;
 using NSubstitute;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -62,9 +63,13 @@ namespace Jasper.Marten.Tests.Persistence
 
             assertEnvelopeWasNotEnqueued(envelope);
         }
+
+        public MartenBackedListenerTests(DockerFixture<MartenContainer> fixture) : base(fixture)
+        {
+        }
     }
 
-    public class MartenBackedListenerContext : IDisposable
+    public class MartenBackedListenerContext : MartenContext, IDisposable
     {
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly DocumentStore theStore;
@@ -74,7 +79,7 @@ namespace Jasper.Marten.Tests.Persistence
         protected IWorkerQueue theWorkerQueue;
 
 
-        public MartenBackedListenerContext()
+        public MartenBackedListenerContext(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             theStore = DocumentStore.For(_ =>
             {

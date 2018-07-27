@@ -7,14 +7,15 @@ using Jasper.Marten.Persistence.Operations;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Marten.Tests.Persistence
 {
-    public class end_to_end_with_persistence : IDisposable
+    public class end_to_end_with_persistence : MartenContext, IDisposable
     {
-        public end_to_end_with_persistence()
+        public end_to_end_with_persistence(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             theSender = JasperRuntime.For<ItemSender>();
             theReceiver = JasperRuntime.For<ItemReceiver>();

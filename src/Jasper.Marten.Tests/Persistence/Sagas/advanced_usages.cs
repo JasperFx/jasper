@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -18,6 +19,10 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
 
             state.ShouldNotBeNull();
             state.Name.ShouldBe("Goblin");
+        }
+
+        public advanced_usages(DockerFixture<MartenContainer> fixture) : base(fixture)
+        {
         }
     }
 }

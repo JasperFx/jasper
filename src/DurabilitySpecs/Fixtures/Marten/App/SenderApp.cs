@@ -2,9 +2,8 @@
 using Jasper;
 using Jasper.Marten;
 using Jasper.Marten.Tests;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Transports.Configuration;
-using Marten;
+using Servers;
 
 namespace DurabilitySpecs.Fixtures.Marten.App
 {

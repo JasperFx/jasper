@@ -7,6 +7,7 @@ using Marten;
 using Marten.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Servers;
 using Shouldly;
 using Xunit;
 

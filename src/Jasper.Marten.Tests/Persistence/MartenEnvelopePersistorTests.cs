@@ -5,14 +5,15 @@ using Jasper.Marten.Persistence;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Marten.Tests.Persistence
 {
-    public class MartenEnvelopePersistorTests : IDisposable
+    public class MartenEnvelopePersistorTests : MartenContext, IDisposable
     {
-        public MartenEnvelopePersistorTests()
+        public MartenEnvelopePersistorTests(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             var store = theRuntime.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
