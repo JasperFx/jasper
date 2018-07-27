@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Tracking;
 using Marten;
 using Marten.Schema;
@@ -163,7 +162,7 @@ namespace Jasper.Marten.Tests.Sample
     {
         public SampleApp()
         {
-            Settings.Alter<StoreOptions>(_ => { _.Connection(ConnectionSource.ConnectionString); });
+            Settings.Alter<StoreOptions>(_ => { _.Connection(MartenContainer.ConnectionString); });
 
             Publish.AllMessagesLocally();
             Services.AddSingleton<UserNames>();

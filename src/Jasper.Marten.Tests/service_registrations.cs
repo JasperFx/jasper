@@ -1,5 +1,4 @@
 ﻿using System;
-using Jasper.Marten.Tests.Setup;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -41,7 +40,7 @@ namespace Jasper.Marten.Tests
         {
             Settings.Alter<StoreOptions>(_ =>
             {
-                _.Connection(ConnectionSource.ConnectionString);
+                _.Connection(MartenContainer.ConnectionString);
                 _.AutoCreateSchemaObjects = AutoCreate.All;
             });
         }

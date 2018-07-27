@@ -69,7 +69,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             {
 
 
-                _.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
                 _.Services.AddSingleton<ITransport, StubTransport>();
 
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
@@ -293,7 +293,7 @@ namespace DurabilitySpecs.Fixtures.Marten
 
         public NodeLocker(int nodeId)
         {
-            _conn = new NpgsqlConnection(ConnectionSource.ConnectionString);
+            _conn = new NpgsqlConnection(MartenContainer.ConnectionString);
             _conn.Open();
             _tx = _conn.BeginTransaction();
 

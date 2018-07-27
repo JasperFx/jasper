@@ -1,7 +1,7 @@
 ﻿using Jasper.Marten.Tests.Persistence.Resiliency;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
+using Servers;
 
 namespace Jasper.Marten.Tests.Persistence
 {
@@ -15,7 +15,7 @@ namespace Jasper.Marten.Tests.Persistence
 
             Settings.Alter<StoreOptions>(_ =>
             {
-                _.Connection(ConnectionSource.ConnectionString);
+                _.Connection(MartenContainer.ConnectionString);
                 _.DatabaseSchemaName = "sender";
             });
 

@@ -2,11 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -25,7 +25,7 @@ namespace Jasper.Marten.Tests.Outbox
     {
         public end_to_end_with_outbox()
         {
-            using (var store = DocumentStore.For(ConnectionSource.ConnectionString))
+            using (var store = DocumentStore.For(MartenContainer.ConnectionString))
             {
                 store.Advanced.Clean.CompletelyRemoveAll();
             }
@@ -110,7 +110,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             Settings.PersistMessagesWithMarten((c, options) =>
             {
-                options.Connection(ConnectionSource.ConnectionString);
+                options.Connection(MartenContainer.ConnectionString);
                 options.DatabaseSchemaName = "orders";
             });
 
@@ -154,7 +154,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             Include<MartenBackedPersistence>();
 
-            Settings.Alter<StoreOptions>(_ => { _.Connection(ConnectionSource.ConnectionString); });
+            Settings.Alter<StoreOptions>(_ => { _.Connection(MartenContainer.ConnectionString); });
 
             //Note: whether or not our event is destined for a durable queue, it will be stored durably in the outbox because of the implementation of the handlers.
             Publish.Message<ItemOutOfStock>().To($"tcp://localhost:{senderPort}/durable");
@@ -163,7 +163,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             Settings.Alter<StoreOptions>(_ =>
             {
-                _.Connection(ConnectionSource.ConnectionString);
+                _.Connection(MartenContainer.ConnectionString);
                 _.DatabaseSchemaName = "warehouse";
             });
 

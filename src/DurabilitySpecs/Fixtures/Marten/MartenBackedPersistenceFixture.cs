@@ -52,7 +52,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _receiverStore = DocumentStore.For(_ =>
             {
                 _.PLV8Enabled = false;
-                _.Connection(ConnectionSource.ConnectionString);
+                _.Connection(MartenContainer.ConnectionString);
                 _.DatabaseSchemaName = "receiver";
                 _.Storage.Add<PostgresqlEnvelopeStorage>();
 
@@ -67,7 +67,7 @@ namespace DurabilitySpecs.Fixtures.Marten
             _sendingStore = DocumentStore.For(_ =>
             {
                 _.PLV8Enabled = false;
-                _.Connection(ConnectionSource.ConnectionString);
+                _.Connection(MartenContainer.ConnectionString);
                 _.DatabaseSchemaName = "sender";
 
                 _.Storage.Add<PostgresqlEnvelopeStorage>();

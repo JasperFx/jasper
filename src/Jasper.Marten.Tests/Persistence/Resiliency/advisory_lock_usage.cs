@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Marten.Resiliency;
-using Jasper.Marten.Tests.Setup;
 using Npgsql;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -13,9 +13,9 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
         //[Fact] -- too slow
         public async Task tx_session_locks()
         {
-            using (var conn1 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -53,9 +53,9 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
         //[Fact] - too slow
         public async Task global_session_locks()
         {
-            using (var conn1 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -87,9 +87,9 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
         [Fact]
         public async Task explicitly_release_global_session_locks()
         {
-            using (var conn1 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -120,9 +120,9 @@ namespace Jasper.Marten.Tests.Persistence.Resiliency
         [Fact]
         public async Task explicitly_release_global_tx_session_locks()
         {
-            using (var conn1 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(ConnectionSource.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();

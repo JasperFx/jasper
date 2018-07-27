@@ -1,6 +1,6 @@
-﻿using Jasper.Marten.Tests.Setup;
-using Jasper.Messaging.Model;
+﻿using Jasper.Messaging.Model;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -14,7 +14,7 @@ namespace Jasper.Marten.Tests
 
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Settings.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+                _.Settings.MartenConnectionStringIs(MartenContainer.ConnectionString);
 
                 _.Include<MartenBackedPersistence>();
 

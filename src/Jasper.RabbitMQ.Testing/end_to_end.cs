@@ -97,7 +97,7 @@ namespace Jasper.RabbitMQ.Testing
 
                 _.Include<MartenBackedPersistence>();
 
-                _.Settings.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+                _.Settings.MartenConnectionStringIs(MartenContainer.ConnectionString);
             });
 
             publisher.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
@@ -111,7 +111,7 @@ namespace Jasper.RabbitMQ.Testing
 
                 _.Include<MartenBackedPersistence>();
 
-                _.Settings.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+                _.Settings.MartenConnectionStringIs(MartenContainer.ConnectionString);
             });
 
             var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();

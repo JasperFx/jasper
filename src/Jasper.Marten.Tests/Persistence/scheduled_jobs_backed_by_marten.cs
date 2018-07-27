@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Marten.Persistence;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
@@ -82,7 +81,7 @@ namespace Jasper.Marten.Tests.Persistence
     {
         public SenderApp()
         {
-            Settings.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+            Settings.MartenConnectionStringIs(MartenContainer.ConnectionString);
 
             Include<MartenBackedPersistence>();
 
@@ -96,7 +95,7 @@ namespace Jasper.Marten.Tests.Persistence
         {
             Transports.LightweightListenerAt(2777);
 
-            Settings.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+            Settings.MartenConnectionStringIs(MartenContainer.ConnectionString);
 
             Include<MartenBackedPersistence>();
         }

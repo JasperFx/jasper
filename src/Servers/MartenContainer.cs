@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Docker.DotNet.Models;
+using Npgsql;
 
 namespace Servers
 {
-    public class SqlServerContainer : DockerServer
+    public class MartenContainer : DockerServer
     {
-        public SqlServerContainer() : base("microsoft/mssql-server-linux:2017-latest", "jasper-mssql")
+        public MartenContainer() : base("clkao/postgres-plv8:latest", "jasper-postgresql")
         {
         }
 
-        public static readonly string ConnectionString = "Server=localhost;User Id=sa;Password=P@55w0rd;Timeout=5";
+        public static readonly string ConnectionString =
+            "Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres";
 
         protected override async Task<bool> isReady()
         {
             try
             {
                 using (var conn =
-                    new SqlConnection(ConnectionString))
+                    new NpgsqlConnection(ConnectionString))
                 {
                     await conn.OpenAsync();
 
@@ -39,12 +40,12 @@ namespace Servers
                 PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
                     {
-                        "1433/tcp",
+                        "5432/tcp",
                         new List<PortBinding>
                         {
                             new PortBinding
                             {
-                                HostPort = $"1433",
+                                HostPort = $"5432",
                                 HostIP = "127.0.0.1"
                             }
                         }
@@ -60,7 +61,7 @@ namespace Servers
         {
             return new Config
             {
-                Env = new List<string> {"ACCEPT_EULA=Y", "SA_PASSWORD=P@55w0rd", "MSSQL_PID=Developer"}
+                Env = new List<string> {"POSTGRES_PASSWORD=postgres"}
             };
         }
     }

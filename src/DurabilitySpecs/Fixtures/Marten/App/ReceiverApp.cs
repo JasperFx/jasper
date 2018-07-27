@@ -18,7 +18,7 @@ namespace DurabilitySpecs.Fixtures.Marten.App
 
             Settings.ConfigureMarten(_ =>
             {
-                _.Connection(ConnectionSource.ConnectionString);
+                _.Connection(MartenContainer.ConnectionString);
                 _.DatabaseSchemaName = "receiver";
 
             });

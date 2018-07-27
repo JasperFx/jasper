@@ -4,10 +4,10 @@ using Baseline.Dates;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -19,7 +19,7 @@ namespace Jasper.Marten.Tests.Persistence
         {
             theRuntime = JasperRuntime.For(_ =>
             {
-                _.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
                 _.ConfigureMarten(x =>
                 {
                     x.Storage.Add<PostgresqlEnvelopeStorage>();

@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Subscriptions;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Marten.Tests
 {
-    public class SubscriptionComplianceSpecs : IDisposable
+    public class SubscriptionComplianceSpecs : MartenContext, IDisposable
     {
-        public SubscriptionComplianceSpecs()
+        public SubscriptionComplianceSpecs(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             using (var runtime = JasperRuntime.For(configure))
             {
@@ -97,11 +97,11 @@ namespace Jasper.Marten.Tests
         {
             registry.Include<MartenBackedSubscriptions>();
 
-            registry.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+            registry.MartenConnectionStringIs(MartenContainer.ConnectionString);
 
             registry.Settings.Alter<MartenSubscriptionSettings>(x =>
             {
-                x.StoreOptions.Connection(ConnectionSource.ConnectionString);
+                x.StoreOptions.Connection(MartenContainer.ConnectionString);
             });
         }
 

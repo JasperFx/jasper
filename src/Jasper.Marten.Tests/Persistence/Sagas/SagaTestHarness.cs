@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Marten;
+using Servers;
 
 namespace Jasper.Marten.Tests.Persistence.Sagas
 {
@@ -21,7 +21,7 @@ namespace Jasper.Marten.Tests.Persistence.Sagas
             _runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
-                _.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
                 _.Include<MartenBackedPersistence>();
 
                 _.Include<MessageTrackingExtension>();

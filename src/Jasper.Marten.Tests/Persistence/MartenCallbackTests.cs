@@ -5,7 +5,6 @@ using Baseline.Dates;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -14,6 +13,7 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Marten;
 using NSubstitute;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -25,7 +25,7 @@ namespace Jasper.Marten.Tests.Persistence
         {
             theRuntime = JasperRuntime.For(_ =>
             {
-                _.MartenConnectionStringIs(ConnectionSource.ConnectionString);
+                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
 
                 _.ConfigureMarten(x =>
                 {

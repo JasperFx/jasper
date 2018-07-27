@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
@@ -9,6 +8,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -25,7 +25,7 @@ namespace Jasper.Marten.Tests.Outbox
 
             Settings.ConfigureMarten(marten =>
             {
-                marten.Connection(ConnectionSource.ConnectionString);
+                marten.Connection(MartenContainer.ConnectionString);
                 marten.DatabaseSchemaName = "outbox_sender";
             });
 
@@ -40,7 +40,7 @@ namespace Jasper.Marten.Tests.Outbox
             Handlers.DisableConventionalDiscovery().IncludeType<TriggerMessageReceiver>();
             Settings.ConfigureMarten(marten =>
             {
-                marten.Connection(ConnectionSource.ConnectionString);
+                marten.Connection(MartenContainer.ConnectionString);
                 marten.DatabaseSchemaName = "outbox_receiver";
             });
 

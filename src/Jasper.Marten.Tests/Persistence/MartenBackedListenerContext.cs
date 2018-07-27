@@ -6,7 +6,6 @@ using Baseline.Dates;
 using Jasper.Marten.Persistence;
 using Jasper.Marten.Persistence.DbObjects;
 using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -79,7 +78,7 @@ namespace Jasper.Marten.Tests.Persistence
         {
             theStore = DocumentStore.For(_ =>
             {
-                _.Connection(ConnectionSource.ConnectionString);
+                _.Connection(MartenContainer.ConnectionString);
                 _.PLV8Enabled = false;
                 _.Storage.Add<PostgresqlEnvelopeStorage>();
             });

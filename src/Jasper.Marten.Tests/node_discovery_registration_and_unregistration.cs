@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Marten.Subscriptions;
-using Jasper.Marten.Tests.Setup;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Marten;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +16,7 @@ namespace Jasper.Marten.Tests
     {
         public node_discovery_registration_and_unregistration()
         {
-            using (var store = DocumentStore.For(ConnectionSource.ConnectionString))
+            using (var store = DocumentStore.For(MartenContainer.ConnectionString))
             {
                 store.Advanced.Clean.CompletelyRemoveAll();
             }
@@ -26,7 +26,7 @@ namespace Jasper.Marten.Tests
                 _.Handlers.DisableConventionalDiscovery();
 
                 _.Settings.Alter<MartenSubscriptionSettings>(x =>
-                    x.StoreOptions.Connection(ConnectionSource.ConnectionString));
+                    x.StoreOptions.Connection(MartenContainer.ConnectionString));
 
                 _.Include<MartenBackedSubscriptions>();
 
@@ -34,7 +34,7 @@ namespace Jasper.Marten.Tests
 
                 _.Settings.Alter<MessagingSettings>(x => { x.MachineName = "MyBox"; });
 
-                _.Settings.Alter<StoreOptions>(x => { x.Connection(ConnectionSource.ConnectionString); });
+                _.Settings.Alter<StoreOptions>(x => { x.Connection(MartenContainer.ConnectionString); });
 
                 _.Transports.LightweightListenerAt(2345);
             });
@@ -107,7 +107,7 @@ namespace Jasper.Marten.Tests
             _runtime.Dispose();
             _runtime = null;
 
-            using (var store = DocumentStore.For(ConnectionSource.ConnectionString))
+            using (var store = DocumentStore.For(MartenContainer.ConnectionString))
             {
                 using (var session = store.OpenSession())
                 {
