@@ -12,7 +12,7 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Marten.Tests\Jasper.Marten.Tests.csproj" />
+    <ProjectReference Include="..\IntegrationTests\IntegrationTests.csproj" />
     <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
   </ItemGroup>
 </Project>
