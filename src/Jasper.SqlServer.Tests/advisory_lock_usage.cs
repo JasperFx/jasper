@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.SqlServer.Tests
 {
-    public class advisory_lock_usage
+    public class advisory_lock_usage : SqlServerContext
     {
+        public advisory_lock_usage(DockerFixture<SqlServerContainer> p0) : base(p0)
+        {
+        }
+
         [Fact] // -- too slow
         public async Task tx_session_locks()
         {

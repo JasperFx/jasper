@@ -6,9 +6,9 @@ using Docker.DotNet.Models;
 
 namespace Servers
 {
-    public class SqlServer : DockerServer
+    public class SqlServerContainer : DockerServer
     {
-        public SqlServer() : base("microsoft/mssql-server-linux:2017-latest", "jasper-mssql")
+        public SqlServerContainer() : base("microsoft/mssql-server-linux:2017-latest", "jasper-mssql")
         {
         }
 
