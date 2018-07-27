@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.ApplicationInsights\Jasper.ApplicationInsights.csproj" />
-    <ProjectReference Include="..\Jasper.Marten\Jasper.Marten.csproj" />
+    <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
     <EmbeddedResource Include="target1.json;target2.json" />
   </ItemGroup>

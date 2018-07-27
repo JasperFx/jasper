@@ -7,7 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Jasper.SqlServer\Jasper.SqlServer.csproj" />
     <ProjectReference Include="..\Jasper.Storyteller\Jasper.Storyteller.csproj" />
-    <ProjectReference Include="..\Jasper.Marten.Tests\Jasper.Marten.Tests.csproj" />
+    <ProjectReference Include="..\IntegrationTests\IntegrationTests.csproj" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-storyteller" Version="5.1.3" />
