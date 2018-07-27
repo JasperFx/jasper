@@ -4,7 +4,7 @@ using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Marten.Util;
 
-namespace Jasper.Marten.Resiliency
+namespace Jasper.Persistence.Marten.Resiliency
 {
     public class ReassignFromDormantNodes : IMessagingAction
     {

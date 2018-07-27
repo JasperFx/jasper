@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Marten.Resiliency;
+using Jasper.Persistence.Marten.Resiliency;
 using Npgsql;
 using Servers;
 using Shouldly;

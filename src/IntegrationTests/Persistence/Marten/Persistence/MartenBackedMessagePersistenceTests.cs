@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using Baseline.Dates;
-using Jasper.Marten.Persistence;
-using Jasper.Marten.Persistence.DbObjects;
-using Jasper.Marten.Persistence.Operations;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Marten;
+using Jasper.Persistence.Marten.Persistence;
+using Jasper.Persistence.Marten.Persistence.DbObjects;
+using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Servers;
 using Shouldly;

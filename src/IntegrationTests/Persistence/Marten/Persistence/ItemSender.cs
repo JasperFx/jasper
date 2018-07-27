@@ -1,5 +1,6 @@
 ﻿using Jasper.Marten.Tests.Persistence.Resiliency;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Persistence.Marten;
 using Marten;
 using Servers;
 

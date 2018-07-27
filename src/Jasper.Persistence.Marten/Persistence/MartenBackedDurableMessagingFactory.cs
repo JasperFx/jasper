@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Conneg;
-using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Resiliency;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -12,10 +9,11 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
+using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Marten.Util;
 
-namespace Jasper.Marten.Persistence
+namespace Jasper.Persistence.Marten.Persistence
 {
     public class MartenBackedDurableMessagingFactory : IDurableMessagingFactory
     {

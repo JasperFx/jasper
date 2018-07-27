@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Util;
 using Marten;
 
-namespace Jasper.Marten.Subscriptions
+namespace Jasper.Persistence.Marten.Subscriptions
 {
     public class MartenSubscriptionRepository : ISubscriptionsRepository
     {

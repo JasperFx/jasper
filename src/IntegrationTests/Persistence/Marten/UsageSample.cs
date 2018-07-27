@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Jasper.Persistence.Marten;
+using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Marten.Tests
 {

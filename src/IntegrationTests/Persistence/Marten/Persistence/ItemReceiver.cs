@@ -1,5 +1,6 @@
 ﻿using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Servers;

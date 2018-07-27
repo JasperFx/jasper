@@ -1,4 +1,5 @@
 ﻿using Jasper.Messaging.Transports.Configuration;
+using Jasper.Persistence.Marten;
 
 namespace Jasper.Marten.Tests
 {

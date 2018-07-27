@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Jasper.Marten.Persistence.DbObjects;
+using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Marten;
 using Oakton;
 using TestMessages;

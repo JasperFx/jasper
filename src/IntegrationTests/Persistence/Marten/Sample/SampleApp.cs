@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Tracking;
+using Jasper.Persistence.Marten;
 using Marten;
 using Marten.Schema;
 using Microsoft.Extensions.Configuration;

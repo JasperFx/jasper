@@ -4,9 +4,8 @@ using Baseline;
 using Jasper.Settings;
 using Marten;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 
-namespace Jasper.Marten
+namespace Jasper.Persistence.Marten
 {
     public static class JasperRegistryExtensions
     {

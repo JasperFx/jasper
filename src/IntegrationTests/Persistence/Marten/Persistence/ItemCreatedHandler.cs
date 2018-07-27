@@ -1,5 +1,6 @@
 ﻿using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
+using Jasper.Persistence.Marten;
 using Marten;
 
 namespace Jasper.Marten.Tests.Persistence

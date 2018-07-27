@@ -2,6 +2,7 @@
 using Jasper;
 using Jasper.Marten;
 using Jasper.Marten.Tests;
+using Jasper.Persistence.Marten;
 using Jasper.Util;
 using Servers;
 

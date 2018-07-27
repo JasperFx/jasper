@@ -5,6 +5,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Marten;
 using Marten;
 using Servers;
 

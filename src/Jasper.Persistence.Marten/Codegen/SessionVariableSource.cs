@@ -2,7 +2,7 @@
 using Lamar.Codegen.Variables;
 using Marten;
 
-namespace Jasper.Marten.Codegen
+namespace Jasper.Persistence.Marten.Codegen
 {
     public class SessionVariableSource : IVariableSource
     {

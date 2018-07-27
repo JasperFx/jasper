@@ -1,9 +1,9 @@
-﻿using Jasper.Marten.Persistence.DbObjects;
-using Jasper.Messaging.Transports.Configuration;
+﻿using Jasper.Messaging.Transports.Configuration;
+using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Marten;
 using Marten.Schema;
 
-namespace Jasper.Marten
+namespace Jasper.Persistence.Marten
 {
     public class EnvelopeTables
     {

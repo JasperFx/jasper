@@ -7,7 +7,7 @@ using Lamar.Codegen.Variables;
 using Lamar.Compilation;
 using Marten;
 
-namespace Jasper.Marten.Codegen
+namespace Jasper.Persistence.Marten.Codegen
 {
     public class TransactionalFrame : Frame
     {

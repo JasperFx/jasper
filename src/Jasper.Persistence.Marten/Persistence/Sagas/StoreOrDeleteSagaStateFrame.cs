@@ -7,7 +7,7 @@ using Lamar.Codegen.Variables;
 using Lamar.Compilation;
 using Marten;
 
-namespace Jasper.Marten.Persistence.Sagas
+namespace Jasper.Persistence.Marten.Persistence.Sagas
 {
     public class StoreOrDeleteSagaStateFrame : AsyncFrame
     {

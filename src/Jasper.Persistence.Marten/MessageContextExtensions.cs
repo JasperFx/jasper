@@ -2,7 +2,7 @@
 using Jasper.Messaging;
 using Marten;
 
-namespace Jasper.Marten
+namespace Jasper.Persistence.Marten
 {
     public static class MessageContextExtensions
     {

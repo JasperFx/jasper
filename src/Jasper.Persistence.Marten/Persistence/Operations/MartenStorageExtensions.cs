@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Marten.Persistence.DbObjects;
-using Jasper.Marten.Resiliency;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Marten;
 using Marten.Schema;
 using Marten.Util;
 using Npgsql;
 
-namespace Jasper.Marten.Persistence.Operations
+namespace Jasper.Persistence.Marten.Persistence.Operations
 {
     public static class MartenStorageExtensions
     {

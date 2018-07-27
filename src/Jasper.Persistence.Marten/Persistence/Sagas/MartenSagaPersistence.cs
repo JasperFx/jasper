@@ -1,13 +1,13 @@
 ﻿using System;
-using Jasper.Marten.Codegen;
 using Jasper.Messaging.Sagas;
+using Jasper.Persistence.Marten.Codegen;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;
 using Marten;
 using Marten.Schema;
 using Marten.Util;
 
-namespace Jasper.Marten.Persistence.Sagas
+namespace Jasper.Persistence.Marten.Persistence.Sagas
 {
     public class MartenSagaPersistence : ISagaPersistence
     {

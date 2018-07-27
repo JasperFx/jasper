@@ -1,4 +1,4 @@
-﻿using Jasper.Marten;
+﻿using Jasper.Persistence.Marten;
 using Marten;
 using TestMessages;
 

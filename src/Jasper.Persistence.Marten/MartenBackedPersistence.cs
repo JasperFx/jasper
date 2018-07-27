@@ -1,19 +1,19 @@
 ﻿using System;
 using Jasper.Configuration;
-using Jasper.Marten.Persistence;
-using Jasper.Marten.Persistence.DbObjects;
-using Jasper.Marten.Persistence.Sagas;
-using Jasper.Marten.Resiliency;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Marten.Persistence;
+using Jasper.Persistence.Marten.Persistence.DbObjects;
+using Jasper.Persistence.Marten.Persistence.Sagas;
+using Jasper.Persistence.Marten.Resiliency;
 using Lamar.Codegen;
 using Lamar.Codegen.Variables;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Jasper.Marten
+namespace Jasper.Persistence.Marten
 {
 
     /// <summary>

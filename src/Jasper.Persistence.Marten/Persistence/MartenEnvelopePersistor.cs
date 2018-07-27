@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Resiliency;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Marten.Util;
 using NpgsqlTypes;
 
-namespace Jasper.Marten.Persistence
+namespace Jasper.Persistence.Marten.Persistence
 {
     public class MartenEnvelopePersistor : IEnvelopePersistor
     {

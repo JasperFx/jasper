@@ -1,15 +1,15 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Marten.Persistence.Operations;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Marten.Util;
 
-namespace Jasper.Marten.Resiliency
+namespace Jasper.Persistence.Marten.Resiliency
 {
 
     public class RecoverIncomingMessages : IMessagingAction

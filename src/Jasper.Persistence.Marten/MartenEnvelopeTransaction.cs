@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Marten.Persistence;
-using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Resiliency;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
+using Jasper.Persistence.Marten.Persistence;
+using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Marten.Services;
 
-namespace Jasper.Marten
+namespace Jasper.Persistence.Marten
 {
     public class MartenEnvelopeTransaction : IEnvelopeTransaction
     {

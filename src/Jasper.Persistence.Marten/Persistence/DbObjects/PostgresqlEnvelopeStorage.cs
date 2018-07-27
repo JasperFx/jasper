@@ -4,7 +4,7 @@ using Jasper.Messaging.Runtime;
 using Marten;
 using Marten.Storage;
 
-namespace Jasper.Marten.Persistence.DbObjects
+namespace Jasper.Persistence.Marten.Persistence.DbObjects
 {
     public class PostgresqlEnvelopeStorage : FeatureSchemaBase
     {

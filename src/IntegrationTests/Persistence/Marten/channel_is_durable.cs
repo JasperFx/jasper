@@ -1,4 +1,5 @@
 ﻿using Jasper.Messaging;
+using Jasper.Persistence.Marten;
 using Jasper.Util;
 using Servers;
 using Shouldly;

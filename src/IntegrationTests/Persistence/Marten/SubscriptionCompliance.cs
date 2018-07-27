@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Marten.Subscriptions;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Persistence.Marten;
+using Jasper.Persistence.Marten.Subscriptions;
 using Marten;
 using Servers;
 using Shouldly;

@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using Jasper.Messaging.Configuration;
+﻿using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Lamar.Codegen.Frames;
 using Marten;
 
-namespace Jasper.Marten.Codegen
+namespace Jasper.Persistence.Marten.Codegen
 {
     public class FineGrainedSessionCreationPolicy : IHandlerPolicy
     {

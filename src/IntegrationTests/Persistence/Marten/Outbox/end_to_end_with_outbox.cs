@@ -5,6 +5,7 @@ using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Persistence.Marten;
 using Marten;
 using Servers;
 using Shouldly;

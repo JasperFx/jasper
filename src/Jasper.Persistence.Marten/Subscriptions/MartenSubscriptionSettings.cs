@@ -2,7 +2,7 @@
 using Jasper.Messaging.Runtime.Subscriptions;
 using Marten;
 
-namespace Jasper.Marten.Subscriptions
+namespace Jasper.Persistence.Marten.Subscriptions
 {
     public class MartenSubscriptionSettings : IDisposable
     {

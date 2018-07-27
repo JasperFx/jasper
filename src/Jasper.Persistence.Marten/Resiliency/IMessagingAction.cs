@@ -2,7 +2,7 @@
 using Jasper.Messaging.Durability;
 using Marten;
 
-namespace Jasper.Marten.Resiliency
+namespace Jasper.Persistence.Marten.Resiliency
 {
     public interface IMessagingAction
     {

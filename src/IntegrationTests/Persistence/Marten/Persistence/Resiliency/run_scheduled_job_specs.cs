@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Marten.Persistence;
-using Jasper.Marten.Persistence.Operations;
-using Jasper.Marten.Resiliency;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Marten;
+using Jasper.Persistence.Marten.Persistence;
+using Jasper.Persistence.Marten.Persistence.Operations;
+using Jasper.Persistence.Marten.Resiliency;
 using Marten;
 using Marten.Services;
 using NSubstitute;

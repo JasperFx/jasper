@@ -6,7 +6,7 @@ using Marten.Services;
 using Marten.Util;
 using NpgsqlTypes;
 
-namespace Jasper.Marten.Persistence.Operations
+namespace Jasper.Persistence.Marten.Persistence.Operations
 {
     public class ScheduleEnvelope : IStorageOperation
     {
