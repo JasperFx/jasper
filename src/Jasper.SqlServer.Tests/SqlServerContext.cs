@@ -1,4 +1,5 @@
-﻿using Servers;
+﻿using Jasper.SqlServer.Schema;
+using Servers;
 using Xunit;
 
 namespace Jasper.SqlServer.Tests
@@ -7,6 +8,8 @@ namespace Jasper.SqlServer.Tests
     {
         protected SqlServerContext(DockerFixture<SqlServerContainer> fixture)
         {
+            var loader = new SchemaLoader(SqlServerContainer.ConnectionString);
+            loader.RecreateAll();
         }
     }
 }

@@ -4,16 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging.Transports.Configuration;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.SqlServer.Tests.Persistence
 {
-    public class scheduled_jobs_backed_by_sqlserver : IDisposable
+    public class scheduled_jobs_backed_by_sqlserver : SqlServerContext, IDisposable
     {
         private JasperRuntime theRuntime;
 
-        public scheduled_jobs_backed_by_sqlserver()
+        public scheduled_jobs_backed_by_sqlserver(DockerFixture<SqlServerContainer> fixture) : base(fixture)
         {
             ScheduledMessageHandler.Reset();
             theRuntime = JasperRuntime.For<ScheduledMessageApp>();
@@ -86,7 +87,7 @@ namespace Jasper.SqlServer.Tests.Persistence
     {
         public SenderApp()
         {
-            Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString);
+            Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString);
 
             Publish.Message<ScheduledMessage>().To("tcp://localhost:2777");
         }
@@ -98,7 +99,7 @@ namespace Jasper.SqlServer.Tests.Persistence
         {
             Transports.LightweightListenerAt(2777);
 
-            Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString);
+            Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString);
         }
     }
 

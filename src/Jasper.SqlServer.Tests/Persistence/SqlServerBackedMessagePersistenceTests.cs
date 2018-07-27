@@ -5,6 +5,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Persistence;
 using Jasper.Util;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -17,18 +18,18 @@ namespace Jasper.SqlServer.Tests.Persistence
     }
 
 
-    public class SqlServerBackedMessagePersistenceTests : IDisposable
+    public class SqlServerBackedMessagePersistenceTests : SqlServerContext, IDisposable
     {
         private JasperRuntime theRuntime;
         private Envelope theEnvelope;
         private Envelope persisted;
 
-        public SqlServerBackedMessagePersistenceTests()
+        public SqlServerBackedMessagePersistenceTests(DockerFixture<SqlServerContainer> fixture) : base(fixture)
         {
             theRuntime = JasperRuntime.For(_ =>
             {
 
-                _.Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString);
+                _.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString);
 
             });
 

@@ -2,18 +2,19 @@
 using System.Data.SqlClient;
 using Jasper.Messaging.Durability;
 using Microsoft.Extensions.DependencyInjection;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.SqlServer.Tests
 {
-    public class extension_registrations
+    public class extension_registrations : SqlServerContext
     {
         [Fact]
         public void registrations()
         {
             using (var runtime = JasperRuntime.For(x =>
-                x.Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString)))
+                x.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString)))
             {
 
                 runtime.Container.Model.HasRegistrationFor<SqlConnection>().ShouldBeTrue();
@@ -26,10 +27,14 @@ namespace Jasper.SqlServer.Tests
 
 
 
-                runtime.Get<SqlConnection>().ConnectionString.ShouldBe(ConnectionSource.ConnectionString);
+                runtime.Get<SqlConnection>().ConnectionString.ShouldBe(SqlServerContainer.ConnectionString);
                 runtime.Get<DbConnection>().ShouldBeOfType<SqlConnection>()
-                    .ConnectionString.ShouldBe(ConnectionSource.ConnectionString);
+                    .ConnectionString.ShouldBe(SqlServerContainer.ConnectionString);
             }
+        }
+
+        public extension_registrations(DockerFixture<SqlServerContainer> fixture) : base(fixture)
+        {
         }
     }
 }

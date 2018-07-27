@@ -10,18 +10,19 @@ using Jasper.Messaging.Tracking;
 using Jasper.SqlServer.Tests;
 using Jasper.SqlServer.Tests.Persistence;
 using Jasper.SqlServer.Util;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.SqlServer.Persistence
 {
-    public class end_to_end_with_persistence : IDisposable
+    public class end_to_end_with_persistence : SqlServerContext, IDisposable
     {
         private JasperRuntime theSender;
         private JasperRuntime theReceiver;
         private MessageTracker theTracker;
 
-        public end_to_end_with_persistence()
+        public end_to_end_with_persistence(DockerFixture<SqlServerContainer> fixture) : base(fixture)
         {
             theSender = JasperRuntime.For<ItemSender>();
             theReceiver = JasperRuntime.For<ItemReceiver>();
@@ -32,7 +33,7 @@ namespace Jasper.SqlServer.Persistence
             theReceiver.RebuildMessageStorage();
 
 
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 conn.Open();
 
@@ -52,7 +53,6 @@ create table receiver.item_created
 
 ").ExecuteNonQuery();
             }
-
         }
 
         public void Dispose()
@@ -64,7 +64,7 @@ create table receiver.item_created
 
         private async Task<ItemCreated> loadItem(Guid id)
         {
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 await conn.OpenAsync();
 

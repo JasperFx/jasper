@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Transports.Configuration;
+using Servers;
 
 namespace Jasper.SqlServer.Tests.Persistence
 {
@@ -8,7 +9,7 @@ namespace Jasper.SqlServer.Tests.Persistence
     {
         public ItemSender()
         {
-            Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString, "sender");
+            Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString, "sender");
 
 
 

@@ -8,6 +8,7 @@ using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace Jasper.SqlServer.Tests.Persistence.Outbox
             Publish.Message<TriggerMessage>().To("durable://localhost:2337");
             Transports.DurableListenerAt(2338);
 
-            Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString, "outbox_sender");
+            Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString, "outbox_sender");
 
         }
     }
@@ -35,7 +36,7 @@ namespace Jasper.SqlServer.Tests.Persistence.Outbox
 
             Handlers.DisableConventionalDiscovery().IncludeType<TriggerMessageReceiver>();
 
-            Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString, "outbox_receiver");
+            Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString, "outbox_receiver");
 
 
             Transports.DurableListenerAt(2337);
@@ -43,9 +44,9 @@ namespace Jasper.SqlServer.Tests.Persistence.Outbox
     }
 
 
-    public class cascading_message_with_outbox : IDisposable
+    public class cascading_message_with_outbox : SqlServerContext, IDisposable
     {
-        public cascading_message_with_outbox()
+        public cascading_message_with_outbox(DockerFixture<SqlServerContainer> fixture) : base(fixture)
         {
             theSender = JasperRuntime.For(new OutboxSender(theTracker));
             theSender.RebuildMessageStorage();

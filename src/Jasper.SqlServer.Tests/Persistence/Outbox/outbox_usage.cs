@@ -15,19 +15,20 @@ using Jasper.SqlServer.Persistence;
 using Jasper.SqlServer.Util;
 using Jasper.Util;
 using JasperHttpTesting;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.SqlServer.Tests.Persistence.Outbox
 {
-    public class outbox_usage : IDisposable
+    public class outbox_usage : SqlServerContext, IDisposable
     {
         private JasperRuntime theSender;
         private JasperRuntime theReceiver;
         private MessageTracker theTracker;
         private SqlServerEnvelopePersistor thePersistor;
 
-        public outbox_usage()
+        public outbox_usage(DockerFixture<SqlServerContainer> fixture) : base(fixture)
         {
             theSender = JasperRuntime.For<ItemSender>();
             theReceiver = JasperRuntime.For<ItemReceiver>();
@@ -38,7 +39,7 @@ namespace Jasper.SqlServer.Tests.Persistence.Outbox
 
             thePersistor = theReceiver.Get<SqlServerEnvelopePersistor>();
 
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 conn.Open();
 
@@ -58,12 +59,12 @@ create table receiver.item_created
 
 ").ExecuteNonQuery();
             }
-
         }
+
 
         private async Task<ItemCreated> loadItem(Guid id)
         {
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 await conn.OpenAsync();
 
@@ -103,7 +104,7 @@ create table receiver.item_created
                 Id = Guid.NewGuid()
             };
 
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 await conn.OpenAsync();
 
@@ -140,7 +141,7 @@ create table receiver.item_created
                 Y = 4
             };
 
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 await conn.OpenAsync();
 
@@ -223,7 +224,7 @@ create table receiver.item_created
         // SAMPLE: basic-sql-server-outbox-sample
         private static async Task outbox_sample(IMessageContext messaging, ItemCreated item)
         {
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 await conn.OpenAsync();
 
@@ -266,7 +267,7 @@ create table receiver.item_created
 
             var waiter = theTracker.WaitFor<ItemCreated>();
 
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 await conn.OpenAsync();
 
@@ -299,7 +300,7 @@ create table receiver.item_created
                 Id = Guid.NewGuid()
             };
 
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 await conn.OpenAsync();
 

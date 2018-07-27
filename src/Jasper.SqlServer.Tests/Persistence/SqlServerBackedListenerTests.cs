@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Transports;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -45,6 +46,10 @@ namespace Jasper.SqlServer.Tests.Persistence
             persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasNotEnqueued(envelope);
+        }
+
+        public SqlServerBackedListenerTests(DockerFixture<SqlServerContainer> fixture) : base(fixture)
+        {
         }
     }
 }

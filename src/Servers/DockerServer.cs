@@ -9,6 +9,12 @@ using Oakton;
 
 namespace Servers
 {
+    public enum StartAction
+    {
+        started,
+        nothing
+    }
+
     public abstract class DockerServer
     {
         public string ImageName { get; }
@@ -20,7 +26,7 @@ namespace Servers
             ContainerName = containerName; // + "-" + Guid.NewGuid().ToString();
         }
 
-        public async Task Start(IDockerClient client)
+        public async Task<StartAction> Start(IDockerClient client)
         {
             var images =
                 await client.Images.ListImagesAsync(new ImagesListParameters {MatchName = ImageName});
@@ -51,7 +57,7 @@ namespace Servers
                 if (container.State == "running")
                 {
                     ConsoleWriter.Write(ConsoleColor.Cyan, $"Container '{ContainerName}' is already running.");
-                    return;
+                    return StartAction.nothing;
                 }
             }
 
@@ -77,7 +83,7 @@ namespace Servers
 
             Console.WriteLine($"Container '{ContainerName}' is ready.");
 
-
+            return StartAction.started;
         }
 
         private async Task createContainer(IDockerClient client)

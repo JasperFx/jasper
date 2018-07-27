@@ -14,11 +14,12 @@ using Jasper.SqlServer.Persistence;
 using Jasper.SqlServer.Schema;
 using Jasper.Util;
 using NSubstitute;
+using Servers;
 using Shouldly;
 
 namespace Jasper.SqlServer.Tests.Persistence
 {
-    public class SqlServerBackedListenerContext
+    public class SqlServerBackedListenerContext : SqlServerContext
     {
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected IWorkerQueue theWorkerQueue;
@@ -31,9 +32,9 @@ namespace Jasper.SqlServer.Tests.Persistence
         protected SqlServerSettings mssqlSettings;
 
 
-        public SqlServerBackedListenerContext()
+        public SqlServerBackedListenerContext(DockerFixture<SqlServerContainer> fixture) : base(fixture)
         {
-            new SchemaLoader(ConnectionSource.ConnectionString).RecreateAll();
+            new SchemaLoader(SqlServerContainer.ConnectionString).RecreateAll();
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
@@ -41,7 +42,7 @@ namespace Jasper.SqlServer.Tests.Persistence
 
             mssqlSettings = new SqlServerSettings
             {
-                ConnectionString = ConnectionSource.ConnectionString
+                ConnectionString = SqlServerContainer.ConnectionString
             };
 
             thePersistor = new SqlServerEnvelopePersistor(mssqlSettings);

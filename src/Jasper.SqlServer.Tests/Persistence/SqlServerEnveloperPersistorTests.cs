@@ -7,19 +7,23 @@ using Baseline.Reflection;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Persistence;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.SqlServer.Tests.Persistence
 {
-    public class SqlServerEnveloperPersistorTests : ConnectedContext
+    public class SqlServerEnveloperPersistorTests : SqlServerBackedListenerContext
     {
         private readonly SqlServerEnvelopePersistor thePersistor
             = new SqlServerEnvelopePersistor(new SqlServerSettings
             {
-                ConnectionString = ConnectionSource.ConnectionString
+                ConnectionString = SqlServerContainer.ConnectionString
             });
 
+        public SqlServerEnveloperPersistorTests(DockerFixture<SqlServerContainer> fixture) : base(fixture)
+        {
+        }
 
         [Fact]
         public async Task increment_the_attempt_count_of_incoming_envelope()

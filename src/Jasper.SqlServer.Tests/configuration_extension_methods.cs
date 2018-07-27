@@ -3,12 +3,13 @@ using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.SqlServer.Tests
 {
-    public class configuration_extension_methods
+    public class configuration_extension_methods: SqlServerContext
     {
 
 
@@ -17,13 +18,13 @@ namespace Jasper.SqlServer.Tests
         public void bootstrap_with_connection_string()
         {
             using (var runtime = JasperRuntime.For(x =>
-                x.Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString)))
+                x.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString)))
             {
                 runtime.Container.Model.DefaultTypeFor<IDurableMessagingFactory>()
                     .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
 
                 runtime.Get<SqlServerSettings>()
-                    .ConnectionString.ShouldBe(ConnectionSource.ConnectionString);
+                    .ConnectionString.ShouldBe(SqlServerContainer.ConnectionString);
             }
         }
 
@@ -31,7 +32,7 @@ namespace Jasper.SqlServer.Tests
         public void bootstrap_with_configuration()
         {
             var registry = new JasperRegistry();
-            registry.Configuration.AddInMemoryCollection(new Dictionary<string, string> {{"connection", ConnectionSource.ConnectionString}});
+            registry.Configuration.AddInMemoryCollection(new Dictionary<string, string> {{"connection", SqlServerContainer.ConnectionString}});
 
             registry.Settings.PersistMessagesWithSqlServer((c, s) =>
                 {
@@ -44,8 +45,12 @@ namespace Jasper.SqlServer.Tests
                     .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
 
                 runtime.Get<SqlServerSettings>()
-                    .ConnectionString.ShouldBe(ConnectionSource.ConnectionString);
+                    .ConnectionString.ShouldBe(SqlServerContainer.ConnectionString);
             }
+        }
+
+        public configuration_extension_methods(DockerFixture<SqlServerContainer> fixture) : base(fixture)
+        {
         }
     }
 

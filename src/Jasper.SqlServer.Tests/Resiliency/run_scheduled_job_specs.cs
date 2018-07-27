@@ -9,6 +9,7 @@ using Jasper.Messaging.Transports;
 using Jasper.SqlServer.Resiliency;
 using Jasper.SqlServer.Tests.Persistence;
 using NSubstitute;
+using Servers;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace Jasper.SqlServer.Tests.Resiliency
 {
     public class run_scheduled_job_specs : SqlServerBackedListenerContext
     {
-        public run_scheduled_job_specs()
+        public run_scheduled_job_specs(DockerFixture<SqlServerContainer> fixture) : base(fixture)
         {
             var logger = TransportLogger.Empty();
 
@@ -27,7 +28,7 @@ namespace Jasper.SqlServer.Tests.Resiliency
 
         protected async Task<IReadOnlyList<Envelope>> afterExecutingAt(DateTimeOffset time)
         {
-            var connection = new SqlConnection(ConnectionSource.ConnectionString);
+            var connection = new SqlConnection(SqlServerContainer.ConnectionString);
             await connection.OpenAsync();
 
             try
