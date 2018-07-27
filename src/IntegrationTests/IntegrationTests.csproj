@@ -12,9 +12,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
+    <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
+    <ProjectReference Include="..\JasperHttpTesting\JasperHttpTesting.csproj" />
     <ProjectReference Include="..\Servers\Servers.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Persistence\Marten" />
+    <Folder Include="Persistence\SqlServer" />
   </ItemGroup>
 </Project>

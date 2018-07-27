@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
-using Jasper.SqlServer.Util;
+using Jasper.Persistence.SqlServer.Util;
 using Oakton;
 
 namespace RunLoadTests

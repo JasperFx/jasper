@@ -1,7 +1,8 @@
 ﻿using System.Data.SqlClient;
 using Jasper;
+using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Util;
 using Jasper.SqlServer;
-using Jasper.SqlServer.Util;
 
 
 namespace DurabilitySpecs.Fixtures.SqlServer.App

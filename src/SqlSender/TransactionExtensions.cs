@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using Jasper.SqlServer.Util;
+using Jasper.Persistence.SqlServer.Util;
 
 namespace SqlSender
 {

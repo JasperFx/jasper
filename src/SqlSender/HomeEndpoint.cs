@@ -7,8 +7,8 @@ using Baseline;
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
-using Jasper.SqlServer;
-using Jasper.SqlServer.Persistence;
+using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Persistence;
 using Newtonsoft.Json;
 using TestMessages;
 

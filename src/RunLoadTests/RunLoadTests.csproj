@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
-    <ProjectReference Include="..\Jasper.SqlServer\Jasper.SqlServer.csproj" />
+    <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
 </Project>

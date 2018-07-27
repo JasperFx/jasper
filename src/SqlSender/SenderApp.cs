@@ -1,7 +1,7 @@
 ﻿using Baseline.Dates;
 using Jasper;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.SqlServer;
+using Jasper.Persistence.SqlServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

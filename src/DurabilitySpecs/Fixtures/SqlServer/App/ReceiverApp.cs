@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper;
 using Jasper.Marten.Tests;
+using Jasper.Persistence.SqlServer;
 using Jasper.SqlServer;
 using Jasper.Util;
 

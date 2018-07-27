@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlClient;
 using System.Threading.Tasks;
-using Jasper.SqlServer;
+using Jasper.Persistence.SqlServer;
 using TestMessages;
 
 namespace SqlReceiver

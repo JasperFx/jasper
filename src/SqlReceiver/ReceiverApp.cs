@@ -1,5 +1,5 @@
 ﻿using Jasper;
-using Jasper.SqlServer;
+using Jasper.Persistence.SqlServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
