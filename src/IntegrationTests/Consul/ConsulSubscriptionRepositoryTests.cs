@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Consul;
+using IntegrationTests.Persistence.SqlServer;
 using Jasper;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;

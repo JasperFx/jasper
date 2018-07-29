@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using IntegrationTests.Persistence.SqlServer;
 using Jasper.Messaging.Runtime;
 using Jasper.RabbitMQ;
 using Jasper.Util;

@@ -22,7 +22,7 @@ using Xunit;
 namespace IntegrationTests.RabbitMQ
 {
 
-    public class end_to_end
+    public class end_to_end : RabbitMQContext
     {
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq()
@@ -190,6 +190,10 @@ namespace IntegrationTests.RabbitMQ
                 await receiver3.Shutdown();
             }
 
+        }
+
+        public end_to_end(DockerFixture<RabbitMQContainer> p0) : base(p0)
+        {
         }
     }
 
