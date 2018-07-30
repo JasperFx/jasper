@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
-using IntegrationTests.Persistence.Marten;
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
@@ -21,10 +20,11 @@ using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Resiliency;
 using Microsoft.Extensions.DependencyInjection;
+using Servers;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
-namespace DurabilitySpecs.Fixtures.SqlServer
+namespace StorytellerSpecs.Fixtures.SqlServer
 {
     public class SqlServerMessageRecoveryFixture : Fixture, ISchedulingAgent
     {
@@ -74,7 +74,7 @@ namespace DurabilitySpecs.Fixtures.SqlServer
 
             _runtime = JasperRuntime.For(_ =>
             {
-                _.Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString);
+                _.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString);
                 _.Services.AddSingleton<ITransport, StubTransport>();
 
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
@@ -224,7 +224,7 @@ namespace DurabilitySpecs.Fixtures.SqlServer
                 else
                     await persistor.StoreIncoming(envelope);
 
-            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
             {
                 await conn.OpenAsync();
 
@@ -268,7 +268,7 @@ namespace DurabilitySpecs.Fixtures.SqlServer
 
         public NodeLocker(int nodeId)
         {
-            _conn = new SqlConnection(ConnectionSource.ConnectionString);
+            _conn = new SqlConnection(SqlServerContainer.ConnectionString);
             _conn.Open();
             _tx = _conn.BeginTransaction();
 

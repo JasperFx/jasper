@@ -1,4 +1,4 @@
-﻿namespace DurabilitySpecs.Fixtures.Marten.App
+﻿namespace StorytellerSpecs.Fixtures.Marten.App
 {
     public class TraceMessage
     {

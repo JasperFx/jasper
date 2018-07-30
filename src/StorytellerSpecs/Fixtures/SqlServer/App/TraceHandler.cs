@@ -3,8 +3,7 @@ using Jasper;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Util;
 
-
-namespace DurabilitySpecs.Fixtures.SqlServer.App
+namespace StorytellerSpecs.Fixtures.SqlServer.App
 {
     [JasperIgnore]
     public class TraceHandler

@@ -1,10 +1,10 @@
 ﻿using System;
-using IntegrationTests.Persistence.Marten;
 using Jasper;
 using Jasper.Persistence.SqlServer;
 using Jasper.Util;
+using Servers;
 
-namespace DurabilitySpecs.Fixtures.SqlServer.App
+namespace StorytellerSpecs.Fixtures.SqlServer.App
 {
     public class ReceiverApp : JasperRegistry
     {
@@ -15,7 +15,7 @@ namespace DurabilitySpecs.Fixtures.SqlServer.App
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<TraceHandler>();
 
-            Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString, "receiver");
+            Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString, "receiver");
 
             Transports.ListenForMessagesFrom(Listener);
         }

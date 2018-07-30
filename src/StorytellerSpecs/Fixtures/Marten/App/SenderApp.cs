@@ -1,10 +1,10 @@
 ﻿using Baseline.Dates;
-using IntegrationTests.Persistence.Marten;
 using Jasper;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.Marten;
+using Servers;
 
-namespace DurabilitySpecs.Fixtures.SqlServer.App
+namespace StorytellerSpecs.Fixtures.Marten.App
 {
     public class SenderApp : JasperRegistry
     {
@@ -14,7 +14,13 @@ namespace DurabilitySpecs.Fixtures.SqlServer.App
 
             Publish.Message<TraceMessage>().To(ReceiverApp.Listener);
 
-            Settings.PersistMessagesWithSqlServer(ConnectionSource.ConnectionString, "sender");
+            Settings.ConfigureMarten(_ =>
+            {
+                _.Connection(MartenContainer.ConnectionString);
+                _.DatabaseSchemaName = "sender";
+            });
+
+            Include<MartenBackedPersistence>();
 
             Settings.Alter<MessagingSettings>(_ =>
             {

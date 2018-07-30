@@ -1,11 +1,10 @@
 ﻿using System;
-using IntegrationTests.Persistence.Marten;
 using Jasper;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
 using Servers;
 
-namespace DurabilitySpecs.Fixtures.Marten.App
+namespace StorytellerSpecs.Fixtures.Marten.App
 {
     public class ReceiverApp : JasperRegistry
     {

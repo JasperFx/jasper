@@ -2,7 +2,7 @@
 using Jasper.Persistence.Marten;
 using Marten;
 
-namespace DurabilitySpecs.Fixtures.Marten.App
+namespace StorytellerSpecs.Fixtures.Marten.App
 {
     [JasperIgnore]
     public class TraceHandler

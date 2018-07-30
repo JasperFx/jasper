@@ -1,4 +1,4 @@
-﻿namespace DurabilitySpecs.Fixtures.SqlServer.App
+﻿namespace StorytellerSpecs.Fixtures.SqlServer.App
 {
     public class TraceMessage
     {

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
-using IntegrationTests.Persistence.Marten;
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
@@ -21,14 +20,13 @@ using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Persistence.Marten.Resiliency;
 using Marten;
-using Marten.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Servers;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
-namespace DurabilitySpecs.Fixtures.Marten
+namespace StorytellerSpecs.Fixtures.Marten
 {
     public class MessageRecoveryFixture : Fixture, ISchedulingAgent
     {
