@@ -10,4 +10,7 @@
     <PackageReference Include="Oakton" Version="1.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
+  </ItemGroup>
 </Project>

@@ -43,7 +43,7 @@ namespace Jasper.RabbitMQ
             if (!segments.Any()) throw new ArgumentOutOfRangeException(nameof(uri), "Unable to determine the routing key / queue for the Uri " + uri);
 
 
-            if (ExchangeType.TryParse<ExchangeType>(segments[0], out var exchangeType))
+            if (Enum.TryParse<ExchangeType>(segments[0], out var exchangeType))
             {
                 ExchangeType = exchangeType;
                 segments = segments.Skip(1).ToArray();
