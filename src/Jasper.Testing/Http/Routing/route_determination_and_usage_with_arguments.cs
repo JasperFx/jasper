@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Alba;
 using Jasper.Http.Routing;
-using JasperHttpTesting;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;

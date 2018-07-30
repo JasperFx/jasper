@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.ApplicationInsights\Jasper.ApplicationInsights.csproj" />
-    <ProjectReference Include="..\JasperHttpTesting\JasperHttpTesting.csproj" />
+    <ProjectReference Include="..\Jasper.TestSupport.Alba\Jasper.TestSupport.Alba.csproj" />
     <ProjectReference Include="..\Receiver\Receiver.csproj" />
     <ProjectReference Include="..\Sender\Sender.csproj" />
   </ItemGroup>

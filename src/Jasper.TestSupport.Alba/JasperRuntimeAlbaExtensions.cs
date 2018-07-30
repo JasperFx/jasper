@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Alba;
-using Jasper;
 
-namespace JasperHttpTesting
+namespace Jasper.TestSupport.Alba
 {
     public static class JasperRuntimeAlbaExtensions
     {

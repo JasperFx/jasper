@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Alba;
 using Jasper;
 using Jasper.Messaging.Runtime;
-using JasperHttpTesting;
+using Jasper.TestSupport.Alba;
 using Marten;
 using Marten.Schema;
 using Microsoft.Extensions.Configuration;

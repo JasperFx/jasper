@@ -6,7 +6,7 @@ using Baseline;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using Jasper;
-using JasperHttpTesting;
+using Jasper.TestSupport.Alba;
 using TestMessages;
 
 namespace benchmarks

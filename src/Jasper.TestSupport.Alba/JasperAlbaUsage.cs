@@ -3,14 +3,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Alba;
 using Alba.Stubs;
-using Jasper;
 using Jasper.Http;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 
-namespace JasperHttpTesting
+namespace Jasper.TestSupport.Alba
 {
     public class JasperAlbaUsage : ISystemUnderTest
     {

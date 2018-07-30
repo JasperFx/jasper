@@ -5,7 +5,7 @@ using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Testing.Messaging.Bootstrapping;
-using JasperHttpTesting;
+using Jasper.TestSupport.Alba;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

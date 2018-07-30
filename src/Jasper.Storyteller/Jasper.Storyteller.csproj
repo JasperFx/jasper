@@ -22,4 +22,7 @@
   <ItemGroup>
     <PackageReference Include="StoryTeller" Version="5.1.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Logging" />
+  </ItemGroup>
 </Project>

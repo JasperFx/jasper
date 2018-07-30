@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Alba;
 using Jasper.Http.Routing;
 
-namespace JasperHttpTesting
+namespace Jasper.TestSupport.Alba
 {
     public class JasperUrlLookup : IUrlLookup
     {
