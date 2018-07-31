@@ -33,9 +33,9 @@ namespace IntegrationTests.Persistence.Marten.Sample
     // ENDSAMPLE
 
 
-    public class MessageInvocationTests : IDisposable
+    public class MessageInvocationTests : MartenContext, IDisposable
     {
-        public MessageInvocationTests()
+        public MessageInvocationTests(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             theRuntime = JasperRuntime.For<SampleApp>();
 

@@ -127,7 +127,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
             await theSender.Messaging.Send(item);
 
-            waiter.Wait(5.Seconds());
+            waiter.Wait(20.Seconds());
 
             waiter.IsCompleted.ShouldBeTrue();
 

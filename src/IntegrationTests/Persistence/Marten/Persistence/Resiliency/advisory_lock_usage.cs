@@ -88,6 +88,8 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
         [Fact]
         public async Task explicitly_release_global_session_locks()
         {
+            var lockNumber = new Random().Next();
+
             using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
             using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
             using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
@@ -97,19 +99,19 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
                 await conn3.OpenAsync();
 
 
-                await conn1.GetGlobalLock(1);
+                await conn1.GetGlobalLock(lockNumber);
 
 
                 // Cannot get the lock here
-                (await conn2.TryGetGlobalLock(1)).ShouldBeFalse();
+                (await conn2.TryGetGlobalLock(lockNumber)).ShouldBeFalse();
 
 
-                await conn1.ReleaseGlobalLock(1);
+                await conn1.ReleaseGlobalLock(lockNumber);
 
 
                 for (var j = 0; j < 5; j++)
                 {
-                    if (await conn2.TryGetGlobalLock(1)) return;
+                    if (await conn2.TryGetGlobalLock(lockNumber)) return;
 
                     await Task.Delay(250);
                 }
@@ -121,6 +123,8 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
         [Fact]
         public async Task explicitly_release_global_tx_session_locks()
         {
+            var lockNumber = new Random().Next();
+
             using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
             using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
             using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
@@ -130,12 +134,12 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
                 await conn3.OpenAsync();
 
                 var tx1 = conn1.BeginTransaction();
-                await conn1.GetGlobalTxLock(1);
+                await conn1.GetGlobalTxLock(lockNumber);
 
 
                 // Cannot get the lock here
                 var tx2 = conn2.BeginTransaction();
-                (await conn2.TryGetGlobalTxLock(1)).ShouldBeFalse();
+                (await conn2.TryGetGlobalTxLock(lockNumber)).ShouldBeFalse();
 
 
                 await tx1.RollbackAsync();
@@ -143,7 +147,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
 
                 for (var j = 0; j < 5; j++)
                 {
-                    if (await conn2.TryGetGlobalTxLock(1))
+                    if (await conn2.TryGetGlobalTxLock(lockNumber))
                     {
                         await tx2.RollbackAsync();
                         return;

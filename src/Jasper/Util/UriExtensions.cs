@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Jasper.Messaging.Transports;
 
 namespace Jasper.Util
@@ -41,7 +42,17 @@ namespace Jasper.Util
 
         public static Uri ToLocalUri(this Uri uri)
         {
-            return new UriBuilder(uri) { Host = Environment.MachineName }.Uri;
+            try
+            {
+                Dns.GetHostEntry(Environment.MachineName);
+                return new UriBuilder(uri) { Host = Environment.MachineName }.Uri;
+            }
+            catch (Exception)
+            {
+                return uri;
+            }
+
+
         }
 
         public static Uri ToCanonicalTcpUri(this Uri uri)

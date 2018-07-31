@@ -100,8 +100,10 @@ namespace IntegrationTests.Persistence.Marten
         {
             using (var session = _runtime.Get<IDocumentStore>().OpenSession())
             {
+                var uri = "tcp://localhost:2345".ToUri().ToMachineUri();
+
                 session.Load<ServiceNode>("MartenSampleApp@MyBox")
-                    .TcpEndpoints.ShouldContain($"tcp://{Environment.MachineName}:2345".ToUri());
+                    .TcpEndpoints.ShouldContain(uri);
             }
         }
 

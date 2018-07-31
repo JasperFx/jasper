@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using Baseline;
+using Jasper.Util;
 using Lamar.Codegen;
 using Lamar.IoC.Instances;
 using Marten.Util;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,6 +21,7 @@ namespace Jasper.Testing
         {
             _output = output;
         }
+
 
         [Fact]
         public void try_out_resolver_cache()

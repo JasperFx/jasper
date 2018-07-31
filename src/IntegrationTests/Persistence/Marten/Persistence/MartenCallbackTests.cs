@@ -22,9 +22,9 @@ using Xunit;
 
 namespace IntegrationTests.Persistence.Marten.Persistence
 {
-    public class MartenCallbackTests : IDisposable
+    public class MartenCallbackTests : MartenContext, IDisposable
     {
-        public MartenCallbackTests()
+        public MartenCallbackTests(DockerFixture<MartenContainer> fixture) : base(fixture)
         {
             theRuntime = JasperRuntime.For(_ =>
             {
