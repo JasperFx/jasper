@@ -59,7 +59,7 @@ namespace IntegrationTests.Persistence.Marten.Outbox
             var code = theSender.Get<HandlerGraph>().ChainFor<ItemOutOfStock>().SourceCode;
 
             code.ShouldContain(
-                "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+                "await Jasper.Persistence.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]

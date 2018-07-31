@@ -38,7 +38,7 @@ namespace IntegrationTests.Persistence.Marten
 
             code.ShouldContain("using (var documentSession = _documentStore.LightweightSession())");
             code.ShouldNotContain(
-                "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+                "await Jasper.Persistence.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace IntegrationTests.Persistence.Marten
 
             code.ShouldContain("using (var documentSession = _documentStore.LightweightSession())");
             code.ShouldContain(
-                "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+                "await Jasper.Persistence.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace IntegrationTests.Persistence.Marten
             code.ShouldNotContain("using (var documentSession = _documentStore.LightweightSession())");
             code.ShouldContain("using (var documentSession = sessionUsingBlock2.OpenSession(_documentStore))");
             code.ShouldNotContain(
-                "await Jasper.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
+                "await Jasper.Persistence.Marten.MessagingExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace IntegrationTests.Persistence.Marten
             code.ShouldNotContain("using (var documentSession = _documentStore.LightweightSession())");
             code.ShouldContain("using (var documentSession = sessionUsingBlock2.OpenSession(_documentStore))");
             code.ShouldContain(
-                "await Jasper.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+                "await Jasper.Persistence.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
         public code_generation_with_session(DockerFixture<MartenContainer> fixture) : base(fixture)
