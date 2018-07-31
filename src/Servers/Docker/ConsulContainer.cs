@@ -4,10 +4,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Docker.DotNet.Models;
-using Jasper.Consul;
-using Jasper.Consul.Internal;
 
-namespace Servers
+namespace Servers.Docker
 {
     public class ConsulContainer : DockerServer
     {

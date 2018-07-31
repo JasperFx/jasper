@@ -15,6 +15,7 @@ using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Util;
 using Marten;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

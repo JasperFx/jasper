@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Jasper.Persistence.SqlServer;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

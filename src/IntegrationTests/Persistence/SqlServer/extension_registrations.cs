@@ -5,6 +5,7 @@ using Jasper.Messaging.Durability;
 using Jasper.Persistence.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

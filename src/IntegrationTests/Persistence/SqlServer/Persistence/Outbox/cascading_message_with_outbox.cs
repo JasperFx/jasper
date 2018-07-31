@@ -11,6 +11,7 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

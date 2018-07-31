@@ -1,32 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Docker.DotNet.Models;
-using RabbitMQ.Client;
 
-namespace Servers
+namespace Servers.Docker
 {
-    public class RabbitMQContainer : DockerServer
+    public class SqlServerContainer : DockerServer
     {
-        public RabbitMQContainer() : base("rabbitmq", "jasper-rabbitmq")
+        public SqlServerContainer() : base("microsoft/mssql-server-linux:2017-latest", "jasper-mssql")
         {
         }
 
-        protected override Task<bool> isReady()
+        public static readonly string ConnectionString = "Server=localhost;User Id=sa;Password=P@55w0rd;Timeout=5";
+
+        protected override async Task<bool> isReady()
         {
-            var factory = new ConnectionFactory();
-            factory.HostName = "localhost";
-            factory.Port = 5672;
             try
             {
-                using (var conn = factory.CreateConnection())
+                using (var conn =
+                    new SqlConnection(ConnectionString))
                 {
-                    return Task.FromResult(true);
+                    await conn.OpenAsync();
+
+                    return true;
                 }
             }
             catch (Exception)
             {
-                return Task.FromResult(false);
+                return false;
             }
         }
 
@@ -37,12 +39,12 @@ namespace Servers
                 PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
                     {
-                        "5672/tcp",
+                        "1433/tcp",
                         new List<PortBinding>
                         {
                             new PortBinding
                             {
-                                HostPort = $"5672",
+                                HostPort = $"1433",
                                 HostIP = "127.0.0.1"
                             }
                         }
@@ -58,7 +60,7 @@ namespace Servers
         {
             return new Config
             {
-                Hostname = "JasperRabbitMq"
+                Env = new List<string> {"ACCEPT_EULA=Y", "SA_PASSWORD=P@55w0rd", "MSSQL_PID=Developer"}
             };
         }
     }

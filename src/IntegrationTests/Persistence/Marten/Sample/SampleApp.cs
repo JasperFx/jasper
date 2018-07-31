@@ -10,6 +10,7 @@ using Marten.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

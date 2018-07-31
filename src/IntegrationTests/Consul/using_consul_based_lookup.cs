@@ -8,6 +8,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Util;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

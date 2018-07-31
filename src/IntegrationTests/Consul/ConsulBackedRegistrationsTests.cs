@@ -3,6 +3,7 @@ using Jasper.Consul;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

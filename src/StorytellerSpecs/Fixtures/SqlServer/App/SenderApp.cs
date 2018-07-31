@@ -3,6 +3,7 @@ using Jasper;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.SqlServer;
 using Servers;
+using Servers.Docker;
 
 namespace StorytellerSpecs.Fixtures.SqlServer.App
 {

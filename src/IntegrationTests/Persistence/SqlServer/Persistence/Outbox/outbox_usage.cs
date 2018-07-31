@@ -16,6 +16,7 @@ using Jasper.Persistence.SqlServer.Util;
 using Jasper.TestSupport.Alba;
 using Jasper.Util;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

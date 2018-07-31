@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Jasper.Persistence.Marten.Resiliency;
 using Npgsql;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

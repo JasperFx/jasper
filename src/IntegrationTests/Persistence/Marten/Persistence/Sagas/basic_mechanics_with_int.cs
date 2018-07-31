@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Jasper.Messaging.Sagas;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

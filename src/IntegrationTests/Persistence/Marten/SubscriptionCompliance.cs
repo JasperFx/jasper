@@ -9,6 +9,7 @@ using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Subscriptions;
 using Marten;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

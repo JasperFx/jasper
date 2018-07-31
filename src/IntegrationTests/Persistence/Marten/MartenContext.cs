@@ -1,4 +1,5 @@
 ﻿using Servers;
+using Servers.Docker;
 using Xunit;
 
 namespace IntegrationTests.Persistence.Marten

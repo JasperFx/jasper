@@ -3,6 +3,7 @@ using Jasper;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 using Servers;
+using Servers.Docker;
 
 namespace StorytellerSpecs.Fixtures.Marten.App
 {

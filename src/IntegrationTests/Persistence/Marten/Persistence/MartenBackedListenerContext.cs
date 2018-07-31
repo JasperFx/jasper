@@ -19,6 +19,7 @@ using Jasper.Util;
 using Marten;
 using NSubstitute;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

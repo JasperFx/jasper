@@ -5,6 +5,7 @@ using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Servers;
+using Servers.Docker;
 
 namespace IntegrationTests.Persistence.Marten.Persistence
 {

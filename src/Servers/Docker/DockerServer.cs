@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Oakton;
 
-namespace Servers
+namespace Servers.Docker
 {
     public enum StartAction
     {
@@ -79,7 +78,7 @@ namespace Servers
             {
                 i++;
 
-                if (i > 10)
+                if (i > 20)
                 {
                     throw new TimeoutException($"Container {ContainerName} does not seem to be responding in a timely manner");
                 }
@@ -127,5 +126,9 @@ namespace Servers
 
         public abstract Config ToConfig();
 
+        public override string ToString()
+        {
+            return $"{nameof(ImageName)}: {ImageName}, {nameof(ContainerName)}: {ContainerName}";
+        }
     }
 }

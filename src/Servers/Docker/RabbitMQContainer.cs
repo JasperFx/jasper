@@ -2,34 +2,31 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Docker.DotNet.Models;
-using Npgsql;
+using RabbitMQ.Client;
 
-namespace Servers
+namespace Servers.Docker
 {
-    public class MartenContainer : DockerServer
+    public class RabbitMQContainer : DockerServer
     {
-        public MartenContainer() : base("clkao/postgres-plv8:latest", "jasper-postgresql")
+        public RabbitMQContainer() : base("rabbitmq", "jasper-rabbitmq")
         {
         }
 
-        public static readonly string ConnectionString =
-            "Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres";
-
-        protected override async Task<bool> isReady()
+        protected override Task<bool> isReady()
         {
+            var factory = new ConnectionFactory();
+            factory.HostName = "localhost";
+            factory.Port = 5672;
             try
             {
-                using (var conn =
-                    new NpgsqlConnection(ConnectionString))
+                using (var conn = factory.CreateConnection())
                 {
-                    await conn.OpenAsync();
-
-                    return true;
+                    return Task.FromResult(true);
                 }
             }
             catch (Exception)
             {
-                return false;
+                return Task.FromResult(false);
             }
         }
 
@@ -40,12 +37,12 @@ namespace Servers
                 PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
                     {
-                        "5432/tcp",
+                        "5672/tcp",
                         new List<PortBinding>
                         {
                             new PortBinding
                             {
-                                HostPort = $"5433",
+                                HostPort = $"5672",
                                 HostIP = "127.0.0.1"
                             }
                         }
@@ -61,7 +58,7 @@ namespace Servers
         {
             return new Config
             {
-                Env = new List<string> {"POSTGRES_PASSWORD=postgres"}
+                Hostname = "JasperRabbitMq"
             };
         }
     }

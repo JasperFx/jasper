@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Docker.DotNet;
 
-namespace Servers
+namespace Servers.Docker
 {
     public class DockerServers
     {

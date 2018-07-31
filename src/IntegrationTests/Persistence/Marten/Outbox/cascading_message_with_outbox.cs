@@ -11,6 +11,7 @@ using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

@@ -9,6 +9,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

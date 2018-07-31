@@ -6,6 +6,7 @@ using Jasper.Persistence.SqlServer.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

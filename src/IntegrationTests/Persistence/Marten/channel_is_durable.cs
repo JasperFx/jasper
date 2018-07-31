@@ -3,6 +3,7 @@ using Jasper.Messaging;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

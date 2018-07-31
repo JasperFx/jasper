@@ -2,6 +2,7 @@
 using Jasper;
 using Marten;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

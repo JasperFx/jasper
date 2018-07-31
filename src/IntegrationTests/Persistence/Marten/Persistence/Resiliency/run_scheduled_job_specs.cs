@@ -14,6 +14,7 @@ using Marten;
 using Marten.Services;
 using NSubstitute;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

@@ -9,6 +9,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

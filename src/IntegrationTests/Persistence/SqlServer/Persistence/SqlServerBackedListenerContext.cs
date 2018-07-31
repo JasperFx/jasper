@@ -16,6 +16,7 @@ using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Util;
 using NSubstitute;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 
 namespace IntegrationTests.Persistence.SqlServer.Persistence

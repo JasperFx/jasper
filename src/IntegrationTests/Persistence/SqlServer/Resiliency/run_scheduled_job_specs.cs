@@ -10,6 +10,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer.Resiliency;
 using NSubstitute;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

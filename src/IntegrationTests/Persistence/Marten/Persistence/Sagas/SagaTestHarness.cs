@@ -9,6 +9,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
 using Marten;
 using Servers;
+using Servers.Docker;
 
 namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 {

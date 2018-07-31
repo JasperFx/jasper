@@ -23,6 +23,7 @@ using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Servers;
+using Servers.Docker;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 

@@ -10,6 +10,7 @@ using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence;
 using Marten;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

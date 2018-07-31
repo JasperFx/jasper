@@ -9,6 +9,7 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 using Marten;
 using Servers;
+using Servers.Docker;
 using Shouldly;
 using Xunit;
 

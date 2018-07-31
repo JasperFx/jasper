@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Docker.DotNet;
 
-namespace Servers
+namespace Servers.Docker
 {
     public class Containers : IDisposable
     {

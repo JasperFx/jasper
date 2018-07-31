@@ -1,8 +1,7 @@
-﻿using System;
-using Baseline.Dates;
+﻿using Baseline.Dates;
 using Docker.DotNet;
 
-namespace Servers
+namespace Servers.Docker
 {
     public class DockerFixture<T> where T : DockerServer, new()
     {
