@@ -8,22 +8,28 @@ using Jasper;
 using Jasper.Consul;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Consul
 {
-    [Collection("Consul")]
-    public class ConsulNodeDiscoveryTests : IDisposable
+    public class ConsulNodeDiscoveryTests : ConsulContext, IDisposable
     {
-        private readonly JasperRuntime _runtime;
-        private readonly INodeDiscovery theNodeDiscovery;
+        private JasperRuntime _runtime;
+        private INodeDiscovery theNodeDiscovery;
 
-        public ConsulNodeDiscoveryTests()
+        public ConsulNodeDiscoveryTests(DockerFixture<ConsulContainer> container) : base(container)
+        {
+
+
+        }
+
+        private async Task withApp()
         {
             using (var client = new ConsulClient())
             {
-                client.KV.DeleteTree(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX).Wait();
+                await client.KV.DeleteTree(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX);
             }
 
             var registry = new JasperRegistry
@@ -33,10 +39,9 @@ namespace IntegrationTests.Consul
 
             registry.Services.ForSingletonOf<INodeDiscovery>().Use<ConsulNodeDiscovery>();
 
-            _runtime = JasperRuntime.For(registry);
+            _runtime = await JasperRuntime.ForAsync(registry);
 
             theNodeDiscovery = _runtime.Get<INodeDiscovery>().As<ConsulNodeDiscovery>();
-
         }
 
         public void Dispose()
@@ -47,6 +52,8 @@ namespace IntegrationTests.Consul
         [Fact]
         public async Task successfully_registers_itself_as_an_active_node()
         {
+            await withApp();
+
             theNodeDiscovery.LocalNode.ShouldNotBeNull();
 
             var peers = await theNodeDiscovery.FindPeers();
@@ -56,13 +63,15 @@ namespace IntegrationTests.Consul
             using (var settings = new ConsulSettings())
             {
                 var nodes = await settings.Client.KV.List(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX);
-                nodes.Response.Length.ShouldBe(1);
+                nodes.Response.Length.ShouldBeGreaterThanOrEqualTo(1);
             }
         }
 
         [Fact]
         public async Task successfully_unregister_on_shutdown()
         {
+            await withApp();
+
             _runtime.Dispose();
 
             using (var settings = new ConsulSettings())

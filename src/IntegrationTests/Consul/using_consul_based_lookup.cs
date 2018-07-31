@@ -7,20 +7,19 @@ using Jasper.Consul.Internal;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Util;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Consul
 {
-    [Collection("Consul")]
-    public class using_consul_based_lookup : IDisposable
+    public class using_consul_based_lookup : ConsulContext, IDisposable
     {
 
         private JasperRuntime theRuntime;
 
-        public using_consul_based_lookup()
+        public using_consul_based_lookup(DockerFixture<ConsulContainer> container) : base(container)
         {
-
             var registry = new ConsulUsingApp();
 
 

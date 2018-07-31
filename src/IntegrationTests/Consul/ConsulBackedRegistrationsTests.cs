@@ -2,13 +2,13 @@
 using Jasper.Consul;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Consul
 {
-    [Collection("Consul")]
-    public class ConsulBackedRegistrationsTests
+    public class ConsulBackedRegistrationsTests : ConsulContext
     {
         [Fact]
         public void use_the_extension()
@@ -22,6 +22,10 @@ namespace IntegrationTests.Consul
                 runtime.Get<ISubscriptionsRepository>()
                     .ShouldBeOfType<ConsulSubscriptionRepository>();
             }
+        }
+
+        public ConsulBackedRegistrationsTests(DockerFixture<ConsulContainer> fixture) : base(fixture)
+        {
         }
     }
 

@@ -8,20 +8,20 @@ using Jasper;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Util;
+using Servers;
 using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Consul
 {
-    [Collection("Consul")]
-    public class ConsulSubscriptionRepositoryTests : IDisposable
+    public class ConsulSubscriptionRepositoryTests : ConsulContext, IDisposable
     {
         private Uri theDestination = "something://localhost:3333/here".ToUri();
 
         private readonly JasperRuntime _runtime;
         private ISubscriptionsRepository theRepository;
 
-        public ConsulSubscriptionRepositoryTests()
+        public ConsulSubscriptionRepositoryTests(DockerFixture<ConsulContainer> container) : base(container)
         {
             using (var client = new ConsulClient())
             {

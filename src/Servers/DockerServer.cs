@@ -12,7 +12,8 @@ namespace Servers
     public enum StartAction
     {
         started,
-        nothing
+        external,
+        none
     }
 
     public abstract class DockerServer
@@ -26,8 +27,12 @@ namespace Servers
             ContainerName = containerName; // + "-" + Guid.NewGuid().ToString();
         }
 
-        public async Task<StartAction> Start(IDockerClient client)
+        public async Task Start(IDockerClient client)
         {
+            // It's already started, carry on
+            if (StartAction != StartAction.none) return;
+
+
             var images =
                 await client.Images.ListImagesAsync(new ImagesListParameters {MatchName = ImageName});
 
@@ -57,7 +62,8 @@ namespace Servers
                 if (container.State == "running")
                 {
                     ConsoleWriter.Write(ConsoleColor.Cyan, $"Container '{ContainerName}' is already running.");
-                    return StartAction.nothing;
+                    StartAction = StartAction.external;
+                    return;
                 }
             }
 
@@ -83,8 +89,10 @@ namespace Servers
 
             Console.WriteLine($"Container '{ContainerName}' is ready.");
 
-            return StartAction.started;
+            StartAction = StartAction.started;
         }
+
+        public StartAction StartAction { get; private set; } = StartAction.none;
 
         private async Task createContainer(IDockerClient client)
         {
