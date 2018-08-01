@@ -36,7 +36,7 @@ namespace Jasper.Testing.Messaging
             waiter.Wait(5.Seconds());
             waiter.IsCompleted.ShouldBeTrue();
 
-            waiter.Result.ReplyUri.ShouldBe($"tcp://{Environment.MachineName}:7001".ToUri());
+            waiter.Result.ReplyUri.ShouldBe($"tcp://localhost:7001".ToUri().ToMachineUri());
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace Jasper.Testing.Messaging
             waiter.Wait(5.Seconds());
             waiter.IsCompleted.ShouldBeTrue();
 
-            waiter.Result.ReplyUri.ShouldBe($"tcp://{Environment.MachineName}:7012".ToUri());
+            waiter.Result.ReplyUri.ShouldBe($"tcp://localhost:7012".ToUri().ToMachineUri());
         }
     }
 

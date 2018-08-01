@@ -82,17 +82,16 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
-	#sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj --no-restore  --framework netcoreapp2.1"
-	sh "dotnet test src/Jasper.Storyteller.Tests/Jasper.Storyteller.Tests.csproj --no-restore --framework netcoreapp2.1"
-
 end
 
 desc "Integration Tests"
 task :integrationtests => [:compile] do
-  sh "dotnet test src/Jasper.Consul.Testing/Jasper.Consul.Testing.csproj --no-restore"
+  Dir.chdir("src/Servers") do
+    sh "dotnet run start"
+  end
 
-  # one test is unreliable. Grr.
-  #sh "dotnet test src/Jasper.Marten.Tests/Jasper.Marten.Tests.csproj --no-restore"
+  sh "dotnet test src/IntegrationTests/IntegrationTests.csproj --no-restore"
+
 
 end
 
@@ -118,15 +117,14 @@ end
 desc 'Build Nuspec packages'
 task :pack do
 	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release --no-restore"
-  #sh "dotnet pack src/Jasper.Diagnostics/Jasper.Diagnostics.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.Marten/Jasper.Marten.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.SqlServer/Jasper.SqlServer.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.Persistence.Marten/Jasper.Persistence.Marten.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.Persistence.SqlServer/Jasper.Persistence.SqlServer.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.Storyteller/Jasper.Storyteller.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.TestSupport.Storyteller/Jasper.TestSupport.Storyteller.csproj -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack src/Jasper.TestSupport.Alba/Jasper.TestSupport.Alba.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.RabbitMQ/Jasper.RabbitMQ.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.ApplicationInsights/Jasper.ApplicationInsights.csproj -o ./../../artifacts --configuration Release --no-restore"
   sh "dotnet pack src/Jasper.JsonCommands/Jasper.JsonCommands.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/JasperHttpTesting/JasperHttpTesting.csproj -o ./../../artifacts --configuration Release --no-restore"
 end
 
 desc "Pushes the Nuget's to AppVeyor"

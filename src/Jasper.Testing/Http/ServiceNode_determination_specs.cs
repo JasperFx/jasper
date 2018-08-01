@@ -58,12 +58,13 @@ namespace Jasper.Testing.Http
         [Fact]
         public async Task register_http_listener()
         {
-            theRegistry.Hosting.UseUrls("http://localhost:5003");
+            var uri = "http://localhost:5003";
+            theRegistry.Hosting.UseUrls(uri);
 
             await withApp();
 
             var serviceNode = theServiceNode;
-            serviceNode.HttpEndpoints.ShouldContain($"http://{Environment.MachineName}:5003".ToUri());
+            serviceNode.HttpEndpoints.ShouldContain(uri.ToUri().ToMachineUri());
             serviceNode.MessagesUrl.ShouldBe(new MessagingSettings().Http.RelativeUrl);
         }
 
@@ -76,8 +77,8 @@ namespace Jasper.Testing.Http
 
             await withApp();
 
-            theServiceNode.TcpEndpoints.ShouldContain($"tcp://{Environment.MachineName}:2222".ToUri());
-            theServiceNode.TcpEndpoints.ShouldContain($"tcp://{Environment.MachineName}:2333/durable".ToUri());
+            theServiceNode.TcpEndpoints.ShouldContain($"tcp://localhost:2222".ToUri().ToMachineUri());
+            theServiceNode.TcpEndpoints.ShouldContain($"tcp://localhost:2333/durable".ToUri().ToMachineUri());
         }
     }
 }

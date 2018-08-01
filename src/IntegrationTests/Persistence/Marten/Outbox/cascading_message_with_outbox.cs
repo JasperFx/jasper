@@ -23,8 +23,8 @@ namespace IntegrationTests.Persistence.Marten.Outbox
         {
             Handlers.DisableConventionalDiscovery().IncludeType<CascadeReceiver>();
             Services.AddSingleton(tracker);
-            Publish.Message<TriggerMessage>().To("durable://localhost:2337");
-            Transports.DurableListenerAt(2338);
+            Publish.Message<TriggerMessage>().To("durable://localhost:3337");
+            Transports.DurableListenerAt(3338);
 
             Settings.ConfigureMarten(marten =>
             {

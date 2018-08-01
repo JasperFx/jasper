@@ -16,7 +16,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
             theRegistry.Transports.LightweightListenerAt(2222);
 
             (await theRuntime()).Get<IChannelGraph>().SystemReplyUri
-                .ShouldBe($"tcp://{Environment.MachineName}:2222".ToUri());
+                .ShouldBe($"tcp://localhost:2222".ToUri().ToMachineUri());
         }
 
         [Fact]
@@ -25,7 +25,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
             theRegistry.Transports.DurableListenerAt(2333);
 
             (await theRuntime()).Get<IChannelGraph>().SystemReplyUri
-                .ShouldBe($"tcp://{Environment.MachineName}:2333/durable".ToUri());
+                .ShouldBe($"tcp://localhost:2333/durable".ToUri().ToMachineUri());
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
             theRegistry.Subscribe.At("tcp://server1:2345");
 
             (await theRuntime()).Get<IChannelGraph>().SystemReplyUri
-                .ShouldBe("tcp://server1:2345".ToUri());
+                .ShouldBe("tcp://server1:2345".ToUri().ToMachineUri());
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Jasper.Testing.Messaging
                 r.Transports.Http.EnableListening(true);
             });
 
-            Runtime.Get<IChannelGraph>().SystemReplyUri.ShouldBe($"http://{Environment.MachineName}:5066/messages".ToUri());
+            Runtime.Get<IChannelGraph>().SystemReplyUri.ShouldBe($"http://localhost:5066/messages".ToUri().ToMachineUri());
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace Jasper.Testing.Messaging
                 r.Transports.Http.EnableListening(false);
             });
 
-            Runtime.Get<IChannelGraph>().SystemReplyUri.ShouldBe($"tcp://{Environment.MachineName}:4356".ToUri());
+            Runtime.Get<IChannelGraph>().SystemReplyUri.ShouldBe($"tcp://localhost:4356".ToUri().ToMachineUri());
         }
     }
 }
