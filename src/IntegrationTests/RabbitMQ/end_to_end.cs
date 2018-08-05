@@ -23,6 +23,7 @@ using Xunit;
 namespace IntegrationTests.RabbitMQ
 {
 
+    [Collection("marten")]
     public class end_to_end : RabbitMQContext
     {
         [Fact]

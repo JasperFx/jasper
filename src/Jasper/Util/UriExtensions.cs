@@ -40,8 +40,13 @@ namespace Jasper.Util
             return _locals.Contains(uri.Host) ? uri.ToLocalUri() : uri;
         }
 
+
+        public static bool IgnoreMachineName { get; set; } = false;
+
         public static Uri ToLocalUri(this Uri uri)
         {
+            if (IgnoreMachineName) return uri;
+
             try
             {
                 Dns.GetHostEntry(Environment.MachineName);

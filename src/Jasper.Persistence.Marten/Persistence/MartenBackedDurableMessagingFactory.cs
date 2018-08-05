@@ -20,7 +20,7 @@ namespace Jasper.Persistence.Marten.Persistence
         private readonly IDocumentStore _store;
         private readonly ITransportLogger _logger;
         private readonly EnvelopeRetries _retries;
-        private MartenEnvelopePersistor _persistor;
+        private readonly MartenEnvelopePersistor _persistor;
 
         public MartenBackedDurableMessagingFactory(IDocumentStore store, ITransportLogger logger,
             MessagingSettings settings, EnvelopeTables tables)

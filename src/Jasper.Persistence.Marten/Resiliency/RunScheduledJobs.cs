@@ -22,7 +22,7 @@ namespace Jasper.Persistence.Marten.Resiliency
         private readonly EnvelopeTables _marker;
         private readonly ITransportLogger _logger;
         private readonly IRetries _retries;
-        public static readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
+        public readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
         private readonly string _markOwnedIncomingSql;
         private readonly MartenEnvelopePersistor _persistor;
 
@@ -38,6 +38,7 @@ namespace Jasper.Persistence.Marten.Resiliency
             _findReadyToExecuteJobs = $"select body from {marker.Incoming} where status = '{TransportConstants.Scheduled}' and execution_time <= :time";
             _markOwnedIncomingSql = $"update {marker.Incoming} set owner_id = :owner, status = '{TransportConstants.Incoming}' where id = ANY(:idlist)";
 
+            ScheduledJobLockId = $"{marker.ServiceName}-scheduled-jobs".GetHashCode();
         }
 
         public async Task Execute(IDocumentSession session, ISchedulingAgent agent)

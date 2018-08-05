@@ -1,5 +1,8 @@
-﻿namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
+﻿using System;
+
+namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
 {
+    [Obsolete("Moved to ST")]
     public class QuestionHandler
     {
         public Answer Handle(Question question)
@@ -12,12 +15,14 @@
         }
     }
 
+    [Obsolete("Moved to ST")]
     public class Question
     {
         public int X;
         public int Y;
     }
 
+    [Obsolete("Moved to ST")]
     public class Answer
     {
         public int Product;

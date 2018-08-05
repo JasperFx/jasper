@@ -11,6 +11,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-storyteller" Version="5.1.3" />
@@ -26,5 +27,8 @@
   <ItemGroup>
     <Folder Include="Specs\Publishing\Lightweight\Resiliency" />
     <Folder Include="Specs\Publishing\Lightweight\Resiliency" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Shouldly" Version="3.0.0" />
   </ItemGroup>
 </Project>

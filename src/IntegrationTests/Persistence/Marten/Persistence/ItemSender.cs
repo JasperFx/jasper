@@ -1,4 +1,5 @@
-﻿using IntegrationTests.Persistence.Marten.Persistence.Resiliency;
+﻿using System;
+using IntegrationTests.Persistence.Marten.Persistence.Resiliency;
 using Jasper;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
@@ -8,6 +9,7 @@ using Servers.Docker;
 
 namespace IntegrationTests.Persistence.Marten.Persistence
 {
+    [Obsolete("Moved to ST")]
     public class ItemSender : JasperRegistry
     {
         public ItemSender()

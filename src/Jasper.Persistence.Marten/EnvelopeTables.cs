@@ -17,7 +17,11 @@ namespace Jasper.Persistence.Marten
 
             CurrentNodeId = settings.UniqueNodeId;
 
+            ServiceName = settings.ServiceName;
+
         }
+
+        public string ServiceName { get; set; }
 
         public int CurrentNodeId { get; }
 
