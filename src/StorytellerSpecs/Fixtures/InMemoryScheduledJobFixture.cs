@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,25 +6,39 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
+using NSubstitute;
 using Shouldly;
-using Xunit;
+using StoryTeller;
 
-namespace Jasper.Testing.Messaging.Scheduled
+namespace StorytellerSpecs.Fixtures
 {
-    [Collection("integration")]
-    public class InMemoryScheduledJobProcessorTests : IWorkerQueue
+    public class InMemoryScheduledJobFixture : Fixture, IWorkerQueue
     {
-        private readonly InMemoryScheduledJobProcessor theScheduledJobs;
-        private readonly IList<Envelope> sent = new List<Envelope>();
+        private InMemoryScheduledJobProcessor theScheduledJobs;
+        private IList<Envelope> sent = new List<Envelope>();
         private readonly Dictionary<Guid, TaskCompletionSource<Envelope>>
             _callbacks = new Dictionary<Guid, TaskCompletionSource<Envelope>>();
 
 
-        public InMemoryScheduledJobProcessorTests()
+
+        public InMemoryScheduledJobFixture()
+        {
+            Title = "In Memory Scheduled Jobs Compliance";
+        }
+
+        public override void SetUp()
         {
             theScheduledJobs = new InMemoryScheduledJobProcessor(this);
+            sent.Clear();
+            _callbacks.Clear();
+        }
+
+        public override void TearDown()
+        {
+            base.TearDown();
         }
 
         Task IWorkerQueue.Enqueue(Envelope envelope)
@@ -47,7 +61,6 @@ namespace Jasper.Testing.Messaging.Scheduled
 
         public IScheduledJobProcessor ScheduledJobs => theScheduledJobs;
 
-
         public Uri Uri { get; }
         public Uri ReplyUri { get; }
         public Uri Destination { get; } = "loopback://delayed".ToUri();
@@ -61,26 +74,15 @@ namespace Jasper.Testing.Messaging.Scheduled
             return source.Task;
         }
 
-        [Fact]
-        public void run_simplest_case()
+
+
+
+
+        [FormatAs("Run multiple messages through the in memory scheduler")]
+        public async Task<bool> run_multiple_messages_through()
         {
-            var envelope = ObjectMother.Envelope();
-            var waiter = waitForReceipt(envelope);
+            SetUp();
 
-            theScheduledJobs.Enqueue(DateTime.UtcNow.AddSeconds(1), envelope);
-
-            theScheduledJobs.Count().ShouldBe(1);
-
-            waiter.Wait(10.Seconds());
-
-            sent.ShouldContain(envelope);
-
-            theScheduledJobs.Count().ShouldBe(0);
-        }
-
-        [Fact]
-        public async Task run_multiple_messages_through()
-        {
             var env1 = ObjectMother.Envelope();
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
@@ -98,11 +100,15 @@ namespace Jasper.Testing.Messaging.Scheduled
             waiter1.IsCompleted.ShouldBeFalse();
             waiter2.IsCompleted.ShouldBeTrue();
             waiter3.IsCompleted.ShouldBeFalse();
+
+            return true;
         }
 
-        [Fact]
-        public async Task play_all()
+        [FormatAs("Play All Expored Jobs")]
+        public async Task<bool> play_all()
         {
+            SetUp();
+
             var env1 = ObjectMother.Envelope();
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
@@ -120,13 +126,17 @@ namespace Jasper.Testing.Messaging.Scheduled
             sent.ShouldContain(env1);
             sent.ShouldContain(env2);
             sent.ShouldContain(env3);
+
+            return true;
         }
 
 
 
-        [Fact]
-        public void empty_all()
+        [FormatAs("Empty all queued jobs")]
+        public async Task<bool> empty_all()
         {
+            SetUp();
+
             var env1 = ObjectMother.Envelope();
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
@@ -142,15 +152,19 @@ namespace Jasper.Testing.Messaging.Scheduled
             theScheduledJobs.Count().ShouldBe(0);
 
 
-            Thread.Sleep(2000);
+            await Task.Delay(2000.Milliseconds());
 
             sent.Any().ShouldBeFalse();
+
+            return true;
         }
 
 
-        [Fact]
-        public async Task play_at_certain_time()
+        [FormatAs("Play scheduled jobs at a given time")]
+        public async Task<bool> play_at_certain_time()
         {
+            SetUp();
+
             var env1 = ObjectMother.Envelope();
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
@@ -168,7 +182,22 @@ namespace Jasper.Testing.Messaging.Scheduled
 
             theScheduledJobs.Count().ShouldBe(1);
 
-        }
+            return true;
 
+        }
+    }
+
+    public static class ObjectMother
+    {
+        public static Envelope Envelope()
+        {
+            return new Envelope
+            {
+                Data = new byte[] {1, 2, 3, 4},
+                Callback = Substitute.For<IMessageCallback>(),
+                MessageType = "Something",
+                Destination = TransportConstants.ScheduledUri
+            };
+        }
     }
 }

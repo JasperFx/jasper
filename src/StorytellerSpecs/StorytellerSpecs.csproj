@@ -29,6 +29,7 @@
     <Folder Include="Specs\Publishing\Lightweight\Resiliency" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="Shouldly" Version="3.0.0" />
   </ItemGroup>
 </Project>
