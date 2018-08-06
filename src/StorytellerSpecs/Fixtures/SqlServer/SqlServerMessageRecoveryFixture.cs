@@ -229,7 +229,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             {
                 await conn.OpenAsync();
 
-                var tx = conn.BeginTransaction();
                 var action = _runtime.Get<T>();
 
                 try

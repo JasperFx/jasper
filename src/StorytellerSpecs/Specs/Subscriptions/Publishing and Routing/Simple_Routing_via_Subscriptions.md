@@ -1,9 +1,9 @@
 # Simple Routing via Subscriptions
 
 -> id = 4b44f85d-f43c-469d-bdb7-67c6cb2a9f16
--> lifecycle = Regression
+-> lifecycle = Acceptance
 -> max-retries = 0
--> last-updated = 2017-08-22T15:02:12.4306000Z
+-> last-updated = 2018-08-06T00:58:21.6085010Z
 -> tags = 
 
 [Communication]

@@ -1,9 +1,9 @@
 # Sending Resumes when the Receiver is Detected
 
 -> id = 204bb3d3-bbf7-409a-b959-ab27bad87032
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-12-01T13:55:27.9111770Z
+-> last-updated = 2018-08-06T00:55:43.9709210Z
 -> tags = 
 
 [MartenBackedPersistence]

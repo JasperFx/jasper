@@ -1,9 +1,9 @@
 # Simple Routing via Subscriptions with Uri Lookups
 
 -> id = 4e42cba1-71a8-4985-8e1f-cd415ad5f754
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 3
--> last-updated = 2017-10-19T19:17:09.1407490Z
+-> last-updated = 2018-08-06T00:52:38.0044960Z
 -> tags = 
 
 [Communication]

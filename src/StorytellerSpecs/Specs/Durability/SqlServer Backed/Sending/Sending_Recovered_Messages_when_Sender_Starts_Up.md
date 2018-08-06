@@ -1,10 +1,10 @@
 # Sending Recovered Messages when Sender Starts Up
 
 -> id = fe2f1d5a-3c77-4ea6-8f1f-8d788efc017e
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-12-01T13:55:36.9710820Z
--> tags =
+-> last-updated = 2018-08-06T00:55:43.9667220Z
+-> tags = 
 
 [SqlServerBackedPersistence]
 |> StartSender name=Sender1

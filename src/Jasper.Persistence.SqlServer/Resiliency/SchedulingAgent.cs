@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
@@ -44,12 +45,14 @@ namespace Jasper.Persistence.SqlServer.Resiliency
             {
                 try
                 {
+                    Debug.WriteLine($"Running {action}");
                     await action.Execute(_connection, this);
                 }
                 catch (Exception e)
                 {
                     logger.LogException(e, message:"Running " + action);
                 }
+
             }
             catch (Exception e)
             {
