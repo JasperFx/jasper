@@ -89,7 +89,7 @@ end
 
 desc "Integration Tests"
 task :integrationtests => [:compile] do
-  if if OS.windows?
+  if OS.windows?
     sh "docker-switch-linux"
   end
 
