@@ -43,7 +43,7 @@ namespace Jasper.RabbitMQ
             if (!segments.Any()) throw new ArgumentOutOfRangeException(nameof(uri), "Unable to determine the routing key / queue for the Uri " + uri);
 
 
-            if (Enum.TryParse<ExchangeType>(segments[0], out var exchangeType))
+            if (Enum.TryParse<ExchangeType>(segments[0], true, out var exchangeType))
             {
                 ExchangeType = exchangeType;
                 segments = segments.Skip(1).ToArray();
@@ -71,7 +71,7 @@ namespace Jasper.RabbitMQ
 
                 if (ExchangeName.IsNotEmpty())
                 {
-                    channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString(), IsDurable, false);
+                    channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString(), IsDurable);
                     channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
                     channel.QueueBind(QueueName, ExchangeName, "");
                 }
@@ -87,7 +87,7 @@ namespace Jasper.RabbitMQ
 
         public bool IsDurable { get; }
         public string ExchangeName { get; } = string.Empty;
-        public ExchangeType ExchangeType { get; private set; } = ExchangeType.direct;
+        public ExchangeType ExchangeType { get; private set; } = ExchangeType.Direct;
         public string QueueName { get; }
 
         public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
@@ -114,12 +114,12 @@ namespace Jasper.RabbitMQ
         public ISender CreateSender(ITransportLogger logger, CancellationToken cancellation)
         {
             // TODO -- will need to create a reply uri & listener here
-            return new RabbitMQSender(logger, this, _model.Value, cancellation);
+            return new RabbitMqSender(logger, this, _model.Value, cancellation);
         }
 
         public IListeningAgent CreateListeningAgent(Uri uri, MessagingSettings settings, ITransportLogger logger)
         {
-            return new RabbitMQListeningAgent(uri, logger, _model.Value, EnvelopeMapping, this);
+            return new RabbitMqListeningAgent(uri, logger, _model.Value, EnvelopeMapping, this);
         }
 
         public PublicationAddress PublicationAddress()

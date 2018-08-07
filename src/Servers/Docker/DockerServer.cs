@@ -38,7 +38,7 @@ namespace Servers.Docker
 
             if (images.Count == 0)
             {
-                Console.WriteLine($"Fetching Docker image 'ImageName'");
+                Console.WriteLine($"Fetching Docker image '{ImageName}'");
 
                 await client.Images.CreateImageAsync(
                     new ImagesCreateParameters {FromImage = ImageName, Tag = "latest"}, null,

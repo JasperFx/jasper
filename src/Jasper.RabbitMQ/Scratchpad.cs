@@ -27,10 +27,6 @@ namespace Jasper.RabbitMQ
 
             channel.BasicPublish(exchange:"", routingKey:"queueName", body:new byte[0]);
 
-            IBasicProperties props = channel.CreateBasicProperties();
-
-
-
 
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>

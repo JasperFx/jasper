@@ -1,0 +1,24 @@
+version: '3'
+services:
+  postgresql:
+    image: "clkao/postgres-plv8:latest"
+    ports:
+     - "5433:5432"
+  consul:
+    image: "consul:latest"
+    ports:
+     - "8500:8500"
+     - "8600:8600"
+  rabbitmq:
+    image: "rabbitmq:latest"
+    ports:
+     - "5672:5672"
+  sqlserver:
+    image: "microsoft/mssql-server-linux:2017-latest"
+    ports:
+     - "1433:1433"
+    environment:
+     - "ACCEPT_EULA=Y"
+     - "SA_PASSWORD=P@55w0rd"
+     - "MSSQL_PID=Developer"
+

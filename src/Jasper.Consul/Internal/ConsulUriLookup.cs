@@ -16,18 +16,18 @@ namespace Jasper.Consul.Internal
         }
 
         public string Protocol { get; } = "consul";
+
         public async Task<Uri[]> Lookup(Uri[] originals)
         {
             var actuals = new Uri[originals.Length];
-            for (int i = 0; i < originals.Length; i++)
+            for (var i = 0; i < originals.Length; i++)
             {
                 var key = originals[i].Host;
                 var actual = await _gateway.GetProperty(key);
 
                 if (actual.IsEmpty())
-                {
-                    throw new ArgumentOutOfRangeException(nameof(key), $"No known Consul key/value data for key '{key}'");
-                }
+                    throw new ArgumentOutOfRangeException(nameof(key),
+                        $"No known Consul key/value data for key '{key}'");
 
                 actuals[i] = actual.ToUri();
             }

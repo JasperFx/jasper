@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Consul;
-using Jasper.Messaging;
 using Jasper.Messaging.Transports.Configuration;
 using Newtonsoft.Json;
 
@@ -8,14 +7,11 @@ namespace Jasper.Consul.Internal
 {
     public abstract class ConsulService
     {
-        protected const string GLOBAL_PREFIX = "jasper/";
-
-        private readonly IChannelGraph _channels;
+        protected const string GlobalPrefix = "jasper/";
 
 
-        protected ConsulService(ConsulSettings settings, IChannelGraph channels, MessagingSettings envSettings)
+        protected ConsulService(ConsulSettings settings, MessagingSettings envSettings)
         {
-            _channels = channels;
             client = settings.Client;
             MachineName = envSettings.MachineName;
         }

@@ -3,7 +3,7 @@ using Jasper.Configuration;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Configuration;
 
-[assembly:JasperModule(typeof(ConsulExtension))]
+[assembly: JasperModule(typeof(ConsulExtension))]
 
 namespace Jasper.Consul.Internal
 {

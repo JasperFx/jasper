@@ -1,6 +1,5 @@
 ﻿using System;
 using Jasper.Settings;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
 namespace Jasper.ApplicationInsights

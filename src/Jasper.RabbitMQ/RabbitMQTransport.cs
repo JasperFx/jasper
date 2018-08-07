@@ -1,8 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Linq.Expressions;
 using System.Threading;
-using Jasper.Messaging;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -11,11 +8,12 @@ using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMQTransport : TransportBase
+    public class RabbitMqTransport : TransportBase
     {
-        private readonly RabbitMQSettings _settings;
+        private readonly RabbitMqSettings _settings;
 
-        public RabbitMQTransport(RabbitMQSettings rabbitMqSettings, IDurableMessagingFactory factory, ITransportLogger logger, MessagingSettings settings)
+        public RabbitMqTransport(RabbitMqSettings rabbitMqSettings, IDurableMessagingFactory factory,
+            ITransportLogger logger, MessagingSettings settings)
             : base("rabbitmq", factory, logger, settings)
         {
             _settings = rabbitMqSettings;

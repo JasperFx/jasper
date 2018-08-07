@@ -5,8 +5,8 @@ using Jasper.Messaging.Runtime.Subscriptions;
 namespace Jasper.Consul
 {
     /// <summary>
-    /// Explicitly applied extension to register Consul-based subscriptions
-    /// and node discovery
+    ///     Explicitly applied extension to register Consul-based subscriptions
+    ///     and node discovery
     /// </summary>
     public class ConsulBackedSubscriptions : IJasperExtension
     {

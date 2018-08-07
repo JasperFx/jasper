@@ -34,7 +34,7 @@ namespace IntegrationTests.RabbitMQ
     {
         public CustomizedRabbitMQApp()
         {
-            Settings.Alter<RabbitMQSettings>(settings =>
+            Settings.Alter<RabbitMqSettings>(settings =>
             {
                 // Retrieve the Jasper "agent" by the full Uri:
                 var agent = settings.For("rabbitmq://server1/queue1");

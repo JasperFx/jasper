@@ -26,7 +26,7 @@ namespace IntegrationTests.Consul
         {
             using (var client = new ConsulClient())
             {
-                client.KV.DeleteTree(ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX).Wait();
+                client.KV.DeleteTree(ConsulSubscriptionRepository.SubscriptionPrefix).Wait();
             }
 
             var registry = new JasperRegistry();

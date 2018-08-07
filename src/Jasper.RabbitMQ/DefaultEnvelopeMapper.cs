@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Jasper.Messaging.Runtime;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 
 namespace Jasper.RabbitMQ
 {
@@ -19,11 +17,7 @@ namespace Jasper.RabbitMQ
             };
 
 
-            if (props.Headers != null)
-            {
-                envelope.ReadPropertiesFromDictionary(props.Headers);
-            }
-
+            if (props.Headers != null) envelope.ReadPropertiesFromDictionary(props.Headers);
 
 
             return envelope;
@@ -41,11 +35,4 @@ namespace Jasper.RabbitMQ
             envelope.WriteToDictionary(properties.Headers);
         }
     }
-
-
-
-
-
-
-
 }

@@ -41,13 +41,13 @@ namespace IntegrationTests.RabbitMQ
 
 
         [Theory]
-        [InlineData("rabbitmq://localhost/one", false, "", ExchangeType.direct, "one")]
-        [InlineData("rabbitmq://localhost/durable/two/", true, "", ExchangeType.direct, "two")]
-        [InlineData("rabbitmq://localhost/durable/durable/", true, "", ExchangeType.direct, "durable")]
-        [InlineData("rabbitmq://localhost/durable/fanout/three", true, "", ExchangeType.fanout, "three")]
-        [InlineData("rabbitmq://localhost/fanout/three", false, "", ExchangeType.fanout, "three")]
-        [InlineData("rabbitmq://localhost/durable/fanout/exchange1/three", true, "exchange1", ExchangeType.fanout, "three")]
-        [InlineData("rabbitmq://localhost/fanout/exchange1/three", false, "exchange1", ExchangeType.fanout, "three")]
+        [InlineData("rabbitmq://localhost/one", false, "", ExchangeType.Direct, "one")]
+        [InlineData("rabbitmq://localhost/durable/two/", true, "", ExchangeType.Direct, "two")]
+        [InlineData("rabbitmq://localhost/durable/durable/", true, "", ExchangeType.Direct, "durable")]
+        [InlineData("rabbitmq://localhost/durable/fanout/three", true, "", ExchangeType.Fanout, "three")]
+        [InlineData("rabbitmq://localhost/fanout/three", false, "", ExchangeType.Fanout, "three")]
+        [InlineData("rabbitmq://localhost/durable/fanout/exchange1/three", true, "exchange1", ExchangeType.Fanout, "three")]
+        [InlineData("rabbitmq://localhost/fanout/exchange1/three", false, "exchange1", ExchangeType.Fanout, "three")]
         public void parse_uri_patterns(
             string uri,
             bool isDurable,

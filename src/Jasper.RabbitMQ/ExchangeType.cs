@@ -2,9 +2,9 @@
 {
     public enum ExchangeType
     {
-        direct,
-        topic,
-        headers,
-        fanout
+        Direct,
+        Topic,
+        Headers,
+        Fanout
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Jasper.Messaging.Runtime;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 
 namespace Jasper.RabbitMQ
 {

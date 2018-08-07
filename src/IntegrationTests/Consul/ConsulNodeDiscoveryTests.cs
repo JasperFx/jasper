@@ -30,7 +30,7 @@ namespace IntegrationTests.Consul
         {
             using (var client = new ConsulClient())
             {
-                await client.KV.DeleteTree(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX);
+                await client.KV.DeleteTree(ConsulNodeDiscovery.TransportNodePrefix);
             }
 
             var registry = new JasperRegistry
@@ -63,7 +63,7 @@ namespace IntegrationTests.Consul
 
             using (var settings = new ConsulSettings())
             {
-                var nodes = await settings.Client.KV.List(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX);
+                var nodes = await settings.Client.KV.List(ConsulNodeDiscovery.TransportNodePrefix);
                 nodes.Response.Length.ShouldBeGreaterThanOrEqualTo(1);
             }
         }
@@ -77,7 +77,7 @@ namespace IntegrationTests.Consul
 
             using (var settings = new ConsulSettings())
             {
-                var nodes = await settings.Client.KV.List(ConsulNodeDiscovery.TRANSPORTNODE_PREFIX);
+                var nodes = await settings.Client.KV.List(ConsulNodeDiscovery.TransportNodePrefix);
                 nodes.StatusCode.ShouldBe(HttpStatusCode.NotFound);
                 nodes.Response.ShouldBeNull();
             }

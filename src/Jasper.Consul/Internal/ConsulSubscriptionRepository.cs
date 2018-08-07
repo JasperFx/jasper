@@ -1,37 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Consul;
-using Jasper.Messaging;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace Jasper.Consul.Internal
 {
     public class ConsulSubscriptionRepository : ConsulService, ISubscriptionsRepository
     {
-        private readonly ConsulSettings _settings;
-        public const string SUBSCRIPTION_PREFIX = GLOBAL_PREFIX + "subscription/";
-        public const string CAPABILITY_PREFEX = GLOBAL_PREFIX + "service/";
+        public const string SubscriptionPrefix = GlobalPrefix + "subscription/";
+        public const string CapabilityPrefex = GlobalPrefix + "service/";
 
-        public ConsulSubscriptionRepository(ConsulSettings settings, IChannelGraph channels, MessagingSettings envSettings)
-            : base(settings, channels, envSettings)
+        public ConsulSubscriptionRepository(ConsulSettings settings,
+            MessagingSettings envSettings)
+            : base(settings, envSettings)
         {
-            _settings = settings;
         }
 
         public void Dispose()
         {
             // Nothing, ConsulClient is disposed elsewhere
-        }
-
-        public override string ToString()
-        {
-            return $"Consul-backed subscriptions";
         }
 
         public Task RemoveCapabilities(string serviceName)
@@ -45,7 +36,7 @@ namespace Jasper.Consul.Internal
                 .Select(s => new KVTxnOp(s.ConsulId(), KVTxnVerb.Set) {Value = serialize(s)})
                 .ToList();
 
-            var persist = new KVTxnOp(capabilities.ConsulId(), KVTxnVerb.Set){Value = serialize(capabilities)};
+            var persist = new KVTxnOp(capabilities.ConsulId(), KVTxnVerb.Set) {Value = serialize(capabilities)};
             ops.Add(persist);
 
             return client.KV.Txn(ops);
@@ -62,9 +53,10 @@ namespace Jasper.Consul.Internal
 
         public async Task<ServiceCapabilities[]> AllCapabilities()
         {
-            var subs = await client.KV.List(CAPABILITY_PREFEX);
+            var subs = await client.KV.List(CapabilityPrefex);
 
-            return subs.Response?.Select(kv => deserialize<ServiceCapabilities>(kv.Value)).ToArray() ?? new ServiceCapabilities[0];
+            return subs.Response?.Select(kv => deserialize<ServiceCapabilities>(kv.Value)).ToArray() ??
+                   new ServiceCapabilities[0];
         }
 
         public async Task<Subscription[]> GetSubscribersFor(Type messageType)
@@ -80,35 +72,38 @@ namespace Jasper.Consul.Internal
             return subs.ToArray();
         }
 
-        public async Task<IEnumerable<Subscription>> AllSubscriptions()
+        public override string ToString()
         {
-            var subs = await client.KV.List(SUBSCRIPTION_PREFIX);
-            return subs.Response?.Select(kv => deserialize<Subscription>(kv.Value)) ?? new Subscription[0];
+            return $"Consul-backed subscriptions";
         }
 
+        public async Task<IEnumerable<Subscription>> AllSubscriptions()
+        {
+            var subs = await client.KV.List(SubscriptionPrefix);
+            return subs.Response?.Select(kv => deserialize<Subscription>(kv.Value)) ?? new Subscription[0];
+        }
     }
 
     public static class SubscriptionExtensions
     {
         public static string ConsulId(this Subscription subscription)
         {
-            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{subscription.GetId()}";
+            return $"{ConsulSubscriptionRepository.SubscriptionPrefix}{subscription.GetId()}";
         }
 
         public static string ServiceCapabilityConsulId(this string serviceName)
         {
-            return $"{ConsulSubscriptionRepository.CAPABILITY_PREFEX}{serviceName}";
+            return $"{ConsulSubscriptionRepository.CapabilityPrefex}{serviceName}";
         }
 
         public static string ConsulId(this ServiceCapabilities capabilities)
         {
-            return $"{ConsulSubscriptionRepository.CAPABILITY_PREFEX}{capabilities.ServiceName}";
+            return $"{ConsulSubscriptionRepository.CapabilityPrefex}{capabilities.ServiceName}";
         }
 
         public static string ConsulIdPrefix(this string messageType)
         {
-            return $"{ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX}{messageType}";
+            return $"{ConsulSubscriptionRepository.SubscriptionPrefix}{messageType}";
         }
     }
-
 }

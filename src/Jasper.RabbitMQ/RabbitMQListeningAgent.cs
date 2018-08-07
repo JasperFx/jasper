@@ -1,27 +1,23 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
-using Jasper.Messaging.Transports.Tcp;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 
 namespace Jasper.RabbitMQ
 {
-
-
-    public class RabbitMQListeningAgent : IListeningAgent
+    public class RabbitMqListeningAgent : IListeningAgent
     {
-        private readonly ITransportLogger _logger;
         private readonly IModel _channel;
+        private readonly ITransportLogger _logger;
         private readonly IEnvelopeMapper _mapper;
         private readonly string _queue;
-        private MessageConsumer _consumer;
         private IReceiverCallback _callback;
+        private MessageConsumer _consumer;
 
-        public RabbitMQListeningAgent(Uri address, ITransportLogger logger, IModel channel, IEnvelopeMapper mapper, RabbitMqAgent agent)
+        public RabbitMqListeningAgent(Uri address, ITransportLogger logger, IModel channel, IEnvelopeMapper mapper,
+            RabbitMqAgent agent)
         {
             _logger = logger;
             _channel = channel;
@@ -64,16 +60,19 @@ namespace Jasper.RabbitMQ
                 ConsumerTag = Guid.NewGuid().ToString()
             };
 
-            _channel.BasicConsume(_consumer, _queue, autoAck: false);
+            _channel.BasicConsume(_consumer, _queue);
         }
+
+
+        public Uri Address { get; }
 
         public class MessageConsumer : DefaultBasicConsumer, IDisposable
         {
-            private readonly IReceiverCallback _callback;
-            private readonly ITransportLogger _logger;
-            private readonly IModel _channel;
-            private readonly IEnvelopeMapper _mapper;
             private readonly Uri _address;
+            private readonly IReceiverCallback _callback;
+            private readonly IModel _channel;
+            private readonly ITransportLogger _logger;
+            private readonly IEnvelopeMapper _mapper;
             private bool _latched;
 
             public MessageConsumer(IReceiverCallback callback, ITransportLogger logger, IModel channel,
@@ -86,7 +85,13 @@ namespace Jasper.RabbitMQ
                 _address = address;
             }
 
-            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,
+            public void Dispose()
+            {
+                _latched = true;
+            }
+
+            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered,
+                string exchange, string routingKey,
                 IBasicProperties properties, byte[] body)
             {
                 if (_callback == null) return;
@@ -97,20 +102,20 @@ namespace Jasper.RabbitMQ
                     return;
                 }
 
-                Envelope envelope = null;
+                Envelope envelope;
                 try
                 {
                     envelope = _mapper.ReadEnvelope(body, properties);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogException(e, message:"Error trying to map an incoming RabbitMQ message to an Envelope");
+                    _logger.LogException(e, message: "Error trying to map an incoming RabbitMQ message to an Envelope");
                     _channel.BasicAck(deliveryTag, false);
 
                     return;
                 }
 
-                _callback.Received(_address, new [] {envelope}).ContinueWith(t =>
+                _callback.Received(_address, new[] {envelope}).ContinueWith(t =>
                 {
                     if (t.IsFaulted)
                     {
@@ -122,17 +127,7 @@ namespace Jasper.RabbitMQ
                         _channel.BasicAck(deliveryTag, false);
                     }
                 });
-
-            }
-
-            public void Dispose()
-            {
-                _latched = true;
             }
         }
-
-
-
-        public Uri Address { get; }
     }
 }

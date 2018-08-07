@@ -115,8 +115,8 @@ namespace IntegrationTests.Consul
         {
             using (var client = new ConsulClient())
             {
-                client.KV.DeleteTree(ConsulSubscriptionRepository.SUBSCRIPTION_PREFIX).Wait();
-                client.KV.DeleteTree(ConsulSubscriptionRepository.CAPABILITY_PREFEX).Wait();
+                client.KV.DeleteTree(ConsulSubscriptionRepository.SubscriptionPrefix).Wait();
+                client.KV.DeleteTree(ConsulSubscriptionRepository.CapabilityPrefex).Wait();
             }
 
         }
