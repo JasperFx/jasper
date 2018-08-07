@@ -21,8 +21,3 @@ services:
      - "ACCEPT_EULA=Y"
      - "SA_PASSWORD=P@55w0rd"
      - "MSSQL_PID=Developer"
-
-networks:
-  default:
-    external:
-      name: nat

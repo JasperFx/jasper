@@ -21,6 +21,9 @@ task :default => [:test, :integrationtests, :storyteller]
 task :full => [:default, :integrationtests]
 
 
+  
+
+
 desc "Prepares the working directory for a new build"
 task :clean do
   #TODO: do any other tasks required to clean/prepare the working directory
@@ -44,7 +47,7 @@ task :version do
   options = {
 	:description => '',
 	:product_name => 'JasperFx Applications',
-	:copyright => 'Copyright 2017 Jeremy D. Miller, et al. All rights reserved.',
+	:copyright => 'Copyright 2018 Jeremy D. Miller, et al. All rights reserved.',
 	:trademark => commit,
 	:version => asm_version,
 	:file_version => build_number,
@@ -86,6 +89,10 @@ end
 
 desc "Integration Tests"
 task :integrationtests => [:compile] do
+  if if OS.windows?
+    sh "docker-switch-linux"
+  end
+
   sh "docker-compose up -d"
 
   sh "dotnet test src/IntegrationTests/IntegrationTests.csproj --no-restore"
@@ -147,6 +154,8 @@ end
 
 desc "Run the storyteller specifications"
 task :storyteller => [:compile] do
+  
+
   sh "docker-compose up -d"
 
   result_output = File.expand_path "#{RESULTS_DIR}/stresults.htm"
