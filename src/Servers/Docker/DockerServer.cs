@@ -28,6 +28,8 @@ namespace Servers.Docker
 
         public async Task Start(IDockerClient client)
         {
+            return;
+
             // It's already started, carry on
             if (StartAction != StartAction.none) return;
 

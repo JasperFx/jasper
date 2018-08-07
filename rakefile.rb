@@ -86,9 +86,7 @@ end
 
 desc "Integration Tests"
 task :integrationtests => [:compile] do
-  Dir.chdir("src/Servers") do
-    sh "dotnet run start"
-  end
+  sh "docker-compose up -d"
 
   sh "dotnet test src/IntegrationTests/IntegrationTests.csproj --no-restore"
 
@@ -149,6 +147,8 @@ end
 
 desc "Run the storyteller specifications"
 task :storyteller => [:compile] do
+  sh "docker-compose up -d"
+
   result_output = File.expand_path "#{RESULTS_DIR}/stresults.htm"
   puts "appveyor AddTest Testing -Framework Storyteller -FileName SomeFile -Outcome Skipped"
   Dir.chdir("src/StorytellerSpecs") do
