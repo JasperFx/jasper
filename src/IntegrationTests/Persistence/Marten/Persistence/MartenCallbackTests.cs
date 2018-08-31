@@ -15,8 +15,6 @@ using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using NSubstitute;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -24,11 +22,11 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class MartenCallbackTests : MartenContext, IDisposable
     {
-        public MartenCallbackTests(DockerFixture<MartenContainer> fixture) : base(fixture)
+        public MartenCallbackTests()
         {
             theRuntime = JasperRuntime.For(_ =>
             {
-                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
+                _.MartenConnectionStringIs(Servers.PostgresConnectionString);
 
                 _.ConfigureMarten(x =>
                 {

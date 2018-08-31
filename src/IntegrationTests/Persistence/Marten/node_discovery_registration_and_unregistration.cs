@@ -8,8 +8,6 @@ using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Subscriptions;
 using Jasper.Util;
 using Marten;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -17,10 +15,10 @@ namespace IntegrationTests.Persistence.Marten
 {
     public class node_discovery_registration_and_unregistration : MartenContext, IDisposable
     {
-        public node_discovery_registration_and_unregistration(DockerFixture<MartenContainer> fixture) : base(fixture)
+        public node_discovery_registration_and_unregistration()
         {
 
-            using (var store = DocumentStore.For(MartenContainer.ConnectionString))
+            using (var store = DocumentStore.For(Servers.PostgresConnectionString))
             {
                 store.Advanced.Clean.CompletelyRemoveAll();
             }
@@ -30,7 +28,7 @@ namespace IntegrationTests.Persistence.Marten
                 _.Handlers.DisableConventionalDiscovery();
 
                 _.Settings.Alter<MartenSubscriptionSettings>(x =>
-                    x.StoreOptions.Connection(MartenContainer.ConnectionString));
+                    x.StoreOptions.Connection(Servers.PostgresConnectionString));
 
                 _.Include<MartenBackedSubscriptions>();
 
@@ -38,7 +36,7 @@ namespace IntegrationTests.Persistence.Marten
 
                 _.Settings.Alter<MessagingSettings>(x => { x.MachineName = "MyBox"; });
 
-                _.Settings.Alter<StoreOptions>(x => { x.Connection(MartenContainer.ConnectionString); });
+                _.Settings.Alter<StoreOptions>(x => { x.Connection(Servers.PostgresConnectionString); });
 
                 _.Transports.LightweightListenerAt(2345);
             });
@@ -113,7 +111,7 @@ namespace IntegrationTests.Persistence.Marten
             _runtime.Dispose();
             _runtime = null;
 
-            using (var store = DocumentStore.For(MartenContainer.ConnectionString))
+            using (var store = DocumentStore.For(Servers.PostgresConnectionString))
             {
                 using (var session = store.OpenSession())
                 {

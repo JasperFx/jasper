@@ -2,8 +2,6 @@
 using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten;
 using Marten;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -17,7 +15,7 @@ namespace IntegrationTests.Persistence.Marten
 
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.Settings.MartenConnectionStringIs(MartenContainer.ConnectionString);
+                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
 
                 _.Include<MartenBackedPersistence>();
 
@@ -73,9 +71,6 @@ namespace IntegrationTests.Persistence.Marten
                 "await Jasper.Persistence.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
 
-        public code_generation_with_session(DockerFixture<MartenContainer> fixture) : base(fixture)
-        {
-        }
     }
 
     public class SessionUsingBlock1

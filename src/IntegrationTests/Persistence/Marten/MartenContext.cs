@@ -1,14 +1,10 @@
-﻿using Servers;
-using Servers.Docker;
-using Xunit;
+﻿using Xunit;
 
 namespace IntegrationTests.Persistence.Marten
 {
     [Collection("marten")]
-    public abstract class MartenContext : IClassFixture<DockerFixture<MartenContainer>>
+    public abstract class MartenContext
     {
-        public MartenContext(DockerFixture<MartenContainer> fixture)
-        {
-        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using IntegrationTests;
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
@@ -8,7 +9,6 @@ using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
-using Servers.Docker;
 using StorytellerSpecs.Fixtures.Durability;
 
 namespace StorytellerSpecs.Fixtures.Marten
@@ -24,7 +24,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         {
             receiverRegistry.Settings.ConfigureMarten(marten =>
             {
-                marten.Connection(MartenContainer.ConnectionString);
+                marten.Connection(Servers.PostgresConnectionString);
                 marten.DatabaseSchemaName = "outbox_receiver";
             });
 
@@ -35,7 +35,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         {
             senderRegistry.Settings.ConfigureMarten(marten =>
             {
-                marten.Connection(MartenContainer.ConnectionString);
+                marten.Connection(Servers.PostgresConnectionString);
                 marten.DatabaseSchemaName = "outbox_sender";
             });
 
@@ -67,7 +67,8 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
 
-        protected override async Task withContext(JasperRuntime sender, IMessageContext context, Func<IMessageContext, Task> action)
+        protected override async Task withContext(JasperRuntime sender, IMessageContext context,
+            Func<IMessageContext, Task> action)
         {
             var senderStore = sender.Get<IDocumentStore>();
 
@@ -107,7 +108,8 @@ namespace StorytellerSpecs.Fixtures.Marten
     public class ItemCreatedHandler
     {
         [MartenTransaction]
-        public static void Handle(ItemCreated created, IDocumentSession session, Jasper.Messaging.Tracking.MessageTracker tracker,
+        public static void Handle(ItemCreated created, IDocumentSession session,
+            Jasper.Messaging.Tracking.MessageTracker tracker,
             Envelope envelope)
         {
             session.Store(created);

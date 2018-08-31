@@ -8,7 +8,6 @@ using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Codegen;
 using Marten;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -16,10 +15,6 @@ namespace IntegrationTests.Persistence.Marten
 {
     public class transactional_frame_end_to_end : MartenContext
     {
-        public transactional_frame_end_to_end(DockerFixture<MartenContainer> fixture) : base(fixture)
-        {
-        }
-
         [Fact]
         public async Task the_transactional_middleware_works()
         {

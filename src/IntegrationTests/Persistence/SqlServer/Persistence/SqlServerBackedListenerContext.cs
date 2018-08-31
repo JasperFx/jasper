@@ -15,8 +15,6 @@ using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Util;
 using NSubstitute;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 
 namespace IntegrationTests.Persistence.SqlServer.Persistence
@@ -34,9 +32,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         protected SqlServerSettings mssqlSettings;
 
 
-        public SqlServerBackedListenerContext(DockerFixture<SqlServerContainer> fixture) : base(fixture)
+        public SqlServerBackedListenerContext()
         {
-            new SchemaLoader(SqlServerContainer.ConnectionString).RecreateAll();
+            new SchemaLoader(Servers.SqlServerConnectionString).RecreateAll();
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
@@ -44,7 +42,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
             mssqlSettings = new SqlServerSettings
             {
-                ConnectionString = SqlServerContainer.ConnectionString
+                ConnectionString = Servers.SqlServerConnectionString
             };
 
             thePersistor = new SqlServerEnvelopePersistor(mssqlSettings);

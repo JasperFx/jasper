@@ -5,8 +5,6 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
-using Servers;
-using Servers.Docker;
 
 namespace IntegrationTests.Persistence.Marten.Persistence
 {
@@ -22,7 +20,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
             Settings.Alter<StoreOptions>(_ =>
             {
-                _.Connection(MartenContainer.ConnectionString);
+                _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "receiver";
             });
 

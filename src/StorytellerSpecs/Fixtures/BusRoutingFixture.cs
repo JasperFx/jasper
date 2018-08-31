@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 using Baseline;
 using Jasper;
 using Jasper.Conneg;
@@ -12,7 +10,6 @@ using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using StoryTeller;
-using StoryTeller.Engine;
 using StoryTeller.Grammars.Tables;
 
 namespace StorytellerSpecs.Fixtures
@@ -21,7 +18,6 @@ namespace StorytellerSpecs.Fixtures
     {
         public void Handle(T message)
         {
-
         }
     }
 
@@ -29,8 +25,44 @@ namespace StorytellerSpecs.Fixtures
     {
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
         private JasperRegistry _registry;
-        private MessageRoute[] _tracks;
         private JasperRuntime _runtime;
+        private MessageRoute[] _tracks;
+
+
+        public Task RemoveCapabilities(string serviceName)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ISubscriptionsRepository.PersistCapabilities(ServiceCapabilities capabilities)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task<ServiceCapabilities> CapabilitiesFor(string serviceName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceCapabilities[]> AllCapabilities()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Subscription[]> ISubscriptionsRepository.GetSubscribersFor(Type messageType)
+        {
+            var subscriptions = _subscriptions.Where(x => x.MessageType == messageType.ToMessageAlias()).ToArray();
+            return Task.FromResult(subscriptions);
+        }
+
+        public Task<Subscription[]> GetSubscriptions()
+        {
+            return Task.FromResult(_subscriptions.ToArray());
+        }
+
+        public void Dispose()
+        {
+        }
 
         [FormatAs("The application has a handler for {MessageType}")]
         public void Handles([SelectionList("MessageTypes")] string MessageType)
@@ -39,8 +71,6 @@ namespace StorytellerSpecs.Fixtures
             var handlerType = typeof(Handler<>).MakeGenericType(messageType);
             _registry.Handlers.IncludeType(handlerType);
         }
-
-
 
 
         [FormatAs("The application is configured to publish all messages locally")]
@@ -57,7 +87,8 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [ExposeAsTable("The subscriptions are")]
-        public void SubscriptionsAre([SelectionList("MessageTypes")]string MessageType, [SelectionList("Channels")] Uri Destination, string[] Accepts)
+        public void SubscriptionsAre([SelectionList("MessageTypes")] string MessageType,
+            [SelectionList("Channels")] Uri Destination, string[] Accepts)
         {
             var messageType = messageTypeFor(MessageType);
             var subscription = new Subscription(messageType, Destination)
@@ -102,10 +133,7 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
 
-            if (_runtime == null)
-            {
-                _runtime = JasperRuntime.For(_registry);
-            }
+            if (_runtime == null) _runtime = JasperRuntime.For(_registry);
 
             var router = _runtime.Get<IMessageRouter>();
 
@@ -115,10 +143,8 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("There should be no routes")]
         public bool NoRoutesFor()
         {
-            StoryTellerAssert.Fail(_tracks.Any(), () =>
-            {
-                return "Found message routes:\n" + _tracks.Select(x => x.ToString()).Join("\n");
-            });
+            StoryTellerAssert.Fail(_tracks.Any(),
+                () => { return "Found message routes:\n" + _tracks.Select(x => x.ToString()).Join("\n"); });
 
             return true;
         }
@@ -146,53 +172,23 @@ namespace StorytellerSpecs.Fixtures
             _runtime = null;
         }
 
-
-        public Task RemoveCapabilities(string serviceName)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task ISubscriptionsRepository.PersistCapabilities(ServiceCapabilities capabilities)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task<ServiceCapabilities> CapabilitiesFor(string serviceName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ServiceCapabilities[]> AllCapabilities()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Subscription[]> ISubscriptionsRepository.GetSubscribersFor(Type messageType)
-        {
-            var subscriptions =  _subscriptions.Where(x => x.MessageType == messageType.ToMessageAlias()).ToArray();
-            return Task.FromResult(subscriptions);
-        }
-
-        public Task<Subscription[]> GetSubscriptions()
-        {
-            return Task.FromResult(_subscriptions.ToArray());
-        }
-
         public Task ReplaceSubscriptions(string serviceName, Subscription[] subscriptions)
         {
             throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-
         }
     }
 
     internal class FakeWriter : IMessageSerializer
     {
+        public FakeWriter(Type messageType, string contentType)
+        {
+            DotNetType = messageType;
+            ContentType = contentType;
+        }
+
         public Type DotNetType { get; }
         public string ContentType { get; }
+
         public byte[] Write(object model)
         {
             throw new NotImplementedException();
@@ -201,12 +197,6 @@ namespace StorytellerSpecs.Fixtures
         public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
-        }
-
-        public FakeWriter(Type messageType, string contentType)
-        {
-            DotNetType = messageType;
-            ContentType = contentType;
         }
     }
 }

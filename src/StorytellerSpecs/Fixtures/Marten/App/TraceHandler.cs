@@ -10,7 +10,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
         [MartenTransaction]
         public void Handle(TraceMessage message, IDocumentSession session)
         {
-            session.Store(new TraceDoc{Name = message.Name});
+            session.Store(new TraceDoc {Name = message.Name});
         }
     }
 }

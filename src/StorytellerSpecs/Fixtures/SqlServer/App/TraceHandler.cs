@@ -11,7 +11,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
         [SqlTransaction]
         public void Handle(TraceMessage message, SqlTransaction tx)
         {
-            var traceDoc = new TraceDoc{Name = message.Name};
+            var traceDoc = new TraceDoc {Name = message.Name};
 
             tx.Connection.CreateCommand(tx, "insert into receiver.trace_doc (id, name) values (@id, @name)")
                 .With("id", traceDoc.Id)

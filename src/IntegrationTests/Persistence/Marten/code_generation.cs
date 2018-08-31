@@ -3,7 +3,6 @@ using Jasper;
 using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten;
 using Marten;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -11,7 +10,7 @@ namespace IntegrationTests.Persistence.Marten
 {
     public class code_generation : MartenContext, IDisposable
     {
-        public code_generation(DockerFixture<MartenContainer> fixture) : base(fixture)
+        public code_generation()
         {
 
             runtime = JasperRuntime.For<MartenUsingApp>();

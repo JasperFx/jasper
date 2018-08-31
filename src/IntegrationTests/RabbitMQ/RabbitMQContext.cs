@@ -1,14 +1,10 @@
-﻿using Servers;
-using Servers.Docker;
-using Xunit;
+﻿using Xunit;
 
 namespace IntegrationTests.RabbitMQ
 {
     [Collection("rabbitmq")]
-    public abstract class RabbitMQContext : IClassFixture<DockerFixture<RabbitMQContainer>>
+    public abstract class RabbitMQContext
     {
-        public RabbitMQContext(DockerFixture<RabbitMQContainer> container)
-        {
-        }
+
     }
 }

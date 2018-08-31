@@ -8,8 +8,6 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -20,12 +18,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         private readonly SqlServerEnvelopePersistor thePersistor
             = new SqlServerEnvelopePersistor(new SqlServerSettings
             {
-                ConnectionString = SqlServerContainer.ConnectionString
+                ConnectionString = Servers.SqlServerConnectionString
             });
 
-        public SqlServerEnveloperPersistorTests(DockerFixture<SqlServerContainer> fixture) : base(fixture)
-        {
-        }
 
         [Fact]
         public async Task increment_the_attempt_count_of_incoming_envelope()

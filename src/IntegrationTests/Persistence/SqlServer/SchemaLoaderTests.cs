@@ -1,6 +1,4 @@
 ﻿using Jasper.Persistence.SqlServer.Schema;
-using Servers;
-using Servers.Docker;
 using Xunit;
 
 namespace IntegrationTests.Persistence.SqlServer
@@ -28,7 +26,7 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public void drop_then_create()
         {
-            var loader = new SchemaLoader(SqlServerContainer.ConnectionString);
+            var loader = new SchemaLoader(Servers.SqlServerConnectionString);
             loader.DropAll();
 
             loader.CreateAll();
@@ -37,7 +35,7 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public void drop_then_create_different_schema()
         {
-            var loader = new SchemaLoader(SqlServerContainer.ConnectionString, "receiver");
+            var loader = new SchemaLoader(Servers.SqlServerConnectionString, "receiver");
             loader.DropAll();
 
             loader.CreateAll();
@@ -46,19 +44,15 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public void recreate_all_tables()
         {
-            var loader = new SchemaLoader(SqlServerContainer.ConnectionString);
+            var loader = new SchemaLoader(Servers.SqlServerConnectionString);
             loader.RecreateAll();
         }
 
         [Fact]
         public void recreate_all_tables_in_a_different_schema()
         {
-            var loader = new SchemaLoader(SqlServerContainer.ConnectionString, "sender");
+            var loader = new SchemaLoader(Servers.SqlServerConnectionString, "sender");
             loader.RecreateAll();
-        }
-
-        public SchemaLoaderTests(DockerFixture<SqlServerContainer> fixture) : base(fixture)
-        {
         }
     }
 }

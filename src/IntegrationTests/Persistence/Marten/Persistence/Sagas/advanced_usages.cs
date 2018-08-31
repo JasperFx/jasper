@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -20,10 +18,6 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 
             state.ShouldNotBeNull();
             state.Name.ShouldBe("Goblin");
-        }
-
-        public advanced_usages(DockerFixture<MartenContainer> fixture) : base(fixture)
-        {
         }
     }
 }

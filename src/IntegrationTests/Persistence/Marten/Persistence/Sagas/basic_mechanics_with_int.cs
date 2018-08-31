@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Messaging.Sagas;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -165,8 +163,5 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
             state.ThreeCompleted.ShouldBeTrue();
         }
 
-        public basic_mechanics_with_int(DockerFixture<MartenContainer> fixture) : base(fixture)
-        {
-        }
     }
 }

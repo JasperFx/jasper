@@ -18,8 +18,6 @@ using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Util;
 using Marten;
 using NSubstitute;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -66,9 +64,6 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             assertEnvelopeWasNotEnqueued(envelope);
         }
 
-        public MartenBackedListenerTests(DockerFixture<MartenContainer> fixture) : base(fixture)
-        {
-        }
     }
 
     public class MartenBackedListenerContext : MartenContext, IDisposable
@@ -81,11 +76,11 @@ namespace IntegrationTests.Persistence.Marten.Persistence
         protected IWorkerQueue theWorkerQueue;
 
 
-        public MartenBackedListenerContext(DockerFixture<MartenContainer> fixture) : base(fixture)
+        public MartenBackedListenerContext()
         {
             theStore = DocumentStore.For(_ =>
             {
-                _.Connection(MartenContainer.ConnectionString);
+                _.Connection(Servers.PostgresConnectionString);
                 _.PLV8Enabled = false;
                 _.Storage.Add<PostgresqlEnvelopeStorage>();
             });

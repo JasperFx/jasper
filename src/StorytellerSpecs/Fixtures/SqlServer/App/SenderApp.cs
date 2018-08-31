@@ -1,9 +1,8 @@
 ﻿using Baseline.Dates;
+using IntegrationTests;
 using Jasper;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.SqlServer;
-using Servers;
-using Servers.Docker;
 
 namespace StorytellerSpecs.Fixtures.SqlServer.App
 {
@@ -15,7 +14,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
 
             Publish.Message<TraceMessage>().To(ReceiverApp.Listener);
 
-            Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString, "sender");
+            Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
 
             Settings.Alter<MessagingSettings>(_ =>
             {

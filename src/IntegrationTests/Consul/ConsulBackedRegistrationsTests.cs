@@ -2,7 +2,6 @@
 using Jasper.Consul;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -22,10 +21,6 @@ namespace IntegrationTests.Consul
                 runtime.Get<ISubscriptionsRepository>()
                     .ShouldBeOfType<ConsulSubscriptionRepository>();
             }
-        }
-
-        public ConsulBackedRegistrationsTests(DockerFixture<ConsulContainer> fixture) : base(fixture)
-        {
         }
     }
 

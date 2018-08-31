@@ -1,9 +1,8 @@
 ﻿using Baseline.Dates;
+using IntegrationTests;
 using Jasper;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
-using Servers;
-using Servers.Docker;
 
 namespace StorytellerSpecs.Fixtures.Marten.App
 {
@@ -17,7 +16,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Settings.ConfigureMarten(_ =>
             {
-                _.Connection(MartenContainer.ConnectionString);
+                _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "sender";
             });
 

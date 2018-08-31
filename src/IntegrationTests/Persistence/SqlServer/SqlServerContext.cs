@@ -1,16 +1,14 @@
 ﻿using Jasper.Persistence.SqlServer.Schema;
-using Servers;
-using Servers.Docker;
 using Xunit;
 
 namespace IntegrationTests.Persistence.SqlServer
 {
     [Collection("sqlserver")]
-    public abstract class SqlServerContext : IClassFixture<DockerFixture<SqlServerContainer>>
+    public abstract class SqlServerContext
     {
-        protected SqlServerContext(DockerFixture<SqlServerContainer> fixture)
+        protected SqlServerContext()
         {
-            var loader = new SchemaLoader(SqlServerContainer.ConnectionString);
+            var loader = new SchemaLoader(Servers.SqlServerConnectionString);
             loader.RecreateAll();
         }
     }

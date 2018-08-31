@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Baseline;
+using IntegrationTests;
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
@@ -10,7 +11,6 @@ using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
-using Servers.Docker;
 using StorytellerSpecs.Fixtures.Durability;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
@@ -28,7 +28,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             receiver.RebuildMessageStorage();
 
 
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 
@@ -52,19 +52,17 @@ create table receiver.item_created
 
         protected override void configureReceiver(JasperRegistry receiverRegistry)
         {
-            receiverRegistry.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString, "receiver");
+            receiverRegistry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
         }
 
         protected override void configureSender(JasperRegistry senderRegistry)
         {
-            senderRegistry.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString, "sender");
-
-
+            senderRegistry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
         }
 
         protected override ItemCreated loadItem(JasperRuntime receiver, Guid id)
         {
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 
@@ -72,10 +70,7 @@ create table receiver.item_created
                     .With("id", id)
                     .ExecuteScalar();
 
-                if (name.IsEmpty())
-                {
-                    return null;
-                }
+                if (name.IsEmpty()) return null;
 
                 return new ItemCreated
                 {
@@ -85,9 +80,10 @@ create table receiver.item_created
             }
         }
 
-        protected override async Task withContext(JasperRuntime sender, IMessageContext context, Func<IMessageContext, Task> action)
+        protected override async Task withContext(JasperRuntime sender, IMessageContext context,
+            Func<IMessageContext, Task> action)
         {
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 await conn.OpenAsync();
 
@@ -129,8 +125,8 @@ create table receiver.item_created
         [SqlTransaction]
         public static async Task Handle(
             ItemCreated created,
-            SqlConnection conn,      // the connection for the container scope
-            SqlTransaction tx,       // the current transaction
+            SqlConnection conn, // the connection for the container scope
+            SqlTransaction tx, // the current transaction
             Jasper.Messaging.Tracking.MessageTracker tracker,
             Envelope envelope)
         {

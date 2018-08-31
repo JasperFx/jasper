@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+using IntegrationTests;
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
@@ -22,8 +23,6 @@ using Jasper.Persistence.Marten.Resiliency;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using Servers;
-using Servers.Docker;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -32,13 +31,18 @@ namespace StorytellerSpecs.Fixtures.Marten
     public class MessageRecoveryFixture : Fixture, ISchedulingAgent
     {
         private readonly IList<Envelope> _envelopes = new List<Envelope>();
-        private int _currentNodeId;
 
-        private JasperRuntime _runtime;
-        private IDocumentStore theStore;
-        private RecordingWorkerQueue _workers;
+        private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
 
         private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
+        private int _currentNodeId;
+        private EnvelopeTables _marker;
+
+        private JasperRuntime _runtime;
+        private RecordingSchedulingAgent _schedulerAgent;
+        private MessagingSerializationGraph _serializers;
+        private RecordingWorkerQueue _workers;
+        private IDocumentStore theStore;
 
         public MessageRecoveryFixture()
         {
@@ -56,6 +60,14 @@ namespace StorytellerSpecs.Fixtures.Marten
             Lists["owners"].AddValues("This Node", "Other Node", "Any Node", "Third Node");
         }
 
+        void ISchedulingAgent.RescheduleOutgoingRecovery()
+        {
+        }
+
+        void ISchedulingAgent.RescheduleIncomingRecovery()
+        {
+        }
+
         public override void SetUp()
         {
             _envelopes.Clear();
@@ -66,9 +78,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             _runtime = JasperRuntime.For(_ =>
             {
-
-
-                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
+                _.MartenConnectionStringIs(Servers.PostgresConnectionString);
                 _.Services.AddSingleton<ITransport, StubTransport>();
 
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
@@ -83,7 +93,6 @@ namespace StorytellerSpecs.Fixtures.Marten
                     x.FirstNodeReassignmentExecution = 30.Minutes();
                     x.NodeReassignmentPollingTime = 30.Minutes();
                 });
-
             });
 
             _runtime.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
@@ -103,19 +112,17 @@ namespace StorytellerSpecs.Fixtures.Marten
         {
             _runtime.Dispose();
 
-            foreach (var locker in _nodeLockers)
-            {
-                locker.SafeDispose();
-            }
+            foreach (var locker in _nodeLockers) locker.SafeDispose();
 
             _nodeLockers.Clear();
         }
 
         [ExposeAsTable("The persisted envelopes are")]
         public void EnvelopesAre(
-            [Default("NULL")]string Note,
+            [Default("NULL")] string Note,
             Guid Id,
-            [SelectionList("channels"), Default("stub://one")] Uri Destination,
+            [SelectionList("channels")] [Default("stub://one")]
+            Uri Destination,
             [Default("NULL")] DateTime? ExecutionTime,
             [Default("TODAY+1")] DateTime DeliverBy,
             [SelectionList("status")] string Status,
@@ -144,14 +151,11 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("Channel {channel} is unavailable and latched for sending")]
         public void ChannelIsLatched(Uri channel)
         {
-
-
             getStubTransport().Channels[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
             _runtime.Get<IChannelGraph>().GetOrBuildChannel(channel);
         }
-
 
 
         private IList<OutgoingMessageAction> outgoingMessages()
@@ -188,7 +192,6 @@ namespace StorytellerSpecs.Fixtures.Marten
                     .Where(x => x.OwnerId == ownerId)
                     .ToList();
             }
-
         }
 
         public IGrammar ThePersistedEnvelopesOwnedByTheCurrentNodeAre()
@@ -212,13 +215,8 @@ namespace StorytellerSpecs.Fixtures.Marten
                 .MatchOn(x => x.Id);
         }
 
-        private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
-        private RecordingSchedulingAgent _schedulerAgent;
-        private EnvelopeTables _marker;
-        private MessagingSerializationGraph _serializers;
-
         [FormatAs("Node {node} is active")]
-        public void NodeIsActive([SelectionList("owners")]string node)
+        public void NodeIsActive([SelectionList("owners")] string node)
         {
             var ownerId = _owners[node];
             _nodeLockers.Add(new NodeLocker(ownerId));
@@ -229,16 +227,10 @@ namespace StorytellerSpecs.Fixtures.Marten
             using (var session = theStore.LightweightSession())
             {
                 foreach (var envelope in _envelopes)
-                {
                     if (envelope.Status == TransportConstants.Outgoing)
-                    {
                         session.StoreOutgoing(_marker, envelope, envelope.OwnerId);
-                    }
                     else
-                    {
                         session.StoreIncoming(_marker, envelope);
-                    }
-                }
 
                 await session.SaveChangesAsync();
             }
@@ -274,15 +266,6 @@ namespace StorytellerSpecs.Fixtures.Marten
         {
             return runAction<RecoverOutgoingMessages>();
         }
-
-        void ISchedulingAgent.RescheduleOutgoingRecovery()
-        {
-
-        }
-
-        void ISchedulingAgent.RescheduleIncomingRecovery()
-        {
-        }
     }
 
     public class NodeLocker : IDisposable
@@ -292,7 +275,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public NodeLocker(int nodeId)
         {
-            _conn = new NpgsqlConnection(MartenContainer.ConnectionString);
+            _conn = new NpgsqlConnection(Servers.PostgresConnectionString);
             _conn.Open();
             _tx = _conn.BeginTransaction();
 
@@ -316,12 +299,10 @@ namespace StorytellerSpecs.Fixtures.Marten
     {
         public void RescheduleOutgoingRecovery()
         {
-
         }
 
         public void RescheduleIncomingRecovery()
         {
-
         }
     }
 
@@ -339,15 +320,8 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public void AddQueue(string queueName, int parallelization)
         {
-
         }
 
-        public IScheduledJobProcessor ScheduledJobs
-        {
-            get
-            {
-                return new InMemoryScheduledJobProcessor(this);
-            }
-        }
+        public IScheduledJobProcessor ScheduledJobs => new InMemoryScheduledJobProcessor(this);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using Alba;
@@ -25,8 +24,8 @@ namespace StorytellerSpecs.Fixtures
     public class AspNetCoreIntegrationFixture : Fixture
     {
         private RecordingEnvironmentCheck theCheck;
-        private IWebHost theHost;
         private IContainer theContainer;
+        private IWebHost theHost;
 
 
         public AspNetCoreIntegrationFixture()
@@ -58,30 +57,11 @@ namespace StorytellerSpecs.Fixtures
             builder.UseJasper<BootstrappingApp>();
 
 
-
             theHost = builder.Build();
-
 
 
             theContainer = theHost.Services.As<IContainer>();
             theHost.Start();
-
-
-        }
-
-        public class AlbaSystem : SystemUnderTest
-        {
-            private readonly IWebHost _host;
-
-            public AlbaSystem(IWebHost host)
-            {
-                _host = host;
-            }
-
-            protected override IWebHost buildHost()
-            {
-                return _host;
-            }
         }
 
         public override void TearDown()
@@ -154,14 +134,14 @@ namespace StorytellerSpecs.Fixtures
         public bool HasMessageActivatorBeforeOtherActivators()
         {
             return theContainer.Model.For<IHostedService>().Instances.First()
-                .ImplementationType == typeof(MessagingActivator);
+                       .ImplementationType == typeof(MessagingActivator);
         }
 
         [FormatAs("9.) Has service registrations from Jasper")]
         public bool HasServiceRegistrationsFromJasper()
         {
             return theHost.Services.GetService<BootstrappingToken>()
-                .Id == BootstrappingApp.Id;
+                       .Id == BootstrappingApp.Id;
         }
 
         [FormatAs("10.) Has service registrations from outside of Jasper")]
@@ -196,6 +176,21 @@ namespace StorytellerSpecs.Fixtures
         {
             return theContainer.Model.For<IService>().Instances
                 .Any(x => x.ImplementationType == typeof(GreenService));
+        }
+
+        public class AlbaSystem : SystemUnderTest
+        {
+            private readonly IWebHost _host;
+
+            public AlbaSystem(IWebHost host)
+            {
+                _host = host;
+            }
+
+            protected override IWebHost buildHost()
+            {
+                return _host;
+            }
         }
     }
 
@@ -324,5 +319,4 @@ namespace StorytellerSpecs.Fixtures
         public string Team { get; set; }
         public string City { get; set; }
     }
-
 }

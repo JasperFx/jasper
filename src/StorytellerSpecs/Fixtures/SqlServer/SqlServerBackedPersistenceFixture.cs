@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using IntegrationTests;
 using Jasper;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
@@ -13,8 +14,6 @@ using Jasper.Persistence.SqlServer.Util;
 using Jasper.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Servers;
-using Servers.Docker;
 using StorytellerSpecs.Fixtures.SqlServer.App;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -37,16 +36,17 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public override void SetUp()
         {
-            _messageLogger = new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory(), new NulloMetrics());
+            _messageLogger =
+                new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory(), new NulloMetrics());
 
             _messageLogger.Start(Context);
 
             _senderWatcher = new SenderLatchDetected(new LoggerFactory());
 
-            new SchemaLoader(SqlServerContainer.ConnectionString, "receiver").RecreateAll();
-            new SchemaLoader(SqlServerContainer.ConnectionString, "sender").RecreateAll();
+            new SchemaLoader(Servers.SqlServerConnectionString, "receiver").RecreateAll();
+            new SchemaLoader(Servers.SqlServerConnectionString, "sender").RecreateAll();
 
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 
@@ -132,7 +132,7 @@ create table receiver.trace_doc
         [FormatAs("The persisted document count in the receiver should be {count}")]
         public int ReceivedMessageCount()
         {
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
                 return (int) conn.CreateCommand("select count(*) from receiver.trace_doc").ExecuteScalar();
@@ -143,13 +143,13 @@ create table receiver.trace_doc
         [FormatAs("Wait for {count} messages to be processed by the receivers")]
         public void WaitForMessagesToBeProcessed(int count)
         {
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 
                 for (var i = 0; i < 200; i++)
                 {
-                    var actual = (int)conn.CreateCommand("select count(*) from receiver.trace_doc").ExecuteScalar();
+                    var actual = (int) conn.CreateCommand("select count(*) from receiver.trace_doc").ExecuteScalar();
 
 
                     var envelopeCount = PersistedIncomingCount();
@@ -170,7 +170,7 @@ create table receiver.trace_doc
         [FormatAs("There should be {count} persisted, incoming messages in the receiver storage")]
         public int PersistedIncomingCount()
         {
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 
@@ -183,7 +183,7 @@ create table receiver.trace_doc
         [FormatAs("There should be {count} persisted, outgoing messages in the sender storage")]
         public int PersistedOutgoingCount()
         {
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 

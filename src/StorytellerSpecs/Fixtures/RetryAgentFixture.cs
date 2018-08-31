@@ -14,22 +14,58 @@ namespace StorytellerSpecs.Fixtures
 {
     public class RetryAgentFixture : Fixture, ISender
     {
-        protected RetrySettings theSettings;
-        protected LightweightRetryAgent theRetryAgent;
-        private Uri _destination;
-        private int _queuedCount;
+        private readonly List<Envelope> _enqueued = new List<Envelope>();
         private bool _latched;
 
-        private bool _pingFails = false;
-
-        private readonly List<Envelope> _enqueued = new List<Envelope>();
-
-        private OutgoingMessageBatch[] batches = new OutgoingMessageBatch[10];
+        private bool _pingFails;
         private bool _unlatched;
+
+        private readonly OutgoingMessageBatch[] batches = new OutgoingMessageBatch[10];
+        protected LightweightRetryAgent theRetryAgent;
+        protected RetrySettings theSettings;
 
         public RetryAgentFixture()
         {
             Title = "Lightweight Retry Agent";
+        }
+
+
+        void IDisposable.Dispose()
+        {
+        }
+
+        void ISender.Start(ISenderCallback callback)
+        {
+        }
+
+        Task ISender.Enqueue(Envelope envelope)
+        {
+            _enqueued.Add(envelope);
+            return Task.CompletedTask;
+        }
+
+        Uri ISender.Destination { get; }
+
+        int ISender.QueuedCount { get; }
+
+        bool ISender.Latched => _latched;
+
+        Task ISender.LatchAndDrain()
+        {
+            _latched = true;
+            return Task.CompletedTask;
+        }
+
+        void ISender.Unlatch()
+        {
+            _unlatched = true;
+        }
+
+        Task ISender.Ping()
+        {
+            if (_pingFails) throw new TimeoutException();
+
+            return Task.CompletedTask;
         }
 
         public override void SetUp()
@@ -42,10 +78,7 @@ namespace StorytellerSpecs.Fixtures
 
             theRetryAgent = new LightweightRetryAgent(this, theSettings);
 
-            for (int i = 0; i < batches.Length; i++)
-            {
-                batches[i] = batchForEnvelopes(15);
-            }
+            for (var i = 0; i < batches.Length; i++) batches[i] = batchForEnvelopes(15);
 
             _enqueued.Clear();
         }
@@ -60,7 +93,7 @@ namespace StorytellerSpecs.Fixtures
             return new Envelope
             {
                 DeliverBy = DateTime.UtcNow.AddHours(-1),
-                Data = new byte[]{1,2,3,4}
+                Data = new byte[] {1, 2, 3, 4}
             };
         }
 
@@ -68,27 +101,18 @@ namespace StorytellerSpecs.Fixtures
         {
             return new Envelope
             {
-                Data = new byte[]{1,2,3,4}
+                Data = new byte[] {1, 2, 3, 4}
             };
         }
 
         protected OutgoingMessageBatch batchForEnvelopes(int notExpired, int expired = 0)
         {
             var list = new List<Envelope>();
-            for (int i = 0; i < notExpired; i++)
-            {
-                list.Add(notExpiredEnvelope());
-            }
+            for (var i = 0; i < notExpired; i++) list.Add(notExpiredEnvelope());
 
-            for (int i = 0; i < expired; i++)
-            {
-                list.Add(expiredEnvelope());
-            }
+            for (var i = 0; i < expired; i++) list.Add(expiredEnvelope());
 
-            foreach (var envelope in list)
-            {
-                envelope.Destination = TransportConstants.LoopbackUri;
-            }
+            foreach (var envelope in list) envelope.Destination = TransportConstants.LoopbackUri;
 
             return new OutgoingMessageBatch(TransportConstants.LoopbackUri, list);
         }
@@ -165,10 +189,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Wait for the queued count to be zero")]
         public async Task WaitForQueuedToBeZero()
         {
-            while (theRetryAgent.Queued.Any())
-            {
-                await Task.Delay(50);
-            }
+            while (theRetryAgent.Queued.Any()) await Task.Delay(50);
         }
 
         [FormatAs("The Sender was unlatched")]
@@ -193,48 +214,6 @@ namespace StorytellerSpecs.Fixtures
         public void PingingIsSucceeding()
         {
             _pingFails = false;
-        }
-
-
-        void IDisposable.Dispose()
-        {
-        }
-
-        void ISender.Start(ISenderCallback callback)
-        {
-        }
-
-        Task ISender.Enqueue(Envelope envelope)
-        {
-            _enqueued.Add(envelope);
-            return Task.CompletedTask;
-        }
-
-        Uri ISender.Destination => _destination;
-
-        int ISender.QueuedCount => _queuedCount;
-
-        bool ISender.Latched => _latched;
-
-        Task ISender.LatchAndDrain()
-        {
-            _latched = true;
-            return Task.CompletedTask;
-        }
-
-        void ISender.Unlatch()
-        {
-            _unlatched = true;
-        }
-
-        Task ISender.Ping()
-        {
-            if (_pingFails)
-            {
-                throw new TimeoutException();
-            }
-
-            return Task.CompletedTask;
         }
     }
 }

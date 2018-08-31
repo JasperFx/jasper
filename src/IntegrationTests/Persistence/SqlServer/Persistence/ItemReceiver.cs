@@ -3,8 +3,6 @@ using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
-using Servers;
-using Servers.Docker;
 
 namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
@@ -15,7 +13,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             Handlers.Worker("items").IsDurable()
                 .HandlesMessage<ItemCreated>();
 
-            Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString, "receiver");
+            Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
             Services.AddSingleton<MessageTracker>();
 

@@ -17,7 +17,6 @@
     <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Storyteller\Jasper.TestSupport.Storyteller.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Alba\Jasper.TestSupport.Alba.csproj" />
-    <ProjectReference Include="..\Servers\Servers.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Consul" />

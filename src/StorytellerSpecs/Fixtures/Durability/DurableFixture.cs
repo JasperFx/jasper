@@ -10,7 +10,6 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Configuration;
-using Jasper.Storyteller.Logging;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,9 +43,6 @@ namespace StorytellerSpecs.Fixtures.Durability
                 .IncludeType<CascadeReceiver>()
                 .IncludeType<ScheduledMessageHandler>();
             senderRegistry.Services.AddSingleton(theTracker);
-
-
-
 
 
             senderRegistry.Publish.Message<TriggerMessage>().To(publishingUri);
@@ -140,7 +136,8 @@ namespace StorytellerSpecs.Fixtures.Durability
         protected abstract ItemCreated loadItem(JasperRuntime receiver, Guid id);
 
 
-        protected abstract Task withContext(JasperRuntime sender, IMessageContext context, Func<IMessageContext, Task> action);
+        protected abstract Task withContext(JasperRuntime sender, IMessageContext context,
+            Func<IMessageContext, Task> action);
 
         private Task send(Func<IMessageContext, Task> action)
         {
@@ -166,7 +163,6 @@ namespace StorytellerSpecs.Fixtures.Durability
             await waiter;
 
             await Task.Delay(500.Milliseconds());
-
 
 
             await assertReceivedItemMatchesSent(item);
@@ -246,10 +242,7 @@ namespace StorytellerSpecs.Fixtures.Durability
                 Id = Guid.NewGuid()
             };
 
-            await send(async c =>
-            {
-                await c.Schedule(item, 1.Hours());
-            });
+            await send(async c => { await c.Schedule(item, 1.Hours()); });
 
             var persistor = theSender.Get<IEnvelopePersistor>();
             var counts = await persistor.GetPersistedCounts();
@@ -300,7 +293,8 @@ namespace StorytellerSpecs.Fixtures.Durability
             var outgoing = loadAllOutgoingEnvelopes(theSender).SingleOrDefault();
 
             StoryTellerAssert.Fail(outgoing == null, "No outgoing envelopes are persisted");
-            StoryTellerAssert.Fail(outgoing.MessageType != typeof(ItemCreated).ToMessageAlias(), $"Envelope message type expected {typeof(ItemCreated).ToMessageAlias()}, but was {outgoing.MessageType}");
+            StoryTellerAssert.Fail(outgoing.MessageType != typeof(ItemCreated).ToMessageAlias(),
+                $"Envelope message type expected {typeof(ItemCreated).ToMessageAlias()}, but was {outgoing.MessageType}");
 
             return true;
         }
@@ -350,7 +344,6 @@ namespace StorytellerSpecs.Fixtures.Durability
                 await c.Schedule(message2, 5.Seconds());
                 await c.Schedule(message3, 2.Hours());
             });
-
 
 
             ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);
@@ -431,8 +424,6 @@ namespace StorytellerSpecs.Fixtures.Durability
             Console.WriteLine("Got me a ScheduledMessage");
             ReceivedMessages.Add(message);
             _source?.TrySetResult(message);
-
-
         }
 
         public static void Reset()

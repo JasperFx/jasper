@@ -8,8 +8,6 @@ using Jasper;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Util;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -22,7 +20,7 @@ namespace IntegrationTests.Consul
         private readonly JasperRuntime _runtime;
         private ISubscriptionsRepository theRepository;
 
-        public ConsulSubscriptionRepositoryTests(DockerFixture<ConsulContainer> container) : base(container)
+        public ConsulSubscriptionRepositoryTests()
         {
             using (var client = new ConsulClient())
             {

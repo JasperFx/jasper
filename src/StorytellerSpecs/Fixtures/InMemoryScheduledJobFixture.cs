@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging.Runtime;
@@ -17,11 +16,11 @@ namespace StorytellerSpecs.Fixtures
 {
     public class InMemoryScheduledJobFixture : Fixture, IWorkerQueue
     {
-        private InMemoryScheduledJobProcessor theScheduledJobs;
-        private IList<Envelope> sent = new List<Envelope>();
         private readonly Dictionary<Guid, TaskCompletionSource<Envelope>>
             _callbacks = new Dictionary<Guid, TaskCompletionSource<Envelope>>();
 
+        private readonly IList<Envelope> sent = new List<Envelope>();
+        private InMemoryScheduledJobProcessor theScheduledJobs;
 
 
         public InMemoryScheduledJobFixture()
@@ -29,25 +28,15 @@ namespace StorytellerSpecs.Fixtures
             Title = "In Memory Scheduled Jobs Compliance";
         }
 
-        public override void SetUp()
-        {
-            theScheduledJobs = new InMemoryScheduledJobProcessor(this);
-            sent.Clear();
-            _callbacks.Clear();
-        }
-
-        public override void TearDown()
-        {
-            base.TearDown();
-        }
+        public Uri Uri { get; }
+        public Uri ReplyUri { get; }
+        public Uri Destination { get; } = "loopback://delayed".ToUri();
+        public Uri Alias { get; }
 
         Task IWorkerQueue.Enqueue(Envelope envelope)
         {
             sent.Add(envelope);
-            if (_callbacks.ContainsKey(envelope.Id))
-            {
-                _callbacks[envelope.Id].SetResult(envelope);
-            }
+            if (_callbacks.ContainsKey(envelope.Id)) _callbacks[envelope.Id].SetResult(envelope);
 
             return Task.CompletedTask;
         }
@@ -61,10 +50,17 @@ namespace StorytellerSpecs.Fixtures
 
         public IScheduledJobProcessor ScheduledJobs => theScheduledJobs;
 
-        public Uri Uri { get; }
-        public Uri ReplyUri { get; }
-        public Uri Destination { get; } = "loopback://delayed".ToUri();
-        public Uri Alias { get; }
+        public override void SetUp()
+        {
+            theScheduledJobs = new InMemoryScheduledJobProcessor(this);
+            sent.Clear();
+            _callbacks.Clear();
+        }
+
+        public override void TearDown()
+        {
+            base.TearDown();
+        }
 
         private Task<Envelope> waitForReceipt(Envelope envelope)
         {
@@ -73,9 +69,6 @@ namespace StorytellerSpecs.Fixtures
 
             return source.Task;
         }
-
-
-
 
 
         [FormatAs("Run multiple messages through the in memory scheduler")]
@@ -131,7 +124,6 @@ namespace StorytellerSpecs.Fixtures
         }
 
 
-
         [FormatAs("Empty all queued jobs")]
         public async Task<bool> empty_all()
         {
@@ -183,7 +175,6 @@ namespace StorytellerSpecs.Fixtures
             theScheduledJobs.Count().ShouldBe(1);
 
             return true;
-
         }
     }
 

@@ -2,8 +2,6 @@
 using Jasper.Messaging;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +14,7 @@ namespace IntegrationTests.Persistence.Marten
         {
             using (var runtime = JasperRuntime.For(_ =>
             {
-                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
+                _.MartenConnectionStringIs(Servers.PostgresConnectionString);
                 _.Include<MartenBackedPersistence>();
             }))
             {
@@ -29,8 +27,5 @@ namespace IntegrationTests.Persistence.Marten
             }
         }
 
-        public channel_is_durable(DockerFixture<MartenContainer> fixture) : base(fixture)
-        {
-        }
     }
 }

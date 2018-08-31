@@ -2,8 +2,6 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Jasper.Persistence.SqlServer;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -11,16 +9,13 @@ namespace IntegrationTests.Persistence.SqlServer
 {
     public class advisory_lock_usage : SqlServerContext
     {
-        public advisory_lock_usage(DockerFixture<SqlServerContainer> p0) : base(p0)
-        {
-        }
 
         [Fact] // -- too slow
         public async Task tx_session_locks()
         {
-            using (var conn1 = new SqlConnection(SqlServerContainer.ConnectionString))
-            using (var conn2 = new SqlConnection(SqlServerContainer.ConnectionString))
-            using (var conn3 = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn1 = new SqlConnection(Servers.SqlServerConnectionString))
+            using (var conn2 = new SqlConnection(Servers.SqlServerConnectionString))
+            using (var conn3 = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -52,9 +47,9 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact] // - too slow
         public async Task global_session_locks()
         {
-            using (var conn1 = new SqlConnection(SqlServerContainer.ConnectionString))
-            using (var conn2 = new SqlConnection(SqlServerContainer.ConnectionString))
-            using (var conn3 = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn1 = new SqlConnection(Servers.SqlServerConnectionString))
+            using (var conn2 = new SqlConnection(Servers.SqlServerConnectionString))
+            using (var conn3 = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -87,9 +82,9 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public async Task explicitly_release_global_tx_session_locks()
         {
-            using (var conn1 = new SqlConnection(SqlServerContainer.ConnectionString))
-            using (var conn2 = new SqlConnection(SqlServerContainer.ConnectionString))
-            using (var conn3 = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn1 = new SqlConnection(Servers.SqlServerConnectionString))
+            using (var conn2 = new SqlConnection(Servers.SqlServerConnectionString))
+            using (var conn3 = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -128,9 +123,9 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public async Task explicitly_release_global_session_locks()
         {
-            using (var conn1 = new SqlConnection(SqlServerContainer.ConnectionString))
-            using (var conn2 = new SqlConnection(SqlServerContainer.ConnectionString))
-            using (var conn3 = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn1 = new SqlConnection(Servers.SqlServerConnectionString))
+            using (var conn2 = new SqlConnection(Servers.SqlServerConnectionString))
+            using (var conn3 = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();

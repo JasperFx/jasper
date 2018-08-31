@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+using IntegrationTests;
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
@@ -20,8 +21,6 @@ using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Resiliency;
 using Microsoft.Extensions.DependencyInjection;
-using Servers;
-using Servers.Docker;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -75,7 +74,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             _runtime = JasperRuntime.For(_ =>
             {
-                _.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString);
+                _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
                 _.Services.AddSingleton<ITransport, StubTransport>();
 
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
@@ -225,7 +224,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 else
                     await persistor.StoreIncoming(envelope);
 
-            using (var conn = new SqlConnection(SqlServerContainer.ConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 await conn.OpenAsync();
 
@@ -268,7 +267,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public NodeLocker(int nodeId)
         {
-            _conn = new SqlConnection(SqlServerContainer.ConnectionString);
+            _conn = new SqlConnection(Servers.SqlServerConnectionString);
             _conn.Open();
             _tx = _conn.BeginTransaction();
 

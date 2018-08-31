@@ -53,10 +53,7 @@ namespace StorytellerSpecs.Fixtures.Routing
             var alias = "unknown";
             TypeAliases.Each((a, t) =>
             {
-                if (t == type)
-                {
-                    alias = a;
-                }
+                if (t == type) alias = a;
             });
 
             return alias;
@@ -70,11 +67,12 @@ namespace StorytellerSpecs.Fixtures.Routing
 
             if (RouteArgument.Conversions.Has(parameter.ParameterType))
             {
-                var typeName =GetTypeAlias(parameter.ParameterType);
+                var typeName = GetTypeAlias(parameter.ParameterType);
 
 
                 return $"{parameter.Name}:{typeName}";
             }
+
             var props = parameter.ParameterType.GetProperties().Select(prop =>
             {
                 var typeName = GetTypeAlias(prop.PropertyType);
@@ -94,7 +92,8 @@ namespace StorytellerSpecs.Fixtures.Routing
 
         [ExposeAsTable("Derive Routes from Method Signature")]
         public void BuildRoute(
-            [Header("Method Signature")] [SelectionList("Methods")] string Method,
+            [Header("Method Signature")] [SelectionList("Methods")]
+            string Method,
             [SelectionList("HttpVerbs")] out string HttpMethod,
             out string Pattern,
             [Default("EMPTY")] out RouteArgumentExpectation[] Arguments)
@@ -135,7 +134,7 @@ namespace StorytellerSpecs.Fixtures.Routing
         public override string ToString()
         {
             var typeName = RouteBuilderFixture.GetTypeAlias(ArgType);
-                
+
             return $"{Key}@{Position}:{typeName}";
         }
 

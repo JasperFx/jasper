@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using IntegrationTests;
 using Jasper;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
@@ -13,8 +14,6 @@ using Marten;
 using Marten.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Servers;
-using Servers.Docker;
 using StorytellerSpecs.Fixtures.Marten.App;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -23,15 +22,14 @@ namespace StorytellerSpecs.Fixtures.Marten
 {
     public class MartenBackedPersistenceFixture : Fixture
     {
-        private DocumentStore _receiverStore;
-        private DocumentStore _sendingStore;
+        private StorytellerMessageLogger _messageLogger;
 
         private LightweightCache<string, JasperRuntime> _receivers;
+        private DocumentStore _receiverStore;
 
         private LightweightCache<string, JasperRuntime> _senders;
-
-        private StorytellerMessageLogger _messageLogger;
         private SenderLatchDetected _senderWatcher;
+        private DocumentStore _sendingStore;
 
         public MartenBackedPersistenceFixture()
         {
@@ -40,8 +38,8 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public override void SetUp()
         {
-
-            _messageLogger = new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory(), new NulloMetrics());
+            _messageLogger =
+                new StorytellerMessageLogger(new MessageHistory(), new LoggerFactory(), new NulloMetrics());
 
             _messageLogger.Start(Context);
 
@@ -50,7 +48,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             _receiverStore = DocumentStore.For(_ =>
             {
                 _.PLV8Enabled = false;
-                _.Connection(MartenContainer.ConnectionString);
+                _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "receiver";
                 _.Storage.Add<PostgresqlEnvelopeStorage>();
 
@@ -65,11 +63,10 @@ namespace StorytellerSpecs.Fixtures.Marten
             _sendingStore = DocumentStore.For(_ =>
             {
                 _.PLV8Enabled = false;
-                _.Connection(MartenContainer.ConnectionString);
+                _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "sender";
 
                 _.Storage.Add<PostgresqlEnvelopeStorage>();
-
             });
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
@@ -92,8 +89,6 @@ namespace StorytellerSpecs.Fixtures.Marten
 
                 return JasperRuntime.For(registry);
             });
-
-
         }
 
         public override void TearDown()
@@ -119,24 +114,25 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
         [FormatAs("Start sender node {name}")]
-        public void StartSender([Default("Sender1")]string name)
+        public void StartSender([Default("Sender1")] string name)
         {
             _senderWatcher.Reset();
             _senders.FillDefault(name);
         }
 
         [ExposeAsTable("Send Messages")]
-        public Task SendFrom([Header("Sending Node"), Default("Sender1")]string sender, [Header("Message Name")]string name)
+        public Task SendFrom([Header("Sending Node")] [Default("Sender1")]
+            string sender, [Header("Message Name")] string name)
         {
             return _senders[sender].Messaging.Send(new TraceMessage {Name = name});
         }
 
         [FormatAs("Send {count} messages from {sender}")]
-        public async Task SendMessages([Default("Sender1")]string sender, int count)
+        public async Task SendMessages([Default("Sender1")] string sender, int count)
         {
             var runtime = _senders[sender];
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
                 await runtime.Messaging.Send(msg);
@@ -158,7 +154,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         {
             using (var session = _receiverStore.QuerySession())
             {
-                for (int i = 0; i < 200; i++)
+                for (var i = 0; i < 200; i++)
                 {
                     var actual = session.Query<TraceDoc>().Count();
                     var envelopeCount = PersistedIncomingCount();
@@ -166,10 +162,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
                     Trace.WriteLine($"waitForMessages: {actual} actual & {envelopeCount} incoming envelopes");
 
-                    if (actual == count && envelopeCount == 0)
-                    {
-                        return;
-                    }
+                    if (actual == count && envelopeCount == 0) return;
 
                     Thread.Sleep(250);
                 }
@@ -217,8 +210,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             _senders[name].Dispose();
             _senders.Remove(name);
         }
-
-
     }
 
 
@@ -226,28 +217,22 @@ namespace StorytellerSpecs.Fixtures.Marten
     {
         public TaskCompletionSource<bool> Waiter = new TaskCompletionSource<bool>();
 
-        public Task<bool> Received => Waiter.Task;
-
         public SenderLatchDetected(ILoggerFactory factory) : base(factory, new NulloMetrics())
         {
         }
 
+        public Task<bool> Received => Waiter.Task;
+
         public override void CircuitResumed(Uri destination)
         {
-            if (destination == ReceiverApp.Listener)
-            {
-                Waiter.TrySetResult(true);
-            }
+            if (destination == ReceiverApp.Listener) Waiter.TrySetResult(true);
 
             base.CircuitResumed(destination);
         }
 
         public override void CircuitBroken(Uri destination)
         {
-            if (destination == ReceiverApp.Listener)
-            {
-                Reset();
-            }
+            if (destination == ReceiverApp.Listener) Reset();
 
             base.CircuitBroken(destination);
         }
@@ -257,6 +242,4 @@ namespace StorytellerSpecs.Fixtures.Marten
             Waiter = new TaskCompletionSource<bool>();
         }
     }
-
-
 }

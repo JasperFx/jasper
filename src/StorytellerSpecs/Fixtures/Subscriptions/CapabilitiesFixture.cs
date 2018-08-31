@@ -8,8 +8,8 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 {
     public class CapabilitiesFixture : BusFixture
     {
-        private ServiceCapabilities _current;
         private readonly IList<ServiceCapabilities> _services = new List<ServiceCapabilities>();
+        private ServiceCapabilities _current;
 
         public CapabilitiesFixture()
         {
@@ -48,14 +48,14 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public IGrammar ThePublishedMessagesAre()
         {
-            return VerifySetOf<PublishedMessage>(() => _current.Published)
+            return VerifySetOf(() => _current.Published)
                 .Titled("The published messages should be")
                 .MatchOn(x => x.MessageType, x => x.ContentTypes);
         }
 
         public IGrammar TheSubscriptionsAre()
         {
-            return VerifySetOf<Subscription>(() => _current.Subscriptions)
+            return VerifySetOf(() => _current.Subscriptions)
                 .Titled("The required subscriptions should be")
                 .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accept);
         }

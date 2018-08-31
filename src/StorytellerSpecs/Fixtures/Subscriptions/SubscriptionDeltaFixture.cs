@@ -39,14 +39,14 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public IGrammar ToBeCreated()
         {
-            return VerifySetOf<Subscription>(() => _delta.NewSubscriptions)
+            return VerifySetOf(() => _delta.NewSubscriptions)
                 .Titled("The missing subscriptions to be created are")
                 .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accept);
         }
 
         public IGrammar ToBeDeleted()
         {
-            return VerifySetOf<Subscription>(() => _delta.ObsoleteSubscriptions)
+            return VerifySetOf(() => _delta.ObsoleteSubscriptions)
                 .Titled("The obsolete subscriptions to be deleted are")
                 .MatchOn(x => x.MessageType, x => x.Destination, x => x.Accept);
         }

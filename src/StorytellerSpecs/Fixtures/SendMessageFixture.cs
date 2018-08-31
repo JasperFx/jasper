@@ -53,10 +53,7 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() =>
-            {
-                _runtime.Get<IMessageContext>().Send(message).Wait();
-            });
+            var waiter = history.Watch(() => { _runtime.Get<IMessageContext>().Send(message).Wait(); });
 
             waiter.Wait(5.Seconds());
 
@@ -134,6 +131,7 @@ namespace StorytellerSpecs.Fixtures
             {
                 // swallow the ex for the sake of the test
             }
+
             return _task.IsCompleted || _task.IsFaulted;
         }
 
@@ -194,7 +192,6 @@ namespace StorytellerSpecs.Fixtures
 
     public class Garbled
     {
-
     }
 
     [MessageAlias("ErrorMessage")]

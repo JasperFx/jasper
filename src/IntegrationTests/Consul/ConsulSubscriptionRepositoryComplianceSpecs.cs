@@ -8,8 +8,6 @@ using Jasper.Consul;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -24,7 +22,7 @@ namespace IntegrationTests.Consul
         private readonly JasperRuntime _primaryColors;
         private readonly JasperRuntime _otherWarm;
 
-        public SubscriptionComplianceSpecs(DockerFixture<ConsulContainer> container) : base(container)
+        public SubscriptionComplianceSpecs()
         {
             using (var runtime = JasperRuntime.For(configure))
             {

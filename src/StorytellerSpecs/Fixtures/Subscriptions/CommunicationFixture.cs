@@ -11,7 +11,6 @@ using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Tracking;
 using Jasper.Util;
 using Lamar;
-using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -19,8 +18,8 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 {
     public class CommunicationFixture : BusFixture
     {
+        private bool _initialized;
         private NodesCollection _nodes;
-        private bool _initialized = false;
         private JasperRuntime _publisher;
 
         public CommunicationFixture()
@@ -55,7 +54,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                     _nodes.Add(registry);
                     _initialized = false;
                 });
-
         }
 
         public IGrammar TheMessagesSentShouldBe()
@@ -85,8 +83,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                     };
 
                     _publisher = _nodes.Add(registry);
-
-
                 }
 
                 await _nodes.StoreSubscriptions();
@@ -102,19 +98,13 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() =>
-            {
-                _publisher.Messaging.Send(message).Wait();
-            });
+            var waiter = history.Watch(() => { _publisher.Messaging.Send(message).Wait(); });
 
             waiter.Wait(5.Seconds());
 
             StoryTellerAssert.Fail(!waiter.IsCompleted, "Messages were never completely tracked");
         }
-
-
     }
-
 
 
     [Hidden]
@@ -170,12 +160,29 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
     public class NodesCollection : IDisposable, IUriLookup
     {
-        public readonly MessageTracker Tracker = new MessageTracker();
-        public readonly MessageHistory History = new MessageHistory();
-        public readonly DefaultSubscriptionsRepository Subscriptions = new DefaultSubscriptionsRepository(new SubscriptionSettings());
-
         private readonly IList<JasperRuntime> _runtimes = new List<JasperRuntime>();
 
+        public readonly Dictionary<Uri, Uri> Aliases = new Dictionary<Uri, Uri>();
+        public readonly MessageHistory History = new MessageHistory();
+
+        public readonly DefaultSubscriptionsRepository Subscriptions =
+            new DefaultSubscriptionsRepository(new SubscriptionSettings());
+
+        public readonly MessageTracker Tracker = new MessageTracker();
+
+        public void Dispose()
+        {
+            Subscriptions?.Dispose();
+            foreach (var runtime in _runtimes) runtime.Dispose();
+        }
+
+        public string Protocol { get; } = "standin";
+
+        public Task<Uri[]> Lookup(Uri[] originals)
+        {
+            var actuals = originals.Select(x => Aliases[x]);
+            return Task.FromResult(actuals.ToArray());
+        }
 
 
         public JasperRuntime Add(JasperRegistry registry)
@@ -193,31 +200,9 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             return runtime;
         }
 
-        public string Protocol { get; } = "standin";
-
-        public readonly Dictionary<Uri, Uri> Aliases = new Dictionary<Uri, Uri>();
-
-        public Task<Uri[]> Lookup(Uri[] originals)
-        {
-            var actuals = originals.Select(x => Aliases[x]);
-            return Task.FromResult(actuals.ToArray());
-        }
-
         public async Task StoreSubscriptions()
         {
-            foreach (var runtime in _runtimes)
-            {
-                await runtime.PersistSubscriptions();
-            }
-        }
-
-        public void Dispose()
-        {
-            Subscriptions?.Dispose();
-            foreach (var runtime in _runtimes)
-            {
-                runtime.Dispose();
-            }
+            foreach (var runtime in _runtimes) await runtime.PersistSubscriptions();
         }
     }
 }

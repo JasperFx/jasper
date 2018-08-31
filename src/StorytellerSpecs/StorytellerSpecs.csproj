@@ -14,19 +14,13 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-storyteller" Version="5.1.3" />
+    <DotNetCliToolReference Include="dotnet-storyteller" Version="5.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
-    <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
+    <ProjectReference Include="..\IntegrationTests\IntegrationTests.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Storyteller\Jasper.TestSupport.Storyteller.csproj" />
-    <ProjectReference Include="..\Jasper\Jasper.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Alba\Jasper.TestSupport.Alba.csproj" />
     <ProjectReference Include="..\Servers\Servers.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Specs\Publishing\Lightweight\Resiliency" />
-    <Folder Include="Specs\Publishing\Lightweight\Resiliency" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NSubstitute" Version="3.1.0" />

@@ -14,13 +14,17 @@ namespace StorytellerSpecs.Fixtures.LQ
         public static Uri Channel3 = new Uri("durable://localhost:2201/three");
         public static Uri Channel4 = new Uri("durable://localhost:2201/four");
 
-        protected readonly Type[] messageTypes = new Type[] { typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4), typeof(Message5), typeof(Message6) };
+        protected readonly Type[] messageTypes =
+        {
+            typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4), typeof(Message5), typeof(Message6)
+        };
 
 
         protected LightningQueuesFixture()
         {
             AddSelectionValues("MessageTypes", messageTypes.Select(x => x.Name).ToArray());
-            AddSelectionValues("Channels", Channel1.ToString(), Channel2.ToString(), Channel3.ToString(), Channel4.ToString());
+            AddSelectionValues("Channels", Channel1.ToString(), Channel2.ToString(), Channel3.ToString(),
+                Channel4.ToString());
         }
 
         protected Type messageTypeFor(string name)
@@ -33,7 +37,6 @@ namespace StorytellerSpecs.Fixtures.LQ
     public class LQServiceBusApplication : LightningQueuesFixture
     {
         private JasperRegistry _registry;
-
 
 
         public override void SetUp()
@@ -52,7 +55,8 @@ namespace StorytellerSpecs.Fixtures.LQ
         }
 
         [FormatAs("Sends message {messageType} to {channel}")]
-        public void SendMessage([SelectionList("MessageTypes")] string messageType, [SelectionList("Channels")] Uri channel)
+        public void SendMessage([SelectionList("MessageTypes")] string messageType,
+            [SelectionList("Channels")] Uri channel)
         {
             var type = messageTypeFor(messageType);
             _registry.Publish.MessagesMatching(type.Name, t => t == type).To(channel);
@@ -61,6 +65,4 @@ namespace StorytellerSpecs.Fixtures.LQ
             _registry.Transports.ListenForMessagesFrom(channel);
         }
     }
-
-
 }

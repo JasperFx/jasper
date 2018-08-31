@@ -7,8 +7,6 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Util;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -27,12 +25,12 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         private Envelope theEnvelope;
         private Envelope persisted;
 
-        public SqlServerBackedMessagePersistenceTests(DockerFixture<SqlServerContainer> fixture) : base(fixture)
+        public SqlServerBackedMessagePersistenceTests()
         {
             theRuntime = JasperRuntime.For(_ =>
             {
 
-                _.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString);
+                _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
             });
 

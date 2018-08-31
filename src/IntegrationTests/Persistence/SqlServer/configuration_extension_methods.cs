@@ -5,8 +5,6 @@ using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -21,13 +19,13 @@ namespace IntegrationTests.Persistence.SqlServer
         public void bootstrap_with_connection_string()
         {
             using (var runtime = JasperRuntime.For(x =>
-                x.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString)))
+                x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
                 runtime.Container.Model.DefaultTypeFor<IDurableMessagingFactory>()
                     .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
 
                 runtime.Get<SqlServerSettings>()
-                    .ConnectionString.ShouldBe(SqlServerContainer.ConnectionString);
+                    .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
             }
         }
 
@@ -35,7 +33,7 @@ namespace IntegrationTests.Persistence.SqlServer
         public void bootstrap_with_configuration()
         {
             var registry = new JasperRegistry();
-            registry.Configuration.AddInMemoryCollection(new Dictionary<string, string> {{"connection", SqlServerContainer.ConnectionString}});
+            registry.Configuration.AddInMemoryCollection(new Dictionary<string, string> {{"connection", Servers.SqlServerConnectionString}});
 
             registry.Settings.PersistMessagesWithSqlServer((c, s) =>
                 {
@@ -48,13 +46,10 @@ namespace IntegrationTests.Persistence.SqlServer
                     .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
 
                 runtime.Get<SqlServerSettings>()
-                    .ConnectionString.ShouldBe(SqlServerContainer.ConnectionString);
+                    .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
             }
         }
 
-        public configuration_extension_methods(DockerFixture<SqlServerContainer> fixture) : base(fixture)
-        {
-        }
     }
 
     // SAMPLE: AppUsingSqlServer

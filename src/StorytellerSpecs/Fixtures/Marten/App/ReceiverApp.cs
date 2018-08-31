@@ -1,15 +1,14 @@
 ﻿using System;
+using IntegrationTests;
 using Jasper;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
-using Servers;
-using Servers.Docker;
 
 namespace StorytellerSpecs.Fixtures.Marten.App
 {
     public class ReceiverApp : JasperRegistry
     {
-        public readonly static Uri Listener = "tcp://localhost:2555/durable".ToUri();
+        public static readonly Uri Listener = "tcp://localhost:2555/durable".ToUri();
 
         public ReceiverApp()
         {
@@ -18,9 +17,8 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Settings.ConfigureMarten(_ =>
             {
-                _.Connection(MartenContainer.ConnectionString);
+                _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "receiver";
-
             });
 
             Include<MartenBackedPersistence>();

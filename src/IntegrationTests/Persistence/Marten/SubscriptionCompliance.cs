@@ -8,8 +8,6 @@ using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Subscriptions;
 using Marten;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -17,7 +15,7 @@ namespace IntegrationTests.Persistence.Marten
 {
     public class SubscriptionComplianceSpecs : MartenContext, IDisposable
     {
-        public SubscriptionComplianceSpecs(DockerFixture<MartenContainer> fixture) : base(fixture)
+        public SubscriptionComplianceSpecs()
         {
             using (var runtime = JasperRuntime.For(configure))
             {
@@ -100,11 +98,11 @@ namespace IntegrationTests.Persistence.Marten
         {
             registry.Include<MartenBackedSubscriptions>();
 
-            registry.MartenConnectionStringIs(MartenContainer.ConnectionString);
+            registry.MartenConnectionStringIs(Servers.PostgresConnectionString);
 
             registry.Settings.Alter<MartenSubscriptionSettings>(x =>
             {
-                x.StoreOptions.Connection(MartenContainer.ConnectionString);
+                x.StoreOptions.Connection(Servers.PostgresConnectionString);
             });
         }
 

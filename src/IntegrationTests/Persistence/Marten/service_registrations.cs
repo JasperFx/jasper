@@ -1,8 +1,6 @@
 ﻿using System;
 using Jasper;
 using Marten;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -31,9 +29,6 @@ namespace IntegrationTests.Persistence.Marten
             }
         }
 
-        public service_registrations(DockerFixture<MartenContainer> fixture) : base(fixture)
-        {
-        }
     }
 
     public class FakeDoc
@@ -47,7 +42,7 @@ namespace IntegrationTests.Persistence.Marten
         {
             Settings.Alter<StoreOptions>(_ =>
             {
-                _.Connection(MartenContainer.ConnectionString);
+                _.Connection(Servers.PostgresConnectionString);
                 _.AutoCreateSchemaObjects = AutoCreate.All;
             });
         }

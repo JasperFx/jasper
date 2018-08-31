@@ -9,8 +9,6 @@ using Marten;
 using Marten.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -35,7 +33,7 @@ namespace IntegrationTests.Persistence.Marten.Sample
 
     public class MessageInvocationTests : MartenContext, IDisposable
     {
-        public MessageInvocationTests(DockerFixture<MartenContainer> fixture) : base(fixture)
+        public MessageInvocationTests()
         {
             theRuntime = JasperRuntime.For<SampleApp>();
 
@@ -166,7 +164,7 @@ namespace IntegrationTests.Persistence.Marten.Sample
     {
         public SampleApp()
         {
-            Settings.Alter<StoreOptions>(_ => { _.Connection(MartenContainer.ConnectionString); });
+            Settings.Alter<StoreOptions>(_ => { _.Connection(Servers.PostgresConnectionString); });
 
             Publish.AllMessagesLocally();
             Services.AddSingleton<UserNames>();

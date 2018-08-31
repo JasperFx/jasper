@@ -15,8 +15,6 @@ using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -98,7 +96,7 @@ namespace IntegrationTests.RabbitMQ
 
                 _.Include<MartenBackedPersistence>();
 
-                _.Settings.MartenConnectionStringIs(MartenContainer.ConnectionString);
+                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
             });
 
             publisher.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
@@ -112,7 +110,7 @@ namespace IntegrationTests.RabbitMQ
 
                 _.Include<MartenBackedPersistence>();
 
-                _.Settings.MartenConnectionStringIs(MartenContainer.ConnectionString);
+                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
             });
 
             var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
@@ -194,9 +192,6 @@ namespace IntegrationTests.RabbitMQ
 
         }
 
-        public end_to_end(DockerFixture<RabbitMQContainer> p0) : base(p0)
-        {
-        }
     }
 
 

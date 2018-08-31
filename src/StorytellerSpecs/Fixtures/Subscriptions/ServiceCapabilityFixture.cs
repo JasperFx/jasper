@@ -26,19 +26,18 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
     [Hidden]
     public class ServiceCapabilityFixture : BusFixture
     {
-        private JasperRegistry _registry;
-
         private readonly Dictionary<Type, Type> _handlerTypes = new Dictionary<Type, Type>
         {
-            {typeof(Message1), typeof(Message1Handler) },
-            {typeof(Message2), typeof(Message2Handler) },
-            {typeof(Message3), typeof(Message3Handler) },
-            {typeof(Message4), typeof(Message4Handler) },
-            {typeof(Message5), typeof(Message5Handler) },
-            {typeof(Message6), typeof(Message6Handler) },
-            {typeof(ErrorMessage), typeof(ErrorMessageHandler) },
-
+            {typeof(Message1), typeof(Message1Handler)},
+            {typeof(Message2), typeof(Message2Handler)},
+            {typeof(Message3), typeof(Message3Handler)},
+            {typeof(Message4), typeof(Message4Handler)},
+            {typeof(Message5), typeof(Message5Handler)},
+            {typeof(Message6), typeof(Message6Handler)},
+            {typeof(ErrorMessage), typeof(ErrorMessageHandler)}
         };
+
+        private JasperRegistry _registry;
 
 
         public override void SetUp()
@@ -62,9 +61,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             }
 
             Context.State.Store(capabilities);
-
-
-
         }
 
         [ExposeAsTable("The message types handled in the service are")]
@@ -97,14 +93,14 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         [FormatAs("Publishes message {messageType}")]
         public void Publishes(
-            [SelectionList("MessageTypes")]string messageType)
+            [SelectionList("MessageTypes")] string messageType)
         {
             PublishesWithExtraContentTypes(messageType, new string[0]);
         }
 
         [FormatAs("Publishes message {MessageType} with extra content types {contentTypes}")]
         public void PublishesWithExtraContentTypes(
-            [SelectionList("MessageTypes")]string MessageType,
+            [SelectionList("MessageTypes")] string MessageType,
             string[] contentTypes)
         {
             var type = messageTypeFor(MessageType);
@@ -118,7 +114,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         }
 
         [FormatAs("The default subscription receiver is {uri}")]
-        public void DefaultSubscriptionReceiverIs([SelectionList("Channels")]string uri)
+        public void DefaultSubscriptionReceiverIs([SelectionList("Channels")] string uri)
         {
             _registry.Subscribe.At(uri);
         }
@@ -138,14 +134,13 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             var type = messageTypeFor(messageType);
             _registry.Subscribe.To(type).At(receiver);
-
-
         }
 
         [ExposeAsTable("The custom media readers are")]
         public void CustomReadersAre(
-            [SelectionList("MessageTypes"), Header("Message Type")] string messageType,
-            [Header("Content Types")]string[] contentTypes)
+            [SelectionList("MessageTypes")] [Header("Message Type")]
+            string messageType,
+            [Header("Content Types")] string[] contentTypes)
         {
             var type = messageTypeFor(messageType);
 
@@ -165,22 +160,20 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                 _registry.Services.For<ITransport>().Add(transport);
             }
         }
-
     }
 
     public class FakeTransport : ITransport
     {
-        public string Protocol { get; }
-
         public FakeTransport(string protocol)
         {
             Protocol = protocol;
         }
 
+        public string Protocol { get; }
+
 
         public void Dispose()
         {
-
         }
 
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
@@ -192,7 +185,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public void StartListening(IMessagingRoot root)
         {
-
         }
 
         public void Describe(TextWriter writer)

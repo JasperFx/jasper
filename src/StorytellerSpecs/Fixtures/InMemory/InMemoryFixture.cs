@@ -14,13 +14,17 @@ namespace StorytellerSpecs.Fixtures.InMemory
         public static Uri Channel3 = new Uri("loopback://three");
         public static Uri Channel4 = new Uri("loopback://four");
 
-        protected readonly Type[] messageTypes = new Type[] { typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4), typeof(Message5), typeof(Message6) };
+        protected readonly Type[] messageTypes =
+        {
+            typeof(Message1), typeof(Message2), typeof(Message3), typeof(Message4), typeof(Message5), typeof(Message6)
+        };
 
 
         protected InMemoryFixture()
         {
             AddSelectionValues("MessageTypes", messageTypes.Select(x => x.Name).ToArray());
-            AddSelectionValues("Channels", Channel1.ToString(), Channel2.ToString(), Channel3.ToString(), Channel4.ToString());
+            AddSelectionValues("Channels", Channel1.ToString(), Channel2.ToString(), Channel3.ToString(),
+                Channel4.ToString());
         }
 
         protected Type messageTypeFor(string name)
@@ -50,7 +54,8 @@ namespace StorytellerSpecs.Fixtures.InMemory
         }
 
         [FormatAs("Sends message {messageType} to {channel}")]
-        public void SendMessage([SelectionList("MessageTypes")] string messageType, [SelectionList("Channels")] Uri channel)
+        public void SendMessage([SelectionList("MessageTypes")] string messageType,
+            [SelectionList("Channels")] Uri channel)
         {
             var type = messageTypeFor(messageType);
             _registry.Publish.MessagesMatching(type.Name, t => t == type).To(channel);

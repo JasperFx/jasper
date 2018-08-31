@@ -1,13 +1,10 @@
-﻿using Servers.Docker;
-using Xunit;
+﻿using Xunit;
 
 namespace IntegrationTests.Consul
 {
     [Collection("consul")]
-    public class ConsulContext : IClassFixture<DockerFixture<ConsulContainer>>
+    public class ConsulContext
     {
-        public ConsulContext(DockerFixture<ConsulContainer> fixture)
-        {
-        }
+
     }
 }

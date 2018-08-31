@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Transports;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -49,8 +47,5 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             assertEnvelopeWasNotEnqueued(envelope);
         }
 
-        public SqlServerBackedListenerTests(DockerFixture<SqlServerContainer> fixture) : base(fixture)
-        {
-        }
     }
 }

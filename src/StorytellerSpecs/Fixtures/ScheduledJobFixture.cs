@@ -66,7 +66,7 @@ namespace StorytellerSpecs.Fixtures
     {
         public readonly ScheduledMessageReceiver Receiver = new ScheduledMessageReceiver();
 
-        public ScheduledMessageApp() : base()
+        public ScheduledMessageApp()
         {
             Services.AddSingleton(Receiver);
 
@@ -80,7 +80,6 @@ namespace StorytellerSpecs.Fixtures
                 x.DisableConventionalDiscovery();
                 x.IncludeType<ScheduledMessageCatcher>();
             });
-
         }
     }
 
@@ -115,8 +114,5 @@ namespace StorytellerSpecs.Fixtures
 
             _receiver.ReceivedMessages.Add(message);
         }
-
-
-
     }
 }

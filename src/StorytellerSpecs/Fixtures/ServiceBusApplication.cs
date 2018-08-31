@@ -1,7 +1,6 @@
 ﻿using System;
 using Baseline;
 using Jasper;
-using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Tracking;
@@ -29,7 +28,6 @@ namespace StorytellerSpecs.Fixtures
 
 
             _registry.Services.For<IMessageLogger>().Use<StorytellerMessageLogger>().Singleton();
-
         }
 
         public override void TearDown()

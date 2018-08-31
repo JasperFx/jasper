@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using Jasper.Persistence.Marten.Resiliency;
 using Npgsql;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -14,9 +12,9 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
         //[Fact] -- too slow
         public async Task tx_session_locks()
         {
-            using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn3 = new NpgsqlConnection(Servers.PostgresConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -54,9 +52,9 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
         //[Fact] - too slow
         public async Task global_session_locks()
         {
-            using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn3 = new NpgsqlConnection(Servers.PostgresConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -90,9 +88,9 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
         {
             var lockNumber = new Random().Next();
 
-            using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn3 = new NpgsqlConnection(Servers.PostgresConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -125,9 +123,9 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
         {
             var lockNumber = new Random().Next();
 
-            using (var conn1 = new NpgsqlConnection(MartenContainer.ConnectionString))
-            using (var conn2 = new NpgsqlConnection(MartenContainer.ConnectionString))
-            using (var conn3 = new NpgsqlConnection(MartenContainer.ConnectionString))
+            using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn3 = new NpgsqlConnection(Servers.PostgresConnectionString))
             {
                 await conn1.OpenAsync();
                 await conn2.OpenAsync();
@@ -158,10 +156,6 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
 
                 throw new Exception("Advisory lock was not released");
             }
-        }
-
-        public advisory_lock_usage(DockerFixture<MartenContainer> fixture) : base(fixture)
-        {
         }
     }
 }

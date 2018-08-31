@@ -9,8 +9,6 @@ using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -18,11 +16,11 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class MartenBackedMessagePersistenceTests : MartenContext, IDisposable
     {
-        public MartenBackedMessagePersistenceTests(DockerFixture<MartenContainer> fixture) : base(fixture)
+        public MartenBackedMessagePersistenceTests()
         {
             theRuntime = JasperRuntime.For(_ =>
             {
-                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
+                _.MartenConnectionStringIs(Servers.PostgresConnectionString);
                 _.ConfigureMarten(x =>
                 {
                     x.Storage.Add<PostgresqlEnvelopeStorage>();

@@ -25,7 +25,8 @@ namespace StorytellerSpecs.Fixtures.Routing
         }
 
         [ExposeAsTable("The selection and arguments should be")]
-        public void TheSelectionShouldBe(string Url, out string Selected, [Default("NONE")]out ArgumentExpectation Arguments)
+        public void TheSelectionShouldBe(string Url, out string Selected,
+            [Default("NONE")] out ArgumentExpectation Arguments)
         {
             var env = StubHttpContext.Empty();
             var leaf = _tree.Select(Url);
@@ -34,13 +35,12 @@ namespace StorytellerSpecs.Fixtures.Routing
 
             Arguments = new ArgumentExpectation(env);
         }
-
     }
 
     public class ArgumentExpectation
     {
-        private readonly string[] _spread;
         private readonly IDictionary<string, object> _args;
+        private readonly string[] _spread;
 
         public ArgumentExpectation(string text)
         {
@@ -56,14 +56,9 @@ namespace StorytellerSpecs.Fixtures.Routing
                 var key = parts[0].Trim();
                 var value = parts[1].Trim();
                 if (key == "spread")
-                {
                     _spread = value == "empty" ? new string[0] : value.Split(',').Select(x => x.Trim()).ToArray();
-                }
                 else
-                {
                     _args.Add(key, value);
-                }
-
             }
         }
 
@@ -82,8 +77,8 @@ namespace StorytellerSpecs.Fixtures.Routing
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ArgumentExpectation)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((ArgumentExpectation) obj);
         }
 
         public override int GetHashCode()

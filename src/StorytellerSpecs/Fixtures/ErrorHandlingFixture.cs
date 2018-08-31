@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
-using StoryTeller;
-using StoryTeller.Grammars.Tables;
-using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
@@ -15,10 +13,11 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
+using StoryTeller;
+using StoryTeller.Grammars.Tables;
 
 namespace StorytellerSpecs.Fixtures
 {
-
     [SelectionList("ErrorTypes")]
     public class ErrorType
     {
@@ -34,7 +33,8 @@ namespace StorytellerSpecs.Fixtures
     {
         protected ErrorHandlingFixtureBase()
         {
-            AddSelectionValues("ErrorTypes", ErrorCausingMessageHandler.ExceptionTypes.Select(x => x.Name).Concat(new string[]{"No Error"}).ToArray());
+            AddSelectionValues("ErrorTypes",
+                ErrorCausingMessageHandler.ExceptionTypes.Select(x => x.Name).Concat(new[] {"No Error"}).ToArray());
         }
     }
 
@@ -93,17 +93,16 @@ namespace StorytellerSpecs.Fixtures
 
     public class ErrorHandlingFixture : ErrorHandlingFixtureBase
     {
-        private JasperRuntime _runtime;
-        private HandlerGraph _graph;
-        private HandlerChain _chain;
-        private StubTransport _transport;
         private IMessageContext _bus;
+        private HandlerChain _chain;
+        private HandlerGraph _graph;
         private ErrorCausingMessage _message;
+        private JasperRuntime _runtime;
         private AttemptTracker _tracker;
+        private StubTransport _transport;
 
         public override void SetUp()
         {
-
             _tracker = new AttemptTracker();
 
             var registry = new JasperRegistry();
@@ -172,32 +171,21 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("The message should have ended as '{result}' on attempt {attempt}")]
         public void MessageResult(
             out int attempt,
-            [SelectionValues("Succeeded", "MovedToErrorQueue", "Retry in 5 seconds")]out string result)
+            [SelectionValues("Succeeded", "MovedToErrorQueue", "Retry in 5 seconds")]
+            out string result)
         {
             attempt = _tracker.LastAttempt;
             result = "Unknown";
 
             var callback = _transport.LastCallback();
-            if (callback == null)
-            {
-                throw new Exception("Something went really wrong, there's no message history");
-            }
+            if (callback == null) throw new Exception("Something went really wrong, there's no message history");
 
             if (callback.MarkedSucessful)
-            {
                 result = "Succeeded";
-            }
             else if (callback.WasMovedToErrors)
-            {
                 result = "MovedToErrorQueue";
-            }
-            else if (callback.DelayedTo != null)
-            {
-                result = "Retry in 5 seconds";
-            }
+            else if (callback.DelayedTo != null) result = "Retry in 5 seconds";
         }
-
-
     }
 
     public class AttemptTracker
@@ -214,8 +202,13 @@ namespace StorytellerSpecs.Fixtures
 
     public class ErrorCausingMessageHandler
     {
-        public static readonly IList<Type> ExceptionTypes = new List<Type>{typeof(DivideByZeroException), typeof(DataMisalignedException), typeof(InvalidOperationException), typeof(ArgumentNullException)};
-
+        public static readonly IList<Type> ExceptionTypes = new List<Type>
+        {
+            typeof(DivideByZeroException),
+            typeof(DataMisalignedException),
+            typeof(InvalidOperationException),
+            typeof(ArgumentNullException)
+        };
 
 
         public void Handle(ErrorCausingMessage message, Envelope envelope, AttemptTracker tracker)

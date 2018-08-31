@@ -12,8 +12,6 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using NSubstitute;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -27,12 +25,12 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         private EnvelopeRetries theRetries;
         private SqlServerEnvelopePersistor thePersistor;
 
-        public SqlServerCallbackTests(DockerFixture<SqlServerContainer> fixture) : base(fixture)
+        public SqlServerCallbackTests()
         {
             // SAMPLE: SqlServer-RebuildMessageStorage
             theRuntime = JasperRuntime.For(_ =>
             {
-                _.Settings.PersistMessagesWithSqlServer(SqlServerContainer.ConnectionString);
+                _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
 
             theRuntime.RebuildMessageStorage();

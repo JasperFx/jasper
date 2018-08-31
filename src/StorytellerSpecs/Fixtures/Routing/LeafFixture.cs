@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Jasper.Http.Routing;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -10,7 +9,8 @@ namespace StorytellerSpecs.Fixtures.Routing
     public class LeafFixture : Fixture
     {
         [ExposeAsTable("Route Creation and Parsing")]
-        public void CreateLeaf(string Route, out string NodePath, [Default("false")]out bool HasSpread, [Default("NONE")] out ParameterExpectation Parameters)
+        public void CreateLeaf(string Route, out string NodePath, [Default("false")] out bool HasSpread,
+            [Default("NONE")] out ParameterExpectation Parameters)
         {
             var leaf = new Route(Route, HttpVerbs.GET);
             NodePath = leaf.NodePath;
@@ -37,17 +37,11 @@ namespace StorytellerSpecs.Fixtures.Routing
                     var position = int.Parse(vals[1]);
 
                     if (key == "spread")
-                    {
                         _segments.Add(new Spread(position));
-                    }
                     else
-                    {
                         _segments.Add(new RouteArgument(key, position));
-                    }
                 }
             }
-
-
         }
 
         public ParameterExpectation(Route route)
@@ -57,10 +51,7 @@ namespace StorytellerSpecs.Fixtures.Routing
 
         public override string ToString()
         {
-            if (!_segments.Any())
-            {
-                return "NONE";
-            }
+            if (!_segments.Any()) return "NONE";
 
             var segments = _segments.OrderBy(x => x.Position).Select(x => x.ToString()).ToArray();
             return string.Join("; ", segments);
@@ -77,28 +68,13 @@ namespace StorytellerSpecs.Fixtures.Routing
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ParameterExpectation)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((ParameterExpectation) obj);
         }
 
         public override int GetHashCode()
         {
-            return (_segments != null ? _segments.GetHashCode() : 0);
+            return _segments != null ? _segments.GetHashCode() : 0;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

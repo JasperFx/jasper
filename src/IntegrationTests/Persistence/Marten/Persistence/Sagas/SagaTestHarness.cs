@@ -8,8 +8,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
 using Marten;
-using Servers;
-using Servers.Docker;
+
 
 namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 {
@@ -19,12 +18,12 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
         private readonly MessageHistory _history;
         private readonly JasperRuntime _runtime;
 
-        protected SagaTestHarness(DockerFixture<MartenContainer> fixture) : base(fixture)
+        protected SagaTestHarness()
         {
             _runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
-                _.MartenConnectionStringIs(MartenContainer.ConnectionString);
+                _.MartenConnectionStringIs(Servers.PostgresConnectionString);
                 _.Include<MartenBackedPersistence>();
 
                 _.Include<MessageTrackingExtension>();

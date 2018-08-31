@@ -8,8 +8,6 @@ using Jasper;
 using Jasper.Consul;
 using Jasper.Consul.Internal;
 using Jasper.Messaging.Runtime.Subscriptions;
-using Servers;
-using Servers.Docker;
 using Shouldly;
 using Xunit;
 
@@ -19,12 +17,6 @@ namespace IntegrationTests.Consul
     {
         private JasperRuntime _runtime;
         private INodeDiscovery theNodeDiscovery;
-
-        public ConsulNodeDiscoveryTests(DockerFixture<ConsulContainer> container) : base(container)
-        {
-
-
-        }
 
         private async Task withApp()
         {
