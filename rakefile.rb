@@ -14,14 +14,14 @@ BUILD_NUMBER = build_number
 CI = ENV["CI"].nil? ? false : true
 
 task :ci => [:default, :commands]
-#task :ci => [:default, :commands, :integrationtests, :pack, :appVeyorPush]
+#task :ci => [:default, :commands, :pack, :appVeyorPush]
 
 
 task :default => [:test, :integrationtests, :storyteller]
 task :full => [:default, :integrationtests]
 
 
-  
+
 
 
 desc "Prepares the working directory for a new build"
@@ -154,7 +154,7 @@ end
 
 desc "Run the storyteller specifications"
 task :storyteller => [:compile] do
-  
+
 
   sh "docker-compose up -d"
 
