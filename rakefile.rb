@@ -133,7 +133,8 @@ task :pack do
 end
 
 def pack_nuget(project)
-  sh "dotnet pack src/#{project}/#{project}.csproj -o ./../../artifacts --configuration Release --no-restore"
+  file = "src/#{project}/#{project}.csproj"
+  sh "dotnet pack #{file} -o ./../../artifacts --configuration Release --no-restore"
 end
 
 desc "Pushes the Nuget's to AppVeyor"
