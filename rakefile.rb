@@ -121,15 +121,19 @@ end
 
 desc 'Build Nuspec packages'
 task :pack do
-	sh "dotnet pack src/Jasper/Jasper.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.Persistence.Marten/Jasper.Persistence.Marten.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.Persistence.SqlServer/Jasper.Persistence.SqlServer.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.Consul/Jasper.Consul.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.TestSupport.Storyteller/Jasper.TestSupport.Storyteller.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.TestSupport.Alba/Jasper.TestSupport.Alba.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.RabbitMQ/Jasper.RabbitMQ.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.ApplicationInsights/Jasper.ApplicationInsights.csproj -o ./../../artifacts --configuration Release --no-restore"
-  sh "dotnet pack src/Jasper.JsonCommands/Jasper.JsonCommands.csproj -o ./../../artifacts --configuration Release --no-restore"
+  pack_nuget 'Jasper'
+  pack_nuget 'Jasper.Persistence.Marten'
+  pack_nuget 'Jasper.Persistence.SqlServer'
+  pack_nuget 'Jasper.Consul'
+  pack_nuget 'Jasper.TestSupport.Storyteller'
+  pack_nuget 'Jasper.TestSupport.Alba'
+  pack_nuget 'Jasper.RabbitMQ'
+  pack_nuget 'Jasper.ApplicationInsights'
+  pack_nuget 'Jasper.JsonCommands'
+end
+
+def pack_nuget(project)
+  sh "dotnet pack src/#{project}/#{project}.csproj -o ./../../artifacts --configuration Release --no-restore"
 end
 
 desc "Pushes the Nuget's to AppVeyor"
