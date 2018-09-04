@@ -1,10 +1,10 @@
 # Sending Resumes when the Receiver is Detected
 
 -> id = 504bb3d3-bbf7-409a-b959-ab27bad87032
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-12-01T13:55:27.9111770Z
--> tags =
+-> last-updated = 2018-09-04T20:44:37.8542480Z
+-> tags = 
 
 [SqlServerBackedPersistence]
 |> StartSender name=Sender1
