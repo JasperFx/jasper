@@ -2,8 +2,8 @@
 
 -> id = 504bb3d3-bbf7-409a-b959-ab27bad87032
 -> lifecycle = Regression
--> max-retries = 0
--> last-updated = 2018-09-04T20:44:37.8542480Z
+-> max-retries = 2
+-> last-updated = 2018-09-08T01:53:40.3804670Z
 -> tags = 
 
 [SqlServerBackedPersistence]

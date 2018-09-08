@@ -1,9 +1,9 @@
 # Sending Recovered Messages when Sender Starts Up
 
 -> id = ee2f1d5a-3c77-4ea6-8f1f-8d788efc017e
--> lifecycle = Acceptance
+-> lifecycle = Regression
 -> max-retries = 0
--> last-updated = 2017-12-01T13:55:36.9710820Z
+-> last-updated = 2018-09-08T01:53:49.3145120Z
 -> tags = 
 
 [MartenBackedPersistence]

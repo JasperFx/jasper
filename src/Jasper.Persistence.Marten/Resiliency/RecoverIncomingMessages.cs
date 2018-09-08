@@ -8,6 +8,7 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Marten.Util;
+using Npgsql;
 
 namespace Jasper.Persistence.Marten.Resiliency
 {

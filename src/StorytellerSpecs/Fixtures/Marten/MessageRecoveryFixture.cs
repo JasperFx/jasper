@@ -240,7 +240,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             {
                 try
                 {
-                    await action.Execute(session, this);
+                    await action.Execute(session, this );
                 }
                 catch (Exception e)
                 {

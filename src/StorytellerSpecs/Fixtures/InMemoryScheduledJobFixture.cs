@@ -139,7 +139,7 @@ namespace StorytellerSpecs.Fixtures
 
             theScheduledJobs.Count().ShouldBe(3);
 
-            theScheduledJobs.EmptyAll();
+            await theScheduledJobs.EmptyAll();
 
             theScheduledJobs.Count().ShouldBe(0);
 

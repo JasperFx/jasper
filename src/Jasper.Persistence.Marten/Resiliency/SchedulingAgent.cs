@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -40,6 +42,7 @@ namespace Jasper.Persistence.Marten.Resiliency
 
         protected override void disposeConnection()
         {
+            _connection?.ReleaseGlobalLock(settings.UniqueNodeId).Wait(5.Seconds());
             _connection?.Dispose();
         }
 
@@ -55,7 +58,8 @@ namespace Jasper.Persistence.Marten.Resiliency
             {
                 Connection = _connection,
                 Transaction = tx,
-                Tracking = DocumentTracking.None
+                Tracking = DocumentTracking.None,
+                OwnsTransactionLifecycle = true
             });
 
             try
@@ -135,10 +139,9 @@ namespace Jasper.Persistence.Marten.Resiliency
 
         protected override async Task releaseNodeLockAndClose()
         {
-            await _connection.CreateCommand().Sql("SELECT pg_advisory_unlock(:id)")
-                .Sql("SELECT pg_advisory_lock(:id)")
-                .With("id", settings.UniqueNodeId, NpgsqlDbType.Integer)
-                .ExecuteNonQueryAsync(CancellationToken.None);
+            Trace.WriteLine($"Releasing lock for node {settings.UniqueNodeId} in service {settings.ServiceName}");
+
+            await _connection.ReleaseGlobalLock(settings.UniqueNodeId);
 
             _connection.Close();
             _connection.Dispose();
@@ -148,11 +151,9 @@ namespace Jasper.Persistence.Marten.Resiliency
 
         private Task retrieveLockForThisNode()
         {
-            return _connection
-                .CreateCommand()
-                .Sql("SELECT pg_advisory_lock(:id)")
-                .With("id", settings.UniqueNodeId, NpgsqlDbType.Integer)
-                .ExecuteNonQueryAsync(settings.Cancellation);
+            Trace.WriteLine($"Attaining lock for node {settings.UniqueNodeId} in service {settings.ServiceName}");
+
+            return _connection.GetGlobalLock(settings.UniqueNodeId);
         }
 
     }

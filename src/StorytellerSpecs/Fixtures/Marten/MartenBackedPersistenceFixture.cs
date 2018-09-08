@@ -12,6 +12,7 @@ using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Jasper.Storyteller.Logging;
 using Marten;
 using Marten.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StorytellerSpecs.Fixtures.Marten.App;
@@ -77,6 +78,12 @@ namespace StorytellerSpecs.Fixtures.Marten
                 var registry = new ReceiverApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
+                registry.Hosting.ConfigureLogging(x =>
+                {
+                    x.AddConsole();
+                    x.AddDebug();
+                });
+
                 return JasperRuntime.For(registry);
             });
 
@@ -86,6 +93,13 @@ namespace StorytellerSpecs.Fixtures.Marten
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
                 registry.Services.For<ITransportLogger>().Use(_senderWatcher);
+
+
+                registry.Hosting.ConfigureLogging(x =>
+                {
+                    x.AddConsole();
+                    x.AddDebug();
+                });
 
                 return JasperRuntime.For(registry);
             });
@@ -150,7 +164,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
 
         [FormatAs("Wait for {count} messages to be processed by the receivers")]
-        public void WaitForMessagesToBeProcessed(int count)
+        public async Task WaitForMessagesToBeProcessed(int count)
         {
             using (var session = _receiverStore.QuerySession())
             {
@@ -160,11 +174,9 @@ namespace StorytellerSpecs.Fixtures.Marten
                     var envelopeCount = PersistedIncomingCount();
 
 
-                    Trace.WriteLine($"waitForMessages: {actual} actual & {envelopeCount} incoming envelopes");
-
                     if (actual == count && envelopeCount == 0) return;
 
-                    Thread.Sleep(250);
+                    await Task.Delay(250);
                 }
             }
 

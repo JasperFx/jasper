@@ -30,12 +30,14 @@ namespace Jasper.Persistence.Marten.Resiliency
             public bool Granted { get; }
             public string Grant { get; }
             public DateTime? Start { get; }
+            public long UniqueId { get; }
 
-            public AdvisoryLock(bool granted, string grant, DateTime? start)
+            public AdvisoryLock(bool granted, string grant, DateTime? start, long uniqueId)
             {
                 Granted = granted;
                 Grant = grant;
                 Start = start;
+                UniqueId = uniqueId;
             }
         }
 
@@ -45,7 +47,8 @@ namespace Jasper.Persistence.Marten.Resiliency
 
 select pg_locks.granted,
        pg_stat_activity.query,
-       pg_stat_activity.query_start
+       pg_stat_activity.query_start,
+       pg_locks.objid
        from pg_locks
   JOIN pg_stat_activity
     on pg_locks.pid = pg_stat_activity.pid
@@ -60,7 +63,10 @@ select pg_locks.granted,
                     var granted = await reader.GetFieldValueAsync<bool>(0);
                     var grant = await reader.GetFieldValueAsync<string>(1);
                     var start = await reader.GetFieldValueAsync<DateTime>(2);
-                    var advisoryLock = new AdvisoryLock(granted, grant, start);
+                    var uniqueId = await reader.GetFieldValueAsync<long>(3);
+
+                    var advisoryLock = new AdvisoryLock(granted, grant, start, uniqueId);
+
 
                     list.Add(advisoryLock);
                 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging;
@@ -12,6 +13,7 @@ using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Util;
 using Marten;
 using Marten.Util;
+using Npgsql;
 using NpgsqlTypes;
 
 namespace Jasper.Persistence.Marten.Resiliency
@@ -82,22 +84,35 @@ namespace Jasper.Persistence.Marten.Resiliency
 
         private async Task<int> recoverFrom(Uri destination, IDocumentSession session)
         {
+
+
             try
             {
                 var channel = _channels.GetOrBuildChannel(destination);
 
                 if (channel.Latched) return 0;
 
+                Trace.WriteLine($"Looking for dormant outgoing messages to {destination} in {_settings.ServiceName}");
                 var outgoing = await session.Connection.CreateCommand(_findOutgoingEnvelopesSql)
                     .With("destination", destination.ToString(), NpgsqlDbType.Varchar)
                     .ExecuteToEnvelopes();
 
+                if (outgoing.Count == 0)
+                {
+                    return 0;
+                }
+
+                Trace.WriteLine($"Recovered {outgoing.Count} outgoing messages to {destination}");
+
                 var filtered = filterExpired(session, outgoing);
+
 
                 // Might easily try to do this in the time between starting
                 // and having the data fetched. Was able to make that happen in
                 // (contrived) testing
                 if (channel.Latched || !filtered.Any()) return 0;
+
+                Trace.WriteLine($"After filtering, taking ownership of {filtered.Length} outgoing messages to {destination} assigned to node {_marker.CurrentNodeId}");
 
                 session.MarkOwnership(_marker.Outgoing, _marker.CurrentNodeId, filtered);
 

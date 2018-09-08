@@ -11,6 +11,7 @@ using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Marten.Util;
+using Npgsql;
 using NpgsqlTypes;
 
 namespace Jasper.Persistence.Marten.Resiliency
