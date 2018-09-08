@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper;
+using Jasper.Persistence.Marten;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -45,6 +46,8 @@ namespace IntegrationTests.Persistence.Marten
                 _.Connection(Servers.PostgresConnectionString);
                 _.AutoCreateSchemaObjects = AutoCreate.All;
             });
+
+            Include<MartenBackedPersistence>();
         }
     }
 }

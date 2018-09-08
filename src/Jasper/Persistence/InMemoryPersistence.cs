@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Jasper.Configuration;
 using Jasper.Messaging.Sagas;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;
@@ -53,6 +54,11 @@ namespace Jasper.Persistence
                            .FirstOrDefault(ReflectionExtensions.HasAttribute<SagaIdentityAttribute>)
                        ?? sagaStateType.GetProperties().FirstOrDefault(x => x.Name == "Id");
             return prop;
+        }
+
+        public virtual void ApplyTransactionSupport(IChain chain)
+        {
+            // nothing
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Configuration;
 using Jasper.Messaging.Sagas;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;
@@ -13,6 +14,8 @@ namespace Jasper.Persistence
         Type DetermineSagaIdType(Type sagaStateType);
 
         Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType);
+
+        void ApplyTransactionSupport(IChain chain);
     }
 
 }

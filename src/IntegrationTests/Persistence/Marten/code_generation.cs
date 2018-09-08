@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper;
 using Jasper.Messaging.Model;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Marten;
 using Shouldly;
@@ -66,7 +67,7 @@ namespace IntegrationTests.Persistence.Marten
         {
         }
 
-        [MartenTransaction]
+        [Transaction]
         public void Handle(Command message, IDocumentSession session)
         {
         }

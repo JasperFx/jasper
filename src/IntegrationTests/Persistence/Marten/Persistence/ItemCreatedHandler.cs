@@ -1,15 +1,15 @@
 ﻿using System;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Marten;
 
 namespace IntegrationTests.Persistence.Marten.Persistence
 {
-    [Obsolete("Moved to ST")]
     public class ItemCreatedHandler
     {
-        [MartenTransaction]
+        [Transaction]
         public static void Handle(ItemCreated created, IDocumentSession session, MessageTracker tracker,
             Envelope envelope)
         {

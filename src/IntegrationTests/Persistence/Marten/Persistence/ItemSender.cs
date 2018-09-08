@@ -7,7 +7,6 @@ using Marten;
 
 namespace IntegrationTests.Persistence.Marten.Persistence
 {
-    [Obsolete("Moved to ST")]
     public class ItemSender : JasperRegistry
     {
         public ItemSender()

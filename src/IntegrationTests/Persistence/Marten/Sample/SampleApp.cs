@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.Messaging.Tracking;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Marten;
 using Marten.Schema;
@@ -169,7 +170,7 @@ namespace IntegrationTests.Persistence.Marten.Sample
             Publish.AllMessagesLocally();
             Services.AddSingleton<UserNames>();
 
-
+            Include<MartenBackedPersistence>();
             Include<MessageTrackingExtension>();
         }
     }
@@ -177,7 +178,7 @@ namespace IntegrationTests.Persistence.Marten.Sample
     public class UserHandler
     {
         // SAMPLE: UserHandler-handle-CreateUser
-        [MartenTransaction]
+        [Transaction]
         public static UserCreated Handle(CreateUser message, IDocumentSession session)
         {
             session.Store(new User {Name = message.Name});

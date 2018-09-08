@@ -7,13 +7,9 @@ using Jasper.Persistence.SqlServer.Persistence;
 
 namespace Jasper.Persistence.SqlServer
 {
-    /// <summary>
-    /// Marks this handler or http action method as using
-    /// a Jasper-handled transaction lifecycle
-    /// </summary>
-    public class SqlTransactionAttribute : ModifyChainAttribute
+    internal class SqlServerPersistence : InMemoryPersistence
     {
-        public override void Modify(IChain chain, JasperGenerationRules rules)
+        public override void ApplyTransactionSupport(IChain chain)
         {
             var shouldFlushOutgoingMessages = false;
             if (chain is RouteChain)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Jasper.Configuration;
 using Jasper.Messaging.Sagas;
 using Jasper.Persistence.Marten.Codegen;
@@ -44,6 +45,14 @@ namespace Jasper.Persistence.Marten.Persistence.Sagas
         public Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType)
         {
             return new StoreOrDeleteSagaStateFrame(document, sagaHandlerType);
+        }
+
+        public void ApplyTransactionSupport(IChain chain)
+        {
+            if (!chain.Middleware.OfType<TransactionalFrame>().Any())
+            {
+                chain.Middleware.Add(new TransactionalFrame());
+            }
         }
     }
 }

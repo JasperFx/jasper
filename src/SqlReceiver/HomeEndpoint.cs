@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Jasper;
+using Jasper.Persistence;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Util;
 
@@ -17,7 +18,7 @@ namespace SqlReceiver
             return writer.ToString();
         }
 
-        [SqlTransaction]
+        [Transaction]
         public static Task post_clear(SqlTransaction tx)
         {
             return tx.Connection.CreateCommand("delete from receiver.sent_track;delete from receiver.received_track")

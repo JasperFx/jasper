@@ -5,6 +5,7 @@ using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
@@ -93,7 +94,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
     public class TriggerMessageReceiver
     {
-        [MartenTransaction]
+        [Transaction]
         public object Handle(TriggerMessage message, IDocumentSession session, IMessageContext context)
         {
             var response = new CascadedMessage
@@ -107,7 +108,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
     public class ItemCreatedHandler
     {
-        [MartenTransaction]
+        [Transaction]
         public static void Handle(ItemCreated created, IDocumentSession session,
             Jasper.Messaging.Tracking.MessageTracker tracker,
             Envelope envelope)

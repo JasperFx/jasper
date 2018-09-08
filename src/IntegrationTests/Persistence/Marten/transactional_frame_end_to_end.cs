@@ -6,6 +6,7 @@ using Jasper;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Codegen;
 using Marten;
@@ -42,7 +43,7 @@ namespace IntegrationTests.Persistence.Marten
     // SAMPLE: CreateDocCommandHandler
     public class CreateDocCommandHandler
     {
-        [MartenTransaction]
+        [Transaction]
         public void Handle(CreateDocCommand message, IDocumentSession session)
         {
             session.Store(new FakeDoc {Id = message.Id});

@@ -8,6 +8,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
+using Jasper.Persistence;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
@@ -107,7 +108,7 @@ create table receiver.item_created
 
     public class TriggerMessageReceiver
     {
-        [SqlTransaction]
+        [Transaction]
         public object Handle(TriggerMessage message, IMessageContext context)
         {
             var response = new CascadedMessage
@@ -122,7 +123,7 @@ create table receiver.item_created
     // SAMPLE: UsingSqlTransaction
     public class ItemCreatedHandler
     {
-        [SqlTransaction]
+        [Transaction]
         public static async Task Handle(
             ItemCreated created,
             SqlConnection conn, // the connection for the container scope
@@ -143,7 +144,7 @@ create table receiver.item_created
     public class CreateItemHandler
     {
         // SAMPLE: SqlServerOutboxWithSqlTransaction
-        [SqlTransaction]
+        [Transaction]
         public async Task<ItemCreatedEvent> Handle(CreateItemCommand command, SqlTransaction tx)
         {
             var item = new Item {Name = command.Name};

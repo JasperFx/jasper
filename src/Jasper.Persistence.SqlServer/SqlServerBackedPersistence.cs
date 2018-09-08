@@ -36,6 +36,8 @@ namespace Jasper.Persistence.SqlServer
 
             registry.Services.Add(new SqlConnectionInstance(typeof(SqlConnection)));
             registry.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
+
+            registry.CodeGeneration.Persistence = new SqlServerPersistence();
         }
     }
 

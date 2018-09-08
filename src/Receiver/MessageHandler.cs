@@ -1,12 +1,13 @@
-﻿using Jasper.Persistence.Marten;
+﻿using Jasper.Persistence;
+using Jasper.Persistence.Marten;
 using Marten;
 using TestMessages;
 
 namespace Receiver
 {
+    [Transaction]
     public static class MessageHandler
     {
-        [MartenTransaction]
         public static void Handle(Target target, IDocumentSession session)
         {
             session.Store(new ReceivedTrack
@@ -16,7 +17,6 @@ namespace Receiver
             });
         }
 
-        [MartenTransaction]
         public static void Handle(UserCreated created, IDocumentSession session)
         {
             session.Store(new ReceivedTrack
@@ -26,7 +26,6 @@ namespace Receiver
             });
         }
 
-        [MartenTransaction]
         public static PongMessage Handle(PingMessage message, IDocumentSession session)
         {
             session.Store(new ReceivedTrack

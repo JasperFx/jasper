@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper;
 using Jasper.Messaging;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Marten;
 using Newtonsoft.Json;
@@ -40,7 +41,7 @@ namespace Sender
             return Task.CompletedTask;
         }
 
-        [MartenTransaction]
+        [Transaction]
         public static async Task post_one(IMessageContext context, IDocumentSession session)
         {
             await context.EnlistInTransaction(session);
@@ -57,7 +58,7 @@ namespace Sender
             await context.Send(target1);
         }
 
-        [MartenTransaction]
+        [Transaction]
         public static async Task post_two(IMessageContext context, IDocumentSession session)
         {
             await context.EnlistInTransaction(session);
@@ -74,7 +75,7 @@ namespace Sender
             await context.Send(target2);
         }
 
-        [MartenTransaction]
+        [Transaction]
         public static async Task post_three(IMessageContext context, IDocumentSession session)
         {
             await context.EnlistInTransaction(session);
@@ -94,7 +95,7 @@ namespace Sender
             await context.SendAndExpectResponseFor<PongMessage>(ping);
         }
 
-        [MartenTransaction]
+        [Transaction]
         public static async Task post_four(IMessageContext context, IDocumentSession session)
         {
             await context.EnlistInTransaction(session);

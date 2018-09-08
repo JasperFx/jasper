@@ -1,5 +1,6 @@
 ﻿using Jasper;
 using Jasper.Messaging.Model;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Marten;
 using Shouldly;
@@ -79,7 +80,7 @@ namespace IntegrationTests.Persistence.Marten
         {
         }
 
-        [MartenTransaction]
+        [Transaction]
         public void Consume(Message2 message, IDocumentSession session)
         {
         }
@@ -102,7 +103,7 @@ namespace IntegrationTests.Persistence.Marten
         {
         }
 
-        [MartenTransaction]
+        [Transaction]
         public void Consume(Message2 message, IDocumentSession session)
         {
         }
