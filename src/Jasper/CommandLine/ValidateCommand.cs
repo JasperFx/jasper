@@ -18,12 +18,12 @@ namespace Jasper.CommandLine
                 Console.WriteLine();
                 Console.WriteLine();
 
-                var rules = runtime.Get<GenerationRules>();
+                var rules = input.Registry.CodeGeneration;
                 var generatedAssembly = new GeneratedAssembly(rules);
                 var handlers = runtime.Get<HandlerGraph>();
                 foreach (var handler in handlers.Chains)
                 {
-                    handler.AssembleType(generatedAssembly);
+                    handler.AssembleType(generatedAssembly, rules);
                 }
             }
 

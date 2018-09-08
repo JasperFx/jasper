@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Lamar.Codegen;
@@ -64,7 +65,7 @@ namespace Jasper.Http.Model
             return _chains.FirstOrDefault(x => x.Action.HandlerType == typeof(T) && Equals(x.Action.Method, method));
         }
 
-        public void BuildRoutingTree(ConnegRules rules, GenerationRules generation, JasperRuntime runtime)
+        public void BuildRoutingTree(ConnegRules rules, JasperGenerationRules generation, JasperRuntime runtime)
         {
             Router.HandlerBuilder = new RouteHandlerBuilder(runtime.Container, rules, generation);
             assertNoDuplicateRoutes();

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -57,7 +58,7 @@ namespace Jasper.Testing.Messaging
         }
 
         public Task Activate(LocalWorkerSender localWorker, CapabilityGraph capabilities, JasperRuntime runtime,
-            GenerationRules generation, PerfTimer timer)
+            JasperGenerationRules generation, PerfTimer timer)
         {
             return Task.CompletedTask;
         }

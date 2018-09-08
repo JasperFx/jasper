@@ -1,4 +1,5 @@
-﻿using Jasper.Messaging.Configuration;
+﻿using Jasper.Configuration;
+using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Lamar.Codegen.Frames;
 using Marten;
@@ -9,7 +10,7 @@ namespace Jasper.Persistence.Marten.Codegen
     {
         public const string OpenSessionMethodName = "OpenSession";
 
-        public void Apply(HandlerGraph graph)
+        public void Apply(HandlerGraph graph, JasperGenerationRules rules)
         {
             foreach (var chain in graph.Chains)
             {

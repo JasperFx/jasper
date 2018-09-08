@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -35,6 +36,6 @@ namespace Jasper.Messaging
         IMessageContext ContextFor(Envelope envelope);
 
         Task Activate(LocalWorkerSender localWorker, CapabilityGraph capabilities, JasperRuntime runtime,
-            GenerationRules generation, PerfTimer timer);
+            JasperGenerationRules generation, PerfTimer timer);
     }
 }

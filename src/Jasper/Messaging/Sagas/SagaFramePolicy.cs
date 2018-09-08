@@ -3,8 +3,10 @@ using System.Linq;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
+using Jasper.Persistence;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;
 
@@ -18,15 +20,15 @@ namespace Jasper.Messaging.Sagas
         public const string SagaIdVariableName = "sagaId";
         public const string IdentityMethodName = "Identity";
 
-        public void Apply(HandlerGraph graph)
+        public void Apply(HandlerGraph graph, JasperGenerationRules rules)
         {
             foreach (var chain in graph.Chains.Where(IsSagaRelated))
             {
-                Apply(chain, graph.SagaPersistence);
+                Apply(chain, rules.Persistence);
             }
         }
 
-        public void Apply(HandlerChain chain, ISagaPersistence persistence)
+        public void Apply(HandlerChain chain, IPersistence persistence)
         {
             if (persistence == null)
             {

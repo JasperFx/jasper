@@ -11,13 +11,13 @@ namespace Jasper.Configuration
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public abstract class ModifyChainAttribute : Attribute
     {
-        public abstract void Modify(IChain chain);
+        public abstract void Modify(IChain chain, JasperGenerationRules rules);
     }
 
 
     public interface IModifyChain<T> where T : IChain
     {
-        void Modify(T chain);
+        void Modify(T chain, JasperGenerationRules rules);
     }
 
     public interface IChain
@@ -52,7 +52,7 @@ namespace Jasper.Configuration
         }
 
 
-        protected void applyAttributesAndConfigureMethods()
+        protected void applyAttributesAndConfigureMethods(JasperGenerationRules rules)
         {
             var handlers = handlerCalls();
             var configureMethods = handlers.Select(x => x.HandlerType).Distinct()
@@ -71,7 +71,7 @@ namespace Jasper.Configuration
 
             foreach (var attribute in handlerAtts.Concat(methodAtts))
             {
-                attribute.Modify(this.As<TChain>());
+                attribute.Modify(this.As<TChain>(), rules);
             }
 
             var genericHandlerAtts = handlers.SelectMany(x => x.HandlerType.GetTypeInfo()
@@ -81,7 +81,7 @@ namespace Jasper.Configuration
 
             foreach (var attribute in genericHandlerAtts.Concat(genericMethodAtts))
             {
-                attribute.Modify(this);
+                attribute.Modify(this, rules);
             }
 
 

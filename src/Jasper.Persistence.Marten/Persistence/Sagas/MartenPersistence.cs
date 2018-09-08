@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Configuration;
 using Jasper.Messaging.Sagas;
 using Jasper.Persistence.Marten.Codegen;
 using Lamar.Codegen.Frames;
@@ -9,7 +10,7 @@ using Marten.Util;
 
 namespace Jasper.Persistence.Marten.Persistence.Sagas
 {
-    public class MartenSagaPersistence : ISagaPersistence
+    public class MartenPersistence : IPersistence
     {
 
         public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,

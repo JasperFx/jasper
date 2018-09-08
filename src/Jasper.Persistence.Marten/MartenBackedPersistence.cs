@@ -35,7 +35,8 @@ namespace Jasper.Persistence.Marten
 
             registry.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
 
-            registry.Handlers.PersistSagasWith(new MartenSagaPersistence());
+            registry.CodeGeneration.Persistence = new MartenPersistence();
+
         }
     }
 

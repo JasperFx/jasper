@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Sagas;
 using Jasper.Util;
@@ -24,7 +25,7 @@ namespace Jasper.Messaging.Model
         private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
 
 
-        private GenerationRules _generation;
+        private JasperGenerationRules _generation;
         private IContainer _container;
 
         private void assertNotGrouped()
@@ -83,7 +84,7 @@ namespace Jasper.Messaging.Model
                         if (chain.Handler == null)
                         {
                             var generatedAssembly = new GeneratedAssembly(_generation);
-                            chain.AssembleType(generatedAssembly);
+                            chain.AssembleType(generatedAssembly, _generation);
                             _container.CompileWithInlineServices(generatedAssembly);
 
                             handler = chain.CreateHandler(_container);
@@ -106,12 +107,8 @@ namespace Jasper.Messaging.Model
 
         }
 
-        /// <summary>
-        /// The currently known strategy for persisting saga state
-        /// </summary>
-        public ISagaPersistence SagaPersistence { get; set; } = new InMemorySagaPersistence();
 
-        internal void Compile(GenerationRules generation, JasperRuntime runtime, PerfTimer timer)
+        internal void Compile(JasperGenerationRules generation, JasperRuntime runtime, PerfTimer timer)
         {
             _generation = generation;
             _container = runtime.Container;

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Jasper.Messaging.Sagas;
 using Lamar.Codegen.Frames;
 using Lamar.Codegen.Variables;
 using ReflectionExtensions = Baseline.Reflection.ReflectionExtensions;
 
-namespace Jasper.Messaging.Sagas
+namespace Jasper.Persistence
 {
 
 
 
 
-    public class InMemorySagaPersistence : ISagaPersistence
+    public class InMemoryPersistence : IPersistence
     {
         public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState)

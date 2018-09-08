@@ -1,4 +1,5 @@
-﻿using Jasper.Messaging.Model;
+﻿using Jasper.Configuration;
+using Jasper.Messaging.Model;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -11,6 +12,7 @@ namespace Jasper.Messaging.Configuration
         /// Called during bootstrapping to alter how the message handlers are configured
         /// </summary>
         /// <param name="graph"></param>
-        void Apply(HandlerGraph graph);
+        /// <param name="rules"></param>
+        void Apply(HandlerGraph graph, JasperGenerationRules rules);
     }
 }

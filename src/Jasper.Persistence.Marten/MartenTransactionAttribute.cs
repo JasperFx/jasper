@@ -10,7 +10,7 @@ namespace Jasper.Persistence.Marten
     /// </summary>
     public class MartenTransactionAttribute : ModifyChainAttribute
     {
-        public override void Modify(IChain chain)
+        public override void Modify(IChain chain, JasperGenerationRules rules)
         {
             if (!chain.Middleware.OfType<TransactionalFrame>().Any())
             {

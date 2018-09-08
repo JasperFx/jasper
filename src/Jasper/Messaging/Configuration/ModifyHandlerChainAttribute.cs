@@ -15,6 +15,7 @@ namespace Jasper.Messaging.Configuration
         /// Called by Jasper during bootstrapping before message handlers are generated and compiled
         /// </summary>
         /// <param name="chain"></param>
-        public abstract void Modify(HandlerChain chain);
+        /// <param name="rules"></param>
+        public abstract void Modify(HandlerChain chain, JasperGenerationRules rules);
     }
 }

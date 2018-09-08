@@ -13,7 +13,7 @@ namespace Jasper.Persistence.SqlServer
     /// </summary>
     public class SqlTransactionAttribute : ModifyChainAttribute
     {
-        public override void Modify(IChain chain)
+        public override void Modify(IChain chain, JasperGenerationRules rules)
         {
             var shouldFlushOutgoingMessages = false;
             if (chain is RouteChain)

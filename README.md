@@ -51,7 +51,7 @@ There is some rudimentary benchmarks exposed through [BenchmarkDotNet](http://be
 ## What's with the name?
 
 I think that FubuMVC turned some people off by its name ("for us, by us"). This time around I was going for an
-unassuming name that was easy to remember and just named it after my Jeremy's hometown (Jasper, MO).
+unassuming name that was easy to remember and just named it after my (Jeremy) hometown (Jasper, MO).
 
 
 

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Testing.Messaging.Runtime;
@@ -92,7 +93,7 @@ namespace Jasper.Testing.Messaging.Compilation
 
     public class FakeFrameAttribute : ModifyHandlerChainAttribute
     {
-        public override void Modify(HandlerChain chain)
+        public override void Modify(HandlerChain chain, JasperGenerationRules rules)
         {
             chain.Middleware.Add(new FakeFrame());
         }

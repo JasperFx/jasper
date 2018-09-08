@@ -54,7 +54,7 @@ namespace Jasper.Testing.Http.Model
         public void will_apply_generic_chain_attributes()
         {
             var chain = chainFor(x => x.post_select_name(null));
-            var frames = chain.DetermineFrames(ConnegRules.Empty());
+            var frames = chain.DetermineFrames(ConnegRules.Empty(), new JasperGenerationRules("Something"));
 
             chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
             chain.Middleware.Any(x => x is FakeMiddleware2).ShouldBeTrue();

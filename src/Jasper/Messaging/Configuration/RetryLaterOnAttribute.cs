@@ -1,5 +1,6 @@
 ﻿using System;
 using Baseline.Dates;
+using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 
@@ -20,7 +21,7 @@ namespace Jasper.Messaging.Configuration
             _seconds = seconds;
         }
 
-        public override void Modify(HandlerChain chain)
+        public override void Modify(HandlerChain chain, JasperGenerationRules rules)
         {
             chain.OnException(_exceptionType).RetryLater(_seconds.Seconds());
         }

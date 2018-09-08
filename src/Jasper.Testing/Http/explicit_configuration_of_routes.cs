@@ -23,7 +23,7 @@ namespace Jasper.Testing.Http
         {
             var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_configured());
 
-            var frames = chain.DetermineFrames(ConnegRules.Empty());
+            var frames = chain.DetermineFrames(ConnegRules.Empty(), JasperGenerationRules.Empty());
 
             frames.OfType<FakeTransaction>().Any().ShouldBeTrue();
         }
@@ -33,7 +33,7 @@ namespace Jasper.Testing.Http
         {
             var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_configured());
 
-            var frames = chain.DetermineFrames(ConnegRules.Empty());
+            var frames = chain.DetermineFrames(ConnegRules.Empty(),JasperGenerationRules.Empty());
 
             frames.OfType<FakeWrapper>().Any().ShouldBeTrue();
         }
@@ -43,7 +43,7 @@ namespace Jasper.Testing.Http
         {
             var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_wrapper2());
 
-            var frames = chain.DetermineFrames(ConnegRules.Empty());
+            var frames = chain.DetermineFrames(ConnegRules.Empty(), JasperGenerationRules.Empty());
 
             frames.OfType<FakeWrapper2>().Any().ShouldBeTrue();
         }
@@ -53,7 +53,7 @@ namespace Jasper.Testing.Http
         {
             var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_wrapper3());
 
-            var frames = chain.DetermineFrames(ConnegRules.Empty());
+            var frames = chain.DetermineFrames(ConnegRules.Empty(), JasperGenerationRules.Empty());
 
             frames.OfType<FakeWrapper3>().Any().ShouldBeTrue();
         }
@@ -105,7 +105,7 @@ namespace Jasper.Testing.Http
 
     public class FakeWrapper2Attribute : ModifyRouteAttribute
     {
-        public override void Modify(RouteChain chain)
+        public override void Modify(RouteChain chain, JasperGenerationRules rules)
         {
             chain.Middleware.Add(new FakeWrapper2());
         }
@@ -113,7 +113,7 @@ namespace Jasper.Testing.Http
 
     public class FakeWrapper3Attribute : ModifyChainAttribute
     {
-        public override void Modify(IChain chain)
+        public override void Modify(IChain chain, JasperGenerationRules rules)
         {
             chain.Middleware.Add(new FakeWrapper3());
         }
@@ -126,7 +126,7 @@ namespace Jasper.Testing.Http
 
     public class GenericFakeTransactionAttribute : ModifyChainAttribute
     {
-        public override void Modify(IChain chain)
+        public override void Modify(IChain chain, JasperGenerationRules rules)
         {
             chain.Middleware.Add(new FakeTransaction());
         }
@@ -134,7 +134,7 @@ namespace Jasper.Testing.Http
 
     public class FakeTransactionAttribute : ModifyHandlerChainAttribute
     {
-        public override void Modify(HandlerChain chain)
+        public override void Modify(HandlerChain chain, JasperGenerationRules rules)
         {
             chain.Middleware.Add(new FakeTransaction());
         }

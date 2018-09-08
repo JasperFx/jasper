@@ -28,7 +28,7 @@ namespace Jasper.CommandLine
             input.Registry.Settings.Alter<MessagingSettings>(x => x.HostedServicesEnabled = false);
             var runtime = input.BuildRuntime();
 
-            var rules = runtime.Get<GenerationRules>();
+            var rules = input.Registry.CodeGeneration;
             var generatedAssembly = new GeneratedAssembly(rules);
 
             if (input.Match == CodeMatch.all || input.Match == CodeMatch.messages)
@@ -37,7 +37,7 @@ namespace Jasper.CommandLine
                 var handlers = runtime.Get<HandlerGraph>();
                 foreach (var handler in handlers.Chains)
                 {
-                    handler.AssembleType(generatedAssembly);
+                    handler.AssembleType(generatedAssembly, rules);
                 }
             }
 
@@ -48,7 +48,7 @@ namespace Jasper.CommandLine
 
                 foreach (var route in routes)
                 {
-                    route.AssemblyType(generatedAssembly, connegRules);
+                    route.AssemblyType(generatedAssembly, connegRules, rules);
                 }
             }
 

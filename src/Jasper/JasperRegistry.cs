@@ -59,7 +59,7 @@ namespace Jasper
             deriveServiceName();
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
-            CodeGeneration = new GenerationRules($"{name.Replace(".", "_")}_Generated");
+            CodeGeneration = new JasperGenerationRules($"{name.Replace(".", "_")}_Generated");
 
             _baseServices = new JasperServiceRegistry(this);
 
@@ -76,9 +76,6 @@ namespace Jasper
             EnvironmentConfiguration[WebHostDefaults.ApplicationKey] = ApplicationAssembly.FullName;
 
             Settings.Replace(HttpRoutes);
-
-
-
         }
 
         /// <summary>
@@ -99,9 +96,9 @@ namespace Jasper
 
 
         /// <summary>
-        ///     Configure or extend the BlueMilk code generation
+        ///     Configure or extend the Lamar code generation
         /// </summary>
-        public GenerationRules CodeGeneration { get; }
+        public JasperGenerationRules CodeGeneration { get; }
 
         /// <summary>
         ///     The main application assembly for this Jasper system

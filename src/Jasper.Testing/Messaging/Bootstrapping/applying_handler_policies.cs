@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Lamar.Codegen;
@@ -23,7 +24,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
     public class WrapWithSimple : IHandlerPolicy
     {
-        public void Apply(HandlerGraph graph)
+        public void Apply(HandlerGraph graph, JasperGenerationRules rules)
         {
             foreach (var chain in graph.Chains) chain.Middleware.Add(new SimpleWrapper());
         }

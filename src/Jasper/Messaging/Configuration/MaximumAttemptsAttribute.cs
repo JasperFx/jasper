@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Configuration;
 using Jasper.Messaging.Model;
 
 namespace Jasper.Messaging.Configuration
@@ -16,7 +17,7 @@ namespace Jasper.Messaging.Configuration
             _attempts = attempts;
         }
 
-        public override void Modify(HandlerChain chain)
+        public override void Modify(HandlerChain chain, JasperGenerationRules rules)
         {
             chain.MaximumAttempts = _attempts;
         }

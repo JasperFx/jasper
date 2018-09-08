@@ -107,12 +107,12 @@ namespace Jasper.Http.Model
             return $"{Route.HttpMethod}: {Route.Pattern}";
         }
 
-        public void AssemblyType(GeneratedAssembly generatedAssembly, ConnegRules rules)
+        public void AssemblyType(GeneratedAssembly generatedAssembly, ConnegRules rules, JasperGenerationRules codeRules)
         {
             _generatedType = generatedAssembly.AddType(TypeName, typeof(RouteHandler));
             var handleMethod = _generatedType.MethodFor(nameof(RouteHandler.Handle));
 
-            handleMethod.Frames.AddRange(DetermineFrames(rules));
+            handleMethod.Frames.AddRange(DetermineFrames(rules, codeRules));
 
             handleMethod.Sources.Add(new ContextVariableSource());
             handleMethod.DerivedVariables.AddRange(HttpContextVariables);
@@ -120,13 +120,13 @@ namespace Jasper.Http.Model
 
 
         private bool _hasAppliedConfigureAndAttributes;
-        public List<Frame> DetermineFrames(ConnegRules rules)
+        public List<Frame> DetermineFrames(ConnegRules rules, JasperGenerationRules codeRules)
         {
             if (!_hasAppliedConfigureAndAttributes)
             {
                 rules.Apply(this);
                 _hasAppliedConfigureAndAttributes = true;
-                applyAttributesAndConfigureMethods();
+                applyAttributesAndConfigureMethods(codeRules);
             }
 
             var list = Middleware.ToList();

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
@@ -132,7 +133,7 @@ namespace Jasper.Messaging
         }
 
         public async Task Activate(LocalWorkerSender localWorker, CapabilityGraph capabilities, JasperRuntime runtime,
-            GenerationRules generation, PerfTimer timer)
+            JasperGenerationRules generation, PerfTimer timer)
         {
             timer.MarkStart("ServiceBusActivator");
 

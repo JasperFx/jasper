@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Persistence;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -52,11 +54,6 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         IWorkerSettings DefaultWorker { get; }
 
-        /// <summary>
-        /// Register a custom saga persistence mechanism
-        /// </summary>
-        /// <param name="sagaPersistence"></param>
-        void PersistSagasWith(ISagaPersistence sagaPersistence);
     }
 
 
@@ -84,10 +81,7 @@ namespace Jasper.Messaging.Configuration
         }
 
         public IWorkerSettings DefaultWorker => _settings.Workers[TransportConstants.Default];
-        public void PersistSagasWith(ISagaPersistence sagaPersistence)
-        {
-            _graph.SagaPersistence = sagaPersistence;
-        }
+
 
         private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
 
@@ -111,11 +105,11 @@ namespace Jasper.Messaging.Configuration
         }
 
 
-        internal void ApplyPolicies(HandlerGraph graph)
+        internal void ApplyPolicies(HandlerGraph graph, JasperGenerationRules rules)
         {
             foreach (var policy in _globals)
             {
-                policy.Apply(graph);
+                policy.Apply(graph, rules);
             }
 
             graph.ErrorHandlers.AddRange(this.As<IHasErrorHandlers>().ErrorHandlers);

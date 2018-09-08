@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Security;
 using Baseline;
 using Baseline.Dates;
+using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
@@ -21,7 +22,7 @@ namespace Jasper.Testing.Messaging.Samples
     // SAMPLE: ErrorHandlingPolicy
     public class ErrorHandlingPolicy : IHandlerPolicy
     {
-        public void Apply(HandlerGraph graph)
+        public void Apply(HandlerGraph graph, JasperGenerationRules rules)
         {
             var matchingChains = graph.Chains.Where(x => x.MessageType.IsInNamespace("MyApp.Messages"));
 

@@ -78,7 +78,7 @@ namespace Jasper.Messaging
                     Graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged(), null)));
 
                     Graph.Group();
-                    Handling.ApplyPolicies(Graph);
+                    Handling.ApplyPolicies(Graph, registry.CodeGeneration);
 
                 });
 

@@ -60,12 +60,12 @@ namespace Jasper.Messaging.Model
         public readonly List<MethodCall> Handlers = new List<MethodCall>();
         private GeneratedType _generatedType;
 
-        public void AssembleType(GeneratedAssembly generatedAssembly)
+        public void AssembleType(GeneratedAssembly generatedAssembly, JasperGenerationRules rules)
         {
             _generatedType = generatedAssembly.AddType(TypeName, typeof(MessageHandler));
             var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
             handleMethod.Sources.Add(new MessageHandlerVariableSource(MessageType));
-            handleMethod.Frames.AddRange(DetermineFrames());
+            handleMethod.Frames.AddRange(DetermineFrames(rules));
 
             handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope), $"context.{nameof(IMessageContext.Envelope)}"));
             handleMethod.DerivedVariables.Add(new Variable(typeof(IAdvancedMessagingActions), $"context.{nameof(IMessageContext.Advanced)}"));
@@ -84,7 +84,7 @@ namespace Jasper.Messaging.Model
 
         private bool hasConfiguredFrames = false;
 
-        public List<Frame> DetermineFrames()
+        public List<Frame> DetermineFrames(JasperGenerationRules rules)
         {
             if (!Handlers.Any())
             {
@@ -95,16 +95,16 @@ namespace Jasper.Messaging.Model
             {
                 hasConfiguredFrames = true;
 
-                applyAttributesAndConfigureMethods();
+                applyAttributesAndConfigureMethods(rules);
 
                 foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyHandlerChainAttribute)).OfType<ModifyHandlerChainAttribute>())
                 {
-                    attribute.Modify(this);
+                    attribute.Modify(this, rules);
                 }
 
                 foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute)).OfType<ModifyChainAttribute>())
                 {
-                    attribute.Modify(this);
+                    attribute.Modify(this, rules);
                 }
             }
 

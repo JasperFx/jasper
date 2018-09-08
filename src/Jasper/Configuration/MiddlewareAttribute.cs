@@ -24,7 +24,7 @@ namespace Jasper.Configuration
             _frameTypes = frameTypes;
         }
 
-        public override void Modify(IChain chain)
+        public override void Modify(IChain chain, JasperGenerationRules rules)
         {
             chain.Middleware.AddRange(_frameTypes.Select(x => Activator.CreateInstance(x).As<Frame>()));
         }

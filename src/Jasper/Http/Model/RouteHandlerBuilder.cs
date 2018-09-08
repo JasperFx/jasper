@@ -1,6 +1,6 @@
-﻿using Jasper.Http.ContentHandling;
+﻿using Jasper.Configuration;
+using Jasper.Http.ContentHandling;
 using Lamar;
-using Lamar.Codegen;
 using Lamar.Compilation;
 
 namespace Jasper.Http.Model
@@ -9,9 +9,9 @@ namespace Jasper.Http.Model
     {
         private readonly IContainer _container;
         private readonly ConnegRules _rules;
-        private readonly GenerationRules _generation;
+        private readonly JasperGenerationRules _generation;
 
-        public RouteHandlerBuilder(IContainer container, ConnegRules rules, GenerationRules generation)
+        public RouteHandlerBuilder(IContainer container, ConnegRules rules, JasperGenerationRules generation)
         {
             _container = container;
             _rules = rules;
@@ -20,10 +20,8 @@ namespace Jasper.Http.Model
 
         public RouteHandler Build(RouteChain chain)
         {
-
-
             var generatedAssembly = new GeneratedAssembly(_generation);
-            chain.AssemblyType(generatedAssembly, _rules);
+            chain.AssemblyType(generatedAssembly, _rules, _generation);
 
             _container.CompileWithInlineServices(generatedAssembly);
 

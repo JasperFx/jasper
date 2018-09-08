@@ -47,7 +47,7 @@ namespace Jasper.Testing.Messaging.Model
         public void apply_generic_middleware()
         {
             var chain = HandlerChain.For<Target>(x => x.Go(null));
-            var frames = chain.DetermineFrames();
+            var frames = chain.DetermineFrames(JasperGenerationRules.Empty());
 
             chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
             chain.Middleware.Any(x => x is FakeMiddleware2).ShouldBeTrue();

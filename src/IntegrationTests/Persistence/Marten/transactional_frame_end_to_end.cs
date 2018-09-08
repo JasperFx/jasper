@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten;
@@ -67,7 +68,7 @@ namespace IntegrationTests.Persistence.Marten
     // SAMPLE: CommandsAreTransactional
     public class CommandsAreTransactional : IHandlerPolicy
     {
-        public void Apply(HandlerGraph graph)
+        public void Apply(HandlerGraph graph, JasperGenerationRules rules)
         {
             // Important! Create a brand new TransactionalFrame
             // for each chain
