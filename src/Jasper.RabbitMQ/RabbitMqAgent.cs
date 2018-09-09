@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
@@ -12,10 +14,15 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
 {
+    public enum AgentState
+    {
+        Connected,
+        Disconnected
+    }
+
     public class RabbitMqAgent : IDisposable
     {
-        private readonly Lazy<IConnection> _connection;
-        private readonly Lazy<IModel> _model;
+        private IConnection _connection;
 
         public Uri Uri { get; }
 
@@ -62,28 +69,74 @@ namespace Jasper.RabbitMQ
                 QueueName = segments.Single();
             }
 
-            _connection = new Lazy<IConnection>(() => ConnectionActivator(ConnectionFactory));
 
-            _model = new Lazy<IModel>(() =>
-            {
-                var channel = _connection.Value.CreateModel();
-                channel.CreateBasicProperties().Persistent = IsDurable;
-
-                if (ExchangeName.IsNotEmpty())
-                {
-                    channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), IsDurable);
-                    channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
-                    channel.QueueBind(QueueName, ExchangeName, "");
-                }
-                else
-                {
-                    channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
-                }
-
-                return channel;
-            });
 
         }
+
+        public AgentState State { get; private set; } = AgentState.Disconnected;
+        private readonly object _locker = new object();
+
+        public void Start()
+        {
+            lock (_locker)
+            {
+                if (State == AgentState.Connected) return;
+
+                startNewConnection();
+
+                State = AgentState.Connected;
+            }
+        }
+
+        private void startNewConnection()
+        {
+            _connection = ConnectionActivator(ConnectionFactory);
+
+            var channel = _connection.CreateModel();
+            channel.CreateBasicProperties().Persistent = IsDurable;
+
+            if (ExchangeName.IsNotEmpty())
+            {
+                channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), IsDurable);
+                channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
+                channel.QueueBind(QueueName, ExchangeName, "");
+            }
+            else
+            {
+                channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
+            }
+
+            Channel = channel;
+        }
+
+        public void Stop()
+        {
+            lock (_locker)
+            {
+                if (State == AgentState.Disconnected) return;
+
+                teardownConnection();
+
+
+            }
+
+
+        }
+
+        private void teardownConnection()
+        {
+            Channel.Abort();
+            Channel.Dispose();
+            _connection.Close();
+            _connection.Dispose();
+
+            Channel = null;
+            _connection = null;
+
+            State = AgentState.Disconnected;
+        }
+
+        public IModel Channel { get; private set; }
 
         public bool IsDurable { get; }
         public string ExchangeName { get; } = string.Empty;
@@ -100,31 +153,48 @@ namespace Jasper.RabbitMQ
 
         public void Dispose()
         {
-            if (_model.IsValueCreated)
-            {
-                _model.Value.Dispose();
-            }
-
-            if (_connection.IsValueCreated)
-            {
-                _connection.Value.Dispose();
-            }
+            Stop();
         }
 
         public ISender CreateSender(ITransportLogger logger, CancellationToken cancellation)
         {
             // TODO -- will need to create a reply uri & listener here
-            return new RabbitMqSender(logger, this, _model.Value, cancellation);
+            return new RabbitMqSender(logger, this, cancellation);
         }
 
         public IListeningAgent CreateListeningAgent(Uri uri, MessagingSettings settings, ITransportLogger logger)
         {
-            return new RabbitMqListeningAgent(uri, logger, _model.Value, EnvelopeMapping, this);
+            return new RabbitMqListeningAgent(uri, logger, EnvelopeMapping, this);
         }
 
         public PublicationAddress PublicationAddress()
         {
             return new PublicationAddress(ExchangeType.ToString(), ExchangeName, QueueName);
+        }
+
+        public Task Ping(Action<IModel> action)
+        {
+            lock (_locker)
+            {
+                if (State == AgentState.Connected) return Task.CompletedTask;
+
+                startNewConnection();
+
+
+                try
+                {
+                    action(Channel);
+                }
+                catch (Exception)
+                {
+                    teardownConnection();
+                    throw;
+                }
+            }
+
+
+
+            return Task.CompletedTask;
         }
     }
 }

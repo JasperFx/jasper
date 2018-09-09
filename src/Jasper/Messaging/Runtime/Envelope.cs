@@ -352,7 +352,8 @@ namespace Jasper.Messaging.Runtime
             return new Envelope
             {
                 MessageType = TransportConstants.PingMessageType,
-                Data = new byte[]{1,2,3,4}
+                Data = new byte[]{1,2,3,4},
+                ContentType = "jasper/ping"
             };
         }
 

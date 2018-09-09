@@ -9,19 +9,19 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMqListeningAgent : IListeningAgent
     {
-        private readonly IModel _channel;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopeMapper _mapper;
+        private readonly RabbitMqAgent _agent;
         private readonly string _queue;
         private IReceiverCallback _callback;
         private MessageConsumer _consumer;
 
-        public RabbitMqListeningAgent(Uri address, ITransportLogger logger, IModel channel, IEnvelopeMapper mapper,
+        public RabbitMqListeningAgent(Uri address, ITransportLogger logger, IEnvelopeMapper mapper,
             RabbitMqAgent agent)
         {
             _logger = logger;
-            _channel = channel;
             _mapper = mapper;
+            _agent = agent;
             Address = address;
             _queue = agent.QueueName;
         }
@@ -40,7 +40,8 @@ namespace Jasper.RabbitMQ
                 {
                     case ListeningStatus.TooBusy when _consumer != null:
                         _consumer.Dispose();
-                        _channel.BasicCancel(_consumer.ConsumerTag);
+
+                        _agent.Channel.BasicCancel(_consumer.ConsumerTag);
                         _consumer = null;
                         break;
                     case ListeningStatus.Accepting when _consumer == null:
@@ -55,12 +56,12 @@ namespace Jasper.RabbitMQ
             if (callback == null) return;
 
             _callback = callback;
-            _consumer = new MessageConsumer(callback, _logger, _channel, _mapper, Address)
+            _consumer = new MessageConsumer(callback, _logger, _agent.Channel, _mapper, Address)
             {
                 ConsumerTag = Guid.NewGuid().ToString()
             };
 
-            _channel.BasicConsume(_consumer, _queue);
+            _agent.Channel.BasicConsume(_consumer, _queue);
         }
 
 
