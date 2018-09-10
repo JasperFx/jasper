@@ -45,16 +45,9 @@ namespace Jasper.Http.Transport
         {
             var batchedSender = new BatchedSender(uri, new HttpSenderProtocol(_settings), cancellation, _logger);
 
-            ISendingAgent agent;
-
-            if (uri.IsDurable())
-            {
-                agent = _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation);
-            }
-            else
-            {
-                agent = new LightweightSendingAgent(uri, batchedSender, _logger, _settings);
-            }
+            ISendingAgent agent = uri.IsDurable()
+                ? _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation)
+                : new LightweightSendingAgent(uri, batchedSender, _logger, _settings);
 
             agent.DefaultReplyUri = LocalReplyUri;
             agent.Start();
