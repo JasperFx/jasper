@@ -113,7 +113,7 @@ namespace Jasper.RabbitMQ
             });
         }
 
-        private Task send(Envelope envelope)
+        private async Task send(Envelope envelope)
         {
             if (_agent.State == AgentState.Disconnected)
                 throw new InvalidOperationException($"The RabbitMQ agent for {_address} is disconnected");
@@ -126,11 +126,18 @@ namespace Jasper.RabbitMQ
                 _mapper.WriteFromEnvelope(envelope, props);
                 _agent.Channel.BasicPublish(_address, props, envelope.Data);
 
-                return _callback.Successful(envelope);
+                await _callback.Successful(envelope);
             }
             catch (Exception e)
             {
-                return _callback.ProcessingFailure(envelope, e);
+                try
+                {
+                    await _callback.ProcessingFailure(envelope, e);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogException(exception);
+                }
             }
         }
     }

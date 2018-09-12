@@ -48,7 +48,6 @@ namespace Jasper.Messaging.Transports.Sending
             {
                 if (x.IsFaulted)
                 {
-                    // TODO -- need to restart things!!!
                     _logger.LogException(x.Exception);
                 }
             }, _cancellation);
@@ -76,7 +75,6 @@ namespace Jasper.Messaging.Transports.Sending
             {
                 if (x.IsFaulted)
                 {
-                    // TODO -- need to restart things!!!
                     _logger.LogException(x.Exception);
                 }
             }, _cancellation);
@@ -94,7 +92,6 @@ namespace Jasper.Messaging.Transports.Sending
             {
                 if (x.IsFaulted)
                 {
-                    // TODO -- need to restart things!!!
                     _logger.LogException(x.Exception);
                 }
             }, _cancellation);
@@ -106,7 +103,6 @@ namespace Jasper.Messaging.Transports.Sending
             {
                 if (x.IsFaulted)
                 {
-                    // TODO -- need to restart things!!!
                     _logger.LogException(x.Exception);
                 }
             }, _cancellation);
@@ -175,7 +171,14 @@ namespace Jasper.Messaging.Transports.Sending
 
         private void batchSendFailed(OutgoingMessageBatch batch, Exception exception)
         {
-            _callback.ProcessingFailure(batch, exception);
+            try
+            {
+                _callback.ProcessingFailure(batch, exception);
+            }
+            catch (Exception e)
+            {
+                _logger.LogException(e);
+            }
         }
 
         public Task Enqueue(Envelope message)

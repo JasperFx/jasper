@@ -48,41 +48,48 @@ namespace Jasper.Persistence.Marten.Resiliency
 
         protected override async Task processAction(IMessagingAction action)
         {
-            await tryRestartConnection();
-
-            if (_connection == null) return;
-
-            var tx = _connection.BeginTransaction();
-
-            var session = _store.OpenSession(new SessionOptions
-            {
-                Connection = _connection,
-                Transaction = tx,
-                Tracking = DocumentTracking.None,
-                OwnsTransactionLifecycle = true
-            });
-
             try
             {
-                await action.Execute(session, this);
+                await tryRestartConnection();
+
+                if (_connection == null) return;
+
+                var tx = _connection.BeginTransaction();
+
+                var session = _store.OpenSession(new SessionOptions
+                {
+                    Connection = _connection,
+                    Transaction = tx,
+                    Tracking = DocumentTracking.None,
+                    OwnsTransactionLifecycle = true
+                });
+
+                try
+                {
+                    await action.Execute(session, this);
 
 
+                }
+                catch (Exception e)
+                {
+                    logger.LogException(e);
+                }
+                finally
+                {
+                    if (!tx.IsCompleted)
+                    {
+                        await tx.RollbackAsync();
+                    }
+
+                    session.Dispose();
+                }
+
+                await tryRestartConnection();
             }
             catch (Exception e)
             {
                 logger.LogException(e);
             }
-            finally
-            {
-                if (!tx.IsCompleted)
-                {
-                    await tx.RollbackAsync();
-                }
-
-                session.Dispose();
-            }
-
-            await tryRestartConnection();
         }
 
         private async Task tryRestartConnection()

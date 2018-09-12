@@ -84,11 +84,18 @@ namespace Jasper.Messaging.WorkerQueues
 
             if (!_receivers.ContainsKey(queueName))
             {
-                var receiver = new ActionBlock<Envelope>(envelope =>
+                var receiver = new ActionBlock<Envelope>(async envelope =>
                 {
-                    envelope.ContentType = envelope.ContentType ?? "application/json";
+                    try
+                    {
+                        envelope.ContentType = envelope.ContentType ?? "application/json";
 
-                    return Pipeline.Invoke(envelope);
+                        await Pipeline.Invoke(envelope);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogException(e);
+                    }
                 }, options);
 
                 _receivers.Add(queueName, receiver);
