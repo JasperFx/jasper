@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTests.Persistence.Marten.Persistence
 {
-    [Obsolete("MOved to ST")]
     public class ItemReceiver : JasperRegistry
     {
         public ItemReceiver()

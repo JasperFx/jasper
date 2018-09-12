@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;

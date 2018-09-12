@@ -100,7 +100,7 @@ namespace IntegrationTests.Consul
             return runtime;
         }
 
-        public void configure(JasperRegistry registry)
+        protected void configure(JasperRegistry registry)
         {
             registry.Include<ConsulBackedSubscriptions>();
         }

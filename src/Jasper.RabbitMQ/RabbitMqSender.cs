@@ -2,11 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Baseline.Dates;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
-using Jasper.Messaging.Transports.Util;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
@@ -32,8 +30,6 @@ namespace Jasper.RabbitMQ
             Destination = agent.Uri;
 
             _address = agent.PublicationAddress();
-
-
         }
 
         public void Dispose()
@@ -120,9 +116,7 @@ namespace Jasper.RabbitMQ
         private Task send(Envelope envelope)
         {
             if (_agent.State == AgentState.Disconnected)
-            {
                 throw new InvalidOperationException($"The RabbitMQ agent for {_address} is disconnected");
-            }
 
             try
             {

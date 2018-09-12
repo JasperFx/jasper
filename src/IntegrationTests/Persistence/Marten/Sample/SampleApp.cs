@@ -52,7 +52,7 @@ namespace IntegrationTests.Persistence.Marten.Sample
         public async Task using_ExecuteAndWait()
         {
             await theRuntime.ExecuteAndWait(
-                () => { return theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"}); });
+                () => theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"}));
 
 
             using (var session = theRuntime.Get<IDocumentStore>().QuerySession())

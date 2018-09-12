@@ -94,7 +94,7 @@ namespace IntegrationTests.Persistence.Marten
             return runtime;
         }
 
-        public void configure(JasperRegistry registry)
+       protected void configure(JasperRegistry registry)
         {
             registry.Include<MartenBackedSubscriptions>();
 
