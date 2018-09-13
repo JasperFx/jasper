@@ -14,10 +14,23 @@ namespace Jasper.Configuration
         /// <summary>
         /// The currently known strategy for persisting saga state
         /// </summary>
-        public IPersistence Persistence { get; set; } = new InMemoryPersistence();
+        public ISagaPersistenceFrameProvider SagaPersistence { get; set; } = new InMemorySagaPersistenceFrameProvider();
+
+        /// <summary>
+        /// The currently known strategy for code generating transaction middleware
+        /// </summary>
+        public ITransactionFrameProvider Transactions { get; set; } = new NulloTransactionFrameProvider();
 
         public JasperGenerationRules(string applicationNamespace) : base(applicationNamespace)
         {
+        }
+
+        public class NulloTransactionFrameProvider : ITransactionFrameProvider
+        {
+            public void ApplyTransactionSupport(IChain chain)
+            {
+                // Nothing
+            }
         }
     }
 }

@@ -24,19 +24,19 @@ namespace Jasper.Messaging.Sagas
         {
             foreach (var chain in graph.Chains.Where(IsSagaRelated))
             {
-                Apply(chain, rules.Persistence);
+                Apply(chain, rules.SagaPersistence);
             }
         }
 
-        public void Apply(HandlerChain chain, IPersistence persistence)
+        public void Apply(HandlerChain chain, ISagaPersistenceFrameProvider sagaPersistenceFrameProvider)
         {
-            if (persistence == null)
+            if (sagaPersistenceFrameProvider == null)
             {
                 throw new InvalidOperationException("No saga persistence strategy is registered.");
             }
 
             var sagaStateType = DetermineSagaStateType(chain);
-            var sagaIdType = persistence.DetermineSagaIdType(sagaStateType);
+            var sagaIdType = sagaPersistenceFrameProvider.DetermineSagaIdType(sagaStateType);
 
             var sagaHandler = chain.Handlers.FirstOrDefault(x => x.HandlerType.Closes(typeof(StatefulSagaOf<>)));
 
@@ -70,7 +70,7 @@ namespace Jasper.Messaging.Sagas
             // Tells the handler chain codegen to not use this as a cascading message
             existingState?.Properties.Add(HandlerChain.NotCascading, true);
 
-            var persistenceFrame = persistence.DeterminePersistenceFrame(existence, ref sagaIdVariable, sagaStateType, existingState, out existingState);
+            var persistenceFrame = sagaPersistenceFrameProvider.DeterminePersistenceFrame(existence, ref sagaIdVariable, sagaStateType, existingState, out existingState);
             if (persistenceFrame != null) chain.Middleware.Add(persistenceFrame);
 
             if (existence == SagaStateExistence.Existing)
@@ -83,7 +83,7 @@ namespace Jasper.Messaging.Sagas
             chain.Postprocessors.Add(enlistInSagaId);
 
 
-            var storeOrDeleteFrame = persistence.DetermineStoreOrDeleteFrame(existingState, sagaHandler.HandlerType);
+            var storeOrDeleteFrame = sagaPersistenceFrameProvider.DetermineStoreOrDeleteFrame(existingState, sagaHandler.HandlerType);
             chain.Postprocessors.Add(storeOrDeleteFrame);
         }
 

@@ -10,7 +10,7 @@ namespace Jasper.Persistence
     {
         public override void Modify(IChain chain, JasperGenerationRules rules)
         {
-            rules.Persistence.ApplyTransactionSupport(chain);
+            rules.Transactions.ApplyTransactionSupport(chain);
         }
     }
 }

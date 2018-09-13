@@ -7,9 +7,9 @@ using Jasper.Persistence.SqlServer.Persistence;
 
 namespace Jasper.Persistence.SqlServer
 {
-    internal class SqlServerPersistence : InMemoryPersistence
+    internal class SqlServerTransactionFrameProvider : ITransactionFrameProvider
     {
-        public override void ApplyTransactionSupport(IChain chain)
+        public void ApplyTransactionSupport(IChain chain)
         {
             var shouldFlushOutgoingMessages = false;
             if (chain is RouteChain)

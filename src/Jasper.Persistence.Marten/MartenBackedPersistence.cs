@@ -35,7 +35,9 @@ namespace Jasper.Persistence.Marten
 
             registry.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
 
-            registry.CodeGeneration.Persistence = new MartenPersistence();
+            var frameProvider = new MartenSagaPersistenceFrameProvider();
+            registry.CodeGeneration.SagaPersistence = frameProvider;
+            registry.CodeGeneration.Transactions = frameProvider;
 
         }
     }

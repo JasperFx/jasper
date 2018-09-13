@@ -11,7 +11,7 @@ using Marten.Util;
 
 namespace Jasper.Persistence.Marten.Persistence.Sagas
 {
-    public class MartenPersistence : IPersistence
+    public class MartenSagaPersistenceFrameProvider : ISagaPersistenceFrameProvider, ITransactionFrameProvider
     {
 
         public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,

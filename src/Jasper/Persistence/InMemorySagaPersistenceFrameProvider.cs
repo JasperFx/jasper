@@ -13,7 +13,7 @@ namespace Jasper.Persistence
 
 
 
-    public class InMemoryPersistence : IPersistence
+    public class InMemorySagaPersistenceFrameProvider : ISagaPersistenceFrameProvider
     {
         public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState)
