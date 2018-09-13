@@ -1,7 +1,7 @@
-<!--title:Jasper.SqlServer-->
+<!--title:Jasper.Persistence.SqlServer-->
 
-The Jasper.SqlServer Nuget library provides Jasper users with a quick way to integrate Sql Server-backed persistence into their
-Jasper applications. To get started, just add the *Jasper.SqlServer* Nuget to your project, and enable the persistence like this:
+The Jasper.Persistence.SqlServer Nuget library provides Jasper users with a quick way to integrate Sql Server-backed persistence into their
+Jasper applications. To get started, just add the *Jasper.Persistence.SqlServer* Nuget to your project, and enable the persistence like this:
 
 <[sample:AppUsingSqlServer]>
 

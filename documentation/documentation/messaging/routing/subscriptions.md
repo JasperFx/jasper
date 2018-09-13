@@ -88,7 +88,7 @@ A couple things to note from the sample above:
 
 ## Publishing Subscriptions
 
-Assuming that you are using the `Jasper.CommandLine` package to <[linkto:documentation/bootstrapping/console;title=run your Jasper application]>, 
+Assuming that you are using the `JasperAgent` class to <[linkto:documentation/bootstrapping/console;title=run your Jasper application]>, 
 you'll have an extra command to publish all the subscriptions to the registered subscription storage. Assuming that 
 your application compiles to "MyApp.exe," the command line would be:
 

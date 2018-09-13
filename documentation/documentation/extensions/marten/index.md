@@ -1,7 +1,7 @@
-<!--title:Jasper.Marten-->
+<!--title:Jasper.Persistence.Marten-->
 
-The Jasper.Marten library provides some easy to use recipes for integrating  [Marten](https://jasperfx.github.io/marten) and Postgresql into a Jasper application. All you need to do to get
-started with Marten + Jasper is to add the *Jasper.Marten* nuget to your project and at minimum,
+The Jasper.Persistence.Marten library provides some easy to use recipes for integrating  [Marten](https://jasperfx.github.io/marten) and Postgresql into a Jasper application. All you need to do to get
+started with Marten + Jasper is to add the *Jasper.Persistence.Marten* nuget to your project and at minimum,
 at least set the connection string to the underlying Postgresql database by configuring
 Marten's `StoreOptions` object like this:
 
@@ -24,6 +24,6 @@ As an example:
 
 <[sample:UsingDocumentSessionHandler]>
 
-On top of the auto-discovered Marten service integration, the Jasper.Marten extension also has:
+On top of the auto-discovered Marten service integration, the Jasper.Persistence.Marten extension also has:
 
 <[TableOfContents]>

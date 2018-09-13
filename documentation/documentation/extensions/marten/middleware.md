@@ -1,7 +1,7 @@
 <!--title:Transactional Middleware-->
 
-You can explicitly apply transactional middleware to a message or HTTP handler action with the
-`[MartenTransaction]` attribute as shown below:
+Assuming that the Jasper.Persistence.Marten Nuget is referenced by your project, you can explicitly apply transactional middleware to a message or HTTP handler action with the
+`[Transaction]` attribute as shown below:
 
 <[sample:CreateDocCommandHandler]>
 
@@ -21,7 +21,7 @@ Then add the policy to your application like this:
 
 ## Customizing How the Session is Created
 
-By default, using `[MartenTransaction]` or just injecting an `IDocumentSession` with the Marten integration will create a lightweight session in Marten using the `IDocumentStore.LightweightSession()`
+By default, using `[Transaction]` or just injecting an `IDocumentSession` with the Marten integration will create a lightweight session in Marten using the `IDocumentStore.LightweightSession()`
 call. However, [Marten](http://jasperfx.github.io/marten) has many other options to create sessions
 with different transaction levels, heavier identity map behavior, or by attaching custom listeners. To allow you to use the full range of Marten behavior, you can choose to override the mechanics of how
 a session is opened for any given message handler by just placing a method called `OpenSession()` on 

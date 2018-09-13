@@ -1,8 +1,7 @@
 <!--title:Jasper in Console Applications-->
 
 At this time, the Jasper team is focused on hosting applications either in IIS (or nginx) or as a console application that would be suitable for
-running in a Docker container. To that end, we've added the `JasperAgent` static class in the 
-external `Jasper.CommandLine` Nuget library as a helper for quickly standing up Jasper applications in a console application.
+running in a Docker container. To that end, we've added the `JasperAgent` static class as a helper for standing up Jasper in a console application.
 
 The sample usage from the <[linkto:documentation/getting_started;title=getting started]> topic would look like this:
 
@@ -21,9 +20,6 @@ Or like this:
 Let's say that your Jasper application compiles to `MyApp.exe` and uses the `JasperAgent` class
 to run the commands. In that case you can run your application simply by typing `MyApp` at the
 command line with no arguments.
-
-However, the `Jasper.CommandLine` library adds some additional commands for running, validating, or describing the running application.
-
 
 ## Overriding the Environment Name
 
