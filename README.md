@@ -7,28 +7,54 @@ Jasper
 
 The [documentation is published here](http://jasperfx.github.io/documentation).
 
-Jasper is a next generation application development framework for distributed server side development in .Net. Jasper is being built on the CoreCLR as a replacement for a small subset of the older [FubuMVC](https://fubumvc.github.io) tooling. Roughly stated, Jasper
+Jasper is a next generation application development framework for distributed server side development in .Net. At the moment, Jasper can be used as:
+
+1. A robust, but lightweight asynchronous messaging framework (call it a service bus if you have to, but know that there's no centralized broker)
+1. An in-memory command runner 
+1. An alternative for authoring HTTP services within ASP.Net Core
+1. A dessert topping (just kidding)
+
+In all cases, Jasper can be used by itself or as an addon to an ASP.Net Core application. As much as possible, Jasper tries to leverage existing ASP.Net Core infrastructure.
+
+
+Jasper is being built on the CoreCLR as a replacement for a small subset of the older [FubuMVC](https://fubumvc.github.io) tooling. Roughly stated, Jasper
 intends to keep the things that have been successful in FubuMVC, ditch the things that weren't, and make the runtime pipeline
 be much more performant. Oh, and make the stacktraces from failures within the runtime pipeline be a whole lot simpler to read -- and yes, that's absolutely worth being one of the main goals.
 
 ## Working with the Code
 
-The *official* build script for Jasper uses Rake, but you're perfectly able to just fire up Visual Studio.Net, Rider, or VS Code and start working.
+The *official* build script for Jasper uses Rake, but you're perfectly able to just fire up Visual Studio.Net, Rider, or VS Code and start working. In its current form, all the integration tests, including the Storyteller specifications, require [Docker](https://www.docker.com/) to be running on your developement machine.
 
-To run the rake script, you'll need to have Ruby and a recent version of Node.js (for building the client side assets we use in diagnostics) installed. Assuming you have those, go to the command line and type:
+To run the rake script, you'll need to have Ruby installed and [Docker]() running on your application. Assuming you have that, go to the command line and type:
 
 1. `bundle install` (only the first time)
 1. `rake` or if you have version conflicts with other projects on your machine (boo), use `bundle exec rake`
 
 This script will build the client side Javascript assets, restore .Net dependencies, execute the xUnit tests, and run the [Storyteller](http://storyteller.github.io) specifications.
 
+## Working with the Integration Tests
+
+If you use the Rake script, you can execute the `IntegrationTests` library directly by using:
+
+```
+rake integrationtests
+```
+
+If you don't want to use Rake, from a command line you need to run this at least once before executing any of the `IntegrationTests`:
+
+```
+docker-compose up -d
+```
+
+
 ## Working with the Storyteller Specifications
 
-If you're okay using the rake script, just use the `rake open_st` task to start and launch the Storyteller specification editor. `rake storyteller` will run the specifications from a command line if you only need to see results.
+See the section on `IntegrationTests` above for directions on using Docker.
+
+If you're okay using the rake script, just use the `rake open_st` task to start and launch the Storyteller specification editor. `rake storyteller` will run the specifications from a command line if you only need to see results. The command `rake storyteller` will likewise run the specification suite from the command line.
 
 If you don't want to use rake, go to the `src/StorytellerSpecs` folder at the command line and type `dotnet storyteller`.
 
-The build script will build 
 
 ## Documentation
 
