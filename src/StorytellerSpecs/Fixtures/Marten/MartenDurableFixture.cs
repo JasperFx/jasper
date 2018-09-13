@@ -94,7 +94,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
     public class TriggerMessageReceiver
     {
-        [Transaction]
+        [Transactional]
         public object Handle(TriggerMessage message, IDocumentSession session, IMessageContext context)
         {
             var response = new CascadedMessage
@@ -108,7 +108,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
     public class ItemCreatedHandler
     {
-        [Transaction]
+        [Transactional]
         public static void Handle(ItemCreated created, IDocumentSession session,
             Jasper.Messaging.Tracking.MessageTracker tracker,
             Envelope envelope)

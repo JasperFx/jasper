@@ -6,7 +6,7 @@ namespace Jasper.Persistence
     /// Applies unit of work / transactional boundary middleware to the
     /// current chain using the currently configured persistence
     /// </summary>
-    public class TransactionAttribute : ModifyChainAttribute
+    public class TransactionalAttribute : ModifyChainAttribute
     {
         public override void Modify(IChain chain, JasperGenerationRules rules)
         {

@@ -18,7 +18,7 @@ namespace SqlReceiver
             return writer.ToString();
         }
 
-        [Transaction]
+        [Transactional]
         public static Task post_clear(SqlTransaction tx)
         {
             return tx.Connection.CreateCommand("delete from receiver.sent_track;delete from receiver.received_track")

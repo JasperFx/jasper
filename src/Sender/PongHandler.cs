@@ -7,7 +7,7 @@ namespace Sender
 {
     public class PongHandler
     {
-        [Transaction]
+        [Transactional]
         public void Handle(PongMessage message, IDocumentSession session)
         {
             session.Store(new ReceivedTrack

@@ -8,7 +8,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
     [JasperIgnore]
     public class TraceHandler
     {
-        [Transaction]
+        [Transactional]
         public void Handle(TraceMessage message, IDocumentSession session)
         {
             session.Store(new TraceDoc {Name = message.Name});

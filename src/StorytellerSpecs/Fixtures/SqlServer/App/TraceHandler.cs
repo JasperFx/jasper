@@ -9,7 +9,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
     [JasperIgnore]
     public class TraceHandler
     {
-        [Transaction]
+        [Transactional]
         public void Handle(TraceMessage message, SqlTransaction tx)
         {
             var traceDoc = new TraceDoc {Name = message.Name};

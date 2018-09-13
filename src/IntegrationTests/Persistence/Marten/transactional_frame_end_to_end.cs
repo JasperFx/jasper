@@ -43,7 +43,7 @@ namespace IntegrationTests.Persistence.Marten
     // SAMPLE: CreateDocCommandHandler
     public class CreateDocCommandHandler
     {
-        [Transaction]
+        [Transactional]
         public void Handle(CreateDocCommand message, IDocumentSession session)
         {
             session.Store(new FakeDoc {Id = message.Id});

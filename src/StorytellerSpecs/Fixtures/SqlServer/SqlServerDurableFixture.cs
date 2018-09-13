@@ -108,7 +108,7 @@ create table receiver.item_created
 
     public class TriggerMessageReceiver
     {
-        [Transaction]
+        [Transactional]
         public object Handle(TriggerMessage message, IMessageContext context)
         {
             var response = new CascadedMessage
@@ -123,7 +123,7 @@ create table receiver.item_created
     // SAMPLE: UsingSqlTransaction
     public class ItemCreatedHandler
     {
-        [Transaction]
+        [Transactional]
         public static async Task Handle(
             ItemCreated created,
             SqlConnection conn, // the connection for the container scope
@@ -144,7 +144,7 @@ create table receiver.item_created
     public class CreateItemHandler
     {
         // SAMPLE: SqlServerOutboxWithSqlTransaction
-        [Transaction]
+        [Transactional]
         public async Task<ItemCreatedEvent> Handle(CreateItemCommand command, SqlTransaction tx)
         {
             var item = new Item {Name = command.Name};

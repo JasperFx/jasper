@@ -9,7 +9,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 {
     public class ItemCreatedHandler
     {
-        [Transaction]
+        [Transactional]
         public static void Handle(ItemCreated created, IDocumentSession session, MessageTracker tracker,
             Envelope envelope)
         {

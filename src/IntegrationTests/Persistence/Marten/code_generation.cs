@@ -67,7 +67,7 @@ namespace IntegrationTests.Persistence.Marten
         {
         }
 
-        [Transaction]
+        [Transactional]
         public void Handle(Command message, IDocumentSession session)
         {
         }

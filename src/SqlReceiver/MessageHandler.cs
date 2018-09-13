@@ -6,7 +6,7 @@ using TestMessages;
 
 namespace SqlReceiver
 {
-    [Transaction]
+    [Transactional]
     public static class MessageHandler
     {
         public static Task Handle(Target target, SqlTransaction tx)

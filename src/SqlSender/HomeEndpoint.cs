@@ -42,7 +42,7 @@ namespace SqlSender
 
         }
 
-        [Transaction]
+        [Transactional]
         public static async Task post_one(IMessageContext context, SqlTransaction tx)
         {
             var target1 = JsonConvert.DeserializeObject<Target>(_json1);
@@ -53,7 +53,7 @@ namespace SqlSender
             await context.Send(target1);
         }
 
-        [Transaction]
+        [Transactional]
         public static async Task post_two(IMessageContext context, SqlTransaction tx)
         {
             var target2 = JsonConvert.DeserializeObject<Target>(_json2);
@@ -64,7 +64,7 @@ namespace SqlSender
             await context.Send(target2);
         }
 
-        [Transaction]
+        [Transactional]
         public static async Task post_three(IMessageContext context, SqlTransaction tx)
         {
             var ping = new PingMessage
@@ -78,7 +78,7 @@ namespace SqlSender
             await context.SendAndExpectResponseFor<PongMessage>(ping);
         }
 
-        [Transaction]
+        [Transactional]
         public static async Task post_four(IMessageContext context, SqlTransaction tx)
         {
             var created = new UserCreated

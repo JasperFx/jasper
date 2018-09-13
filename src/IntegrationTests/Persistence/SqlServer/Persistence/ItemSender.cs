@@ -11,7 +11,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
     public class SendItemEndpoint
     {
-        [Transaction]
+        [Transactional]
         public Task post_send_item(ItemCreated created, IMessageContext context)
         {
             return context.Send(created);

@@ -8,7 +8,7 @@ namespace SqlSender
 {
     public class PongHandler
     {
-        [Transaction]
+        [Transactional]
         public Task Handle(PongMessage message, SqlTransaction tx)
         {
             return tx.StoreReceived(message.Id, "PongMessage");

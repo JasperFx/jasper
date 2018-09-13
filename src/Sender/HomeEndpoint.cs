@@ -41,7 +41,7 @@ namespace Sender
             return Task.CompletedTask;
         }
 
-        [Transaction]
+        [Transactional]
         public static async Task post_one(IMessageContext context, IDocumentSession session)
         {
             await context.EnlistInTransaction(session);
@@ -58,7 +58,7 @@ namespace Sender
             await context.Send(target1);
         }
 
-        [Transaction]
+        [Transactional]
         public static async Task post_two(IMessageContext context, IDocumentSession session)
         {
             await context.EnlistInTransaction(session);
@@ -75,7 +75,7 @@ namespace Sender
             await context.Send(target2);
         }
 
-        [Transaction]
+        [Transactional]
         public static async Task post_three(IMessageContext context, IDocumentSession session)
         {
             await context.EnlistInTransaction(session);
@@ -95,7 +95,7 @@ namespace Sender
             await context.SendAndExpectResponseFor<PongMessage>(ping);
         }
 
-        [Transaction]
+        [Transactional]
         public static async Task post_four(IMessageContext context, IDocumentSession session)
         {
             await context.EnlistInTransaction(session);

@@ -5,7 +5,7 @@ using TestMessages;
 
 namespace Receiver
 {
-    [Transaction]
+    [Transactional]
     public static class MessageHandler
     {
         public static void Handle(Target target, IDocumentSession session)

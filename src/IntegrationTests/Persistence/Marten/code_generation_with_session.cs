@@ -80,7 +80,7 @@ namespace IntegrationTests.Persistence.Marten
         {
         }
 
-        [Transaction]
+        [Transactional]
         public void Consume(Message2 message, IDocumentSession session)
         {
         }
@@ -103,7 +103,7 @@ namespace IntegrationTests.Persistence.Marten
         {
         }
 
-        [Transaction]
+        [Transactional]
         public void Consume(Message2 message, IDocumentSession session)
         {
         }

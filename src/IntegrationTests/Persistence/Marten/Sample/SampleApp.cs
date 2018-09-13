@@ -178,7 +178,7 @@ namespace IntegrationTests.Persistence.Marten.Sample
     public class UserHandler
     {
         // SAMPLE: UserHandler-handle-CreateUser
-        [Transaction]
+        [Transactional]
         public static UserCreated Handle(CreateUser message, IDocumentSession session)
         {
             session.Store(new User {Name = message.Name});
