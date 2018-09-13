@@ -1,9 +1,9 @@
 <!--title:Using Storyteller against Jasper Systems-->
 
 Jasper comes with a pre-built recipe for doing integration or acceptance testing with [Storyteller](http://storyteller.github.io) using
-the *Jasper.Storyteller* extension library.
+the *Jasper.TestSupport.Storyteller* extension library.
 
-To get started with this package, create a new console application in your solution and add the `Jasper.Storyteller` Nuget dependency. Next,
+To get started with this package, create a new console application in your solution and add the `Jasper.TestSupport.Storyteller` Nuget dependency. Next,
 in the `Program.Main()` method, use this code to connect your application to Storyteller:
 
 <[sample:bootstrapping-storyteller-with-Jasper]>
