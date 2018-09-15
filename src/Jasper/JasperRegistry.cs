@@ -67,7 +67,6 @@ namespace Jasper
 
             Settings.Require<SubscriptionSettings>();
             Settings.Replace(Messaging.Settings);
-            Settings.Replace(Messaging.Settings.Http);
 
 
             Hosting = this;

@@ -6,6 +6,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Subscriptions
 {
+    [Obsolete]
     public interface IServiceNode
     {
         string ServiceName { get; }
@@ -16,6 +17,7 @@ namespace Jasper.Messaging.Runtime.Subscriptions
         Uri[] TcpEndpoints { get; }
     }
 
+    [Obsolete]
     public class ServiceNode : IServiceNode
     {
         //For json deserialization
@@ -32,7 +34,6 @@ namespace Jasper.Messaging.Runtime.Subscriptions
             MachineName = settings.MachineName;
             Id = $"{ServiceName}@{MachineName}";
 
-            MessagesUrl = settings.Http.RelativeUrl;
 
 
             TcpEndpoints = settings.Listeners.Where(x => x.Scheme == "tcp")

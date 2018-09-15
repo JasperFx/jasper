@@ -55,18 +55,6 @@ namespace Jasper.Testing.Http
             theServiceNode.Id.ShouldBe("ImportantService@BigBox");
         }
 
-        [Fact]
-        public async Task register_http_listener()
-        {
-            var uri = "http://localhost:5003";
-            theRegistry.Hosting.UseUrls(uri);
-
-            await withApp();
-
-            var serviceNode = theServiceNode;
-            serviceNode.HttpEndpoints.ShouldContain(uri.ToUri().ToMachineUri());
-            serviceNode.MessagesUrl.ShouldBe(new MessagingSettings().Http.RelativeUrl);
-        }
 
         [Fact]
         public async Task register_tcp_listener_if_any()

@@ -30,8 +30,6 @@ namespace Jasper.Messaging.Transports.Configuration
             ServiceName = "Jasper";
 
             UniqueNodeId = Guid.NewGuid().ToString().GetHashCode();
-
-            Http = new HttpTransportSettings(this);
         }
 
         /// <summary>
@@ -42,9 +40,6 @@ namespace Jasper.Messaging.Transports.Configuration
 
         public int UniqueNodeId { get; }
 
-        public HttpTransportSettings Http { get; }
-
-        IHttpTransportConfiguration ITransportsExpression.Http => Http;
 
         // Was ChannelGraph.Name
         public string ServiceName

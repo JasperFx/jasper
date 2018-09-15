@@ -2,10 +2,8 @@
 using System.Linq.Expressions;
 using Jasper.Conneg;
 using Jasper.EnvironmentChecks;
-using Jasper.Http;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
-using Jasper.Http.Transport;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Durability;
@@ -16,8 +14,6 @@ using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Lamar;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +21,6 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper
 {
-
     internal class JasperServiceRegistry : ServiceRegistry
     {
         public JasperServiceRegistry(JasperRegistry parent)
@@ -54,10 +49,6 @@ namespace Jasper
 
         private void aspnetcore(JasperRegistry parent)
         {
-            For<ITransport>()
-                .Use<HttpTransport>();
-
-
             this.AddSingleton<ConnegRules>();
 
             this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
@@ -107,7 +98,6 @@ namespace Jasper
             ForSingletonOf<IMessagingRoot>().Use<MessagingRoot>();
 
             ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());
-
 
 
             MessagingRootService(x => x.Workers);

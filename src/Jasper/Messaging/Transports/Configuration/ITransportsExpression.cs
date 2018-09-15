@@ -28,10 +28,6 @@ namespace Jasper.Messaging.Transports.Configuration
         /// <param name="protocol"></param>
         void DisableTransport(string protocol);
 
-
-
-        IHttpTransportConfiguration Http { get; }
-
     }
 
     public static class TransportsExpressionExtensions
