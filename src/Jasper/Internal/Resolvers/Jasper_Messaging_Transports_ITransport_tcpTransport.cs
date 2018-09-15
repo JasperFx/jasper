@@ -7,12 +7,12 @@ namespace Jasper.Internal.Resolvers
     // START: Jasper_Messaging_Transports_ITransport_tcpTransport
     public class Jasper_Messaging_Transports_ITransport_tcpTransport : Lamar.IoC.Resolvers.TransientResolver<Jasper.Messaging.Transports.ITransport>
     {
-        private readonly Jasper.Messaging.Logging.ITransportLogger _transportLogger_1475560721;
+        private readonly Jasper.Messaging.Logging.ITransportLogger _transportLogger_1156645429;
         private readonly Jasper.Messaging.Transports.Configuration.MessagingSettings _messagingSettings;
 
-        public Jasper_Messaging_Transports_ITransport_tcpTransport([Lamar.Named("transportLogger2")] Jasper.Messaging.Logging.ITransportLogger transportLogger_1475560721, Jasper.Messaging.Transports.Configuration.MessagingSettings messagingSettings)
+        public Jasper_Messaging_Transports_ITransport_tcpTransport([Lamar.Named("transportLogger2")] Jasper.Messaging.Logging.ITransportLogger transportLogger_1156645429, Jasper.Messaging.Transports.Configuration.MessagingSettings messagingSettings)
         {
-            _transportLogger_1475560721 = transportLogger_1475560721;
+            _transportLogger_1156645429 = transportLogger_1156645429;
             _messagingSettings = messagingSettings;
         }
 
@@ -20,8 +20,8 @@ namespace Jasper.Internal.Resolvers
 
         public override Jasper.Messaging.Transports.ITransport Build(Lamar.IoC.Scope scope)
         {
-            var nulloDurableMessagingFactory = new Jasper.Messaging.Transports.NulloDurableMessagingFactory(_transportLogger_1475560721, _messagingSettings);
-            return new Jasper.Messaging.Transports.Tcp.TcpTransport(nulloDurableMessagingFactory, _transportLogger_1475560721, _messagingSettings);
+            var nulloDurableMessagingFactory = new Jasper.Messaging.Transports.NulloDurableMessagingFactory(_transportLogger_1156645429, _messagingSettings);
+            return new Jasper.Messaging.Transports.Tcp.TcpTransport(nulloDurableMessagingFactory, _transportLogger_1156645429, _messagingSettings);
         }
 
     }

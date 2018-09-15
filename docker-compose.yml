@@ -4,11 +4,6 @@ services:
     image: "clkao/postgres-plv8:latest"
     ports:
      - "5433:5432"
-  consul:
-    image: "consul:latest"
-    ports:
-     - "8500:8500"
-     - "8600:8600"
   rabbitmq:
     image: "rabbitmq:latest"
     ports:
