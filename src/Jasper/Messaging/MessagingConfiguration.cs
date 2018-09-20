@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -15,9 +14,6 @@ namespace Jasper.Messaging
 {
     public class MessagingConfiguration
     {
-        public readonly CapabilityGraph Capabilities = new CapabilityGraph();
-
-
         public HandlerConfiguration Handling { get; }
 
 
@@ -75,7 +71,6 @@ namespace Jasper.Messaging
                     var calls = t.Result;
 
                     if (calls != null && calls.Any()) Graph.AddRange(calls);
-                    Graph.Add(HandlerCall.For<SubscriptionsHandler>(x => x.Handle(new SubscriptionsChanged(), null)));
 
                     Graph.Group();
                     Handling.ApplyPolicies(Graph, registry.CodeGeneration);

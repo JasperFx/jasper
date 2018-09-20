@@ -21,8 +21,6 @@ namespace Subscriber
         public SubscriberApp()
         {
             Hosting.UseUrls("http://localhost:5004");
-            Subscribe.At("http://loadbalancer/messages");
-            Subscribe.ToAllMessages();
 
             Transports.LightweightListenerAt(22222);
         }

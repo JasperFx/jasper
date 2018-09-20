@@ -6,7 +6,7 @@ using Baseline;
 using Jasper;
 using Jasper.CommandLine;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Runtime.Subscriptions;
+using Jasper.Messaging.Runtime.Routing;
 using Jasper.Util;
 using NJsonSchema;
 using Oakton;
@@ -37,7 +37,7 @@ namespace Jasper.JsonCommands
             using (var runtime = input.BuildRuntime())
             {
                 var handlers = runtime.Get<HandlerGraph>();
-                var messageTypes = handlers.Chains.Select(x => x.MessageType).Where(x => x.Assembly != typeof(Subscription).Assembly);
+                var messageTypes = handlers.Chains.Select(x => x.MessageType).Where(x => x.Assembly != typeof(MessageRoute).Assembly);
                 foreach (var messageType in messageTypes)
                 {
                     var filename = $"{messageType.ToMessageAlias()}-{messageType.ToVersion()}.json";

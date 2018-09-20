@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using Baseline;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Tracking;
 using Microsoft.Extensions.Logging;
 using StoryTeller;
@@ -16,34 +12,33 @@ namespace Jasper.Storyteller.Logging
     public class StorytellerMessageLogger : MessageTrackingLogger
     {
         private readonly MessageHistory _history;
-        private ISpecContext _context;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
-        private readonly List<PublisherSubscriberMismatch> _mismatches = new List<PublisherSubscriberMismatch>();
+        private ISpecContext _context;
 
-        public StorytellerMessageLogger(MessageHistory history, ILoggerFactory factory, IMetrics metrics) : base(history, factory, metrics)
+        public StorytellerMessageLogger(MessageHistory history, ILoggerFactory factory, IMetrics metrics) : base(
+            history, factory, metrics)
         {
             _history = history;
             Errors = new BusErrors();
         }
+
+        public BusErrors Errors { get; private set; }
+
+        public string ServiceName { get; set; } = "Jasper";
 
 
         public void Start(ISpecContext context)
         {
             _records.Clear();
             Errors = new BusErrors();
-            _mismatches.Clear();
 
             _context = context;
         }
 
-        public BusErrors Errors { get; private set; }
-
         public Report[] BuildReports()
         {
-            return new Report[]{Errors, new MessageHistoryReport(_records.ToArray())};
+            return new Report[] {Errors, new MessageHistoryReport(_records.ToArray())};
         }
-
-        public string ServiceName { get; set; } = "Jasper";
 
         private void trace(Envelope envelope, string message, Exception ex)
         {
@@ -95,7 +90,8 @@ namespace Jasper.Storyteller.Logging
             base.MessageFailed(envelope, ex);
         }
 
-        public override void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        public override void LogException(Exception ex, Guid correlationId = default(Guid),
+            string message = "Exception detected:")
         {
             Errors.Exceptions.Add(ex);
             base.LogException(ex, correlationId, message);
@@ -111,12 +107,6 @@ namespace Jasper.Storyteller.Logging
         {
             trace(envelope, "No message routes");
             base.NoRoutesFor(envelope);
-        }
-
-        public override void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
-        {
-            _mismatches.Add(mismatch);
-            base.SubscriptionMismatch(mismatch);
         }
 
         public override void MovedToErrorQueue(Envelope envelope, Exception ex)

@@ -4,7 +4,6 @@ using System.Linq;
 using Baseline;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 
@@ -24,7 +23,7 @@ namespace Jasper.Messaging.Transports
         private IMessageLogger _logger;
         private IMessagingRoot _root;
 
-        public void Start(IMessagingRoot root, CapabilityGraph capabilities)
+        public void Start(IMessagingRoot root)
         {
             var settings = root.Settings;
 
@@ -52,9 +51,7 @@ namespace Jasper.Messaging.Transports
             GetOrBuildChannel(TransportConstants.RetryUri);
 
             SystemReplyUri =
-                capabilities.DefaultReceiverLocation
-                ?? tryGetReplyUri("http")
-                ?? tryGetReplyUri("tcp")
+                tryGetReplyUri("tcp")
                 ?? _transports.Values.FirstOrDefault(x => x.LocalReplyUri != null)?.LocalReplyUri;
         }
 

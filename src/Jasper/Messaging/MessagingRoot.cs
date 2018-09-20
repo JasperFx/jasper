@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -10,12 +9,11 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
-using Lamar.Codegen;
+using Lamar;
 using Lamar.Util;
 
 namespace Jasper.Messaging
@@ -23,32 +21,17 @@ namespace Jasper.Messaging
     [CacheResolver]
     public class MessagingRoot : IDisposable, IMessagingRoot
     {
-        // bouncing through this makes the mock root easier
-        public static IMessageContext BusFor(Envelope envelope, IMessagingRoot root)
-        {
-            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings, root.Channels, root.Factory, root.Logger, envelope);
-
-        }
-
-        // bouncing through this makes the mock root easier
-        public static IMessageContext BusFor(IMessagingRoot root)
-        {
-            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings, root.Channels, root.Factory, root.Logger);
-        }
-
         private readonly HandlerGraph _handlers;
         private readonly ITransportLogger _transportLogger;
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
-        public MessagingRoot(
-            MessagingSerializationGraph serialization,
+        public MessagingRoot(MessagingSerializationGraph serialization,
             MessagingSettings settings,
             HandlerGraph handlers,
             IDurableMessagingFactory factory,
             IChannelGraph channels,
-            ISubscriptionsRepository subscriptions,
             IMessageLogger messageLogger,
-            Lamar.IContainer container,
+            IContainer container,
             ITransportLogger transportLogger)
         {
             Settings = settings;
@@ -60,7 +43,6 @@ namespace Jasper.Messaging
             Transports = container.QuickBuildAll<ITransport>().ToArray();
 
 
-
             Lookup = new UriAliasLookup(container.QuickBuildAll<IUriLookup>());
 
 
@@ -68,33 +50,33 @@ namespace Jasper.Messaging
 
             Logger = messageLogger;
 
-            Pipeline = new HandlerPipeline(Serialization, handlers, Replies, Logger, container.QuickBuildAll<IMissingHandler>(),
+            Pipeline = new HandlerPipeline(Serialization, handlers, Replies, Logger,
+                container.QuickBuildAll<IMissingHandler>(),
                 this);
 
             Workers = new WorkerQueue(Logger, Pipeline, settings);
 
-            Router = new MessageRouter(Serialization, channels, subscriptions, handlers, Logger, Lookup, settings);
+            Router = new MessageRouter(Serialization, channels, handlers, Logger, Lookup, settings);
 
             // TODO -- ZOMG this is horrible, and I admit it.
-            if (Factory is NulloDurableMessagingFactory f)
-            {
-                f.ScheduledJobs = ScheduledJobs;
-            }
+            if (Factory is NulloDurableMessagingFactory f) f.ScheduledJobs = ScheduledJobs;
+        }
+
+        public void Dispose()
+        {
+            ScheduledJobs.Dispose();
         }
 
         public ListeningStatus ListeningStatus
         {
             get => _listeningStatus;
-            set {
-
+            set
+            {
                 _transportLogger.ListeningStatusChange(value);
                 _listeningStatus = value;
 
 
-                foreach (var transport in Transports)
-                {
-                    transport.ListeningStatus = value;
-                }
+                foreach (var transport in Transports) transport.ListeningStatus = value;
             }
         }
 
@@ -132,7 +114,7 @@ namespace Jasper.Messaging
             return BusFor(envelope, this);
         }
 
-        public async Task Activate(LocalWorkerSender localWorker, CapabilityGraph capabilities, JasperRuntime runtime,
+        public async Task Activate(LocalWorkerSender localWorker, JasperRuntime runtime,
             JasperGenerationRules generation, PerfTimer timer)
         {
             timer.MarkStart("ServiceBusActivator");
@@ -140,15 +122,8 @@ namespace Jasper.Messaging
             _handlers.Compile(generation, runtime, timer);
 
 
-            var capabilityCompilation = capabilities.Compile(_handlers, Serialization, Channels, runtime, Transports, Lookup);
-
-
-
-            timer.Record("WorkersGraph.Compile", () =>
-            {
-                Settings.Workers.Compile(_handlers.Chains.Select(x => x.MessageType));
-            });
-
+            timer.Record("WorkersGraph.Compile",
+                () => { Settings.Workers.Compile(_handlers.Chains.Select(x => x.MessageType)); });
 
 
             localWorker.Start(this);
@@ -163,24 +138,24 @@ namespace Jasper.Messaging
 
 
                 timer.Record("ChannelGraph.Start",
-                    () => { ((ChannelGraph)Channels).Start(this, capabilities); });
-
-            }
-
-            runtime.Capabilities = await capabilityCompilation;
-            if (runtime.Capabilities.Errors.Any() && Settings.ThrowOnValidationErrors)
-            {
-                throw new InvalidSubscriptionException(runtime.Capabilities.Errors);
+                    () => { ((ChannelGraph) Channels).Start(this); });
             }
 
             timer.MarkFinished("ServiceBusActivator");
         }
 
-        public void Dispose()
+        // bouncing through this makes the mock root easier
+        public static IMessageContext BusFor(Envelope envelope, IMessagingRoot root)
         {
-            ScheduledJobs.Dispose();
+            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings,
+                root.Channels, root.Factory, root.Logger, envelope);
+        }
 
-
+        // bouncing through this makes the mock root easier
+        public static IMessageContext BusFor(IMessagingRoot root)
+        {
+            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings,
+                root.Channels, root.Factory, root.Logger);
         }
     }
 }

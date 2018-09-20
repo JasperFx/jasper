@@ -1,6 +1,5 @@
 ﻿using System;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Jasper.Messaging.Logging
 {
@@ -65,13 +64,6 @@ namespace Jasper.Messaging.Logging
         /// </summary>
         /// <param name="envelope"></param>
         void NoRoutesFor(Envelope envelope);
-
-        /// <summary>
-        /// Called when a Jasper application cannot send a message to a known subscriber because of
-        /// mismatches in either message version or representation or supported transports
-        /// </summary>
-        /// <param name="mismatch"></param>
-        void SubscriptionMismatch(PublisherSubscriberMismatch mismatch);
 
         /// <summary>
         /// Called when Jasper moves an envelope into the dead letter queue

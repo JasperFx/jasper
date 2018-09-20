@@ -1,27 +1,12 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Baseline;
-using Baseline.Dates;
-using Baseline.Reflection;
-using Jasper.Configuration;
-using Jasper.EnvironmentChecks;
 using Jasper.Messaging;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime.Subscriptions;
-using Jasper.Messaging.Transports.Configuration;
-using Jasper.Util;
 using Lamar;
 using Lamar.Codegen.Variables;
-using Lamar.Scanning.Conventions;
 using Lamar.Util;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -29,15 +14,14 @@ namespace Jasper
 {
     public partial class JasperRuntime : IDisposable
     {
+        private static ApplicationLifetime _lifetime;
         private readonly Lazy<IMessageContext> _bus;
         private bool isDisposing;
-        private static ApplicationLifetime _lifetime;
 
 
         private JasperRuntime(JasperRegistry registry, PerfTimer timer)
         {
             Bootstrapping = timer;
-
 
 
             registry.CodeGeneration.Sources.Add(new NowTimeVariableSource());
@@ -60,17 +44,11 @@ namespace Jasper
         public Assembly ApplicationAssembly => Registry.ApplicationAssembly;
 
         /// <summary>
-        /// The underlying Lamar container
+        ///     The underlying Lamar container
         /// </summary>
         public IContainer Container { get; private set; }
 
         public bool IsDisposed { get; private set; }
-
-        /// <summary>
-        ///     Summary of all the message handling, subscription, and message publishing
-        ///     capabilities of the running Jasper application
-        /// </summary>
-        public ServiceCapabilities Capabilities { get; internal set; }
 
         public string[] HttpAddresses { get; private set; } = new string[0];
 
@@ -83,12 +61,6 @@ namespace Jasper
         ///     The logical name of the application from JasperRegistry.ServiceName
         /// </summary>
         public string ServiceName => Registry.ServiceName;
-
-        /// <summary>
-        ///     Information about the running service node as published to service discovery
-        /// </summary>
-        public IServiceNode Node { get; internal set; }
-
 
 
         /// <summary>
@@ -140,7 +112,7 @@ namespace Jasper
         /// <returns></returns>
         public static JasperRuntime For<T>(Action<T> configure = null) where T : JasperRegistry, new()
         {
-            return ForAsync<T>(configure).GetAwaiter().GetResult();
+            return ForAsync(configure).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -220,10 +192,7 @@ namespace Jasper
             }
 
             var hosted = Container.GetAllInstances<IHostedService>();
-            foreach (var hostedService in hosted)
-            {
-                writer.WriteLine("Hosted Service: " + hostedService);
-            }
+            foreach (var hostedService in hosted) writer.WriteLine("Hosted Service: " + hostedService);
 
             Registry.Describe(this, writer);
         }

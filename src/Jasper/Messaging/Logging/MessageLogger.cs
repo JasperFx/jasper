@@ -1,6 +1,5 @@
 ﻿using System;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Messaging.Logging
@@ -16,7 +15,6 @@ namespace Jasper.Messaging.Logging
         public const int MessageFailedEventId = 105;
         public const int NoHandlerEventId = 106;
         public const int NoRoutesEventId = 107;
-        public const int SubscriptionMismatchId = 108;
         public const int MovedToErrorQueueId = 108;
         public const int UndeliverableEventId = 108;
 
@@ -29,7 +27,6 @@ namespace Jasper.Messaging.Logging
         private readonly Action<ILogger, string, Guid, Uri, Exception> _messageFailed;
         private readonly Action<ILogger, string, Guid, Uri, Exception> _noHandler;
         private readonly Action<ILogger, Envelope, Exception> _noRoutes;
-        private readonly Action<ILogger, PublisherSubscriberMismatch, Exception> _subscriptionMismatch;
         private readonly Action<ILogger, Envelope, Exception> _movedToErrorQueue;
         private readonly Action<ILogger, Envelope, Exception> _undeliverable;
 
@@ -62,10 +59,6 @@ namespace Jasper.Messaging.Logging
 
             _noRoutes = LoggerMessage.Define<Envelope>(LogLevel.Information, NoRoutesEventId,
                 "No routes can be determined for {envelope}");
-
-            _subscriptionMismatch =
-                LoggerMessage.Define<PublisherSubscriberMismatch>(LogLevel.Error, SubscriptionMismatchId,
-                    "Subscriber mismatch: {mismatch}");
 
             _movedToErrorQueue = LoggerMessage.Define<Envelope>(LogLevel.Error, MovedToErrorQueueId,
                 "Envelope {envelope} was moved to the error queue");
@@ -115,11 +108,6 @@ namespace Jasper.Messaging.Logging
         public virtual void NoRoutesFor(Envelope envelope)
         {
             _noRoutes(_logger, envelope, null);
-        }
-
-        public virtual void SubscriptionMismatch(PublisherSubscriberMismatch mismatch)
-        {
-            _subscriptionMismatch(_logger, mismatch, null);
         }
 
         public virtual void MovedToErrorQueue(Envelope envelope, Exception ex)

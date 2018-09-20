@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
@@ -20,7 +18,6 @@ namespace Jasper.Messaging.Runtime.Routing
     {
         private readonly SerializationGraph _serializers;
         private readonly IChannelGraph _channels;
-        private readonly ISubscriptionsRepository _subscriptions;
         private readonly HandlerGraph _handlers;
         private readonly IMessageLogger _logger;
         private readonly UriAliasLookup _lookup;
@@ -31,12 +28,11 @@ namespace Jasper.Messaging.Runtime.Routing
 
         // TODO -- take in MessagingRoot instead?
         public MessageRouter(MessagingSerializationGraph serializers, IChannelGraph channels,
-            ISubscriptionsRepository subscriptions, HandlerGraph handlers, IMessageLogger logger, UriAliasLookup lookup,
+            HandlerGraph handlers, IMessageLogger logger, UriAliasLookup lookup,
             MessagingSettings settings)
         {
             _serializers = serializers;
             _channels = channels;
-            _subscriptions = subscriptions;
             _handlers = handlers;
             _logger = logger;
             _lookup = lookup;
@@ -139,8 +135,6 @@ namespace Jasper.Messaging.Runtime.Routing
 
             applyStaticPublishingRules(messageType, supported, list, modelWriter);
 
-            await applyDynamicSubscriptions(messageType, modelWriter, list);
-
             if (!list.Any())
             {
                 if (_handlers.CanHandle(messageType))
@@ -150,31 +144,6 @@ namespace Jasper.Messaging.Runtime.Routing
             }
 
             return list;
-        }
-
-        private async Task applyDynamicSubscriptions(Type messageType, ModelWriter modelWriter, List<MessageRoute> list)
-        {
-            var subscriptions = await _subscriptions.GetSubscribersFor(messageType);
-            if (subscriptions.Any())
-            {
-                var published = new PublishedMessage(messageType, modelWriter, _channels);
-
-
-                foreach (var subscription in subscriptions)
-                {
-                    if (MessageRoute.TryToRoute(published, subscription, out MessageRoute route,
-                        out PublisherSubscriberMismatch mismatch))
-                    {
-                        route.Writer = modelWriter[route.ContentType];
-                        route.Channel = _channels.GetOrBuildChannel(route.Destination);
-                        list.Add(route);
-                    }
-                    else
-                    {
-                        _logger.SubscriptionMismatch(mismatch);
-                    }
-                }
-            }
         }
 
         private void applyStaticPublishingRules(Type messageType, string[] supported, List<MessageRoute> list, ModelWriter modelWriter)

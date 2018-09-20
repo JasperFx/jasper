@@ -23,11 +23,6 @@ namespace Jasper.Testing.Samples
             // Declare published messages
             Publish.Message<Message1>().To("tcp://server1:2222");
 
-            // Register to receive messages
-            Subscribe.At("tcp://loadbalancer1:2233");
-            Subscribe.To<Message2>();
-            Subscribe.To(type => type.IsInNamespace("MyMessagingApp.Incoming"));
-
             // Configure the built in transports
             Transports.LightweightListenerAt(2233);
         }
@@ -106,12 +101,6 @@ namespace Jasper.Testing.Samples
 
             // Or do the exact same thing by supplying a Uri
             Transports.ListenForMessagesFrom("tcp://localhost:4000");
-
-
-            // Registering a subscription to Message1 that should be
-            // delivered to a load balancer Uri at port 2200 and the "important"
-            // queue
-            Subscribe.To<Message1>().At("tcp://loadbalancer:2200/important");
 
             // Publish the message Message2 to the DNS entry "remoteserver"
             Publish.Message<Message2>().To("tcp://remoteserver:2201");

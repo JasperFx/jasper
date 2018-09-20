@@ -1,6 +1,5 @@
 ﻿using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Transports.Configuration;
 
 namespace Jasper
@@ -26,11 +25,6 @@ namespace Jasper
         ///     Configure or disable the built in transports
         /// </summary>
         public ITransportsExpression Transports => Messaging.Settings;
-
-        /// <summary>
-        ///     Configure dynamic subscriptions to this application
-        /// </summary>
-        public ISubscriptions Subscribe => Messaging.Capabilities;
 
         /// <summary>
         ///     Gets or sets the logical service name for this Jasper application. By default,

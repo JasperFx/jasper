@@ -9,7 +9,6 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
@@ -38,7 +37,6 @@ namespace Jasper
 
             this.AddSingleton(parent.CodeGeneration);
 
-            For<IHostedService>().Use<NodeRegistration>();
             For<IHostedService>().Use<BackPressureAgent>();
 
             conneg(parent);
@@ -110,10 +108,6 @@ namespace Jasper
             For<IMessageContext>().Use(new MessageContextInstance());
 
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
-
-            ForSingletonOf<INodeDiscovery>().UseIfNone(new InMemoryNodeDiscovery(parent.MessagingSettings));
-            ForSingletonOf<ISubscriptionsRepository>().UseIfNone<DefaultSubscriptionsRepository>();
-
 
             For<IUriLookup>().Use<ConfigUriLookup>();
 

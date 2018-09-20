@@ -28,14 +28,6 @@ namespace Jasper.Testing.Messaging.Bootstrapping
                 .ShouldBe($"tcp://localhost:2333/durable".ToUri().ToMachineUri());
         }
 
-        [Fact]
-        public async Task has_global_subscriber_so_that_wins()
-        {
-            theRegistry.Transports.DurableListenerAt(2333);
-            theRegistry.Subscribe.At("tcp://server1:2345");
 
-            (await theRuntime()).Get<IChannelGraph>().SystemReplyUri
-                .ShouldBe("tcp://server1:2345".ToUri().ToMachineUri());
-        }
     }
 }

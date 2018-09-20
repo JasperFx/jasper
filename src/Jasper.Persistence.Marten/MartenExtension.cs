@@ -1,6 +1,5 @@
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Codegen;
 using Marten;
@@ -15,11 +14,6 @@ namespace Jasper.Persistence.Marten
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Settings.Alter<StoreOptions>(x =>
-            {
-                x.Schema.For<ServiceCapabilities>().Identity(_ => _.ServiceName);
-            });
-
             registry.Services.AddSingleton<IDocumentStore>(x =>
             {
                 var storeOptions = x.GetService<StoreOptions>();

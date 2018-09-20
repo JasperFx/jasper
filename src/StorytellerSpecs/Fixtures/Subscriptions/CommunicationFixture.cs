@@ -7,7 +7,6 @@ using Baseline.Dates;
 using Jasper;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Tracking;
 using Jasper.Util;
 using Lamar;
@@ -74,7 +73,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             if (!_initialized)
             {
-                await _nodes.StoreSubscriptions();
                 if (_publisher == null)
                 {
                     var registry = new JasperRegistry
@@ -85,9 +83,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                     _publisher = _nodes.Add(registry);
                 }
 
-                await _nodes.StoreSubscriptions();
-
-                _publisher.ResetSubscriptions();
 
                 _initialized = true;
             }
@@ -140,22 +135,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             _registry.ServiceName = serviceName;
         }
 
-        [FormatAs("Handles and subscibes to message {messageType} at port {port}")]
-        public void SubscribesTo([SelectionList("MessageTypes")] string messageType, int port)
-        {
-            var uri = $"tcp://localhost:{port}/local".ToUri();
-            SubscribeAtUri(messageType, uri);
-        }
 
-        [FormatAs("Handles and subscibes to message {messageType} at Uri {uri}")]
-        public void SubscribeAtUri(string messageType, Uri uri)
-        {
-            _registry.Transports.ListenForMessagesFrom(uri);
-
-            var type = messageTypeFor(messageType);
-
-            _registry.Subscribe.To(type).At(uri);
-        }
     }
 
     public class NodesCollection : IDisposable, IUriLookup
@@ -165,14 +145,10 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public readonly Dictionary<Uri, Uri> Aliases = new Dictionary<Uri, Uri>();
         public readonly MessageHistory History = new MessageHistory();
 
-        public readonly DefaultSubscriptionsRepository Subscriptions =
-            new DefaultSubscriptionsRepository(new SubscriptionSettings());
-
         public readonly MessageTracker Tracker = new MessageTracker();
 
         public void Dispose()
         {
-            Subscriptions?.Dispose();
             foreach (var runtime in _runtimes) runtime.Dispose();
         }
 
@@ -189,7 +165,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             registry.Services.For<MessageTracker>().Use(Tracker);
             registry.Services.For<MessageHistory>().Use(History);
-            registry.Services.For<ISubscriptionsRepository>().Use(Subscriptions);
 
             registry.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
             registry.Services.For<IUriLookup>().Add(this);
@@ -200,9 +175,5 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             return runtime;
         }
 
-        public async Task StoreSubscriptions()
-        {
-            foreach (var runtime in _runtimes) await runtime.PersistSubscriptions();
-        }
     }
 }

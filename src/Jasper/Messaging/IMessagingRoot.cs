@@ -6,7 +6,6 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
@@ -35,7 +34,7 @@ namespace Jasper.Messaging
         IMessageContext NewContext();
         IMessageContext ContextFor(Envelope envelope);
 
-        Task Activate(LocalWorkerSender localWorker, CapabilityGraph capabilities, JasperRuntime runtime,
+        Task Activate(LocalWorkerSender localWorker, JasperRuntime runtime,
             JasperGenerationRules generation, PerfTimer timer);
     }
 }

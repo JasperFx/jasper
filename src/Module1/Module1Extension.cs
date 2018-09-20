@@ -1,14 +1,12 @@
-﻿using System;
-using Jasper;
+﻿using Jasper;
 using Jasper.Configuration;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Subscriptions;
 
 namespace Module1
 {
     public class Module1Extension : IJasperExtension
     {
+        public static JasperRegistry Registry { get; set; }
+
         public void Configure(JasperRegistry registry)
         {
             Registry = registry;
@@ -20,15 +18,11 @@ namespace Module1
             });
 
             registry.Services.For<IModuleService>().Use<ServiceFromModule>();
-
         }
-
-        public static JasperRegistry Registry { get; set; }
     }
 
     public interface IModuleService
     {
-
     }
 
     public class ModuleSettings
@@ -39,6 +33,5 @@ namespace Module1
 
     public class ServiceFromModule : IModuleService
     {
-
     }
 }

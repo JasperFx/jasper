@@ -7,12 +7,10 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Runtime.Subscriptions;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
-using Lamar.Codegen;
 using Lamar.Util;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -57,7 +55,7 @@ namespace Jasper.Testing.Messaging
             return MessagingRoot.BusFor(this);
         }
 
-        public Task Activate(LocalWorkerSender localWorker, CapabilityGraph capabilities, JasperRuntime runtime,
+        public Task Activate(LocalWorkerSender localWorker, JasperRuntime runtime,
             JasperGenerationRules generation, PerfTimer timer)
         {
             return Task.CompletedTask;

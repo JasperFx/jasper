@@ -21,7 +21,7 @@ namespace Jasper.Messaging
         public Task StartAsync(CancellationToken cancellationToken)
         {
             var messaging = _runtime.Registry.Messaging;
-            return _root.Activate(messaging.LocalWorker, messaging.Capabilities, _runtime,
+            return _root.Activate(messaging.LocalWorker, _runtime,
                 _runtime.Registry.CodeGeneration, new PerfTimer());
         }
 

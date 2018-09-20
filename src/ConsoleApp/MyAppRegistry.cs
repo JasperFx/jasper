@@ -17,10 +17,6 @@ namespace MyApp
             Publish.Message<Message1>();
             Publish.Message<Message2>();
             Publish.Message<Message3>();
-
-            Subscribe.At("tcp://server1:2222");
-            Subscribe.To<Message4>();
-            Subscribe.To<Message5>();
         }
     }
     // ENDSAMPLE
