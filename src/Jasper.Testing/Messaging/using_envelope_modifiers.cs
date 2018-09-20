@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging.Lightweight.Protocol;
 using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
@@ -18,10 +19,11 @@ namespace Jasper.Testing.Messaging
         public async Task applies_modifiers_per_channel()
         {
             var receiver = new EnvelopeReceiver();
-
+            var tracker = new MessageTracker();
 
             await with(_ =>
             {
+                _.Services.AddSingleton(tracker);
                 _.Services.AddSingleton(receiver);
 
                 _.Handlers.DisableConventionalDiscovery();
@@ -32,9 +34,14 @@ namespace Jasper.Testing.Messaging
 
             });
 
+            var wait1 = tracker.WaitFor<Message1>();
+            var wait2 = tracker.WaitFor<Message2>();
 
-            await Bus.SendAndWait(new Message1());
-            await Bus.SendAndWait(new Message2());
+            await Bus.Send(new Message1());
+            await Bus.Send(new Message2());
+
+            await wait1;
+            await wait2;
 
             var envelopeForChannelOne = receiver.Received.First(x => x.MessageType == typeof(Message1).ToMessageAlias());
             var envelopeForChannelTwo = receiver.Received.First(x => x.MessageType == typeof(Message2).ToMessageAlias());
@@ -55,20 +62,24 @@ namespace Jasper.Testing.Messaging
     public class EnvelopeCatchingHandler
     {
         private EnvelopeReceiver _receiver;
+        private readonly MessageTracker _tracker;
 
-        public EnvelopeCatchingHandler(EnvelopeReceiver receiver)
+        public EnvelopeCatchingHandler(EnvelopeReceiver receiver, MessageTracker tracker)
         {
             _receiver = receiver;
+            _tracker = tracker;
         }
 
         public void Handle(Message1 message, Envelope envelope)
         {
             _receiver.Received.Add(envelope);
+            _tracker.Record(message, envelope);
         }
 
         public void Handle(Message2 message, Envelope envelope)
         {
             _receiver.Received.Add(envelope);
+            _tracker.Record(message, envelope);
         }
     }
 

@@ -43,7 +43,7 @@ namespace Jasper.Testing.Messaging
             });
 
             var router = Runtime.Get<IMessageRouter>();
-            var tracks = await router.Route(typeof(Message1));
+            var tracks = router.Route(typeof(Message1));
 
             tracks.Single().Destination.ShouldBe("loopback://one".ToUri());
         }

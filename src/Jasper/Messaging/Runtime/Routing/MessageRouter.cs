@@ -45,22 +45,22 @@ namespace Jasper.Messaging.Runtime.Routing
             _routes = ImHashMap<Type, MessageRoute[]>.Empty;
         }
 
-        public async Task<MessageRoute[]> Route(Type messageType)
+        public MessageRoute[] Route(Type messageType)
         {
             if (_routes.TryFind(messageType, out var routes)) return routes;
 
-            routes = (await compileRoutes(messageType)).ToArray();
+            routes = compileRoutes(messageType).ToArray();
             _routes = _routes.AddOrUpdate(messageType, routes);
 
             return routes;
         }
 
-        public async Task<MessageRoute> RouteForDestination(Envelope envelope)
+        public MessageRoute RouteForDestination(Envelope envelope)
         {
             envelope.Destination = _lookup.Resolve(envelope.Destination);
 
             var messageType = envelope.Message.GetType();
-            var routes = await Route(messageType);
+            var routes = Route(messageType);
 
             var candidate = routes.FirstOrDefault(x => x.MatchesEnvelope(envelope));
             if (candidate != null) return candidate;
@@ -79,9 +79,9 @@ namespace Jasper.Messaging.Runtime.Routing
                        contentType);
         }
 
-        public async Task<Envelope[]> Route(Envelope envelope)
+        public Envelope[] Route(Envelope envelope)
         {
-            var envelopes = await route(envelope);
+            var envelopes = route(envelope);
             foreach (var outgoing in envelopes)
             {
                 outgoing.Source = _settings.NodeId;
@@ -98,11 +98,11 @@ namespace Jasper.Messaging.Runtime.Routing
 
         }
 
-        private async Task<Envelope[]> route(Envelope envelope)
+        private Envelope[] route(Envelope envelope)
         {
             if (envelope.Destination == null)
             {
-                var routes = await compileRoutes(envelope.Message.GetType());
+                var routes = compileRoutes(envelope.Message.GetType());
 
                 var outgoing = routes.Select(x => x.CloneForSending(envelope)).ToArray();
 
@@ -115,7 +115,7 @@ namespace Jasper.Messaging.Runtime.Routing
                 return outgoing;
             }
 
-            var route = await RouteForDestination(envelope);
+            var route = RouteForDestination(envelope);
 
 
             var toBeSent = route.CloneForSending(envelope);
@@ -124,7 +124,7 @@ namespace Jasper.Messaging.Runtime.Routing
             return new Envelope[]{toBeSent};
         }
 
-        private async Task<List<MessageRoute>> compileRoutes(Type messageType)
+        private List<MessageRoute> compileRoutes(Type messageType)
         {
             var list = new List<MessageRoute>();
 

@@ -252,25 +252,6 @@ namespace StorytellerSpecs.Fixtures.Durability
             return true;
         }
 
-        [FormatAs("SendAndAwait Works durably")]
-        public async Task<bool> SendAndAwaitWorks()
-        {
-            cleanDatabase();
-
-            var item = new ItemCreated
-            {
-                Name = "Hat",
-                Id = Guid.NewGuid()
-            };
-
-
-            await send(c => c.SendAndWait(item));
-
-            await assertReceivedItemMatchesSent(item);
-            await assertIncomingEnvelopesIsZero();
-
-            return true;
-        }
 
         [FormatAs("Can send durably with the receiver down (*must be last*)")]
         public async Task<bool> SendWithReceiverDown()

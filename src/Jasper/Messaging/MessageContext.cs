@@ -136,21 +136,21 @@ namespace Jasper.Messaging
             }
         }
 
-        public async Task Publish(Envelope envelope)
+        public Task Publish(Envelope envelope)
         {
             if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
             if (envelope.RequiresLocalReply) throw new ArgumentOutOfRangeException(nameof(envelope), "Cannot 'Publish' and envelope that requires a local reply");
 
-            var outgoing = await _router.Route(envelope);
+            var outgoing = _router.Route(envelope);
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
             {
                 _logger.NoRoutesFor(envelope);
-                return;
+                return Task.CompletedTask;
             }
 
-            await persistOrSend(outgoing);
+            return persistOrSend(outgoing);
         }
 
 
@@ -159,7 +159,7 @@ namespace Jasper.Messaging
         {
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = await _router.Route(envelope);
+            var outgoing = _router.Route(envelope);
             foreach (var env in outgoing)
             {
                 _settings.ApplyMessageTypeSpecificRules(env);
@@ -391,16 +391,6 @@ namespace Jasper.Messaging
             return ScheduleSend(message, DateTime.UtcNow.Add(delay));
         }
 
-        public Task SendAndWait<T>(T message)
-        {
-            return GetSendAndWaitTask(message);
-        }
-
-        public Task SendAndWait<T>(Uri destination, T message)
-        {
-            return GetSendAndWaitTask(message, destination);
-        }
-
         private async Task GetSendAndWaitTask<T>(T message, Uri destination = null)
         {
             var envelope = new Envelope
@@ -493,7 +483,7 @@ namespace Jasper.Messaging
                     }
                 };
 
-                var outgoingEnvelopes = await _router.Route(envelope);
+                var outgoingEnvelopes = _router.Route(envelope);
 
                 foreach (var outgoing in outgoingEnvelopes)
                 {
@@ -516,7 +506,7 @@ namespace Jasper.Messaging
         public async Task SendAcknowledgement()
         {
             var ack = buildAcknowledgement();
-            var outgoingEnvelopes = await _router.Route(ack);
+            var outgoingEnvelopes = _router.Route(ack);
 
             foreach (var outgoing in outgoingEnvelopes)
             {

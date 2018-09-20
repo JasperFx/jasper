@@ -108,18 +108,6 @@ namespace StorytellerSpecs.Fixtures
             }).ToList();
         }
 
-        [FormatAs("Send a Message1 named 'Ack' that we expect to succeed and wait for the ack")]
-        public void SendMessageSuccessfully()
-        {
-            _task = bus().SendAndWait(new Message1 {Name = "Ack"});
-        }
-
-        [FormatAs("Send a message that will fail with an AmbiguousMatchException exception")]
-        public void SendMessageUnsuccessfully()
-        {
-            _task = bus().SendAndWait(new ErrorMessage());
-        }
-
         [FormatAs("The acknowledgement was received within 3 seconds")]
         public bool AckIsReceived()
         {

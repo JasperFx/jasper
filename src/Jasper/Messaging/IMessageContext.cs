@@ -18,6 +18,7 @@ namespace Jasper.Messaging
         /// <param name="timeout"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
+        [Obsolete]
         Task<TResponse> Request<TResponse>(object request, TimeSpan timeout = default(TimeSpan),  Action<Envelope> configure = null);
 
         /// <summary>
@@ -136,25 +137,6 @@ namespace Jasper.Messaging
         /// <param name="delay"></param>
         /// <typeparam name="T"></typeparam>
         Task ScheduleSend<T>(T message, TimeSpan delay);
-
-        /// <summary>
-        /// Send a message and await an acknowledgement that the
-        /// message has been processed
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        Task SendAndWait<T>(T message);
-
-        /// <summary>
-        /// Send a message to a specific destination and await an acknowledgment
-        /// that the message has been processed.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="destination">The destination to send to</param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        Task SendAndWait<T>(Uri destination, T message);
 
         /// <summary>
         /// Send a message with the expectation of a response sent back to the global subscription

@@ -28,7 +28,7 @@ namespace Jasper.Testing.Messaging
 
             var msg1 = new MessageWithNoHandler();
 
-            await Bus.SendAndWait(msg1);
+            await Bus.Send(msg1);
 
             await NoMessageHandler1.Finished;
             await NoMessageHandler2.Finished;

@@ -151,21 +151,6 @@ namespace Jasper.Testing.Samples
         }
         // ENDSAMPLE
 
-        // SAMPLE: sending-message-with-send-and-await
-        public async Task SendMessageAndAwait(IMessageContext bus)
-        {
-            var @event = new InvoiceCreated
-            {
-                Time = DateTime.UtcNow,
-                Purchaser = "Guy Fieri",
-                Amount = 112.34,
-                Item = "Cookbook"
-            };
-
-            await bus.SendAndWait(@event);
-        }
-        // ENDSAMPLE
-
 
         // SAMPLE: send-message-to-specific-destination
         public async Task SendMessageToSpecificDestination(IMessageContext bus)

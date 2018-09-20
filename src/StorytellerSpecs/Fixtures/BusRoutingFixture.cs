@@ -90,7 +90,7 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("For message type {MessageType}")]
-        public async Task ForMessage([SelectionList("MessageTypes")] string MessageType)
+        public void ForMessage([SelectionList("MessageTypes")] string MessageType)
         {
             var messageType = messageTypeFor(MessageType);
 
@@ -98,7 +98,7 @@ namespace StorytellerSpecs.Fixtures
 
             var router = _runtime.Get<IMessageRouter>();
 
-            _tracks = await router.Route(messageType);
+            _tracks = router.Route(messageType);
         }
 
         [FormatAs("There should be no routes")]

@@ -6,9 +6,9 @@ namespace Jasper.Messaging.Runtime.Routing
     public interface IMessageRouter
     {
         void ClearAll();
-        Task<MessageRoute[]> Route(Type messageType);
-        Task<MessageRoute> RouteForDestination(Envelope envelopeDestination);
+        MessageRoute[] Route(Type messageType);
+        MessageRoute RouteForDestination(Envelope envelopeDestination);
 
-        Task<Envelope[]> Route(Envelope envelope);
+        Envelope[] Route(Envelope envelope);
     }
 }
