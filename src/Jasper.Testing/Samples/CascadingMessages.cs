@@ -58,9 +58,9 @@ namespace Jasper.Testing.Samples.CascadingMessages
             _bus = bus;
         }
 
-        public Task<MyResponse> GatherResponse()
+        public Task GatherResponse()
         {
-            return _bus.Request<MyResponse>(new MyMessage());
+            return _bus.SendAndExpectResponseFor<MyResponse>(new MyMessage());
         }
     }
     // ENDSAMPLE

@@ -21,7 +21,6 @@ namespace Jasper.Messaging
     public class MessageContext : IMessageContext, IAdvancedMessagingActions
     {
         private readonly IMessageRouter _router;
-        private readonly IReplyWatcher _watcher;
         private readonly IHandlerPipeline _pipeline;
         private readonly SerializationGraph _serialization;
         private readonly MessagingSettings _settings;
@@ -29,10 +28,11 @@ namespace Jasper.Messaging
         private readonly IMessageLogger _logger;
 
         // TODO -- just pull in MessagingRoot?
-        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IDurableMessagingFactory factory, IMessageLogger logger)
+        public MessageContext(IMessageRouter router, IHandlerPipeline pipeline,
+            MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels,
+            IDurableMessagingFactory factory, IMessageLogger logger)
         {
             _router = router;
-            _watcher = watcher;
             _pipeline = pipeline;
             _serialization = serialization;
             _settings = settings;
@@ -42,10 +42,11 @@ namespace Jasper.Messaging
         }
 
         // TODO -- just pull in MessagingRoot?
-        public MessageContext(IMessageRouter router, IReplyWatcher watcher, IHandlerPipeline pipeline, MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels, IDurableMessagingFactory factory, IMessageLogger logger, Envelope originalEnvelope)
+        public MessageContext(IMessageRouter router, IHandlerPipeline pipeline,
+            MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels,
+            IDurableMessagingFactory factory, IMessageLogger logger, Envelope originalEnvelope)
         {
             _router = router;
-            _watcher = watcher;
             _pipeline = pipeline;
             _serialization = serialization;
             _settings = settings;
@@ -76,7 +77,6 @@ namespace Jasper.Messaging
             {
                 ParentId = Envelope.Id,
                 Destination = Envelope.ReplyUri,
-                ResponseId = Envelope.Id,
                 SagaId = Envelope.SagaId,
                 Message = new Acknowledgement {CorrelationId = Envelope.Id},
                 Route = new MessageRoute(typeof(Acknowledgement), Envelope.ReplyUri, "application/json")
@@ -218,21 +218,6 @@ namespace Jasper.Messaging
                     outbound.ParentId = Envelope.Id;
                 }
             }
-        }
-
-        public async Task<TResponse> Request<TResponse>(object request, TimeSpan timeout = default(TimeSpan),
-            Action<Envelope> configure = null)
-        {
-            var envelope = EnvelopeForRequestResponse<TResponse>(request);
-            configure?.Invoke(envelope);
-
-            timeout = timeout == default(TimeSpan) ? 10.Seconds() : timeout;
-
-            var watcher = _watcher.StartWatch<TResponse>(envelope.Id, timeout);
-
-            await SendEnvelope(envelope);
-
-            return await watcher;
         }
 
         public Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null)
@@ -391,24 +376,6 @@ namespace Jasper.Messaging
             return ScheduleSend(message, DateTime.UtcNow.Add(delay));
         }
 
-        private async Task GetSendAndWaitTask<T>(T message, Uri destination = null)
-        {
-            var envelope = new Envelope
-            {
-                Message = message,
-                AckRequested = true,
-                Destination = destination,
-                RequiresLocalReply = true
-            };
-
-            var task = _watcher.StartWatch<Acknowledgement>(envelope.Id, 10.Minutes());
-
-
-            await SendEnvelope(envelope);
-
-            await task;
-        }
-
         public Task Publish<T>(T message)
         {
             var envelope = new Envelope(message);
@@ -475,7 +442,6 @@ namespace Jasper.Messaging
                 {
                     ParentId = Envelope.Id,
                     Destination = Envelope.ReplyUri,
-                    ResponseId = Envelope.Id,
                     Message = new FailureAcknowledgement()
                     {
                         CorrelationId = Envelope.Id,

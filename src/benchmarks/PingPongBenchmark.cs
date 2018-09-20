@@ -24,28 +24,10 @@ namespace benchmarks
             _sender.Dispose();
         }
 
-        [Benchmark()]
-        public Task RequestReply()
-        {
-            var ping = new Ping();
-            return _sender.Messaging.Request<Pong>(ping);
-        }
 
         [Params(1)]
         public int Parallelization { get; set; }
 
-        [Benchmark]
-        public Task RequestReplyMultiThreaded()
-        {
-            if (Parallelization == 1) return _sender.Messaging.Request<Pong>(new Ping());
 
-            var tasks = new Task[Parallelization];
-            for (int i = 0; i < tasks.Length; i++)
-            {
-                tasks[i] = _sender.Messaging.Request<Pong>(new Ping());
-            }
-
-            return Task.WhenAll(tasks);
-        }
     }
 }

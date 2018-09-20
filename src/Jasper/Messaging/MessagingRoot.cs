@@ -37,7 +37,6 @@ namespace Jasper.Messaging
             Settings = settings;
             _handlers = handlers;
             _transportLogger = transportLogger;
-            Replies = new ReplyWatcher();
             Factory = factory;
             Channels = channels;
             Transports = container.QuickBuildAll<ITransport>().ToArray();
@@ -50,7 +49,7 @@ namespace Jasper.Messaging
 
             Logger = messageLogger;
 
-            Pipeline = new HandlerPipeline(Serialization, handlers, Replies, Logger,
+            Pipeline = new HandlerPipeline(Serialization, handlers, Logger,
                 container.QuickBuildAll<IMissingHandler>(),
                 this);
 
@@ -87,8 +86,6 @@ namespace Jasper.Messaging
         public MessagingSettings Settings { get; }
 
         public IChannelGraph Channels { get; }
-
-        public IReplyWatcher Replies { get; }
 
         public IMessageRouter Router { get; }
 
@@ -147,14 +144,14 @@ namespace Jasper.Messaging
         // bouncing through this makes the mock root easier
         public static IMessageContext BusFor(Envelope envelope, IMessagingRoot root)
         {
-            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings,
+            return new MessageContext(root.Router, root.Pipeline, root.Serialization, root.Settings,
                 root.Channels, root.Factory, root.Logger, envelope);
         }
 
         // bouncing through this makes the mock root easier
         public static IMessageContext BusFor(IMessagingRoot root)
         {
-            return new MessageContext(root.Router, root.Replies, root.Pipeline, root.Serialization, root.Settings,
+            return new MessageContext(root.Router, root.Pipeline, root.Serialization, root.Settings,
                 root.Channels, root.Factory, root.Logger);
         }
     }

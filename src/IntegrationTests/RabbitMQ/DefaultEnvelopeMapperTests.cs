@@ -98,13 +98,6 @@ namespace IntegrationTests.RabbitMQ
         }
 
         [Fact]
-        public void response_id()
-        {
-            theOriginal.ResponseId = Guid.NewGuid();
-            theEnvelope.ResponseId.ShouldBe(theOriginal.ResponseId);
-        }
-
-        [Fact]
         public void saga_id()
         {
             theOriginal.SagaId = Guid.NewGuid().ToString();
@@ -227,13 +220,6 @@ namespace IntegrationTests.RabbitMQ
         {
             theEnvelope.ParentId = Guid.NewGuid();
             theProperties.Headers[Envelope.ParentIdKey].ShouldBe(theEnvelope.ParentId.ToString());
-        }
-
-        [Fact]
-        public void response_id_key()
-        {
-            theEnvelope.ResponseId = Guid.NewGuid();
-            theProperties.Headers[Envelope.ResponseIdKey].ShouldBe(theEnvelope.ResponseId.ToString());
         }
 
         [Fact]

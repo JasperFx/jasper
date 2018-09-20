@@ -96,42 +96,9 @@ namespace Jasper.Testing.Messaging.Samples
         {
             // Publish a message
             await bus.Send(new PingMessage());
-
-            // Request/Reply
-            var pong = await bus.Request<PongMessage>(new PingMessage());
         }
     }
     // ENDSAMPLE
-
-
-    public class PingPong
-    {
-        // SAMPLE: using-request-reply
-        public async Task RequestReply(IMessageContext bus)
-        {
-            var pong = await bus.Request<PongMessage>(new PingMessage());
-            // do something with the pong
-        }
-        // ENDSAMPLE
-
-        // SAMPLE: CustomizedRequestReply
-        public async Task CustomizedRequestReply(IMessageContext bus)
-        {
-            var pong = await bus.Request<PongMessage>(
-                new PingMessage(),
-
-                // Override the timeout period for the expected reply
-                20.Seconds(),
-
-                // Override the destination where the request is to be sent
-                e => e.Destination = new Uri("tcp://someserver:2000")
-            );
-
-
-            // do something with the pong
-        }
-        // ENDSAMPLE
-    }
 
 
 

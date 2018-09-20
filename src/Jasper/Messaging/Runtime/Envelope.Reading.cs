@@ -59,13 +59,6 @@ namespace Jasper.Messaging.Runtime
                         }
                         break;
 
-                    case ResponseIdKey:
-                        if (Guid.TryParse(value, out Guid responseId))
-                        {
-                            ResponseId = responseId;
-                        }
-                        break;
-
                     case DestinationKey:
                         Destination = value.ToUri();
                         break;

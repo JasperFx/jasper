@@ -9,9 +9,7 @@
         public const string ParentIdKey = "parent-id";
         private const string ContentTypeKey = "content-type";
         private const string SourceKey = "source";
-        public const string ChannelKey = "channel";
         public const string ReplyRequestedKey = "reply-requested";
-        public const string ResponseIdKey = "response";
         public const string DestinationKey = "destination";
         public const string ReplyUriKey = "reply-uri";
         public const string ExecutionTimeKey = "time-to-send";

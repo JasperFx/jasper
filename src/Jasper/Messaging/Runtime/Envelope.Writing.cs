@@ -128,7 +128,6 @@ namespace Jasper.Messaging.Runtime
             dictionary.WriteProp(ContentTypeKey, ContentType);
             dictionary.WriteProp(OriginalIdKey, OriginalId);
             dictionary.WriteProp(ParentIdKey, ParentId);
-            dictionary.WriteProp(ResponseIdKey, ResponseId);
             dictionary.WriteProp(DestinationKey, Destination);
             dictionary.WriteProp(SagaIdKey, SagaId);
 
@@ -169,7 +168,6 @@ namespace Jasper.Messaging.Runtime
             writer.WriteProp(ref count, ContentTypeKey, ContentType);
             writer.WriteProp(ref count, OriginalIdKey, OriginalId);
             writer.WriteProp(ref count, ParentIdKey, ParentId);
-            writer.WriteProp(ref count, ResponseIdKey, ResponseId);
             writer.WriteProp(ref count, DestinationKey, Destination);
             writer.WriteProp(ref count, SagaIdKey, SagaId);
 

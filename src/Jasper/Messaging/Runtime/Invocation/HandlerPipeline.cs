@@ -20,17 +20,16 @@ namespace Jasper.Messaging.Runtime.Invocation
     {
         private readonly MessagingSerializationGraph _serializer;
         private readonly HandlerGraph _graph;
-        private readonly IReplyWatcher _replies;
         private readonly IMessagingRoot _root;
 
         // TODO -- try to eliminate this dependency
         private readonly IMissingHandler[] _missingHandlers;
 
-        public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IReplyWatcher replies, IMessageLogger logger, IEnumerable<IMissingHandler> missingHandlers, IMessagingRoot root)
+        public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IMessageLogger logger,
+            IEnumerable<IMissingHandler> missingHandlers, IMessagingRoot root)
         {
             _serializer = serializers;
             _graph = graph;
-            _replies = replies;
             _root = root;
             _missingHandlers = missingHandlers.ToArray();
 
@@ -81,32 +80,25 @@ namespace Jasper.Messaging.Runtime.Invocation
         {
             var context = _root.ContextFor(envelope);
 
-            if (envelope.ResponseId.IsNotEmpty())
-            {
-                await completeRequestWithRequestedResponse(envelope);
-            }
-            else
-            {
-                envelope.StartTiming();
+            envelope.StartTiming();
 
-                try
-                {
-                    deserialize(envelope);
-                }
-                catch (Exception e)
-                {
-                    envelope.MarkCompletion(false);
-                    Logger.MessageFailed(envelope, e);
-                    await envelope.Callback.MoveToErrors(envelope, e);
-                    return;
-                }
-                finally
-                {
-                    Logger.Received(envelope);
-                }
-
-                await ProcessMessage(envelope, context).ConfigureAwait(false);
+            try
+            {
+                deserialize(envelope);
             }
+            catch (Exception e)
+            {
+                envelope.MarkCompletion(false);
+                Logger.MessageFailed(envelope, e);
+                await envelope.Callback.MoveToErrors(envelope, e);
+                return;
+            }
+            finally
+            {
+                Logger.Received(envelope);
+            }
+
+            await ProcessMessage(envelope, context).ConfigureAwait(false);
         }
 
 
@@ -226,21 +218,7 @@ namespace Jasper.Messaging.Runtime.Invocation
             await envelope.Callback.MarkComplete();
         }
 
-        private Task completeRequestWithRequestedResponse(Envelope envelope)
-        {
-            try
-            {
-                deserialize(envelope);
-                _replies.Handle(envelope);
 
-                return envelope.Callback.MarkComplete();
-            }
-            catch (Exception e)
-            {
-                Logger.LogException(e, envelope.Id, "Failure during reply handling.");
-                return envelope.Callback.MoveToErrors(envelope, e);
-            }
-        }
 
     }
 }

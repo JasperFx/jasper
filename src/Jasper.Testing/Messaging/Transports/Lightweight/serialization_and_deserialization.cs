@@ -167,13 +167,6 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
         }
 
         [Fact]
-        public void response_id()
-        {
-            outgoing.ResponseId = Guid.NewGuid();
-            incoming.ResponseId.ShouldBe(outgoing.ResponseId);
-        }
-
-        [Fact]
         public void accepted_content_types_positive()
         {
             outgoing.AcceptedContentTypes = new string[]{"a", "b"};

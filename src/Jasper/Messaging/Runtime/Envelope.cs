@@ -83,14 +83,13 @@ namespace Jasper.Messaging.Runtime
         public Envelope ForResponse(object message)
         {
             var child = ForSend(message);
-
+            child.ParentId = Id;
 
             if (message.GetType().ToMessageAlias() == ReplyRequested)
             {
-                child.ResponseId = Id;
+
                 child.Destination = ReplyUri;
                 child.AcceptedContentTypes = AcceptedContentTypes;
-                child.ResponseId = Id;
             }
 
             return child;
@@ -252,11 +251,6 @@ namespace Jasper.Messaging.Runtime
         /// Id of the immediate parent of this envelope
         /// </summary>
         public Guid ParentId { get; set; }
-
-        /// <summary>
-        /// Denotes that this envelope is a response to the given Id
-        /// </summary>
-        public Guid ResponseId { get; set; }
 
         /// <summary>
         /// Location that this message should be sent

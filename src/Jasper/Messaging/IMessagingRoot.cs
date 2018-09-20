@@ -24,7 +24,6 @@ namespace Jasper.Messaging
         IHandlerPipeline Pipeline { get; }
         IMessageLogger Logger { get; }
         MessagingSerializationGraph Serialization { get; }
-        IReplyWatcher Replies { get; }
         IChannelGraph Channels { get; }
         MessagingSettings Settings { get; }
         IDurableMessagingFactory Factory { get; }

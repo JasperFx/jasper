@@ -26,7 +26,6 @@ namespace Jasper.Testing.Messaging
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger Logger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
-        public IReplyWatcher Replies { get; } = new ReplyWatcher();
         public MessagingSettings Settings { get; } = new MessagingSettings();
         public IDurableMessagingFactory Factory { get; } = Substitute.For<IDurableMessagingFactory>();
 

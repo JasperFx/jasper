@@ -41,7 +41,6 @@ namespace Jasper.Storyteller.Logging
             headers.WriteEnvelopeProperty(envelope, x => x.ContentType);
             headers.WriteEnvelopeProperty(envelope, x => x.OriginalId);
             headers.WriteEnvelopeProperty(envelope, x => x.ParentId);
-            headers.WriteEnvelopeProperty(envelope, x => x.ResponseId);
 
             // TODO -- come back and add saga id
 

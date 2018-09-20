@@ -134,45 +134,8 @@ namespace Jasper.Testing.Messaging.Runtime
 
             var child = parent.ForResponse(childMessage);
 
-            child.ResponseId.ShouldBe(parent.Id);
+            child.ParentId.ShouldBe(parent.Id);
             child.Destination.ShouldBe(parent.ReplyUri);
-        }
-
-
-        [Fact]
-        public void if_reply_requested_header_exists_in_parent_and_does_NOT_match_the_message_type()
-        {
-            var parent = new Envelope
-            {
-                OriginalId = Guid.NewGuid(),
-                ReplyUri = "foo://bar".ToUri(),
-                ReplyRequested = typeof(Message2).Name
-            };
-
-            var childMessage = new Message1();
-
-            var child = parent.ForResponse(childMessage);
-
-            child.ResponseId.ShouldBe(Guid.Empty);
-            child.Destination.ShouldBeNull();
-        }
-
-        [Fact]
-        public void do_not_set_destination_or_response_if_requested_header_does_not_exist_in_parent()
-        {
-            var parent = new Envelope
-            {
-                Id = Guid.NewGuid(),
-                OriginalId = Guid.NewGuid(),
-                Source = "foo://bar"
-            };
-
-
-            var childMessage = new Message1();
-
-            var child = parent.ForResponse(childMessage);
-            child.ResponseId.ShouldBe(Guid.Empty);
-            child.Destination.ShouldBeNull();
         }
 
 

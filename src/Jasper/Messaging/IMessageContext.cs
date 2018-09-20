@@ -11,17 +11,6 @@ namespace Jasper.Messaging
     public interface IMessageContext
     {
         /// <summary>
-        /// Loosely-coupled Request/Reply pattern
-        /// </summary>
-        /// <typeparam name="TResponse"></typeparam>
-        /// <param name="request"></param>
-        /// <param name="timeout"></param>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        [Obsolete]
-        Task<TResponse> Request<TResponse>(object request, TimeSpan timeout = default(TimeSpan),  Action<Envelope> configure = null);
-
-        /// <summary>
         /// Publish a message to all known subscribers. Will throw an exception if there are no known subscribers
         /// </summary>
         /// <param name="message"></param>

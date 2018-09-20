@@ -210,27 +210,6 @@ namespace StorytellerSpecs.Fixtures.Durability
             StoryTellerAssert.Fail(receiverCounts.Incoming > 0, "There are still persisted, incoming messages");
         }
 
-        [FormatAs("Request/Reply Works")]
-        public async Task<bool> RequestReplyWorks()
-        {
-            cleanDatabase();
-
-            var question = new Question
-            {
-                X = 3,
-                Y = 4
-            };
-
-
-            await send(async c =>
-            {
-                var answer = await c.Request<Answer>(question);
-                StoryTellerAssert.Fail(answer.Sum != 7, "The reply was invalid");
-            });
-
-            return true;
-        }
-
         [FormatAs("Can schedule job durably")]
         public async Task<bool> CanScheduleJobDurably()
         {
