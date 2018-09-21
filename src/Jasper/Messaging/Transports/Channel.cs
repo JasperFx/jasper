@@ -40,11 +40,6 @@ namespace Jasper.Messaging.Transports
 
         public async Task Send(Envelope envelope)
         {
-            if (envelope.RequiresLocalReply && LocalReplyUri == null)
-            {
-                throw new InvalidOperationException($"There is no known local reply Uri for channel {_address}, but one is required for this operation");
-            }
-
             ApplyModifications(envelope);
 
             envelope.Status = TransportConstants.Outgoing;

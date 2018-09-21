@@ -224,8 +224,6 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public string MessageType { get; set; }
 
-        internal bool RequiresLocalReply { get; set; }
-
         /// <summary>
         /// Location where any replies should be sent
         /// </summary>

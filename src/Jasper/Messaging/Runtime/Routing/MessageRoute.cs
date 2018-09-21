@@ -50,10 +50,7 @@ namespace Jasper.Messaging.Runtime.Routing
             sending.Id = CombGuidIdGeneration.NewGuid();
             sending.OriginalId = envelope.Id;
 
-            if (envelope.RequiresLocalReply)
-            {
-                sending.ReplyUri = envelope.ReplyUri ?? Channel.LocalReplyUri;
-            }
+            sending.ReplyUri = envelope.ReplyUri ?? Channel.LocalReplyUri;
 
             Channel.ApplyModifications(sending);
 

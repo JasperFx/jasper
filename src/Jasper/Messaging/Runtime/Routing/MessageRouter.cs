@@ -86,11 +86,7 @@ namespace Jasper.Messaging.Runtime.Routing
             {
                 outgoing.Source = _settings.NodeId;
 
-                // TODO -- watch this
-                if (!envelope.RequiresLocalReply)
-                {
-                    outgoing.ReplyUri = envelope.ReplyUri ?? _channels.SystemReplyUri;
-                }
+                outgoing.ReplyUri = envelope.ReplyUri ?? _channels.SystemReplyUri;
 
             }
 

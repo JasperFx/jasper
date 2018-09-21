@@ -139,7 +139,6 @@ namespace Jasper.Messaging
         public Task Publish(Envelope envelope)
         {
             if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
-            if (envelope.RequiresLocalReply) throw new ArgumentOutOfRangeException(nameof(envelope), "Cannot 'Publish' and envelope that requires a local reply");
 
             var outgoing = _router.Route(envelope);
             trackEnvelopeCorrelation(outgoing);
@@ -167,33 +166,11 @@ namespace Jasper.Messaging
 
             trackEnvelopeCorrelation(outgoing);
 
-
-            if (envelope.RequiresLocalReply)
-            {
-                if (outgoing.Length > 1)
-                {
-                    throw new InvalidOperationException("Cannot find a unique handler for this request");
-                }
-
-                // this is important for the request/reply mechanics
-                outgoing[0].Id = envelope.Id;
-            }
-
             if (!outgoing.Any())
             {
                 _logger.NoRoutesFor(envelope);
 
                 throw new NoRoutesException(envelope);
-            }
-
-            if (envelope.RequiresLocalReply)
-            {
-                foreach (var outgoingEnvelope in outgoing)
-                {
-                    await outgoingEnvelope.Send();
-                }
-
-                return envelope.Id;
             }
 
             await persistOrSend(outgoing);
@@ -210,13 +187,12 @@ namespace Jasper.Messaging
                 envelope.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? envelope.SagaId;
             }
 
-            if (Envelope != null)
+            if (Envelope == null) return;
+
+            foreach (var outbound in outgoing)
             {
-                foreach (var outbound in outgoing)
-                {
-                    outbound.OriginalId = Envelope.OriginalId;
-                    outbound.ParentId = Envelope.Id;
-                }
+                outbound.OriginalId = Envelope.OriginalId;
+                outbound.ParentId = Envelope.Id;
             }
         }
 
@@ -270,8 +246,7 @@ namespace Jasper.Messaging
             {
                 Message = request,
                 ReplyRequested = messageType,
-                AcceptedContentTypes = reader.ContentTypes,
-                RequiresLocalReply = true
+                AcceptedContentTypes = reader.ContentTypes
 
             };
         }
