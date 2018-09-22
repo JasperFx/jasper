@@ -19,7 +19,6 @@ namespace StorytellerSpecs.Fixtures
     public class SendMessageFixture : BusFixture
     {
         private JasperRuntime _runtime;
-        private Task _task;
 
         public SendMessageFixture()
         {
@@ -96,40 +95,6 @@ namespace StorytellerSpecs.Fixtures
             }).ToList();
         }
 
-        [FormatAs("The acknowledgement was received within 3 seconds")]
-        public bool AckIsReceived()
-        {
-            try
-            {
-                _task.Wait(3.Seconds());
-            }
-            catch (Exception)
-            {
-                // swallow the ex for the sake of the test
-            }
-
-            return _task.IsCompleted || _task.IsFaulted;
-        }
-
-        [FormatAs("The acknowledgement was successful")]
-        public bool AckWasSuccessful()
-        {
-            StoryTellerAssert.Fail(_task.IsFaulted || !_task.IsCompleted,
-                () => _task.Exception?.ToString() ?? "Task was not completed");
-
-            return true;
-        }
-
-        [FormatAs("The acknowledgment failed and contained the message {message}")]
-        public bool TheAckFailedWithMessage(string message)
-        {
-            StoryTellerAssert.Fail(_task.Exception == null, "The task exception is null");
-
-            StoryTellerAssert.Fail(!_task.Exception.InnerExceptions.First().ToString().Contains(message),
-                "The actual exception text was:\n" + _task.Exception);
-
-            return true;
-        }
 
         [FormatAs("Send a message with an unknown content type to {address}")]
         public async Task SendMessageWithUnknownContentType([SelectionList("Channels")] Uri address)

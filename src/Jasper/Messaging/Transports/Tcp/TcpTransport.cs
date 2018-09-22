@@ -27,11 +27,7 @@ namespace Jasper.Messaging.Transports.Tcp
         {
             assertNoDuplicatePorts(incoming);
 
-            if (incoming.Any())
-            {
-                var uri = incoming.First();
-                LocalReplyUri = uri.ToMachineUri();
-            }
+            ReplyUri = incoming.FirstOrDefault();
 
             return incoming;
         }
@@ -40,15 +36,14 @@ namespace Jasper.Messaging.Transports.Tcp
         protected override IListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings)
         {
             // check the uri for an ip address to bind to
-            if (uri.HostNameType == UriHostNameType.IPv4 || uri.HostNameType == UriHostNameType.IPv6)
-            {
-                IPAddress ipaddr = IPAddress.Parse(uri.Host);
-                return new SocketListeningAgent(ipaddr, uri.Port, settings.Cancellation);
-            }
+            if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)
+                return uri.Host == "localhost"
+                    ? new SocketListeningAgent(IPAddress.Loopback, uri.Port, settings.Cancellation)
+                    : new SocketListeningAgent(IPAddress.Any, uri.Port, settings.Cancellation);
 
-            return uri.Host == "localhost"
-                ? new SocketListeningAgent(IPAddress.Loopback, uri.Port, settings.Cancellation)
-                : new SocketListeningAgent(IPAddress.Any, uri.Port, settings.Cancellation);
+            var ipaddr = IPAddress.Parse(uri.Host);
+            return new SocketListeningAgent(ipaddr, uri.Port, settings.Cancellation);
+
         }
 
         private static void assertNoDuplicatePorts(Uri[] incoming)

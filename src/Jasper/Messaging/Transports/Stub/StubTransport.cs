@@ -51,7 +51,7 @@ namespace Jasper.Messaging.Transports.Stub
         public StubTransport()
 
         {
-            LocalReplyUri = new Uri($"stub://replies");
+            ReplyUri = new Uri($"stub://replies");
         }
 
         public void Dispose()
@@ -69,7 +69,7 @@ namespace Jasper.Messaging.Transports.Stub
             return Channels[uri];
         }
 
-        public Uri LocalReplyUri { get; }
+        public Uri ReplyUri { get; }
 
         public void StartListening(IMessagingRoot root)
         {

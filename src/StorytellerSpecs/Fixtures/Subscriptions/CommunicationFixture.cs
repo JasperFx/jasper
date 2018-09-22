@@ -69,7 +69,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
 
         [FormatAs("Send message {messageType} named {name}")]
-        public async Task SendMessage([SelectionList("MessageTypes")] string messageType, string name)
+        public void SendMessage([SelectionList("MessageTypes")] string messageType, string name)
         {
             if (!_initialized)
             {

@@ -27,7 +27,7 @@ namespace Jasper.Messaging.Transports
         }
 
         public string Protocol { get; }
-        public Uri LocalReplyUri { get; protected set; }
+        public Uri ReplyUri { get; protected set; }
         public IWorkerQueue WorkerQueue { get; private set; }
 
         public MessagingSettings MessagingSettings { get; }
@@ -49,7 +49,7 @@ namespace Jasper.Messaging.Transports
                 agent = new LightweightSendingAgent(uri, batchedSender, logger, MessagingSettings);
             }
 
-            agent.DefaultReplyUri = LocalReplyUri;
+            agent.DefaultReplyUri = ReplyUri;
             agent.Start();
 
             return agent;

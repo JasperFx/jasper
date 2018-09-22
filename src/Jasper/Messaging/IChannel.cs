@@ -7,7 +7,7 @@ namespace Jasper.Messaging
     public interface IChannel : IDisposable
     {
         Uri Uri { get; }
-        Uri LocalReplyUri { get; }
+        Uri ReplyUri { get; }
 
         bool ShouldSendMessage(Type messageType);
 

@@ -39,12 +39,4 @@ namespace Jasper.RabbitMQ
         }
     }
 
-    /*
-     * Notes
-     * Will need to be able to configure the RabbitMQ ConnectionFactory
-     * Send the envelope through as a byte array in the body
-     * All Agents will need a
-     * Use the ServiceName.ToLowerCase-replies as the reply queue
-     * Need to use the basic ack to finish the receiving
-     */
 }

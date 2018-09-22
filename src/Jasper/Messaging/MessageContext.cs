@@ -199,7 +199,6 @@ namespace Jasper.Messaging
         public Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null)
         {
             var envelope = EnvelopeForRequestResponse<TResponse>(message);
-            envelope.ReplyUri = _channels.SystemReplyUri ?? envelope.ReplyUri;
 
             customization?.Invoke(envelope);
 

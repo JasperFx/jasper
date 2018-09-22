@@ -15,11 +15,11 @@ namespace Jasper.Messaging.Transports
         private readonly SubscriberAddress _address;
         private readonly ISendingAgent _agent;
         public Uri Uri => _address.Uri;
-        public Uri LocalReplyUri { get; }
+        public Uri ReplyUri { get; }
 
         public Channel(IMessageLogger logger, SubscriberAddress address, Uri replyUri, ISendingAgent agent)
         {
-            LocalReplyUri = replyUri;
+            ReplyUri = replyUri;
             _logger = logger;
             _address = address;
             _agent = agent;

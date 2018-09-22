@@ -49,10 +49,6 @@ namespace Jasper.Messaging.Transports
 
 
             GetOrBuildChannel(TransportConstants.RetryUri);
-
-            SystemReplyUri =
-                tryGetReplyUri("tcp")
-                ?? _transports.Values.FirstOrDefault(x => x.LocalReplyUri != null)?.LocalReplyUri;
         }
 
         private void buildInitialSendingAgents(IMessagingRoot root)
@@ -62,7 +58,7 @@ namespace Jasper.Messaging.Transports
                 var transport = _transports[subscriberAddress.Uri.Scheme];
                 var agent = transport.BuildSendingAgent(subscriberAddress.Uri, root, _settings.Cancellation);
 
-                var channel = new Channel(_logger, subscriberAddress, transport.LocalReplyUri, agent);
+                var channel = new Channel(_logger, subscriberAddress, transport.ReplyUri, agent);
 
 
                 _channels = _channels.AddOrUpdate(subscriberAddress.Uri, channel);
@@ -85,7 +81,7 @@ namespace Jasper.Messaging.Transports
         {
             if (_settings.StateFor(protocol) == TransportState.Disabled) return null;
 
-            return _transports.ContainsKey(protocol) ? _transports[protocol].LocalReplyUri : null;
+            return _transports.ContainsKey(protocol) ? _transports[protocol].ReplyUri : null;
         }
 
         public string[] ValidTransports => _transports.Keys.ToArray();
@@ -104,7 +100,7 @@ namespace Jasper.Messaging.Transports
 
             var transport = _transports[uri.Scheme];
             var agent = transport.BuildSendingAgent(uri, _root, _settings.Cancellation);
-            return new Channel(_logger, agent, transport.LocalReplyUri);
+            return new Channel(_logger, agent, transport.ReplyUri);
         }
 
 
@@ -150,8 +146,6 @@ namespace Jasper.Messaging.Transports
         {
             return _channels.Enumerate().Select(x => x.Value).ToArray();
         }
-
-        public Uri SystemReplyUri { get; private set; }
 
         private void assertNoUnknownTransportsInListeners(MessagingSettings settings)
         {

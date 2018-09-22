@@ -27,8 +27,6 @@ namespace StorytellerSpecs.Fixtures.Durability
 
         public override void SetUp()
         {
-            Jasper.Util.UriExtensions.IgnoreMachineName = true;
-
             theTracker = new Jasper.Messaging.Tracking.MessageTracker();
 
             var receiverPort = PortFinder.FindPort(3340);
@@ -107,7 +105,6 @@ namespace StorytellerSpecs.Fixtures.Durability
 
         public override void TearDown()
         {
-            Jasper.Util.UriExtensions.IgnoreMachineName = false;
             theSender?.Dispose();
             theReceiver?.Dispose();
         }

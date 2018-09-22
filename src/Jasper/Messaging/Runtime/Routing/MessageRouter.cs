@@ -85,9 +85,6 @@ namespace Jasper.Messaging.Runtime.Routing
             foreach (var outgoing in envelopes)
             {
                 outgoing.Source = _settings.NodeId;
-
-                outgoing.ReplyUri = envelope.ReplyUri ?? _channels.SystemReplyUri;
-
             }
 
             return envelopes;

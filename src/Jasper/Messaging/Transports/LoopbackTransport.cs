@@ -23,7 +23,7 @@ namespace Jasper.Messaging.Transports
                 : new LoopbackSendingAgent(uri, root.Workers);
         }
 
-        public Uri LocalReplyUri => TransportConstants.RetryUri;
+        public Uri ReplyUri => TransportConstants.RetryUri;
 
         public void StartListening(IMessagingRoot root)
         {

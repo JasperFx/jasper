@@ -35,30 +35,7 @@ namespace Jasper.Util
             return TransportConstants.Durable == firstSegment.TrimEnd('/');
         }
 
-        public static Uri ToMachineUri(this Uri uri)
-        {
-            return _locals.Contains(uri.Host) ? uri.ToLocalUri() : uri;
-        }
 
-
-        public static bool IgnoreMachineName { get; set; } = false;
-
-        public static Uri ToLocalUri(this Uri uri)
-        {
-            if (IgnoreMachineName) return uri;
-
-            try
-            {
-                Dns.GetHostEntry(Environment.MachineName);
-                return new UriBuilder(uri) { Host = Environment.MachineName }.Uri;
-            }
-            catch (Exception)
-            {
-                return uri;
-            }
-
-
-        }
 
         public static Uri ToCanonicalTcpUri(this Uri uri)
         {
