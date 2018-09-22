@@ -11,9 +11,8 @@ namespace Jasper.Conneg
 
         string ContentType { get; }
 
-        IMessageDeserializer[] ReadersFor(Type messageType, MediaSelectionMode mode);
-        IMessageSerializer[] WritersFor(Type messageType, MediaSelectionMode mode);
-        IMessageDeserializer VersionedReaderFor(Type incomingType);
+        IMessageDeserializer ReaderFor(Type messageType);
+        IMessageSerializer WriterFor(Type messageType);
     }
     // ENDSAMPLE
 }

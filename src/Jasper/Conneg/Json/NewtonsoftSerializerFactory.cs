@@ -48,47 +48,16 @@ namespace Jasper.Conneg.Json
 
         public string ContentType => "application/json";
 
-        private IEnumerable<IMessageDeserializer> determineReaders(Type messageType, MediaSelectionMode mode)
+        public IMessageDeserializer ReaderFor(Type messageType)
         {
-            if (mode == MediaSelectionMode.All)
-            {
-                yield return new NewtonsoftJsonReader(messageType, _charPool, _bytePool, _serializerPool);
-            }
-
-            if (messageType.HasAttribute<VersionAttribute>() || mode == MediaSelectionMode.VersionedOnly)
-            {
-                yield return VersionedReaderFor(messageType);
-            }
+            return new NewtonsoftJsonReader(messageType, _charPool, _bytePool, _serializerPool);
         }
 
-        public IMessageDeserializer[] ReadersFor(Type messageType, MediaSelectionMode mode)
+        public IMessageSerializer WriterFor(Type messageType)
         {
-            return determineReaders(messageType, mode).ToArray();
+            return new NewtonsoftJsonWriter(messageType, _charPool, _bytePool, _serializerPool);
         }
 
-        public IMessageSerializer[] WritersFor(Type messageType, MediaSelectionMode mode)
-        {
-            return determineWriters(messageType, mode).ToArray();
-        }
-
-        public IMessageDeserializer VersionedReaderFor(Type incomingType)
-        {
-            return new NewtonsoftJsonReader(incomingType, _charPool, _bytePool, _serializerPool, incomingType.ToContentType("json"));
-        }
-
-        private IEnumerable<IMessageSerializer> determineWriters(Type messageType, MediaSelectionMode mode)
-        {
-            if (mode == MediaSelectionMode.All)
-            {
-                yield return new NewtonsoftJsonWriter(messageType, _charPool, _bytePool, _serializerPool);
-            }
-
-            if (messageType.HasAttribute<VersionAttribute>() || mode == MediaSelectionMode.VersionedOnly)
-            {
-                var contentType = messageType.ToContentType("json");
-                yield return new NewtonsoftJsonWriter(messageType, contentType, _charPool, _bytePool, _serializerPool);
-            }
-        }
     }
     // ENDSAMPLE
 }

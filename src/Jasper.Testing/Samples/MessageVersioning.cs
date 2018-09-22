@@ -122,15 +122,6 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
     }
 
-    // SAMPLE: NoUnVersionedMessages
-    public class NoUnVersionedMessages : JasperRegistry
-    {
-        public NoUnVersionedMessages()
-        {
-            Advanced.MediaSelectionMode = MediaSelectionMode.VersionedOnly;
-        }
-    }
-    // ENDSAMPLE
 
     // SAMPLE: RegisteringCustomReadersAndWriters
     public class RegisteringCustomReadersAndWriters : JasperRegistry

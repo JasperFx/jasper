@@ -29,8 +29,6 @@ namespace Jasper.Http
 
         public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings();
 
-        public MediaSelectionMode MediaSelectionMode { get; set; } = MediaSelectionMode.All;
-
 
         internal Task FindRoutes(JasperRuntime runtime, JasperRegistry registry, PerfTimer timer)
         {

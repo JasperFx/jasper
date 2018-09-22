@@ -46,19 +46,14 @@ namespace StorytellerSpecs.Fixtures
 
         public string ContentType { get; }
 
-        public IMessageDeserializer[] ReadersFor(Type messageType, MediaSelectionMode mode)
+        public IMessageDeserializer ReaderFor(Type messageType)
         {
-            return new IMessageDeserializer[0];
+            return null;
         }
 
-        public IMessageSerializer[] WritersFor(Type messageType, MediaSelectionMode mode)
+        public IMessageSerializer WriterFor(Type messageType)
         {
-            return new IMessageSerializer[] {new FakeWriter(messageType, ContentType)};
-        }
-
-        public IMessageDeserializer VersionedReaderFor(Type incomingType)
-        {
-            throw new NotImplementedException();
+            return new FakeWriter(messageType, ContentType);
         }
 
         public void Serialize(object message, Stream stream)

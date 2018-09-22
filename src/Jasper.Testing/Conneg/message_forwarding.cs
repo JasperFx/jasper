@@ -41,7 +41,7 @@ namespace Jasper.Testing.Conneg
                 var reader = modelReader.OfType<ForwardingMessageDeserializer<NewMessage>>().Single();
                 reader.ShouldNotBeNull();
 
-                modelReader.ContentTypes.OrderBy(x => x).ShouldHaveTheSameElementsAs("application/json", typeof(OriginalMessage).ToContentType("json"), typeof(NewMessage).ToContentType("json"));
+                modelReader.ContentTypes.OrderBy(x => x).ShouldHaveTheSameElementsAs("application/json");
             }
             finally
             {
@@ -76,7 +76,7 @@ namespace Jasper.Testing.Conneg
                 await runtime.Messaging.Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
                 {
                     e.Destination = channel;
-                    e.ContentType = typeof(OriginalMessage).ToContentType("json");
+                    e.ContentType = "application/json";
                 });
 
                 waiter.Wait(5.Seconds());

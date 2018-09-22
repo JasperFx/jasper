@@ -94,6 +94,7 @@ namespace Jasper.Util
             return string.Join("_", parts);
         }
 
+        [Obsolete("Get rid of this")]
         public static string ToVersion(this Type messageType)
         {
             return messageType.HasAttribute<VersionAttribute>()
@@ -101,14 +102,6 @@ namespace Jasper.Util
                 : "V1";
         }
 
-        public static string ToContentType(this Type messageType, string format)
-        {
-            var alias = messageType.ToMessageAlias().ToLowerInvariant();
-            var version = messageType.ToVersion().ToLower();
-
-            return $"application/vnd.{alias}.{version}+{format}";
-
-        }
 
         private static readonly Type[] _tupleTypes = new Type[]
         {

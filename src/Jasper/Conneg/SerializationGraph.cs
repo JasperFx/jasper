@@ -14,7 +14,6 @@ namespace Jasper.Conneg
 {
     public abstract class SerializationGraph
     {
-        private readonly MediaSelectionMode _selectionMode;
         private readonly Forwarders _forwarders;
         private readonly Dictionary<string, ISerializerFactory> _serializers = new Dictionary<string, ISerializerFactory>();
 
@@ -27,9 +26,10 @@ namespace Jasper.Conneg
 
         private readonly IList<Type> _otherTypes = new List<Type>();
 
-        protected SerializationGraph(ObjectPoolProvider pooling, MediaSelectionMode selectionMode, JsonSerializerSettings jsonSettings, Forwarders forwarders, IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
+        protected SerializationGraph(ObjectPoolProvider pooling, JsonSerializerSettings jsonSettings,
+            Forwarders forwarders, IEnumerable<ISerializerFactory> serializers,
+            IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
         {
-            _selectionMode = selectionMode;
             _forwarders = forwarders;
             foreach (var serializer in serializers)
             {
@@ -108,7 +108,7 @@ namespace Jasper.Conneg
 
         private ModelWriter compileWriter(Type messageType)
         {
-            var fromSerializers = _serializers.Values.SelectMany(x => x.WritersFor(messageType, _selectionMode));
+            var fromSerializers = _serializers.Values.Select(x => x.WriterFor(messageType));
             var writers = _writers.Where(x => x.DotNetType == messageType);
 
             return new ModelWriter(fromSerializers.Concat(writers).ToArray());
@@ -128,13 +128,13 @@ namespace Jasper.Conneg
         public ModelReader ReaderFor(Type inputType)
         {
             var readers = _readers.Where(x => x.DotNetType == inputType);
-            var serialized = _serializers.Values.SelectMany(x => x.ReadersFor(inputType, _selectionMode));
+            var serialized = _serializers.Values.Select(x => x.ReaderFor(inputType));
 
             var forwarded = _forwarders.ForwardingTypesTo(inputType).SelectMany(incomingType =>
             {
                 return _serializers.Values.Select(x =>
                 {
-                    var inner = x.VersionedReaderFor(incomingType);
+                    var inner = x.ReaderFor(incomingType);
                     return typeof(ForwardingMessageDeserializer<>).CloseAndBuildAs<IMessageDeserializer>(inner, inputType);
                 });
             });
@@ -167,15 +167,13 @@ namespace Jasper.Conneg
         public IMessageDeserializer JsonReaderFor(Type inputType)
         {
             return _serializers["application/json"]
-                .ReadersFor(inputType, _selectionMode)
-                .FirstOrDefault(x => x.ContentType == "application/json");
+                .ReaderFor(inputType);
         }
 
         public IMessageSerializer JsonWriterFor(Type resourceType)
         {
             return _serializers["application/json"]
-                .WritersFor(resourceType, _selectionMode)
-                .FirstOrDefault(x => x.ContentType == "application/json");
+                .WriterFor(resourceType);
         }
 
         public IMessageSerializer[] CustomWritersFor(Type resourceType)

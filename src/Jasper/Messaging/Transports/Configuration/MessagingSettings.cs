@@ -78,9 +78,6 @@ namespace Jasper.Messaging.Transports.Configuration
 
         public bool ThrowOnValidationErrors { get; set; } = true;
 
-        public MediaSelectionMode MediaSelectionMode { get; set; } = MediaSelectionMode.All;
-
-
 
         public string NodeId { get; private set; }
 
