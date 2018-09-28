@@ -8,8 +8,7 @@ namespace Jasper.Conneg
 {
     public class Forwarders
     {
-        private readonly LightweightCache<Type, List<Type>> _forwarders =
-            new LightweightCache<Type, List<Type>>(t => new List<Type>());
+        public Dictionary<Type, Type> Relationships { get; } = new Dictionary<Type, Type>();
 
         public void Add(Type type)
         {
@@ -18,12 +17,8 @@ namespace Jasper.Conneg
                 .GetGenericArguments()
                 .Single();
 
-            _forwarders[forwardedType].Add(type);
-        }
+            Relationships.Add(type, forwardedType);
 
-        public IReadOnlyList<Type> ForwardingTypesTo(Type handledType)
-        {
-            return _forwarders.Has(handledType) ? _forwarders[handledType] : new List<Type>();
         }
     }
 }

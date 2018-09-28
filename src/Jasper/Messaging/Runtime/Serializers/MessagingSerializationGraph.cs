@@ -19,7 +19,7 @@ namespace Jasper.Messaging.Runtime.Serializers
         private readonly HandlerGraph _handlers;
 
         public MessagingSerializationGraph(ObjectPoolProvider pooling, MessagingSettings messagingSettings, HandlerGraph handlers, Forwarders forwarders, IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
-            : base(pooling, messagingSettings.JsonSerialization, forwarders, serializers, readers, writers)
+            : base(pooling, messagingSettings.JsonSerialization, serializers, readers, writers)
         {
             _handlers = handlers;
 

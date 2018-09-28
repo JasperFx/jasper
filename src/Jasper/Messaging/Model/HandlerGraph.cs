@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Baseline;
 using Jasper.Configuration;
+using Jasper.Conneg;
 using Jasper.Messaging.ErrorHandling;
-using Jasper.Messaging.Sagas;
 using Jasper.Util;
+using TypeExtensions = Baseline.TypeExtensions;
+using Baseline;
 using Lamar;
-using Lamar.Codegen;
 using Lamar.Compilation;
 using Lamar.Util;
-using TypeExtensions = Baseline.TypeExtensions;
 
 namespace Jasper.Messaging.Model
 {
@@ -112,6 +111,9 @@ namespace Jasper.Messaging.Model
         {
             _generation = generation;
             _container = runtime.Container;
+
+            var forwarders = runtime.Get<Forwarders>();
+            AddForwarders(forwarders);
         }
 
         private readonly object _groupingLock = new object();
@@ -142,6 +144,24 @@ namespace Jasper.Messaging.Model
             }
 
 
+        }
+
+        public void AddForwarders(Forwarders forwarders)
+        {
+            foreach (var pair in forwarders.Relationships)
+            {
+                var source = pair.Key;
+                var destination = pair.Value;
+
+                if (_chains.TryFind(destination, out var inner))
+                {
+                    var handler =
+                        TypeExtensions.CloseAndBuildAs<MessageHandler>(typeof(ForwardingHandler<,>), this, new Type[]{source, destination});
+
+                    _chains = _chains.AddOrUpdate(source, handler.Chain);
+                    _handlers = _handlers.AddOrUpdate(source, handler);
+                }
+            }
         }
 
         public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();

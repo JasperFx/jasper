@@ -71,7 +71,7 @@ namespace Jasper.Messaging.Model
             handleMethod.DerivedVariables.Add(new Variable(typeof(IAdvancedMessagingActions), $"context.{nameof(IMessageContext.Advanced)}"));
         }
 
-        public MessageHandler CreateHandler(IContainer container)
+        public virtual MessageHandler CreateHandler(IContainer container)
         {
             var handler = container.QuickBuild(_generatedType.CompiledType).As<MessageHandler>();
             handler.Chain = this;

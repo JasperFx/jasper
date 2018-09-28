@@ -14,7 +14,6 @@ namespace Jasper.Conneg
 {
     public abstract class SerializationGraph
     {
-        private readonly Forwarders _forwarders;
         private readonly Dictionary<string, ISerializerFactory> _serializers = new Dictionary<string, ISerializerFactory>();
 
         private readonly IList<IMessageDeserializer> _readers = new List<IMessageDeserializer>();
@@ -27,10 +26,9 @@ namespace Jasper.Conneg
         private readonly IList<Type> _otherTypes = new List<Type>();
 
         protected SerializationGraph(ObjectPoolProvider pooling, JsonSerializerSettings jsonSettings,
-            Forwarders forwarders, IEnumerable<ISerializerFactory> serializers,
+            IEnumerable<ISerializerFactory> serializers,
             IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
         {
-            _forwarders = forwarders;
             foreach (var serializer in serializers)
             {
                 _serializers.SmartAdd(serializer.ContentType, serializer);
@@ -130,17 +128,7 @@ namespace Jasper.Conneg
             var readers = _readers.Where(x => x.DotNetType == inputType);
             var serialized = _serializers.Values.Select(x => x.ReaderFor(inputType));
 
-            var forwarded = _forwarders.ForwardingTypesTo(inputType).SelectMany(incomingType =>
-            {
-                return _serializers.Values.Select(x =>
-                {
-                    var inner = x.ReaderFor(incomingType);
-                    return typeof(ForwardingMessageDeserializer<>).CloseAndBuildAs<IMessageDeserializer>(inner, inputType);
-                });
-            });
-
-
-            return new ModelReader(readers.Concat(serialized).Concat(forwarded).ToArray());
+            return new ModelReader(readers.Concat(serialized).ToArray());
         }
 
         private ModelReader compileReader(string messageType)
