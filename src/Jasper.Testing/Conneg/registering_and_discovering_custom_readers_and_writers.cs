@@ -29,7 +29,7 @@ namespace Jasper.Testing.Conneg
         public async Task scans_for_custom_readers_in_the_app_assembly()
         {
             await withAllDefaults();
-            theSerialization.ReaderFor(typeof(Message1).ToMessageAlias())
+            theSerialization.ReaderFor(typeof(Message1).ToMessageTypeName())
                 .ContentTypes.ShouldContain("green");
         }
 
@@ -53,11 +53,11 @@ namespace Jasper.Testing.Conneg
             await withAllDefaults();
 
             // Not overridden, so it should be the default
-            theSerialization.ReaderFor(typeof(Message4).ToMessageAlias())["application/json"]
+            theSerialization.ReaderFor(typeof(Message4).ToMessageTypeName())["application/json"]
                 .ShouldBeOfType<NewtonsoftJsonReader>();
 
             // Overridden
-            theSerialization.ReaderFor(typeof(OverriddenJsonMessage).ToMessageAlias())["application/json"]
+            theSerialization.ReaderFor(typeof(OverriddenJsonMessage).ToMessageTypeName())["application/json"]
                 .ShouldBeOfType<OverrideJsonReader>();
         }
     }
@@ -81,7 +81,7 @@ namespace Jasper.Testing.Conneg
 
     public class OverrideJsonReader : IMessageDeserializer
     {
-        public string MessageType { get; } = typeof(OverriddenJsonMessage).ToMessageAlias();
+        public string MessageType { get; } = typeof(OverriddenJsonMessage).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
         public string ContentType { get; } = "application/json";
         public object ReadFromData(byte[] data)
@@ -97,7 +97,7 @@ namespace Jasper.Testing.Conneg
 
     public class GreenMessage1Reader : IMessageDeserializer
     {
-        public string MessageType { get; } = typeof(Message1).ToMessageAlias();
+        public string MessageType { get; } = typeof(Message1).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(Message1);
         public string ContentType { get; } = "green";
         public object ReadFromData(byte[] data)

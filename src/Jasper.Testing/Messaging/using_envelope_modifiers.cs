@@ -43,8 +43,8 @@ namespace Jasper.Testing.Messaging
             await wait1;
             await wait2;
 
-            var envelopeForChannelOne = receiver.Received.First(x => x.MessageType == typeof(Message1).ToMessageAlias());
-            var envelopeForChannelTwo = receiver.Received.First(x => x.MessageType == typeof(Message2).ToMessageAlias());
+            var envelopeForChannelOne = receiver.Received.First(x => x.MessageType == typeof(Message1).ToMessageTypeName());
+            var envelopeForChannelTwo = receiver.Received.First(x => x.MessageType == typeof(Message2).ToMessageTypeName());
 
             envelopeForChannelOne.Headers["foo"].ShouldBe("yes");
             envelopeForChannelOne.Headers["bar"].ShouldBe("yes");

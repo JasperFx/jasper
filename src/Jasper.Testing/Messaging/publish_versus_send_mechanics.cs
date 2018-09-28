@@ -75,10 +75,10 @@ namespace Jasper.Testing.Messaging
 
             var sent = theRuntime.AllSentThroughTheStubTransport();
 
-            sent.Single(x => x.MessageType == typeof(Message1).ToMessageAlias()).Destination
+            sent.Single(x => x.MessageType == typeof(Message1).ToMessageTypeName()).Destination
                 .ShouldBe("stub://one".ToUri());
 
-            sent.Where(x => x.MessageType == typeof(Message2).ToMessageAlias())
+            sent.Where(x => x.MessageType == typeof(Message2).ToMessageTypeName())
                 .Select(x => x.Destination)
                 .ShouldHaveTheSameElementsAs("stub://one".ToUri(), "stub://two".ToUri());
         }

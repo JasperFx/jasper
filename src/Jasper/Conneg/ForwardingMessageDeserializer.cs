@@ -21,7 +21,7 @@ namespace Jasper.Conneg
             _inner = inner;
         }
 
-        public string MessageType { get; } = typeof(T).ToMessageAlias();
+        public string MessageType { get; } = typeof(T).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(T);
         public string ContentType { get; }
 

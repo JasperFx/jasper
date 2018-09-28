@@ -30,7 +30,7 @@ namespace Jasper.Messaging.Runtime
             get => _message;
             set
             {
-                MessageType = value?.GetType().ToMessageAlias();
+                MessageType = value?.GetType().ToMessageTypeName();
                 _message = value;
             }
         }
@@ -85,7 +85,7 @@ namespace Jasper.Messaging.Runtime
             var child = ForSend(message);
             child.ParentId = Id;
 
-            if (message.GetType().ToMessageAlias() == ReplyRequested)
+            if (message.GetType().ToMessageTypeName() == ReplyRequested)
             {
 
                 child.Destination = ReplyUri;

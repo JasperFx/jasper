@@ -65,9 +65,9 @@ namespace Jasper.Testing.Messaging.WorkerQueues
             theWorkers.WorkerFor(typeof(BooM7)).ShouldBe("bar");
             theWorkers.WorkerFor(typeof(M4)).ShouldBe("foo");
 
-            theWorkers.WorkerFor(typeof(BooM6).ToMessageAlias()).ShouldBe("bar");
-            theWorkers.WorkerFor(typeof(BooM7).ToMessageAlias()).ShouldBe("bar");
-            theWorkers.WorkerFor(typeof(M4).ToMessageAlias()).ShouldBe("foo");
+            theWorkers.WorkerFor(typeof(BooM6).ToMessageTypeName()).ShouldBe("bar");
+            theWorkers.WorkerFor(typeof(BooM7).ToMessageTypeName()).ShouldBe("bar");
+            theWorkers.WorkerFor(typeof(M4).ToMessageTypeName()).ShouldBe("foo");
         }
 
         [Fact]
@@ -78,8 +78,8 @@ namespace Jasper.Testing.Messaging.WorkerQueues
             theWorkers.WorkerFor(typeof(M2)).ShouldBe("important");
             theWorkers.WorkerFor(typeof(M3)).ShouldBe("fast");
 
-            theWorkers.WorkerFor(typeof(M2).ToMessageAlias()).ShouldBe("important");
-            theWorkers.WorkerFor(typeof(M3).ToMessageAlias()).ShouldBe("fast");
+            theWorkers.WorkerFor(typeof(M2).ToMessageTypeName()).ShouldBe("important");
+            theWorkers.WorkerFor(typeof(M3).ToMessageTypeName()).ShouldBe("fast");
         }
 
         [Fact]
@@ -92,8 +92,8 @@ namespace Jasper.Testing.Messaging.WorkerQueues
             theWorkers.WorkerFor(typeof(M2)).ShouldBe("important");
             theWorkers.WorkerFor(typeof(M3)).ShouldBe("fast");
 
-            theWorkers.WorkerFor(typeof(M2).ToMessageAlias()).ShouldBe("important");
-            theWorkers.WorkerFor(typeof(M3).ToMessageAlias()).ShouldBe("fast");
+            theWorkers.WorkerFor(typeof(M2).ToMessageTypeName()).ShouldBe("important");
+            theWorkers.WorkerFor(typeof(M3).ToMessageTypeName()).ShouldBe("fast");
         }
 
         [Fact]
@@ -141,9 +141,9 @@ namespace Jasper.Testing.Messaging.WorkerQueues
             theWorkers.ShouldBeDurable(typeof(M4)).ShouldBeTrue();
             theWorkers.ShouldBeDurable(typeof(M5)).ShouldBeFalse();
 
-            theWorkers.ShouldBeDurable(typeof(M3).ToMessageAlias()).ShouldBeTrue();
-            theWorkers.ShouldBeDurable(typeof(M4).ToMessageAlias()).ShouldBeTrue();
-            theWorkers.ShouldBeDurable(typeof(M5).ToMessageAlias()).ShouldBeFalse();
+            theWorkers.ShouldBeDurable(typeof(M3).ToMessageTypeName()).ShouldBeTrue();
+            theWorkers.ShouldBeDurable(typeof(M4).ToMessageTypeName()).ShouldBeTrue();
+            theWorkers.ShouldBeDurable(typeof(M5).ToMessageTypeName()).ShouldBeFalse();
         }
 
         [Fact]
@@ -159,10 +159,10 @@ namespace Jasper.Testing.Messaging.WorkerQueues
             theWorkers.ShouldBeDurable(typeof(M4)).ShouldBeTrue();
             theWorkers.ShouldBeDurable(typeof(M5)).ShouldBeFalse();
 
-            theWorkers.ShouldBeDurable(typeof(M1).ToMessageAlias()).ShouldBeTrue();
-            theWorkers.ShouldBeDurable(typeof(M3).ToMessageAlias()).ShouldBeTrue();
-            theWorkers.ShouldBeDurable(typeof(M4).ToMessageAlias()).ShouldBeTrue();
-            theWorkers.ShouldBeDurable(typeof(M5).ToMessageAlias()).ShouldBeFalse();
+            theWorkers.ShouldBeDurable(typeof(M1).ToMessageTypeName()).ShouldBeTrue();
+            theWorkers.ShouldBeDurable(typeof(M3).ToMessageTypeName()).ShouldBeTrue();
+            theWorkers.ShouldBeDurable(typeof(M4).ToMessageTypeName()).ShouldBeTrue();
+            theWorkers.ShouldBeDurable(typeof(M5).ToMessageTypeName()).ShouldBeFalse();
 
         }
 
@@ -211,6 +211,6 @@ namespace Jasper.Testing.Messaging.WorkerQueues
     public class BooM6{}
     public class BooM7{}
 
-    [MessageAlias("JamesBond")]
+    [MessageIdentity("JamesBond")]
     public class M8{}
 }

@@ -127,7 +127,7 @@ namespace Jasper.Testing.Messaging.Runtime
             {
                 OriginalId = Guid.NewGuid(),
                 ReplyUri = "foo://bar".ToUri(),
-                ReplyRequested = typeof(Message1).ToMessageAlias()
+                ReplyRequested = typeof(Message1).ToMessageTypeName()
             };
 
             var childMessage = new Message1();
@@ -160,7 +160,7 @@ namespace Jasper.Testing.Messaging.Runtime
                 }
             };
 
-            envelope.MessageType.ShouldBe(typeof(Message1).ToMessageAlias());
+            envelope.MessageType.ShouldBe(typeof(Message1).ToMessageTypeName());
         }
     }
 

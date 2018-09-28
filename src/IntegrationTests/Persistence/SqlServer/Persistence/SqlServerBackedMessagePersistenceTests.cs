@@ -12,7 +12,7 @@ using Xunit;
 
 namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
-    [MessageAlias("Message1")]
+    [MessageIdentity("Message1")]
     public class Message1
     {
         public Guid Id = Guid.NewGuid();

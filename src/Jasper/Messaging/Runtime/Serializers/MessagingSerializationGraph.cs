@@ -29,7 +29,7 @@ namespace Jasper.Messaging.Runtime.Serializers
 
         protected override IEnumerable<Type> determineChainCandidates(string messageType)
         {
-            return _handlers.Chains.Where(x => x.MessageType.ToMessageAlias() == messageType)
+            return _handlers.Chains.Where(x => x.MessageType.ToMessageTypeName() == messageType)
                 .Select(x => x.MessageType);
         }
     }

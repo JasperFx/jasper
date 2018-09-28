@@ -32,7 +32,7 @@ namespace Jasper.Testing.Samples
                 e.ReplyRequested = "other-message-type";
 
                 // Probably easier to use this extension method though
-                e.ReplyRequested = typeof(Message2).ToMessageAlias();
+                e.ReplyRequested = typeof(Message2).ToMessageTypeName();
 
                 // This envelope should be discarded if not processed
                 // successfully within 5 days

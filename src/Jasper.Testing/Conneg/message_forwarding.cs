@@ -18,10 +18,10 @@ namespace Jasper.Testing.Conneg
     public class message_forwarding
     {
         [Fact]
-        public void pick_up_message_alias_from_upstream()
+        public void message_alias_is_separate_from_forwarded_type()
         {
-            typeof(OriginalMessage).ToMessageAlias().ShouldBe("versioned-message");
-            typeof(NewMessage).ToMessageAlias().ShouldBe("versioned-message");
+            typeof(OriginalMessage).ToMessageTypeName().ShouldBe("versioned-message.V1");
+            typeof(NewMessage).ToMessageTypeName().ShouldBe("versioned-message.V2");
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace Jasper.Testing.Conneg
         }
     }
 
-    [Version("V1")]
+    [MessageIdentity("versioned-message", Version = 1)]
     public class OriginalMessage : IForwardsTo<NewMessage>
     {
         public string FirstName { get; set; }
@@ -103,7 +103,7 @@ namespace Jasper.Testing.Conneg
         }
     }
 
-    [Version("V2"), MessageAlias("versioned-message")]
+    [MessageIdentity("versioned-message", Version = 2)]
     public class NewMessage
     {
         public string FullName { get; set; }

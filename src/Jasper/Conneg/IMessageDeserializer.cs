@@ -24,7 +24,7 @@ namespace Jasper.Conneg
         protected MessageDeserializerBase(string contentType)
         {
             ContentType = contentType;
-            MessageType = typeof(T).ToMessageAlias();
+            MessageType = typeof(T).ToMessageTypeName();
         }
 
         public string MessageType { get; }

@@ -15,7 +15,7 @@ namespace Jasper.Messaging.Runtime.Routing
                 throw new ArgumentNullException(nameof(destination));
             }
 
-            MessageType = messageType.ToMessageAlias();
+            MessageType = messageType.ToMessageTypeName();
             DotNetType = messageType;
             Destination = destination;
             ContentType = contentType;

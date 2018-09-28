@@ -109,31 +109,31 @@ namespace Jasper.Testing.Messaging.Sagas
         public Guid Id { get; set; }
     }
 
-    [MessageAlias("Message1")]
+    [MessageIdentity("Message1")]
     public class Message1
     {
         public Guid Id = Guid.NewGuid();
     }
 
-    [MessageAlias("Message2")]
+    [MessageIdentity("Message2")]
     public class Message2
     {
         public Guid Id = Guid.NewGuid();
     }
 
-    [MessageAlias("Message3")]
+    [MessageIdentity("Message3")]
     public class Message3
     {
 
     }
 
-    [MessageAlias("Message4")]
+    [MessageIdentity("Message4")]
     public class Message4
     {
 
     }
 
-    [MessageAlias("Message5")]
+    [MessageIdentity("Message5")]
     public class Message5
     {
         public Guid Id = Guid.NewGuid();

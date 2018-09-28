@@ -87,7 +87,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         private void analyzeMessageType(Type messageType)
         {
-            var messageAlias = messageType.ToMessageAlias();
+            var messageAlias = messageType.ToMessageTypeName();
             var alias = messageAlias;
 
 

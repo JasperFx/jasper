@@ -13,10 +13,6 @@ namespace Jasper.Conneg
 
         public void Add(Type type)
         {
-            if (!type.HasAttribute<VersionAttribute>())
-                throw new ArgumentOutOfRangeException(nameof(type),
-                    $"'Forwarding' type {type.FullName} must be decorated with a {typeof(VersionAttribute).FullName} attribute to denote the message version");
-
             var forwardedType = type
                 .FindInterfaceThatCloses(typeof(IForwardsTo<>))
                 .GetGenericArguments()

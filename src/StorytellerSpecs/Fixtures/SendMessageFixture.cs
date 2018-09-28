@@ -135,7 +135,7 @@ namespace StorytellerSpecs.Fixtures
     {
     }
 
-    [MessageAlias("ErrorMessage")]
+    [MessageIdentity("ErrorMessage")]
     public class ErrorMessage
     {
     }
@@ -158,32 +158,32 @@ namespace StorytellerSpecs.Fixtures
     {
     }
 
-    [MessageAlias("Message1")]
+    [MessageIdentity("Message1")]
     public class Message1 : Message
     {
     }
 
-    [MessageAlias("Message2")]
+    [MessageIdentity("Message2")]
     public class Message2 : Message
     {
     }
 
-    [MessageAlias("Message3")]
+    [MessageIdentity("Message3")]
     public class Message3 : Message
     {
     }
 
-    [MessageAlias("Message4")]
+    [MessageIdentity("Message4")]
     public class Message4 : Message
     {
     }
 
-    [MessageAlias("Message5")]
+    [MessageIdentity("Message5")]
     public class Message5 : Message
     {
     }
 
-    [MessageAlias("Message6")]
+    [MessageIdentity("Message6")]
     public class Message6 : Message
     {
     }

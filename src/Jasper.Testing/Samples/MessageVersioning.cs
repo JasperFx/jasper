@@ -48,7 +48,7 @@ namespace Jasper.Testing.Samples
     namespace SecondTry
     {
         // SAMPLE: override-message-alias
-        [MessageAlias("person-born")]
+        [MessageIdentity("person-born")]
         public class PersonBorn
         {
             public string FirstName { get; set; }
@@ -75,7 +75,7 @@ namespace Jasper.Testing.Samples
     namespace ThirdTry
     {
         // SAMPLE: PersonBorn-V2
-        [MessageAlias("person-born"), Version("V2")]
+        [MessageIdentity("person-born", Version = 2)]
         public class PersonBornV2
         {
             public string FirstName { get; set; }
@@ -85,7 +85,6 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: IForwardsTo<PersonBornV2>
-        [Version("V1")]
         public class PersonBorn : IForwardsTo<PersonBornV2>
         {
             public string FirstName { get; set; }

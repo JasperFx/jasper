@@ -134,13 +134,13 @@ namespace Jasper.Testing.Conneg
         }
     }
 
-    [MessageAlias("Structural.Typed.Message")]
+    [MessageIdentity("Structural.Typed.Message")]
     public class BlueMessage
     {
         public string Name { get; set; }
     }
 
-    [MessageAlias("Structural.Typed.Message")]
+    [MessageIdentity("Structural.Typed.Message")]
     public class GreenMessage
     {
         public string Name { get; set; }

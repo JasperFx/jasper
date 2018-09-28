@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Internal;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -16,13 +17,20 @@ namespace Jasper.Util
     /// type
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class MessageAliasAttribute : Attribute
+    public class MessageIdentityAttribute : Attribute
     {
         public string Alias { get; }
 
-        public MessageAliasAttribute(string alias)
+        public int Version { get; set; }
+
+        public MessageIdentityAttribute(string alias)
         {
             Alias = alias;
+        }
+
+        public string GetName()
+        {
+            return Version == 0 ? Alias : $"{Alias}.V{Version}";
         }
     }
 
@@ -59,13 +67,26 @@ namespace Jasper.Util
             return sb.ToString();
         }
 
-        public static string ToMessageAlias(this Type type)
+        private static ImHashMap<Type, string> _typeNames = ImHashMap<Type, string>.Empty;
+
+        public static string ToMessageTypeName(this Type type)
         {
-
-
-            if (type.HasAttribute<MessageAliasAttribute>())
+            if (_typeNames.TryFind(type, out var alias))
             {
-                return type.GetAttribute<MessageAliasAttribute>().Alias;
+                return alias;
+            }
+
+            var name = toMessageTypeName(type);
+            _typeNames = _typeNames.AddOrUpdate(type, name);
+
+            return name;
+        }
+
+        private static string toMessageTypeName(Type type)
+        {
+            if (type.HasAttribute<MessageIdentityAttribute>())
+            {
+                return type.GetAttribute<MessageIdentityAttribute>().GetName();
             }
 
             if (type.CanBeCastTo<ClientMessage>() && type.IsConcreteWithDefaultCtor())
@@ -76,7 +97,7 @@ namespace Jasper.Util
             if (type.Closes(typeof(IForwardsTo<>)))
             {
                 var forwardedType = type.FindInterfaceThatCloses(typeof(IForwardsTo<>)).GetGenericArguments().Single();
-                return forwardedType.ToMessageAlias();
+                return forwardedType.ToMessageTypeName();
             }
 
             var nameToAlias = type.FullName;
@@ -92,14 +113,6 @@ namespace Jasper.Util
             }
 
             return string.Join("_", parts);
-        }
-
-        [Obsolete("Get rid of this")]
-        public static string ToVersion(this Type messageType)
-        {
-            return messageType.HasAttribute<VersionAttribute>()
-                ? messageType.GetAttribute<VersionAttribute>().Version
-                : "V1";
         }
 
 

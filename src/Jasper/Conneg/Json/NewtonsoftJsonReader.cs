@@ -48,7 +48,7 @@ namespace Jasper.Conneg.Json
             _jsonCharPool = new JsonArrayPool<char>(charPool);
 
             DotNetType = messageType;
-            MessageType = messageType.ToMessageAlias();
+            MessageType = messageType.ToMessageTypeName();
             ContentType = contentType;
         }
 

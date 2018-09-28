@@ -69,7 +69,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
     public class SpecialReader : IMessageDeserializer
     {
-        public string MessageType { get; } = typeof(SpecialInput).ToMessageAlias();
+        public string MessageType { get; } = typeof(SpecialInput).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(SpecialInput);
         public string ContentType { get; } = "text/special";
         public object ReadFromData(byte[] data)

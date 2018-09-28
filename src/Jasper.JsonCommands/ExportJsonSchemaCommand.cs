@@ -40,7 +40,7 @@ namespace Jasper.JsonCommands
                 var messageTypes = handlers.Chains.Select(x => x.MessageType).Where(x => x.Assembly != typeof(MessageRoute).Assembly);
                 foreach (var messageType in messageTypes)
                 {
-                    var filename = $"{messageType.ToMessageAlias()}-{messageType.ToVersion()}.json";
+                    var filename = $"{messageType.ToMessageTypeName()}.json";
                     var schema = await JsonSchema4.FromTypeAsync(messageType);
                     var path = directory.AppendPath(filename);
 

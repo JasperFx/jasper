@@ -28,8 +28,7 @@ namespace Jasper.JsonCommands
 
         public void WriteAnnotations(ISourceWriter writer)
         {
-            writer.WriteLine($"[{typeof(MessageAliasAttribute).FullName.TrimEnd("Attribute".ToCharArray())}(\"{MessageAlias}\")]");
-            writer.WriteLine($"[{typeof(VersionAttribute).FullName.TrimEnd("Attribute".ToCharArray())}(\"{Version}\")]");
+            writer.WriteLine($"[{typeof(MessageIdentityAttribute).FullName.TrimEnd("Attribute".ToCharArray())}(\"{MessageAlias}\")]");
             writer.WriteLine($"public partial class {ClassName} {{}}");
             writer.BlankLine();
         }

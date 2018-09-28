@@ -65,7 +65,7 @@ namespace Jasper.Testing.Conneg
         {
             DotNetType = dotNetType;
             ContentType = contentType;
-            MessageType = dotNetType.ToMessageAlias();
+            MessageType = dotNetType.ToMessageTypeName();
         }
 
         public string MessageType { get; }

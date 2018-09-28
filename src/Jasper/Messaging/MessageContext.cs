@@ -236,7 +236,7 @@ namespace Jasper.Messaging
 
         public Envelope EnvelopeForRequestResponse<TResponse>(object request)
         {
-            var messageType = typeof(TResponse).ToMessageAlias();
+            var messageType = typeof(TResponse).ToMessageTypeName();
             _serialization.RegisterType(typeof(TResponse));
 
             var reader = _serialization.ReaderFor(messageType);
@@ -286,7 +286,7 @@ namespace Jasper.Messaging
             {
                 Callback = new InvocationCallback(),
                 ReplyUri = TransportConstants.RepliesUri,
-                ReplyRequested = typeof(T).ToMessageAlias(),
+                ReplyRequested = typeof(T).ToMessageTypeName(),
                 ResponseType = typeof(T)
 
             };
@@ -397,7 +397,7 @@ namespace Jasper.Messaging
                     return;
             }
 
-            if (message.GetType().ToMessageAlias() == Envelope.ReplyRequested)
+            if (message.GetType().ToMessageTypeName() == Envelope.ReplyRequested)
             {
                 var envelope = Envelope.ForResponse(message);
                 await SendEnvelope(envelope);

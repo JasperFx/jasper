@@ -133,7 +133,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
     public class XmlWriter<T> : IMessageSerializer
     {
-        public string MessageType { get; } = typeof(T).ToMessageAlias();
+        public string MessageType { get; } = typeof(T).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(T);
         public string ContentType { get; } = "text/xml";
 
@@ -154,7 +154,7 @@ namespace Jasper.Testing.Http.ContentHandling
 
     public class XmlReader<T> : IMessageDeserializer
     {
-        public string MessageType { get; } = typeof(T).ToMessageAlias();
+        public string MessageType { get; } = typeof(T).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(T);
         public string ContentType { get; } = "text/xml";
 

@@ -35,7 +35,7 @@ namespace Jasper.Testing.Messaging
 
     public class Message1TextReader : IMessageDeserializer
     {
-        public string MessageType { get; } = typeof(Message1).ToMessageAlias();
+        public string MessageType { get; } = typeof(Message1).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(Message1);
         public string ContentType { get; } = "text/message1";
         public object ReadFromData(byte[] data)
@@ -51,7 +51,7 @@ namespace Jasper.Testing.Messaging
 
     public class Message1OddballReader : IMessageDeserializer
     {
-        public string MessageType { get; } = typeof(Message1).ToMessageAlias();
+        public string MessageType { get; } = typeof(Message1).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(Message3);
         public string ContentType { get; } = "text/oddball";
         public object ReadFromData(byte[] data)

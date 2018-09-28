@@ -54,7 +54,7 @@ namespace Jasper.WebSockets
 
             foreach (var messageType in _handlers.Chains.Select(x => x.MessageType).Where(x => x.CanBeCastTo<ClientMessage>()))
             {
-                JsonSerialization.RegisterType(messageType.ToMessageAlias(), messageType);
+                JsonSerialization.RegisterType(messageType.ToMessageTypeName(), messageType);
             }
         }
 

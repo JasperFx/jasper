@@ -250,8 +250,8 @@ namespace StorytellerSpecs.Fixtures.Durability
             var outgoing = loadAllOutgoingEnvelopes(theSender).SingleOrDefault();
 
             StoryTellerAssert.Fail(outgoing == null, "No outgoing envelopes are persisted");
-            StoryTellerAssert.Fail(outgoing.MessageType != typeof(ItemCreated).ToMessageAlias(),
-                $"Envelope message type expected {typeof(ItemCreated).ToMessageAlias()}, but was {outgoing.MessageType}");
+            StoryTellerAssert.Fail(outgoing.MessageType != typeof(ItemCreated).ToMessageTypeName(),
+                $"Envelope message type expected {typeof(ItemCreated).ToMessageTypeName()}, but was {outgoing.MessageType}");
 
             return true;
         }
