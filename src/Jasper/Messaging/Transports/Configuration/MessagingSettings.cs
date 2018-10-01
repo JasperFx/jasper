@@ -305,7 +305,7 @@ namespace Jasper.Messaging.Transports.Configuration
         private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
 
-        public readonly IList<IRoutingRule> LocalPublishing = new List<IRoutingRule>();
+        public readonly IList<RoutingRule> LocalPublishing = new List<RoutingRule>();
     }
 
     public class MessageTypeRule

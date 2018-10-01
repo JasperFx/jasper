@@ -42,7 +42,7 @@ namespace Jasper.Messaging.Transports.Configuration
             return this;
         }
 
-        public IList<IRoutingRule> Rules = new List<IRoutingRule>();
+        public IList<RoutingRule> Rules = new List<RoutingRule>();
 
         public bool ShouldSendMessage(Type messageType)
         {

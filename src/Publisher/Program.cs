@@ -24,17 +24,9 @@ namespace Publisher
             // 100% Optional for diagnostics
             Publish.Message<NewUser>();
             Publish.Message<DeleteUser>();
-
-            // Assume that all concrete types in your application
-            // in your application assembly that implement a marker
-            // interface are published by the application
-            // NOTE: IPublished is just an example and does not exist in Jasper
-            Publish.MessagesMatching(x => x.CanBeCastTo<IPublished>());
         }
     }
     // ENDSAMPLE
-
-    public interface IPublished{}
 
     public class UserHandler
     {

@@ -65,7 +65,8 @@ namespace StorytellerSpecs.Fixtures
             [SelectionList("Channels")] Uri channel)
         {
             var type = messageTypeFor(messageType);
-            _registry.Publish.MessagesMatching(type.Name, t => t == type).To(channel);
+
+            _registry.Publish.Message(type).To(channel);
 
             // Just makes the test harness listen for things
             _registry.Transports.ListenForMessagesFrom(channel);

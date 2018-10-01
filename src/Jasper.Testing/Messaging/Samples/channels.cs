@@ -112,11 +112,6 @@ namespace Jasper.Testing.Messaging.Samples
             Publish.Message<PingMessage>()
                 .To(settings.Transactions);
 
-            // Publish any types matching the supplied filter
-            // to this channel
-            Publish.MessagesMatching("Message suffix", type => type.Name.EndsWith("Message"))
-                .To(settings.Transactions);
-
             // Publish any message type contained in the assembly
             // to this channel, by supplying a type contained
             // within that assembly

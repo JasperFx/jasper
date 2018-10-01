@@ -18,9 +18,9 @@ namespace Jasper.WebSockets
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Publish
-                .MessagesMatching(x => x.CanBeCastTo<ClientMessage>())
-                .To("ws://default");
+//            registry.Publish
+//                .MessagesMatching(x => x.CanBeCastTo<ClientMessage>())
+//                .To("ws://default");
 
 
             registry.As<JasperRegistry>().Hosting.Configure(app => app.UseWebSockets());

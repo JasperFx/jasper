@@ -19,27 +19,22 @@ namespace Jasper.Messaging.Configuration
 
         public MessageTrackExpression Message<T>()
         {
-            return new MessageTrackExpression(_bus, new SingleTypeRoutingRule<T>());
+            return new MessageTrackExpression(_bus, RoutingRule.ForType<T>());
         }
 
         public MessageTrackExpression Message(Type type)
         {
-            return new MessageTrackExpression(_bus, new LambdaRoutingRule(type.FullName, t => t == type));
-        }
-
-        public MessageTrackExpression MessagesMatching(string description, Func<Type, bool> filter)
-        {
-            return new MessageTrackExpression(_bus, new LambdaRoutingRule(description, filter));
-        }
-
-        public MessageTrackExpression MessagesMatching(Func<Type, bool> filter)
-        {
-            return new MessageTrackExpression(_bus, new LambdaRoutingRule("User supplied filter", filter));
+            return new MessageTrackExpression(_bus, RoutingRule.ForType(type));
         }
 
         public MessageTrackExpression MessagesFromNamespace(string @namespace)
         {
-            return new MessageTrackExpression(_bus, new NamespaceRule(@namespace));
+            return new MessageTrackExpression(_bus, new RoutingRule
+            {
+                Scope = RoutingScope.Namespace,
+                Value = @namespace
+            });
+
         }
 
         public MessageTrackExpression MessagesFromNamespaceContaining<T>()
@@ -49,7 +44,8 @@ namespace Jasper.Messaging.Configuration
 
         public MessageTrackExpression MessagesFromAssembly(Assembly assembly)
         {
-            return new MessageTrackExpression(_bus, new AssemblyRule(assembly));
+
+            return new MessageTrackExpression(_bus, new RoutingRule(assembly));
         }
 
         public MessageTrackExpression MessagesFromAssemblyContaining<T>()
@@ -64,15 +60,18 @@ namespace Jasper.Messaging.Configuration
 
         public ISubscriberAddress AllMessagesTo(Uri uri)
         {
-            return MessagesMatching("all messages", _ => true).To(uri);
+            var address = _bus.Settings.SendTo(uri);
+            address.Rules.Add(RoutingRule.All());
+
+            return address;
         }
 
         public class MessageTrackExpression
         {
             private readonly MessagingConfiguration _bus;
-            private readonly IRoutingRule _routing;
+            private readonly RoutingRule _routing;
 
-            internal MessageTrackExpression(MessagingConfiguration bus, IRoutingRule routing)
+            internal MessageTrackExpression(MessagingConfiguration bus, RoutingRule routing)
             {
                 _bus = bus;
                 _routing = routing;
@@ -120,7 +119,7 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         public void AllMessagesLocally()
         {
-            var rule = new LambdaRoutingRule("Everything", t => true);
+            var rule = RoutingRule.All();
             _bus.Settings.LocalPublishing.Add(rule);
         }
     }
