@@ -97,7 +97,6 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             /// <param name="customization"></param>
             /// <returns></returns>
-            /// <exception cref="NotImplementedException"></exception>
             public MessageTrackExpression Customize(Action<Envelope> customization)
             {
                 var rule = new MessageTypeRule(type => _routing.Matches(type), customization);
@@ -119,7 +118,6 @@ namespace Jasper.Messaging.Configuration
         /// Directs Jasper to try to publish all messages locally even if there are other
         /// subscribers for the message type
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
         public void AllMessagesLocally()
         {
             var rule = new LambdaRoutingRule("Everything", t => true);

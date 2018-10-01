@@ -88,10 +88,10 @@ namespace StorytellerSpecs.Fixtures.Marten
 
                 _.Settings.Alter<MessagingSettings>(x =>
                 {
-                    x.FirstNodeReassignmentExecution = 30.Minutes();
-                    x.FirstScheduledJobExecution = 30.Minutes();
-                    x.FirstNodeReassignmentExecution = 30.Minutes();
-                    x.NodeReassignmentPollingTime = 30.Minutes();
+                    x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
+                    x.ScheduledJobs.FirstExecution = 30.Minutes();
+                    x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
+                    x.Retries.NodeReassignmentPollingTime = 30.Minutes();
                 });
             });
 

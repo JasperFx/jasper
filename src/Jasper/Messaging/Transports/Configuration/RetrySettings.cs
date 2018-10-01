@@ -11,7 +11,14 @@ namespace Jasper.Messaging.Transports.Configuration
 
         public int RecoveryBatchSize { get; set; } = 100;
 
+        public TimeSpan NodeReassignmentPollingTime { get; set; } = 1.Minutes();
+        public TimeSpan FirstNodeReassignmentExecution{ get; set; } = 0.Seconds();
 
+    }
 
+    public class ScheduledJobSettings
+    {
+        public TimeSpan FirstExecution { get; set; } = 0.Seconds();
+        public TimeSpan PollingTime { get; set; } = 5.Seconds();
     }
 }

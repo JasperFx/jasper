@@ -41,7 +41,10 @@ namespace Jasper.Messaging.Transports.Configuration
         public int UniqueNodeId { get; }
 
 
-        // Was ChannelGraph.Name
+        /// <summary>
+        /// Logical service name of this application used for instrumentation purposes
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public string ServiceName
         {
             get => _serviceName;
@@ -54,6 +57,12 @@ namespace Jasper.Messaging.Transports.Configuration
             }
         }
 
+        /// <summary>
+        /// Environment.MachineName by default. This is used to create the unique node id
+        /// of the running Jasper application that uniquely identifies a running node of this
+        /// application name
+        /// </summary>
+        /// <exception cref="ArgumentNullException"></exception>
         public string MachineName
         {
             get => _machineName;
@@ -68,17 +77,30 @@ namespace Jasper.Messaging.Transports.Configuration
             }
         }
 
+        /// <summary>
+        /// It may be valuable to disable any and all transports when bootstrapping for
+        /// testing local message handling
+        /// </summary>
         public bool DisableAllTransports { get; set; }
 
+        /// <summary>
+        /// Newtonsoft.Json serialization settings for messages received
+        /// </summary>
         public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects
         };
 
+        /// <summary>
+        /// Default is true. Should Jasper throw an exception on start up if any validation errors
+        /// are detected
+        /// </summary>
         public bool ThrowOnValidationErrors { get; set; } = true;
 
-
+        /// <summary>
+        /// The unique id of this instance of the logical Jasper service
+        /// </summary>
         public string NodeId { get; private set; }
 
 
@@ -86,6 +108,10 @@ namespace Jasper.Messaging.Transports.Configuration
         public readonly IList<Uri> Listeners = new List<Uri>();
 
 
+        /// <summary>
+        /// Listen for messages at the given uri
+        /// </summary>
+        /// <param name="uri"></param>
         public void ListenForMessagesFrom(Uri uri)
         {
             Listeners.Fill(uri.ToCanonicalUri());
@@ -96,6 +122,11 @@ namespace Jasper.Messaging.Transports.Configuration
         private string _machineName;
         private string _serviceName = "Jasper";
 
+        /// <summary>
+        /// Add a new outgoing message subscription
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public SubscriberAddress SendTo(Uri uri)
         {
             var subscriber = KnownSubscribers.FirstOrDefault(x => x.Uri == uri) ?? new SubscriberAddress(uri);
@@ -104,16 +135,28 @@ namespace Jasper.Messaging.Transports.Configuration
             return subscriber;
         }
 
+        /// <summary>
+        /// Add a new outgoing message subscription
+        /// </summary>
+        /// <param name="uriString"></param>
+        /// <returns></returns>
         public ISubscriberAddress SendTo(string uriString)
         {
             return SendTo(uriString.ToUri());
         }
 
+        /// <summary>
+        /// Establish a message listener to a known location and transport
+        /// </summary>
+        /// <param name="uriString"></param>
         public void ListenForMessagesFrom(string uriString)
         {
             ListenForMessagesFrom(uriString.ToUri());
         }
 
+        /// <summary>
+        /// Policies and routing for local message handling
+        /// </summary>
         public WorkersGraph Workers { get; } = new WorkersGraph();
 
 
@@ -141,6 +184,11 @@ namespace Jasper.Messaging.Transports.Configuration
 
         private readonly IList<string> _disabledTransports = new List<string>();
 
+        /// <summary>
+        /// Find the current state of an attached transport
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
         public TransportState StateFor(string protocol)
         {
             return _disabledTransports.Contains(protocol.ToLower())
@@ -148,34 +196,45 @@ namespace Jasper.Messaging.Transports.Configuration
                 : TransportState.Enabled;
         }
 
+        /// <summary>
+        /// Disable an attached transport
+        /// </summary>
+        /// <param name="protocol"></param>
         public void DisableTransport(string protocol)
         {
             _disabledTransports.Fill(protocol.ToLower());
         }
 
+        /// <summary>
+        /// Enable an attached transport
+        /// </summary>
+        /// <param name="protocol"></param>
         public void EnableTransport(string protocol)
         {
             _disabledTransports.RemoveAll(x => x == protocol.ToLower());
         }
 
 
-
         public CancellationToken Cancellation => _cancellation.Token;
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
-        public void StopAll()
+        internal void StopAll()
         {
             _cancellation.Cancel();
         }
 
-        public RetrySettings Retries { get; } = new RetrySettings();
+        /// <summary>
+        /// Timings and sizes around retrying message receiving and sending failures
+        /// </summary>
+        public RetrySettings Retries { get; set; } = new RetrySettings();
 
-        // TODO -- move these underneath Retries and introduce a new value object
-        public TimeSpan FirstScheduledJobExecution { get; set; } = 0.Seconds();
-        public TimeSpan ScheduledJobPollingTime { get; set; } = 5.Seconds();
-        public TimeSpan NodeReassignmentPollingTime { get; set; } = 1.Minutes();
-        public TimeSpan FirstNodeReassignmentExecution{ get; set; } = 0.Seconds();
+
+        /// <summary>
+        /// Timing configuration around the Scheduled Job feature
+        /// </summary>
+        public ScheduledJobSettings ScheduledJobs { get; set; } = new ScheduledJobSettings();
+
 
         /// <summary>
         /// Interval between collecting persisted and queued message metrics
@@ -190,15 +249,17 @@ namespace Jasper.Messaging.Transports.Configuration
         public int MaximumLocalEnqueuedBackPressureThreshold { get; set; } = 10000;
 
         /// <summary>
+        /// Polling interval for applying back pressure checking. Default is 2 seconds
+        /// </summary>
+        public TimeSpan BackPressurePollingInterval { get; set; } = 2.Seconds();
+
+
+
+        /// <summary>
         /// Used to control whether or not envelopes being moved to the dead letter queue are permanently stored
         /// with the related error report
         /// </summary>
         public bool PersistDeadLetterEnvelopes { get; set; } = true;
-
-        /// <summary>
-        /// Polling interval for applying back pressure checking. Default is 2 seconds
-        /// </summary>
-        public TimeSpan BackPressurePollingInterval { get; set; } = 2.Seconds();
 
 
 

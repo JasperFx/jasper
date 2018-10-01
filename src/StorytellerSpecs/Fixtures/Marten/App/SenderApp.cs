@@ -24,8 +24,8 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Settings.Alter<MessagingSettings>(_ =>
             {
-                _.ScheduledJobPollingTime = 1.Seconds();
-                _.FirstScheduledJobExecution = 0.Seconds();
+                _.ScheduledJobs.PollingTime = 1.Seconds();
+                _.ScheduledJobs.FirstExecution = 0.Seconds();
             });
         }
     }

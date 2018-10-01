@@ -23,7 +23,7 @@ namespace SqlSender
                 x.AddConsole();
             });
 
-            Settings.Alter<MessagingSettings>(x => x.NodeReassignmentPollingTime = 5.Seconds());
+            Settings.Alter<MessagingSettings>(x => x.Retries.NodeReassignmentPollingTime = 5.Seconds());
 
             Settings.PersistMessagesWithSqlServer((context, settings) =>
             {

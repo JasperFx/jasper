@@ -78,14 +78,14 @@ namespace Jasper.Messaging.Durability
                 _worker.Post(IncomingMessages);
                 _worker.Post(OutgoingMessages);
 
-            }, settings, settings.FirstScheduledJobExecution, settings.ScheduledJobPollingTime);
+            }, settings, settings.ScheduledJobs.FirstExecution, settings.ScheduledJobs.PollingTime);
 
             _nodeReassignmentTimer = new Timer(s =>
             {
                 _worker.Post(NodeReassignment);
 
 
-            }, settings, settings.FirstNodeReassignmentExecution, settings.NodeReassignmentPollingTime);
+            }, settings, settings.Retries.FirstNodeReassignmentExecution, settings.Retries.NodeReassignmentPollingTime);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
