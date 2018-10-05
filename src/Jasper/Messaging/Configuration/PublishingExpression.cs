@@ -90,19 +90,6 @@ namespace Jasper.Messaging.Configuration
                 return To(address.ToUri());
             }
 
-            /// <summary>
-            /// Customize how a message of this type is sent by modifying
-            /// the outgoing Envelope
-            /// </summary>
-            /// <param name="customization"></param>
-            /// <returns></returns>
-            public MessageTrackExpression Customize(Action<Envelope> customization)
-            {
-                var rule = new MessageTypeRule(type => _routing.Matches(type), customization);
-                _bus.Settings.MessageTypeRules.Add(rule);
-
-                return this;
-            }
 
             /// <summary>
             /// Publishes the matching messages locally in addition to any other subscriber rules

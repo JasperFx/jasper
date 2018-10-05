@@ -157,7 +157,7 @@ namespace Jasper.Messaging.Transports.Configuration
         /// <summary>
         /// Policies and routing for local message handling
         /// </summary>
-        public WorkersGraph Workers { get; } = new WorkersGraph();
+        internal WorkersGraph Workers { get; } = new WorkersGraph();
 
 
         public async Task ApplyLookups(UriAliasLookup lookups)
@@ -263,10 +263,6 @@ namespace Jasper.Messaging.Transports.Configuration
 
 
 
-
-        public readonly IList<MessageTypeRule> MessageTypeRules = new List<MessageTypeRule>();
-
-
         public void ApplyMessageTypeSpecificRules(Envelope envelope)
         {
             if (envelope.Message == null)
@@ -294,10 +290,6 @@ namespace Jasper.Messaging.Transports.Configuration
                 yield return e => att.Modify(e);
             }
 
-            foreach (var rule in MessageTypeRules.Where(x => x.Filter(messageType)))
-            {
-                yield return rule.Action;
-            }
 
 
         }
@@ -305,19 +297,8 @@ namespace Jasper.Messaging.Transports.Configuration
         private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
 
-        public readonly IList<RoutingRule> LocalPublishing = new List<RoutingRule>();
+        internal readonly IList<RoutingRule> LocalPublishing = new List<RoutingRule>();
     }
 
-    public class MessageTypeRule
-    {
-        public MessageTypeRule(Func<Type, bool> filter, Action<Envelope> action)
-        {
-            Filter = filter;
-            Action = action;
-        }
 
-        public Func<Type, bool> Filter { get; }
-        public Action<Envelope> Action { get; }
-
-    }
 }
