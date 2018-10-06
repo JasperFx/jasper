@@ -21,11 +21,11 @@ namespace Jasper.Messaging.Runtime.Routing
             ContentType = contentType;
         }
 
-        public MessageRoute(Type messageType, ModelWriter writer, IChannel channel, string contentType)
-            : this(messageType, channel.Uri, contentType)
+        public MessageRoute(Type messageType, ModelWriter writer, ISubscriber subscriber, string contentType)
+            : this(messageType, subscriber.Uri, contentType)
         {
             Writer = writer[contentType];
-            Channel = channel;
+            Channel = subscriber;
         }
 
         public IMessageSerializer Writer { get; internal set; }
@@ -36,7 +36,7 @@ namespace Jasper.Messaging.Runtime.Routing
         public Uri Destination { get; }
         public string ContentType { get; }
 
-        public IChannel Channel { get; set; }
+        public ISubscriber Channel { get; set; }
 
 
         public Envelope CloneForSending(Envelope envelope)

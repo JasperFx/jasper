@@ -19,7 +19,7 @@ namespace Jasper.Messaging
 
         public MessagingSettings Settings { get; } = new MessagingSettings();
 
-        public ChannelGraph Channels { get; } = new ChannelGraph();
+        public SubscriberGraph Subscribers { get; } = new SubscriberGraph();
 
         public LocalWorkerSender LocalWorker { get; } = new LocalWorkerSender();
 
@@ -43,7 +43,7 @@ namespace Jasper.Messaging
             foreach (var transport in transports) transport.Describe(writer);
 
             writer.WriteLine();
-            foreach (var channel in Channels.AllKnownChannels())
+            foreach (var channel in Subscribers.AllKnown())
                 writer.WriteLine($"Active sending agent to {channel.Uri}");
 
             writer.WriteLine("Handles messages:");

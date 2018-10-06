@@ -19,7 +19,7 @@ namespace Jasper.Persistence.SqlServer.Resiliency
     public class RecoverOutgoingMessages : IMessagingAction
     {
         public static readonly int OutgoingMessageLockId = "recover-outgoing-messages".GetHashCode();
-        private readonly IChannelGraph _channels;
+        private readonly ISubscriberGraph _subscribers;
         private readonly SqlServerSettings _mssqlSettings;
         private readonly ITransportLogger _logger;
         private readonly MessagingSettings _settings;
@@ -27,10 +27,10 @@ namespace Jasper.Persistence.SqlServer.Resiliency
         private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
 
-        public RecoverOutgoingMessages(IChannelGraph channels, MessagingSettings settings, SqlServerSettings mssqlSettings,
+        public RecoverOutgoingMessages(ISubscriberGraph subscribers, MessagingSettings settings, SqlServerSettings mssqlSettings,
             ITransportLogger logger)
         {
-            _channels = channels;
+            _subscribers = subscribers;
             _settings = settings;
             _mssqlSettings = mssqlSettings;
             _logger = logger;
@@ -101,7 +101,7 @@ namespace Jasper.Persistence.SqlServer.Resiliency
                 Envelope[] filtered = null;
                 List<Envelope> outgoing = null;
 
-                if (_channels.GetOrBuildChannel(destination).Latched) return 0;
+                if (_subscribers.GetOrBuild(destination).Latched) return 0;
 
                 var tx = conn.BeginTransaction();
 
@@ -116,7 +116,7 @@ namespace Jasper.Persistence.SqlServer.Resiliency
                     // Might easily try to do this in the time between starting
                     // and having the data fetched. Was able to make that happen in
                     // (contrived) testing
-                    if (_channels.GetOrBuildChannel(destination).Latched || !filtered.Any())
+                    if (_subscribers.GetOrBuild(destination).Latched || !filtered.Any())
                     {
                         tx.Rollback();
                         return 0;
@@ -139,7 +139,7 @@ namespace Jasper.Persistence.SqlServer.Resiliency
                 {
                     try
                     {
-                        await _channels.GetOrBuildChannel(destination).QuickSend(envelope);
+                        await _subscribers.GetOrBuild(destination).QuickSend(envelope);
                     }
                     catch (Exception e)
                     {

@@ -17,12 +17,12 @@ namespace Jasper.Persistence.SqlServer.Resiliency
         private SqlConnection _connection;
 
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, SqlServerSettings mssqlSettings,
+        public SchedulingAgent(ISubscriberGraph subscribers, IWorkerQueue workers, SqlServerSettings mssqlSettings,
             MessagingSettings settings, ITransportLogger logger, IRetries retries)
             : base(settings, logger,
                 new RunScheduledJobs(workers, mssqlSettings, logger, retries, settings),
                 new RecoverIncomingMessages(workers, settings, mssqlSettings, logger),
-                new RecoverOutgoingMessages(channels, settings, mssqlSettings, logger),
+                new RecoverOutgoingMessages(subscribers, settings, mssqlSettings, logger),
                 new ReassignFromDormantNodes(mssqlSettings, settings)
             )
         {

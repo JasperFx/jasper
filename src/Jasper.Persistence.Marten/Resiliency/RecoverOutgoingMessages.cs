@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Marten.Resiliency
     public class RecoverOutgoingMessages : IMessagingAction
     {
         public static readonly int OutgoingMessageLockId = "recover-outgoing-messages".GetHashCode();
-        private readonly IChannelGraph _channels;
+        private readonly ISubscriberGraph _subscribers;
         private readonly EnvelopeTables _marker;
         private readonly ITransportLogger _logger;
         private readonly MessagingSettings _settings;
@@ -29,10 +29,10 @@ namespace Jasper.Persistence.Marten.Resiliency
         private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
 
-        public RecoverOutgoingMessages(IChannelGraph channels, MessagingSettings settings, EnvelopeTables marker,
+        public RecoverOutgoingMessages(ISubscriberGraph subscribers, MessagingSettings settings, EnvelopeTables marker,
             ITransportLogger logger)
         {
-            _channels = channels;
+            _subscribers = subscribers;
             _settings = settings;
             _marker = marker;
             _logger = logger;
@@ -88,7 +88,7 @@ namespace Jasper.Persistence.Marten.Resiliency
 
             try
             {
-                var channel = _channels.GetOrBuildChannel(destination);
+                var channel = _subscribers.GetOrBuild(destination);
 
                 if (channel.Latched) return 0;
 

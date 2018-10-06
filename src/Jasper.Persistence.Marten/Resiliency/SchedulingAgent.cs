@@ -25,11 +25,11 @@ namespace Jasper.Persistence.Marten.Resiliency
         private NpgsqlConnection _connection;
 
 
-        public SchedulingAgent(IChannelGraph channels, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, ITransportLogger logger, StoreOptions storeOptions, IRetries retries, EnvelopeTables tables)
+        public SchedulingAgent(ISubscriberGraph subscribers, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, ITransportLogger logger, StoreOptions storeOptions, IRetries retries, EnvelopeTables tables)
             : base(settings, logger,
                 new RunScheduledJobs(workers, store, tables, logger, retries),
                 new RecoverIncomingMessages(workers, settings, tables, logger),
-                new RecoverOutgoingMessages(channels, settings, tables, logger),
+                new RecoverOutgoingMessages(subscribers, settings, tables, logger),
                 new ReassignFromDormantNodes(tables, settings)
 
 

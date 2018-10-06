@@ -47,7 +47,7 @@ namespace Jasper.Testing.Messaging
             }
         }
 
-        public IChannelGraph Channels { get; } = Substitute.For<IChannelGraph>();
+        public ISubscriberGraph Subscribers { get; } = Substitute.For<ISubscriberGraph>();
 
         public IMessageContext NewContext()
         {

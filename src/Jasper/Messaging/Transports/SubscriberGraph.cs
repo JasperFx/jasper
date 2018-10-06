@@ -9,13 +9,13 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Transports
 {
-    public class ChannelGraph : IChannelGraph, IDisposable
+    public class SubscriberGraph : ISubscriberGraph, IDisposable
     {
         private MessagingSettings _settings;
 
 
 
-        private ImHashMap<Uri, IChannel> _channels = ImHashMap<Uri, IChannel>.Empty;
+        private ImHashMap<Uri, ISubscriber> _subscribers = ImHashMap<Uri, ISubscriber>.Empty;
         private readonly object _channelLock = new object();
 
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
@@ -48,7 +48,7 @@ namespace Jasper.Messaging.Transports
 
 
 
-            GetOrBuildChannel(TransportConstants.RetryUri);
+            GetOrBuild(TransportConstants.RetryUri);
         }
 
         private void buildInitialSendingAgents(IMessagingRoot root)
@@ -58,10 +58,10 @@ namespace Jasper.Messaging.Transports
                 var transport = _transports[subscriberAddress.Uri.Scheme];
                 var agent = transport.BuildSendingAgent(subscriberAddress.Uri, root, _settings.Cancellation);
 
-                var channel = new Channel(_logger, subscriberAddress, transport.ReplyUri, agent);
+                subscriberAddress.StartSending(_logger, agent, transport.ReplyUri);
 
 
-                _channels = _channels.AddOrUpdate(subscriberAddress.Uri, channel);
+                _subscribers = _subscribers.AddOrUpdate(subscriberAddress.Uri, subscriberAddress);
             }
         }
 
@@ -77,12 +77,6 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        private Uri tryGetReplyUri(string protocol)
-        {
-            if (_settings.StateFor(protocol) == TransportState.Disabled) return null;
-
-            return _transports.ContainsKey(protocol) ? _transports[protocol].ReplyUri : null;
-        }
 
         public string[] ValidTransports => _transports.Keys.ToArray();
 
@@ -94,42 +88,46 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        private IChannel buildChannel(Uri uri)
+        private ISubscriber buildChannel(Uri uri)
         {
             assertValidTransport(uri);
 
             var transport = _transports[uri.Scheme];
             var agent = transport.BuildSendingAgent(uri, _root, _settings.Cancellation);
-            return new Channel(_logger, agent, transport.ReplyUri);
+
+            var subscriber = new Subscriber(uri);
+            subscriber.StartSending(_logger, agent, transport.ReplyUri);
+
+            return subscriber;
         }
 
 
         public void Dispose()
         {
-            foreach (var channel in _channels.Enumerate())
+            foreach (var channel in _subscribers.Enumerate())
             {
                 channel.Value.Dispose();
             }
 
 
-            _channels = ImHashMap<Uri, IChannel>.Empty;
+            _subscribers = ImHashMap<Uri, ISubscriber>.Empty;
         }
 
 
-        public IChannel GetOrBuildChannel(Uri address)
+        public ISubscriber GetOrBuild(Uri address)
         {
             var uri = _lookups == null ? address : _lookups.Resolve(address);
 
             assertValidTransport(uri);
 
-            if (_channels.TryFind(uri, out var channel)) return channel;
+            if (_subscribers.TryFind(uri, out var channel)) return channel;
 
             lock (_channelLock)
             {
-                if (!_channels.TryFind(uri, out channel))
+                if (!_subscribers.TryFind(uri, out channel))
                 {
                     channel = buildChannel(address);
-                    _channels = _channels.AddOrUpdate(address, channel);
+                    _subscribers = _subscribers.AddOrUpdate(address, channel);
                 }
 
                 return channel;
@@ -137,14 +135,14 @@ namespace Jasper.Messaging.Transports
 
         }
 
-        public bool HasChannel(Uri uri)
+        public bool HasSubscriber(Uri uri)
         {
-            return _channels.TryFind(uri, out var channel);
+            return _subscribers.TryFind(uri, out var channel);
         }
 
-        public IChannel[] AllKnownChannels()
+        public ISubscriber[] AllKnown()
         {
-            return _channels.Enumerate().Select(x => x.Value).ToArray();
+            return _subscribers.Enumerate().Select(x => x.Value).ToArray();
         }
 
         private void assertNoUnknownTransportsInListeners(MessagingSettings settings)

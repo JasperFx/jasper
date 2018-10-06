@@ -44,7 +44,7 @@ namespace Jasper.Testing.Messaging
             foreach (var env in outgoing)
             {
                 var route = new MessageRoute(typeof(Message1), env?.Destination ?? destinations.First().ToUri(), "application/json");
-                route.Channel = Substitute.For<IChannel>();
+                route.Channel = Substitute.For<ISubscriber>();
                 route.Channel.IsDurable.Returns(true);
 
                 prop.SetValue(env, route);

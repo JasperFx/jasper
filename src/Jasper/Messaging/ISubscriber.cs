@@ -4,7 +4,7 @@ using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging
 {
-    public interface IChannel : IDisposable
+    public interface ISubscriber : IDisposable
     {
         Uri Uri { get; }
         Uri ReplyUri { get; }

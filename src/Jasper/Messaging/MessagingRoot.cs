@@ -29,7 +29,7 @@ namespace Jasper.Messaging
             MessagingSettings settings,
             HandlerGraph handlers,
             IDurableMessagingFactory factory,
-            IChannelGraph channels,
+            ISubscriberGraph subscribers,
             IMessageLogger messageLogger,
             IContainer container,
             ITransportLogger transportLogger)
@@ -38,7 +38,7 @@ namespace Jasper.Messaging
             _handlers = handlers;
             _transportLogger = transportLogger;
             Factory = factory;
-            Channels = channels;
+            Subscribers = subscribers;
             Transports = container.QuickBuildAll<ITransport>().ToArray();
 
 
@@ -55,7 +55,7 @@ namespace Jasper.Messaging
 
             Workers = new WorkerQueue(Logger, Pipeline, settings);
 
-            Router = new MessageRouter(Serialization, channels, handlers, Logger, Lookup, settings);
+            Router = new MessageRouter(Serialization, subscribers, handlers, Logger, Lookup, settings);
 
             // TODO -- ZOMG this is horrible, and I admit it.
             if (Factory is NulloDurableMessagingFactory f) f.ScheduledJobs = ScheduledJobs;
@@ -85,7 +85,7 @@ namespace Jasper.Messaging
 
         public MessagingSettings Settings { get; }
 
-        public IChannelGraph Channels { get; }
+        public ISubscriberGraph Subscribers { get; }
 
         public IMessageRouter Router { get; }
 
@@ -135,7 +135,7 @@ namespace Jasper.Messaging
 
 
                 timer.Record("ChannelGraph.Start",
-                    () => { ((ChannelGraph) Channels).Start(this); });
+                    () => { ((SubscriberGraph) Subscribers).Start(this); });
             }
 
             timer.MarkFinished("ServiceBusActivator");
@@ -145,14 +145,14 @@ namespace Jasper.Messaging
         public static IMessageContext BusFor(Envelope envelope, IMessagingRoot root)
         {
             return new MessageContext(root.Router, root.Pipeline, root.Serialization, root.Settings,
-                root.Channels, root.Factory, root.Logger, envelope);
+                root.Subscribers, root.Factory, root.Logger, envelope);
         }
 
         // bouncing through this makes the mock root easier
         public static IMessageContext BusFor(IMessagingRoot root)
         {
             return new MessageContext(root.Router, root.Pipeline, root.Serialization, root.Settings,
-                root.Channels, root.Factory, root.Logger);
+                root.Subscribers, root.Factory, root.Logger);
         }
     }
 }

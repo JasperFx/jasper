@@ -117,7 +117,7 @@ namespace Jasper.Messaging.Transports.Configuration
             Listeners.Fill(uri.ToCanonicalUri());
         }
 
-        public readonly IList<SubscriberAddress> KnownSubscribers = new List<SubscriberAddress>();
+        public readonly IList<Subscriber> KnownSubscribers = new List<Subscriber>();
 
         private string _machineName;
         private string _serviceName = "Jasper";
@@ -127,9 +127,9 @@ namespace Jasper.Messaging.Transports.Configuration
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public SubscriberAddress SendTo(Uri uri)
+        public Subscriber SendTo(Uri uri)
         {
-            var subscriber = KnownSubscribers.FirstOrDefault(x => x.Uri == uri) ?? new SubscriberAddress(uri);
+            var subscriber = KnownSubscribers.FirstOrDefault(x => x.Uri == uri) ?? new Subscriber(uri);
             KnownSubscribers.Fill(subscriber);
 
             return subscriber;
@@ -140,7 +140,7 @@ namespace Jasper.Messaging.Transports.Configuration
         /// </summary>
         /// <param name="uriString"></param>
         /// <returns></returns>
-        public ISubscriberAddress SendTo(string uriString)
+        public ISubscriber SendTo(string uriString)
         {
             return SendTo(uriString.ToUri());
         }

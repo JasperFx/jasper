@@ -18,12 +18,12 @@ namespace IntegrationTests.Persistence.Marten
                 _.Include<MartenBackedPersistence>();
             }))
             {
-                var channels = runtime.Get<IChannelGraph>();
-                channels.GetOrBuildChannel("loopback://one".ToUri()).IsDurable.ShouldBeFalse();
-                channels.GetOrBuildChannel("loopback://durable/two".ToUri()).IsDurable.ShouldBeTrue();
+                var channels = runtime.Get<ISubscriberGraph>();
+                channels.GetOrBuild("loopback://one".ToUri()).IsDurable.ShouldBeFalse();
+                channels.GetOrBuild("loopback://durable/two".ToUri()).IsDurable.ShouldBeTrue();
 
-                channels.GetOrBuildChannel("tcp://server1".ToUri()).IsDurable.ShouldBeFalse();
-                channels.GetOrBuildChannel("tcp://server2/durable".ToUri()).IsDurable.ShouldBeTrue();
+                channels.GetOrBuild("tcp://server1".ToUri()).IsDurable.ShouldBeFalse();
+                channels.GetOrBuild("tcp://server2/durable".ToUri()).IsDurable.ShouldBeTrue();
             }
         }
 

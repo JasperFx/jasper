@@ -14,18 +14,18 @@ namespace Jasper.Internal.Resolvers
         private readonly Jasper.Messaging.Runtime.Serializers.MessagingSerializationGraph _messagingSerializationGraph;
         private readonly Jasper.Messaging.Transports.Configuration.MessagingSettings _messagingSettings;
         private readonly Jasper.Messaging.Model.HandlerGraph _handlerGraph;
-        private readonly Jasper.Messaging.Logging.ITransportLogger _transportLogger1157277804;
-        private readonly Jasper.Messaging.IChannelGraph _channelGraph;
+        private readonly Jasper.Messaging.Logging.ITransportLogger _transportLogger1933978807;
+        private readonly Jasper.Messaging.ISubscriberGraph _subscriberGraph;
         private readonly Jasper.Messaging.Logging.IMessageLogger _messageLogger;
         private readonly Lamar.IoC.Scope _topLevelScope;
 
-        public Jasper_Messaging_IMessagingRoot_messagingRoot(Jasper.Messaging.Runtime.Serializers.MessagingSerializationGraph messagingSerializationGraph, Jasper.Messaging.Transports.Configuration.MessagingSettings messagingSettings, Jasper.Messaging.Model.HandlerGraph handlerGraph, [Lamar.Named("transportLogger2")] Jasper.Messaging.Logging.ITransportLogger transportLogger1157277804, Jasper.Messaging.IChannelGraph channelGraph, Jasper.Messaging.Logging.IMessageLogger messageLogger, Lamar.IoC.Scope topLevelScope) : base(topLevelScope)
+        public Jasper_Messaging_IMessagingRoot_messagingRoot(Jasper.Messaging.Runtime.Serializers.MessagingSerializationGraph messagingSerializationGraph, Jasper.Messaging.Transports.Configuration.MessagingSettings messagingSettings, Jasper.Messaging.Model.HandlerGraph handlerGraph, [Lamar.Named("transportLogger2")] Jasper.Messaging.Logging.ITransportLogger transportLogger1933978807, Jasper.Messaging.ISubscriberGraph subscriberGraph, Jasper.Messaging.Logging.IMessageLogger messageLogger, Lamar.IoC.Scope topLevelScope) : base(topLevelScope)
         {
             _messagingSerializationGraph = messagingSerializationGraph;
             _messagingSettings = messagingSettings;
             _handlerGraph = handlerGraph;
-            _transportLogger1157277804 = transportLogger1157277804;
-            _channelGraph = channelGraph;
+            _transportLogger1933978807 = transportLogger1933978807;
+            _subscriberGraph = subscriberGraph;
             _messageLogger = messageLogger;
             _topLevelScope = topLevelScope;
         }
@@ -35,8 +35,8 @@ namespace Jasper.Internal.Resolvers
         public override Jasper.Messaging.IMessagingRoot Build(Lamar.IoC.Scope scope)
         {
             var container = (Lamar.IContainer) scope;
-            var nulloDurableMessagingFactory = new Jasper.Messaging.Transports.NulloDurableMessagingFactory(_transportLogger1157277804, _messagingSettings);
-            return new Jasper.Messaging.MessagingRoot(_messagingSerializationGraph, _messagingSettings, _handlerGraph, nulloDurableMessagingFactory, _channelGraph, _messageLogger, container, _transportLogger1157277804);
+            var nulloDurableMessagingFactory = new Jasper.Messaging.Transports.NulloDurableMessagingFactory(_transportLogger1933978807, _messagingSettings);
+            return new Jasper.Messaging.MessagingRoot(_messagingSerializationGraph, _messagingSettings, _handlerGraph, nulloDurableMessagingFactory, _subscriberGraph, _messageLogger, container, _transportLogger1933978807);
         }
 
     }

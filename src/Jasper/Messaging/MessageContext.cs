@@ -24,33 +24,33 @@ namespace Jasper.Messaging
         private readonly IHandlerPipeline _pipeline;
         private readonly SerializationGraph _serialization;
         private readonly MessagingSettings _settings;
-        private readonly IChannelGraph _channels;
+        private readonly ISubscriberGraph _subscribers;
         private readonly IMessageLogger _logger;
 
         // TODO -- just pull in MessagingRoot?
         public MessageContext(IMessageRouter router, IHandlerPipeline pipeline,
-            MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels,
+            MessagingSerializationGraph serialization, MessagingSettings settings, ISubscriberGraph subscribers,
             IDurableMessagingFactory factory, IMessageLogger logger)
         {
             _router = router;
             _pipeline = pipeline;
             _serialization = serialization;
             _settings = settings;
-            _channels = channels;
+            _subscribers = subscribers;
             Factory = factory;
             _logger = logger;
         }
 
         // TODO -- just pull in MessagingRoot?
         public MessageContext(IMessageRouter router, IHandlerPipeline pipeline,
-            MessagingSerializationGraph serialization, MessagingSettings settings, IChannelGraph channels,
+            MessagingSerializationGraph serialization, MessagingSettings settings, ISubscriberGraph subscribers,
             IDurableMessagingFactory factory, IMessageLogger logger, Envelope originalEnvelope)
         {
             _router = router;
             _pipeline = pipeline;
             _serialization = serialization;
             _settings = settings;
-            _channels = channels;
+            _subscribers = subscribers;
             Factory = factory;
             _logger = logger;
 
@@ -81,7 +81,7 @@ namespace Jasper.Messaging
                 Message = new Acknowledgement {CorrelationId = Envelope.Id},
                 Route = new MessageRoute(typeof(Acknowledgement), Envelope.ReplyUri, "application/json")
                 {
-                    Channel = _channels.GetOrBuildChannel(Envelope.ReplyUri),
+                    Channel = _subscribers.GetOrBuild(Envelope.ReplyUri),
 
                 },
                 Writer = _serialization.JsonWriterFor(typeof(Acknowledgement))

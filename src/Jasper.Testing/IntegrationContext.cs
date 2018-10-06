@@ -13,7 +13,7 @@ namespace Jasper.Testing
 
         public IMessageContext Bus => Runtime.Get<IMessageContext>();
 
-        public IChannelGraph Channels => Runtime.Get<IChannelGraph>();
+        public ISubscriberGraph Subscribers => Runtime.Get<ISubscriberGraph>();
 
 
         protected Task withAllDefaults()

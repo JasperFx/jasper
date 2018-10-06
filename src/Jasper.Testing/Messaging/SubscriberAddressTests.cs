@@ -1,4 +1,5 @@
-﻿using Jasper.Messaging.Configuration;
+﻿using Jasper.Messaging;
+using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Shouldly;
@@ -12,7 +13,7 @@ namespace Jasper.Testing.Messaging
         public void has_an_alias()
         {
             var fake = "fake://one".ToUri();
-            var address = new SubscriberAddress(fake);
+            var address = new Subscriber(fake);
             var lookups = new UriAliasLookup(new IUriLookup[0]);
 
             var real = "real://one".ToUri();
@@ -28,7 +29,7 @@ namespace Jasper.Testing.Messaging
         public void does_not_have_an_alias()
         {
             var uri = "loopback://one".ToUri();
-            var address = new SubscriberAddress(uri);
+            var address = new Subscriber(uri);
             var lookups = new UriAliasLookup(new IUriLookup[0]);
 
 

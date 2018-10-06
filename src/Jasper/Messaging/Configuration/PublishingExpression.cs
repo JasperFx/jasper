@@ -53,12 +53,12 @@ namespace Jasper.Messaging.Configuration
             return MessagesFromAssembly(typeof(T).Assembly);
         }
 
-        public ISubscriberAddress AllMessagesTo(string uriString)
+        public Transports.Configuration.ISubscriber AllMessagesTo(string uriString)
         {
             return AllMessagesTo(uriString.ToUri());
         }
 
-        public ISubscriberAddress AllMessagesTo(Uri uri)
+        public Transports.Configuration.ISubscriber AllMessagesTo(Uri uri)
         {
             var address = _bus.Settings.SendTo(uri);
             address.Rules.Add(RoutingRule.All());
@@ -77,7 +77,7 @@ namespace Jasper.Messaging.Configuration
                 _routing = routing;
             }
 
-            public ISubscriberAddress To(Uri address)
+            public Transports.Configuration.ISubscriber To(Uri address)
             {
                 var subscriberAddress = _bus.Settings.SendTo(address);
                 subscriberAddress.Rules.Add(_routing);
@@ -85,7 +85,7 @@ namespace Jasper.Messaging.Configuration
                 return subscriberAddress;
             }
 
-            public ISubscriberAddress To(string address)
+            public Transports.Configuration.ISubscriber To(string address)
             {
                 return To(address.ToUri());
             }

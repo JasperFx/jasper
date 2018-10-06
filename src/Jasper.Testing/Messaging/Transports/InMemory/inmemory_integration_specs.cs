@@ -35,7 +35,7 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
         public async Task automatically_sticks_in_replies_queue()
         {
             await configure();
-            Channels.HasChannel(TransportConstants.RetryUri)
+            Subscribers.HasSubscriber(TransportConstants.RetryUri)
                 .ShouldBeTrue();
         }
 

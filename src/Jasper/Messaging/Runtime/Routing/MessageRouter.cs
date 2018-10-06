@@ -17,7 +17,7 @@ namespace Jasper.Messaging.Runtime.Routing
     public class MessageRouter : IMessageRouter
     {
         private readonly SerializationGraph _serializers;
-        private readonly IChannelGraph _channels;
+        private readonly ISubscriberGraph _subscribers;
         private readonly HandlerGraph _handlers;
         private readonly IMessageLogger _logger;
         private readonly UriAliasLookup _lookup;
@@ -27,12 +27,12 @@ namespace Jasper.Messaging.Runtime.Routing
         private ImHashMap<Type, MessageRoute[]> _routes = ImHashMap<Type, MessageRoute[]>.Empty;
 
         // TODO -- take in MessagingRoot instead?
-        public MessageRouter(MessagingSerializationGraph serializers, IChannelGraph channels,
+        public MessageRouter(MessagingSerializationGraph serializers, ISubscriberGraph subscribers,
             HandlerGraph handlers, IMessageLogger logger, UriAliasLookup lookup,
             MessagingSettings settings)
         {
             _serializers = serializers;
-            _channels = channels;
+            _subscribers = subscribers;
             _handlers = handlers;
             _logger = logger;
             _lookup = lookup;
@@ -71,7 +71,7 @@ namespace Jasper.Messaging.Runtime.Routing
                               ?? "application/json";
 
 
-            var channel = _channels.GetOrBuildChannel(envelope.Destination);
+            var channel = _subscribers.GetOrBuild(envelope.Destination);
             return new MessageRoute(
                        messageType,
                        modelWriter,
@@ -141,7 +141,7 @@ namespace Jasper.Messaging.Runtime.Routing
 
         private void applyStaticPublishingRules(Type messageType, string[] supported, List<MessageRoute> list, ModelWriter modelWriter)
         {
-            foreach (var channel in _channels.AllKnownChannels().Where(x => x.ShouldSendMessage(messageType)))
+            foreach (var channel in _subscribers.AllKnown().Where(x => x.ShouldSendMessage(messageType)))
             {
                 var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
 
@@ -167,7 +167,7 @@ namespace Jasper.Messaging.Runtime.Routing
             var destination = _workers.LoopbackUriFor(messageType);
             var route = new MessageRoute(messageType, destination, "application/json")
             {
-                Channel = _channels.GetOrBuildChannel(destination)
+                Channel = _subscribers.GetOrBuild(destination)
             };
             return route;
         }

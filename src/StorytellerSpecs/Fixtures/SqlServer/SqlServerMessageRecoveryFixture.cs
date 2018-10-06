@@ -147,7 +147,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             getStubTransport().Channels[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
-            _runtime.Get<IChannelGraph>().GetOrBuildChannel(channel);
+            _runtime.Get<ISubscriberGraph>().GetOrBuild(channel);
         }
 
 

@@ -81,7 +81,7 @@ namespace Jasper
             this.AddSingleton<InMemorySagaPersistor>();
 
             this.AddSingleton(parent.Messaging.Graph);
-            this.AddSingleton<IChannelGraph>(parent.Messaging.Channels);
+            this.AddSingleton<ISubscriberGraph>(parent.Messaging.Subscribers);
             this.AddSingleton<ILocalWorkerSender>(parent.Messaging.LocalWorker);
 
             this.AddSingleton<IRetries, EnvelopeRetries>();
