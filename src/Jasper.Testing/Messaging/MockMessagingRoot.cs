@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
@@ -58,6 +59,16 @@ namespace Jasper.Testing.Messaging
             JasperGenerationRules generation, PerfTimer timer)
         {
             return Task.CompletedTask;
+        }
+
+        public void ApplyMessageTypeSpecificRules(Envelope envelope)
+        {
+
+        }
+
+        public virtual bool ShouldBeDurable(Type messageType)
+        {
+            return false;
         }
 
         public IMessageContext ContextFor(Envelope envelope)

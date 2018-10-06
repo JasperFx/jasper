@@ -18,15 +18,20 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void apply_message_type_rules_from_attributes()
         {
-            var settings = new MessagingSettings();
-            var envelope = new Envelope
+            using (var runtime = JasperRuntime.Basic())
             {
-                Message = new MySpecialMessage()
-            };
+                var root = runtime.Get<IMessagingRoot>();
+                var envelope = new Envelope
+                {
+                    Message = new MySpecialMessage()
+                };
 
-            settings.ApplyMessageTypeSpecificRules(envelope);
+                root.ApplyMessageTypeSpecificRules(envelope);
 
-            envelope.Headers["special"].ShouldBe("true");
+                envelope.Headers["special"].ShouldBe("true");
+            }
+
+
         }
 
 
@@ -65,15 +70,19 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void deliver_by_mechanics()
         {
-            var settings = new MessagingSettings();
-            var envelope = new Envelope
+            using (var runtime = JasperRuntime.Basic())
             {
-                Message = new MySpecialMessage()
-            };
+                var root = runtime.Get<IMessagingRoot>();
+                var envelope = new Envelope
+                {
+                    Message = new MySpecialMessage()
+                };
 
-            settings.ApplyMessageTypeSpecificRules(envelope);
+                root.ApplyMessageTypeSpecificRules(envelope);
 
-            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
+                envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
+            }
+
         }
 
 

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -13,6 +15,7 @@ using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Util;
 using Lamar;
 using Lamar.Codegen.Frames;
 using Lamar.Util;
@@ -141,6 +144,46 @@ namespace Jasper.Messaging
 
             timer.MarkFinished("ServiceBusActivator");
         }
+
+
+        public void ApplyMessageTypeSpecificRules(Envelope envelope)
+        {
+            if (envelope.Message == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required for this operation");
+            }
+
+            var messageType = envelope.Message.GetType();
+            if (!_messageRules.TryFind(messageType, out var rules))
+            {
+                rules = findMessageTypeCustomizations(messageType).ToArray();
+                _messageRules = _messageRules.AddOrUpdate(messageType, rules);
+            }
+
+            foreach (var action in rules)
+            {
+                action(envelope);
+            }
+        }
+
+        public bool ShouldBeDurable(Type messageType)
+        {
+            return Settings.Workers.ShouldBeDurable(messageType);
+        }
+
+        private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
+        {
+            foreach (var att in messageType.GetAllAttributes<ModifyEnvelopeAttribute>())
+            {
+                yield return e => att.Modify(e);
+            }
+
+
+
+        }
+
+        private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
+
 
     }
 }

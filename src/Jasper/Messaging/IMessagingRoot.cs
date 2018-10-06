@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
@@ -35,5 +36,8 @@ namespace Jasper.Messaging
 
         Task Activate(LocalWorkerSender localWorker, JasperRuntime runtime,
             JasperGenerationRules generation, PerfTimer timer);
+
+        void ApplyMessageTypeSpecificRules(Envelope envelope);
+        bool ShouldBeDurable(Type messageType);
     }
 }

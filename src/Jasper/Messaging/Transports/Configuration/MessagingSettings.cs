@@ -262,39 +262,6 @@ namespace Jasper.Messaging.Transports.Configuration
         public bool PersistDeadLetterEnvelopes { get; set; } = true;
 
 
-        // TODO -- move this somewhere else!
-        public void ApplyMessageTypeSpecificRules(Envelope envelope)
-        {
-            if (envelope.Message == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required for this operation");
-            }
-
-            var messageType = envelope.Message.GetType();
-            if (!_messageRules.TryFind(messageType, out var rules))
-            {
-                rules = findMessageTypeCustomizations(messageType).ToArray();
-                _messageRules = _messageRules.AddOrUpdate(messageType, rules);
-            }
-
-            foreach (var action in rules)
-            {
-                action(envelope);
-            }
-        }
-
-        private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
-        {
-            foreach (var att in messageType.GetAllAttributes<ModifyEnvelopeAttribute>())
-            {
-                yield return e => att.Modify(e);
-            }
-
-
-
-        }
-
-        private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
 
         internal readonly IList<RoutingRule> LocalPublishing = new List<RoutingRule>();

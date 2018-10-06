@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Conneg;
+using Jasper.Internal.Resolvers;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -20,21 +21,9 @@ namespace Jasper.Messaging
 {
     public class MessageContext : IMessageContext, IAdvancedMessagingActions
     {
-        private readonly IMessageRouter _router;
-        private readonly IHandlerPipeline _pipeline;
-        private readonly SerializationGraph _serialization;
-        private readonly MessagingSettings _settings;
-        private readonly ISubscriberGraph _subscribers;
-        private readonly IMessageLogger _logger;
-
         public MessageContext(IMessagingRoot root)
         {
-            _router = root.Router;
-            _pipeline = root.Pipeline;
-            _serialization = root.Serialization;
-            _settings = root.Settings;
-            _subscribers = root.Subscribers;
-            _logger = root.Logger;
+            _root = root;
 
             Factory = root.Factory;
         }
@@ -70,10 +59,10 @@ namespace Jasper.Messaging
                 Message = new Acknowledgement {CorrelationId = Envelope.Id},
                 Route = new MessageRoute(typeof(Acknowledgement), Envelope.ReplyUri, "application/json")
                 {
-                    Channel = _subscribers.GetOrBuild(Envelope.ReplyUri),
+                    Channel = _root.Subscribers.GetOrBuild(Envelope.ReplyUri),
 
                 },
-                Writer = _serialization.JsonWriterFor(typeof(Acknowledgement))
+                Writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement))
             };
 
             return ack;
@@ -84,6 +73,7 @@ namespace Jasper.Messaging
 
         private readonly List<Envelope> _outstanding = new List<Envelope>();
         private object _sagaId;
+        private IMessagingRoot _root;
 
         public IEnumerable<Envelope> Outstanding => _outstanding;
 
@@ -129,12 +119,12 @@ namespace Jasper.Messaging
         {
             if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = _router.Route(envelope);
+            var outgoing = _root.Router.Route(envelope);
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
             {
-                _logger.NoRoutesFor(envelope);
+                _root.Logger.NoRoutesFor(envelope);
                 return Task.CompletedTask;
             }
 
@@ -147,17 +137,17 @@ namespace Jasper.Messaging
         {
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = _router.Route(envelope);
+            var outgoing = _root.Router.Route(envelope);
             foreach (var env in outgoing)
             {
-                _settings.ApplyMessageTypeSpecificRules(env);
+                _root.ApplyMessageTypeSpecificRules(env);
             }
 
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
             {
-                _logger.NoRoutesFor(envelope);
+                _root.Logger.NoRoutesFor(envelope);
 
                 throw new NoRoutesException(envelope);
             }
@@ -204,7 +194,7 @@ namespace Jasper.Messaging
 
             if (envelope.Data == null || envelope.Data.Length == 0)
             {
-                var writer = _serialization.JsonWriterFor(message.GetType());
+                var writer = _root.Serialization.JsonWriterFor(message.GetType());
                 envelope.Data = writer.Write(message);
                 envelope.ContentType = writer.ContentType;
             }
@@ -226,9 +216,9 @@ namespace Jasper.Messaging
         public Envelope EnvelopeForRequestResponse<TResponse>(object request)
         {
             var messageType = typeof(TResponse).ToMessageTypeName();
-            _serialization.RegisterType(typeof(TResponse));
+            _root.Serialization.RegisterType(typeof(TResponse));
 
-            var reader = _serialization.ReaderFor(messageType);
+            var reader = _root.Serialization.ReaderFor(messageType);
 
             return new Envelope
             {
@@ -260,7 +250,7 @@ namespace Jasper.Messaging
 
         public Task Invoke(object message)
         {
-            return _pipeline.InvokeNow(new Envelope(message)
+            return _root.Pipeline.InvokeNow(new Envelope(message)
             {
                 Callback = new InvocationCallback(),
                 ReplyUri = TransportConstants.RepliesUri
@@ -280,14 +270,14 @@ namespace Jasper.Messaging
 
             };
 
-            await _pipeline.InvokeNow(envelope);
+            await _root.Pipeline.InvokeNow(envelope);
 
             return envelope.Response as T;
         }
 
         public Task Enqueue<T>(T message, string workerQueue = null)
         {
-            var isDurable = _settings.Workers.ShouldBeDurable(typeof(T));
+            var isDurable = _root.ShouldBeDurable(typeof(T));
             var destination = isDurable ? TransportConstants.DurableLoopbackUri : TransportConstants.LoopbackUri;
 
             var envelope = new Envelope
@@ -412,7 +402,7 @@ namespace Jasper.Messaging
                     }
                 };
 
-                var outgoingEnvelopes = _router.Route(envelope);
+                var outgoingEnvelopes = _root.Router.Route(envelope);
 
                 foreach (var outgoing in outgoingEnvelopes)
                 {
@@ -427,15 +417,15 @@ namespace Jasper.Messaging
         {
             _outstanding.Clear();
 
-            return _pipeline.Invoke(Envelope);
+            return _root.Pipeline.Invoke(Envelope);
         }
 
-        public IMessageLogger Logger => _logger;
+        public IMessageLogger Logger => _root.Logger;
 
         public async Task SendAcknowledgement()
         {
             var ack = buildAcknowledgement();
-            var outgoingEnvelopes = _router.Route(ack);
+            var outgoingEnvelopes = _root.Router.Route(ack);
 
             foreach (var outgoing in outgoingEnvelopes)
             {

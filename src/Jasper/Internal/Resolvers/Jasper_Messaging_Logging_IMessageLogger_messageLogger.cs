@@ -7,12 +7,12 @@ namespace Jasper.Internal.Resolvers
     // START: Jasper_Messaging_Logging_IMessageLogger_messageLogger
     public class Jasper_Messaging_Logging_IMessageLogger_messageLogger : Lamar.IoC.Resolvers.SingletonResolver<Jasper.Messaging.Logging.IMessageLogger>
     {
-        private readonly Microsoft.Extensions.Logging.ILoggerFactory _loggerFactory1591921539;
+        private readonly Microsoft.Extensions.Logging.ILoggerFactory _loggerFactory593862936;
         private readonly Lamar.IoC.Scope _topLevelScope;
 
-        public Jasper_Messaging_Logging_IMessageLogger_messageLogger([Lamar.Named("loggerFactory2")] Microsoft.Extensions.Logging.ILoggerFactory loggerFactory1591921539, Lamar.IoC.Scope topLevelScope) : base(topLevelScope)
+        public Jasper_Messaging_Logging_IMessageLogger_messageLogger([Lamar.Named("loggerFactory2")] Microsoft.Extensions.Logging.ILoggerFactory loggerFactory593862936, Lamar.IoC.Scope topLevelScope) : base(topLevelScope)
         {
-            _loggerFactory1591921539 = loggerFactory1591921539;
+            _loggerFactory593862936 = loggerFactory593862936;
             _topLevelScope = topLevelScope;
         }
 
@@ -21,7 +21,7 @@ namespace Jasper.Internal.Resolvers
         public override Jasper.Messaging.Logging.IMessageLogger Build(Lamar.IoC.Scope scope)
         {
             var nulloMetrics = new Jasper.Messaging.Logging.NulloMetrics();
-            return new Jasper.Messaging.Logging.MessageLogger(_loggerFactory1591921539, nulloMetrics);
+            return new Jasper.Messaging.Logging.MessageLogger(_loggerFactory593862936, nulloMetrics);
         }
 
     }
