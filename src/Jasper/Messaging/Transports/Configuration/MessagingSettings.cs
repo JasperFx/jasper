@@ -262,7 +262,7 @@ namespace Jasper.Messaging.Transports.Configuration
         public bool PersistDeadLetterEnvelopes { get; set; } = true;
 
 
-
+        // TODO -- move this somewhere else!
         public void ApplyMessageTypeSpecificRules(Envelope envelope)
         {
             if (envelope.Message == null)

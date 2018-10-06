@@ -14,6 +14,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Lamar;
+using Lamar.Codegen.Frames;
 using Lamar.Util;
 
 namespace Jasper.Messaging
@@ -103,12 +104,12 @@ namespace Jasper.Messaging
 
         public IMessageContext NewContext()
         {
-            return BusFor(this);
+            return new MessageContext(this);
         }
 
         public IMessageContext ContextFor(Envelope envelope)
         {
-            return BusFor(envelope, this);
+            return new MessageContext(this, envelope);
         }
 
         public async Task Activate(LocalWorkerSender localWorker, JasperRuntime runtime,
@@ -141,18 +142,5 @@ namespace Jasper.Messaging
             timer.MarkFinished("ServiceBusActivator");
         }
 
-        // bouncing through this makes the mock root easier
-        public static IMessageContext BusFor(Envelope envelope, IMessagingRoot root)
-        {
-            return new MessageContext(root.Router, root.Pipeline, root.Serialization, root.Settings,
-                root.Subscribers, root.Factory, root.Logger, envelope);
-        }
-
-        // bouncing through this makes the mock root easier
-        public static IMessageContext BusFor(IMessagingRoot root)
-        {
-            return new MessageContext(root.Router, root.Pipeline, root.Serialization, root.Settings,
-                root.Subscribers, root.Factory, root.Logger);
-        }
     }
 }

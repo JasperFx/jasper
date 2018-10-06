@@ -27,33 +27,20 @@ namespace Jasper.Messaging
         private readonly ISubscriberGraph _subscribers;
         private readonly IMessageLogger _logger;
 
-        // TODO -- just pull in MessagingRoot?
-        public MessageContext(IMessageRouter router, IHandlerPipeline pipeline,
-            MessagingSerializationGraph serialization, MessagingSettings settings, ISubscriberGraph subscribers,
-            IDurableMessagingFactory factory, IMessageLogger logger)
+        public MessageContext(IMessagingRoot root)
         {
-            _router = router;
-            _pipeline = pipeline;
-            _serialization = serialization;
-            _settings = settings;
-            _subscribers = subscribers;
-            Factory = factory;
-            _logger = logger;
+            _router = root.Router;
+            _pipeline = root.Pipeline;
+            _serialization = root.Serialization;
+            _settings = root.Settings;
+            _subscribers = root.Subscribers;
+            _logger = root.Logger;
+
+            Factory = root.Factory;
         }
 
-        // TODO -- just pull in MessagingRoot?
-        public MessageContext(IMessageRouter router, IHandlerPipeline pipeline,
-            MessagingSerializationGraph serialization, MessagingSettings settings, ISubscriberGraph subscribers,
-            IDurableMessagingFactory factory, IMessageLogger logger, Envelope originalEnvelope)
+        public MessageContext(IMessagingRoot root, Envelope originalEnvelope) : this(root)
         {
-            _router = router;
-            _pipeline = pipeline;
-            _serialization = serialization;
-            _settings = settings;
-            _subscribers = subscribers;
-            Factory = factory;
-            _logger = logger;
-
             Envelope = originalEnvelope;
             _sagaId = originalEnvelope.SagaId;
 
@@ -70,6 +57,8 @@ namespace Jasper.Messaging
                 _outstanding.Add(ack);
             }
         }
+
+
 
         private Envelope buildAcknowledgement()
         {

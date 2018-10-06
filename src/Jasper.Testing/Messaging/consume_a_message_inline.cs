@@ -68,19 +68,15 @@ namespace Jasper.Testing.Messaging
         {
         }
 
-        public void NoRoutesFor(Envelope envelope)
+        void IMessageLogger.NoRoutesFor(Envelope envelope)
         {
         }
 
-        public void Undeliverable(Envelope envelope)
+        void IMessageLogger.MovedToErrorQueue(Envelope envelope, Exception ex)
         {
         }
 
-        public void MovedToErrorQueue(Envelope envelope, Exception ex)
-        {
-        }
-
-        public void DiscardedEnvelope(Envelope envelope)
+        void IMessageLogger.DiscardedEnvelope(Envelope envelope)
         {
         }
 

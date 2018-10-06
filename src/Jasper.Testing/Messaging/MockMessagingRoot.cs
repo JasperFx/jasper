@@ -51,7 +51,7 @@ namespace Jasper.Testing.Messaging
 
         public IMessageContext NewContext()
         {
-            return MessagingRoot.BusFor(this);
+            return new MessageContext(this);
         }
 
         public Task Activate(LocalWorkerSender localWorker, JasperRuntime runtime,
@@ -62,7 +62,7 @@ namespace Jasper.Testing.Messaging
 
         public IMessageContext ContextFor(Envelope envelope)
         {
-            return MessagingRoot.BusFor(envelope, this);
+            return new MessageContext(this, envelope);
         }
     }
 }
