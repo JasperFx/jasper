@@ -26,17 +26,14 @@ namespace Jasper.Messaging.Runtime.Routing
 
         private ImHashMap<Type, MessageRoute[]> _routes = ImHashMap<Type, MessageRoute[]>.Empty;
 
-        // TODO -- take in MessagingRoot instead?
-        public MessageRouter(MessagingSerializationGraph serializers, ISubscriberGraph subscribers,
-            HandlerGraph handlers, IMessageLogger logger, UriAliasLookup lookup,
-            MessagingSettings settings)
+        public MessageRouter(IMessagingRoot root, HandlerGraph handlers)
         {
-            _serializers = serializers;
-            _subscribers = subscribers;
+            _serializers = root.Serialization;
+            _subscribers = root.Subscribers;
             _handlers = handlers;
-            _logger = logger;
-            _lookup = lookup;
-            _settings = settings;
+            _logger = root.Logger;
+            _lookup = root.Lookup;
+            _settings = root.Settings;
             _workers = _settings.Workers;
         }
 

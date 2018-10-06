@@ -55,7 +55,7 @@ namespace Jasper.Messaging
 
             Workers = new WorkerQueue(Logger, Pipeline, settings);
 
-            Router = new MessageRouter(Serialization, subscribers, handlers, Logger, Lookup, settings);
+            Router = new MessageRouter(this, handlers);
 
             // TODO -- ZOMG this is horrible, and I admit it.
             if (Factory is NulloDurableMessagingFactory f) f.ScheduledJobs = ScheduledJobs;
