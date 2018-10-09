@@ -25,8 +25,6 @@ namespace Jasper.Messaging
 
         bool Latched { get; }
 
-        void ApplyModifications(Envelope envelope);
-
         bool IsDurable { get; }
 
         int QueuedCount { get; }

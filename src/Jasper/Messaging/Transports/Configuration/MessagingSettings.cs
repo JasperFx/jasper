@@ -104,55 +104,10 @@ namespace Jasper.Messaging.Transports.Configuration
         public string NodeId { get; private set; }
 
 
-        // Catches anything from unknown transports
-        public readonly IList<Uri> Listeners = new List<Uri>();
-
-
-        /// <summary>
-        /// Listen for messages at the given uri
-        /// </summary>
-        /// <param name="uri"></param>
-        public void ListenForMessagesFrom(Uri uri)
-        {
-            Listeners.Fill(uri.ToCanonicalUri());
-        }
-
-        public readonly IList<Subscriber> KnownSubscribers = new List<Subscriber>();
 
         private string _machineName;
         private string _serviceName = "Jasper";
 
-        /// <summary>
-        /// Add a new outgoing message subscription
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <returns></returns>
-        public Subscriber SendTo(Uri uri)
-        {
-            var subscriber = KnownSubscribers.FirstOrDefault(x => x.Uri == uri) ?? new Subscriber(uri);
-            KnownSubscribers.Fill(subscriber);
-
-            return subscriber;
-        }
-
-        /// <summary>
-        /// Add a new outgoing message subscription
-        /// </summary>
-        /// <param name="uriString"></param>
-        /// <returns></returns>
-        public ISubscriber SendTo(string uriString)
-        {
-            return SendTo(uriString.ToUri());
-        }
-
-        /// <summary>
-        /// Establish a message listener to a known location and transport
-        /// </summary>
-        /// <param name="uriString"></param>
-        public void ListenForMessagesFrom(string uriString)
-        {
-            ListenForMessagesFrom(uriString.ToUri());
-        }
 
         /// <summary>
         /// Policies and routing for local message handling
@@ -265,7 +220,74 @@ namespace Jasper.Messaging.Transports.Configuration
 
 
         internal readonly IList<RoutingRule> LocalPublishing = new List<RoutingRule>();
+
+
+
+
+
+
+
+
+
+
+
+
+        // Catches anything from unknown transports
+        public readonly IList<Uri> Listeners = new List<Uri>();
+
+
+        /// <summary>
+        /// Listen for messages at the given uri
+        /// </summary>
+        /// <param name="uri"></param>
+        public void ListenForMessagesFrom(Uri uri)
+        {
+            Listeners.Fill(uri.ToCanonicalUri());
+        }
+
+        public readonly IList<Subscriber> KnownSubscribers = new List<Subscriber>();
+
+        /// <summary>
+        /// Add a new outgoing message subscription
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public Subscriber SendTo(Uri uri)
+        {
+            var subscriber = KnownSubscribers.FirstOrDefault(x => x.Uri == uri) ?? new Subscriber(uri);
+            KnownSubscribers.Fill(subscriber);
+
+            return subscriber;
+        }
+
+        /// <summary>
+        /// Add a new outgoing message subscription
+        /// </summary>
+        /// <param name="uriString"></param>
+        /// <returns></returns>
+        public ISubscriber SendTo(string uriString)
+        {
+            return SendTo(uriString.ToUri());
+        }
+
+        /// <summary>
+        /// Establish a message listener to a known location and transport
+        /// </summary>
+        /// <param name="uriString"></param>
+        public void ListenForMessagesFrom(string uriString)
+        {
+            ListenForMessagesFrom(uriString.ToUri());
+        }
     }
 
+
+
+    public class Subscription
+    {
+        public RoutingScope Scope { get; set; } = RoutingScope.All;
+        public Uri Uri { get; set; }
+        public string[] ContentTypes { get; set; } = new string[]{"application/json"};
+        public string Match { get; set; } = null;
+    }
 
 }

@@ -52,8 +52,6 @@ namespace Jasper.Messaging.Runtime.Routing
 
             sending.ReplyUri = envelope.ReplyUri ?? Channel.ReplyUri;
 
-            Channel.ApplyModifications(sending);
-
             sending.ContentType = envelope.ContentType ?? ContentType;
 
             sending.Writer = Writer;
