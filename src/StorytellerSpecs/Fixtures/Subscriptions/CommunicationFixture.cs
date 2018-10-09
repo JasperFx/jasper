@@ -138,7 +138,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
     }
 
-    public class NodesCollection : IDisposable, IUriLookup
+    public class NodesCollection : IDisposable
     {
         private readonly IList<JasperRuntime> _runtimes = new List<JasperRuntime>();
 
@@ -167,7 +167,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             registry.Services.For<MessageHistory>().Use(History);
 
             registry.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
-            registry.Services.For<IUriLookup>().Add(this);
 
             var runtime = JasperRuntime.For(registry);
             _runtimes.Add(runtime);

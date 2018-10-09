@@ -22,7 +22,6 @@ namespace Jasper.Testing.Messaging
     {
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
         public IMessageRouter Router { get; } = Substitute.For<IMessageRouter>();
-        public UriAliasLookup Lookup { get; } = new UriAliasLookup(new IUriLookup[0]);
         public IWorkerQueue Workers { get; } = Substitute.For<IWorkerQueue>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger Logger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());

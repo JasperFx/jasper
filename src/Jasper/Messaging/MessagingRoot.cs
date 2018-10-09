@@ -46,9 +46,6 @@ namespace Jasper.Messaging
             Transports = container.QuickBuildAll<ITransport>().ToArray();
 
 
-            Lookup = new UriAliasLookup(container.QuickBuildAll<IUriLookup>());
-
-
             Serialization = serialization;
 
             Logger = messageLogger;
@@ -93,8 +90,6 @@ namespace Jasper.Messaging
 
         public IMessageRouter Router { get; }
 
-        public UriAliasLookup Lookup { get; }
-
         public IWorkerQueue Workers { get; }
 
         public IHandlerPipeline Pipeline { get; }
@@ -132,8 +127,6 @@ namespace Jasper.Messaging
             if (!Settings.DisableAllTransports)
             {
                 timer.MarkStart("ApplyLookups");
-
-                await Settings.ApplyLookups(Lookup);
 
                 timer.MarkFinished("ApplyLookups");
 

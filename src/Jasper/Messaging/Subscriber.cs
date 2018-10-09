@@ -17,8 +17,6 @@ namespace Jasper.Messaging
         private ISendingAgent _agent;
         public Uri Uri { get; private set; }
 
-        public Uri Alias { get; private set; }
-
         public Subscriber(Uri uri)
         {
             Uri = uri;
@@ -30,16 +28,6 @@ namespace Jasper.Messaging
         public bool ShouldSendMessage(Type messageType)
         {
             return Rules.Any(x => x.Matches(messageType));
-        }
-
-        public void ReadAlias(UriAliasLookup lookups)
-        {
-            var real = lookups.Resolve(Uri);
-            if (real != Uri)
-            {
-                Alias = Uri;
-                Uri = real;
-            }
         }
 
         public override string ToString()

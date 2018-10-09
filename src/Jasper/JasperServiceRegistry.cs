@@ -102,14 +102,11 @@ namespace Jasper
             MessagingRootService(x => x.Pipeline);
 
             MessagingRootService(x => x.Router);
-            MessagingRootService(x => x.Lookup);
             MessagingRootService(x => x.ScheduledJobs);
 
             For<IMessageContext>().Use(new MessageContextInstance());
 
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
-
-            For<IUriLookup>().Use<ConfigUriLookup>();
 
             For<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
         }

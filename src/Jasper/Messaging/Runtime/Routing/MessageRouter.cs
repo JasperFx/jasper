@@ -20,7 +20,6 @@ namespace Jasper.Messaging.Runtime.Routing
         private readonly ISubscriberGraph _subscribers;
         private readonly HandlerGraph _handlers;
         private readonly IMessageLogger _logger;
-        private readonly UriAliasLookup _lookup;
         private readonly MessagingSettings _settings;
         private readonly WorkersGraph _workers;
 
@@ -32,7 +31,6 @@ namespace Jasper.Messaging.Runtime.Routing
             _subscribers = root.Subscribers;
             _handlers = handlers;
             _logger = root.Logger;
-            _lookup = root.Lookup;
             _settings = root.Settings;
             _workers = _settings.Workers;
         }
@@ -54,8 +52,6 @@ namespace Jasper.Messaging.Runtime.Routing
 
         public MessageRoute RouteForDestination(Envelope envelope)
         {
-            envelope.Destination = _lookup.Resolve(envelope.Destination);
-
             var messageType = envelope.Message.GetType();
             var routes = Route(messageType);
 

@@ -114,29 +114,6 @@ namespace Jasper.Messaging.Transports.Configuration
         /// </summary>
         internal WorkersGraph Workers { get; } = new WorkersGraph();
 
-
-        public async Task ApplyLookups(UriAliasLookup lookups)
-        {
-            var all = Listeners.Concat(KnownSubscribers.Select(x => x.Uri))
-                .Distinct().ToArray();
-
-            await lookups.ReadAliases(all);
-
-            foreach (var subscriberAddress in KnownSubscribers)
-            {
-                subscriberAddress.ReadAlias(lookups);
-            }
-
-            var listeners = Listeners.ToArray();
-            Listeners.Clear();
-
-            foreach (var listener in listeners)
-            {
-                var uri = lookups.Resolve(listener);
-                ListenForMessagesFrom(uri);
-            }
-        }
-
         private readonly IList<string> _disabledTransports = new List<string>();
 
         /// <summary>

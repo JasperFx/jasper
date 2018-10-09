@@ -20,7 +20,6 @@ namespace Jasper.Messaging
     {
         IScheduledJobProcessor ScheduledJobs { get; }
         IMessageRouter Router { get; }
-        UriAliasLookup Lookup { get; }
         IWorkerQueue Workers { get; }
         IHandlerPipeline Pipeline { get; }
         IMessageLogger Logger { get; }

@@ -19,7 +19,6 @@ namespace Jasper.Messaging.Transports
         private readonly object _channelLock = new object();
 
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
-        private UriAliasLookup _lookups;
         private IMessageLogger _logger;
         private IMessagingRoot _root;
 
@@ -27,7 +26,6 @@ namespace Jasper.Messaging.Transports
         {
             var settings = root.Settings;
 
-            _lookups = root.Lookup;
             _settings = settings;
             _logger = root.Logger;
             _root = root;
@@ -116,15 +114,13 @@ namespace Jasper.Messaging.Transports
 
         public ISubscriber GetOrBuild(Uri address)
         {
-            var uri = _lookups == null ? address : _lookups.Resolve(address);
+            assertValidTransport(address);
 
-            assertValidTransport(uri);
-
-            if (_subscribers.TryFind(uri, out var channel)) return channel;
+            if (_subscribers.TryFind(address, out var channel)) return channel;
 
             lock (_channelLock)
             {
-                if (!_subscribers.TryFind(uri, out channel))
+                if (!_subscribers.TryFind(address, out channel))
                 {
                     channel = buildChannel(address);
                     _subscribers = _subscribers.AddOrUpdate(address, channel);

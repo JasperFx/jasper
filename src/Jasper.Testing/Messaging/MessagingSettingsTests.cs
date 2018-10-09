@@ -38,23 +38,6 @@ namespace Jasper.Testing.Messaging
 
 
         [Fact]
-        public async Task applies_lookups_to_senders()
-        {
-            theSettings.SendTo("fake://one");
-
-            var lookups = new UriAliasLookup(new IUriLookup[0]);
-
-            lookups.SetAlias("fake://one", "tcp://server:2222");
-
-            await theSettings.ApplyLookups(lookups);
-
-            theSettings.KnownSubscribers.Single()
-                .Uri.ShouldBe("tcp://server:2222".ToUri());
-
-
-        }
-
-        [Fact]
         public void enable_and_disable_transport()
         {
             theSettings.StateFor("tcp").ShouldBe(TransportState.Enabled);
