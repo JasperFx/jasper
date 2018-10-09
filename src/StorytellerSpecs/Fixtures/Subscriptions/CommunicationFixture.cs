@@ -152,15 +152,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             foreach (var runtime in _runtimes) runtime.Dispose();
         }
 
-        public string Protocol { get; } = "standin";
-
-        public Task<Uri[]> Lookup(Uri[] originals)
-        {
-            var actuals = originals.Select(x => Aliases[x]);
-            return Task.FromResult(actuals.ToArray());
-        }
-
-
         public JasperRuntime Add(JasperRegistry registry)
         {
             registry.Services.For<MessageTracker>().Use(Tracker);

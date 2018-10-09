@@ -36,12 +36,6 @@ namespace Jasper
             set => Messaging.Settings.ServiceName = value;
         }
 
-        /// <summary>
-        ///     Configure uncommonly used, advanced options
-        /// </summary>
-        public IAdvancedOptions Advanced => Messaging.Settings;
-
-
 
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.EnvironmentChecks;
 using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Transports.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -21,7 +22,10 @@ namespace Jasper.Testing.EnvironmentChecks
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.EnvironmentCheck<NegativeCheck>();
-                _.Advanced.ThrowOnValidationErrors = false;
+
+
+                _.Settings.AlterMessaging(x => x.ThrowOnValidationErrors = false);
+
             });
 
             await runtime.Shutdown();

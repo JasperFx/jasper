@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace Jasper.Messaging.Transports.Configuration
 {
-    public class MessagingSettings : ITransportsExpression, IAdvancedOptions
+    public class MessagingSettings : ITransportsExpression
     {
 
         public MessagingSettings()
@@ -222,6 +222,15 @@ namespace Jasper.Messaging.Transports.Configuration
             Listeners.Fill(uri.ToCanonicalUri());
         }
 
+        /// <summary>
+        /// Establish a message listener to a known location and transport
+        /// </summary>
+        /// <param name="uriString"></param>
+        public void ListenForMessagesFrom(string uriString)
+        {
+            ListenForMessagesFrom(uriString.ToUri());
+        }
+
         public readonly IList<Subscriber> KnownSubscribers = new List<Subscriber>();
 
         /// <summary>
@@ -247,14 +256,7 @@ namespace Jasper.Messaging.Transports.Configuration
             return SendTo(uriString.ToUri());
         }
 
-        /// <summary>
-        /// Establish a message listener to a known location and transport
-        /// </summary>
-        /// <param name="uriString"></param>
-        public void ListenForMessagesFrom(string uriString)
-        {
-            ListenForMessagesFrom(uriString.ToUri());
-        }
+
     }
 
 

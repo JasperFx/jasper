@@ -4,6 +4,7 @@ using System.Reflection;
 using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Settings;
 using Jasper.Util;
 using Lamar;

@@ -5,7 +5,7 @@
     {
         public TransportsAreDisabled()
         {
-            Advanced.DisableAllTransports = true;
+            Settings.AlterMessaging(_ => _.DisableAllTransports = true);
         }
     }
     // ENDSAMPLE

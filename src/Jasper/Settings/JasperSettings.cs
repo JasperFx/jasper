@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -95,6 +96,16 @@ namespace Jasper.Settings
                 builder.Alter(alteration);
         }
 
+        public void AlterMessaging(Action<MessagingSettings> alteration)
+        {
+            Alter(alteration);
+        }
+
+        public void AlterMessaging(Action<WebHostBuilderContext, MessagingSettings> alteration)
+        {
+            Alter(alteration);
+        }
+
         /// <summary>
         ///     Replace a settings object after it is loaded
         /// </summary>
@@ -115,6 +126,8 @@ namespace Jasper.Settings
         {
             _configActions.Add(configuration);
         }
+
+
 
 
         internal void Bootstrap(WebHostBuilderContext config)
