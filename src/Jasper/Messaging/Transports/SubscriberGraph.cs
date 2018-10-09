@@ -67,6 +67,11 @@ namespace Jasper.Messaging.Transports
 
         private void organizeTransports(MessagingSettings settings, ITransport[] transports)
         {
+            foreach (var subscription in settings.Subscriptions.Where(x => x.Uri.Scheme == TransportConstants.Durable))
+            {
+                subscription.Uri = subscription.Uri.ToCanonicalTcpUri();
+            }
+
             transports.Where(x => settings.StateFor(x.Protocol) != TransportState.Disabled)
                 .Each(t => _transports.Add(t.Protocol, t));
 
@@ -82,7 +87,7 @@ namespace Jasper.Messaging.Transports
 
         private void assertValidTransport(Uri uri)
         {
-            if (!_transports.ContainsKey(uri.Scheme))
+            if (!_transports.ContainsKey(uri.Scheme) && uri.Scheme != TransportConstants.Durable)
             {
                 throw new ArgumentOutOfRangeException(nameof(uri), $"Unrecognized transport scheme '{uri.Scheme}'");
             }
@@ -90,6 +95,11 @@ namespace Jasper.Messaging.Transports
 
         private ISubscriber buildChannel(Uri uri)
         {
+            if (uri.Scheme == TransportConstants.Durable)
+            {
+                uri = uri.ToCanonicalTcpUri();
+            }
+
             assertValidTransport(uri);
 
             var transport = _transports[uri.Scheme];
