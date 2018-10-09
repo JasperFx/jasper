@@ -28,6 +28,7 @@ namespace Jasper.Messaging
         bool IsDurable { get; }
 
         int QueuedCount { get; }
+        string[] ContentTypes { get; set; }
     }
 
 }

@@ -27,15 +27,6 @@ namespace Jasper.Testing.Messaging
             theSettings.NodeId.ShouldBe("OtherService@OtherMachine");
         }
 
-        [Fact]
-        public void SendTo_is_cached()
-        {
-            var subscriber1 = theSettings.SendTo("tcp://localhost:2299/one");
-            var subscriber2 = theSettings.SendTo("tcp://localhost:2299/one");
-
-            subscriber1.ShouldBeSameAs(subscriber2);
-        }
-
 
         [Fact]
         public void enable_and_disable_transport()

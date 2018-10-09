@@ -1,16 +1,17 @@
 using Jasper.Messaging.Runtime.Routing;
+using Jasper.Messaging.Transports.Configuration;
 using Shouldly;
 using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Runtime.Routing
 {
-    public class RoutingRuleTester
+    public class SubscriptionTester
     {
         [Fact]
         public void positive_assembly_test()
         {
-            var rule = new RoutingRule(typeof(NewUser).Assembly);
+                var rule = new Subscription(typeof(NewUser).Assembly);
 
             rule.Matches(typeof(NewUser)).ShouldBeTrue();
             rule.Matches(typeof(EditUser)).ShouldBeTrue();
@@ -20,7 +21,7 @@ namespace Jasper.Testing.Messaging.Runtime.Routing
         [Fact]
         public void negative_assembly_test()
         {
-            var rule = new RoutingRule(typeof(NewUser).Assembly);
+            var rule = new Subscription(typeof(NewUser).Assembly);
             rule.Matches(typeof(Message1)).ShouldBeFalse();
             rule.Matches(typeof(Message2)).ShouldBeFalse();
             rule.Matches(GetType()).ShouldBeFalse();
@@ -29,10 +30,10 @@ namespace Jasper.Testing.Messaging.Runtime.Routing
         [Fact]
         public void positive_namespace_test()
         {
-            var rule = new RoutingRule
+            var rule = new Subscription
             {
                 Scope = RoutingScope.Namespace,
-                Value = typeof(Red.RedMessage1).Namespace
+                Match = typeof(Red.RedMessage1).Namespace
             };
 
             rule.Matches(typeof(Red.RedMessage1)).ShouldBeTrue();
@@ -43,10 +44,10 @@ namespace Jasper.Testing.Messaging.Runtime.Routing
         [Fact]
         public void negative_namespace_test()
         {
-            var rule = new RoutingRule
+            var rule = new Subscription
             {
                 Scope = RoutingScope.Namespace,
-                Value = typeof(Red.RedMessage1).Namespace
+                Match = typeof(Red.RedMessage1).Namespace
             };
 
             rule.Matches(typeof(Green.GreenMessage1)).ShouldBeFalse();

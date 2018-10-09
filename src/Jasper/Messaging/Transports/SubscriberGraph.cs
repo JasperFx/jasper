@@ -51,15 +51,17 @@ namespace Jasper.Messaging.Transports
 
         private void buildInitialSendingAgents(IMessagingRoot root)
         {
-            foreach (var subscriberAddress in root.Settings.KnownSubscribers)
+            var groups = root.Settings.Subscriptions.GroupBy(x => x.Uri);
+            foreach (var @group in groups)
             {
-                var transport = _transports[subscriberAddress.Uri.Scheme];
-                var agent = transport.BuildSendingAgent(subscriberAddress.Uri, root, _settings.Cancellation);
+                var subscriber = new Subscriber(@group.Key, @group);
+                var transport = _transports[subscriber.Uri.Scheme];
+                var agent = transport.BuildSendingAgent(subscriber.Uri, root, _settings.Cancellation);
 
-                subscriberAddress.StartSending(_logger, agent, transport.ReplyUri);
+                subscriber.StartSending(_logger, agent, transport.ReplyUri);
 
 
-                _subscribers = _subscribers.AddOrUpdate(subscriberAddress.Uri, subscriberAddress);
+                _subscribers = _subscribers.AddOrUpdate(subscriber.Uri, subscriber);
             }
         }
 
@@ -93,7 +95,7 @@ namespace Jasper.Messaging.Transports
             var transport = _transports[uri.Scheme];
             var agent = transport.BuildSendingAgent(uri, _root, _settings.Cancellation);
 
-            var subscriber = new Subscriber(uri);
+            var subscriber = new Subscriber(uri, new Subscription[0]);
             subscriber.StartSending(_logger, agent, transport.ReplyUri);
 
             return subscriber;
@@ -154,7 +156,7 @@ namespace Jasper.Messaging.Transports
 
         private void assertNoUnknownTransportsInSubscribers(MessagingSettings settings)
         {
-            var unknowns = settings.KnownSubscribers.Where(x => !ValidTransports.Contains(x.Uri.Scheme)).ToArray();
+            var unknowns = settings.Subscriptions.Where(x => !ValidTransports.Contains(x.Uri.Scheme)).ToArray();
             if (unknowns.Length > 0)
             {
                 throw new UnknownTransportException(

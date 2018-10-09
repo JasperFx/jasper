@@ -160,7 +160,7 @@ namespace Jasper.Messaging.Runtime.Routing
             var destination = _workers.LoopbackUriFor(messageType);
             var route = new MessageRoute(messageType, destination, "application/json")
             {
-                Channel = _subscribers.GetOrBuild(destination)
+                Subscriber = _subscribers.GetOrBuild(destination)
             };
             return route;
         }

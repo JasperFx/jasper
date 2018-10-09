@@ -25,7 +25,7 @@ namespace Jasper.Messaging.Runtime.Routing
             : this(messageType, subscriber.Uri, contentType)
         {
             Writer = writer[contentType];
-            Channel = subscriber;
+            Subscriber = subscriber;
         }
 
         public IMessageSerializer Writer { get; internal set; }
@@ -36,7 +36,7 @@ namespace Jasper.Messaging.Runtime.Routing
         public Uri Destination { get; }
         public string ContentType { get; }
 
-        public ISubscriber Channel { get; set; }
+        public ISubscriber Subscriber { get; set; }
 
 
         public Envelope CloneForSending(Envelope envelope)
@@ -50,7 +50,7 @@ namespace Jasper.Messaging.Runtime.Routing
             sending.Id = CombGuidIdGeneration.NewGuid();
             sending.OriginalId = envelope.Id;
 
-            sending.ReplyUri = envelope.ReplyUri ?? Channel.ReplyUri;
+            sending.ReplyUri = envelope.ReplyUri ?? Subscriber.ReplyUri;
 
             sending.ContentType = envelope.ContentType ?? ContentType;
 

@@ -19,22 +19,17 @@ namespace Jasper.Messaging.Configuration
 
         public MessageTrackExpression Message<T>()
         {
-            return new MessageTrackExpression(_bus, RoutingRule.ForType<T>());
+            return Message(typeof(T));
         }
 
         public MessageTrackExpression Message(Type type)
         {
-            return new MessageTrackExpression(_bus, RoutingRule.ForType(type));
+            return new MessageTrackExpression(_bus, RoutingScope.Type, type.ToMessageTypeName());
         }
 
         public MessageTrackExpression MessagesFromNamespace(string @namespace)
         {
-            return new MessageTrackExpression(_bus, new RoutingRule
-            {
-                Scope = RoutingScope.Namespace,
-                Value = @namespace
-            });
-
+            return new MessageTrackExpression(_bus, RoutingScope.Namespace, @namespace);
         }
 
         public MessageTrackExpression MessagesFromNamespaceContaining<T>()
@@ -44,8 +39,7 @@ namespace Jasper.Messaging.Configuration
 
         public MessageTrackExpression MessagesFromAssembly(Assembly assembly)
         {
-
-            return new MessageTrackExpression(_bus, new RoutingRule(assembly));
+            return new MessageTrackExpression(_bus, RoutingScope.Assembly, assembly.GetName().Name);
         }
 
         public MessageTrackExpression MessagesFromAssemblyContaining<T>()
@@ -53,41 +47,50 @@ namespace Jasper.Messaging.Configuration
             return MessagesFromAssembly(typeof(T).Assembly);
         }
 
-        public ISubscriber AllMessagesTo(string uriString)
+        public void AllMessagesTo(string uriString)
         {
-            return AllMessagesTo(uriString.ToUri());
+            AllMessagesTo(uriString.ToUri());
         }
 
-        public ISubscriber AllMessagesTo(Uri uri)
+        public void AllMessagesTo(Uri uri)
         {
-            var address = _bus.Settings.SendTo(uri);
-            address.Rules.Add(RoutingRule.All());
+            var subscription = new Subscription
+            {
+                Scope = RoutingScope.All,
+                Uri = uri
+            };
 
-            return address;
+            _bus.Settings.AddSubscription(subscription);
         }
 
         public class MessageTrackExpression
         {
+            private readonly RoutingScope _routingScope;
+            private readonly string _match;
             private readonly MessagingConfiguration _bus;
-            private readonly RoutingRule _routing;
 
-            internal MessageTrackExpression(MessagingConfiguration bus, RoutingRule routing)
+            internal MessageTrackExpression(MessagingConfiguration bus, RoutingScope routingScope, string match)
             {
                 _bus = bus;
-                _routing = routing;
+                _routingScope = routingScope;
+                _match = match;
             }
 
-            public ISubscriber To(Uri address)
+            public void To(Uri address)
             {
-                var subscriberAddress = _bus.Settings.SendTo(address);
-                subscriberAddress.Rules.Add(_routing);
+                var subscription = new Subscription
+                {
+                    Match = _match,
+                    Scope = _routingScope,
+                    Uri = address
+                };
 
-                return subscriberAddress;
+                _bus.Settings.AddSubscription(subscription);
             }
 
-            public ISubscriber To(string address)
+            public void To(string address)
             {
-                return To(address.ToUri());
+                To(address.ToUri());
             }
 
 
@@ -96,7 +99,10 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             public void Locally()
             {
-                _bus.Settings.LocalPublishing.Add(_routing);
+                _bus.Settings.LocalPublishing.Add(new Subscription()
+                {
+                    Scope = _routingScope, Match = _match
+                });
             }
         }
 
@@ -106,7 +112,7 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         public void AllMessagesLocally()
         {
-            var rule = RoutingRule.All();
+            var rule = Subscription.All();
             _bus.Settings.LocalPublishing.Add(rule);
         }
     }

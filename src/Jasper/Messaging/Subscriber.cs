@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging
@@ -17,17 +19,20 @@ namespace Jasper.Messaging
         private ISendingAgent _agent;
         public Uri Uri { get; private set; }
 
-        public Subscriber(Uri uri)
+        public Subscriber(Uri uri, IEnumerable<Subscription> subscriptions)
         {
             Uri = uri;
+            Subscriptions.AddRange(subscriptions);
         }
 
+        public string[] ContentTypes { get; set; } = new string[]{"application/json"};
 
-        public IList<RoutingRule> Rules { get; } = new List<RoutingRule>();
+
+        public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
 
         public bool ShouldSendMessage(Type messageType)
         {
-            return Rules.Any(x => x.Matches(messageType));
+            return Subscriptions.Any(x => x.Matches(messageType));
         }
 
         public override string ToString()

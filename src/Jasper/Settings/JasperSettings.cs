@@ -27,12 +27,9 @@ namespace Jasper.Settings
             _parent = parent;
         }
 
-        JasperRegistry IHasRegistryParent.Parent
-        {
-            get { return _parent; }
-        }
+        JasperRegistry IHasRegistryParent.Parent => _parent;
 
-        internal bool ApplyingExtensions { get; set; }
+        internal bool ApplyingExtensions { private get; set; }
 
         private SettingsBuilder<T> forType<T>(Func<WebHostBuilderContext, T> source = null) where T : class
         {
@@ -86,7 +83,12 @@ namespace Jasper.Settings
                 builder.Alter((_, x) => alteration(x));
         }
 
-
+        /// <summary>
+        /// Alter a settings object after it has been loaded from configuration using
+        /// the IConfiguration and IHostingEnvironment for the application
+        /// </summary>
+        /// <param name="alteration"></param>
+        /// <typeparam name="T"></typeparam>
         public void Alter<T>(Action<WebHostBuilderContext, T> alteration) where T : class, new()
         {
             var builder = forType<T>();
@@ -96,12 +98,21 @@ namespace Jasper.Settings
                 builder.Alter(alteration);
         }
 
-        public void AlterMessaging(Action<MessagingSettings> alteration)
+        /// <summary>
+        /// Alter advanced features of the messaging support
+        /// </summary>
+        /// <param name="alteration"></param>
+        public void Messaging(Action<MessagingSettings> alteration)
         {
             Alter(alteration);
         }
 
-        public void AlterMessaging(Action<WebHostBuilderContext, MessagingSettings> alteration)
+        /// <summary>
+        /// Alter advanced features of the messaging support with access to the
+        /// IConfiguration and IHostingEnvironment for the application
+        /// </summary>
+        /// <param name="alteration"></param>
+        public void Messaging(Action<WebHostBuilderContext, MessagingSettings> alteration)
         {
             Alter(alteration);
         }
@@ -122,6 +133,11 @@ namespace Jasper.Settings
             forType<T>().With(alteration);
         }
 
+        /// <summary>
+        /// Apply additional changes to this JasperRegistry object based on
+        /// the loaded IConfiguration and IHostedEnvironment for the application
+        /// </summary>
+        /// <param name="configuration"></param>
         public void Configure(Action<WebHostBuilderContext> configuration)
         {
             _configActions.Add(configuration);
@@ -143,6 +159,11 @@ namespace Jasper.Settings
         }
 
 
+        /// <summary>
+        /// Load a settings object "T" from the named configuration section
+        /// </summary>
+        /// <param name="sectionName"></param>
+        /// <typeparam name="T"></typeparam>
         public void BindToConfigSection<T>(string sectionName) where T : class, new()
         {
             Configure<T>(c => c.GetSection(sectionName));

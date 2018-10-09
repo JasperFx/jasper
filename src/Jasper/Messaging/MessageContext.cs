@@ -59,7 +59,7 @@ namespace Jasper.Messaging
                 Message = new Acknowledgement {CorrelationId = Envelope.Id},
                 Route = new MessageRoute(typeof(Acknowledgement), Envelope.ReplyUri, "application/json")
                 {
-                    Channel = _root.Subscribers.GetOrBuild(Envelope.ReplyUri),
+                    Subscriber = _root.Subscribers.GetOrBuild(Envelope.ReplyUri),
 
                 },
                 Writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement))
@@ -102,7 +102,7 @@ namespace Jasper.Messaging
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(x => x.Route.Channel.IsDurable).ToArray());
+                await Transaction.Persist(outgoing.Where(x => x.Route.Subscriber.IsDurable).ToArray());
 
                 _outstanding.AddRange(outgoing);
             }

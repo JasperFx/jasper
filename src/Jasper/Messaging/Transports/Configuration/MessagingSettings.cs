@@ -196,7 +196,8 @@ namespace Jasper.Messaging.Transports.Configuration
 
 
 
-        internal readonly IList<RoutingRule> LocalPublishing = new List<RoutingRule>();
+        [Obsolete("Think I'd rather have these go into the subscriptions")]
+        internal readonly IList<Subscription> LocalPublishing = new List<Subscription>();
 
 
 
@@ -207,10 +208,17 @@ namespace Jasper.Messaging.Transports.Configuration
 
 
 
+        private readonly IList<Uri> _listeners = new List<Uri>();
 
-
-        // Catches anything from unknown transports
-        public readonly IList<Uri> Listeners = new List<Uri>();
+        public Uri[] Listeners
+        {
+            get => _listeners.ToArray();
+            set
+            {
+                _listeners.Clear();
+                if (value != null) _listeners.AddRange(value);
+            }
+        }
 
 
         /// <summary>
@@ -219,7 +227,7 @@ namespace Jasper.Messaging.Transports.Configuration
         /// <param name="uri"></param>
         public void ListenForMessagesFrom(Uri uri)
         {
-            Listeners.Fill(uri.ToCanonicalUri());
+            _listeners.Fill(uri.ToCanonicalUri());
         }
 
         /// <summary>
@@ -231,42 +239,33 @@ namespace Jasper.Messaging.Transports.Configuration
             ListenForMessagesFrom(uriString.ToUri());
         }
 
-        public readonly IList<Subscriber> KnownSubscribers = new List<Subscriber>();
+
+
+        private readonly IList<Subscription> _subscriptions = new List<Subscription>();
 
         /// <summary>
-        /// Add a new outgoing message subscription
+        /// Array of all subscription rules for publishing messages from this
+        /// application
         /// </summary>
-        /// <param name="uri"></param>
-        /// <returns></returns>
-        public Subscriber SendTo(Uri uri)
+        public Subscription[] Subscriptions
         {
-            var subscriber = KnownSubscribers.FirstOrDefault(x => x.Uri == uri) ?? new Subscriber(uri);
-            KnownSubscribers.Fill(subscriber);
-
-            return subscriber;
+            get => _subscriptions.ToArray();
+            set
+            {
+                _subscriptions.Clear();
+                if (value != null) _subscriptions.AddRange(value);
+            }
         }
 
         /// <summary>
-        /// Add a new outgoing message subscription
+        /// Add a single subscription
         /// </summary>
-        /// <param name="uriString"></param>
-        /// <returns></returns>
-        public ISubscriber SendTo(string uriString)
+        /// <param name="subscription"></param>
+        public void AddSubscription(Subscription subscription)
         {
-            return SendTo(uriString.ToUri());
+            _subscriptions.Fill(subscription);
         }
 
 
     }
-
-
-
-    public class Subscription
-    {
-        public RoutingScope Scope { get; set; } = RoutingScope.All;
-        public Uri Uri { get; set; }
-        public string[] ContentTypes { get; set; } = new string[]{"application/json"};
-        public string Match { get; set; } = null;
-    }
-
 }

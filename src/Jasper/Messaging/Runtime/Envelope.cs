@@ -376,7 +376,7 @@ namespace Jasper.Messaging.Runtime
 
 
 
-            return Route.Channel.Send(this);
+            return Route.Subscriber.Send(this);
         }
 
         internal Task QuickSend()
@@ -393,7 +393,7 @@ namespace Jasper.Messaging.Runtime
 
             _enqueued = true;
 
-            return Route.Channel.QuickSend(this);
+            return Route.Subscriber.QuickSend(this);
         }
 
 

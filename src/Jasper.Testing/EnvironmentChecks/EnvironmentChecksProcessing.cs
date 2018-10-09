@@ -24,7 +24,7 @@ namespace Jasper.Testing.EnvironmentChecks
                 _.Services.EnvironmentCheck<NegativeCheck>();
 
 
-                _.Settings.AlterMessaging(x => x.ThrowOnValidationErrors = false);
+                _.Settings.Messaging(x => x.ThrowOnValidationErrors = false);
 
             });
 

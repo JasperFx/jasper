@@ -17,6 +17,7 @@ namespace Jasper.Messaging
         public HandlerConfiguration Handling { get; }
 
 
+        // TODO --- this needs to be loaded from JSON!!!
         public MessagingSettings Settings { get; } = new MessagingSettings();
 
         public SubscriberGraph Subscribers { get; } = new SubscriberGraph();
