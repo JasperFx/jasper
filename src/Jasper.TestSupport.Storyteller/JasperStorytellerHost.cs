@@ -93,7 +93,7 @@ namespace Jasper.Storyteller
         public ExternalNode AddNode(JasperRegistry registry)
         {
             var node = new ExternalNode(registry);
-            _nodes.Add(registry.ServiceName, node);
+            _nodes.Add(node.Runtime.ServiceName, node);
 
             return node;
         }

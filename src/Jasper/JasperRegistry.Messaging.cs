@@ -1,13 +1,14 @@
-﻿using Jasper.Messaging;
+﻿using System;
+using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Util;
 
 namespace Jasper
 {
-    public partial class JasperRegistry
+    public partial class JasperRegistry : ITransportsExpression
     {
         internal MessagingConfiguration Messaging { get; } = new MessagingConfiguration();
-        protected internal MessagingSettings MessagingSettings => Messaging.Settings;
 
         /// <summary>
         ///     Options to control how Jasper discovers message handler actions, error
@@ -24,18 +25,45 @@ namespace Jasper
         /// <summary>
         ///     Configure or disable the built in transports
         /// </summary>
-        public ITransportsExpression Transports => Messaging.Settings;
+        public ITransportsExpression Transports => this;
+
+        private string _serviceName;
 
         /// <summary>
-        ///     Gets or sets the logical service name for this Jasper application. By default,
-        ///     this is derived from the name of the JasperRegistry class
+        /// Get or set the logical Jasper service name. By default, this is
+        /// derived from the name of a custom JasperRegistry
         /// </summary>
         public string ServiceName
         {
-            get => Messaging.Settings.ServiceName;
-            set => Messaging.Settings.ServiceName = value;
+            get => _serviceName;
+            set
+            {
+                _serviceName = value;
+                Settings.Messaging(x => x.ServiceName = value);
+            }
         }
 
 
+
+
+        void ITransportsExpression.ListenForMessagesFrom(Uri uri)
+        {
+            Settings.Alter<MessagingSettings>(x => x.ListenForMessagesFrom(uri));
+        }
+
+        void ITransportsExpression.ListenForMessagesFrom(string uriString)
+        {
+            Settings.Alter<MessagingSettings>(x => x.ListenForMessagesFrom(uriString.ToUri()));
+        }
+
+        void ITransportsExpression.EnableTransport(string protocol)
+        {
+            Settings.Alter<MessagingSettings>(x => x.EnableTransport(protocol));
+        }
+
+        void ITransportsExpression.DisableTransport(string protocol)
+        {
+            Settings.Alter<MessagingSettings>(x => x.DisableTransport(protocol));
+        }
     }
 }

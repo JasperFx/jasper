@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Jasper.Messaging;
+using Jasper.Messaging.Transports.Configuration;
 using Lamar;
 using Lamar.Codegen.Variables;
 using Lamar.Util;
@@ -17,6 +18,7 @@ namespace Jasper
         private static ApplicationLifetime _lifetime;
         private readonly Lazy<IMessageContext> _bus;
         private bool isDisposing;
+        private IContainer _container;
 
 
         private JasperRuntime(JasperRegistry registry, PerfTimer timer)
@@ -34,6 +36,8 @@ namespace Jasper
             _bus = new Lazy<IMessageContext>(Get<IMessageContext>);
         }
 
+        internal MessagingSettings Settings { get; private set; }
+
         public PerfTimer Bootstrapping { get; }
 
         internal JasperRegistry Registry { get; }
@@ -46,7 +50,15 @@ namespace Jasper
         /// <summary>
         ///     The underlying Lamar container
         /// </summary>
-        public IContainer Container { get; private set; }
+        public IContainer Container
+        {
+            get => _container;
+            private set
+            {
+                _container = value;
+                Settings = _container.GetInstance<MessagingSettings>();
+            }
+        }
 
         public bool IsDisposed { get; private set; }
 
@@ -60,7 +72,7 @@ namespace Jasper
         /// <summary>
         ///     The logical name of the application from JasperRegistry.ServiceName
         /// </summary>
-        public string ServiceName => Registry.ServiceName;
+        public string ServiceName => Settings?.ServiceName;
 
 
         /// <summary>

@@ -119,7 +119,7 @@ namespace Jasper.Messaging
 
 
             timer.Record("WorkersGraph.Compile",
-                () => { Settings.Workers.Compile(_handlers.Chains.Select(x => x.MessageType)); });
+                () => { _handlers.Workers.Compile(_handlers.Chains.Select(x => x.MessageType)); });
 
 
             localWorker.Start(this);
@@ -161,7 +161,7 @@ namespace Jasper.Messaging
 
         public bool ShouldBeDurable(Type messageType)
         {
-            return Settings.Workers.ShouldBeDurable(messageType);
+            return _handlers.Workers.ShouldBeDurable(messageType);
         }
 
         private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)

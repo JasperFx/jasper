@@ -60,13 +60,11 @@ namespace Jasper.Messaging.Configuration
     public class HandlerConfiguration : IHandlerConfiguration
     {
         private readonly HandlerGraph _graph;
-        private readonly MessagingSettings _settings;
         internal readonly HandlerSource Source = new HandlerSource();
 
-        public HandlerConfiguration(HandlerGraph graph, MessagingSettings settings)
+        public HandlerConfiguration(HandlerGraph graph)
         {
             _graph = graph;
-            _settings = settings;
         }
 
         public IHandlerConfiguration Discovery(Action<HandlerSource> configure)
@@ -77,10 +75,10 @@ namespace Jasper.Messaging.Configuration
 
         public IWorkerSettings Worker(string queueName)
         {
-            return _settings.Workers[queueName];
+            return _graph.Workers[queueName];
         }
 
-        public IWorkerSettings DefaultWorker => _settings.Workers[TransportConstants.Default];
+        public IWorkerSettings DefaultWorker => _graph.Workers[TransportConstants.Default];
 
 
         private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();

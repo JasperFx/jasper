@@ -7,6 +7,7 @@ using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Configuration;
+using Jasper.Messaging.WorkerQueues;
 using Lamar.Codegen;
 using Lamar.Util;
 
@@ -17,9 +18,6 @@ namespace Jasper.Messaging
         public HandlerConfiguration Handling { get; }
 
 
-        // TODO --- this needs to be loaded from JSON!!!
-        public MessagingSettings Settings { get; } = new MessagingSettings();
-
         public SubscriberGraph Subscribers { get; } = new SubscriberGraph();
 
         public LocalWorkerSender LocalWorker { get; } = new LocalWorkerSender();
@@ -29,17 +27,23 @@ namespace Jasper.Messaging
         public HandlerGraph Graph { get;  } = new HandlerGraph();
 
 
+
+
+
+
         public MessagingConfiguration()
         {
-            Handling = new HandlerConfiguration(Graph, Settings);
+            Handling = new HandlerConfiguration(Graph);
 
             Handling.GlobalPolicy<SagaFramePolicy>();
         }
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
+            var settings = runtime.Get<MessagingSettings>();
+
             var transports = runtime.Get<ITransport[]>()
-                .Where(x => Settings.StateFor(x.Protocol) == TransportState.Enabled);
+                .Where(x => settings.StateFor(x.Protocol) == TransportState.Enabled);
 
             foreach (var transport in transports) transport.Describe(writer);
 

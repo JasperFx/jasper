@@ -30,18 +30,19 @@ namespace Jasper
 
         public JasperRegistry()
         {
+
             Configuration.SetBasePath(Directory.GetCurrentDirectory());
 
-            Publish = new PublishingExpression(Messaging);
 
-            HttpRoutes = new HttpSettings(Messaging.Settings);
+
+            HttpRoutes = new HttpSettings();
 
             Services = _applicationServices;
 
             establishApplicationAssembly();
 
 
-            deriveServiceName();
+
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
             CodeGeneration = new JasperGenerationRules($"{name.Replace(".", "_")}_Generated");
@@ -49,8 +50,11 @@ namespace Jasper
             _baseServices = new JasperServiceRegistry(this);
 
             Settings = new JasperSettings(this);
+            Settings.BindToConfigSection<MessagingSettings>("Messaging");
 
-            Settings.Replace(Messaging.Settings);
+            deriveServiceName();
+
+            Publish = new PublishingExpression(Settings, Messaging);
 
 
             Hosting = this;

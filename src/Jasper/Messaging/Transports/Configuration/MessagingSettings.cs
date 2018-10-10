@@ -38,6 +38,7 @@ namespace Jasper.Messaging.Transports.Configuration
         /// </summary>
         public bool HostedServicesEnabled { get; set; } = true;
 
+        [JsonIgnore]
         public int UniqueNodeId { get; }
 
 
@@ -45,6 +46,7 @@ namespace Jasper.Messaging.Transports.Configuration
         /// Logical service name of this application used for instrumentation purposes
         /// </summary>
         /// <exception cref="ArgumentNullException"></exception>
+        [JsonIgnore]
         public string ServiceName
         {
             get => _serviceName;
@@ -86,6 +88,7 @@ namespace Jasper.Messaging.Transports.Configuration
         /// <summary>
         /// Newtonsoft.Json serialization settings for messages received
         /// </summary>
+        [JsonIgnore]
         public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
@@ -101,6 +104,7 @@ namespace Jasper.Messaging.Transports.Configuration
         /// <summary>
         /// The unique id of this instance of the logical Jasper service
         /// </summary>
+        [JsonIgnore]
         public string NodeId { get; private set; }
 
 
@@ -108,11 +112,6 @@ namespace Jasper.Messaging.Transports.Configuration
         private string _machineName;
         private string _serviceName = "Jasper";
 
-
-        /// <summary>
-        /// Policies and routing for local message handling
-        /// </summary>
-        internal WorkersGraph Workers { get; } = new WorkersGraph();
 
         private readonly IList<string> _disabledTransports = new List<string>();
 
@@ -147,6 +146,7 @@ namespace Jasper.Messaging.Transports.Configuration
         }
 
 
+        [JsonIgnore]
         public CancellationToken Cancellation => _cancellation.Token;
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
@@ -194,17 +194,7 @@ namespace Jasper.Messaging.Transports.Configuration
         public bool PersistDeadLetterEnvelopes { get; set; } = true;
 
 
-
-
-        [Obsolete("Think I'd rather have these go into the subscriptions")]
         internal readonly IList<Subscription> LocalPublishing = new List<Subscription>();
-
-
-
-
-
-
-
 
 
 

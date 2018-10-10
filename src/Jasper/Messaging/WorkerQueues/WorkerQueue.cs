@@ -29,7 +29,7 @@ namespace Jasper.Messaging.WorkerQueues
             _settings = settings;
             _cancellationToken = _settings.Cancellation;
 
-            foreach (var worker in _settings.Workers.AllWorkers)
+            foreach (var worker in Pipeline.Workers.AllWorkers)
             {
                 AddQueue(worker.Name, worker.Parallelization);
             }
@@ -56,7 +56,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         private ActionBlock<Envelope> determineReceiver(Envelope envelope)
         {
-            var queueName = envelope.Queue ?? _settings.Workers.WorkerFor(envelope.MessageType);
+            var queueName = envelope.Queue ?? Pipeline.Workers.WorkerFor(envelope.MessageType);
 
 
             var receiver = _receivers.ContainsKey(queueName)

@@ -7,7 +7,7 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
   <ItemGroup>
-    <None Update="appsettings.json;colors.json;nested.json;subscriptions.json">
+    <None Update="appsettings.json;colors.json;nested.json;subscriptions.json;messaging.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -33,7 +33,7 @@ namespace Jasper
 
             await shutdownAspNetCoreServer();
 
-            if (Registry.MessagingSettings.HostedServicesEnabled)
+            if (Settings.HostedServicesEnabled)
             {
                 await shutdownHostedServices();
             }

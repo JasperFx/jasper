@@ -32,7 +32,7 @@ namespace Jasper.Messaging.Runtime.Routing
             _handlers = handlers;
             _logger = root.Logger;
             _settings = root.Settings;
-            _workers = _settings.Workers;
+            _workers = _handlers.Workers;
         }
 
         public void ClearAll()

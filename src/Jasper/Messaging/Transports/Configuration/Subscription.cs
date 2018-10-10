@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Baseline;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Util;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Jasper.Messaging.Transports.Configuration
 {
     public class Subscription
     {
+        private string[] _contentTypes = new string[]{"application/json"};
+
         public Subscription()
         {
         }
@@ -18,22 +23,30 @@ namespace Jasper.Messaging.Transports.Configuration
             Match = assembly.GetName().Name;
         }
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public RoutingScope Scope { get; set; } = RoutingScope.All;
         public Uri Uri { get; set; }
-        public string[] ContentTypes { get; set; } = new string[]{"application/json"};
-        public string Match { get; set; } = null;
 
-        public static Subscription ForType<T>()
+        public string[] ContentTypes
         {
-            return ForType(typeof(T));
+            get => _contentTypes;
+            set => _contentTypes = value?.Distinct().ToArray() ?? new string[]{"application/json"};
         }
 
-        public static Subscription ForType(Type type)
+        public string Match { get; set; } = string.Empty;
+
+        public static Subscription ForType<T>(Uri uri = null)
+        {
+            return ForType(typeof(T), uri);
+        }
+
+        public static Subscription ForType(Type type, Uri uri = null)
         {
             return new Subscription
             {
                 Scope = RoutingScope.Type,
-                Match = type.FullName
+                Match = type.FullName,
+                Uri = uri
             };
         }
 
@@ -69,7 +82,7 @@ namespace Jasper.Messaging.Transports.Configuration
 
         protected bool Equals(Subscription other)
         {
-            return Scope == other.Scope && Equals(Uri, other.Uri) && Equals(ContentTypes, other.ContentTypes) && string.Equals(Match, other.Match);
+            return Scope == other.Scope && Equals(Uri, other.Uri) && ContentTypes.SequenceEqual(other.ContentTypes) && string.Equals(Match, other.Match);
         }
 
         public override bool Equals(object obj)
@@ -90,6 +103,14 @@ namespace Jasper.Messaging.Transports.Configuration
                 hashCode = (hashCode * 397) ^ (Match != null ? Match.GetHashCode() : 0);
                 return hashCode;
             }
+        }
+
+        public static Subscription All(Uri uri)
+        {
+            var subscription = Subscription.All();
+            subscription.Uri = uri;
+
+            return subscription;
         }
     }
 }

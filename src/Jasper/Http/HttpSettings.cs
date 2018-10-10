@@ -9,11 +9,12 @@ using Newtonsoft.Json;
 
 namespace Jasper.Http
 {
+    // TODO -- this should be "loadable" from JSON too
     public partial class HttpSettings
     {
         internal readonly RouteGraph Routes = new RouteGraph();
 
-        public HttpSettings(MessagingSettings settings)
+        public HttpSettings()
         {
             _methodFilters = new ActionMethodFilter();
             _methodFilters.Excludes += m => m.Name == "Configure";

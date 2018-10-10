@@ -7,6 +7,7 @@ using Jasper.Messaging.ErrorHandling;
 using Jasper.Util;
 using TypeExtensions = Baseline.TypeExtensions;
 using Baseline;
+using Jasper.Messaging.WorkerQueues;
 using Lamar;
 using Lamar.Compilation;
 using Lamar.Util;
@@ -43,6 +44,11 @@ namespace Jasper.Messaging.Model
             assertNotGrouped();
             _calls.AddRange(calls);
         }
+
+        /// <summary>
+        /// Policies and routing for local message handling
+        /// </summary>
+        public WorkersGraph Workers { get; } = new WorkersGraph();
 
 
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.EnvironmentChecks;
 using Jasper.Http;
+using Jasper.Messaging.Transports.Configuration;
 using Lamar;
 using Lamar.Util;
 using Microsoft.AspNetCore.Builder;
@@ -133,7 +134,7 @@ namespace Jasper
                 _timer.Record("Environment Checks", () =>
                 {
                     var recorder = EnvironmentChecker.ExecuteAll(_runtime);
-                    if (_runtime.Registry.MessagingSettings.ThrowOnValidationErrors) recorder.AssertAllSuccessful();
+                    if (_runtime.Get<MessagingSettings>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
                 });
 
                 _timer.Stop();

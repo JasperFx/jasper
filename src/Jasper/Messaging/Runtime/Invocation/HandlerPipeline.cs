@@ -6,6 +6,7 @@ using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
+using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Invocation
@@ -14,6 +15,7 @@ namespace Jasper.Messaging.Runtime.Invocation
     {
         Task Invoke(Envelope envelope);
         Task InvokeNow(Envelope envelope);
+        WorkersGraph Workers { get; }
     }
 
     public class HandlerPipeline : IHandlerPipeline
@@ -37,6 +39,8 @@ namespace Jasper.Messaging.Runtime.Invocation
 
 
         public IMessageLogger Logger { get; }
+
+        public WorkersGraph Workers => _graph.Workers;
 
         public async Task Invoke(Envelope envelope)
         {

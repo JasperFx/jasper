@@ -124,7 +124,7 @@ namespace Jasper.Http.ContentHandling
         {
             var provider = new DefaultObjectPoolProvider();
 
-            var graph = new HttpSerializationGraph(new HttpSettings(new MessagingSettings()), provider, new Forwarders(), new ISerializerFactory[0], new IMessageDeserializer[0], new IMessageSerializer[0]);
+            var graph = new HttpSerializationGraph(new HttpSettings(), provider, new Forwarders(), new ISerializerFactory[0], new IMessageDeserializer[0], new IMessageSerializer[0]);
             return new ConnegRules(graph, new IReaderRule[0], new IWriterRule[0]);
         }
     }

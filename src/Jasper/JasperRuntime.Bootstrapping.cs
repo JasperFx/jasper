@@ -35,12 +35,12 @@ namespace Jasper
 
         private async Task startHostedServices()
         {
-            if (!Registry.MessagingSettings.HostedServicesEnabled) return;
+            if (!Settings.HostedServicesEnabled) return;
 
             _hostedServices = Container.GetAllInstances<IHostedService>().ToArray();
 
             foreach (var hostedService in _hostedServices)
-                await hostedService.StartAsync(Registry.MessagingSettings.Cancellation);
+                await hostedService.StartAsync(Settings.Cancellation);
         }
 
         private static async Task<JasperRuntime> bootstrap(JasperRegistry registry)
@@ -73,6 +73,7 @@ namespace Jasper
             container.DisposalLock = DisposalLock.Ignore;
             runtime.Container = container;
 
+
             var routeDiscovery = registry.HttpRoutes.Enabled
                 ? registry.HttpRoutes.FindRoutes(runtime, registry, timer)
                 : Task.CompletedTask;
@@ -88,7 +89,7 @@ namespace Jasper
             timer.Record("Environment Checks", () =>
             {
                 var recorder = EnvironmentChecker.ExecuteAll(runtime);
-                if (registry.MessagingSettings.ThrowOnValidationErrors) recorder.AssertAllSuccessful();
+                if (runtime.Settings.ThrowOnValidationErrors) recorder.AssertAllSuccessful();
             });
 
             _lifetime = TypeExtensions.As<ApplicationLifetime>(container.GetInstance<IApplicationLifetime>());
@@ -124,7 +125,7 @@ namespace Jasper
 
         private async Task shutdownAspNetCoreServer()
         {
-            await _server.StopAsync(Registry.MessagingSettings.Cancellation).ConfigureAwait(false);
+            await _server.StopAsync(Settings.Cancellation).ConfigureAwait(false);
 
             // Fire IApplicationLifetime.Stopped
             _applicationLifetime?.NotifyStopped();
@@ -153,7 +154,7 @@ namespace Jasper
                 Container.GetInstance<DiagnosticListener>(), // See if this can be passed in directly
                 httpContextFactory);
 
-            await _server.StartAsync(hostingApp, Registry.MessagingSettings.Cancellation);
+            await _server.StartAsync(hostingApp, Settings.Cancellation);
 
             // Fire IApplicationLifetime.Started
             _applicationLifetime?.NotifyStarted();
