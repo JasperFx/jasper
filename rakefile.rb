@@ -113,7 +113,6 @@ task :commands do
     sh "dotnet run -- ?"
     sh "dotnet run -- services"
     sh "dotnet run -- validate"
-    sh "dotnet run -- subscriptions"
     sh "dotnet run -- export-json-schema obj/schema"
   end
 end
@@ -124,7 +123,6 @@ task :pack do
   pack_nuget 'Jasper'
   pack_nuget 'Jasper.Persistence.Marten'
   pack_nuget 'Jasper.Persistence.SqlServer'
-  pack_nuget 'Jasper.Consul'
   pack_nuget 'Jasper.TestSupport.Storyteller'
   pack_nuget 'Jasper.TestSupport.Alba'
   pack_nuget 'Jasper.RabbitMQ'

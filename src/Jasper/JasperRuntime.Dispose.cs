@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Baseline.Dates;
 using Lamar;
 using Microsoft.Extensions.Hosting;
@@ -42,7 +43,7 @@ namespace Jasper
 
             isDisposing = true;
 
-            Container.DisposalLock = DisposalLock.Unlocked;
+            Container.As<Container>().DisposalLock = DisposalLock.Unlocked;
             Container.Dispose();
 
             IsDisposed = true;
