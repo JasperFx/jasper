@@ -221,7 +221,7 @@ namespace Jasper.Http.Routing
 
         public override string ToString()
         {
-            return $"{HttpMethod}:{Pattern}";
+            return $"{HttpMethod}: {Pattern}";
         }
 
         public string ReadRouteDataFromMethodArguments(Expression expression)

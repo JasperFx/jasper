@@ -108,5 +108,10 @@ namespace Jasper.Http.Routing
         }
 
         public Route ArgRoute { get; private set; }
+
+        public override string ToString()
+        {
+            return Route.ToString();
+        }
     }
 }

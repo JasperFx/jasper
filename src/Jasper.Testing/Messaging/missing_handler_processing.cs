@@ -53,8 +53,9 @@ namespace Jasper.Testing.Messaging
 
         public Task Handle(Envelope envelope, IMessageContext context)
         {
-            _source.SetResult(envelope);
             Handled.Add(envelope);
+            _source.SetResult(envelope);
+
 
             return Task.CompletedTask;
         }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Jasper.Http;
 using Jasper.Messaging;
 using Lamar;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +38,31 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         public void Dispose()
         {
             theHost?.Dispose();
+        }
+    }
+
+
+    public class can_add_jasper_to_default_web_host_builder
+    {
+        [Fact]
+        public async Task still_works()
+        {
+            var builder = WebHost.CreateDefaultBuilder()
+                .UseJasper<SimpleJasperBusApp>();
+
+            using (var theHost = builder.Build())
+            {
+                await theHost.StartAsync();
+
+                using (var client = new HttpClient())
+                {
+                    var text = await client.GetStringAsync("http://localhost:5000/hello");
+
+                    // See "get_hello" method
+                    text.ShouldContain("hello");
+
+                }
+            }
         }
     }
 
