@@ -136,7 +136,7 @@ The Jasper.Console package uses the [Oakton](http://jasperfx.github.io/oakton) l
 
 or without any kind of extension like so:
 
-<[sample:using-JasperModule-with-no-extension]>
+<[sample:AppWithExtensions]>
 
 If you want to write a command that uses the actual Jasper application, use the `JasperInput` class as either the input to your
 command or as the superclass to your input class:

@@ -17,9 +17,9 @@ Now, on to how you would consume extensions in your projects:
 
 ## Explicitly Loading Extensions
 
-In the <[linkto:documentation/extensions/marten;title=Jasper.Marten]> library there's an extension to opt into <[linkto:documentation/extensions/marten/subscriptions;title=Marten-backed subscriptions]> that can be applied using the `JasperRegistry.Include()` method shown below:
+You can also explicitly create and consume `IJasperExtension` classes that are not automatically loaded through the `[JasperModule]` attribute that are be applied using the `JasperRegistry.Include()` method shown below:
 
-<[sample:AppWithMartenBackedSubscriptions]>
+<[sample:explicitly-add-extension]>
 
 ## Auto Discovery of Extensions
 

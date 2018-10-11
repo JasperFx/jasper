@@ -41,7 +41,6 @@ If you want to selectively disable some of the built in transport types, you can
 A couple notes first though:
 
 * The tcp transport is enabled by default
-* The http transport has to be explicitly enabled
 * Disabling a transport prevents Jasper from creating either outgoing
   channels or listeners for that transport
 

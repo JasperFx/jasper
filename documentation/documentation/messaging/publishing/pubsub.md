@@ -9,13 +9,6 @@ To send a message with Jasper, use the `IServiceBus` like this:
 That by itself will send the `InvoiceCreated` message to whatever subscribers are interested in
 that message.
 
-## Sending and Awaiting Acknowledgement
-
-Much rarer is the need to send a message, but wait until the message is successfully acknowledged as received by the receiver before continuing onto other work:
-
-<[sample:sending-message-with-send-and-await]>
-
-
 ## Sending to a Specific Destination
 
 You can bypass the routing and subscribing rules and designate the destination for a message like this:

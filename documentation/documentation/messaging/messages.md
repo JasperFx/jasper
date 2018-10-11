@@ -63,14 +63,6 @@ The `[Version("V2")]` attribute usage tells Jasper that this class is "V2" for t
 Jasper will now accept or publish this message using the built in Json serialization with the content type of `application/vnd.person-born.v2+json`.
 Any custom serializers should follow some kind of naming convention for content types that identify versioned representations.
 
-## Disallowing Non-Versioned Messages
-
-As an easy on ramp, Jasper will publish and accept messages with the default `application/json` content type using Newtonsoft.Json serialization.
-If instead you'd like to enforce versions on all messages being sent or received, you can configure Jasper to only use the versioned content types:
-
-<[sample:NoUnVersionedMessages]>
-
-
 ## Message Serializers and Deserializers
 
 You can create custom message deserializers for a message by providing your own implementation of the `IMessageDeserializer` interface from Jasper:

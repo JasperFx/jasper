@@ -84,11 +84,14 @@ create table receiver.item_created
         protected override async Task withContext(JasperRuntime sender, IMessageContext context,
             Func<IMessageContext, Task> action)
         {
+            // SAMPLE: basic-sql-server-outbox-sample
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 await conn.OpenAsync();
 
                 var tx = conn.BeginTransaction();
+
+                // "context" is an IMessageContext object
                 await context.EnlistInTransaction(tx);
 
                 await action(context);
@@ -97,6 +100,7 @@ create table receiver.item_created
 
                 await context.SendAllQueuedOutgoingMessages();
             }
+            // ENDSAMPLE
         }
 
         protected override Envelope[] loadAllOutgoingEnvelopes(JasperRuntime sender)

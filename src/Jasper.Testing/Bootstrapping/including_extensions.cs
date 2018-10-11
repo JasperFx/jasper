@@ -10,8 +10,11 @@ namespace Jasper.Testing.Bootstrapping
         [Fact]
         public async Task will_apply_an_extension()
         {
+            // SAMPLE: explicitly-add-extension
             var registry = new JasperRegistry();
             registry.Include<OptionalExtension>();
+            // ENDSAMPLE
+
             registry.Handlers.DisableConventionalDiscovery(true);
 
             var runtime = await JasperRuntime.ForAsync(registry);

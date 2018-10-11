@@ -1,4 +1,4 @@
-<!--title:Static Publishing Rules-->
+<!--title:Routing Messages-->
 
 When you publish a message using `IServiceBus` without explicitly setting the Uri of the desired 
 destination, Jasper has to invoke the known message routing rules and dynamic subscriptions to
