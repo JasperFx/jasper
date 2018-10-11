@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Jeremy D. Miller",
+    "classifications": [
+        "Jasper", "Commands", "Service Bus"
+    ],
+    "identity": "Jasper.Service",
+    "name": "Jasper Service",
+    "shortName": "jasper",
+    "sourceName": "JasperService",
+    "preferNameDirectory" : true
+
+}

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>JasperService</AssemblyName>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Jasper" Version="0.9.0" />
+  </ItemGroup>
+</Project>

@@ -51,18 +51,22 @@ namespace Jasper.Messaging
             foreach (var channel in Subscribers.AllKnown())
                 writer.WriteLine($"Active sending agent to {channel.Uri}");
 
-            writer.WriteLine("Handles messages:");
-
-            var longestMessageName = Graph.Chains.Select(x => x.MessageType.NameInCode().Length).Max() + 2;
-
-            foreach (var chain in Graph.Chains)
+            if (Graph.Chains.Any())
             {
-                var messageName = chain.MessageType.NameInCode().PadLeft(longestMessageName);
-                var handlers = chain.Handlers.Select(x => x.ToString()).Join(", ");
+                writer.WriteLine("Handles messages:");
+
+                var longestMessageName = Graph.Chains.Select(x => x.MessageType.NameInCode().Length).Max() + 2;
+
+                foreach (var chain in Graph.Chains)
+                {
+                    var messageName = chain.MessageType.NameInCode().PadLeft(longestMessageName);
+                    var handlers = chain.Handlers.Select(x => x.ToString()).Join(", ");
 
 
-                writer.WriteLine($"{messageName}: {handlers}");
+                    writer.WriteLine($"{messageName}: {handlers}");
+                }
             }
+
 
             writer.WriteLine();
         }

@@ -2,6 +2,7 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
+TEMPLATE_VERSION = "0.9.0"
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 BUILD_VERSION = '0.9.0'
@@ -188,7 +189,7 @@ task :docs => [:prepare_docs] do
 	sh "dotnet stdocs run -v #{BUILD_VERSION}"
 end
 
-"Exports the documentation to storyteller.github.io - requires Git access to that repo though!"
+"Exports the documentation to jasperfx.github.io - requires Git access to that repo though!"
 task :publish => [:prepare_docs] do
 	if Dir.exists? 'doc-target'
 		FileUtils.rm_rf 'doc-target'
@@ -209,6 +210,27 @@ task :publish => [:prepare_docs] do
 
 
 
+end
+
+desc 'Build and test templates'
+task :templates => [:clean] do
+    
+
+	Dir.chdir "templates/Jasper.Service" do
+		sh "nuget pack jasperservice.nuspec -Version #{TEMPLATE_VERSION}"
+	end
+
+	if Dir.exists? 'template-target'
+		FileUtils.rm_rf 'template-target'
+	end
+	Dir.mkdir 'template-target'
+
+	Dir.chdir "template-target" do
+		sh "dotnet new -i ../templates/Jasper.Service/Jasper.Service.#{TEMPLATE_VERSION}.nupkg"
+		sh "dotnet new jasper"
+		sh "dotnet restore"
+		sh "dotnet run -- run"
+	end
 end
 
 
