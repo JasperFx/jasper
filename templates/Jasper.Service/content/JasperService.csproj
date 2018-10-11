@@ -6,6 +6,6 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Jasper" Version="0.9.0" />
+    <PackageReference Include="Jasper" Version="0.9.1" />
   </ItemGroup>
 </Project>

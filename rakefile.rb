@@ -121,6 +121,10 @@ end
 
 desc 'Build Nuspec packages'
 task :pack do
+  Dir.chdir "templates/Jasper.Service" do
+		sh "nuget pack jasperservice.nuspec -Version #{TEMPLATE_VERSION}"
+	end
+
   pack_nuget 'Jasper'
   pack_nuget 'Jasper.Persistence.Marten'
   pack_nuget 'Jasper.Persistence.SqlServer'
@@ -142,6 +146,10 @@ task :appVeyorPush do
     puts "Not on CI, skipping artifact upload"
     next
   end
+
+  sh "appveyor PushArtifact templates/Jasper.Service/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
+
+
   Dir.glob('./artifacts/*.*') do |file|
     full_path = File.expand_path file
     full_path = full_path.gsub('/', '\\') if OS.windows?

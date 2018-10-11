@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
-    <id>Jasper.Service</id>
-    <version>0.9.0</version>
+    <id>JasperTemplates</id>
+    <title>Jasper Template for dotnet-new</title>
+    <summary>A dotnet-new template for Jasper applications.</summary>
+
+        <owners>Jeremy D. Miller</owners>
+        <projectUrl>https://jasperfx.github.io/</projectUrl>
+        <iconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <version>0.9.1</version>
     <description>
-      Creates a headless Jasper service project.
+      dotnet-new template to create a headless Jasper service project.
     </description>
     <authors>Jeremy D. Miller</authors>
     <packageTypes>

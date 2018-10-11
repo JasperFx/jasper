@@ -9,15 +9,15 @@ namespace JasperService
         static int Main(string[] args)
         {
             // The application is configured through the MyApp class
-            return JasperAgent.Run<MyApp>(args);
+            return JasperAgent.Run<JasperServiceApp>(args);
         }
     }
 
-    public class MyApp : JasperRegistry
+    public class JasperServiceApp : JasperRegistry
     {
-        public MyApp()
+        public JasperServiceApp()
         {
-            
+
         }
     }
 }
