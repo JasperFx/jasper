@@ -2,7 +2,7 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-TEMPLATE_VERSION = "0.9.1.1"
+TEMPLATE_VERSION = "0.9.1.2"
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 BUILD_VERSION = '0.9.0'
@@ -233,7 +233,8 @@ task :templates => [:clean] do
 	end
 	Dir.mkdir 'template-target'
 
-	Dir.chdir "template-target" do
+  Dir.chdir "template-target" do
+    sh "dotnet new --uninstall jasper"
 		sh "dotnet new -i ../templates/Jasper.Service/Jasper.Service.#{TEMPLATE_VERSION}.nupkg"
 		sh "dotnet new jasper"
 		sh "dotnet restore"

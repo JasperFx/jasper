@@ -7,6 +7,34 @@ Jasper only targets Netstandard 2.0 and higher at this time.
 Jasper is a framework for building server side services in .Net. Jasper can be used as an alternative web framework for .Net, a service bus for messaging, as a "mediator" type
 pipeline within a different framework, or any combination thereof. Jasper can be used as either your main application framework that handles all the configuration and bootstrapping, or as an add on to ASP.Net Core applications.
 
+
+
+## Standalone Jasper Application
+
+```
+dotnet new --install JasperTemplates
+
+
+Jeremys-MacBook-Pro:jasper jeremydmiller$ cd ..
+Jeremys-MacBook-Pro:code jeremydmiller$ mkdir JasperApp
+Jeremys-MacBook-Pro:code jeremydmiller$ cd JasperApp
+Jeremys-MacBook-Pro:JasperApp jeremydmiller$ dotnet new jasper
+The template "Jasper Service" was created successfully.
+Jeremys-MacBook-Pro:JasperApp jeremydmiller$ ls
+JasperApp.csproj	JasperConfig.cs		Program.cs		appsettings.json
+Jeremys-MacBook-Pro:JasperApp jeremydmiller$ dotnet run
+
+
+
+```
+
+
+
+
+## Adding Jasper to ASP.Net Core Application
+
+
+
 To create a new Jasper application, start by building a new console application:
 
 <pre>dotnet new console -n MyApp</pre>

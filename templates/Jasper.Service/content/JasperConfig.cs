@@ -1,6 +1,7 @@
 using System;
 using Jasper;
 using Jasper.CommandLine;
+using Microsoft.Extensions.Configuration;
 
 namespace JasperService
 {

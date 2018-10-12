@@ -9,17 +9,13 @@ The [documentation is published here](http://jasperfx.github.io/documentation).
 
 Jasper is a next generation application development framework for distributed server side development in .Net. At the moment, Jasper can be used as:
 
-1. A robust, but lightweight asynchronous messaging framework (call it a service bus if you have to, but know that there's no centralized broker)
 1. An in-memory command runner 
+1. A robust, but lightweight asynchronous messaging framework (call it a service bus if you have to, but know that there's no centralized broker)
 1. An alternative for authoring HTTP services within ASP.Net Core
 1. A dessert topping (just kidding)
 
 In all cases, Jasper can be used by itself or as an addon to an ASP.Net Core application. As much as possible, Jasper tries to leverage existing ASP.Net Core infrastructure.
 
-
-Jasper is being built on the CoreCLR as a replacement for a small subset of the older [FubuMVC](https://fubumvc.github.io) tooling. Roughly stated, Jasper
-intends to keep the things that have been successful in FubuMVC, ditch the things that weren't, and make the runtime pipeline
-be much more performant. Oh, and make the stacktraces from failures within the runtime pipeline be a whole lot simpler to read -- and yes, that's absolutely worth being one of the main goals.
 
 ## Working with the Code
 
