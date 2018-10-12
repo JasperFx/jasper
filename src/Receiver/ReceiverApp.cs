@@ -12,7 +12,9 @@ namespace Receiver
     {
         public ReceiverApp()
         {
-            Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
+            Configuration
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables();
 
             Hosting.UseUrls("http://*:5061").UseKestrel();
 

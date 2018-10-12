@@ -9,7 +9,7 @@
         <projectUrl>https://jasperfx.github.io/</projectUrl>
         <iconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <version>0.9.1</version>
+    <version>0.9.1.1</version>
     <description>
       dotnet-new template to create a headless Jasper service project.
     </description>
