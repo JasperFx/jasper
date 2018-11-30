@@ -234,8 +234,9 @@ task :templates => [:clean] do
 	Dir.mkdir 'template-target'
 
   Dir.chdir "template-target" do
+    sh "dotnet new --uninstall JasperTemplates"
     sh "dotnet new --uninstall jasper"
-		sh "dotnet new -i ../templates/Jasper.Service/Jasper.Service.#{TEMPLATE_VERSION}.nupkg"
+		sh "dotnet new -i ../templates/Jasper.Service/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
 		sh "dotnet new jasper"
 		sh "dotnet restore"
 		sh "dotnet run -- run"

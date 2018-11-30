@@ -1,88 +1,66 @@
 <!--title: Getting Started-->
 
 <[info]>
-Jasper only targets Netstandard 2.0 and higher at this time.
+Jasper only targets Netstandard 2.0 at this time.
 <[/info]>
 
-Jasper is a framework for building server side services in .Net. Jasper can be used as an alternative web framework for .Net, a service bus for messaging, as a "mediator" type
-pipeline within a different framework, or any combination thereof. Jasper can be used as either your main application framework that handles all the configuration and bootstrapping, or as an add on to ASP.Net Core applications.
+Jasper is a framework for command processing inside of .Net Core services. The command execution pipeline can be used as:
 
+1. A "mediator" type pipeline or an in memory messaging bus within a different framework like ASP.Net Core
+1. Used as a service bus in conjunction with topic-based queues like [RabbitMQ](https://www.rabbitmq.com/) for asynchronous messaging between services
+1. A lightweight service bus using its own transport mechanism
+1. An alternative for building HTTP services with ASP.Net Core
+1. Any combination of the above
 
+Jasper can either be in charge of your service's lifecycle as the primary application framework, or be added to an existing ASP.Net Core application. 
+Jasper tries very hard to be a good citizen within the greater ASP.Net Core ecosystem. 
 
 ## Standalone Jasper Application
 
+To create a standalone Jasper service, the quickest thing to do is to use a [dotnet new](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new?tabs=netcore21) template. First, install the latest `JasperTemplates` with this command:
+
 ```
 dotnet new --install JasperTemplates
-
-
-Jeremys-MacBook-Pro:jasper jeremydmiller$ cd ..
-Jeremys-MacBook-Pro:code jeremydmiller$ mkdir JasperApp
-Jeremys-MacBook-Pro:code jeremydmiller$ cd JasperApp
-Jeremys-MacBook-Pro:JasperApp jeremydmiller$ dotnet new jasper
-The template "Jasper Service" was created successfully.
-Jeremys-MacBook-Pro:JasperApp jeremydmiller$ ls
-JasperApp.csproj	JasperConfig.cs		Program.cs		appsettings.json
-Jeremys-MacBook-Pro:JasperApp jeremydmiller$ dotnet run
-
-
-
 ```
 
-
-
-
-## Adding Jasper to ASP.Net Core Application
-
-
-
-To create a new Jasper application, start by building a new console application:
-
-<pre>dotnet new console -n MyApp</pre>
-
-Then, go get Jasper from Nuget:
-
-PM> Install-Package Jasper
-Or, using paket:
-
-paket add nuget Jasper
-
-While this isn't expressly necessary, you probably want to create a new `JasperRegistry` that will define the active options and configuration for your application:
-
-<[sample:MyAppRegistry]>
-
-See <[linkto:documentation/bootstrapping/configuring_jasper]> for more information about using the `JasperRegistry` class.
-
-Now, to bootstrap your application, add this code to the entrypoint of your console application:
-
-<[sample:QuickStartConsoleMain]>
-
-By itself, this doesn't really do much, so let's start listening for messages from other applications using Jasper's built in, lightweight transport.
-
-
-<[sample:MyAppRegistryWithOptions]>
-
-Now, when you run the console application you should see output like this:
+Next, build a new application using the `jasper` template in this case called "JasperApp" with this command:
 
 ```
+dotnet new jasper -o JasperApp
+```
+
+Finally, if you run this new application with this command:
+
+```
+cd JasperApp
+dotnet run
+```
+
+You should see some output in the console describing the running Jasper application like this:
+
+```
+Running service 'JasperConfig'
+Application Assembly: JasperApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 Hosting environment: Production
-Content root path: /Users/jeremill/code/jasper/src/MyApp/bin/Debug/netcoreapp2.0
-Listening for messages at loopback://delayed/
-Listening for messages at jasper://localhost:2333/replies
-Listening for messages at jasper://localhost:2222/incoming
+Content root path: /SomeDirectory/JasperApp/bin/Debug/netcoreapp2.1/
+Hosted Service: Jasper.Messaging.MessagingActivator
+Hosted Service: Jasper.Messaging.Logging.MetricsCollector
+Hosted Service: Jasper.Messaging.BackPressureAgent
+Listening for loopback messages
+
+Active sending agent to loopback://retries/
+
 Application started. Press Ctrl+C to shut down.
 ```
 
-See <[linkto:documentation/bootstrapping]> for more information about idiomatic Jasper bootstrapping.
+Your new Jasper service isn't actually *doing* anything useful, but you're got a working skeleton. To learn more about what you can do with Jasper, see the <[linkto:documentation/tutorials]> page. See <[linkto:documentation/bootstrapping]> for more information about idiomatic Jasper bootstrapping.
 
 That covers bootstrapping Jasper by itself, but next let's see how you can add Jasper
 to an idiomatic ASP.Net Core application.
 
+
+
 ## Adding Jasper to an ASP.Net Core Application
-
-
-<[info]>
-As of Jasper 0.7, the ASP.Net Core integration was folded right back into the main library with optimized bootstrapping and there is no more "Jasper.Http" library.
-<[/info]>
 
 While you may certainly build headless services with Jasper, it's pretty likely that you will also want to integrate Jasper into
 ASP.Net Core applications.

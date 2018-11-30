@@ -11,7 +11,7 @@ discussions of setting up Jasper applications:
 ## Service Name
 
 By default, Jasper derives a descriptive _ServiceName_ for your application by taking the class name of your `JasperRegistry` and stripping off
-any "JasperRegistry" or "Registry" suffix. For diagnostic purposes and for the <[linkto:documentation/messaging/routing/subscriptions;title=dynamic subscriptions and service discovery]>, you may want to override the service name like so:
+any "JasperRegistry" or "Registry" suffix. For diagnostic purposes you may want to override the service name like so:
 
 <[sample:CustomServiceRegistry]>
 
