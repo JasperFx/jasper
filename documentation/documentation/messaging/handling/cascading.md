@@ -3,7 +3,7 @@
 
 Many times during the processing of a message you will need to create and send out other messages. Maybe you need to respond back to the original sender with a reply,
 maybe you need to trigger a subsequent action, or send out additional messages to start some kind of background processing. You can do that by just having
-your handler class use the `IServiceBus` interface as shown in this sample:
+your handler class use the `IMessageContext` interface as shown in this sample:
 
 <[sample:NoCascadingHandler]>
 
