@@ -8,5 +8,6 @@
             Settings.Messaging(_ => _.ThrowOnValidationErrors = false);
         }
     }
+
     // ENDSAMPLE
 }

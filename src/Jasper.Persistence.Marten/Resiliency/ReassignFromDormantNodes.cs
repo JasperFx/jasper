@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
-using Jasper.Messaging.Transports.Configuration;
 using Marten;
 using Marten.Services;
 using Marten.Util;
-using Npgsql;
 
 namespace Jasper.Persistence.Marten.Resiliency
 {
@@ -18,10 +14,7 @@ namespace Jasper.Persistence.Marten.Resiliency
         public SqlCommandOperation(string sql)
         {
             _sql = sql.Trim();
-            if (!_sql.EndsWith(";"))
-            {
-                _sql += ";";
-            }
+            if (!_sql.EndsWith(";")) _sql += ";";
         }
 
         public void ConfigureCommand(CommandBuilder builder)
@@ -35,11 +28,11 @@ namespace Jasper.Persistence.Marten.Resiliency
     public class ReassignFromDormantNodes : IMessagingAction
     {
         private readonly EnvelopeTables _marker;
-        public readonly int ReassignmentLockId = "jasper-reassign-envelopes".GetHashCode();
         private readonly string _reassignDormantNodeIncomingSql;
         private readonly string _reassignDormantNodeOutgoingSql;
+        public readonly int ReassignmentLockId = "jasper-reassign-envelopes".GetHashCode();
 
-        public ReassignFromDormantNodes(EnvelopeTables marker, MessagingSettings settings)
+        public ReassignFromDormantNodes(EnvelopeTables marker, JasperOptions settings)
         {
             _marker = marker;
 
@@ -68,10 +61,7 @@ where
 
         public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
         {
-            if (!await session.TryGetGlobalTxLock(ReassignmentLockId))
-            {
-                return;
-            }
+            if (!await session.TryGetGlobalTxLock(ReassignmentLockId)) return;
 
             session.QueueOperation(new SqlCommandOperation(_reassignDormantNodeIncomingSql));
             session.QueueOperation(new SqlCommandOperation(_reassignDormantNodeOutgoingSql));

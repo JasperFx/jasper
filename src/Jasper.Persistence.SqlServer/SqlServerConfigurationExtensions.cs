@@ -9,7 +9,7 @@ namespace Jasper.Persistence.SqlServer
     public static class SqlServerConfigurationExtensions
     {
         /// <summary>
-        /// Register sql server backed message persistence to a known connection string
+        ///     Register sql server backed message persistence to a known connection string
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="connectionString"></param>
@@ -19,9 +19,7 @@ namespace Jasper.Persistence.SqlServer
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<SqlServerBackedPersistence>().Any())
-            {
                 parent.Include<SqlServerBackedPersistence>();
-            }
 
             settings.Alter<SqlServerSettings>(x =>
             {
@@ -31,8 +29,8 @@ namespace Jasper.Persistence.SqlServer
         }
 
         /// <summary>
-        /// Register sql server backed message persistence based on configuration and the
-        /// development environment
+        ///     Register sql server backed message persistence based on configuration and the
+        ///     development environment
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
@@ -41,9 +39,7 @@ namespace Jasper.Persistence.SqlServer
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<SqlServerBackedPersistence>().Any())
-            {
                 parent.Include<SqlServerBackedPersistence>();
-            }
 
             settings.Alter(configure);
         }

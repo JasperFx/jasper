@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Conneg.Json;
 using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Testing.Messaging;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -16,22 +13,6 @@ namespace Jasper.Testing.Conneg
     public class registering_and_discovering_custom_readers_and_writers : IntegrationContext
     {
         public MessagingSerializationGraph theSerialization => Runtime.Get<MessagingSerializationGraph>();
-
-        [Fact]
-        public async Task scans_for_custom_writers_in_the_app_assembly()
-        {
-            await withAllDefaults();
-            theSerialization.WriterFor(typeof(Message5)).ContentTypes
-                .ShouldHaveTheSameElementsAs("application/json", "green", "blue");
-        }
-
-        [Fact]
-        public async Task scans_for_custom_readers_in_the_app_assembly()
-        {
-            await withAllDefaults();
-            theSerialization.ReaderFor(typeof(Message1).ToMessageTypeName())
-                .ContentTypes.ShouldContain("green");
-        }
 
         [Fact]
         public async Task can_override_json_serialization_for_a_mesage()
@@ -60,14 +41,33 @@ namespace Jasper.Testing.Conneg
             theSerialization.ReaderFor(typeof(OverriddenJsonMessage).ToMessageTypeName())["application/json"]
                 .ShouldBeOfType<OverrideJsonReader>();
         }
+
+        [Fact]
+        public async Task scans_for_custom_readers_in_the_app_assembly()
+        {
+            await withAllDefaults();
+            theSerialization.ReaderFor(typeof(Message1).ToMessageTypeName())
+                .ContentTypes.ShouldContain("green");
+        }
+
+        [Fact]
+        public async Task scans_for_custom_writers_in_the_app_assembly()
+        {
+            await withAllDefaults();
+            theSerialization.WriterFor(typeof(Message5)).ContentTypes
+                .ShouldHaveTheSameElementsAs("application/json", "green", "blue");
+        }
     }
 
-    public class OverriddenJsonMessage{}
+    public class OverriddenJsonMessage
+    {
+    }
 
     public class OverrideJsonWriter : IMessageSerializer
     {
         public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
         public string ContentType { get; } = "application/json";
+
         public byte[] Write(object model)
         {
             throw new NotSupportedException();
@@ -84,6 +84,7 @@ namespace Jasper.Testing.Conneg
         public string MessageType { get; } = typeof(OverriddenJsonMessage).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
         public string ContentType { get; } = "application/json";
+
         public object ReadFromData(byte[] data)
         {
             throw new NotSupportedException();
@@ -100,6 +101,7 @@ namespace Jasper.Testing.Conneg
         public string MessageType { get; } = typeof(Message1).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(Message1);
         public string ContentType { get; } = "green";
+
         public object ReadFromData(byte[] data)
         {
             throw new NotSupportedException();
@@ -116,6 +118,7 @@ namespace Jasper.Testing.Conneg
     {
         public Type DotNetType { get; } = typeof(Message5);
         public string ContentType { get; } = "green";
+
         public byte[] Write(object model)
         {
             throw new NotSupportedException();
@@ -131,6 +134,7 @@ namespace Jasper.Testing.Conneg
     {
         public Type DotNetType { get; } = typeof(Message5);
         public string ContentType { get; } = "blue";
+
         public byte[] Write(object model)
         {
             throw new NotSupportedException();

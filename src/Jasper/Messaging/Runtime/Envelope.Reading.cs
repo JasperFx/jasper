@@ -11,12 +11,8 @@ namespace Jasper.Messaging.Runtime
         public void ReadPropertiesFromDictionary(IDictionary<string, object> dictionary)
         {
             foreach (var pair in dictionary)
-            {
                 if (pair.Value is string)
-                {
                     ReadData(pair.Key, pair.Value.As<string>());
-                }
-            }
         }
 
         private void ReadData(string key, string value)
@@ -42,10 +38,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case OriginalIdKey:
-                        if (Guid.TryParse(value, out Guid originalId))
-                        {
-                            OriginalId = originalId;
-                        }
+                        if (Guid.TryParse(value, out var originalId)) OriginalId = originalId;
                         break;
 
                     case SagaIdKey:
@@ -53,10 +46,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case ParentIdKey:
-                        if (Guid.TryParse(value, out Guid parentId))
-                        {
-                            ParentId = parentId;
-                        }
+                        if (Guid.TryParse(value, out var parentId)) ParentId = parentId;
                         break;
 
                     case DestinationKey:
@@ -68,10 +58,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case IdKey:
-                        if (Guid.TryParse(value, out Guid id))
-                        {
-                            Id = id;
-                        }
+                        if (Guid.TryParse(value, out var id)) Id = id;
                         break;
 
                     case ReplyRequestedKey:
@@ -102,7 +89,6 @@ namespace Jasper.Messaging.Runtime
                     case ReceivedAtKey:
                         ReceivedAt = value.ToUri();
                         break;
-
 
 
                     default:

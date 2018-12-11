@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 
 namespace Jasper.Http.Routing.Codegen
 {
     public abstract class RouteArgumentFrame : SyncFrame
     {
-        public int Position { get; }
-        public Variable Variable { get; }
-        public Variable Segments { get; private set; }
-
         protected RouteArgumentFrame(string name, int position, Type variableType)
         {
             Variable = new Variable(variableType, name, this);
             Position = position;
-
         }
+
+        public int Position { get; }
+        public Variable Variable { get; }
+        public Variable Segments { get; private set; }
 
         public override IEnumerable<Variable> Creates
         {

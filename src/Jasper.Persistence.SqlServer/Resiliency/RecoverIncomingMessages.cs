@@ -8,24 +8,23 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Resiliency
 {
-
     public class RecoverIncomingMessages : IMessagingAction
     {
         public static readonly int IncomingMessageLockId = "recover-incoming-messages".GetHashCode();
+        private readonly string _findAtLargeEnvelopesSql;
         private readonly ITransportLogger _logger;
         private readonly SqlServerSettings _mssqlSettings;
-        private readonly MessagingSettings _settings;
+        private readonly JasperOptions _settings;
         private readonly IWorkerQueue _workers;
-        private readonly string _findAtLargeEnvelopesSql;
 
-        public RecoverIncomingMessages(IWorkerQueue workers, MessagingSettings settings, SqlServerSettings mssqlSettings,
+        public RecoverIncomingMessages(IWorkerQueue workers, JasperOptions settings,
+            SqlServerSettings mssqlSettings,
             ITransportLogger logger)
         {
             _workers = workers;
@@ -33,7 +32,8 @@ namespace Jasper.Persistence.SqlServer.Resiliency
             _mssqlSettings = mssqlSettings;
             _logger = logger;
 
-            _findAtLargeEnvelopesSql = $"select top {settings.Retries.RecoveryBatchSize} body from {mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
+            _findAtLargeEnvelopesSql =
+                $"select top {settings.Retries.RecoveryBatchSize} body from {mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
         }
 
         public async Task Execute(SqlConnection conn, ISchedulingAgent agent)
@@ -64,8 +64,6 @@ namespace Jasper.Persistence.SqlServer.Resiliency
                 await markOwnership(conn, tx, incoming);
 
                 tx.Commit();
-
-
             }
             catch (Exception)
             {
@@ -83,9 +81,7 @@ namespace Jasper.Persistence.SqlServer.Resiliency
 
             if (incoming.Count == _settings.Retries.RecoveryBatchSize &&
                 _workers.QueuedCount < _settings.MaximumLocalEnqueuedBackPressureThreshold)
-            {
                 agent.RescheduleIncomingRecovery();
-            }
         }
 
         private async Task markOwnership(SqlConnection conn, SqlTransaction tx, List<Envelope> incoming)

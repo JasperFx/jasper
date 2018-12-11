@@ -6,9 +6,8 @@ using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
 using Shouldly;
 using Xunit;
 
@@ -16,8 +15,6 @@ namespace Jasper.Testing.Http.Model
 {
     public class RouteChainTester
     {
-
-
         private RouteChain chainFor(Expression<Action<RouteChainTarget>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
@@ -49,7 +46,6 @@ namespace Jasper.Testing.Http.Model
         }
 
 
-
         [Fact]
         public void will_apply_generic_chain_attributes()
         {
@@ -69,7 +65,6 @@ namespace Jasper.Testing.Http.Model
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-
         }
     }
 
@@ -81,7 +76,6 @@ namespace Jasper.Testing.Http.Model
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-
         }
     }
 
@@ -90,12 +84,10 @@ namespace Jasper.Testing.Http.Model
         [Middleware(typeof(FakeMiddleware1), typeof(FakeMiddleware2))]
         public void post_select_name(string name)
         {
-
         }
 
         public void post_command(Input1 input)
         {
-
         }
 
         public string get_command()
@@ -106,7 +98,6 @@ namespace Jasper.Testing.Http.Model
 
         public void put_command()
         {
-
         }
 
         public Task post_input()
@@ -127,17 +118,13 @@ namespace Jasper.Testing.Http.Model
 
     public class Input1
     {
-
     }
 
     public class Resource1
     {
-
     }
 
     public class Resource2
     {
-
     }
-
 }

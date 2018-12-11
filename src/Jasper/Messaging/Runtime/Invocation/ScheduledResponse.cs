@@ -4,8 +4,6 @@ namespace Jasper.Messaging.Runtime.Invocation
 {
     public class ScheduledResponse : ISendMyself
     {
-        private readonly object _outgoing;
-
         public ScheduledResponse(object outgoing, TimeSpan delay) : this(outgoing, DateTime.UtcNow.Add(delay))
         {
             Delay = delay;
@@ -13,11 +11,11 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         public ScheduledResponse(object outgoing, DateTime time)
         {
-            _outgoing = outgoing;
+            Outgoing = outgoing;
             Time = time;
         }
 
-        public object Outgoing => _outgoing;
+        public object Outgoing { get; }
 
         public DateTime Time { get; }
 
@@ -25,7 +23,7 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         public Envelope CreateEnvelope(Envelope original)
         {
-            var outgoing = original.ForResponse(_outgoing);
+            var outgoing = original.ForResponse(Outgoing);
             outgoing.ExecutionTime = Time;
 
             return outgoing;
@@ -33,7 +31,7 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         public override string ToString()
         {
-            return string.Format("Execute {0} at time: {1}", _outgoing, Time);
+            return string.Format("Execute {0} at time: {1}", Outgoing, Time);
         }
     }
 }

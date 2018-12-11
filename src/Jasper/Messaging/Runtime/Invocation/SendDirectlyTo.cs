@@ -16,7 +16,6 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         public SendDirectlyTo(string uriString, object message) : this(uriString.ToUri(), message)
         {
-
         }
 
         public Envelope CreateEnvelope(Envelope original)

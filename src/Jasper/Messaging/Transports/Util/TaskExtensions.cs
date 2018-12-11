@@ -6,7 +6,6 @@ namespace Jasper.Messaging.Transports.Util
 {
     public static class TaskExtensions
     {
-
         public static Task TimeoutAfter(this Task task, int millisecondsTimeout)
         {
             return task.ContinueWith(_ => true).TimeoutAfter(millisecondsTimeout);
@@ -17,15 +16,10 @@ namespace Jasper.Messaging.Transports.Util
         public static Task<T> TimeoutAfter<T>(this Task<T> task, int millisecondsTimeout)
         {
             // Short-circuit #1: infinite timeout or task already completed
-            if (task.IsCompleted || (millisecondsTimeout == Timeout.Infinite))
-            {
-                // Either the task has already completed or timeout will never occur.
-                // No proxy necessary.
-                return task;
-            }
+            if (task.IsCompleted || millisecondsTimeout == Timeout.Infinite) return task;
 
             // tcs.Task will be returned as a proxy to the caller
-            TaskCompletionSource<T> tcs =
+            var tcs =
                 new TaskCompletionSource<T>();
 
             // Short-circuit #2: zero timeout
@@ -37,10 +31,10 @@ namespace Jasper.Messaging.Transports.Util
             }
 
             // Set up a timer to complete after the specified timeout period
-            Timer timer = new Timer(state =>
+            var timer = new Timer(state =>
             {
                 // Recover your state information
-                var myTcs = (TaskCompletionSource<T>)state;
+                var myTcs = (TaskCompletionSource<T>) state;
 
                 // Fault our proxy with a TimeoutException
                 myTcs.TrySetException(new TimeoutException());
@@ -51,7 +45,7 @@ namespace Jasper.Messaging.Transports.Util
                 {
                     // Recover our state data
                     var tuple =
-                        (Tuple<Timer, TaskCompletionSource<T>>)state;
+                        (Tuple<Timer, TaskCompletionSource<T>>) state;
 
                     // Cancel the Timer
                     tuple.Item1.Dispose();
@@ -79,9 +73,11 @@ namespace Jasper.Messaging.Transports.Util
                     proxy.TrySetCanceled();
                     break;
                 case TaskStatus.RanToCompletion:
-                    Task<TResult> castedSource = source as Task<TResult>;
+                    var castedSource = source as Task<TResult>;
                     proxy.TrySetResult(
-                        castedSource == null ? default(TResult) : // source is a Task
+                        castedSource == null
+                            ? default(TResult)
+                            : // source is a Task
                             castedSource.Result); // source is a Task<TResult>
                     break;
             }

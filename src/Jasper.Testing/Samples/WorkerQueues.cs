@@ -33,24 +33,31 @@ namespace Jasper.Testing.Samples
             Handlers.Worker("durable")
                 .HandleMessages(x => x.CanBeCastTo<DurableMessage>())
                 .IsDurable();
-
         }
     }
     // ENDSAMPLE
 
-    public class StatusUpdated{}
+    public class StatusUpdated
+    {
+    }
 
-    public class SuperImportantMessage{}
+    public class SuperImportantMessage
+    {
+    }
 
-    public abstract class DurableMessage{}
+    public abstract class DurableMessage
+    {
+    }
 
-    public abstract class EphemeralMessage{}
+    public abstract class EphemeralMessage
+    {
+    }
 
     // SAMPLE: using-WorkerAttribute
     [Worker("important", IsDurable = true)]
     public class MyAppMessage
     {
-
     }
+
     // ENDSAMPLE
 }

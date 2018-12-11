@@ -8,17 +8,17 @@ namespace Jasper.Messaging.Configuration
     public static class EnvironmentCheckServiceExtensions
     {
         /// <summary>
-        /// Shorthand to register an IEnvironmentCheck service
+        ///     Shorthand to register an IEnvironmentCheck service
         /// </summary>
         /// <param name="services"></param>
         /// <typeparam name="T"></typeparam>
         public static void EnvironmentCheck(this IServiceCollection services, IEnvironmentCheck check)
         {
-            services.AddSingleton<IEnvironmentCheck>(check);
+            services.AddSingleton(check);
         }
 
         /// <summary>
-        /// Shorthand to register an IEnvironmentCheck service
+        ///     Shorthand to register an IEnvironmentCheck service
         /// </summary>
         /// <param name="services"></param>
         /// <typeparam name="T"></typeparam>
@@ -28,18 +28,19 @@ namespace Jasper.Messaging.Configuration
         }
 
         /// <summary>
-        /// Register an environment check for the supplied action
+        ///     Register an environment check for the supplied action
         /// </summary>
         /// <param name="services"></param>
         /// <param name="description"></param>
         /// <param name="action"></param>
-        public static void EnvironmentCheck(this IServiceCollection services, string description, Action<JasperRuntime> action)
+        public static void EnvironmentCheck(this IServiceCollection services, string description,
+            Action<JasperRuntime> action)
         {
             services.AddSingleton<IEnvironmentCheck>(new LambdaCheck(description, action));
         }
 
         /// <summary>
-        /// Register an environment check for the supplied action using a registered service T
+        ///     Register an environment check for the supplied action using a registered service T
         /// </summary>
         /// <param name="services"></param>
         /// <param name="description"></param>
@@ -51,7 +52,7 @@ namespace Jasper.Messaging.Configuration
         }
 
         /// <summary>
-        /// Register an environment check for the supplied action
+        ///     Register an environment check for the supplied action
         /// </summary>
         /// <param name="services"></param>
         /// <param name="description"></param>
@@ -62,7 +63,7 @@ namespace Jasper.Messaging.Configuration
         }
 
         /// <summary>
-        /// Register an environment check for an asynchronous operation
+        ///     Register an environment check for an asynchronous operation
         /// </summary>
         /// <param name="services"></param>
         /// <param name="description"></param>
@@ -70,22 +71,20 @@ namespace Jasper.Messaging.Configuration
         /// <param name="timeout"></param>
         /// <typeparam name="T"></typeparam>
         /// <exception cref="TimeoutException"></exception>
-        public static void EnvironmentCheck<T>(this IServiceCollection services, string description, Func<T, Task> func, TimeSpan timeout)
+        public static void EnvironmentCheck<T>(this IServiceCollection services, string description, Func<T, Task> func,
+            TimeSpan timeout)
         {
             services.EnvironmentCheck(description, r =>
             {
                 var task = func(r.Get<T>());
                 task.Wait(timeout);
 
-                if (!task.IsCompleted)
-                {
-                    throw new TimeoutException(description);
-                }
+                if (!task.IsCompleted) throw new TimeoutException(description);
             });
         }
 
         /// <summary>
-        /// Register an environment check for the existence of the named file
+        ///     Register an environment check for the existence of the named file
         /// </summary>
         /// <param name="services"></param>
         /// <param name="file"></param>

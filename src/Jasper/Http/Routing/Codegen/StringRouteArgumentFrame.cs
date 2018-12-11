@@ -1,5 +1,4 @@
-﻿using Lamar.Codegen;
-using Lamar.Compilation;
+﻿using LamarCompiler;
 
 namespace Jasper.Http.Routing.Codegen
 {

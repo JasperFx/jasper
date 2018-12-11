@@ -9,6 +9,10 @@ namespace Jasper.Http.Routing
     {
         internal readonly List<object> Arguments = new List<object>();
 
+        private MethodCallParser()
+        {
+        }
+
         public static List<object> ToArguments(Expression expression)
         {
             var parser = new MethodCallParser();
@@ -23,10 +27,6 @@ namespace Jasper.Http.Routing
             parser.Visit(expression);
 
             return parser.Arguments;
-        } 
-
-        private MethodCallParser()
-        {
         }
 
         protected override Expression VisitConstant(ConstantExpression node)
@@ -41,9 +41,9 @@ namespace Jasper.Http.Routing
             if (member.Expression is ConstantExpression &&
                 member.Member is FieldInfo)
             {
-                object container =
-                    ((ConstantExpression)member.Expression).Value;
-                object value = ((FieldInfo)member.Member).GetValue(container);
+                var container =
+                    ((ConstantExpression) member.Expression).Value;
+                var value = ((FieldInfo) member.Member).GetValue(container);
 
                 Arguments.Add(value);
 

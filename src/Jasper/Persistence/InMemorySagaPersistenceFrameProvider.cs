@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Messaging.Sagas;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using ReflectionExtensions = Baseline.Reflection.ReflectionExtensions;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 
 namespace Jasper.Persistence
 {
-
-
-
-
     public class InMemorySagaPersistenceFrameProvider : ISagaPersistenceFrameProvider
     {
         public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
@@ -27,13 +23,9 @@ namespace Jasper.Persistence
 
             var frame = new InMemorySagaPersistenceFrame(sagaStateType, sagaId, existence);
 
-            if (existence == SagaStateExistence.Existing)
-            {
-                loadedState = frame.Document;
-            }
+            if (existence == SagaStateExistence.Existing) loadedState = frame.Document;
 
             return frame;
-
         }
 
         public Type DetermineSagaIdType(Type sagaStateType)

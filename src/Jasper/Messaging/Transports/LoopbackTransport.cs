@@ -8,7 +8,6 @@ namespace Jasper.Messaging.Transports
 {
     public class LoopbackTransport : ITransport
     {
-
         public void Dispose()
         {
             // Nothing really

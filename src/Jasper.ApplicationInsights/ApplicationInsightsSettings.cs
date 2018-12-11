@@ -12,8 +12,8 @@ namespace Jasper.ApplicationInsights
     public static class ApplicationInsightSettingsExtensions
     {
         /// <summary>
-        /// If you already know your ApplicationInsights InstrumentationKey, use
-        /// this to set it for the Jasper integration
+        ///     If you already know your ApplicationInsights InstrumentationKey, use
+        ///     this to set it for the Jasper integration
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="instrumentationKey"></param>
@@ -23,17 +23,18 @@ namespace Jasper.ApplicationInsights
         }
 
         /// <summary>
-        /// Configure the Appication Insights instrumentation key value from
-        /// the application's IConfiguration
+        ///     Configure the Appication Insights instrumentation key value from
+        ///     the application's IConfiguration
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="valueSource"></param>
-        public static void ApplicationInsightsKeyIs(this JasperSettings settings, Func<IConfiguration, string> valueSource)
+        public static void ApplicationInsightsKeyIs(this JasperSettings settings,
+            Func<IConfiguration, string> valueSource)
         {
-        settings.Alter<ApplicationInsightsSettings>((c, s) =>
-        {
-            s.InstrumentationKey = valueSource(c.Configuration);
-        });
+            settings.Alter<ApplicationInsightsSettings>((c, s) =>
+            {
+                s.InstrumentationKey = valueSource(c.Configuration);
+            });
         }
     }
 }

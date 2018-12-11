@@ -1,5 +1,4 @@
 ﻿using Jasper;
-using Jasper.Messaging.Transports.Configuration;
 
 namespace benchmarks
 {

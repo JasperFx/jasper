@@ -1,5 +1,4 @@
 ﻿using Jasper.Configuration;
-using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,12 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Jasper.Messaging.Tracking
 {
     /// <summary>
-    /// Add the message tracking support to your application
-    /// for reliable automated testing
+    ///     Add the message tracking support to your application
+    ///     for reliable automated testing
     /// </summary>
     public class MessageTrackingExtension : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptionsBuilder registry)
         {
             registry.Services.AddSingleton<MessageHistory>();
 

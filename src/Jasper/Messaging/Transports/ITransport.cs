@@ -9,14 +9,14 @@ namespace Jasper.Messaging.Transports
     {
         string Protocol { get; }
 
-        ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation);
-
         Uri ReplyUri { get; }
+
+        ListeningStatus ListeningStatus { get; set; }
+
+        ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation);
 
         void StartListening(IMessagingRoot root);
 
         void Describe(TextWriter writer);
-
-        ListeningStatus ListeningStatus { get; set; }
     }
 }

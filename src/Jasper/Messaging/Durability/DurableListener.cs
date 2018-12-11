@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
@@ -18,10 +17,10 @@ namespace Jasper.Messaging.Durability
         private readonly IEnvelopePersistor _persistor;
         private readonly IWorkerQueue _queues;
         private readonly IRetries _retries;
-        private readonly MessagingSettings _settings;
+        private readonly JasperOptions _settings;
 
         public DurableListener(IListeningAgent agent, IWorkerQueue queues, ITransportLogger logger,
-            MessagingSettings settings, IRetries retries, IEnvelopePersistor persistor)
+            JasperOptions settings, IRetries retries, IEnvelopePersistor persistor)
         {
             _agent = agent;
             _queues = queues;

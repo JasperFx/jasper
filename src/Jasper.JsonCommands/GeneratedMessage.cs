@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
 using Baseline;
-using Jasper.Messaging;
 using Jasper.Util;
-using Lamar.Compilation;
+using LamarCompiler;
 
 namespace Jasper.JsonCommands
 {
@@ -28,7 +27,8 @@ namespace Jasper.JsonCommands
 
         public void WriteAnnotations(ISourceWriter writer)
         {
-            writer.WriteLine($"[{typeof(MessageIdentityAttribute).FullName.TrimEnd("Attribute".ToCharArray())}(\"{MessageAlias}\")]");
+            writer.WriteLine(
+                $"[{typeof(MessageIdentityAttribute).FullName.TrimEnd("Attribute".ToCharArray())}(\"{MessageAlias}\")]");
             writer.WriteLine($"public partial class {ClassName} {{}}");
             writer.BlankLine();
         }

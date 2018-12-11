@@ -15,13 +15,6 @@ namespace Jasper.Testing.Messaging.Transports.Receiving
     public class SocketListeningAgentTests
     {
         [Fact]
-        public void status_is_accepting_by_default()
-        {
-            new SocketListeningAgent(IPAddress.Any, 5500, CancellationToken.None)
-                .Status.ShouldBe(ListeningStatus.Accepting);
-        }
-
-        [Fact]
         public async Task receive_when_it_is_latched()
         {
             var stream = new MemoryStream();
@@ -39,6 +32,13 @@ namespace Jasper.Testing.Messaging.Transports.Receiving
             bytes.ShouldBe(WireProtocol.ProcessingFailureBuffer);
 
             callback.DidNotReceive().Received();
+        }
+
+        [Fact]
+        public void status_is_accepting_by_default()
+        {
+            new SocketListeningAgent(IPAddress.Any, 5500, CancellationToken.None)
+                .Status.ShouldBe(ListeningStatus.Accepting);
         }
     }
 }

@@ -3,8 +3,8 @@ using System.Linq;
 using Jasper.Configuration;
 using Jasper.Messaging.Sagas;
 using Jasper.Persistence.Marten.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Marten;
 using Marten.Schema;
 using Marten.Util;
@@ -13,7 +13,6 @@ namespace Jasper.Persistence.Marten.Persistence.Sagas
 {
     public class MartenSagaPersistenceFrameProvider : ISagaPersistenceFrameProvider, ITransactionFrameProvider
     {
-
         public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState)
         {
@@ -27,7 +26,8 @@ namespace Jasper.Persistence.Marten.Persistence.Sagas
             {
                 var mapping = new DocumentMapping(sagaStateType, new StoreOptions());
 
-                sagaId = new Variable(mapping.IdMember.GetMemberType(), existingState.Usage + "." + mapping.IdMember.Name);
+                sagaId = new Variable(mapping.IdMember.GetMemberType(),
+                    existingState.Usage + "." + mapping.IdMember.Name);
 
 
                 loadedState = existingState;
@@ -49,10 +49,7 @@ namespace Jasper.Persistence.Marten.Persistence.Sagas
 
         public void ApplyTransactionSupport(IChain chain)
         {
-            if (!chain.Middleware.OfType<TransactionalFrame>().Any())
-            {
-                chain.Middleware.Add(new TransactionalFrame());
-            }
+            if (!chain.Middleware.OfType<TransactionalFrame>().Any()) chain.Middleware.Add(new TransactionalFrame());
         }
     }
 }

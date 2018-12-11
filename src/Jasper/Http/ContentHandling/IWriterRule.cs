@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Jasper.Http.Model;
+﻿using Jasper.Http.Model;
 
 namespace Jasper.Http.ContentHandling
 {

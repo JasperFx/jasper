@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices.ComTypes;
 using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 
@@ -8,10 +7,6 @@ namespace Jasper.Testing.Samples
     // SAMPLE: MyAppRegistry
     public class MyAppRegistry : JasperRegistry
     {
-        public MyAppRegistry()
-        {
-            // Configure or select options in this constructor function
-        }
     }
     // ENDSAMPLE
 
@@ -19,10 +14,6 @@ namespace Jasper.Testing.Samples
     // SAMPLE: ServiceBusApp
     public class ServiceBusApp : JasperRegistry
     {
-        public ServiceBusApp()
-        {
-            // Customize your messaging setup here
-        }
     }
     // ENDSAMPLE
 
@@ -54,6 +45,7 @@ namespace Jasper.Testing.Samples
             // do something here with the created variable...
         }
     }
+
     // ENDSAMPLE
 }
 
@@ -67,5 +59,6 @@ namespace Jasper.Testing.Samples2
             Hosting.UseKestrel();
         }
     }
+
     // ENDSAMPLE
 }

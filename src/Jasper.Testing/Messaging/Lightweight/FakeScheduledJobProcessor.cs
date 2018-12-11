@@ -10,11 +10,6 @@ namespace Jasper.Testing.Messaging.Lightweight
     {
         private readonly TaskCompletionSource<Envelope> _envelope = new TaskCompletionSource<Envelope>();
 
-        public Task<Envelope> Envelope()
-        {
-            return _envelope.Task;
-        }
-
         public void Enqueue(DateTimeOffset executionTime, Envelope envelope)
         {
             envelope.ExecutionTime = executionTime;
@@ -46,12 +41,16 @@ namespace Jasper.Testing.Messaging.Lightweight
             throw new NotImplementedException();
         }
 
-        public void Start(IWorkerQueue workerQueue)
+        public void Dispose()
         {
-
         }
 
-        public void Dispose()
+        public Task<Envelope> Envelope()
+        {
+            return _envelope.Task;
+        }
+
+        public void Start(IWorkerQueue workerQueue)
         {
         }
     }

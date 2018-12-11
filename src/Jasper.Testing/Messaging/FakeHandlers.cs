@@ -19,26 +19,40 @@
 
     public class DifferentInput
     {
-
     }
 
     public class SpecialInput : Input
     {
-
     }
 
     public class Output
     {
     }
 
-    public interface IInput { }
-    public abstract class InputBase { }
-    public class Input1 : InputBase, IInput { }
-    public class Input2 { }
+    public interface IInput
+    {
+    }
+
+    public abstract class InputBase
+    {
+    }
+
+    public class Input1 : InputBase, IInput
+    {
+    }
+
+    public class Input2
+    {
+    }
 
     public class SomeHandler
     {
-        public void Interface(IInput input) { }
-        public void BaseClass(InputBase input) { }
+        public void Interface(IInput input)
+        {
+        }
+
+        public void BaseClass(InputBase input)
+        {
+        }
     }
 }

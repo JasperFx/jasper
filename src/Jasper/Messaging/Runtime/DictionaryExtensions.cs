@@ -22,13 +22,9 @@ namespace Jasper.Messaging.Runtime
             if (dict.ContainsKey(key))
             {
                 if (value == null)
-                {
                     dict.Remove(key);
-                }
                 else
-                {
                     dict[key] = value.ToString();
-                }
             }
             else
             {
@@ -48,10 +44,7 @@ namespace Jasper.Messaging.Runtime
 
         public static DateTime? GetNullableDateTime(this IDictionary<string, string> dict, string key)
         {
-            if (dict.ContainsKey(key))
-            {
-                return XmlConvert.ToDateTime(dict[key], XmlDateTimeSerializationMode.Utc);
-            }
+            if (dict.ContainsKey(key)) return XmlConvert.ToDateTime(dict[key], XmlDateTimeSerializationMode.Utc);
 
             return null;
         }

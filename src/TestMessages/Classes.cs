@@ -6,7 +6,10 @@ namespace TestMessages
     {
         public string UserId { get; set; }
     }
-    public class EditUser{}
+
+    public class EditUser
+    {
+    }
 
     public class DeleteUser
     {
@@ -51,5 +54,4 @@ namespace TestMessages
         public Guid Id { get; set; }
         public string MessageType { get; set; }
     }
-
 }

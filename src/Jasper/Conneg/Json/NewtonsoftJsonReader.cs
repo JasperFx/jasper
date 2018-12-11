@@ -15,21 +15,20 @@ namespace Jasper.Conneg.Json
 {
     public class NewtonsoftJsonReader : IMessageDeserializer
     {
-        private readonly ArrayPool<char> _charPool;
         private readonly ArrayPool<byte> _bytePool;
+        private readonly ArrayPool<char> _charPool;
         private readonly JsonArrayPool<char> _jsonCharPool;
         private readonly ObjectPool<JsonSerializer> _serializerPool;
-        private int _bufferSize = 1024;
+        private readonly int _bufferSize = 1024;
 
         internal NewtonsoftJsonReader(
             Type messageType,
             ArrayPool<char> charPool,
             ArrayPool<byte> bytePool,
             ObjectPool<JsonSerializer> serializerPool
-            )
+        )
             : this(messageType, charPool, bytePool, serializerPool, "application/json")
         {
-
         }
 
 
@@ -51,7 +50,6 @@ namespace Jasper.Conneg.Json
             MessageType = messageType.ToMessageTypeName();
             ContentType = contentType;
         }
-
 
 
         public string MessageType { get; }

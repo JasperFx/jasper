@@ -4,7 +4,6 @@ using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
 using TestMessages;
 
 namespace Sender
@@ -13,14 +12,16 @@ namespace Sender
     {
         public SenderApp()
         {
-            Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
+            Hosting.ConfigureAppConfiguration((_, config) =>
+            {
+                config
+                    .AddJsonFile("appsettings.json")
+                    .AddEnvironmentVariables();
+            });
 
             Hosting.UseUrls("http://*:5060").UseKestrel();
 
-            Hosting.ConfigureLogging(x =>
-            {
-                x.SetMinimumLevel(LogLevel.Error);
-            });
+            Hosting.ConfigureLogging(x => { x.SetMinimumLevel(LogLevel.Error); });
 
             Settings.ConfigureMarten((config, options) =>
             {
@@ -40,7 +41,6 @@ namespace Sender
                 Transports.ListenForMessagesFrom(c.Configuration["listener"]);
                 Publish.AllMessagesTo(c.Configuration["receiver"]);
             });
-
         }
     }
 }

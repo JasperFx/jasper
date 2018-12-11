@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
 
 namespace Jasper.Testing.Samples
 {
@@ -38,6 +37,7 @@ namespace Jasper.Testing.Samples
             // JUST SHOW ME THE FULL STACKTRACE ALREADY!!!!
             Console.WriteLine(report.ExceptionText);
         }
+
         // ENDSAMPLE
     }
 }

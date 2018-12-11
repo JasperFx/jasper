@@ -19,7 +19,6 @@ namespace Jasper.Messaging.Runtime.Invocation
         public async Task Execute(IMessageContext context, DateTime utcNow)
         {
             foreach (var continuation in _continuations)
-            {
                 try
                 {
                     await continuation.Execute(context, utcNow).ConfigureAwait(false);
@@ -27,14 +26,9 @@ namespace Jasper.Messaging.Runtime.Invocation
                 catch (Exception e)
                 {
                     var envelope = context.Envelope;
-                    context.Advanced.Logger.LogException(e, envelope.Id, $"Failed trying to run continuation {continuation} as part of error handling");
+                    context.Advanced.Logger.LogException(e, envelope.Id,
+                        $"Failed trying to run continuation {continuation} as part of error handling");
                 }
-            }
-        }
-
-        public void Add(IContinuation child)
-        {
-            _continuations.Add(child);
         }
 
 
@@ -46,6 +40,11 @@ namespace Jasper.Messaging.Runtime.Invocation
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void Add(IContinuation child)
+        {
+            _continuations.Add(child);
         }
 
         public override string ToString()

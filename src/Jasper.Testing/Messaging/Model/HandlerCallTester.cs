@@ -24,7 +24,9 @@ namespace Jasper.Testing.Messaging.Model
             bool ReturnsValueType(Input input);
         }
 
-        public interface ISomeService{}
+        public interface ISomeService
+        {
+        }
 
         public class Input
         {
@@ -110,7 +112,6 @@ namespace Jasper.Testing.Messaging.Model
 
             HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.OneInZeroOut(null)))
                 .ShouldBeTrue();
-
 
 
             HandlerCall.IsCandidate(ReflectionHelper.GetMethod<ITargetHandler>(x => x.ManyIn(null, null)))

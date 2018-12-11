@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using Lamar.Codegen;
+using LamarCompiler;
 
 namespace Jasper.Messaging.Sagas
 {
@@ -19,10 +19,7 @@ namespace Jasper.Messaging.Sagas
             var key = ToKey(typeof(T), id);
 
 
-            if (_data.TryGetValue(key, out var value))
-            {
-                return value as T;
-            }
+            if (_data.TryGetValue(key, out var value)) return value as T;
 
 
             return null;
@@ -31,7 +28,9 @@ namespace Jasper.Messaging.Sagas
         public void Store<T>(T document)
         {
             var id = typeof(T).GetProperty("Id")?.GetValue(document);
-            if (id == null) throw new InvalidOperationException($"Type {typeof(T).FullNameInCode()} does not have a public Id property");
+            if (id == null)
+                throw new InvalidOperationException(
+                    $"Type {typeof(T).FullNameInCode()} does not have a public Id property");
 
             var key = ToKey(typeof(T), id);
             _data[key] = document;

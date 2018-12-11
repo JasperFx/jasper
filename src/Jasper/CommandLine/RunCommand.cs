@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading;
-using Baseline;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -43,6 +42,8 @@ namespace Jasper.CommandLine
                 using (runtime)
                 {
                     runtime.Describe(Console.Out);
+
+                    runtime.ExecuteAllEnvironmentChecks();
 
                     Console.WriteLine("Application started. Press Ctrl+C to shut down.");
                     done.Wait(cts.Token);

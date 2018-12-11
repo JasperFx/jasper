@@ -13,19 +13,18 @@ namespace StorytellerSample.Application
         {
             Teams.Fill(added.Name);
 
-            return new League{Teams = Teams.ToArray()};
+            return new League {Teams = Teams.ToArray()};
         }
 
         public void Handle(GamePlayed played)
         {
-            if (played.Home.Score < 0 || played.Visitor.Score < 0) throw new InvalidOperationException("Score cannot be negative");
+            if (played.Home.Score < 0 || played.Visitor.Score < 0)
+                throw new InvalidOperationException("Score cannot be negative");
         }
 
         public void Handle(League league)
         {
             // nothing
         }
-
-
     }
 }

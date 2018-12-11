@@ -1,20 +1,13 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http.Features;
 
 namespace Jasper.Http
 {
-    [CacheResolver]
     public class NulloServer : IServer
     {
         public void Dispose()
-        {
-
-        }
-
-        public void Start<TContext>(IHttpApplication<TContext> application)
         {
         }
 
@@ -28,6 +21,10 @@ namespace Jasper.Http
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        public void Start<TContext>(IHttpApplication<TContext> application)
+        {
         }
     }
 }

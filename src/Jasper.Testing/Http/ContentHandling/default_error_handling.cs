@@ -7,6 +7,10 @@ namespace Jasper.Testing.Http.ContentHandling
 {
     public class default_error_handling : RegistryContext<HttpTestingApp>
     {
+        public default_error_handling(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public Task get_a_500()
         {
@@ -16,10 +20,6 @@ namespace Jasper.Testing.Http.ContentHandling
                 _.StatusCodeShouldBe(500);
                 _.ContentShouldContain("DivideByZeroException");
             });
-        }
-
-        public default_error_handling(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
-        {
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Lamar.Codegen.Frames;
+using LamarCompiler.Frames;
 using Marten;
 
 namespace Jasper.Persistence.Marten.Codegen
@@ -12,10 +12,7 @@ namespace Jasper.Persistence.Marten.Codegen
 
         public void Apply(HandlerGraph graph, JasperGenerationRules rules)
         {
-            foreach (var chain in graph.Chains)
-            {
-                applyToChain(chain);
-            }
+            foreach (var chain in graph.Chains) applyToChain(chain);
         }
 
         private void applyToChain(HandlerChain chain)
@@ -27,8 +24,8 @@ namespace Jasper.Persistence.Marten.Codegen
 
                 if (method.ReturnType != typeof(IDocumentSession)) continue;
 
-                var @call = new MethodCall(handler.HandlerType, method);
-                chain.Middleware.Add(@call);
+                var call = new MethodCall(handler.HandlerType, method);
+                chain.Middleware.Add(call);
             }
         }
     }

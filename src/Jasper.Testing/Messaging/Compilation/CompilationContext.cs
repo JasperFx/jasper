@@ -3,14 +3,23 @@ using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
-using Lamar;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation
 {
-    public abstract class CompilationContext: IDisposable
+    public abstract class CompilationContext : IDisposable
     {
+        public CompilationContext()
+        {
+            theRegistry.Handlers.DisableConventionalDiscovery();
+        }
+
+        public void Dispose()
+        {
+            _runtime?.Dispose();
+        }
+
         private JasperRuntime _runtime;
 
 
@@ -19,40 +28,18 @@ namespace Jasper.Testing.Messaging.Compilation
 
         public readonly JasperRegistry theRegistry = new JasperRegistry();
 
-        public CompilationContext()
+        protected void AllHandlersCompileSuccessfully()
         {
-            theRegistry.Handlers.DisableConventionalDiscovery();
-        }
-
-        [Fact]
-        public Task can_compile_all()
-        {
-            return AllHandlersCompileSuccessfully();
-        }
-
-        protected async Task AllHandlersCompileSuccessfully()
-        {
-            var runtime = await JasperRuntime.ForAsync(theRegistry);
-
-            try
+            using (var runtime = JasperRuntime.For(theRegistry))
             {
                 runtime.Get<HandlerGraph>().Chains.Length.ShouldBeGreaterThan(0);
             }
-            finally
-            {
-                await runtime.Shutdown();
-            }
-
 
         }
 
         public async Task<MessageHandler> HandlerFor<TMessage>()
         {
-            if (_runtime == null)
-            {
-                _runtime = await JasperRuntime.ForAsync(theRegistry);
-            }
-
+            if (_runtime == null) _runtime = await JasperRuntime.ForAsync(theRegistry);
 
 
             return _runtime.Get<HandlerGraph>().HandlerFor(typeof(TMessage));
@@ -69,9 +56,10 @@ namespace Jasper.Testing.Messaging.Compilation
             return context;
         }
 
-        public void Dispose()
+        [Fact]
+        public void can_compile_all()
         {
-            _runtime?.Dispose();
+            AllHandlersCompileSuccessfully();
         }
     }
 }

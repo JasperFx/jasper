@@ -3,8 +3,8 @@
 namespace Jasper.Persistence
 {
     /// <summary>
-    /// Applies unit of work / transactional boundary middleware to the
-    /// current chain using the currently configured persistence
+    ///     Applies unit of work / transactional boundary middleware to the
+    ///     current chain using the currently configured persistence
     /// </summary>
     public class TransactionalAttribute : ModifyChainAttribute
     {

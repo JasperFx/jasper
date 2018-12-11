@@ -20,10 +20,7 @@ namespace Jasper.Testing.Http.Routing
 
                 actual.Count.ShouldBe(expected.Count);
 
-                for (int i = 0; i < actual.Count; i++)
-                {
-                    actual[i].ShouldBe(expected[i]);
-                }
+                for (var i = 0; i < actual.Count; i++) actual[i].ShouldBe(expected[i]);
             }
             catch (Exception)
             {
@@ -35,35 +32,31 @@ namespace Jasper.Testing.Http.Routing
 
         public static void ShouldHaveTheSameElementsAs<T>(this IEnumerable<T> actual, params T[] expected)
         {
-            ShouldHaveTheSameElementsAs(actual, (IEnumerable<T>)expected);
+            ShouldHaveTheSameElementsAs(actual, (IEnumerable<T>) expected);
         }
 
         public static void ShouldHaveTheSameElementsAs<T>(this IEnumerable<T> actual, IEnumerable<T> expected)
         {
-            IList actualList = (actual is IList) ? (IList)actual : actual.ToList();
-            IList expectedList = (expected is IList) ? (IList)expected : expected.ToList();
+            var actualList = actual is IList ? (IList) actual : actual.ToList();
+            var expectedList = expected is IList ? (IList) expected : expected.ToList();
 
             ShouldHaveTheSameElementsAs(actualList, expectedList);
         }
 
         public static void ShouldHaveTheSameElementKeysAs<ELEMENT, KEY>(this IEnumerable<ELEMENT> actual,
-                                                                        IEnumerable expected,
-                                                                        Func<ELEMENT, KEY> keySelector)
+            IEnumerable expected,
+            Func<ELEMENT, KEY> keySelector)
         {
             ShouldBeNullExtensions.ShouldNotBeNull(actual);
             ShouldBeNullExtensions.ShouldNotBeNull(expected);
 
-            ELEMENT[] actualArray = actual.ToArray();
-            object[] expectedArray = expected.Cast<object>().ToArray();
+            var actualArray = actual.ToArray();
+            var expectedArray = expected.Cast<object>().ToArray();
 
             actualArray.Length.ShouldBe(expectedArray.Length);
 
-            for (int i = 0; i < actual.Count(); i++)
-            {
-                keySelector(actualArray[i]).ShouldBe(expectedArray[i]);
-            }
+            for (var i = 0; i < actual.Count(); i++) keySelector(actualArray[i]).ShouldBe(expectedArray[i]);
         }
-
     }
 
     public static class Exception<T> where T : Exception
@@ -81,7 +74,8 @@ namespace Jasper.Testing.Http.Routing
                 exception = e.ShouldBeOfType<T>();
             }
 
-            if (exception == null) throw new Exception("An exception was expected, but not thrown by the given action.");
+            if (exception == null)
+                throw new Exception("An exception was expected, but not thrown by the given action.");
 
             return exception;
         }
@@ -99,7 +93,8 @@ namespace Jasper.Testing.Http.Routing
                 exception = e.ShouldBeOfType<T>();
             }
 
-            if (exception == null) throw new Exception("An exception was expected, but not thrown by the given action.");
+            if (exception == null)
+                throw new Exception("An exception was expected, but not thrown by the given action.");
 
             return exception;
         }

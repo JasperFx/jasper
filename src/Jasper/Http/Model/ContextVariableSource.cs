@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Http.Routing.Codegen;
-using Lamar.Codegen.Variables;
+using LamarCompiler.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Model

@@ -1,7 +1,6 @@
 ﻿using System;
 using Jasper.Messaging.Model;
-using Lamar.Codegen;
-using Lamar.Compilation;
+using LamarCompiler;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -21,10 +20,7 @@ namespace Jasper.CommandLine
                 var rules = input.Registry.CodeGeneration;
                 var generatedAssembly = new GeneratedAssembly(rules);
                 var handlers = runtime.Get<HandlerGraph>();
-                foreach (var handler in handlers.Chains)
-                {
-                    handler.AssembleType(generatedAssembly, rules);
-                }
+                foreach (var handler in handlers.Chains) handler.AssembleType(generatedAssembly, rules);
             }
 
             ConsoleWriter.Write(ConsoleColor.Green, "All systems good!");

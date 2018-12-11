@@ -26,9 +26,6 @@ namespace Jasper.Testing.Samples
             Services.AddSingleton<IMissingHandler, MyMissingHandler>();
         }
     }
+
     // ENDSAMPLE
-
-
-
-
 }

@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.Persistence;
-using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace SqlReceiver

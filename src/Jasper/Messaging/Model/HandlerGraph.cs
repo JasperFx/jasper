@@ -1,32 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging.ErrorHandling;
-using Jasper.Util;
-using TypeExtensions = Baseline.TypeExtensions;
-using Baseline;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Util;
 using Lamar;
-using Lamar.Compilation;
-using Lamar.Util;
+using LamarCompiler;
+using LamarCompiler.Util;
 
 namespace Jasper.Messaging.Model
 {
     public class HandlerGraph : IHasErrorHandlers
     {
         public static readonly string Context = "context";
-
-        private bool _hasGrouped = false;
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
 
+        private readonly object _groupingLock = new object();
+
         private ImHashMap<Type, HandlerChain> _chains = ImHashMap<Type, HandlerChain>.Empty;
-        private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
+        private IContainer _container;
 
 
         private JasperGenerationRules _generation;
-        private IContainer _container;
+        private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
+
+        private bool _hasGrouped;
+
+        /// <summary>
+        ///     Policies and routing for local message handling
+        /// </summary>
+        public WorkersGraph Workers { get; } = new WorkersGraph();
+
+        public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
+
+        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
 
         private void assertNotGrouped()
         {
@@ -45,12 +55,6 @@ namespace Jasper.Messaging.Model
             _calls.AddRange(calls);
         }
 
-        /// <summary>
-        /// Policies and routing for local message handling
-        /// </summary>
-        public WorkersGraph Workers { get; } = new WorkersGraph();
-
-
 
         public MessageHandler HandlerFor<T>()
         {
@@ -67,9 +71,6 @@ namespace Jasper.Messaging.Model
             return ChainFor(typeof(T));
         }
 
-        public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
-
-
 
         public MessageHandler HandlerFor(Type messageType)
         {
@@ -79,11 +80,8 @@ namespace Jasper.Messaging.Model
             if (_chains.TryFind(messageType, out var chain))
             {
                 if (chain.Handler != null)
-                {
                     handler = chain.Handler;
-                }
                 else
-                {
                     lock (chain)
                     {
                         if (chain.Handler == null)
@@ -99,7 +97,6 @@ namespace Jasper.Messaging.Model
                             handler = chain.Handler;
                         }
                     }
-                }
 
                 _handlers = _handlers.AddOrUpdate(messageType, handler);
 
@@ -109,20 +106,17 @@ namespace Jasper.Messaging.Model
             // memoize the "miss"
             _handlers = _handlers.AddOrUpdate(messageType, null);
             return null;
-
         }
 
 
-        internal void Compile(JasperGenerationRules generation, JasperRuntime runtime, PerfTimer timer)
+        internal void Compile(JasperGenerationRules generation, IContainer container)
         {
             _generation = generation;
-            _container = runtime.Container;
+            _container = container;
 
-            var forwarders = runtime.Get<Forwarders>();
+            var forwarders = container.GetInstance<Forwarders>();
             AddForwarders(forwarders);
         }
-
-        private readonly object _groupingLock = new object();
 
         public void Group()
         {
@@ -130,15 +124,12 @@ namespace Jasper.Messaging.Model
             {
                 if (_hasGrouped) return;
 
-                _calls.Where(x => TypeExtensions.IsConcrete(x.MessageType))
+                _calls.Where(x => x.MessageType.IsConcrete())
                     .GroupBy(x => x.MessageType)
-                    .Select(group => new HandlerChain(@group))
-                    .Each(chain =>
-                    {
-                        _chains = _chains.AddOrUpdate(chain.MessageType, chain);
-                    });
+                    .Select(group => new HandlerChain(group))
+                    .Each(chain => { _chains = _chains.AddOrUpdate(chain.MessageType, chain); });
 
-                _calls.Where(x => !TypeExtensions.IsConcrete(x.MessageType))
+                _calls.Where(x => !x.MessageType.IsConcrete())
                     .Each(call =>
                     {
                         Chains
@@ -148,8 +139,6 @@ namespace Jasper.Messaging.Model
 
                 _hasGrouped = true;
             }
-
-
         }
 
         public void AddForwarders(Forwarders forwarders)
@@ -162,7 +151,7 @@ namespace Jasper.Messaging.Model
                 if (_chains.TryFind(destination, out var inner))
                 {
                     var handler =
-                        TypeExtensions.CloseAndBuildAs<MessageHandler>(typeof(ForwardingHandler<,>), this, new Type[]{source, destination});
+                        typeof(ForwardingHandler<,>).CloseAndBuildAs<MessageHandler>(this, source, destination);
 
                     _chains = _chains.AddOrUpdate(source, handler.Chain);
                     _handlers = _handlers.AddOrUpdate(source, handler);
@@ -170,12 +159,9 @@ namespace Jasper.Messaging.Model
             }
         }
 
-        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
-
         public bool CanHandle(Type messageType)
         {
             return _chains.TryFind(messageType, out var chain);
         }
-
     }
 }

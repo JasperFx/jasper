@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Http.Routing.Codegen;
-using Lamar.Codegen.Frames;
+using LamarCompiler.Frames;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing
@@ -12,6 +12,14 @@ namespace Jasper.Http.Routing
         public Spread(int position)
         {
             Position = position;
+        }
+
+        public Frame ToParsingFrame(MethodCall action)
+        {
+            var parameter = action.Method.GetParameters().Single(x => x.IsSpread());
+            return parameter.Name == Route.PathSegments
+                ? (Frame) new PathSegmentsFrame(Position)
+                : new RelativePathFrame(Position);
         }
 
         public int Position { get; }
@@ -58,14 +66,6 @@ namespace Jasper.Http.Routing
         public override string ToString()
         {
             return $"spread:{Position}";
-        }
-
-        public Frame ToParsingFrame(MethodCall action)
-        {
-            var parameter = action.Method.GetParameters().Single(x => x.IsSpread());
-            return parameter.Name == Route.PathSegments
-                ? (Frame) new PathSegmentsFrame(Position)
-                : new RelativePathFrame(Position);
         }
 
         protected bool Equals(Spread other)

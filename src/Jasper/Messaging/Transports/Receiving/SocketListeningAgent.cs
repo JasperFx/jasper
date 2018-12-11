@@ -13,12 +13,12 @@ namespace Jasper.Messaging.Transports.Receiving
 {
     public class SocketListeningAgent : IListeningAgent
     {
+        private readonly CancellationToken _cancellationToken;
         private readonly IPAddress _ipaddr;
         private readonly int _port;
-        private readonly CancellationToken _cancellationToken;
         private TcpListener _listener;
-        private ActionBlock<Socket> _socketHandling;
         private Task _receivingLoop;
+        private ActionBlock<Socket> _socketHandling;
 
         public SocketListeningAgent(IPAddress ipaddr, int port, CancellationToken cancellationToken)
         {
@@ -54,16 +54,6 @@ namespace Jasper.Messaging.Transports.Receiving
             }, _cancellationToken);
         }
 
-        public Task HandleStream(IReceiverCallback callback, Stream stream)
-        {
-            if (Status == ListeningStatus.TooBusy)
-            {
-                return stream.SendBuffer(WireProtocol.ProcessingFailureBuffer);
-            }
-
-            return WireProtocol.Receive(stream, callback, Address);
-        }
-
         public Uri Address { get; }
 
         public void Dispose()
@@ -74,5 +64,12 @@ namespace Jasper.Messaging.Transports.Receiving
         }
 
         public ListeningStatus Status { get; set; } = ListeningStatus.Accepting;
+
+        public Task HandleStream(IReceiverCallback callback, Stream stream)
+        {
+            if (Status == ListeningStatus.TooBusy) return stream.SendBuffer(WireProtocol.ProcessingFailureBuffer);
+
+            return WireProtocol.Receive(stream, callback, Address);
+        }
     }
 }

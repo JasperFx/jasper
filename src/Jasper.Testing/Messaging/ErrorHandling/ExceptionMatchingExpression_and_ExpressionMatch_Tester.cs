@@ -8,12 +8,26 @@ namespace Jasper.Testing.Messaging.ErrorHandling
 {
     public class ExceptionMatchingExpression_and_ExpressionMatch_Tester
     {
-        private ExceptionMatch theMatch;
-        private readonly ExceptionMatchExpression theExpression;
-
         public ExceptionMatchingExpression_and_ExpressionMatch_Tester()
         {
             theExpression = new ExceptionMatchExpression(m => theMatch = m.As<ExceptionMatch>());
+        }
+
+        private ExceptionMatch theMatch;
+        private readonly ExceptionMatchExpression theExpression;
+
+        [Fact]
+        public void exception_type()
+        {
+            var exception1 = new NotImplementedException();
+            var exception2 = new NotSupportedException();
+
+            theExpression.IsType<NotImplementedException>();
+
+            theMatch.Description.ShouldBe("Exception type is " + typeof(NotImplementedException).FullName);
+
+            theMatch.Matches(null, exception1).ShouldBeTrue();
+            theMatch.Matches(null, exception2).ShouldBeFalse();
         }
 
         [Fact]
@@ -26,22 +40,8 @@ namespace Jasper.Testing.Messaging.ErrorHandling
 
             theMatch.Description.ShouldBe("Exception message contains 'like you'");
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(theMatch.Matches(null, exception1));
-            ShouldBeBooleanExtensions.ShouldBeFalse(theMatch.Matches(null, exception2));
-        }
-
-        [Fact]
-        public void exception_type()
-        {
-            var exception1 = new NotImplementedException();
-            var exception2 = new NotSupportedException();
-
-            theExpression.IsType<NotImplementedException>();
-
-            theMatch.Description.ShouldBe("Exception type is " + typeof(NotImplementedException).FullName);
-
-            ShouldBeBooleanExtensions.ShouldBeTrue(theMatch.Matches(null, exception1));
-            ShouldBeBooleanExtensions.ShouldBeFalse(theMatch.Matches(null, exception2));
+            theMatch.Matches(null, exception1).ShouldBeTrue();
+            theMatch.Matches(null, exception2).ShouldBeFalse();
         }
     }
 }

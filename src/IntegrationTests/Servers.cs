@@ -5,6 +5,7 @@
         public static readonly string PostgresConnectionString =
             "Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres";
 
-        public static readonly string SqlServerConnectionString = "Server=localhost;User Id=sa;Password=P@55w0rd;Timeout=5";
+        public static readonly string SqlServerConnectionString =
+            "Server=localhost;User Id=sa;Password=P@55w0rd;Timeout=5";
     }
 }

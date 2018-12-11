@@ -7,7 +7,6 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using Shouldly;
-using Xunit;
 
 namespace Jasper.Testing.Messaging.Transports.Sending
 {
@@ -27,16 +26,16 @@ namespace Jasper.Testing.Messaging.Transports.Sending
                 completed.WaitOne(1.Seconds())
                     .ShouldBeTrue();
             }
-
-
         }
-
-
     }
 
     public class StubSender : ISender
     {
         private readonly int _failureCount;
+
+        public readonly IList<Envelope> Queued = new List<Envelope>();
+
+        private int _count;
 
         public StubSender(int failureCount)
         {
@@ -50,8 +49,6 @@ namespace Jasper.Testing.Messaging.Transports.Sending
         public void Start(ISenderCallback callback)
         {
         }
-
-        public readonly IList<Envelope> Queued = new List<Envelope>();
 
         public Task Enqueue(Envelope envelope)
         {
@@ -76,19 +73,13 @@ namespace Jasper.Testing.Messaging.Transports.Sending
             Latched = true;
         }
 
-        private int _count = 0;
-
         public Task Ping()
         {
             _count++;
 
-            if (_count < _failureCount)
-            {
-                throw new Exception("No!");
-            }
+            if (_count < _failureCount) throw new Exception("No!");
 
             return Task.CompletedTask;
-
         }
     }
 }

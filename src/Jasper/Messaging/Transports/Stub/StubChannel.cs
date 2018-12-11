@@ -13,6 +13,8 @@ namespace Jasper.Messaging.Transports.Stub
         private readonly StubTransport _stubTransport;
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
+        public readonly IList<Envelope> Sent = new List<Envelope>();
+
         public StubChannel(Uri destination, IHandlerPipeline pipeline, StubTransport stubTransport)
         {
             _pipeline = pipeline;
@@ -20,11 +22,8 @@ namespace Jasper.Messaging.Transports.Stub
             Destination = destination;
         }
 
-        public readonly IList<Envelope> Sent = new List<Envelope>();
-
         public void Dispose()
         {
-
         }
 
         public bool Latched { get; set; } = false;
@@ -64,15 +63,11 @@ namespace Jasper.Messaging.Transports.Stub
 
         public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
         {
-            foreach (var envelope in envelopes)
-            {
-                await EnqueueOutgoing(envelope);
-            }
+            foreach (var envelope in envelopes) await EnqueueOutgoing(envelope);
         }
 
         public void Start()
         {
-
         }
 
         public int QueuedCount { get; } = 0;

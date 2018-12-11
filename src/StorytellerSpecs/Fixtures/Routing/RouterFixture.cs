@@ -26,11 +26,7 @@ namespace StorytellerSpecs.Fixtures.Routing
         public void RoutesAre([SelectionValues("GET", "POST", "DELETE", "PUT", "HEAD")]
             string HttpMethod, string Pattern)
         {
-            _router.Add(HttpMethod, Pattern, env =>
-            {
-                env.Response.ContentType("text/plain");
-                return env.Response.WriteAsync($"{HttpMethod}: /{Pattern}");
-            });
+            _router.Add(HttpMethod, Pattern);
         }
 
         [ExposeAsTable("The selection and arguments should be")]

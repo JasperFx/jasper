@@ -3,7 +3,6 @@ using Jasper.Messaging.Model;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Marten;
-using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Persistence.Marten
@@ -71,7 +70,6 @@ namespace IntegrationTests.Persistence.Marten
             code.ShouldContain(
                 "await Jasper.Persistence.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
         }
-
     }
 
     public class SessionUsingBlock1

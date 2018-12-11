@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.EnvironmentChecks;
 using Jasper.Messaging.Configuration;
-using Jasper.Messaging.Transports.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -18,17 +17,19 @@ namespace Jasper.Testing.EnvironmentChecks
         [Fact]
         public async Task do_not_fail_if_advanced_says_not_to_blow_up()
         {
-            var runtime = await JasperRuntime.ForAsync(_ =>
+            using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.EnvironmentCheck<NegativeCheck>();
 
 
                 _.Settings.Messaging(x => x.ThrowOnValidationErrors = false);
+            }))
 
-            });
+            {
+                runtime.ExecuteAllEnvironmentChecks();
+            }
 
-            await runtime.Shutdown();
         }
 
 
@@ -43,6 +44,8 @@ namespace Jasper.Testing.EnvironmentChecks
 
                     _.Services.EnvironmentCheck<NegativeCheck>();
                 });
+
+                runtime.ExecuteAllEnvironmentChecks();
             });
 
             aggregate.InnerExceptions.Single().Message
@@ -60,6 +63,8 @@ namespace Jasper.Testing.EnvironmentChecks
 
                     _.Services.EnvironmentCheck("Bazinga!", () => throw new Exception("Bang"));
                 });
+
+                runtime.ExecuteAllEnvironmentChecks();
             });
 
             aggregate.InnerExceptions.Single().Message
@@ -71,12 +76,14 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
             {
-                await JasperRuntime.ForAsync(_ =>
+                var runtime = await JasperRuntime.ForAsync(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 
                     _.Services.EnvironmentCheck<Thing>("Bazinga!", t => t.ThrowUp());
                 });
+
+                runtime.ExecuteAllEnvironmentChecks();
             });
         }
 
@@ -85,36 +92,48 @@ namespace Jasper.Testing.EnvironmentChecks
         {
             var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
             {
-                await JasperRuntime.ForAsync(_ =>
+                var runtime = await JasperRuntime.ForAsync(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
                     _.Services.AddTransient<ISomeService, BadService>();
                 });
+
+                runtime.ExecuteAllEnvironmentChecks();
             });
 
             aggregate.InnerExceptions.Single().Message.ShouldContain("I'm bad!");
         }
 
         [Fact]
-        public async Task succeed_with_lambda_check()
+        public void succeed_with_lambda_check()
         {
-            await JasperRuntime.ForAsync(_ =>
+            using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
                 _.Services.EnvironmentCheck("Bazinga!", () => { });
-            });
+            }))
+
+            {
+                runtime.ExecuteAllEnvironmentChecks();
+            }
+
         }
 
         [Fact]
-        public async Task succeed_with_lambda_check_using_service()
+        public void succeed_with_lambda_check_using_service()
         {
-            var runtime = await JasperRuntime.ForAsync(_ =>
+            using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
                 _.Services.EnvironmentCheck<Thing>("Bazinga!", t => t.AllGood());
-            });
+            }))
+
+            {
+                runtime.ExecuteAllEnvironmentChecks();
+            }
+
         }
 
         [Fact]
@@ -128,6 +147,8 @@ namespace Jasper.Testing.EnvironmentChecks
 
                     _.Services.EnvironmentCheck<Thing>("Bazinga!", t => t.TooLong(), 50.Milliseconds());
                 });
+
+                runtime.ExecuteAllEnvironmentChecks();
             });
         }
     }
@@ -254,9 +275,6 @@ namespace Jasper.Testing.EnvironmentChecks
         }
 
         public string Description { get; } = "Fake Store Environment Check";
-
-
-
     }
     // ENDSAMPLE
 

@@ -12,7 +12,7 @@ namespace Jasper.Testing.Http
         [Fact]
         public async Task sample_alba_spec()
         {
-            using (var runtime = JasperRuntime.Basic())
+            using (var runtime = JasperAlba.ForBasic())
             {
                 await runtime.Scenario(x =>
                 {
@@ -23,6 +23,7 @@ namespace Jasper.Testing.Http
                 });
             }
         }
+
         // ENDSAMPLE
     }
 
@@ -43,10 +44,10 @@ namespace Jasper.Testing.Http
         {
             // Your application setup here would probably
             // refer to a JasperRegistry for your application
-            Runtime = JasperRuntime.Basic();
+            Runtime = JasperAlba.ForBasic();
         }
 
-        public JasperRuntime Runtime { get; private set; }
+        public SystemUnderTest Runtime { get; }
 
         public void Dispose()
         {
@@ -56,12 +57,12 @@ namespace Jasper.Testing.Http
 
     public class AlbaExampleWithSharedContext : IClassFixture<ApplicationFixture>
     {
-        private JasperRuntime _runtime;
-
         public AlbaExampleWithSharedContext(ApplicationFixture fixture)
         {
             _runtime = fixture.Runtime;
         }
+
+        private readonly SystemUnderTest _runtime;
 
 
         [Fact]
@@ -75,7 +76,7 @@ namespace Jasper.Testing.Http
                 x.ContentTypeShouldBe("text/plain");
             });
         }
-
     }
+
     // ENDSAMPLE
 }

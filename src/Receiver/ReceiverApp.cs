@@ -12,9 +12,12 @@ namespace Receiver
     {
         public ReceiverApp()
         {
-            Configuration
-                .AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables();
+            Hosting.ConfigureAppConfiguration((_, config) =>
+            {
+                config
+                    .AddJsonFile("appsettings.json")
+                    .AddEnvironmentVariables();
+            });
 
             Hosting.UseUrls("http://*:5061").UseKestrel();
 
@@ -37,12 +40,7 @@ namespace Receiver
             Include<MartenBackedPersistence>();
 
 
-
-            Settings.Configure(c =>
-            {
-                Transports.ListenForMessagesFrom(c.Configuration["listener"]);
-            });
-
+            Settings.Configure(c => { Transports.ListenForMessagesFrom(c.Configuration["listener"]); });
         }
     }
 }

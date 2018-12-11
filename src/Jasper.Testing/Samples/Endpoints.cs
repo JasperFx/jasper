@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Shouldly;
 
 namespace Jasper.Testing.Samples
 {
@@ -26,6 +25,5 @@ namespace Jasper.Testing.Samples
             response.ContentType = "text/plain";
             return response.WriteAsync("Greetings and salutations!");
         }
-
     }
 }

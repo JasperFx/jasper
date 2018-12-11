@@ -11,13 +11,13 @@ namespace Jasper.Messaging.ErrorHandling
             Delay = delay;
         }
 
+        public TimeSpan Delay { get; }
+
         public Task Execute(IMessageContext context, DateTime utcNow)
         {
             var envelope = context.Envelope;
             return envelope.Callback.MoveToScheduledUntil(utcNow.Add(Delay), envelope);
         }
-
-        public TimeSpan Delay { get; }
 
         public override string ToString()
         {
@@ -25,4 +25,3 @@ namespace Jasper.Messaging.ErrorHandling
         }
     }
 }
-

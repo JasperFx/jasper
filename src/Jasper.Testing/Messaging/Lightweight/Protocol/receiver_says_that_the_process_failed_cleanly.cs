@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Baseline.Dates;
 using Jasper.Messaging.Transports.Tcp;
 using Shouldly;
 using Xunit;
@@ -19,7 +18,6 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             await afterSending();
             theSender.Succeeded.ShouldBeFalse();
         }
-
 
 
         [Fact]

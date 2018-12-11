@@ -1,12 +1,8 @@
 ﻿using Jasper;
-using Jasper.Http;
-using Jasper.Messaging.Transports.Configuration;
-using Microsoft.AspNetCore.Hosting;
 using StorytellerSpecs.Fixtures;
 
 namespace MyApp
 {
-
     // SAMPLE: MyAppRegistryWithOptions
     public class MyAppRegistry : JasperRegistry
     {
@@ -24,10 +20,24 @@ namespace MyApp
 
     public class MessageHandler
     {
-        public void Handle(Message1 msg){}
-        public void Handle(Message2 msg){}
-        public void Handle(Message3 msg){}
-        public void Handle(Message4 msg){}
-        public void Handle(Message5 msg){}
+        public void Handle(Message1 msg)
+        {
+        }
+
+        public void Handle(Message2 msg)
+        {
+        }
+
+        public void Handle(Message3 msg)
+        {
+        }
+
+        public void Handle(Message4 msg)
+        {
+        }
+
+        public void Handle(Message5 msg)
+        {
+        }
     }
 }

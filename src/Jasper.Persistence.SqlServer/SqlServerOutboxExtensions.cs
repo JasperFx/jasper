@@ -12,7 +12,5 @@ namespace Jasper.Persistence.SqlServer
             var transaction = new SqlServerEnvelopeTransaction(context, tx);
             return context.EnlistInTransaction(transaction);
         }
-
-
     }
 }

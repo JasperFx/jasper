@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -25,7 +24,6 @@ namespace Jasper.Testing.Messaging.Compilation
         {
             public void Handle(Message1 message)
             {
-
             }
         }
     }

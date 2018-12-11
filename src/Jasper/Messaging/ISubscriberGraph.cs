@@ -2,7 +2,6 @@
 
 namespace Jasper.Messaging
 {
-
     public interface ISubscriberGraph
     {
         ISubscriber GetOrBuild(Uri address);
@@ -10,6 +9,5 @@ namespace Jasper.Messaging
         bool HasSubscriber(Uri uri);
 
         ISubscriber[] AllKnown();
-
     }
 }

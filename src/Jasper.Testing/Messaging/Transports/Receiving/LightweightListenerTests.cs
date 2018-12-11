@@ -1,5 +1,4 @@
-﻿using Jasper.Messaging.Durability;
-using Jasper.Messaging.Transports;
+﻿using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using NSubstitute;
 using Xunit;
@@ -28,5 +27,4 @@ namespace Jasper.Testing.Messaging.Transports.Receiving
             agent.Received().Status = ListeningStatus.TooBusy;
         }
     }
-
 }

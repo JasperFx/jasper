@@ -6,24 +6,6 @@ namespace IntegrationTests.Persistence.SqlServer
     public class SchemaLoaderTests : SqlServerContext
     {
         [Fact]
-        public void retrieve_creation_script()
-        {
-            var sql = SchemaLoader.ToCreationScript("foo");
-
-            sql.ShouldContain("create table foo.jasper_outgoing_envelopes");
-            sql.ShouldContain("create table foo.jasper_incoming_envelopes");
-        }
-
-        [Fact]
-        public void retrieve_drop_script()
-        {
-            var sql = SchemaLoader.ToDropScript("foo");
-
-            sql.ShouldContain("drop table foo.jasper_outgoing_envelopes");
-            sql.ShouldContain("drop table foo.jasper_incoming_envelopes");
-        }
-
-        [Fact]
         public void drop_then_create()
         {
             var loader = new SchemaLoader(Servers.SqlServerConnectionString);
@@ -53,6 +35,24 @@ namespace IntegrationTests.Persistence.SqlServer
         {
             var loader = new SchemaLoader(Servers.SqlServerConnectionString, "sender");
             loader.RecreateAll();
+        }
+
+        [Fact]
+        public void retrieve_creation_script()
+        {
+            var sql = SchemaLoader.ToCreationScript("foo");
+
+            sql.ShouldContain("create table foo.jasper_outgoing_envelopes");
+            sql.ShouldContain("create table foo.jasper_incoming_envelopes");
+        }
+
+        [Fact]
+        public void retrieve_drop_script()
+        {
+            var sql = SchemaLoader.ToDropScript("foo");
+
+            sql.ShouldContain("drop table foo.jasper_outgoing_envelopes");
+            sql.ShouldContain("drop table foo.jasper_incoming_envelopes");
         }
     }
 }

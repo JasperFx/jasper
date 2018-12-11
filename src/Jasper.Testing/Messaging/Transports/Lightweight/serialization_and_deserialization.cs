@@ -2,7 +2,6 @@
 using System.Reflection;
 using Baseline;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
@@ -11,9 +10,29 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
 {
     public class serialization_and_deserialization_of_single_message
     {
-        private Envelope outgoing;
+        public serialization_and_deserialization_of_single_message()
+        {
+            outgoing = new Envelope
+            {
+                SentAt = DateTime.Today.ToUniversalTime(),
+                Data = new byte[] {1, 5, 6, 11, 2, 3},
+                Destination = "durable://localhost:2222/incoming".ToUri(),
+                DeliverBy = DateTime.Today.ToUniversalTime(),
+                ReplyUri = "durable://localhost:2221/replies".ToUri(),
+                SagaId = Guid.NewGuid().ToString()
+            };
+
+
+            sentAttempts = typeof(Envelope).GetProperty("SentAttempts", BindingFlags.Instance | BindingFlags.NonPublic);
+            sentAttempts.SetValue(outgoing, 2);
+
+            outgoing.Headers.Add("name", "Jeremy");
+            outgoing.Headers.Add("state", "Texas");
+        }
+
+        private readonly Envelope outgoing;
         private Envelope _incoming;
-        private PropertyInfo sentAttempts;
+        private readonly PropertyInfo sentAttempts;
         private DateTimeOffset today;
 
         private Envelope incoming
@@ -30,64 +49,25 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
             }
         }
 
-        public serialization_and_deserialization_of_single_message()
-        {
-            outgoing = new Envelope
-            {
-                SentAt = DateTime.Today.ToUniversalTime(),
-                Data = new byte[]{1, 5, 6, 11, 2, 3},
-                Destination = "durable://localhost:2222/incoming".ToUri(),
-                DeliverBy = DateTime.Today.ToUniversalTime(),
-                ReplyUri = "durable://localhost:2221/replies".ToUri(),
-                SagaId = Guid.NewGuid().ToString()
-            };
-
-
-            sentAttempts = typeof(Envelope).GetProperty("SentAttempts", BindingFlags.Instance | BindingFlags.NonPublic);
-            sentAttempts.SetValue(outgoing, 2);
-
-            outgoing.Headers.Add("name", "Jeremy");
-            outgoing.Headers.Add("state", "Texas");
-
-
-        }
-
-
         [Fact]
-        public void brings_over_the_saga_id()
+        public void accepted_content_types_positive()
         {
-            incoming.SagaId.ShouldBe(outgoing.SagaId);
+            outgoing.AcceptedContentTypes = new[] {"a", "b"};
+            incoming.AcceptedContentTypes.ShouldHaveTheSameElementsAs("a", "b");
         }
 
         [Fact]
-        public void brings_over_the_id()
+        public void ack_requested_negative()
         {
-            incoming.EnvelopeVersionId.ShouldBe(outgoing.EnvelopeVersionId);
+            outgoing.AckRequested = false;
+            incoming.AckRequested.ShouldBeFalse();
         }
 
         [Fact]
-        public void brings_over_the_correlation_id()
+        public void ack_requested_positive()
         {
-            incoming.Id.ShouldBe(outgoing.Id);
-        }
-
-        [Fact]
-        public void sent_at()
-        {
-            incoming.SentAt.ShouldBe(outgoing.SentAt);
-        }
-
-        [Fact]
-        public void source()
-        {
-            outgoing.Source = "something";
-            incoming.Source.ShouldBe(outgoing.Source);
-        }
-
-        [Fact]
-        public void data_comes_over()
-        {
-            incoming.Data.ShouldHaveTheSameElementsAs(outgoing.Data);
+            outgoing.AckRequested = true;
+            incoming.AckRequested.ShouldBeTrue();
         }
 
         [Fact]
@@ -98,16 +78,35 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
         }
 
         [Fact]
-        public void destination()
+        public void brings_over_the_correlation_id()
         {
-            incoming.Destination.ShouldBe(outgoing.Destination);
+            incoming.Id.ShouldBe(outgoing.Id);
+        }
+
+        [Fact]
+        public void brings_over_the_id()
+        {
+            incoming.EnvelopeVersionId.ShouldBe(outgoing.EnvelopeVersionId);
         }
 
 
         [Fact]
-        public void sent_attempts()
+        public void brings_over_the_saga_id()
         {
-            sentAttempts.GetValue(incoming).As<int>().ShouldBe(2);
+            incoming.SagaId.ShouldBe(outgoing.SagaId);
+        }
+
+        [Fact]
+        public void content_type()
+        {
+            outgoing.ContentType = "application/json";
+            incoming.ContentType.ShouldBe(outgoing.ContentType);
+        }
+
+        [Fact]
+        public void data_comes_over()
+        {
+            incoming.Data.ShouldHaveTheSameElementsAs(outgoing.Data);
         }
 
 
@@ -125,10 +124,23 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
         }
 
         [Fact]
-        public void received_at()
+        public void destination()
         {
-            outgoing.ReceivedAt = "http://server1".ToUri();
-            incoming.ReceivedAt.ShouldBe(outgoing.ReceivedAt);
+            incoming.Destination.ShouldBe(outgoing.Destination);
+        }
+
+        [Fact]
+        public void execution_time_not_null()
+        {
+            outgoing.ExecutionTime = DateTime.Today;
+            incoming.ExecutionTime.ShouldBe(DateTime.Today.ToUniversalTime());
+        }
+
+        [Fact]
+        public void execution_time_null()
+        {
+            outgoing.ExecutionTime = null;
+            incoming.ExecutionTime.HasValue.ShouldBeFalse();
         }
 
         [Fact]
@@ -137,19 +149,6 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
             outgoing.MessageType = "some.model.object";
 
             incoming.MessageType.ShouldBe(outgoing.MessageType);
-        }
-
-        [Fact]
-        public void reply_uri()
-        {
-            incoming.ReplyUri.ShouldBe(outgoing.ReplyUri);
-        }
-
-        [Fact]
-        public void content_type()
-        {
-            outgoing.ContentType = "application/json";
-            incoming.ContentType.ShouldBe(outgoing.ContentType);
         }
 
         [Fact]
@@ -167,10 +166,10 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
         }
 
         [Fact]
-        public void accepted_content_types_positive()
+        public void received_at()
         {
-            outgoing.AcceptedContentTypes = new string[]{"a", "b"};
-            incoming.AcceptedContentTypes.ShouldHaveTheSameElementsAs("a", "b");
+            outgoing.ReceivedAt = "http://server1".ToUri();
+            incoming.ReceivedAt.ShouldBe(outgoing.ReceivedAt);
         }
 
         [Fact]
@@ -181,33 +180,29 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
         }
 
         [Fact]
-        public void ack_requested_positive()
+        public void reply_uri()
         {
-            outgoing.AckRequested = true;
-            incoming.AckRequested.ShouldBeTrue();
+            incoming.ReplyUri.ShouldBe(outgoing.ReplyUri);
         }
 
         [Fact]
-        public void ack_requested_negative()
+        public void sent_at()
         {
-            outgoing.AckRequested = false;
-            incoming.AckRequested.ShouldBeFalse();
+            incoming.SentAt.ShouldBe(outgoing.SentAt);
+        }
+
+
+        [Fact]
+        public void sent_attempts()
+        {
+            sentAttempts.GetValue(incoming).As<int>().ShouldBe(2);
         }
 
         [Fact]
-        public void execution_time_null()
+        public void source()
         {
-            outgoing.ExecutionTime = null;
-            incoming.ExecutionTime.HasValue.ShouldBeFalse();
+            outgoing.Source = "something";
+            incoming.Source.ShouldBe(outgoing.Source);
         }
-
-        [Fact]
-        public void execution_time_not_null()
-        {
-            outgoing.ExecutionTime = DateTime.Today;
-            incoming.ExecutionTime.ShouldBe(DateTime.Today.ToUniversalTime());
-        }
-
-
     }
 }

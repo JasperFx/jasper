@@ -25,5 +25,4 @@ namespace Jasper.Messaging.Runtime.Cascading
             return this;
         }
     }
-
 }

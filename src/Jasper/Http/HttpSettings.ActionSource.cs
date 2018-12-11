@@ -7,8 +7,8 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Http.Routing;
 using Jasper.Util;
-using Lamar.Codegen.Frames;
 using Lamar.Scanning;
+using LamarCompiler.Frames;
 
 namespace Jasper.Http
 {
@@ -33,7 +33,8 @@ namespace Jasper.Http
 
             if (method.Name.EqualsIgnoreCase("Index")) return true;
 
-            return HttpVerbs.All.Contains(method.Name, StringComparer.OrdinalIgnoreCase) || HttpVerbs.All.Any(x => method.Name.StartsWith(x + "_", StringComparison.OrdinalIgnoreCase));
+            return HttpVerbs.All.Contains(method.Name, StringComparer.OrdinalIgnoreCase) ||
+                   HttpVerbs.All.Any(x => method.Name.StartsWith(x + "_", StringComparison.OrdinalIgnoreCase));
         }
 
 

@@ -8,10 +8,6 @@ namespace Jasper.Testing.Messaging.Runtime
 {
     public class ErrorReportTests
     {
-        private Envelope theEnvelope;
-        private TimeoutException theException;
-        private ErrorReport theErrorReport;
-
         public ErrorReportTests()
         {
             theEnvelope = new Envelope();
@@ -25,26 +21,9 @@ namespace Jasper.Testing.Messaging.Runtime
             theErrorReport = new ErrorReport(theEnvelope, theException);
         }
 
-        [Fact]
-        public void copy_the_id()
-        {
-            theErrorReport.Id.ShouldBe(theEnvelope.Id);
-
-        }
-
-        [Fact]
-        public void copy_the_message_type()
-        {
-            theErrorReport.MessageType.ShouldBe(theEnvelope.MessageType);
-
-        }
-
-        [Fact]
-        public void copy_the_source()
-        {
-            theErrorReport.Source.ShouldBe(theEnvelope.Source);
-
-        }
+        private readonly Envelope theEnvelope;
+        private readonly TimeoutException theException;
+        private readonly ErrorReport theErrorReport;
 
         [Fact]
         public void can_reconstitute_the_envelope()
@@ -60,6 +39,24 @@ namespace Jasper.Testing.Messaging.Runtime
             theErrorReport.ExceptionText.ShouldBe(theException.ToString());
             theErrorReport.ExceptionMessage.ShouldBe(theException.Message);
             theErrorReport.ExceptionType.ShouldBe(theException.GetType().FullName);
+        }
+
+        [Fact]
+        public void copy_the_id()
+        {
+            theErrorReport.Id.ShouldBe(theEnvelope.Id);
+        }
+
+        [Fact]
+        public void copy_the_message_type()
+        {
+            theErrorReport.MessageType.ShouldBe(theEnvelope.MessageType);
+        }
+
+        [Fact]
+        public void copy_the_source()
+        {
+            theErrorReport.Source.ShouldBe(theEnvelope.Source);
         }
     }
 }

@@ -75,7 +75,9 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
     }
     // ENDSAMPLE
 
-    public class MyService : IMyService{}
+    public class MyService : IMyService
+    {
+    }
 
     // SAMPLE: injecting-services-into-handlers
     public interface IMyService

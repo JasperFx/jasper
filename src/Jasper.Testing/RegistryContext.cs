@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Alba;
+using Baseline;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
-using Jasper.Testing.Messaging.Bootstrapping;
 using Jasper.TestSupport.Alba;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -29,39 +30,27 @@ namespace Jasper.Testing
     }
 
 
-
     public class RegistryFixture<T> : IDisposable where T : JasperRegistry, new()
     {
-        private JasperRuntime _runtime;
-
-        public async Task WithApp()
+        private Lazy<SystemUnderTest> _sut = new Lazy<SystemUnderTest>(() =>
         {
-            if (_runtime == null)
-            {
-                _runtime = await JasperRuntime.ForAsync<T>();
-            }
-        }
+            var system = JasperAlba.For<T>();
+            system.Services.As<Container>().DisposalLock = DisposalLock.ThrowOnDispose;
+
+            return system;
+        });
+
+        public SystemUnderTest System => _sut.Value;
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            System.Services.As<Container>().DisposalLock = DisposalLock.Unlocked;
+            System?.Dispose();
         }
-
-        public JasperRuntime Runtime => _runtime;
 
         public Task<IScenarioResult> Scenario(Action<Scenario> configuration)
         {
-            if (_runtime != null)
-            {
-                return _runtime.Scenario(configuration);
-            }
-            else
-            {
-                return JasperRuntime.ForAsync<T>()
-                    .ContinueWith(t => { _runtime = t.Result; })
-                    .ContinueWith(t => _runtime.Scenario(configuration))
-                    .Unwrap();
-            }
+            return System.Scenario(configuration);
         }
     }
 
@@ -74,18 +63,12 @@ namespace Jasper.Testing
             _fixture = fixture;
         }
 
-        protected JasperRuntime Runtime => _fixture.Runtime;
+        protected SystemUnderTest Runtime => _fixture.System;
 
-        protected Task withApp()
+
+        protected HandlerGraph theHandlers()
         {
-            return _fixture.WithApp();
-        }
-
-        protected async Task<HandlerGraph> theHandlers()
-        {
-            await _fixture.WithApp();
-
-            return _fixture.Runtime.Get<HandlerGraph>();
+            return _fixture.System.Services.GetRequiredService<HandlerGraph>();
         }
 
         protected Task<IScenarioResult> scenario(Action<Scenario> configuration)

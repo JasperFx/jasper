@@ -5,6 +5,7 @@ namespace Jasper.Messaging.Transports
 {
     public static class TransportConstants
     {
+        public const string Durable = "durable";
         public static readonly string Loopback = "loopback";
 
         public static readonly string Default = "default";
@@ -15,10 +16,8 @@ namespace Jasper.Messaging.Transports
         public static readonly Uri RepliesUri = "loopback://replies".ToUri();
         public static readonly Uri ScheduledUri = "loopback://delayed".ToUri();
 
-        public const string Durable = "durable";
-
-        public static readonly Uri DurableLoopbackUri = $"loopback://durable".ToUri();
-        public static readonly Uri LoopbackUri = $"loopback://".ToUri();
+        public static readonly Uri DurableLoopbackUri = "loopback://durable".ToUri();
+        public static readonly Uri LoopbackUri = "loopback://".ToUri();
 
         public static readonly string PingMessageType = "jasper-ping";
 

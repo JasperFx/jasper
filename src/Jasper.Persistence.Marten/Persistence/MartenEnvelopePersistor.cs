@@ -34,7 +34,7 @@ namespace Jasper.Persistence.Marten.Persistence
 
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
-            return DeleteIncomingEnvelopes(new Envelope[] {envelope});
+            return DeleteIncomingEnvelopes(new[] {envelope});
         }
 
         public async Task DeleteOutgoingEnvelopes(Envelope[] envelopes)
@@ -72,10 +72,7 @@ namespace Jasper.Persistence.Marten.Persistence
         {
             using (var session = _store.LightweightSession())
             {
-                foreach (var envelope in envelopes)
-                {
-                    session.ScheduleExecution(_tables.Incoming, envelope);
-                }
+                foreach (var envelope in envelopes) session.ScheduleExecution(_tables.Incoming, envelope);
 
                 await session.SaveChangesAsync();
             }
@@ -115,10 +112,7 @@ namespace Jasper.Persistence.Marten.Persistence
         {
             using (var session = _store.LightweightSession())
             {
-                foreach (var envelope in envelopes)
-                {
-                    session.StoreIncoming(_tables, envelope);
-                }
+                foreach (var envelope in envelopes) session.StoreIncoming(_tables, envelope);
 
                 await session.SaveChangesAsync();
             }
@@ -149,10 +143,7 @@ namespace Jasper.Persistence.Marten.Persistence
         {
             using (var session = _store.LightweightSession())
             {
-                foreach (var envelope in envelopes)
-                {
-                    session.StoreOutgoing(_tables, envelope, ownerId);
-                }
+                foreach (var envelope in envelopes) session.StoreOutgoing(_tables, envelope, ownerId);
 
                 await session.SaveChangesAsync();
             }
@@ -164,7 +155,6 @@ namespace Jasper.Persistence.Marten.Persistence
 
             using (var session = _store.QuerySession())
             {
-
                 using (var reader = await session.Connection
                     .CreateCommand(
                         $"select status, count(*) from {_tables.Incoming} group by status")
@@ -176,20 +166,14 @@ namespace Jasper.Persistence.Marten.Persistence
                         var count = await reader.GetFieldValueAsync<int>(1);
 
                         if (status == TransportConstants.Incoming)
-                        {
                             counts.Incoming = count;
-                        }
-                        else if (status == TransportConstants.Scheduled)
-                        {
-                            counts.Scheduled = count;
-                        }
+                        else if (status == TransportConstants.Scheduled) counts.Scheduled = count;
                     }
                 }
 
-                counts.Outgoing = (int)(long)await session.Connection
+                counts.Outgoing = (int) (long) await session.Connection
                     .CreateCommand($"select count(*) from {_tables.Outgoing}").ExecuteScalarAsync();
             }
-
 
 
             return counts;

@@ -7,6 +7,8 @@
             Outgoing = outgoing;
         }
 
+        public object Outgoing { get; }
+
         public Envelope CreateEnvelope(Envelope original)
         {
             var response = original.ForResponse(Outgoing);
@@ -14,7 +16,5 @@
 
             return response;
         }
-
-        public object Outgoing { get; }
     }
 }

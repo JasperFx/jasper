@@ -17,9 +17,18 @@ namespace Jasper.Testing.Messaging.ErrorHandling
         }
 
         [Fact]
-        public void matches_with_no_rules_is_true()
+        public void if_nothing_matches_do_not_return_a_continuation()
         {
-            ShouldBeBooleanExtensions.ShouldBeTrue(new ErrorHandler().Matches(ObjectMother.Envelope(), new Exception()));
+            var exception = new Exception();
+            var envelope = ObjectMother.Envelope();
+
+            var conditionThatDoesNotMatch = Substitute.For<IExceptionMatch>();
+
+
+            var handler = new ErrorHandler();
+            handler.AddCondition(conditionThatDoesNotMatch);
+
+            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(envelope, exception));
         }
 
         [Fact]
@@ -41,31 +50,22 @@ namespace Jasper.Testing.Messaging.ErrorHandling
             var handler = new ErrorHandler();
 
             handler.AddCondition(matchingCondition1);
-            ShouldBeBooleanExtensions.ShouldBeTrue(handler.Matches(envelope, exception));
+            handler.Matches(envelope, exception).ShouldBeTrue();
 
             handler.AddCondition(matchingCondition2);
-            ShouldBeBooleanExtensions.ShouldBeTrue(handler.Matches(envelope, exception));
+            handler.Matches(envelope, exception).ShouldBeTrue();
 
             handler.AddCondition(matchingCondition3);
-            ShouldBeBooleanExtensions.ShouldBeTrue(handler.Matches(envelope, exception));
+            handler.Matches(envelope, exception).ShouldBeTrue();
 
             handler.AddCondition(conditionThatDoesNotMatch);
-            ShouldBeBooleanExtensions.ShouldBeFalse(handler.Matches(envelope, exception));
+            handler.Matches(envelope, exception).ShouldBeFalse();
         }
 
         [Fact]
-        public void if_nothing_matches_do_not_return_a_continuation()
+        public void matches_with_no_rules_is_true()
         {
-            var exception = new Exception();
-            var envelope = ObjectMother.Envelope();
-
-            var conditionThatDoesNotMatch = Substitute.For<IExceptionMatch>();
-
-
-            var handler = new ErrorHandler();
-            handler.AddCondition(conditionThatDoesNotMatch);
-
-            ShouldBeNullExtensions.ShouldBeNull(handler.DetermineContinuation(envelope, exception));
+            new ErrorHandler().Matches(ObjectMother.Envelope(), new Exception()).ShouldBeTrue();
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace Jasper.Testing.Messaging.ErrorHandling
             handler.AddCondition(matchingCondition1);
             handler.AddContinuation(Substitute.For<IContinuation>());
 
-            ShouldBeBooleanExtensions.ShouldBeTrue(handler.Matches(envelope, exception));
+            handler.Matches(envelope, exception).ShouldBeTrue();
 
             handler.DetermineContinuation(envelope, exception)
                 .ShouldBeTheSameAs(handler.Continuation(null, null));

@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 using Alba;
 using Baseline.Reflection;
 using Jasper.Http;
-using Jasper.Http.Model;
-using Jasper.Http.Routing;
 using Shouldly;
 using Xunit;
 
@@ -19,9 +17,14 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void methods_are_candidate_actions()
         {
-            HttpSettings.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue))).ShouldBeTrue();
-            HttpSettings.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_dateoffset_time(DateTimeOffset.MaxValue))).ShouldBeTrue();
-            HttpSettings.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_number_value(55))).ShouldBeTrue();
+            HttpSettings
+                .IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue)))
+                .ShouldBeTrue();
+            HttpSettings
+                .IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x =>
+                    x.get_with_dateoffset_time(DateTimeOffset.MaxValue))).ShouldBeTrue();
+            HttpSettings.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_number_value(55)))
+                .ShouldBeTrue();
         }
 
         [Fact]
@@ -37,14 +40,13 @@ namespace Jasper.Testing.Http.Routing
             });
 
             RoutedEndpoint.LastTime.ShouldBe(time);
-
-
         }
 
         [Fact]
         public async Task use_date_timeoffset_route_arguments()
         {
-            RoutedEndpoint.LastTimeOffset = DateTimeOffset.MinValue;;
+            RoutedEndpoint.LastTimeOffset = DateTimeOffset.MinValue;
+            ;
             var time = new DateTimeOffset(2017, 8, 15, 8, 0, 0, 0, TimeSpan.Zero);
 
             await scenario(_ =>
@@ -54,8 +56,6 @@ namespace Jasper.Testing.Http.Routing
             });
 
             RoutedEndpoint.LastTimeOffset.ShouldBe(time);
-
-
         }
 
         [Fact]
@@ -71,6 +71,10 @@ namespace Jasper.Testing.Http.Routing
 
     public class RoutedEndpoint
     {
+        public static DateTimeOffset LastTimeOffset { get; set; }
+
+        public static DateTime LastTime { get; set; }
+
         public string get_with_number_value(int value)
         {
             return value.ToString();
@@ -84,11 +88,6 @@ namespace Jasper.Testing.Http.Routing
         public void get_with_dateoffset_time(DateTimeOffset time)
         {
             LastTimeOffset = time;
-
         }
-
-        public static DateTimeOffset LastTimeOffset { get; set; }
-
-        public static DateTime LastTime { get; set; }
     }
 }

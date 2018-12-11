@@ -23,25 +23,21 @@ namespace Jasper.Testing.CommandLine
 
     public class Message1
     {
-
     }
 
     public class MessageConsumer
     {
         public void Handle(Message1 message)
         {
-
         }
     }
 
     public static class HandlerConfigurationExtensions
     {
-        public static IHandlerConfiguration DisableConventionalDiscovery(this IHandlerConfiguration handlers, bool disabled = true)
+        public static IHandlerConfiguration DisableConventionalDiscovery(this IHandlerConfiguration handlers,
+            bool disabled = true)
         {
-            if (disabled)
-            {
-                handlers.Discovery(x => x.DisableConventionalDiscovery());
-            }
+            if (disabled) handlers.Discovery(x => x.DisableConventionalDiscovery());
 
             return handlers;
         }

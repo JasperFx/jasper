@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Conneg;
-using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Samples
 {
-
     namespace FirstTry
     {
         // SAMPLE: PersonBorn1
@@ -41,6 +37,7 @@ namespace Jasper.Testing.Samples
                 new Envelope(new PersonBorn())
                     .MessageType.ShouldBe(typeof(PersonBorn).FullName);
             }
+
             // ENDSAMPLE
         }
     }
@@ -68,6 +65,7 @@ namespace Jasper.Testing.Samples
                 new Envelope(new PersonBorn())
                     .MessageType.ShouldBe("person-born");
             }
+
             // ENDSAMPLE
         }
     }
@@ -118,6 +116,7 @@ namespace Jasper.Testing.Samples
                 // do something w/ the message
             }
         }
+
         // ENDSAMPLE
     }
 
@@ -137,6 +136,7 @@ namespace Jasper.Testing.Samples
     {
         public Type DotNetType { get; }
         public string ContentType { get; }
+
         public byte[] Write(object model)
         {
             throw new NotImplementedException();
@@ -171,13 +171,13 @@ namespace Jasper.Testing.Samples
     {
         public CustomizingJsonSerialization()
         {
-            Settings.Alter<MessagingSettings>(_ =>
+            Settings.Alter<JasperOptions>(_ =>
             {
                 // Edit the JsonSerializerSettings used by the messaging serialization
                 _.JsonSerialization.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
             });
         }
     }
-    // ENDSAMPLE
 
+    // ENDSAMPLE
 }

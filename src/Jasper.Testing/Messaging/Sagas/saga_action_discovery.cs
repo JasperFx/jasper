@@ -8,40 +8,34 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Sagas
 {
-
     public class SagaFixture : IDisposable
     {
         private JasperRuntime _runtime;
 
+        public void Dispose()
+        {
+            _runtime?.Dispose();
+        }
+
         public async Task withRuntime()
         {
-            if (_runtime == null)
-            {
-                _runtime = await JasperRuntime.BasicAsync();
-            }
+            if (_runtime == null) _runtime = await JasperRuntime.BasicAsync();
         }
 
         public HandlerChain ChainFor<T>()
         {
             return _runtime.Get<HandlerGraph>().ChainFor<T>();
         }
-
-        public void Dispose()
-        {
-            _runtime?.Shutdown();
-        }
-
-
     }
 
     public class saga_action_discovery : IClassFixture<SagaFixture>
     {
-        private readonly SagaFixture _fixture;
-
         public saga_action_discovery(SagaFixture fixture)
         {
             _fixture = fixture;
         }
+
+        private readonly SagaFixture _fixture;
 
         private HandlerChain chainFor<T>()
         {
@@ -75,12 +69,10 @@ namespace Jasper.Testing.Messaging.Sagas
     {
         public void Orchestrates(SagaMessage1 message)
         {
-
         }
 
         public void Handle(SagaMessage2 message)
         {
-
         }
 
         public MySagaState Start(SagaStarter starter)
@@ -91,17 +83,14 @@ namespace Jasper.Testing.Messaging.Sagas
 
     public class SagaStarter : Message3
     {
-
     }
 
     public class SagaMessage1 : Message1
     {
-
     }
 
     public class SagaMessage2 : Message2
     {
-
     }
 
     public class MySagaState
@@ -124,20 +113,17 @@ namespace Jasper.Testing.Messaging.Sagas
     [MessageIdentity("Message3")]
     public class Message3
     {
-
     }
 
     [MessageIdentity("Message4")]
     public class Message4
     {
-
     }
 
     [MessageIdentity("Message5")]
     public class Message5
     {
-        public Guid Id = Guid.NewGuid();
-
         public int FailThisManyTimes = 0;
+        public Guid Id = Guid.NewGuid();
     }
 }

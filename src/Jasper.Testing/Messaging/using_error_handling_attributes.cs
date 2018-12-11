@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
-using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -20,10 +19,11 @@ namespace Jasper.Testing.Messaging
         }
 
         [Fact]
-        public async Task use_retry_on_attribute()
+        public async Task use_move_to_error_queue_on_attribute()
         {
             await withAllDefaults();
-            chainFor<Message2>().ShouldHandleExceptionWith<DivideByZeroException, RetryNowContinuation>();
+
+            chainFor<Message4>().ShouldMoveToErrorQueue<DataMisalignedException>();
         }
 
         [Fact]
@@ -31,14 +31,6 @@ namespace Jasper.Testing.Messaging
         {
             await withAllDefaults();
             chainFor<Message3>().ShouldHandleExceptionWith<NotImplementedException, RequeueContinuation>();
-        }
-
-        [Fact]
-        public async Task use_move_to_error_queue_on_attribute()
-        {
-            await withAllDefaults();
-
-            chainFor<Message4>().ShouldMoveToErrorQueue<DataMisalignedException>();
         }
 
         [Fact]
@@ -57,6 +49,13 @@ namespace Jasper.Testing.Messaging
 
             continuation.Delay.ShouldBe(5.Seconds());
         }
+
+        [Fact]
+        public async Task use_retry_on_attribute()
+        {
+            await withAllDefaults();
+            chainFor<Message2>().ShouldHandleExceptionWith<DivideByZeroException, RetryNowContinuation>();
+        }
     }
 
     public class ErrorCausingConsumer
@@ -64,31 +63,26 @@ namespace Jasper.Testing.Messaging
         [MaximumAttempts(3)]
         public void Handle(Message1 message)
         {
-
         }
 
         [RetryOn(typeof(DivideByZeroException))]
         public void Handle(Message2 message)
         {
-
         }
 
         [RequeueOn(typeof(NotImplementedException))]
         public void Handle(Message3 message)
         {
-
         }
 
         [MoveToErrorQueueOn(typeof(DataMisalignedException))]
         public void Handle(Message4 message)
         {
-
         }
 
         [RetryLaterOn(typeof(DivideByZeroException), 5)]
         public void Handle(Message5 message)
         {
-
         }
     }
 }

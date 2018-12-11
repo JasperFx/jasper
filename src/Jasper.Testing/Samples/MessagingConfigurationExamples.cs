@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Baseline;
 using Baseline.Dates;
 using Jasper.Messaging.ErrorHandling;
-using Jasper.Messaging.Transports.Configuration;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Testing.Messaging.Samples;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
@@ -47,33 +44,6 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
 
-    // SAMPLE: configuring-bus-application-with-settings
-    public class MySettings
-    {
-        public int LightweightPort { get; set; } = 2222;
-        public Uri DefaultListener { get; set; } = "durable://localhost:2223".ToUri();
-
-        public int MaximumSendAttempts { get; set; } = 5;
-    }
-
-    public class MyAppWithSettings : JasperRegistry
-    {
-        public MyAppWithSettings()
-        {
-            Configuration
-                .AddEnvironmentVariables()
-                .AddJsonFile("appSettings.json");
-
-            Settings.With<MySettings>(_ =>
-            {
-                Transports.LightweightListenerAt(_.LightweightPort);
-
-                Transports.ListenForMessagesFrom(_.DefaultListener);
-
-            });
-        }
-    }
-    // ENDSAMPLE
 
 
     // SAMPLE: configuring-via-uri-lookup
@@ -81,8 +51,11 @@ namespace Jasper.Testing.Samples
     {
         public MyAppUsingUriLookups()
         {
-            Configuration
-                .AddInMemoryCollection(new Dictionary<string, string>{{"incoming", "tcp://server3:2000"}});
+            Hosting.ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string> {{"incoming", "tcp://server3:2000"}});
+            });
+
 
             // This usage assumes that there is a value in the configuration
             // with the key "incoming" that corresponds to a Uri
@@ -142,5 +115,6 @@ namespace Jasper.Testing.Samples
             Publish.Message<Message2>().To("loopback://important");
         }
     }
+
     // ENDSAMPLE
 }

@@ -10,10 +10,9 @@ using Jasper.Conneg;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Lamar;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Model
@@ -24,6 +23,9 @@ namespace Jasper.Http.Model
             Variable.VariablesForProperties<HttpContext>(RouteGraph.Context);
 
         private GeneratedType _generatedType;
+
+
+        private bool _hasAppliedConfigureAndAttributes;
 
         public RouteChain(MethodCall action)
         {
@@ -107,7 +109,8 @@ namespace Jasper.Http.Model
             return $"{Route.HttpMethod}: {Route.Pattern}";
         }
 
-        public void AssemblyType(GeneratedAssembly generatedAssembly, ConnegRules rules, JasperGenerationRules codeRules)
+        public void AssemblyType(GeneratedAssembly generatedAssembly, ConnegRules rules,
+            JasperGenerationRules codeRules)
         {
             _generatedType = generatedAssembly.AddType(TypeName, typeof(RouteHandler));
             var handleMethod = _generatedType.MethodFor(nameof(RouteHandler.Handle));
@@ -118,8 +121,6 @@ namespace Jasper.Http.Model
             handleMethod.DerivedVariables.AddRange(HttpContextVariables);
         }
 
-
-        private bool _hasAppliedConfigureAndAttributes;
         public List<Frame> DetermineFrames(ConnegRules rules, JasperGenerationRules codeRules)
         {
             if (!_hasAppliedConfigureAndAttributes)

@@ -9,18 +9,66 @@ using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using GenericEnumerableExtensions = Baseline.GenericEnumerableExtensions;
+using Lamar;
+using LamarCompiler.Frames;
 
 namespace Jasper.Http.Model
 {
     public class RouteGraph : IEnumerable<RouteChain>
     {
         public static readonly string Context = "httpContext";
-        public readonly Router Router = new Router();
 
         private readonly IList<RouteChain> _chains = new List<RouteChain>();
+        public readonly Router Router = new Router();
+
+        public IEnumerable<RouteChain> Gets
+        {
+            get { return this.Where(x => x.RespondsToMethod("GET")); }
+        }
+
+
+        public IEnumerable<RouteChain> Posts
+        {
+            get { return this.Where(x => x.RespondsToMethod("POST")); }
+        }
+
+
+        public IEnumerable<RouteChain> Puts
+        {
+            get { return this.Where(x => x.RespondsToMethod("PUT")); }
+        }
+
+
+        public IEnumerable<RouteChain> Deletes
+        {
+            get { return this.Where(x => x.RespondsToMethod("DELETE")); }
+        }
+
+
+        public IEnumerable<RouteChain> Heads
+        {
+            get { return this.Where(x => x.RespondsToMethod("HEAD")); }
+        }
+
+        /// <summary>
+        ///     Union of routed chains that respond to GET or HEAD
+        /// </summary>
+        public IEnumerable<RouteChain> Resources => Gets.Union(Heads);
+
+        /// <summary>
+        ///     Union of routed chains that respond to POST, PUT, or DELETE
+        /// </summary>
+        public IEnumerable<RouteChain> Commands => Posts.Union(Puts).Union(Deletes);
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public IEnumerator<RouteChain> GetEnumerator()
+        {
+            return _chains.GetEnumerator();
+        }
 
         public RouteChain AddRoute(Type handlerType, MethodInfo method, string url = null)
         {
@@ -30,8 +78,10 @@ namespace Jasper.Http.Model
 
         public RouteChain AddRoute<T>(string methodName, string url = null)
         {
-            var method = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-            if (method == null) throw new ArgumentOutOfRangeException(nameof(method), "Could not find the designated method");
+            var method = typeof(T).GetMethod(methodName,
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+            if (method == null)
+                throw new ArgumentOutOfRangeException(nameof(method), "Could not find the designated method");
 
             return AddRoute(typeof(T), method, url);
         }
@@ -65,17 +115,15 @@ namespace Jasper.Http.Model
             return _chains.FirstOrDefault(x => x.Action.HandlerType == typeof(T) && Equals(x.Action.Method, method));
         }
 
-        public void BuildRoutingTree(ConnegRules rules, JasperGenerationRules generation, JasperRuntime runtime)
+        public void BuildRoutingTree(JasperGenerationRules generation, IContainer container)
         {
-            Router.HandlerBuilder = new RouteHandlerBuilder(runtime.Container, rules, generation);
+            var rules = container.QuickBuild<ConnegRules>();
+
+            Router.HandlerBuilder = new RouteHandlerBuilder(container, rules, generation);
             assertNoDuplicateRoutes();
 
-            foreach (var route in _chains.Select(x => x.Route))
-            {
-                Router.Add(route);
-            }
+            foreach (var route in _chains.Select(x => x.Route)) Router.Add(route);
         }
-
 
 
         private void assertNoDuplicateRoutes()
@@ -83,72 +131,18 @@ namespace Jasper.Http.Model
             var duplicates = _chains
                 .GroupBy(x => x.Route.Name)
                 .Where(x => x.Count() > 1)
-                .Select(group => new DuplicateRoutesException(@group)).ToArray();
+                .Select(group => new DuplicateRoutesException(group)).ToArray();
 
-            if (duplicates.Length == 1)
-            {
-                throw duplicates[0];
-            }
+            if (duplicates.Length == 1) throw duplicates[0];
 
-            if (duplicates.Any())
-            {
-                throw new AggregateException(duplicates);
-            }
+            if (duplicates.Any()) throw new AggregateException(duplicates);
         }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IEnumerator<RouteChain> GetEnumerator()
-        {
-            return _chains.GetEnumerator();
-        }
-
-        public IEnumerable<RouteChain> Gets
-        {
-            get { return this.Where(x => x.RespondsToMethod("GET")); }
-        }
-
-
-        public IEnumerable<RouteChain> Posts
-        {
-            get { return this.Where(x => x.RespondsToMethod("POST")); }
-        }
-
-
-        public IEnumerable<RouteChain> Puts
-        {
-            get { return this.Where(x => x.RespondsToMethod("PUT")); }
-        }
-
-
-        public IEnumerable<RouteChain> Deletes
-        {
-            get { return this.Where(x => x.RespondsToMethod("DELETE")); }
-        }
-
-
-        public IEnumerable<RouteChain> Heads
-        {
-            get { return this.Where(x => x.RespondsToMethod("HEAD")); }
-        }
-
-        /// <summary>
-        /// Union of routed chains that respond to GET or HEAD
-        /// </summary>
-        public IEnumerable<RouteChain> Resources => Gets.Union(Heads);
-
-        /// <summary>
-        /// Union of routed chains that respond to POST, PUT, or DELETE
-        /// </summary>
-        public IEnumerable<RouteChain> Commands => Posts.Union(Puts).Union(Deletes);
     }
 
     public class DuplicateRoutesException : Exception
     {
-        public DuplicateRoutesException(IEnumerable<RouteChain> chains) : base($"Duplicated route with pattern {chains.First().Route.Name} between {GenericEnumerableExtensions.Join(chains.Select(x => $"{x.Action}"), ", ")}")
+        public DuplicateRoutesException(IEnumerable<RouteChain> chains) : base(
+            $"Duplicated route with pattern {chains.First().Route.Name} between {chains.Select(x => $"{x.Action}").Join(", ")}")
         {
         }
     }

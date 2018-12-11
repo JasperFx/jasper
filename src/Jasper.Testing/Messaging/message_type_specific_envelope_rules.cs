@@ -2,11 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
@@ -30,41 +28,7 @@ namespace Jasper.Testing.Messaging
 
                 envelope.Headers["special"].ShouldBe("true");
             }
-
-
         }
-
-
-        [Fact]
-        public async Task see_the_customizations_happen_inside_of_message_context()
-        {
-            var runtime = await JasperRuntime.BasicAsync();
-
-
-            try
-            {
-                var context = runtime.Get<IMessageContext>();
-
-                // Just to force the message context to pool up the envelope instead
-                // of sending it out
-                await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
-
-                var mySpecialMessage = new MySpecialMessage();
-
-                await context.Send("tcp://localhost:2001".ToUri(), mySpecialMessage);
-
-                var outgoing = context.As<MessageContext>().Outstanding.Single();
-
-                outgoing.Headers["special"].ShouldBe("true");
-            }
-            finally
-            {
-                await runtime.Shutdown();
-            }
-        }
-
-
-
 
 
         [Fact]
@@ -82,10 +46,29 @@ namespace Jasper.Testing.Messaging
 
                 envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
             }
-
         }
 
 
+        [Fact]
+        public async Task see_the_customizations_happen_inside_of_message_context()
+        {
+            using (var runtime = JasperRuntime.Basic())
+            {
+                var context = runtime.Get<IMessageContext>();
+
+                // Just to force the message context to pool up the envelope instead
+                // of sending it out
+                await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
+
+                var mySpecialMessage = new MySpecialMessage();
+
+                await context.Send("tcp://localhost:2001".ToUri(), mySpecialMessage);
+
+                var outgoing = context.As<MessageContext>().Outstanding.Single();
+
+                outgoing.Headers["special"].ShouldBe("true");
+            }
+        }
     }
 
     public class SpecialAttribute : ModifyEnvelopeAttribute
@@ -96,16 +79,19 @@ namespace Jasper.Testing.Messaging
         }
     }
 
-    [Special, DeliverWithin(5)]
+    [Special]
+    [DeliverWithin(5)]
     public class MySpecialMessage
     {
-
     }
 
     // SAMPLE: UsingDeliverWithinAttribute
     // Any message of this type should be successfully
     // delivered within 10 seconds or discarded
     [DeliverWithin(10)]
-    public class StatusMessage{}
+    public class StatusMessage
+    {
+    }
+
     // ENDSAMPLE
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Baseline.Dates;
-using Jasper.Testing.EnvironmentChecks;
 using Shouldly;
 using Xunit;
 

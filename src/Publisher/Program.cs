@@ -1,7 +1,5 @@
-﻿using Baseline;
-using Jasper;
+﻿using Jasper;
 using Jasper.CommandLine;
-using Jasper.Messaging.Transports.Configuration;
 using TestMessages;
 
 namespace Publisher
@@ -32,12 +30,10 @@ namespace Publisher
     {
         public void Handle(UserCreated message)
         {
-
         }
 
         public void Handle(UserDeleted message)
         {
-
         }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Messaging;
 
 namespace Jasper.Conneg
 {
@@ -17,8 +16,14 @@ namespace Jasper.Conneg
                 .GetGenericArguments()
                 .Single();
 
-            Relationships.Add(type, forwardedType);
-
+            if (Relationships.ContainsKey(type))
+            {
+                Relationships[type] = forwardedType;
+            }
+            else
+            {
+                Relationships.Add(type, forwardedType);
+            }
         }
     }
 }

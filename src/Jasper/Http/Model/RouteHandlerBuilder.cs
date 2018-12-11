@@ -1,15 +1,15 @@
 ﻿using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Lamar;
-using Lamar.Compilation;
+using LamarCompiler;
 
 namespace Jasper.Http.Model
 {
     public class RouteHandlerBuilder
     {
         private readonly IContainer _container;
-        private readonly ConnegRules _rules;
         private readonly JasperGenerationRules _generation;
+        private readonly ConnegRules _rules;
 
         public RouteHandlerBuilder(IContainer container, ConnegRules rules, JasperGenerationRules generation)
         {

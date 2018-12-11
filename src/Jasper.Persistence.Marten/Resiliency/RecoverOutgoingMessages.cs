@@ -8,12 +8,10 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Util;
 using Marten;
 using Marten.Util;
-using Npgsql;
 using NpgsqlTypes;
 
 namespace Jasper.Persistence.Marten.Resiliency
@@ -21,15 +19,15 @@ namespace Jasper.Persistence.Marten.Resiliency
     public class RecoverOutgoingMessages : IMessagingAction
     {
         public static readonly int OutgoingMessageLockId = "recover-outgoing-messages".GetHashCode();
-        private readonly ISubscriberGraph _subscribers;
-        private readonly EnvelopeTables _marker;
-        private readonly ITransportLogger _logger;
-        private readonly MessagingSettings _settings;
-        private readonly string _findUniqueDestinations;
-        private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
+        private readonly string _findOutgoingEnvelopesSql;
+        private readonly string _findUniqueDestinations;
+        private readonly ITransportLogger _logger;
+        private readonly EnvelopeTables _marker;
+        private readonly JasperOptions _settings;
+        private readonly ISubscriberGraph _subscribers;
 
-        public RecoverOutgoingMessages(ISubscriberGraph subscribers, MessagingSettings settings, EnvelopeTables marker,
+        public RecoverOutgoingMessages(ISubscriberGraph subscribers, JasperOptions settings, EnvelopeTables marker,
             ITransportLogger logger)
         {
             _subscribers = subscribers;
@@ -38,9 +36,26 @@ namespace Jasper.Persistence.Marten.Resiliency
             _logger = logger;
 
             _findUniqueDestinations = $"select distinct destination from {_marker.Outgoing}";
-            _findOutgoingEnvelopesSql = $"select body from {marker.Outgoing} where owner_id = {TransportConstants.AnyNode} and destination = :destination limit {settings.Retries.RecoveryBatchSize}";
-            _deleteOutgoingSql = $"delete from {marker.Outgoing} where owner_id = :owner and destination = :destination";
+            _findOutgoingEnvelopesSql =
+                $"select body from {marker.Outgoing} where owner_id = {TransportConstants.AnyNode} and destination = :destination limit {settings.Retries.RecoveryBatchSize}";
+            _deleteOutgoingSql =
+                $"delete from {marker.Outgoing} where owner_id = :owner and destination = :destination";
+        }
 
+        public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
+        {
+            if (!await session.TryGetGlobalTxLock(OutgoingMessageLockId))
+                return;
+
+
+            var destinations = await FindAllOutgoingDestinations(session);
+
+            var count = 0;
+            foreach (var destination in destinations) count += await recoverFrom(destination, session);
+
+            var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
+
+            if (wasMaxedOut) agent.RescheduleOutgoingRecovery();
         }
 
         public async Task<List<Uri>> FindAllOutgoingDestinations(IDocumentSession session)
@@ -60,32 +75,8 @@ namespace Jasper.Persistence.Marten.Resiliency
             return list;
         }
 
-        public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
-        {
-            if (!await session.TryGetGlobalTxLock(OutgoingMessageLockId))
-                return;
-
-
-            var destinations = await FindAllOutgoingDestinations(session);
-
-            var count = 0;
-            foreach (var destination in destinations)
-            {
-                count += await recoverFrom(destination, session);
-            }
-
-            var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
-
-            if (wasMaxedOut)
-            {
-                agent.RescheduleOutgoingRecovery();
-            }
-        }
-
         private async Task<int> recoverFrom(Uri destination, IDocumentSession session)
         {
-
-
             try
             {
                 var channel = _subscribers.GetOrBuild(destination);
@@ -97,10 +88,7 @@ namespace Jasper.Persistence.Marten.Resiliency
                     .With("destination", destination.ToString(), NpgsqlDbType.Varchar)
                     .ExecuteToEnvelopes();
 
-                if (outgoing.Count == 0)
-                {
-                    return 0;
-                }
+                if (outgoing.Count == 0) return 0;
 
                 Trace.WriteLine($"Recovered {outgoing.Count} outgoing messages to {destination}");
 
@@ -112,7 +100,8 @@ namespace Jasper.Persistence.Marten.Resiliency
                 // (contrived) testing
                 if (channel.Latched || !filtered.Any()) return 0;
 
-                Trace.WriteLine($"After filtering, taking ownership of {filtered.Length} outgoing messages to {destination} assigned to node {_marker.CurrentNodeId}");
+                Trace.WriteLine(
+                    $"After filtering, taking ownership of {filtered.Length} outgoing messages to {destination} assigned to node {_marker.CurrentNodeId}");
 
                 session.MarkOwnership(_marker.Outgoing, _marker.CurrentNodeId, filtered);
 
@@ -121,19 +110,16 @@ namespace Jasper.Persistence.Marten.Resiliency
                 _logger.RecoveredOutgoing(filtered);
 
                 foreach (var envelope in filtered)
-                {
                     try
                     {
                         await channel.QuickSend(envelope);
                     }
                     catch (Exception e)
                     {
-                        _logger.LogException(e, message:$"Unable to enqueue {envelope} for sending");
+                        _logger.LogException(e, message: $"Unable to enqueue {envelope} for sending");
                     }
-                }
 
                 return outgoing.Count();
-
             }
             catch (UnknownTransportException e)
             {
@@ -164,5 +150,4 @@ namespace Jasper.Persistence.Marten.Resiliency
             return outgoing.Where(x => !x.IsExpired()).ToArray();
         }
     }
-
 }

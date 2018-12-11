@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper;
 using Jasper.Messaging;
-using Jasper.Messaging.Durability;
 using Jasper.Persistence;
-using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Newtonsoft.Json;
 using TestMessages;
@@ -17,14 +15,16 @@ namespace SqlSender
 {
     public class HomeEndpoint
     {
-        private static string _json1;
-        private static string _json2;
+        private static readonly string _json1;
+        private static readonly string _json2;
 
 
         static HomeEndpoint()
         {
-            _json1 = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(HomeEndpoint), "target1.json").ReadAllText();
-            _json2 = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(HomeEndpoint), "target2.json").ReadAllText();
+            _json1 = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(HomeEndpoint), "target1.json")
+                .ReadAllText();
+            _json2 = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(HomeEndpoint), "target2.json")
+                .ReadAllText();
         }
 
 
@@ -39,7 +39,6 @@ namespace SqlSender
         public static void post_clear(SqlServerEnvelopePersistor persistor)
         {
             persistor.ClearAllStoredMessages();
-
         }
 
         [Transactional]

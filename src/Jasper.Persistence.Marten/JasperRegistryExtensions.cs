@@ -29,13 +29,14 @@ namespace Jasper.Persistence.Marten
             settings.Alter(configuration);
         }
 
-        public static void ConfigureMarten(this JasperSettings settings, Action<WebHostBuilderContext, StoreOptions> configuration)
+        public static void ConfigureMarten(this JasperSettings settings,
+            Action<WebHostBuilderContext, StoreOptions> configuration)
         {
-            settings.Alter<StoreOptions>(configuration);
+            settings.Alter(configuration);
         }
 
         /// <summary>
-        /// Register Marten backed message persistence to a known connection string
+        ///     Register Marten backed message persistence to a known connection string
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="connectionString"></param>
@@ -45,19 +46,14 @@ namespace Jasper.Persistence.Marten
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<MartenBackedPersistence>().Any())
-            {
                 parent.Include<MartenBackedPersistence>();
-            }
 
-            settings.Alter<StoreOptions>(x =>
-            {
-                x.Connection(connectionString);
-            });
+            settings.Alter<StoreOptions>(x => { x.Connection(connectionString); });
         }
 
         /// <summary>
-        /// Register Marten backed message persistence based on configuration and the
-        /// development environment
+        ///     Register Marten backed message persistence based on configuration and the
+        ///     development environment
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
@@ -66,9 +62,7 @@ namespace Jasper.Persistence.Marten
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<MartenBackedPersistence>().Any())
-            {
                 parent.Include<MartenBackedPersistence>();
-            }
 
             settings.Alter(configure);
         }

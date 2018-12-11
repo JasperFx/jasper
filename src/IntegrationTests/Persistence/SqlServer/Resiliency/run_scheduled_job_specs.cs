@@ -33,7 +33,6 @@ namespace IntegrationTests.Persistence.SqlServer.Resiliency
             try
             {
                 return await theScheduledJob.ExecuteAtTime(connection, time);
-
             }
             finally
             {

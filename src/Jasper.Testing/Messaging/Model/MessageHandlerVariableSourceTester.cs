@@ -1,6 +1,5 @@
 ﻿using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
-using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
 using Xunit;
 

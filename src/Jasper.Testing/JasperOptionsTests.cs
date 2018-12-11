@@ -1,16 +1,11 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Jasper.Messaging.Configuration;
-using Jasper.Messaging.Transports.Configuration;
-using Jasper.Util;
-using Shouldly;
+﻿using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging
+namespace Jasper.Testing
 {
-    public class MessagingSettingsTests
+    public class JasperOptionsTests
     {
-        private readonly MessagingSettings theSettings = new MessagingSettings();
+        private readonly JasperOptions theSettings = new JasperOptions();
 
         [Fact]
         public void derive_the_node_id()
@@ -39,6 +34,5 @@ namespace Jasper.Testing.Messaging
             theSettings.EnableTransport("tcp");
             theSettings.StateFor("tcp").ShouldBe(TransportState.Enabled);
         }
-
     }
 }

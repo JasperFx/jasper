@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 
 namespace Jasper.Testing.FakeStoreTypes
 {
@@ -28,8 +27,8 @@ namespace Jasper.Testing.FakeStoreTypes
 
     public class FakeTransaction : Frame
     {
-        private Variable _store;
         private readonly Variable _session;
+        private Variable _store;
 
         public FakeTransaction() : base(false)
         {
@@ -58,9 +57,9 @@ namespace Jasper.Testing.FakeStoreTypes
 
     public class Tracking
     {
+        public bool CalledSaveChanges;
         public bool DisposedTheSession;
         public bool OpenedSession;
-        public bool CalledSaveChanges;
     }
 
     public class FakeStore : IFakeStore

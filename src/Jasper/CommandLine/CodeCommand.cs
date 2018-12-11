@@ -3,9 +3,7 @@ using Baseline;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Transports.Configuration;
-using Lamar.Codegen;
-using Lamar.Compilation;
+using LamarCompiler;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -25,7 +23,8 @@ namespace Jasper.CommandLine
             Console.WriteLine();
             Console.WriteLine();
 
-            input.Registry.Settings.Alter<MessagingSettings>(x => x.HostedServicesEnabled = false);
+            // TODO -- need to replace this
+            //input.Registry.Settings.Alter<JasperOptions>(x => x.HostedServicesEnabled = false);
             var runtime = input.BuildRuntime();
 
             var rules = input.Registry.CodeGeneration;
@@ -33,12 +32,8 @@ namespace Jasper.CommandLine
 
             if (input.Match == CodeMatch.all || input.Match == CodeMatch.messages)
             {
-
                 var handlers = runtime.Get<HandlerGraph>();
-                foreach (var handler in handlers.Chains)
-                {
-                    handler.AssembleType(generatedAssembly, rules);
-                }
+                foreach (var handler in handlers.Chains) handler.AssembleType(generatedAssembly, rules);
             }
 
             if (input.Match == CodeMatch.all || input.Match == CodeMatch.routes)
@@ -46,10 +41,7 @@ namespace Jasper.CommandLine
                 var connegRules = runtime.Get<ConnegRules>();
                 var routes = runtime.Get<RouteGraph>();
 
-                foreach (var route in routes)
-                {
-                    route.AssemblyType(generatedAssembly, connegRules, rules);
-                }
+                foreach (var route in routes) route.AssemblyType(generatedAssembly, connegRules, rules);
             }
 
             var text = runtime.Container.GenerateCodeWithInlineServices(generatedAssembly);

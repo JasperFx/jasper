@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Lamar.Compilation;
+using LamarCompiler;
 using NJsonSchema;
 using NJsonSchema.CodeGeneration.CSharp;
 using Oakton;
@@ -17,7 +17,7 @@ namespace Jasper.JsonCommands
             var settings = new CSharpGeneratorSettings
             {
                 ClassStyle = CSharpClassStyle.Poco,
-                Namespace = input.NamespaceFlag,
+                Namespace = input.NamespaceFlag
             };
 
             var codeDirectory = input.OutputDirectory.ToFullPath();
@@ -56,7 +56,6 @@ namespace Jasper.JsonCommands
             var annotationFile = codeDirectory.AppendPath("MessageAnnotations.cs");
             Console.WriteLine("Writing attribute annotations to " + annotationFile);
             system.WriteStringToFile(annotationFile, writer.Code());
-
 
 
             return true;

@@ -1,7 +1,6 @@
 ﻿using System;
 using Jasper.Http.Model;
-using Lamar.Codegen;
-using Lamar.Compilation;
+using LamarCompiler;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing.Codegen
@@ -17,17 +16,13 @@ namespace Jasper.Http.Routing.Codegen
             var alias = RoutingFrames.TypeOutputs[Variable.VariableType];
             writer.WriteLine($"{alias} {Variable.Usage};");
             writer.Write($"BLOCK:if (!{alias}.TryParse(segments[{Position}], out {Variable.Usage}))");
-            writer.WriteLine($"{RouteGraph.Context}.{nameof(HttpContext.Response)}.{nameof(HttpResponse.StatusCode)} = 400;");
+            writer.WriteLine(
+                $"{RouteGraph.Context}.{nameof(HttpContext.Response)}.{nameof(HttpResponse.StatusCode)} = 400;");
             writer.WriteLine(method.ToExitStatement());
             writer.FinishBlock();
 
             writer.BlankLine();
             Next?.GenerateCode(method, writer);
         }
-
-
     }
-
-
-
 }

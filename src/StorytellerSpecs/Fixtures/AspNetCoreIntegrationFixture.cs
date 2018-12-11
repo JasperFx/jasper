@@ -25,7 +25,7 @@ namespace StorytellerSpecs.Fixtures
     {
         private RecordingEnvironmentCheck theCheck;
         private IContainer theContainer;
-        private IWebHost theHost;
+        private SystemUnderTest theSystem;
 
 
         public AspNetCoreIntegrationFixture()
@@ -57,16 +57,16 @@ namespace StorytellerSpecs.Fixtures
             builder.UseJasper<BootstrappingApp>();
 
 
-            theHost = builder.Build();
+            theSystem = new SystemUnderTest(builder);
 
 
-            theContainer = theHost.Services.As<IContainer>();
-            theHost.Start();
+
+            theContainer = theSystem.Services.As<IContainer>();
         }
 
         public override void TearDown()
         {
-            theHost.Dispose();
+            theSystem.Dispose();
         }
 
         public IGrammar SettingsShouldBe()
@@ -75,7 +75,7 @@ namespace StorytellerSpecs.Fixtures
                 "1.) The resolved properties of BootstrappingSettings should be",
                 x =>
                 {
-                    x.Object = () => theHost.Services.GetRequiredService<BootstrappingSetting>();
+                    x.Object = () => theSystem.Services.GetRequiredService<BootstrappingSetting>();
                     x.Check(_ => _.Team);
                     x.Check(_ => _.City);
                     x.Check(_ => _.Environment);
@@ -91,7 +91,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("3.) Can hit Jasper routes")]
         public Task CanHitJasperRoutes()
         {
-            return new AlbaSystem(theHost).Scenario(x =>
+            return theSystem.Scenario(x =>
             {
                 x.Get.Url("/check");
                 x.ContentShouldContain("got this from jasper route");
@@ -101,7 +101,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("4.) Can hit ASP.Net Core routes")]
         public Task CanHitAspNetCoreRoutes()
         {
-            return new AlbaSystem(theHost).Scenario(x =>
+            return theSystem.Scenario(x =>
             {
                 x.Get.Url("/startup");
                 x.ContentShouldContain("from startup route");
@@ -111,7 +111,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("5.) Gets AppBuilder Configuration from JasperRegistry Host Calls")]
         public Task GetsAppBuilderConfigurationFromJasperRegistryHostCalls()
         {
-            return new AlbaSystem(theHost).Scenario(x =>
+            return theSystem.Scenario(x =>
             {
                 x.Get.Url("/host");
                 x.ContentShouldContain("from jasperregistry host");
@@ -121,26 +121,19 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("6.) Configuration[{key}] should be {value}")]
         public string GetKey(string key)
         {
-            return theHost.Services.GetService<IConfiguration>()[key];
+            return theSystem.Services.GetService<IConfiguration>()[key];
         }
 
         [FormatAs("7.) Has message handlers")]
         public bool HasHandlers()
         {
-            return theHost.Services.GetService<HandlerGraph>().Chains.Any();
-        }
-
-        [FormatAs("8.) MessageActivator is first")]
-        public bool HasMessageActivatorBeforeOtherActivators()
-        {
-            return theContainer.Model.For<IHostedService>().Instances.First()
-                       .ImplementationType == typeof(MessagingActivator);
+            return theSystem.Services.GetService<HandlerGraph>().Chains.Any();
         }
 
         [FormatAs("9.) Has service registrations from Jasper")]
         public bool HasServiceRegistrationsFromJasper()
         {
-            return theHost.Services.GetService<BootstrappingToken>()
+            return theSystem.Services.GetService<BootstrappingToken>()
                        .Id == BootstrappingApp.Id;
         }
 
@@ -154,7 +147,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("11.) Uses Lamar for the ServiceProvider")]
         public bool is_using_lamar_for_the_service_provider()
         {
-            return theHost.Services.GetType() == typeof(Container);
+            return theSystem.Services.GetType() == typeof(Container);
         }
 
         [FormatAs("12.) JasperRuntime is registered")]
@@ -178,20 +171,6 @@ namespace StorytellerSpecs.Fixtures
                 .Any(x => x.ImplementationType == typeof(GreenService));
         }
 
-        public class AlbaSystem : SystemUnderTest
-        {
-            private readonly IWebHost _host;
-
-            public AlbaSystem(IWebHost host)
-            {
-                _host = host;
-            }
-
-            protected override IWebHost buildHost()
-            {
-                return _host;
-            }
-        }
     }
 
     public class Service : IService
@@ -285,10 +264,11 @@ namespace StorytellerSpecs.Fixtures
         {
             Services.For<BootstrappingToken>().Use(new BootstrappingToken(Id));
 
-            Configuration.AddInMemoryCollection(new Dictionary<string, string> {{"foo", "bar"}});
-
             Hosting.ConfigureAppConfiguration(c =>
-                c.AddInMemoryCollection(new Dictionary<string, string> {{"team", "chiefs"}}));
+            {
+                c.AddInMemoryCollection(new Dictionary<string, string> {{"foo", "bar"}});
+                c.AddInMemoryCollection(new Dictionary<string, string> {{"team", "chiefs"}});
+            });
 
             Hosting.ConfigureServices(s => s.AddTransient<IService, ServiceFromJasperRegistryConfigure>());
 
@@ -297,12 +277,6 @@ namespace StorytellerSpecs.Fixtures
                 if (c.HostingEnvironment.EnvironmentName == "Green") services.AddTransient<IService, GreenService>();
             });
 
-            Hosting.Configure(app =>
-            {
-                app.MapWhen(
-                    c => c.Request.Path.Value.Contains("host"),
-                    b => b.Run(c => c.Response.WriteAsync("from jasperregistry host")));
-            });
 
             Settings.Alter<BootstrappingSetting>((context, settings) =>
             {

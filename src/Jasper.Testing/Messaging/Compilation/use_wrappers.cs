@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Testing.FakeStoreTypes;
-using Jasper.Testing.Messaging.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;

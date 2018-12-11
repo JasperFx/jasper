@@ -2,9 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Testing.FakeStoreTypes;
-using Jasper.Testing.Messaging.Bootstrapping;
-using Jasper.Testing.Messaging.Compilation;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http.Features;
@@ -22,9 +19,9 @@ namespace Jasper.Testing.Bootstrapping
     public class BootstrappingFixture : IDisposable
     {
         private JasperRuntime _runtime;
+        public FakeServer Server = new FakeServer();
 
         public CustomHostedService theHostedService = new CustomHostedService();
-        public FakeServer Server = new FakeServer();
 
         public void Dispose()
         {
@@ -53,9 +50,9 @@ namespace Jasper.Testing.Bootstrapping
             return _runtime;
         }
 
-        public async Task Shutdown()
+        public void Shutdown()
         {
-            await _runtime.Shutdown();
+            _runtime.Dispose();
             _runtime = null;
         }
     }
@@ -63,12 +60,12 @@ namespace Jasper.Testing.Bootstrapping
     [Collection("integration")]
     public class BootstrappingTests : IClassFixture<BootstrappingFixture>
     {
-        private BootstrappingFixture theFixture;
-
         public BootstrappingTests(BootstrappingFixture fixture)
         {
             theFixture = fixture;
         }
+
+        private readonly BootstrappingFixture theFixture;
 
         [Fact]
         public async Task can_determine_the_application_assembly()
@@ -79,14 +76,6 @@ namespace Jasper.Testing.Bootstrapping
         }
 
         [Fact]
-        public async Task has_the_hosted_environment()
-        {
-            var runtime = await theFixture.WithRuntime();
-
-            runtime.Container.ShouldHaveRegistration<IHostingEnvironment, HostingEnvironment>();
-        }
-
-        [Fact]
         public async Task can_use_custom_hosted_service_without_aspnet()
         {
             await theFixture.WithRuntime();
@@ -94,10 +83,17 @@ namespace Jasper.Testing.Bootstrapping
             theFixture.theHostedService.WasStarted.ShouldBeTrue();
             theFixture.theHostedService.WasStopped.ShouldBeFalse();
 
-            await theFixture.Shutdown();
+            theFixture.Shutdown();
 
             theFixture.theHostedService.WasStopped.ShouldBeTrue();
+        }
 
+        [Fact]
+        public async Task has_the_hosted_environment()
+        {
+            var runtime = await theFixture.WithRuntime();
+
+            runtime.Container.ShouldHaveRegistration<IHostingEnvironment, HostingEnvironment>();
         }
 
         [Fact]
@@ -119,19 +115,20 @@ namespace Jasper.Testing.Bootstrapping
             server.WasStarted.ShouldBeTrue();
             server.WasStopped.ShouldBeFalse();
 
-            await theFixture.Shutdown();
+            theFixture.Shutdown();
 
             server.WasStopped.ShouldBeTrue();
         }
-
-
     }
 
     public class FakeServer : IServer
     {
+        public bool WasStarted { get; set; }
+
+        public bool WasStopped { get; set; }
+
         public void Dispose()
         {
-
         }
 
         public Task StartAsync<TContext>(IHttpApplication<TContext> application, CancellationToken cancellationToken)
@@ -140,15 +137,11 @@ namespace Jasper.Testing.Bootstrapping
             return Task.CompletedTask;
         }
 
-        public bool WasStarted { get; set; }
-
         public Task StopAsync(CancellationToken cancellationToken)
         {
             WasStopped = true;
             return Task.CompletedTask;
         }
-
-        public bool WasStopped { get; set; }
 
         public IFeatureCollection Features { get; } = new FeatureCollection();
     }
@@ -191,7 +184,6 @@ namespace Jasper.Testing.Bootstrapping
             theRegistry.Services.AddSingleton<IMainService>(mainService);
 
             theRegistry.Services.AddTransient<IFakeStore, FakeStore>();
-
 
 
             theRuntime = JasperRuntime.For(theRegistry);

@@ -5,7 +5,6 @@ using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Util;
 
 namespace Jasper.Messaging.Durability
@@ -22,7 +21,7 @@ namespace Jasper.Messaging.Durability
         private readonly IEnvelopePersistor _persistor;
         private readonly ActionBlock<Envelope[]> _scheduleIncoming;
         private readonly BatchingBlock<Envelope> _scheduleIncomingBatching;
-        private readonly MessagingSettings _settings;
+        private readonly JasperOptions _settings;
         public readonly ManualResetEvent ErrorReportLogged = new ManualResetEvent(false);
 
         // Strictly for testing
@@ -30,7 +29,7 @@ namespace Jasper.Messaging.Durability
         public readonly ManualResetEvent OutgoingDeleted = new ManualResetEvent(false);
         public readonly ManualResetEvent Scheduled = new ManualResetEvent(false);
 
-        public EnvelopeRetries(IEnvelopePersistor persistor, ITransportLogger logger, MessagingSettings settings)
+        public EnvelopeRetries(IEnvelopePersistor persistor, ITransportLogger logger, JasperOptions settings)
         {
             _persistor = persistor;
 

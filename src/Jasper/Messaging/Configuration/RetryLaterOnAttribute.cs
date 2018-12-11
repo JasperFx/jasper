@@ -7,8 +7,8 @@ using Jasper.Messaging.Model;
 namespace Jasper.Messaging.Configuration
 {
     /// <summary>
-    /// Applies an error handling policy to schedule a message to be retried
-    /// in a designated number of seconds after encountering the named exception
+    ///     Applies an error handling policy to schedule a message to be retried
+    ///     in a designated number of seconds after encountering the named exception
     /// </summary>
     public class RetryLaterOnAttribute : ModifyHandlerChainAttribute
     {

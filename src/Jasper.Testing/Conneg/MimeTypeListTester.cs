@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Jasper.Conneg;
-using Jasper.Testing.Messaging;
 using Shouldly;
 using Xunit;
 
@@ -9,10 +8,32 @@ namespace Jasper.Testing.Conneg
     public class MimeTypeListTester
     {
         [Fact]
+        public void accepts_any()
+        {
+            // If empty, going to say it's true
+            new MimeTypeList().AcceptsAny().ShouldBeTrue();
+
+            new MimeTypeList("*/*").AcceptsAny().ShouldBeTrue();
+            new MimeTypeList("application/json,*/*").AcceptsAny().ShouldBeTrue();
+            new MimeTypeList("application/json,text/html").AcceptsAny().ShouldBeFalse();
+        }
+
+        [Fact]
         public void build_from_string()
         {
             var list = new MimeTypeList("text/json");
             list.ShouldHaveTheSameElementsAs("text/json");
+        }
+
+        [Fact]
+        public void build_with_complex_mimetypes()
+        {
+            var list =
+                new MimeTypeList(
+                    "application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5");
+
+            list.ShouldHaveTheSameElementsAs("application/xml", "application/xhtml+xml", "text/html", "text/plain",
+                "image/png", "*/*");
         }
 
         [Fact]
@@ -23,13 +44,11 @@ namespace Jasper.Testing.Conneg
         }
 
         [Fact]
-        public void  build_with_complex_mimetypes()
+        public void matches_negative()
         {
-            var list =
-                new MimeTypeList(
-                    "application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5");
-
-            list.ShouldHaveTheSameElementsAs("application/xml", "application/xhtml+xml", "text/html", "text/plain", "image/png", "*/*");
+            var list = new MimeTypeList("text/json,application/json");
+            list.Matches("weird").ShouldBeFalse();
+            list.Matches("weird", "wrong").ShouldBeFalse();
         }
 
         [Fact]
@@ -42,24 +61,16 @@ namespace Jasper.Testing.Conneg
         }
 
         [Fact]
-        public void matches_negative()
+        public void should_ignore_empty_string()
         {
-            var list = new MimeTypeList("text/json,application/json");
-            list.Matches("weird").ShouldBeFalse();
-            list.Matches("weird", "wrong").ShouldBeFalse();
+            var list = new MimeTypeList(string.Empty);
+            list.Count().ShouldBe(0);
         }
 
         [Fact]
         public void should_ignore_null()
         {
-            var list = new MimeTypeList((string)null);
-            list.Count().ShouldBe(0);
-        }
-
-        [Fact]
-        public void should_ignore_empty_string()
-        {
-            var list = new MimeTypeList(string.Empty);
+            var list = new MimeTypeList((string) null);
             list.Count().ShouldBe(0);
         }
 
@@ -68,17 +79,6 @@ namespace Jasper.Testing.Conneg
         {
             var list = new MimeTypeList("    ");
             list.Count().ShouldBe(0);
-        }
-
-        [Fact]
-        public void accepts_any()
-        {
-            // If empty, going to say it's true
-            new MimeTypeList().AcceptsAny().ShouldBeTrue();
-
-            new MimeTypeList("*/*").AcceptsAny().ShouldBeTrue();
-            new MimeTypeList("application/json,*/*").AcceptsAny().ShouldBeTrue();
-            new MimeTypeList("application/json,text/html").AcceptsAny().ShouldBeFalse();
         }
     }
 }

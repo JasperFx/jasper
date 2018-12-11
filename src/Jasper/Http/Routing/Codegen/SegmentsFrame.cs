@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using Jasper.Http.Model;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 
 namespace Jasper.Http.Routing.Codegen
 {
     public class SegmentsFrame : Frame
     {
-        public SegmentsFrame() : base((bool) false)
+        public SegmentsFrame() : base(false)
         {
             Segments = new Variable(typeof(string[]), RoutingFrames.Segments, this);
             Creates = new[] {Segments};
@@ -17,13 +16,14 @@ namespace Jasper.Http.Routing.Codegen
 
         public Variable Segments { get; }
 
+        public override IEnumerable<Variable> Creates { get; }
+
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.WriteLine($"var {RoutingFrames.Segments} = (string[]){RouteGraph.Context}.Items[\"{RoutingFrames.Segments}\"];");
+            writer.WriteLine(
+                $"var {RoutingFrames.Segments} = (string[]){RouteGraph.Context}.Items[\"{RoutingFrames.Segments}\"];");
 
             Next?.GenerateCode(method, writer);
         }
-
-        public override IEnumerable<Variable> Creates { get; }
     }
 }

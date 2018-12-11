@@ -2,7 +2,6 @@ using System.Linq;
 using Lamar;
 using Lamar.Scanning;
 using Lamar.Scanning.Conventions;
-using Microsoft.Extensions.DependencyInjection;
 using TypeExtensions = Baseline.TypeExtensions;
 
 namespace Jasper.Conneg
@@ -21,10 +20,7 @@ namespace Jasper.Conneg
             var forwardingTypes = types.FindTypes(TypeClassification.Closed)
                 .Where(t => TypeExtensions.Closes(t, typeof(IForwardsTo<>)));
 
-            foreach (var type in forwardingTypes)
-            {
-                _forwarders.Add(type);
-            }
+            foreach (var type in forwardingTypes) _forwarders.Add(type);
         }
     }
 }

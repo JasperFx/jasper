@@ -28,6 +28,8 @@ namespace Jasper.Http.Routing
 
         public IList<Node> ArgNodes { get; } = new List<Node>();
 
+        public Route ArgRoute { get; private set; }
+
         public Route Select(string[] segments, int position)
         {
             var hasMore = position < segments.Length - 1;
@@ -35,10 +37,7 @@ namespace Jasper.Http.Routing
 
             if (!hasMore)
             {
-                if (NamedLeaves.ContainsKey(current))
-                {
-                    return NamedLeaves[current];
-                }
+                if (NamedLeaves.ContainsKey(current)) return NamedLeaves[current];
 
                 if (NamedNodes.ContainsKey(current))
                 {
@@ -65,10 +64,7 @@ namespace Jasper.Http.Routing
             }
 
 
-
-
             return SpreadRoute;
-
         }
 
         public void AddChild(Node child)
@@ -77,13 +73,9 @@ namespace Jasper.Http.Routing
 
             var lastSegment = child.LastSegment();
             if (lastSegment == "*")
-            {
                 ArgNodes.Add(child);
-            }
             else
-            {
                 NamedNodes.Add(lastSegment, child);
-            }
         }
 
         private string LastSegment()
@@ -94,24 +86,16 @@ namespace Jasper.Http.Routing
         public void AddLeaf(Route route)
         {
             if (route.HasSpread)
-            {
                 SpreadRoute = route;
-            }
             else if (route.EndsWithArgument)
-            {
                 ArgRoute = route;
-            }
             else
-            {
                 NamedLeaves.Add(route.LastSegment, route);
-            }
         }
-
-        public Route ArgRoute { get; private set; }
 
         public override string ToString()
         {
-            return Route.ToString();
+            return Route;
         }
     }
 }

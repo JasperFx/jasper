@@ -27,8 +27,7 @@ namespace Jasper.Testing.Messaging.Sagas
 
     public class GuidDoThree
     {
-        [SagaIdentity]
-        public Guid TheSagaId { get; set; }
+        [SagaIdentity] public Guid TheSagaId { get; set; }
     }
 
     public class basic_mechanics_with_guid : SagaTestHarness<GuidBasicWorkflow, GuidWorkflowState>
@@ -36,10 +35,38 @@ namespace Jasper.Testing.Messaging.Sagas
         private readonly Guid stateId = Guid.NewGuid();
 
         [Fact]
+        public async Task complete()
+        {
+            await send(new GuidStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new FinishItAll(), stateId);
+
+            LoadState(stateId).ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
+        {
+            await send(new GuidStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new CompleteOne(), stateId);
+
+            var state = LoadState(stateId);
+            state.OneCompleted.ShouldBeTrue();
+            state.TwoCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
         public async Task start_1()
         {
-
-
             await send(new GuidStart
             {
                 Id = stateId,
@@ -88,6 +115,21 @@ namespace Jasper.Testing.Messaging.Sagas
         }
 
         [Fact]
+        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
+        {
+            await send(new GuidStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new CompleteFour(), stateId);
+
+            var state = LoadState(stateId);
+            state.FourCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
         public async Task update_with_message_that_uses_saga_identity_attributed_property()
         {
             await send(new GuidStart
@@ -108,28 +150,12 @@ namespace Jasper.Testing.Messaging.Sagas
         }
 
         [Fact]
-        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
-        {
-            await send(new GuidStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new CompleteFour(), stateId);
-
-            var state = LoadState(stateId);
-            state.FourCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
         public async Task update_with_no_saga_id_to_be_on_the_envelope()
         {
             await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
             {
                 await invoke(new CompleteFour());
             });
-
         }
 
         [Fact]
@@ -139,38 +165,6 @@ namespace Jasper.Testing.Messaging.Sagas
             {
                 await invoke(new GuidCompleteThree());
             });
-
-        }
-
-        [Fact]
-        public async Task complete()
-        {
-            await send(new GuidStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new FinishItAll(), stateId);
-
-            LoadState(stateId).ShouldBeNull();
-        }
-
-        [Fact]
-        public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
-        {
-            await send(new GuidStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new CompleteOne(), stateId);
-
-            var state = LoadState(stateId);
-            state.OneCompleted.ShouldBeTrue();
-            state.TwoCompleted.ShouldBeTrue();
-
         }
     }
 }

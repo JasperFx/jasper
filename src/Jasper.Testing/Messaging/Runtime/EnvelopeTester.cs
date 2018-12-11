@@ -11,6 +11,88 @@ namespace Jasper.Testing.Messaging.Runtime
     public class EnvelopeTester
     {
         [Fact]
+        public void automatically_set_the_message_type_header_off_of_the_message()
+        {
+            var envelope = new Envelope
+            {
+                Message = new Message1(),
+                Headers =
+                {
+                    ["a"] = "1",
+                    ["b"] = "2"
+                }
+            };
+
+            envelope.MessageType.ShouldBe(typeof(Message1).ToMessageTypeName());
+        }
+
+        [Fact]
+        public void default_values_for_original_and_parent_id_are_null()
+        {
+            var parent = new Envelope();
+
+            parent.OriginalId.ShouldBe(Guid.Empty);
+            parent.ParentId.ShouldBe(Guid.Empty);
+        }
+
+        [Fact]
+        public void envelope_for_ping()
+        {
+            var envelope = Envelope.ForPing();
+            envelope.MessageType.ShouldBe(TransportConstants.PingMessageType);
+            envelope.Data.ShouldNotBeNull();
+        }
+
+
+        [Fact]
+        public void execution_time_is_null_by_default()
+        {
+            new Envelope().ExecutionTime.ShouldBeNull();
+        }
+
+
+        [Fact]
+        public void for_response_copies_the_saga_id_from_the_parent()
+        {
+            var parent = ObjectMother.Envelope();
+            parent.SagaId = Guid.NewGuid().ToString();
+
+            var response = parent.ForResponse(new Message2());
+            response.SagaId.ShouldBe(parent.SagaId);
+        }
+
+
+        [Fact]
+        public void has_a_correlation_id_by_default()
+        {
+            new Envelope().Id.ShouldNotBeNull();
+
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+            new Envelope().Id.ShouldNotBe(new Envelope().Id);
+        }
+
+        [Fact]
+        public void if_reply_requested_header_exists_in_parent_and_matches_the_message_type()
+        {
+            var parent = new Envelope
+            {
+                OriginalId = Guid.NewGuid(),
+                ReplyUri = "foo://bar".ToUri(),
+                ReplyRequested = typeof(Message1).ToMessageTypeName()
+            };
+
+            var childMessage = new Message1();
+
+            var child = parent.ForResponse(childMessage);
+
+            child.ParentId.ShouldBe(parent.Id);
+            child.Destination.ShouldBe(parent.ReplyUri);
+        }
+
+        [Fact]
         public void is_expired()
         {
             var envelope = new Envelope
@@ -28,58 +110,10 @@ namespace Jasper.Testing.Messaging.Runtime
             envelope.IsExpired().ShouldBeFalse();
         }
 
-
-        [Fact]
-        public void has_a_correlation_id_by_default()
-        {
-            new Envelope().Id.ShouldNotBeNull();
-
-            new Envelope().Id.ShouldNotBe(new Envelope().Id);
-            new Envelope().Id.ShouldNotBe(new Envelope().Id);
-            new Envelope().Id.ShouldNotBe(new Envelope().Id);
-            new Envelope().Id.ShouldNotBe(new Envelope().Id);
-            new Envelope().Id.ShouldNotBe(new Envelope().Id);
-        }
-
-        [Fact]
-        public void envelope_for_ping()
-        {
-            var envelope = Envelope.ForPing();
-            envelope.MessageType.ShouldBe(TransportConstants.PingMessageType);
-            envelope.Data.ShouldNotBeNull();
-        }
-
-        [Fact]
-        public void set_deliver_by_threshold()
-        {
-            var envelope = new Envelope();
-
-            envelope.DeliverWithin(5.Minutes());
-
-            envelope.DeliverBy.ShouldNotBeNull();
-
-            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(-5));
-            envelope.DeliverBy.Value.ShouldBeLessThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(5));
-        }
-
-        [Fact]
-        public void default_values_for_original_and_parent_id_are_null()
-        {
-            var parent = new Envelope
-            {
-
-            };
-
-            parent.OriginalId.ShouldBe(Guid.Empty);
-            parent.ParentId.ShouldBe(Guid.Empty);
-        }
-
         [Fact]
         public void original_message_creating_child_envelope()
         {
-            var parent = new Envelope
-            {
-            };
+            var parent = new Envelope();
 
             var childMessage = new Message1();
 
@@ -89,17 +123,6 @@ namespace Jasper.Testing.Messaging.Runtime
 
             child.OriginalId.ShouldBe(parent.Id);
             child.ParentId.ShouldBe(parent.Id);
-        }
-
-
-        [Fact]
-        public void for_response_copies_the_saga_id_from_the_parent()
-        {
-            var parent = ObjectMother.Envelope();
-            parent.SagaId = Guid.NewGuid().ToString();
-
-            var response = parent.ForResponse(new Message2());
-            response.SagaId.ShouldBe(parent.SagaId);
         }
 
         [Fact]
@@ -121,48 +144,16 @@ namespace Jasper.Testing.Messaging.Runtime
         }
 
         [Fact]
-        public void if_reply_requested_header_exists_in_parent_and_matches_the_message_type()
+        public void set_deliver_by_threshold()
         {
-            var parent = new Envelope
-            {
-                OriginalId = Guid.NewGuid(),
-                ReplyUri = "foo://bar".ToUri(),
-                ReplyRequested = typeof(Message1).ToMessageTypeName()
-            };
+            var envelope = new Envelope();
 
-            var childMessage = new Message1();
+            envelope.DeliverWithin(5.Minutes());
 
-            var child = parent.ForResponse(childMessage);
+            envelope.DeliverBy.ShouldNotBeNull();
 
-            child.ParentId.ShouldBe(parent.Id);
-            child.Destination.ShouldBe(parent.ReplyUri);
-        }
-
-
-        [Fact]
-        public void execution_time_is_null_by_default()
-        {
-            new Envelope().ExecutionTime.ShouldBeNull();
-        }
-
-
-
-        [Fact]
-        public void automatically_set_the_message_type_header_off_of_the_message()
-        {
-            var envelope = new Envelope
-            {
-                Message = new Message1(),
-                Headers =
-                {
-                    ["a"] = "1",
-                    ["b"] = "2"
-                }
-            };
-
-            envelope.MessageType.ShouldBe(typeof(Message1).ToMessageTypeName());
+            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(-5));
+            envelope.DeliverBy.Value.ShouldBeLessThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(5));
         }
     }
-
-
 }

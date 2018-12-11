@@ -7,7 +7,6 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
@@ -19,12 +18,6 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class SqlServerCallbackTests : SqlServerContext, IDisposable
     {
-        private JasperRuntime theRuntime;
-        private Envelope theEnvelope;
-        private DurableCallback theCallback;
-        private EnvelopeRetries theRetries;
-        private SqlServerEnvelopePersistor thePersistor;
-
         public SqlServerCallbackTests()
         {
             // SAMPLE: SqlServer-RebuildMessageStorage
@@ -40,22 +33,40 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             theEnvelope.Status = TransportConstants.Incoming;
 
 
-
             thePersistor = theRuntime.Get<SqlServerEnvelopePersistor>();
             thePersistor.StoreIncoming(theEnvelope).Wait(3.Seconds());
 
 
             var logger = TransportLogger.Empty();
-            theRetries = new EnvelopeRetries(thePersistor, logger, new MessagingSettings());
+            theRetries = new EnvelopeRetries(thePersistor, logger, new JasperOptions());
 
 
-
-            theCallback = new DurableCallback(theEnvelope, Substitute.For<IWorkerQueue>(), thePersistor, theRetries, logger);
+            theCallback = new DurableCallback(theEnvelope, Substitute.For<IWorkerQueue>(), thePersistor, theRetries,
+                logger);
         }
 
         public void Dispose()
         {
             theRuntime?.Dispose();
+        }
+
+        private readonly JasperRuntime theRuntime;
+        private readonly Envelope theEnvelope;
+        private readonly DurableCallback theCallback;
+        private readonly EnvelopeRetries theRetries;
+        private readonly SqlServerEnvelopePersistor thePersistor;
+
+        [Fact]
+        public async Task can_reload_the_error_report()
+        {
+            await theCallback.MoveToErrors(theEnvelope, new Exception("Boom!"));
+
+            theRetries.ErrorReportLogged.WaitOne(500);
+
+
+            var report = await thePersistor.LoadDeadLetterEnvelope(theEnvelope.Id);
+
+            report.ExceptionMessage.ShouldBe("Boom!");
         }
 
         [Fact]
@@ -69,7 +80,21 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
 
             persisted.ShouldBeNull();
+        }
 
+        [Fact]
+        public async Task move_to_delayed_until()
+        {
+            var time = DateTime.Today.ToUniversalTime().AddDays(1);
+
+            await theCallback.MoveToScheduledUntil(time, theEnvelope);
+
+            theRetries.Scheduled.WaitOne(1.Seconds());
+
+            var persisted = thePersistor.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
+            persisted.Status.ShouldBe(TransportConstants.Scheduled);
+            persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
+            persisted.ExecutionTime.ShouldBe(time);
         }
 
         [Fact]
@@ -88,23 +113,6 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             var report = await thePersistor.LoadDeadLetterEnvelope(theEnvelope.Id);
 
             report.ExceptionMessage.ShouldBe("Boom!");
-
-
-        }
-
-        [Fact]
-        public async Task can_reload_the_error_report()
-        {
-            await theCallback.MoveToErrors(theEnvelope, new Exception("Boom!"));
-
-            theRetries.ErrorReportLogged.WaitOne(500);
-
-
-
-
-            var report = await thePersistor.LoadDeadLetterEnvelope(theEnvelope.Id);
-
-            report.ExceptionMessage.ShouldBe("Boom!");
         }
 
         [Fact]
@@ -115,21 +123,6 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             var persisted = thePersistor.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
 
             persisted.ShouldNotBeNull();
-        }
-
-        [Fact]
-        public async Task move_to_delayed_until()
-        {
-            var time = DateTime.Today.ToUniversalTime().AddDays(1);
-
-            await theCallback.MoveToScheduledUntil(time, theEnvelope);
-
-            theRetries.Scheduled.WaitOne(1.Seconds());
-
-            var persisted = thePersistor.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
-            persisted.Status.ShouldBe(TransportConstants.Scheduled);
-            persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
-            persisted.ExecutionTime.ShouldBe(time);
         }
     }
 }

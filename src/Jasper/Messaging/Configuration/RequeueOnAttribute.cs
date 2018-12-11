@@ -6,8 +6,8 @@ using Jasper.Messaging.Model;
 namespace Jasper.Messaging.Configuration
 {
     /// <summary>
-    /// Applies an error handling polity to requeue a message if it
-    /// encounters an exception of the designated type
+    ///     Applies an error handling polity to requeue a message if it
+    ///     encounters an exception of the designated type
     /// </summary>
     public class RequeueOnAttribute : ModifyHandlerChainAttribute
     {

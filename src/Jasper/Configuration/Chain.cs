@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
+using LamarCompiler.Frames;
 
 namespace Jasper.Configuration
 {
@@ -27,7 +26,6 @@ namespace Jasper.Configuration
     }
 
 
-
     public abstract class Chain<TChain, TModifyAttribute> : IChain
         where TChain : Chain<TChain, TModifyAttribute>
         where TModifyAttribute : Attribute, IModifyChain<TChain>
@@ -43,10 +41,7 @@ namespace Jasper.Configuration
             if (method.Name != "Configure") return false;
 
             if (method.GetParameters().Length != 1) return false;
-            if (typeof(TChain).CanBeCastTo(method.GetParameters().Single().ParameterType))
-            {
-                return true;
-            }
+            if (typeof(TChain).CanBeCastTo(method.GetParameters().Single().ParameterType)) return true;
 
             return false;
         }
@@ -59,32 +54,21 @@ namespace Jasper.Configuration
                 .SelectMany(x => x.GetTypeInfo().GetMethods())
                 .Where(isConfigureMethod);
 
-            foreach (var method in configureMethods)
-            {
-                method?.Invoke(null, new object[] {this});
-            }
+            foreach (var method in configureMethods) method?.Invoke(null, new object[] {this});
 
             var handlerAtts = handlers.SelectMany(x => x.HandlerType.GetTypeInfo()
                 .GetCustomAttributes<TModifyAttribute>());
 
             var methodAtts = handlers.SelectMany(x => x.Method.GetCustomAttributes<TModifyAttribute>());
 
-            foreach (var attribute in handlerAtts.Concat(methodAtts))
-            {
-                attribute.Modify(this.As<TChain>(), rules);
-            }
+            foreach (var attribute in handlerAtts.Concat(methodAtts)) attribute.Modify(this.As<TChain>(), rules);
 
             var genericHandlerAtts = handlers.SelectMany(x => x.HandlerType.GetTypeInfo()
                 .GetCustomAttributes<ModifyChainAttribute>());
 
             var genericMethodAtts = handlers.SelectMany(x => x.Method.GetCustomAttributes<ModifyChainAttribute>());
 
-            foreach (var attribute in genericHandlerAtts.Concat(genericMethodAtts))
-            {
-                attribute.Modify(this, rules);
-            }
-
-
+            foreach (var attribute in genericHandlerAtts.Concat(genericMethodAtts)) attribute.Modify(this, rules);
         }
     }
 }

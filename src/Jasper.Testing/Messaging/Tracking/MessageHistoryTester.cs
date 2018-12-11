@@ -8,21 +8,15 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Tracking
 {
-
-
     public class MessageHistoryTester
     {
-        private readonly MessageHistory history = new MessageHistory();
-        private readonly Task<MessageTrack[]> watch;
-
         public MessageHistoryTester()
         {
-
-            watch = history.Watch(() =>
-            {
-
-            });
+            watch = history.Watch(() => { });
         }
+
+        private readonly MessageHistory history = new MessageHistory();
+        private readonly Task<MessageTrack[]> watch;
 
 
         [Fact]
@@ -37,11 +31,18 @@ namespace Jasper.Testing.Messaging.Tracking
                 .InnerExceptions.Single().ShouldBeOfType<DivideByZeroException>();
         }
 
-
         [Fact]
-        public void knows_when_stuff_is_finished_starting_from_scratch()
+        public void complete_with_exception()
         {
-            watch.IsCompleted.ShouldBeFalse();
+            var ex = new DivideByZeroException();
+
+            var envelope1 = ObjectMother.Envelope();
+            history.Start(envelope1, "Envelope");
+            history.Complete(envelope1, "Envelope", ex);
+
+            watch.IsCompleted.ShouldBeTrue();
+
+            watch.Result.Single().ExceptionText.ShouldBe(ex.ToString());
         }
 
         [Fact]
@@ -76,19 +77,11 @@ namespace Jasper.Testing.Messaging.Tracking
             }
         }
 
+
         [Fact]
-        public void complete_with_exception()
+        public void knows_when_stuff_is_finished_starting_from_scratch()
         {
-            var ex = new DivideByZeroException();
-
-            var envelope1 = ObjectMother.Envelope();
-            history.Start(envelope1, "Envelope");
-            history.Complete(envelope1, "Envelope", ex);
-
-            watch.IsCompleted.ShouldBeTrue();
-
-            watch.Result.Single().ExceptionText.ShouldBe(ex.ToString());
-
+            watch.IsCompleted.ShouldBeFalse();
         }
     }
 
@@ -97,14 +90,12 @@ namespace Jasper.Testing.Messaging.Tracking
         [Fact]
         public async Task history_can_still_do_the_watch()
         {
-            var runtime = await JasperRuntime.ForAsync(_ =>
+            using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<MessageThatFailsHandler>();
                 _.Include<MessageTrackingExtension>();
                 _.Publish.AllMessagesTo(TransportConstants.LoopbackUri);
-            });
-
-            try
+            }))
             {
                 var history = runtime.Get<MessageHistory>();
 
@@ -114,17 +105,11 @@ namespace Jasper.Testing.Messaging.Tracking
                 aggregate
                     .InnerExceptions.Single().ShouldBeOfType<DivideByZeroException>();
             }
-            finally
-            {
-                await runtime.Shutdown();
-            }
         }
-
     }
 
     public class MessageThatFails
     {
-
     }
 
     [JasperIgnore]

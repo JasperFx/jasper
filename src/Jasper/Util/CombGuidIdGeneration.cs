@@ -28,9 +28,15 @@ namespace Jasper.Util
         /// <summary>
         ///     Returns a new Guid COMB, consisting of a random Guid combined with the provided timestamp.
         /// </summary>
-        public static Guid NewGuid(DateTimeOffset timestamp) => Create(Guid.NewGuid(), timestamp);
+        public static Guid NewGuid(DateTimeOffset timestamp)
+        {
+            return Create(Guid.NewGuid(), timestamp);
+        }
 
-        public static Guid NewGuid() => Create(Guid.NewGuid(), DateTimeOffset.UtcNow);
+        public static Guid NewGuid()
+        {
+            return Create(Guid.NewGuid(), DateTimeOffset.UtcNow);
+        }
 
         private static byte[] DateTimeToBytes(DateTimeOffset timestamp)
         {

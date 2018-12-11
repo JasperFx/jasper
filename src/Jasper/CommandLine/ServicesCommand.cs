@@ -1,5 +1,4 @@
 ﻿using System;
-using Jasper.Messaging.Transports.Configuration;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -10,10 +9,7 @@ namespace Jasper.CommandLine
     {
         public override bool Execute(JasperInput input)
         {
-            input.Registry.Settings.Alter<MessagingSettings>(_ =>
-            {
-                _.ThrowOnValidationErrors = false;
-            });
+            input.Registry.Settings.Alter<JasperOptions>(_ => { _.ThrowOnValidationErrors = false; });
 
             using (var runtime = input.BuildRuntime())
             {
@@ -23,5 +19,6 @@ namespace Jasper.CommandLine
             return true;
         }
     }
+
     // ENDSAMPLE
 }

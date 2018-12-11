@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
@@ -21,15 +21,14 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 {
     public class SqlServerBackedListenerContext : SqlServerContext
     {
-        protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
-        protected IWorkerQueue theWorkerQueue;
-        protected MessagingSettings theSettings;
-        protected DurableListener theListener;
-
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
-        protected SqlServerEnvelopePersistor thePersistor;
-        protected EnvelopeRetries retries;
+        protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected SqlServerSettings mssqlSettings;
+        protected EnvelopeRetries retries;
+        protected DurableListener theListener;
+        protected SqlServerEnvelopePersistor thePersistor;
+        protected JasperOptions theSettings;
+        protected IWorkerQueue theWorkerQueue;
 
 
         public SqlServerBackedListenerContext()
@@ -38,7 +37,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
-            theSettings = new MessagingSettings();
+            theSettings = new JasperOptions();
 
             mssqlSettings = new SqlServerSettings
             {
@@ -60,8 +59,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         {
             var env = new Envelope
             {
-                Data = new byte[]{1,2,3,4}
-
+                Data = new byte[] {1, 2, 3, 4}
             };
 
             theEnvelopes.Add(env);
@@ -73,9 +71,8 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         {
             var env = new Envelope
             {
-                Data = new byte[]{1,2,3,4},
+                Data = new byte[] {1, 2, 3, 4},
                 ExecutionTime = DateTime.UtcNow.Add(1.Hours())
-
             };
 
             theEnvelopes.Add(env);
@@ -87,9 +84,8 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         {
             var env = new Envelope
             {
-                Data = new byte[]{1,2,3,4},
+                Data = new byte[] {1, 2, 3, 4},
                 ExecutionTime = DateTime.UtcNow.Add(-1.Hours())
-
             };
 
             theEnvelopes.Add(env);
@@ -115,8 +111,5 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         {
             theWorkerQueue.DidNotReceive().Enqueue(envelope);
         }
-
-
-
     }
 }

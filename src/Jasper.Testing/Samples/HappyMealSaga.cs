@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Jasper.Messaging;
-using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Sagas;
-using Jasper.Testing.Messaging.Compilation;
 
 namespace Jasper.Testing.Samples
 {
@@ -48,15 +44,22 @@ namespace Jasper.Testing.Samples
         public string DrinkName { get; set; }
     }
 
-    public class FetchFries {}
+    public class FetchFries
+    {
+    }
 
     public class FetchToy
     {
         public string ToyName { get; set; }
     }
 
-    public class MakeHamburger{}
-    public class FetchChickenNuggets{}
+    public class MakeHamburger
+    {
+    }
+
+    public class FetchChickenNuggets
+    {
+    }
 
     public class SodaRequested
     {
@@ -66,12 +69,12 @@ namespace Jasper.Testing.Samples
 
     // SAMPLE: HappyMealSaga1
     /// <summary>
-    /// This is being done completely in memory, which you most likely wouldn't
-    /// do in "real" systems
+    ///     This is being done completely in memory, which you most likely wouldn't
+    ///     do in "real" systems
     /// </summary>
     public class HappyMealSaga : StatefulSagaOf<HappyMealOrderState>
     {
-        private int _orderIdSequence = 0;
+        private int _orderIdSequence;
 
         // This is a little bit cute, but the HappyMealOrderState type
         // is known to be the saga state document, so it'll be treated as
@@ -94,28 +97,23 @@ namespace Jasper.Testing.Samples
             // system tracking all this -- to start having this happy meal
             // order put together
 
-            if (order.Drink == "Soda")
-            {
-                yield return new SodaRequested{OrderId = stateId};
-            }
+            if (order.Drink == "Soda") yield return new SodaRequested {OrderId = stateId};
 
             // and others
         }
-
     }
     // ENDSAMPLE
 
 
-
     public class HappyMealSagaNoTuple : StatefulSagaOf<HappyMealOrderState>
     {
-        private int _orderIdSequence = 0;
+        private int _orderIdSequence;
 
         // SAMPLE: HappyMealSaga1NoTuple
 
         public async Task<HappyMealOrderState> Starts(
-            HappyMealOrder order,     // The first argument is assumed to be the message type
-            IMessageContext context)  // Additional arguments are assumed to be services
+            HappyMealOrder order, // The first argument is assumed to be the message type
+            IMessageContext context) // Additional arguments are assumed to be services
         {
             var state = new HappyMealOrderState
             {
@@ -123,29 +121,25 @@ namespace Jasper.Testing.Samples
                 Id = ++_orderIdSequence
             };
 
-            if (order.Drink == "Soda")
-            {
-                await context.Send(new SodaRequested {OrderId = state.Id});
-            }
+            if (order.Drink == "Soda") await context.Send(new SodaRequested {OrderId = state.Id});
 
             // And other outgoing messages to coordinate gathering up the happy meal
 
             return state;
         }
+
         // ENDSAMPLE
-
-
     }
 
     public class HappyMealSagaAllLocal : StatefulSagaOf<HappyMealOrderState>
     {
-        private int _orderIdSequence = 0;
+        private int _orderIdSequence;
 
         // SAMPLE: HappyMealSaga1Local
 
         public async Task<HappyMealOrderState> Starts(
-            HappyMealOrder order,     // The first argument is assumed to be the message type
-            IMessageContext context)  // Additional arguments are assumed to be services
+            HappyMealOrder order, // The first argument is assumed to be the message type
+            IMessageContext context) // Additional arguments are assumed to be services
         {
             var state = new HappyMealOrderState
             {
@@ -153,19 +147,14 @@ namespace Jasper.Testing.Samples
                 Id = ++_orderIdSequence
             };
 
-            if (order.Drink == "Soda")
-            {
-                // This enqueues the SodaRequested message in the local system
-                await context.Enqueue(new SodaRequested {OrderId = state.Id});
-            }
+            if (order.Drink == "Soda") await context.Enqueue(new SodaRequested {OrderId = state.Id});
 
             // And other outgoing messages to coordinate gathering up the happy meal
 
             return state;
         }
+
         // ENDSAMPLE
-
-
     }
 
     // SAMPLE: SodaHandler
@@ -182,12 +171,12 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
     /// <summary>
-    /// This is being done completely in memory, which you most likely wouldn't
-    /// do in "real" systems
+    ///     This is being done completely in memory, which you most likely wouldn't
+    ///     do in "real" systems
     /// </summary>
     public class HappyMealSaga2 : StatefulSagaOf<HappyMealOrderState>
     {
-        private int _orderIdSequence = 0;
+        private int _orderIdSequence;
 
         // This is a little bit cute, but the HappyMealOrderState type
         // is known to be the saga state document, so it'll be treated as
@@ -203,16 +192,11 @@ namespace Jasper.Testing.Samples
 
 
             // You can explicitly call the IMessageContext if you prefer
-            if (order.Drink == "Soda")
-            {
-                await context.Send(new SodaRequested {OrderId = state.Id});
-            }
-
+            if (order.Drink == "Soda") await context.Send(new SodaRequested {OrderId = state.Id});
 
 
             return state;
         }
-
     }
 
     public interface IOrderService
@@ -220,7 +204,9 @@ namespace Jasper.Testing.Samples
         void Close(int order);
     }
 
-    public class SodaFetched {}
+    public class SodaFetched
+    {
+    }
 
     // SAMPLE: BurgerReady
     public class BurgerReady
@@ -239,8 +225,7 @@ namespace Jasper.Testing.Samples
         // so you can use this attribute to tell Jasper
         // that this property refers to the Id of the
         // Saga state document
-        [SagaIdentity]
-        public int OrderId { get; set; }
+        [SagaIdentity] public int OrderId { get; set; }
     }
     // ENDSAMPLE
 
@@ -249,16 +234,12 @@ namespace Jasper.Testing.Samples
     {
         // SAMPLE: completing-saga
         public void Handle(
-            SodaFetched soda,            // The first argument is the message type
-
-            HappyMealOrderState state,   // This matches the state document type, so it will be the
-                                         // state document matching the current saga identified by
-                                         // the incoming message envelope
-
-            IOrderService service        // Additional arguments are injected services
-
-
-            )
+            SodaFetched soda, // The first argument is the message type
+            HappyMealOrderState state, // This matches the state document type, so it will be the
+            // state document matching the current saga identified by
+            // the incoming message envelope
+            IOrderService service // Additional arguments are injected services
+        )
         {
             state.DrinkReady = true;
 
@@ -280,22 +261,15 @@ namespace Jasper.Testing.Samples
         public void Handle(ToyOnTray toyReady, HappyMealOrderState state)
         {
             state.ToyReady = true;
-            if (state.IsOrderComplete())
-            {
-                MarkCompleted();
-            }
+            if (state.IsOrderComplete()) MarkCompleted();
         }
 
         public void Handle(BurgerReady burgerReady, HappyMealOrderState state)
         {
             state.MainReady = true;
-            if (state.IsOrderComplete())
-            {
-                MarkCompleted();
-            }
+            if (state.IsOrderComplete()) MarkCompleted();
         }
+
         // ENDSAMPLE
-
     }
-
 }

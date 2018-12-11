@@ -17,18 +17,18 @@ namespace Jasper.Testing.Messaging.Sagas
                 .Name.ShouldBe(propertyName);
         }
 
-        [Fact]
-        public void is_saga_related_false()
+        [Theory]
+        [InlineData("Handle", SagaStateExistence.Existing)]
+        [InlineData("Start", SagaStateExistence.New)]
+        [InlineData("Starts", SagaStateExistence.New)]
+        [InlineData("Orchestrates", SagaStateExistence.Existing)]
+        public void determine_saga_existence_from_handler_call(string methodName, SagaStateExistence existence)
         {
-            var chain = HandlerChain.For<FooHandler>(x => x.Handle(null));
-            SagaFramePolicy.IsSagaRelated(chain).ShouldBeFalse();
-        }
+            var method = typeof(FooSaga).GetMethod(methodName);
+            var call = new HandlerCall(typeof(FooSaga), method);
 
-        [Fact]
-        public void is_saga_related_true()
-        {
-            var chain = HandlerChain.For<FooSaga>(x => x.Handle(null));
-            SagaFramePolicy.IsSagaRelated(chain).ShouldBeTrue();
+            SagaFramePolicy.DetermineExistence(call)
+                .ShouldBe(existence);
         }
 
         [Fact]
@@ -47,18 +47,18 @@ namespace Jasper.Testing.Messaging.Sagas
                 .ShouldBe(typeof(FooState));
         }
 
-        [Theory]
-        [InlineData("Handle", SagaStateExistence.Existing)]
-        [InlineData("Start", SagaStateExistence.New)]
-        [InlineData("Starts", SagaStateExistence.New)]
-        [InlineData("Orchestrates", SagaStateExistence.Existing)]
-        public void determine_saga_existence_from_handler_call(string methodName, SagaStateExistence existence)
+        [Fact]
+        public void is_saga_related_false()
         {
-            var method = typeof(FooSaga).GetMethod(methodName);
-            var @call = new HandlerCall(typeof(FooSaga), method);
+            var chain = HandlerChain.For<FooHandler>(x => x.Handle(null));
+            SagaFramePolicy.IsSagaRelated(chain).ShouldBeFalse();
+        }
 
-            SagaFramePolicy.DetermineExistence(@call)
-                .ShouldBe(existence);
+        [Fact]
+        public void is_saga_related_true()
+        {
+            var chain = HandlerChain.For<FooSaga>(x => x.Handle(null));
+            SagaFramePolicy.IsSagaRelated(chain).ShouldBeTrue();
         }
     }
 
@@ -67,22 +67,18 @@ namespace Jasper.Testing.Messaging.Sagas
     {
         public void Handle(WithIdProp prop)
         {
-
         }
 
         public void Start(WithIdProp prop)
         {
-
         }
 
         public void Starts(WithIdProp prop)
         {
-
         }
 
         public void Orchestrates(WithIdProp prop)
         {
-
         }
     }
 
@@ -95,7 +91,6 @@ namespace Jasper.Testing.Messaging.Sagas
     {
         public void Handle(WithIdProp prop)
         {
-
         }
     }
 
@@ -115,15 +110,18 @@ namespace Jasper.Testing.Messaging.Sagas
     {
         public string SagaId { get; set; }
 
-        [SagaIdentity]
-        public string Name { get; set; }
+        [SagaIdentity] public string Name { get; set; }
     }
 
-    public abstract class AbstractSaga<T> : StatefulSagaOf<T>{}
+    public abstract class AbstractSaga<T> : StatefulSagaOf<T>
+    {
+    }
 
     [JasperIgnore]
     public class DoubleInherited : AbstractSaga<FooState>
     {
-        public void Handle(WithIdProp prop){}
+        public void Handle(WithIdProp prop)
+        {
+        }
     }
 }

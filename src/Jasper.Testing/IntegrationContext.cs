@@ -15,6 +15,13 @@ namespace Jasper.Testing
 
         public ISubscriberGraph Subscribers => Runtime.Get<ISubscriberGraph>();
 
+        public HandlerGraph Handlers => Runtime.Get<HandlerGraph>();
+
+        public virtual void Dispose()
+        {
+            Runtime?.Dispose();
+        }
+
 
         protected Task withAllDefaults()
         {
@@ -48,16 +55,9 @@ namespace Jasper.Testing
             return with(registry);
         }
 
-        public virtual void Dispose()
-        {
-            Runtime?.Dispose();
-        }
-
         protected HandlerChain chainFor<T>()
         {
             return Handlers.ChainFor<T>();
         }
-
-        public HandlerGraph Handlers => Runtime.Get<HandlerGraph>();
     }
 }

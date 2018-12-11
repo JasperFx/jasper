@@ -1,13 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Jasper.CommandLine;
-using Jasper.Messaging.Transports.Configuration;
+﻿using Jasper.CommandLine;
 
 namespace Receiver
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             return JasperAgent.Run<ReceiverApp>(args);
         }

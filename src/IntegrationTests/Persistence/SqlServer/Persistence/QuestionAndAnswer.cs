@@ -10,7 +10,6 @@
                 Product = question.X * question.Y
             };
         }
-
     }
 
     public class Question
@@ -21,7 +20,7 @@
 
     public class Answer
     {
-        public int Sum;
         public int Product;
+        public int Sum;
     }
 }

@@ -27,6 +27,49 @@ namespace TestMessages
             "nine", "ten"
         };
 
+        public float Float;
+
+        public string StringField;
+
+        public Target()
+        {
+            Id = Guid.NewGuid();
+            StringDict = new Dictionary<string, string>();
+        }
+
+        public Guid Id { get; set; }
+
+        public int Number { get; set; }
+        public long Long { get; set; }
+        public string String { get; set; }
+        public string AnotherString { get; set; }
+
+        public Guid OtherGuid { get; set; }
+
+        public Target Inner { get; set; }
+
+        public Colors Color { get; set; }
+
+        public bool Flag { get; set; }
+
+        public double Double { get; set; }
+        public decimal Decimal { get; set; }
+        public DateTime Date { get; set; }
+        public DateTimeOffset DateOffset { get; set; }
+
+        public int[] NumberArray { get; set; }
+
+
+        public Target[] Children { get; set; }
+
+        public int? NullableNumber { get; set; }
+        public DateTime? NullableDateTime { get; set; }
+        public bool? NullableBoolean { get; set; }
+
+        public IDictionary<string, string> StringDict { get; set; }
+
+        public Guid UserId { get; set; }
+
         public static IEnumerable<Target> GenerateRandomData(int number)
         {
             var i = 0;
@@ -49,7 +92,7 @@ namespace TestMessages
 
             target.Float = float.Parse(_random.NextDouble().ToString());
 
-            target.NumberArray = new[] { _random.Next(0, 10), _random.Next(0, 10), _random.Next(0, 10) };
+            target.NumberArray = new[] {_random.Next(0, 10), _random.Next(0, 10), _random.Next(0, 10)};
 
             target.NumberArray = target.NumberArray.Distinct().ToArray();
 
@@ -81,61 +124,13 @@ namespace TestMessages
 
                 var number = _random.Next(1, 10);
                 target.Children = new Target[number];
-                for (int i = 0; i < number; i++)
-                {
-                    target.Children[i] = Random();
-                }
+                for (var i = 0; i < number; i++) target.Children[i] = Random();
 
-                target.StringDict = Enumerable.Range(0, _random.Next(1, 10)).ToDictionary(i => $"key{i}", i => $"value{i}");
+                target.StringDict = Enumerable.Range(0, _random.Next(1, 10))
+                    .ToDictionary(i => $"key{i}", i => $"value{i}");
             }
 
             return target;
         }
-
-        public Target()
-        {
-            Id = Guid.NewGuid();
-            StringDict = new Dictionary<string, string>();
-        }
-
-        public Guid Id { get; set; }
-
-        public int Number { get; set; }
-        public long Long { get; set; }
-        public string String { get; set; }
-        public string AnotherString { get; set; }
-
-        public Guid OtherGuid { get; set; }
-
-        public Target Inner { get; set; }
-
-        public Colors Color { get; set; }
-
-        public bool Flag { get; set; }
-
-        public string StringField;
-
-        public double Double { get; set; }
-        public decimal Decimal { get; set; }
-        public DateTime Date { get; set; }
-        public DateTimeOffset DateOffset { get; set; }
-
-        public float Float;
-
-        public int[] NumberArray { get; set; }
-
-
-        public Target[] Children { get; set; }
-
-        public int? NullableNumber { get; set; }
-        public DateTime? NullableDateTime { get; set; }
-        public bool? NullableBoolean { get; set; }
-
-        public IDictionary<string,string> StringDict { get; set; }
-
-        public Guid UserId { get; set; }
-
     }
-
-
 }

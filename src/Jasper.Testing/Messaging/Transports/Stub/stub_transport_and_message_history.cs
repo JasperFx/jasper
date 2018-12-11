@@ -30,9 +30,6 @@ namespace Jasper.Testing.Messaging.Transports.Stub
 
             // First envelope is sent & executed. Cascading message is sent and received
             tracks.Length.ShouldBe(2);
-
         }
-
-
     }
 }

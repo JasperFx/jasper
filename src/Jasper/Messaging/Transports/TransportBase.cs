@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using Baseline;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
@@ -18,21 +17,25 @@ namespace Jasper.Messaging.Transports
         private readonly IDurableMessagingFactory _durableMessagingFactory;
         private readonly IList<IListener> _listeners = new List<IListener>();
 
-        public TransportBase(string protocol, IDurableMessagingFactory factory, ITransportLogger logger, MessagingSettings settings)
+        private ListeningStatus _status = ListeningStatus.Accepting;
+
+        public TransportBase(string protocol, IDurableMessagingFactory factory, ITransportLogger logger,
+            JasperOptions settings)
         {
             _durableMessagingFactory = factory;
             this.logger = logger;
-            MessagingSettings = settings;
+            JasperOptions = settings;
             Protocol = protocol;
         }
 
-        public string Protocol { get; }
-        public Uri ReplyUri { get; protected set; }
         public IWorkerQueue WorkerQueue { get; private set; }
 
-        public MessagingSettings MessagingSettings { get; }
+        public JasperOptions JasperOptions { get; }
 
         protected ITransportLogger logger { get; }
+
+        public string Protocol { get; }
+        public Uri ReplyUri { get; protected set; }
 
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
@@ -41,21 +44,15 @@ namespace Jasper.Messaging.Transports
             ISendingAgent agent;
 
             if (uri.IsDurable())
-            {
                 agent = _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation);
-            }
             else
-            {
-                agent = new LightweightSendingAgent(uri, batchedSender, logger, MessagingSettings);
-            }
+                agent = new LightweightSendingAgent(uri, batchedSender, logger, JasperOptions);
 
             agent.DefaultReplyUri = ReplyUri;
             agent.Start();
 
             return agent;
         }
-
-        protected abstract ISender createSender(Uri uri, CancellationToken cancellation);
 
         public void StartListening(IMessagingRoot root)
         {
@@ -76,7 +73,7 @@ namespace Jasper.Messaging.Transports
 
                 var listener = uri.IsDurable()
                     ? _durableMessagingFactory.BuildListener(agent, root)
-                    : new LightweightListener( WorkerQueue, logger, agent);
+                    : new LightweightListener(WorkerQueue, logger, agent);
 
                 _listeners.Add(listener);
 
@@ -84,18 +81,10 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        protected abstract Uri[] validateAndChooseReplyChannel(Uri[] incoming);
-        protected abstract IListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings);
-
         public void Describe(TextWriter writer)
         {
-            foreach (var listener in _listeners)
-            {
-                writer.WriteLine($"Listening at {listener.Address}");
-            }
+            foreach (var listener in _listeners) writer.WriteLine($"Listening at {listener.Address}");
         }
-
-        private ListeningStatus _status = ListeningStatus.Accepting;
 
         public ListeningStatus ListeningStatus
         {
@@ -103,21 +92,20 @@ namespace Jasper.Messaging.Transports
             set
             {
                 _status = value;
-                foreach (var listener in _listeners)
-                {
-                    listener.Status = value;
-                }
+                foreach (var listener in _listeners) listener.Status = value;
             }
         }
 
         public void Dispose()
         {
-            foreach (var listener in _listeners)
-            {
-                listener.SafeDispose();
-            }
+            foreach (var listener in _listeners) listener.SafeDispose();
 
             _listeners.Clear();
         }
+
+        protected abstract ISender createSender(Uri uri, CancellationToken cancellation);
+
+        protected abstract Uri[] validateAndChooseReplyChannel(Uri[] incoming);
+        protected abstract IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings);
     }
 }

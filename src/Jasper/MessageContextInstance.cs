@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using Jasper.Messaging;
 using Lamar;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
 using Lamar.IoC;
 using Lamar.IoC.Frames;
 using Lamar.IoC.Instances;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper
@@ -26,19 +25,16 @@ namespace Jasper
             Name = Variable.DefaultArgName<IMessageContext>();
         }
 
+        public override bool RequiresServiceProvider => false;
+
         public override Func<Scope, object> ToResolver(Scope topScope)
         {
             return s => topScope.GetInstance<IMessagingRoot>().NewContext();
         }
 
-        public override bool RequiresServiceProvider => false;
-
         public override object Resolve(Scope scope)
         {
-            if (_root == null)
-            {
-                _root = scope.GetInstance<IMessagingRoot>();
-            }
+            if (_root == null) _root = scope.GetInstance<IMessagingRoot>();
 
             return _root.NewContext();
         }
@@ -66,7 +62,7 @@ namespace Jasper
                 uses.Add(root);
             }
 
-            public Variable Variable { get;  }
+            public Variable Variable { get; }
 
             public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
             {

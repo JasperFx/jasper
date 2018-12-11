@@ -13,18 +13,13 @@ namespace Jasper.Testing.Messaging.Transports.Sending
 {
     public class BatchedSenderTests
     {
-        private readonly ISenderProtocol theProtocol = Substitute.For<ISenderProtocol>();
-        private readonly CancellationTokenSource theCancellation = new CancellationTokenSource();
-        private BatchedSender theSender;
-        private ISenderCallback theSenderCallback = Substitute.For<ISenderCallback>();
-        private OutgoingMessageBatch theBatch;
-
         public BatchedSenderTests()
         {
-            theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token, TransportLogger.Empty());
+            theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token,
+                TransportLogger.Empty());
             theSender.Start(theSenderCallback);
 
-            theBatch = new OutgoingMessageBatch(theSender.Destination, new Envelope[]
+            theBatch = new OutgoingMessageBatch(theSender.Destination, new[]
             {
                 Envelope.ForPing(),
                 Envelope.ForPing(),
@@ -36,6 +31,12 @@ namespace Jasper.Testing.Messaging.Transports.Sending
 
             theBatch.Messages.Each(x => x.Destination = theBatch.Destination);
         }
+
+        private readonly ISenderProtocol theProtocol = Substitute.For<ISenderProtocol>();
+        private readonly CancellationTokenSource theCancellation = new CancellationTokenSource();
+        private readonly BatchedSender theSender;
+        private readonly ISenderCallback theSenderCallback = Substitute.For<ISenderCallback>();
+        private readonly OutgoingMessageBatch theBatch;
 
         [Fact]
         public async Task call_send_batch_if_not_latched_and_not_cancelled()

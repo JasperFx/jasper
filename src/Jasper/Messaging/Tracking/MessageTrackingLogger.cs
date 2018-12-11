@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Microsoft.Extensions.Logging;
@@ -7,8 +6,8 @@ using Microsoft.Extensions.Logging;
 namespace Jasper.Messaging.Tracking
 {
     /// <summary>
-    /// Useful for automated testing scenarios against the service bus to "know"
-    /// when all outstanding messages are completed. DO NOT USE IN PRODUCTION!!!
+    ///     Useful for automated testing scenarios against the service bus to "know"
+    ///     when all outstanding messages are completed. DO NOT USE IN PRODUCTION!!!
     /// </summary>
     public class MessageTrackingLogger : MessageLogger
     {
@@ -18,12 +17,14 @@ namespace Jasper.Messaging.Tracking
         private readonly MessageHistory _history;
 
 
-        public MessageTrackingLogger(MessageHistory history, ILoggerFactory factory, IMetrics metrics) : base(factory, metrics)
+        public MessageTrackingLogger(MessageHistory history, ILoggerFactory factory, IMetrics metrics) : base(factory,
+            metrics)
         {
             _history = history;
         }
 
-        public override void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        public override void LogException(Exception ex, Guid correlationId = default(Guid),
+            string message = "Exception detected:")
         {
             _history.LogException(ex);
             base.LogException(ex, correlationId, message);
@@ -60,6 +61,4 @@ namespace Jasper.Messaging.Tracking
             base.MessageFailed(envelope, ex);
         }
     }
-
-
 }

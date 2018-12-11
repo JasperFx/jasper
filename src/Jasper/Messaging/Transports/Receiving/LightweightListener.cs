@@ -9,9 +9,9 @@ namespace Jasper.Messaging.Transports.Receiving
 {
     public class LightweightListener : IListener
     {
-        private readonly IWorkerQueue _workerQueue;
-        private readonly ITransportLogger _logger;
         private readonly IListeningAgent _agent;
+        private readonly ITransportLogger _logger;
+        private readonly IWorkerQueue _workerQueue;
 
         public LightweightListener(IWorkerQueue workerQueue, ITransportLogger logger, IListeningAgent agent)
         {
@@ -41,13 +41,9 @@ namespace Jasper.Messaging.Transports.Receiving
                     message.Callback = new LightweightCallback(_workerQueue);
 
                     if (message.IsDelayed(now))
-                    {
                         _workerQueue.ScheduledJobs.Enqueue(message.ExecutionTime.Value, message);
-                    }
                     else
-                    {
                         await _workerQueue.Enqueue(message);
-                    }
                 }
 
                 _logger.IncomingBatchReceived(messages);

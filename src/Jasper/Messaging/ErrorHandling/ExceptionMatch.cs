@@ -13,12 +13,12 @@ namespace Jasper.Messaging.ErrorHandling
             Description = description;
         }
 
+        public string Description { get; }
+
         public bool Matches(Envelope envelope, Exception ex)
         {
             return _filter(ex);
         }
-
-        public string Description { get; }
 
         public override string ToString()
         {

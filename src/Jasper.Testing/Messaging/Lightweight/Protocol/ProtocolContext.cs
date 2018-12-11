@@ -18,15 +18,15 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
     public abstract class ProtocolContext : IDisposable
     {
         protected static int NextPort = 6005;
+        private readonly IPAddress theAddress = IPAddress.Loopback;
+        private readonly int thePort = ++NextPort;
+        private readonly ListeningAgent _listener;
+        private readonly Uri destination;
+        private readonly OutgoingMessageBatch theMessageBatch;
 
 
         protected StubReceiverCallback theReceiver = new StubReceiverCallback();
         protected StubSenderCallback theSender = new StubSenderCallback();
-        private readonly IPAddress theAddress = IPAddress.Loopback;
-        private readonly int thePort = ++NextPort;
-        private Uri destination;
-        private OutgoingMessageBatch theMessageBatch;
-        private ListeningAgent _listener;
 
         public ProtocolContext()
         {
@@ -34,8 +34,7 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             _listener = new ListeningAgent(theReceiver, theAddress, thePort, "durable", CancellationToken.None);
 
 
-
-            var messages = new Envelope[]
+            var messages = new[]
             {
                 outgoingMessage(),
                 outgoingMessage(),
@@ -46,7 +45,11 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             };
 
             theMessageBatch = new OutgoingMessageBatch(destination, messages);
+        }
 
+        public void Dispose()
+        {
+            _listener.Dispose();
         }
 
 
@@ -55,14 +58,9 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             return new Envelope
             {
                 Destination = destination,
-                Data = new byte[]{1,2,3,4,5,6,7},
+                Data = new byte[] {1, 2, 3, 4, 5, 6, 7},
                 SentAt = DateTime.Today.ToUniversalTime()
             };
-        }
-
-        public void Dispose()
-        {
-            _listener.Dispose();
         }
 
         protected async Task afterSending()
@@ -72,9 +70,7 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             using (var client = new TcpClient())
             {
                 if (Dns.GetHostName() == destination.Host)
-                {
                     await client.ConnectAsync(IPAddress.Loopback, destination.Port);
-                }
 
                 await client.ConnectAsync(destination.Host, destination.Port);
 
@@ -85,11 +81,9 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
         protected void allTheMessagesWereReceived()
         {
             theReceiver.MessagesReceived.Length.ShouldBe(theMessageBatch.Messages.Count);
-            Testing.SpecificationExtensions.ShouldHaveTheSameElementsAs(theReceiver.MessagesReceived.Select(x => x.EnvelopeVersionId), theMessageBatch.Messages.Select(x => x.EnvelopeVersionId));
+            theReceiver.MessagesReceived.Select(x => x.EnvelopeVersionId)
+                .ShouldHaveTheSameElementsAs(theMessageBatch.Messages.Select(x => x.EnvelopeVersionId));
         }
-
-
-
     }
 
 
@@ -98,28 +92,26 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
         public ReceivedStatus StatusToReturn;
         public bool ThrowErrorOnReceived;
 
+        public Envelope[] MessagesReceived { get; set; }
+
+        public bool? WasAcknowledged { get; set; }
+
+        public Exception FailureException { get; set; }
+
         Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
-            if (ThrowErrorOnReceived)
-            {
-                throw new DivideByZeroException();
-            }
+            if (ThrowErrorOnReceived) throw new DivideByZeroException();
 
             MessagesReceived = messages;
 
             return Task.FromResult(StatusToReturn);
-
         }
-
-        public Envelope[] MessagesReceived { get; set; }
 
         Task IReceiverCallback.Acknowledged(Envelope[] messages)
         {
             WasAcknowledged = true;
             return Task.CompletedTask;
         }
-
-        public bool? WasAcknowledged { get; set; }
 
         Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
         {
@@ -132,12 +124,20 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             FailureException = exception;
             return Task.CompletedTask;
         }
-
-        public Exception FailureException { get; set; }
     }
 
     public class StubSenderCallback : ISenderCallback
     {
+        public bool Succeeded { get; set; }
+
+        public bool TimedOut { get; set; }
+
+        public bool SerializationFailed { get; set; }
+
+        public bool QueueDoesNotExist { get; set; }
+
+        public bool ProcessingFailed { get; set; }
+
         public Task Successful(OutgoingMessageBatch outgoing)
         {
             Succeeded = true;
@@ -150,15 +150,11 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             return Task.CompletedTask;
         }
 
-        public bool Succeeded { get; set; }
-
         Task ISenderCallback.TimedOut(OutgoingMessageBatch outgoing)
         {
             TimedOut = true;
             return Task.CompletedTask;
         }
-
-        public bool TimedOut { get; set; }
 
         Task ISenderCallback.SerializationFailure(OutgoingMessageBatch outgoing)
         {
@@ -166,15 +162,11 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
             return Task.CompletedTask;
         }
 
-        public bool SerializationFailed { get; set; }
-
         Task ISenderCallback.QueueDoesNotExist(OutgoingMessageBatch outgoing)
         {
             QueueDoesNotExist = true;
             return Task.CompletedTask;
         }
-
-        public bool QueueDoesNotExist { get; set; }
 
         Task ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing)
         {
@@ -202,7 +194,5 @@ namespace Jasper.Testing.Messaging.Lightweight.Protocol
         {
             throw new NotImplementedException();
         }
-
-        public bool ProcessingFailed { get; set; }
     }
 }

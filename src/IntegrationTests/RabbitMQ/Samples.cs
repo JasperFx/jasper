@@ -71,5 +71,6 @@ namespace IntegrationTests.RabbitMQ
             base.WriteFromEnvelope(envelope, properties);
         }
     }
+
     // ENDSAMPLE
 }

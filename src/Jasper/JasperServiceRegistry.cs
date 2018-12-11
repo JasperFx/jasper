@@ -5,7 +5,6 @@ using Jasper.EnvironmentChecks;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Jasper.Messaging;
-using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Serializers;
@@ -22,10 +21,8 @@ namespace Jasper
 {
     internal class JasperServiceRegistry : ServiceRegistry
     {
-        public JasperServiceRegistry(JasperRegistry parent)
+        public JasperServiceRegistry(JasperOptionsBuilder parent)
         {
-            Policies.Add<JasperResolverSet>();
-
             For<IMetrics>().Use<NulloMetrics>();
             For<IHostedService>().Use<MetricsCollector>();
 
@@ -45,7 +42,7 @@ namespace Jasper
             aspnetcore(parent);
         }
 
-        private void aspnetcore(JasperRegistry parent)
+        private void aspnetcore(JasperOptionsBuilder parent)
         {
             this.AddSingleton<ConnegRules>();
 
@@ -57,7 +54,7 @@ namespace Jasper
             this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());
         }
 
-        private void conneg(JasperRegistry parent)
+        private void conneg(JasperOptionsBuilder parent)
         {
             this.AddOptions();
 
@@ -73,7 +70,7 @@ namespace Jasper
             });
         }
 
-        private void messaging(JasperRegistry parent)
+        private void messaging(JasperOptionsBuilder parent)
         {
             ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
 

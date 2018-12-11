@@ -47,16 +47,14 @@ namespace Jasper.Persistence.SqlServer.Util
             return parameter;
         }
 
-        public static SqlParameter AddNamedParameter(this SqlCommand command, string name, object value, SqlDbType? type = null)
+        public static SqlParameter AddNamedParameter(this SqlCommand command, string name, object value,
+            SqlDbType? type = null)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
             parameter.Value = value ?? DBNull.Value;
 
-            if (type.HasValue)
-            {
-                parameter.SqlDbType = type.Value;
-            }
+            if (type.HasValue) parameter.SqlDbType = type.Value;
 
             command.Parameters.Add(parameter);
 
@@ -73,7 +71,8 @@ namespace Jasper.Persistence.SqlServer.Util
             return command;
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, object value, SqlDbType dbType, string parameterTypeName = null)
+        public static SqlCommand With(this SqlCommand command, string name, object value, SqlDbType dbType,
+            string parameterTypeName = null)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
@@ -81,10 +80,7 @@ namespace Jasper.Persistence.SqlServer.Util
             parameter.SqlDbType = dbType;
             command.Parameters.Add(parameter);
 
-            if (parameterTypeName.IsNotEmpty())
-            {
-                parameter.TypeName = parameterTypeName;
-            }
+            if (parameterTypeName.IsNotEmpty()) parameter.TypeName = parameterTypeName;
 
             return command;
         }

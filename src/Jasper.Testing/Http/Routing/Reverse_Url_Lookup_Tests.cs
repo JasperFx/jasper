@@ -10,8 +10,6 @@ namespace Jasper.Testing.Http.Routing
 {
     public class Reverse_Url_Lookup_Tests
     {
-        private static readonly UrlGraph urls = new UrlGraph();
-
         static Reverse_Url_Lookup_Tests()
         {
             readType<OneController>();
@@ -20,11 +18,13 @@ namespace Jasper.Testing.Http.Routing
             readType<OnlyOneActionController>();
         }
 
+        private static readonly UrlGraph urls = new UrlGraph();
+
         private static void readType<T>()
         {
-            typeof (T).GetMethods().Where(x => x.DeclaringType != typeof(object)).Each(method =>
+            typeof(T).GetMethods().Where(x => x.DeclaringType != typeof(object)).Each(method =>
             {
-                var route = RouteBuilder.Build(typeof (T), method);
+                var route = RouteBuilder.Build(typeof(T), method);
                 urls.Register(route);
             });
         }
@@ -38,21 +38,44 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [Fact]
-        public void retrieve_by_controller_action_even_if_it_has_an_input_model()
+        public void find_route_by_name_positive()
         {
-            urls.UrlFor<OneController>(x => x.get_one_M1(null), null).ShouldBe("/one/m1");
+            urls.UrlFor("A").ShouldBe("/one/a");
+        }
+
+        [Fact]
+        public void retrieve_a_url_by_action()
+        {
+            urls.UrlFor<OneController>(x => x.delete_one_m2(), null).ShouldBe("/one/m2");
+        }
+
+        [Fact]
+        public void retrieve_a_url_by_action_negative_case()
+        {
+            Exception<UrlResolutionException>.ShouldBeThrownBy(() =>
+            {
+                urls.UrlFor<RandomClass>(x => x.Ignored(), null);
+            });
+        }
+
+        [Fact]
+        public void retrieve_a_url_for_a_inferred_model_simple_case()
+        {
+            urls.UrlFor<Model1>(null).ShouldBe("/one/m1");
+        }
+
+
+        [Fact]
+        public void retrieve_a_url_for_a_model_and_http_method()
+        {
+            urls.UrlFor(new UrlModel(), "GET").ShouldBe("/urlmodel");
+            urls.UrlFor(new UrlModel(), "POST").ShouldBe("/urlmodel");
         }
 
         [Fact]
         public void retrieve_a_url_for_a_model_simple_case()
         {
             urls.UrlFor(new Model1()).ShouldBe("/one/m1");
-        }
-
-        [Fact]
-        public void retrieve_a_url_for_a_inferred_model_simple_case()
-        {
-            urls.UrlFor<Model1>((string)null).ShouldBe("/one/m1");
         }
 
         [Fact]
@@ -69,6 +92,18 @@ namespace Jasper.Testing.Http.Routing
             {
                 Name = "Jeremy"
             }).ShouldBe("/find/Jeremy");
+        }
+
+        [Fact]
+        public void retrieve_by_controller_action_even_if_it_has_an_input_model()
+        {
+            urls.UrlFor<OneController>(x => x.get_one_M1(null), null).ShouldBe("/one/m1");
+        }
+
+        [Fact]
+        public void retrieve_by_model_with_multiples()
+        {
+            Exception<UrlResolutionException>.ShouldBeThrownBy(() => { urls.UrlFor(new UrlModel()); });
         }
         /*
         [Fact]
@@ -92,46 +127,26 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void retrieve_url_by_urn_name_with_parameters()
         {
-            var dict = new Dictionary<string, object> { {"Name", "Max"} };
+            var dict = new Dictionary<string, object> {{"Name", "Max"}};
 
             urls.UrlFor("find_by_name", dict).ShouldBe("/find/Max");
         }
 
-        [Fact]
-        public void find_route_by_name_positive()
-        {
-            urls.UrlFor("A").ShouldBe("/one/a");
-        }
-
 
         [Fact]
-        public void retrieve_a_url_for_a_model_and_http_method()
+        public void url_for_by_type_respects_the_absolute_path()
         {
-            urls.UrlFor(new UrlModel(), "GET").ShouldBe("/urlmodel");
-            urls.UrlFor(new UrlModel(), "POST").ShouldBe("/urlmodel");
+            urls.UrlFor<Model6>()
+                .ShouldBe("/one/a");
         }
 
         [Fact]
-        public void retrieve_by_model_with_multiples()
+        public void url_for_handler_type_and_method_negative_case_should_throw_204()
         {
             Exception<UrlResolutionException>.ShouldBeThrownBy(() =>
             {
-                urls.UrlFor(new UrlModel());
-            });
-        }
-
-        [Fact]
-        public void retrieve_a_url_by_action()
-        {
-            urls.UrlFor<OneController>(x => x.delete_one_m2(), null).ShouldBe("/one/m2");
-        }
-
-        [Fact]
-        public void retrieve_a_url_by_action_negative_case()
-        {
-            Exception<UrlResolutionException>.ShouldBeThrownBy(() =>
-            {
-                urls.UrlFor<RandomClass>(x => x.Ignored(), null);
+                var method = ReflectionHelper.GetMethod<RandomClass>(x => x.Ignored());
+                urls.UrlFor(typeof(OneController), method, null);
             });
         }
 
@@ -148,26 +163,6 @@ namespace Jasper.Testing.Http.Routing
         {
             urls.UrlFor(typeof(OneController), nameof(OneController.head_one_m3)).ShouldBe("/one/m3");
         }
-
-        [Fact]
-        public void url_for_handler_type_and_method_negative_case_should_throw_204()
-        {
-            Exception<UrlResolutionException>.ShouldBeThrownBy(() => {
-                var method = ReflectionHelper.GetMethod<RandomClass>(x => x.Ignored());
-                urls.UrlFor(typeof(OneController), method, null);
-            });
-        }
-
-
-        [Fact]
-        public void url_for_by_type_respects_the_absolute_path()
-        {
-            urls.UrlFor<Model6>()
-                .ShouldBe("/one/a");
-        }
-
-
-
     }
 
 
@@ -236,7 +231,9 @@ namespace Jasper.Testing.Http.Routing
         {
         }
 
-        public void post_urlmodel(UrlModel input) { }
+        public void post_urlmodel(UrlModel input)
+        {
+        }
     }
 
     public class OnlyOneActionController
@@ -307,7 +304,6 @@ namespace Jasper.Testing.Http.Routing
     }
 
 
-
     public class UrlModel
     {
         public string Name { get; set; }
@@ -320,14 +316,12 @@ namespace Jasper.Testing.Http.Routing
 
     public class ModelWithQueryStringInput
     {
-        [QueryString]
-        public int Param { get; set; }
+        [QueryString] public int Param { get; set; }
     }
 
     public class ModelWithQueryStringAndRouteInput
     {
-        [QueryString]
-        public int Param { get; set; }
+        [QueryString] public int Param { get; set; }
 
         public int RouteParam { get; set; }
     }

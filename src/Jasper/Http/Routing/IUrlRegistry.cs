@@ -18,6 +18,5 @@ namespace Jasper.Http.Routing
         string UrlFor(string routeName, IDictionary<string, object> parameters = null);
 
         string UrlFor(Type handlerType, string methodName);
-
     }
 }

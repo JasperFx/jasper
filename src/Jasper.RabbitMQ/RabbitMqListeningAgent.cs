@@ -9,9 +9,9 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMqListeningAgent : IListeningAgent
     {
+        private readonly RabbitMqAgent _agent;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopeMapper _mapper;
-        private readonly RabbitMqAgent _agent;
         private readonly string _queue;
         private IReceiverCallback _callback;
         private MessageConsumer _consumer;

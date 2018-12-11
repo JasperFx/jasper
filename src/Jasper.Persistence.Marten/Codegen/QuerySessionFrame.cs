@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Marten;
 
 namespace Jasper.Persistence.Marten.Codegen
@@ -16,13 +15,13 @@ namespace Jasper.Persistence.Marten.Codegen
             Session = new Variable(typeof(IQuerySession), this);
         }
 
+        public Variable Session { get; }
+
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             _store = chain.FindVariable(typeof(IDocumentStore));
             return new[] {_store};
         }
-
-        public Variable Session { get; }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {

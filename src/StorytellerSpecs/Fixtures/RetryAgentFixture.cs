@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.Transports.Tcp;
 using StoryTeller;
@@ -15,12 +15,12 @@ namespace StorytellerSpecs.Fixtures
     public class RetryAgentFixture : Fixture, ISender
     {
         private readonly List<Envelope> _enqueued = new List<Envelope>();
+
+        private readonly OutgoingMessageBatch[] batches = new OutgoingMessageBatch[10];
         private bool _latched;
 
         private bool _pingFails;
         private bool _unlatched;
-
-        private readonly OutgoingMessageBatch[] batches = new OutgoingMessageBatch[10];
         protected LightweightRetryAgent theRetryAgent;
         protected RetrySettings theSettings;
 

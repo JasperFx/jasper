@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Tracking;
-using Jasper.Messaging.Transports.Configuration;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -18,6 +14,12 @@ namespace Jasper.Testing.Messaging.Lightweight
     [Collection("integration")]
     public class end_to_end : IDisposable
     {
+        public void Dispose()
+        {
+            theSender?.Dispose();
+            theReceiver?.Dispose();
+        }
+
         private static int port = 2114;
 
         private JasperRuntime theSender;
@@ -52,27 +54,6 @@ namespace Jasper.Testing.Messaging.Lightweight
             receiver.Services.For<MessageTracker>().Use(theTracker);
 
             theReceiver = await JasperRuntime.ForAsync(receiver);
-
-        }
-
-        public void Dispose()
-        {
-            theSender?.Dispose();
-            theReceiver?.Dispose();
-        }
-
-        [Fact]
-        public async Task can_send_from_one_node_to_another()
-        {
-            await getReady();
-
-            var waiter = theTracker.WaitFor<Message1>();
-
-            await theSender.Messaging.Send(theAddress, new Message1());
-
-            var env = await waiter;
-
-            env.Message.ShouldBeOfType<Message1>();
         }
 
         [Fact]
@@ -90,6 +71,20 @@ namespace Jasper.Testing.Messaging.Lightweight
         }
 
         [Fact]
+        public async Task can_send_from_one_node_to_another()
+        {
+            await getReady();
+
+            var waiter = theTracker.WaitFor<Message1>();
+
+            await theSender.Messaging.Send(theAddress, new Message1());
+
+            var env = await waiter;
+
+            env.Message.ShouldBeOfType<Message1>();
+        }
+
+        [Fact]
         public async Task tags_the_envelope_with_the_source()
         {
             await getReady();
@@ -100,7 +95,7 @@ namespace Jasper.Testing.Messaging.Lightweight
 
             var env = await waiter;
 
-            env.Source.ShouldBe(theSender.Get<MessagingSettings>().NodeId);
+            env.Source.ShouldBe(theSender.Get<JasperOptions>().NodeId);
         }
     }
 }

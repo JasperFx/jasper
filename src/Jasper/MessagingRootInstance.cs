@@ -5,27 +5,26 @@ using System.Reflection;
 using Baseline.Reflection;
 using Jasper.Messaging;
 using Lamar;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
 using Lamar.IoC;
 using Lamar.IoC.Frames;
 using Lamar.IoC.Instances;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper
 {
     public class MessagingRootInstance<T> : Instance
     {
-        private Instance _root;
         private readonly PropertyInfo _property;
+        private Instance _root;
 
-        public MessagingRootInstance(Expression<Func<IMessagingRoot, T>> expression) : base(typeof(T), typeof(T), ServiceLifetime.Singleton)
+        public MessagingRootInstance(Expression<Func<IMessagingRoot, T>> expression) : base(typeof(T), typeof(T),
+            ServiceLifetime.Singleton)
         {
             _property = ReflectionHelper.GetProperty(expression);
             Name = Variable.DefaultArgName<T>();
-
         }
 
         public override bool RequiresServiceProvider => false;
@@ -76,9 +75,6 @@ namespace Jasper
                 writer.Write($"var {Service.Usage} = {_root.Usage}.{_parent._property.Name};");
                 Next?.GenerateCode(method, writer);
             }
-
         }
     }
-
-
 }

@@ -13,7 +13,7 @@ namespace Jasper.Testing.Http
         [Fact]
         public async Task will_still_apply_middleware()
         {
-            var runtime = await JasperRuntime.ForAsync<JasperRegistry>(_ =>
+            var runtime = JasperAlba.For<JasperRegistry>(_ =>
             {
                 _.HttpRoutes.DisableConventionalDiscovery();
                 _.Hosting.Configure(app => { app.Run(c => c.Response.WriteAsync("Hello")); });
@@ -29,7 +29,7 @@ namespace Jasper.Testing.Http
             }
             finally
             {
-                await runtime.Shutdown();
+                runtime.Dispose();
             }
         }
     }

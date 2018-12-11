@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
-using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 
@@ -16,11 +12,11 @@ namespace Jasper.Messaging.Runtime.Routing
 {
     public class MessageRouter : IMessageRouter
     {
-        private readonly SerializationGraph _serializers;
-        private readonly ISubscriberGraph _subscribers;
         private readonly HandlerGraph _handlers;
         private readonly IMessageLogger _logger;
-        private readonly MessagingSettings _settings;
+        private readonly SerializationGraph _serializers;
+        private readonly JasperOptions _settings;
+        private readonly ISubscriberGraph _subscribers;
         private readonly WorkersGraph _workers;
 
         private ImHashMap<Type, MessageRoute[]> _routes = ImHashMap<Type, MessageRoute[]>.Empty;
@@ -60,28 +56,25 @@ namespace Jasper.Messaging.Runtime.Routing
 
 
             var modelWriter = _serializers.WriterFor(messageType);
-            var contentType = envelope.ContentType ?? envelope.AcceptedContentTypes.Intersect(modelWriter.ContentTypes).FirstOrDefault()
+            var contentType = envelope.ContentType ??
+                              envelope.AcceptedContentTypes.Intersect(modelWriter.ContentTypes).FirstOrDefault()
                               ?? "application/json";
 
 
             var channel = _subscribers.GetOrBuild(envelope.Destination);
             return new MessageRoute(
-                       messageType,
-                       modelWriter,
-                       channel,
-                       contentType);
+                messageType,
+                modelWriter,
+                channel,
+                contentType);
         }
 
         public Envelope[] Route(Envelope envelope)
         {
             var envelopes = route(envelope);
-            foreach (var outgoing in envelopes)
-            {
-                outgoing.Source = _settings.NodeId;
-            }
+            foreach (var outgoing in envelopes) outgoing.Source = _settings.NodeId;
 
             return envelopes;
-
         }
 
         private Envelope[] route(Envelope envelope)
@@ -93,10 +86,7 @@ namespace Jasper.Messaging.Runtime.Routing
                 var outgoing = routes.Select(x => x.CloneForSending(envelope)).ToArray();
 
                 // A hack.
-                if (outgoing.Length == 1)
-                {
-                    outgoing[0].Id = envelope.Id;
-                }
+                if (outgoing.Length == 1) outgoing[0].Id = envelope.Id;
 
                 return outgoing;
             }
@@ -107,7 +97,7 @@ namespace Jasper.Messaging.Runtime.Routing
             var toBeSent = route.CloneForSending(envelope);
             toBeSent.Id = envelope.Id;
 
-            return new Envelope[]{toBeSent};
+            return new[] {toBeSent};
         }
 
         private List<MessageRoute> compileRoutes(Type messageType)
@@ -122,26 +112,21 @@ namespace Jasper.Messaging.Runtime.Routing
             applyStaticPublishingRules(messageType, supported, list, modelWriter);
 
             if (!list.Any())
-            {
                 if (_handlers.CanHandle(messageType))
-                {
                     list.Add(createLocalRoute(messageType));
-                }
-            }
 
             return list;
         }
 
-        private void applyStaticPublishingRules(Type messageType, string[] supported, List<MessageRoute> list, ModelWriter modelWriter)
+        private void applyStaticPublishingRules(Type messageType, string[] supported, List<MessageRoute> list,
+            ModelWriter modelWriter)
         {
             foreach (var channel in _subscribers.AllKnown().Where(x => x.ShouldSendMessage(messageType)))
             {
                 var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
 
                 if (contentType.IsNotEmpty())
-                {
-                    list.Add(new MessageRoute(messageType, modelWriter, channel, contentType) { });
-                }
+                    list.Add(new MessageRoute(messageType, modelWriter, channel, contentType));
             }
         }
 

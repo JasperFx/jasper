@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Util;
 
@@ -101,8 +100,6 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
 
-
-
     // SAMPLE: StaticRoutingApp
     public class StaticRoutingApp : JasperRegistry
     {
@@ -134,5 +131,6 @@ namespace Jasper.Testing.Messaging.Samples
                 .To(settings.Transactions);
         }
     }
+
     // ENDSAMPLE
 }

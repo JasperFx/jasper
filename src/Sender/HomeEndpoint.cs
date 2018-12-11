@@ -15,14 +15,16 @@ namespace Sender
 {
     public class HomeEndpoint
     {
-        private static string _json1;
-        private static string _json2;
+        private static readonly string _json1;
+        private static readonly string _json2;
 
 
         static HomeEndpoint()
         {
-            _json1 = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(HomeEndpoint), "target1.json").ReadAllText();
-            _json2 = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(HomeEndpoint), "target2.json").ReadAllText();
+            _json1 = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(HomeEndpoint), "target1.json")
+                .ReadAllText();
+            _json2 = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(HomeEndpoint), "target2.json")
+                .ReadAllText();
         }
 
 

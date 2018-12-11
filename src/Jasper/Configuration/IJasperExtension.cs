@@ -1,21 +1,17 @@
-﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
-
-
-namespace Jasper.Configuration
+﻿namespace Jasper.Configuration
 {
     // SAMPLE: IJasperExtension
     /// <summary>
-    /// Use to create loadable extensions to Jasper applications
+    ///     Use to create loadable extensions to Jasper applications
     /// </summary>
     public interface IJasperExtension
     {
         /// <summary>
-        /// Make any alterations to the JasperRegistry for the application
+        ///     Make any alterations to the JasperRegistry for the application
         /// </summary>
         /// <param name="registry"></param>
-        void Configure(JasperRegistry registry);
+        void Configure(JasperOptionsBuilder registry);
     }
+
     // ENDSAMPLE
 }

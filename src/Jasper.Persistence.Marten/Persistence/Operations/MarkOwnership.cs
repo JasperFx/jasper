@@ -11,9 +11,9 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 {
     public class MarkOwnership : IStorageOperation
     {
-        private readonly DbObjectName _table;
-        private readonly int _ownerId;
         private readonly Guid[] _idlist;
+        private readonly int _ownerId;
+        private readonly DbObjectName _table;
 
         public MarkOwnership(DbObjectName table, int ownerId, IEnumerable<Envelope> envelopes)
         {

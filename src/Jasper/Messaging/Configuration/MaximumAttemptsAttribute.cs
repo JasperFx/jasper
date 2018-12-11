@@ -5,7 +5,7 @@ using Jasper.Messaging.Model;
 namespace Jasper.Messaging.Configuration
 {
     /// <summary>
-    /// Specify the maximum number of attempts to process a received message
+    ///     Specify the maximum number of attempts to process a received message
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class MaximumAttemptsAttribute : ModifyHandlerChainAttribute

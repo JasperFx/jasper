@@ -5,6 +5,7 @@ using Alba;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
@@ -19,6 +20,8 @@ namespace Jasper.Testing.Http.ContentHandling
             HttpRoutes.IncludeType<CustomReaderWriterEndpoint>();
             Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
             Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
+
+            Hosting.Configure(app => app.UseJasper());
         }
     }
 

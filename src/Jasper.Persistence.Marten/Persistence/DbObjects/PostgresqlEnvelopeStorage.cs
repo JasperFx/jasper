@@ -15,13 +15,13 @@ namespace Jasper.Persistence.Marten.Persistence.DbObjects
         {
         }
 
+        public override Type StorageType => typeof(Envelope);
+
         protected override IEnumerable<ISchemaObject> schemaObjects()
         {
             yield return new IncomingEnvelopeTable(Options);
             yield return new OutgoingEnvelopeTable(Options);
         }
-
-        public override Type StorageType => typeof(Envelope);
 
         public override bool IsActive(StoreOptions options)
         {

@@ -17,37 +17,25 @@ namespace Jasper.Http.Routing
         public static void SetRouteData(this HttpContext context, IDictionary<string, object> routeValues)
         {
             if (context.Items.ContainsKey(RouteData))
-            {
                 context.Items[RouteData] = routeValues;
-            }
             else
-            {
                 context.Items.Add(RouteData, routeValues);
-            }
         }
 
         public static void SetRouteData(this HttpContext context, string key, object value)
         {
             var routeData = context.GetRouteData();
             if (routeData.ContainsKey(key))
-            {
                 routeData[key] = value;
-            }
             else
-            {
                 routeData.Add(key, value);
-            }
-
         }
 
         public static object GetRouteData(this HttpContext context, string key)
         {
             var routeData = context.GetRouteData();
 
-            if (routeData != null && routeData.ContainsKey(key))
-            {
-                return routeData[key];
-            }
+            if (routeData != null && routeData.ContainsKey(key)) return routeData[key];
 
             return null;
         }
@@ -70,13 +58,9 @@ namespace Jasper.Http.Routing
         public static void SetSpreadData(this HttpContext context, string[] values)
         {
             if (context.Items.ContainsKey(SpreadData))
-            {
                 context.Items[SpreadData] = values;
-            }
             else
-            {
                 context.Items.Add(SpreadData, values);
-            }
         }
     }
 }

@@ -17,6 +17,15 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
         };
 
         [Fact]
+        public void alter_any_which_way()
+        {
+            var toSend = Respond.With(new Message1()).Altered(e => e.AckRequested = true)
+                .As<ISendMyself>().CreateEnvelope(Original);
+
+            toSend.AckRequested.ShouldBeTrue();
+        }
+
+        [Fact]
         public void carries_the_message_forward()
         {
             var message2 = new Message2();
@@ -24,6 +33,26 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
                 .As<ISendMyself>().CreateEnvelope(Original);
 
             toSend.Message.ShouldBe(message2);
+        }
+
+        [Fact]
+        public void delayed_by()
+        {
+            var toSend = Respond.With(new Message1()).DelayedBy(5.Minutes())
+                .As<ISendMyself>().CreateEnvelope(Original);
+
+            toSend.ExecutionTime.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
+        }
+
+        [Fact]
+        public void delayed_until()
+        {
+            var time = DateTime.UtcNow.Date.AddDays(2);
+
+            var toSend = Respond.With(new Message1()).DelayedUntil(time)
+                .As<ISendMyself>().CreateEnvelope(Original);
+
+            toSend.ExecutionTime.ShouldBe(time);
         }
 
         [Fact]
@@ -41,32 +70,11 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
         [Fact]
         public void send_back_to_sender()
         {
-
             var message2 = new Message2();
             var toSend = Respond.With(message2).ToSender()
                 .As<ISendMyself>().CreateEnvelope(Original);
 
             toSend.Destination.ShouldBe(Original.ReplyUri);
-        }
-
-        [Fact]
-        public void delayed_until()
-        {
-            var time = DateTime.UtcNow.Date.AddDays(2);
-
-            var toSend = Respond.With(new Message1()).DelayedUntil(time)
-                .As<ISendMyself>().CreateEnvelope(Original);
-
-            toSend.ExecutionTime.ShouldBe(time);
-        }
-
-        [Fact]
-        public void delayed_by()
-        {
-            var toSend = Respond.With(new Message1()).DelayedBy(5.Minutes())
-                .As<ISendMyself>().CreateEnvelope(Original);
-
-            toSend.ExecutionTime.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
         }
 
         [Fact]
@@ -77,16 +85,5 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
 
             toSend.Headers["foo"].ShouldBe("bar");
         }
-
-        [Fact]
-        public void alter_any_which_way()
-        {
-            var toSend = Respond.With(new Message1()).Altered(e => e.AckRequested = true)
-                .As<ISendMyself>().CreateEnvelope(Original);
-
-            toSend.AckRequested.ShouldBeTrue();
-        }
-
-
     }
 }

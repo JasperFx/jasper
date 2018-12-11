@@ -11,13 +11,13 @@ namespace Jasper.Util
 
         public CompositePredicate<T> Includes
         {
-            get { return _includes; }
+            get => _includes;
             set { }
         }
 
         public CompositePredicate<T> Excludes
         {
-            get { return _excludes; }
+            get => _excludes;
             set { }
         }
 

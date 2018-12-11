@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.Messaging.Transports.Sending
@@ -13,6 +12,8 @@ namespace Jasper.Messaging.Transports.Sending
         public LightweightRetryAgent(ISender sender, RetrySettings settings) : base(sender, settings)
         {
         }
+
+        public IList<Envelope> Queued { get; private set; } = new List<Envelope>();
 
         public override Task EnqueueForRetry(OutgoingMessageBatch batch)
         {
@@ -34,14 +35,10 @@ namespace Jasper.Messaging.Transports.Sending
             Queued.Clear();
 
             foreach (var envelope in toRetry)
-            {
                 // It's perfectly okay to not wait on the task here
                 _sender.Enqueue(envelope);
-            }
 
             return Task.CompletedTask;
         }
-
-        public IList<Envelope> Queued { get; private set; } = new List<Envelope>();
     }
 }

@@ -13,7 +13,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         {
             theRegistry.Include<MyExtension>();
 
-            var handlerChain =(await theHandlers()).HandlerFor<ExtensionMessage>().Chain;
+            var handlerChain = (await theHandlers()).HandlerFor<ExtensionMessage>().Chain;
             handlerChain.Handlers.Single()
                 .HandlerType.ShouldBe(typeof(ExtensionThing));
         }
@@ -21,7 +21,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
     public class MyExtension : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptionsBuilder registry)
         {
             registry.Handlers.IncludeType<ExtensionThing>();
         }
@@ -29,14 +29,12 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
     public class ExtensionMessage
     {
-
     }
 
     public class ExtensionThing
     {
         public void Handle(ExtensionMessage message)
         {
-
         }
     }
 }

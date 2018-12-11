@@ -11,9 +11,8 @@ namespace Jasper.Testing.Http.Routing
     public class Route_resolving_urls_with_input_model_Tests
     {
         private readonly RequestDelegate Empty = c => Task.CompletedTask;
-            
-            
-            
+
+
         [Fact]
         public void get_parameters_from_field()
         {
@@ -44,27 +43,10 @@ namespace Jasper.Testing.Http.Routing
             route.GetArgument("Color").MapToProperty<InputModel>(x => x.Color);
             route.GetArgument("Key").MapToField<InputModel>("Key");
 
-            var dict = route.ToParameters(new InputModel { Color = Color.Blue, Key = "Perrin"});
+            var dict = route.ToParameters(new InputModel {Color = Color.Blue, Key = "Perrin"});
 
             dict["Color"].ShouldBe("Blue");
             dict["Key"] = "Perrin";
-        }
-
-
-        [Fact]
-        public void write_a_string_field()
-        {
-            var route = new Route("foo/:Key", "GET");
-            route.InputType = typeof (InputModel);
-            route.GetArgument("Key").MapToField<InputModel>("Key");
-
-            var model = new InputModel();
-            var dict = new Dictionary<string, object>();
-            dict.Add("Key", "Thom");
-
-            route.WriteToInputModel(model, dict);
-
-            model.Key.ShouldBe("Thom");
         }
 
         [Fact]
@@ -83,6 +65,23 @@ namespace Jasper.Testing.Http.Routing
             model.Number.ShouldBe(11);
         }
 
+
+        [Fact]
+        public void write_a_string_field()
+        {
+            var route = new Route("foo/:Key", "GET");
+            route.InputType = typeof(InputModel);
+            route.GetArgument("Key").MapToField<InputModel>("Key");
+
+            var model = new InputModel();
+            var dict = new Dictionary<string, object>();
+            dict.Add("Key", "Thom");
+
+            route.WriteToInputModel(model, dict);
+
+            model.Key.ShouldBe("Thom");
+        }
+
         [Fact]
         public void write_an_enum_property()
         {
@@ -98,9 +97,7 @@ namespace Jasper.Testing.Http.Routing
             route.WriteToInputModel(model, dict);
 
             model.Color.ShouldBe(Color.Blue);
-
         }
-
     }
 
     public class InputModel

@@ -3,10 +3,8 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Testing.Messaging.Runtime;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
 using Shouldly;
 using Xunit;
 
@@ -14,52 +12,41 @@ namespace Jasper.Testing.Messaging.Compilation
 {
     public class can_customize_handler_chains_with_attributes
     {
-
-
-        private async Task forMessage<T>(Action<HandlerChain> action)
+        private void forMessage<T>(Action<HandlerChain> action)
         {
-            var runtime = await JasperRuntime.ForAsync(_ =>
+            using (var runtime = JasperRuntime.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<FakeHandler1>();
                 _.Handlers.IncludeType<FakeHandler2>();
-            });
-
-            var chain = runtime.Get<HandlerGraph>().ChainFor<T>();
-
-            try
+            }))
             {
+                var chain = runtime.Get<HandlerGraph>().ChainFor<T>();
                 action(chain);
             }
-            finally
-            {
-                await runtime.Shutdown();
-            }
         }
 
 
         [Fact]
-        public Task apply_attribute_on_class()
+        public void apply_attribute_on_class()
         {
-            return forMessage<Message2>(chain => chain.SourceCode.ShouldContain("// fake frame here"));
+            forMessage<Message2>(chain => chain.SourceCode.ShouldContain("// fake frame here"));
         }
 
         [Fact]
-        public Task apply_attribute_on_message_type()
+        public void apply_attribute_on_message_type()
         {
-            return forMessage<ErrorHandledMessage>(chain =>
+            forMessage<ErrorHandledMessage>(chain =>
             {
                 chain.SourceCode.ShouldContain("// fake frame here");
                 chain.MaximumAttempts.ShouldBe(5);
             });
-
-
         }
 
         [Fact]
-        public Task apply_attribute_on_method()
+        public void apply_attribute_on_method()
         {
-            return forMessage<Message1>(chain => chain.SourceCode.ShouldContain("// fake frame here"));
+            forMessage<Message1>(chain => chain.SourceCode.ShouldContain("// fake frame here"));
         }
     }
 

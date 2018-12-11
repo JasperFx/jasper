@@ -4,19 +4,27 @@ using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
-using Jasper.Persistence;
 
 namespace Jasper.Messaging.Configuration
 {
     public interface IHandlerConfiguration : IHasErrorHandlers
     {
         /// <summary>
-        /// Configure how Jasper discovers message handler classes to override
-        /// the built in conventions
+        ///     The default number of attempts to try to process a received message
+        ///     if there is no explicit configuration at the chain level. The default is 1
+        /// </summary>
+        int DefaultMaximumAttempts { get; set; }
+
+        /// <summary>
+        ///     Configure the default local worker queue
+        /// </summary>
+        IWorkerSettings DefaultWorker { get; }
+
+        /// <summary>
+        ///     Configure how Jasper discovers message handler classes to override
+        ///     the built in conventions
         /// </summary>
         /// <param name="configure"></param>
         /// <returns></returns>
@@ -24,41 +32,30 @@ namespace Jasper.Messaging.Configuration
 
 
         /// <summary>
-        /// Applies a handler policy to all known message handlers
+        ///     Applies a handler policy to all known message handlers
         /// </summary>
         /// <typeparam name="T"></typeparam>
         void GlobalPolicy<T>() where T : IHandlerPolicy, new();
 
         /// <summary>
-        /// Applies a handler policy to all known message handlers
+        ///     Applies a handler policy to all known message handlers
         /// </summary>
         /// <param name="policy"></param>
         void GlobalPolicy(IHandlerPolicy policy);
 
         /// <summary>
-        /// The default number of attempts to try to process a received message
-        /// if there is no explicit configuration at the chain level. The default is 1
-        /// </summary>
-        int DefaultMaximumAttempts { get; set; }
-
-        /// <summary>
-        /// Configure a named, local worker queue, including the routing of message
-        /// types to local worker queue and maximum concurrency
+        ///     Configure a named, local worker queue, including the routing of message
+        ///     types to local worker queue and maximum concurrency
         /// </summary>
         /// <param name="queueName"></param>
         /// <returns></returns>
         IWorkerSettings Worker(string queueName);
-
-        /// <summary>
-        /// Configure the default local worker queue
-        /// </summary>
-        IWorkerSettings DefaultWorker { get; }
-
     }
 
 
     public class HandlerConfiguration : IHandlerConfiguration
     {
+        private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
         private readonly HandlerGraph _graph;
         internal readonly HandlerSource Source = new HandlerSource();
 
@@ -80,12 +77,9 @@ namespace Jasper.Messaging.Configuration
 
         public IWorkerSettings DefaultWorker => _graph.Workers[TransportConstants.Default];
 
-
-        private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
-
         // TODO -- have a Local option later
         /// <summary>
-        /// Applies a handler policy to all known message handlers
+        ///     Applies a handler policy to all known message handlers
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public void GlobalPolicy<T>() where T : IHandlerPolicy, new()
@@ -94,7 +88,7 @@ namespace Jasper.Messaging.Configuration
         }
 
         /// <summary>
-        /// Applies a handler policy to all known message handlers
+        ///     Applies a handler policy to all known message handlers
         /// </summary>
         /// <param name="policy"></param>
         public void GlobalPolicy(IHandlerPolicy policy)
@@ -102,30 +96,23 @@ namespace Jasper.Messaging.Configuration
             _globals.Add(policy);
         }
 
-
-        internal void ApplyPolicies(HandlerGraph graph, JasperGenerationRules rules)
-        {
-            foreach (var policy in _globals)
-            {
-                policy.Apply(graph, rules);
-            }
-
-            graph.ErrorHandlers.AddRange(this.As<IHasErrorHandlers>().ErrorHandlers);
-
-            foreach (var chain in graph.Chains)
-            {
-                chain.MaximumAttempts = DefaultMaximumAttempts;
-            }
-        }
-
         /// <summary>
-        /// The default number of attempts to try to process a received message
-        /// if there is no explicit configuration at the chain level. The default is 1
+        ///     The default number of attempts to try to process a received message
+        ///     if there is no explicit configuration at the chain level. The default is 1
         /// </summary>
         public int DefaultMaximumAttempts { get; set; } = 1;
 
 
         public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
-    }
 
+
+        internal void ApplyPolicies(HandlerGraph graph, JasperGenerationRules rules)
+        {
+            foreach (var policy in _globals) policy.Apply(graph, rules);
+
+            graph.ErrorHandlers.AddRange(this.As<IHasErrorHandlers>().ErrorHandlers);
+
+            foreach (var chain in graph.Chains) chain.MaximumAttempts = DefaultMaximumAttempts;
+        }
+    }
 }

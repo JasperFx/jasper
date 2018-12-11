@@ -7,7 +7,7 @@ using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging.Transports
 {
-    public interface  IDurableMessagingFactory
+    public interface IDurableMessagingFactory
     {
         ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation);
         ISendingAgent BuildLocalAgent(Uri destination, IMessagingRoot root);
@@ -15,7 +15,5 @@ namespace Jasper.Messaging.Transports
         void ClearAllStoredMessages();
 
         Task ScheduleJob(Envelope envelope);
-
-
     }
 }

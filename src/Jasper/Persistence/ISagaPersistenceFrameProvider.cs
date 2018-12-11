@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Sagas;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 
 namespace Jasper.Persistence
 {
@@ -14,5 +14,4 @@ namespace Jasper.Persistence
 
         Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType);
     }
-
 }

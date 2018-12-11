@@ -1,35 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
-using Jasper.Messaging.Transports.Configuration;
+using Lamar;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace Jasper.Settings
 {
     public interface IHasRegistryParent
     {
-        JasperRegistry Parent { get; }
+        JasperOptionsBuilder Parent { get; }
     }
 
     public class JasperSettings : IHasRegistryParent
     {
-        private readonly IList<Action<WebHostBuilderContext>> _configActions = new List<Action<WebHostBuilderContext>>();
+        private readonly IList<Action<WebHostBuilderContext>>
+            _configActions = new List<Action<WebHostBuilderContext>>();
 
-        private readonly JasperRegistry _parent;
+        private readonly JasperOptionsBuilder _parent;
 
         private readonly Dictionary<Type, ISettingsBuilder> _settings
             = new Dictionary<Type, ISettingsBuilder>();
 
-        public JasperSettings(JasperRegistry parent)
+        public JasperSettings(JasperOptionsBuilder parent)
         {
             _parent = parent;
         }
 
-        JasperRegistry IHasRegistryParent.Parent => _parent;
-
         internal bool ApplyingExtensions { private get; set; }
+
+        JasperOptionsBuilder IHasRegistryParent.Parent => _parent;
 
         private SettingsBuilder<T> forType<T>(Func<WebHostBuilderContext, T> source = null) where T : class
         {
@@ -84,8 +84,8 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        /// Alter a settings object after it has been loaded from configuration using
-        /// the IConfiguration and IHostingEnvironment for the application
+        ///     Alter a settings object after it has been loaded from configuration using
+        ///     the IConfiguration and IHostingEnvironment for the application
         /// </summary>
         /// <param name="alteration"></param>
         /// <typeparam name="T"></typeparam>
@@ -99,20 +99,20 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        /// Alter advanced features of the messaging support
+        ///     Alter advanced features of the messaging support
         /// </summary>
         /// <param name="alteration"></param>
-        public void Messaging(Action<MessagingSettings> alteration)
+        public void Messaging(Action<JasperOptions> alteration)
         {
             Alter(alteration);
         }
 
         /// <summary>
-        /// Alter advanced features of the messaging support with access to the
-        /// IConfiguration and IHostingEnvironment for the application
+        ///     Alter advanced features of the messaging support with access to the
+        ///     IConfiguration and IHostingEnvironment for the application
         /// </summary>
         /// <param name="alteration"></param>
-        public void Messaging(Action<WebHostBuilderContext, MessagingSettings> alteration)
+        public void Messaging(Action<WebHostBuilderContext, JasperOptions> alteration)
         {
             Alter(alteration);
         }
@@ -126,16 +126,8 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        ///     Modify the application using loaded settings
-        /// </summary>
-        public void With<T>(Action<T> alteration) where T : class
-        {
-            forType<T>().With(alteration);
-        }
-
-        /// <summary>
-        /// Apply additional changes to this JasperRegistry object based on
-        /// the loaded IConfiguration and IHostedEnvironment for the application
+        ///     Apply additional changes to this JasperRegistry object based on
+        ///     the loaded IConfiguration and IHostedEnvironment for the application
         /// </summary>
         /// <param name="configuration"></param>
         public void Configure(Action<WebHostBuilderContext> configuration)
@@ -144,29 +136,22 @@ namespace Jasper.Settings
         }
 
 
-
-
-        internal void Bootstrap(WebHostBuilderContext config)
-        {
-            foreach (var configAction in _configActions)
-            {
-                configAction(config);
-            }
-
-
-            foreach (var settings in _settings.Values)
-                settings.Apply(config, _parent);
-        }
-
-
         /// <summary>
-        /// Load a settings object "T" from the named configuration section
+        ///     Load a settings object "T" from the named configuration section
         /// </summary>
         /// <param name="sectionName"></param>
         /// <typeparam name="T"></typeparam>
         public void BindToConfigSection<T>(string sectionName) where T : class, new()
         {
             Configure<T>(c => c.GetSection(sectionName));
+        }
+
+        internal void Apply(ServiceRegistry services)
+        {
+            foreach (var setting in _settings)
+            {
+                setting.Value.Apply(services);
+            }
         }
     }
 }

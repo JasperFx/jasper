@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -14,12 +13,12 @@ namespace Jasper.Testing.Messaging
 {
     public class publish_versus_send_mechanics : IDisposable
     {
-        private JasperRuntime theRuntime;
-
         public void Dispose()
         {
             theRuntime?.Dispose();
         }
+
+        private JasperRuntime theRuntime;
 
         private async Task buildRuntime()
         {
@@ -33,27 +32,6 @@ namespace Jasper.Testing.Messaging
 
                 _.Services.AddSingleton<ITransport, StubTransport>();
             });
-        }
-
-
-        [Fact]
-        public async Task send_with_known_subscribers()
-        {
-            await buildRuntime();
-            await theRuntime.Messaging.Send(new Message1());
-            await theRuntime.Messaging.Send(new Message2());
-
-            var sent = theRuntime.AllSentThroughTheStubTransport();
-
-            sent.Length.ShouldBe(3);
-        }
-
-        [Fact]
-        public async Task send_message_with_no_known_subscribers()
-        {
-            await buildRuntime();
-            await Exception<NoRoutesException>.ShouldBeThrownByAsync(async () =>
-                await theRuntime.Messaging.Send(new Message3()));
         }
 
         [Fact]
@@ -81,6 +59,27 @@ namespace Jasper.Testing.Messaging
             sent.Where(x => x.MessageType == typeof(Message2).ToMessageTypeName())
                 .Select(x => x.Destination)
                 .ShouldHaveTheSameElementsAs("stub://one".ToUri(), "stub://two".ToUri());
+        }
+
+        [Fact]
+        public async Task send_message_with_no_known_subscribers()
+        {
+            await buildRuntime();
+            await Exception<NoRoutesException>.ShouldBeThrownByAsync(async () =>
+                await theRuntime.Messaging.Send(new Message3()));
+        }
+
+
+        [Fact]
+        public async Task send_with_known_subscribers()
+        {
+            await buildRuntime();
+            await theRuntime.Messaging.Send(new Message1());
+            await theRuntime.Messaging.Send(new Message2());
+
+            var sent = theRuntime.AllSentThroughTheStubTransport();
+
+            sent.Length.ShouldBe(3);
         }
     }
 }

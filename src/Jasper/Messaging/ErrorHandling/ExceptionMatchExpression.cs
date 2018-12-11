@@ -22,13 +22,12 @@ namespace Jasper.Messaging.ErrorHandling
         public ExceptionMatchExpression MessageContains(string text)
         {
             return Matching(ex => ex.Message.ToLowerInvariant().Contains(text.ToLowerInvariant()),
-                            $"Exception message contains '{text}'");
+                $"Exception message contains '{text}'");
         }
 
         public ExceptionMatchExpression IsType<T>() where T : Exception
         {
-            return Matching(t => t is T, "Exception type is " + typeof (T).FullName);
+            return Matching(t => t is T, "Exception type is " + typeof(T).FullName);
         }
-
     }
 }

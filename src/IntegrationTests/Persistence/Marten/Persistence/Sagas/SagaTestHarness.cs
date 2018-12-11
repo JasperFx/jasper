@@ -9,7 +9,6 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
 using Marten;
 
-
 namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 {
     public abstract class SagaTestHarness<TSagaHandler, TSagaState> : MartenContext, IDisposable

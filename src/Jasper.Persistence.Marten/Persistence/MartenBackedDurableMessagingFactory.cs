@@ -6,7 +6,6 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Persistence.Marten.Persistence.Operations;
@@ -17,13 +16,13 @@ namespace Jasper.Persistence.Marten.Persistence
 {
     public class MartenBackedDurableMessagingFactory : IDurableMessagingFactory
     {
-        private readonly IDocumentStore _store;
         private readonly ITransportLogger _logger;
-        private readonly EnvelopeRetries _retries;
         private readonly MartenEnvelopePersistor _persistor;
+        private readonly EnvelopeRetries _retries;
+        private readonly IDocumentStore _store;
 
         public MartenBackedDurableMessagingFactory(IDocumentStore store, ITransportLogger logger,
-            MessagingSettings settings, EnvelopeTables tables)
+            JasperOptions settings, EnvelopeTables tables)
         {
             _store = store;
             _logger = logger;
@@ -35,7 +34,7 @@ namespace Jasper.Persistence.Marten.Persistence
             _retries = new EnvelopeRetries(new MartenEnvelopePersistor(_store, tables), _logger, Settings);
         }
 
-        public MessagingSettings Settings { get; }
+        public JasperOptions Settings { get; }
 
         public EnvelopeTables Tables { get; }
 
@@ -65,7 +64,6 @@ namespace Jasper.Persistence.Marten.Persistence
 
                 conn.CreateCommand().Sql($"delete from {Tables.Incoming};delete from {Tables.Outgoing}")
                     .ExecuteNonQuery();
-
             }
         }
 
@@ -74,14 +72,10 @@ namespace Jasper.Persistence.Marten.Persistence
             envelope.Status = TransportConstants.Scheduled;
 
             if (envelope.Message == null)
-            {
                 throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
-            }
 
             if (!envelope.ExecutionTime.HasValue)
-            {
                 throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
-            }
 
             using (var session = _store.LightweightSession())
             {
@@ -89,7 +83,5 @@ namespace Jasper.Persistence.Marten.Persistence
                 await session.SaveChangesAsync();
             }
         }
-
-
     }
 }

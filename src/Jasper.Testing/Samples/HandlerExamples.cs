@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
-using Jasper.Testing.Messaging.Runtime;
-using Jasper.Testing.Samples.FirstTry;
 using Marten;
 
 namespace Jasper.Testing.Samples
 {
-
     // SAMPLE: ValidMessageHandlers
     public class ValidMessageHandlers
     {
@@ -15,33 +12,23 @@ namespace Jasper.Testing.Samples
         // argument is the message
         public void Handle(Message1 something)
         {
-
         }
 
         // The parameter named "message" is assumed to be the message type
         public void Consume(Message1 message, IDocumentSession session)
         {
-
         }
 
         // It's perfectly valid to have multiple handler methods
         // for a given message type. Each will be called in sequence
         public void SendEmail(Message1 input, IEmailService emails)
         {
-
-        }
-
-        public interface IEvent
-        {
-            string CustomerId { get; }
-            Guid Id { get; }
         }
 
         // It's also legal to handle a message by an abstract
         // base class or an implemented interface.
         public void PostProcessEvent(IEvent @event)
         {
-
         }
 
         // In this case, we assume that the first type is the message type
@@ -49,19 +36,23 @@ namespace Jasper.Testing.Samples
         // "Settings"
         public void Consume(Message3 weirdName, IEmailService service)
         {
+        }
 
+        public interface IEvent
+        {
+            string CustomerId { get; }
+            Guid Id { get; }
         }
     }
     // ENDSAMPLE
 
 
-
-
-    public interface IEmailService{}
+    public interface IEmailService
+    {
+    }
 
     public class MyMessage
     {
-
     }
 
     // SAMPLE: simplest-possible-handler
@@ -91,6 +82,7 @@ namespace Jasper.Testing.Samples
                 return Task.CompletedTask;
             }
         }
+
         // ENDSAMPLE
     }
 
@@ -110,6 +102,7 @@ namespace Jasper.Testing.Samples
                 return Task.CompletedTask;
             }
         }
+
         // ENDSAMPLE
     }
 
@@ -148,6 +141,7 @@ namespace Jasper.Testing.Samples
                 return session.SaveChangesAsync();
             }
         }
+
         // ENDSAMPLE
     }
 
@@ -178,5 +172,6 @@ namespace Jasper.Testing.Samples
             Handlers.DisableConventionalDiscovery();
         }
     }
+
     // ENDSAMPLE
 }

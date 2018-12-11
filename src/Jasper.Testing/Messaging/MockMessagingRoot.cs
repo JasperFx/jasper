@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging;
-using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
@@ -10,9 +9,9 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
-using Lamar.Util;
+using Lamar;
+using LamarCompiler.Util;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
@@ -20,30 +19,28 @@ namespace Jasper.Testing.Messaging
 {
     public class MockMessagingRoot : IMessagingRoot
     {
+        private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
         public IMessageRouter Router { get; } = Substitute.For<IMessageRouter>();
         public IWorkerQueue Workers { get; } = Substitute.For<IWorkerQueue>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger Logger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
-        public MessagingSettings Settings { get; } = new MessagingSettings();
+        public JasperOptions Settings { get; } = new JasperOptions();
         public IDurableMessagingFactory Factory { get; } = Substitute.For<IDurableMessagingFactory>();
 
-        public ITransport[] Transports { get; } = new ITransport[]{Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
+        public ITransport[] Transports { get; } =
+            {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
 
-        private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
         public ListeningStatus ListeningStatus
         {
             get => _listeningStatus;
-            set {
-
+            set
+            {
                 _listeningStatus = value;
 
 
-                foreach (var transport in Transports)
-                {
-                    transport.ListeningStatus = value;
-                }
+                foreach (var transport in Transports) transport.ListeningStatus = value;
             }
         }
 
@@ -54,15 +51,13 @@ namespace Jasper.Testing.Messaging
             return new MessageContext(this);
         }
 
-        public Task Activate(LocalWorkerSender localWorker, JasperRuntime runtime,
-            JasperGenerationRules generation, PerfTimer timer)
+        public void Activate(LocalWorkerSender localWorker,
+            JasperGenerationRules generation, IContainer container)
         {
-            return Task.CompletedTask;
         }
 
         public void ApplyMessageTypeSpecificRules(Envelope envelope)
         {
-
         }
 
         public virtual bool ShouldBeDurable(Type messageType)

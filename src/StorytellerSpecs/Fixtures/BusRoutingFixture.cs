@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime.Routing;
-using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -131,7 +129,6 @@ namespace StorytellerSpecs.Fixtures
             _runtime?.Dispose();
             _runtime = null;
         }
-
     }
 
     internal class FakeWriter : IMessageSerializer

@@ -10,12 +10,10 @@ namespace Jasper.Testing.Samples.CascadingMessages
 {
     public class MyMessage
     {
-
     }
 
     public class MyResponse
     {
-
     }
 
 
@@ -65,13 +63,21 @@ namespace Jasper.Testing.Samples.CascadingMessages
     }
     // ENDSAMPLE
 
-    public class GoNorth {}
+    public class GoNorth
+    {
+    }
 
-    public class GoSouth {}
+    public class GoSouth
+    {
+    }
 
-    public class GoWest {}
+    public class GoWest
+    {
+    }
 
-    public class GoEast {}
+    public class GoEast
+    {
+    }
 
     public class DirectionRequest
     {
@@ -212,6 +218,6 @@ namespace Jasper.Testing.Samples.CascadingMessages
             };
         }
     }
-    // ENDSAMPLE
 
+    // ENDSAMPLE
 }

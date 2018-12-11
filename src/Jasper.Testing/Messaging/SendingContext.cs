@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Http;
 using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging.Lightweight;
-using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
     public abstract class SendingContext : IDisposable
     {
-        private readonly JasperRegistry senderRegistry = new JasperRegistry();
         private readonly JasperRegistry receiverRegistry = new JasperRegistry();
-        protected JasperRuntime theSender;
+        private readonly JasperRegistry senderRegistry = new JasperRegistry();
         protected JasperRuntime theReceiver;
+        protected JasperRuntime theSender;
         protected MessageTracker theTracker;
 
         public SendingContext()
@@ -23,7 +21,13 @@ namespace Jasper.Testing.Messaging
                 .IncludeType<MessageConsumer>();
 
             receiverRegistry.Services.For<MessageTracker>().Use(theTracker);
+        }
 
+
+        public void Dispose()
+        {
+            theSender?.Dispose();
+            theReceiver?.Dispose();
         }
 
         protected async Task StartTheSender(Action<JasperRegistry> configure)
@@ -56,13 +60,6 @@ namespace Jasper.Testing.Messaging
         protected void StopTheReceiver()
         {
             theSender?.Dispose();
-        }
-
-
-        public void Dispose()
-        {
-            theSender?.Dispose();
-            theReceiver?.Dispose();
         }
     }
 }

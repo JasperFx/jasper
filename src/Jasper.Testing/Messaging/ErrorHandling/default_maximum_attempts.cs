@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Messaging.Model;
 using Jasper.Testing.Messaging.Bootstrapping;
-using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -29,14 +28,12 @@ namespace Jasper.Testing.Messaging.ErrorHandling
 
     public class SimpleMessage
     {
-
     }
 
     public class NotOverriddenHandler
     {
         public void Handle(SimpleMessage message)
         {
-
         }
     }
 
@@ -49,7 +46,6 @@ namespace Jasper.Testing.Messaging.ErrorHandling
 
         public void Handle(Message4 message)
         {
-
         }
     }
 }

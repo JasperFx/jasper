@@ -11,11 +11,12 @@ using Jasper.Util;
 using NJsonSchema;
 using Oakton;
 
-[assembly:JasperModule]
+[assembly: JasperModule]
 
 namespace Jasper.JsonCommands
 {
-    [Description("Exports Json schema documents for all handled message types in the current application", Name = "export-json-schema")]
+    [Description("Exports Json schema documents for all handled message types in the current application", Name =
+        "export-json-schema")]
     public class ExportJsonSchemaCommand : OaktonAsyncCommand<ExportJsonSchemaInput>
     {
         public override async Task<bool> Execute(ExportJsonSchemaInput input)
@@ -37,7 +38,8 @@ namespace Jasper.JsonCommands
             using (var runtime = input.BuildRuntime())
             {
                 var handlers = runtime.Get<HandlerGraph>();
-                var messageTypes = handlers.Chains.Select(x => x.MessageType).Where(x => x.Assembly != typeof(MessageRoute).Assembly);
+                var messageTypes = handlers.Chains.Select(x => x.MessageType)
+                    .Where(x => x.Assembly != typeof(MessageRoute).Assembly);
                 foreach (var messageType in messageTypes)
                 {
                     var filename = $"{messageType.ToMessageTypeName()}.json";

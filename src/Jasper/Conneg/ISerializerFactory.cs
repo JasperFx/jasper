@@ -1,18 +1,17 @@
 ﻿using System;
 using System.IO;
-using Baseline;
 
 namespace Jasper.Conneg
 {
     // SAMPLE: ISerializer
     public interface ISerializerFactory
     {
-        object Deserialize(Stream message);
-
         string ContentType { get; }
+        object Deserialize(Stream message);
 
         IMessageDeserializer ReaderFor(Type messageType);
         IMessageSerializer WriterFor(Type messageType);
     }
+
     // ENDSAMPLE
 }

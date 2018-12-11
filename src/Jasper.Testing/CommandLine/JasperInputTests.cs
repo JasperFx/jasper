@@ -49,7 +49,6 @@ namespace Jasper.Testing.CommandLine
                 var providers = runtime.Container.GetAllInstances<ILoggerProvider>();
                 providers.OfType<ConsoleLoggerProvider>().Any().ShouldBeTrue();
                 providers.OfType<DebugLoggerProvider>().Any().ShouldBeTrue();
-
             }
         }
     }

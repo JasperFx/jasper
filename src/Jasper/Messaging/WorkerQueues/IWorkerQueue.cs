@@ -6,10 +6,10 @@ namespace Jasper.Messaging.WorkerQueues
 {
     public interface IWorkerQueue
     {
-        Task Enqueue(Envelope envelope);
         int QueuedCount { get; }
-        void AddQueue(string queueName, int parallelization);
 
         IScheduledJobProcessor ScheduledJobs { get; }
+        Task Enqueue(Envelope envelope);
+        void AddQueue(string queueName, int parallelization);
     }
 }

@@ -14,24 +14,21 @@ namespace Jasper.Persistence.Marten
 {
     public class MartenEnvelopeTransaction : IEnvelopeTransaction
     {
-        private readonly IDocumentSession _session;
         private readonly int _nodeId;
+        private readonly IDocumentSession _session;
         private readonly EnvelopeTables _tables;
 
         public MartenEnvelopeTransaction(IDocumentSession session, IMessageContext bus)
         {
             if (!(bus.Advanced.Factory is MartenBackedDurableMessagingFactory))
-            {
-                throw new InvalidOperationException("This Jasper application is not using Marten as the backing message persistence");
-            }
+                throw new InvalidOperationException(
+                    "This Jasper application is not using Marten as the backing message persistence");
 
             var martenPersistence = bus.Advanced.Factory.As<MartenBackedDurableMessagingFactory>();
 
             _nodeId = martenPersistence.Settings.UniqueNodeId;
             _tables = martenPersistence.Tables;
             _session = session;
-
-
         }
 
         public Task Persist(Envelope envelope)
@@ -42,10 +39,7 @@ namespace Jasper.Persistence.Marten
 
         public Task Persist(Envelope[] envelopes)
         {
-            foreach (var envelope in envelopes)
-            {
-                _session.StoreOutgoing(_tables, envelope, _nodeId);
-            }
+            foreach (var envelope in envelopes) _session.StoreOutgoing(_tables, envelope, _nodeId);
 
             return Task.CompletedTask;
         }

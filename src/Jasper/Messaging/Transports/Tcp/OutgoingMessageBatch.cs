@@ -13,10 +13,7 @@ namespace Jasper.Messaging.Transports.Tcp
             messagesList.AddRange(messages);
             Messages = messagesList;
 
-            foreach (var message in messages)
-            {
-                message.Destination = destination;
-            }
+            foreach (var message in messages) message.Destination = destination;
 
             Data = Envelope.Serialize(Messages);
         }
@@ -26,6 +23,8 @@ namespace Jasper.Messaging.Transports.Tcp
         public Uri Destination { get; }
 
         public IList<Envelope> Messages { get; }
+
+        public bool IsPing { get; private set; }
 
         public override string ToString()
         {
@@ -37,12 +36,10 @@ namespace Jasper.Messaging.Transports.Tcp
             var envelope = Envelope.ForPing();
             envelope.Destination = destination;
 
-            return new OutgoingMessageBatch(destination, new[]{envelope})
+            return new OutgoingMessageBatch(destination, new[] {envelope})
             {
                 IsPing = true
             };
         }
-
-        public bool IsPing { get; private set; }
     }
 }

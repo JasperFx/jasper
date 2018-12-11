@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
@@ -21,24 +20,26 @@ namespace Jasper.RabbitMQ
 
     public class RabbitMqAgent : IDisposable
     {
+        private readonly object _locker = new object();
         private IConnection _connection;
 
-        public Uri Uri { get; }
-
-        public RabbitMqAgent(string uriString) : this (uriString.ToUri())
+        public RabbitMqAgent(string uriString) : this(uriString.ToUri())
         {
         }
 
         public RabbitMqAgent(Uri uri)
         {
-            if (uri.Scheme != "rabbitmq") throw new ArgumentOutOfRangeException(nameof(uri), "The protocol must be 'rabbitmq'");
+            if (uri.Scheme != "rabbitmq")
+                throw new ArgumentOutOfRangeException(nameof(uri), "The protocol must be 'rabbitmq'");
             Uri = uri;
 
             ConnectionFactory.Port = uri.IsDefaultPort ? 5672 : uri.Port;
 
 
             var segments = uri.Segments.Where(x => x != "/").Select(x => x.TrimEnd('/')).ToArray();
-            if (!segments.Any()) throw new ArgumentOutOfRangeException(nameof(uri), "Unable to determine the routing key / queue for the Uri " + uri);
+            if (!segments.Any())
+                throw new ArgumentOutOfRangeException(nameof(uri),
+                    "Unable to determine the routing key / queue for the Uri " + uri);
 
             if (segments[0] == TransportConstants.Durable)
             {
@@ -46,7 +47,9 @@ namespace Jasper.RabbitMQ
                 segments = segments.Skip(1).ToArray();
             }
 
-            if (!segments.Any()) throw new ArgumentOutOfRangeException(nameof(uri), "Unable to determine the routing key / queue for the Uri " + uri);
+            if (!segments.Any())
+                throw new ArgumentOutOfRangeException(nameof(uri),
+                    "Unable to determine the routing key / queue for the Uri " + uri);
 
 
             if (Enum.TryParse<ExchangeType>(segments[0], true, out var exchangeType))
@@ -55,7 +58,9 @@ namespace Jasper.RabbitMQ
                 segments = segments.Skip(1).ToArray();
             }
 
-            if (!segments.Any()) throw new ArgumentOutOfRangeException(nameof(uri), "Unable to determine the routing key / queue for the Uri " + uri);
+            if (!segments.Any())
+                throw new ArgumentOutOfRangeException(nameof(uri),
+                    "Unable to determine the routing key / queue for the Uri " + uri);
 
 
             if (segments.Length > 1)
@@ -67,13 +72,30 @@ namespace Jasper.RabbitMQ
             {
                 QueueName = segments.Single();
             }
-
-
-
         }
 
+        public Uri Uri { get; }
+
         public AgentState State { get; private set; } = AgentState.Disconnected;
-        private readonly object _locker = new object();
+
+        public IModel Channel { get; private set; }
+
+        public bool IsDurable { get; }
+        public string ExchangeName { get; } = string.Empty;
+        public ExchangeType ExchangeType { get; } = ExchangeType.Direct;
+        public string QueueName { get; }
+
+        public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
+
+        public IEnvelopeMapper EnvelopeMapping { get; set; } = new DefaultEnvelopeMapper();
+
+        public Func<IConnectionFactory, IConnection> ConnectionActivator { get; set; } = f => f.CreateConnection();
+
+
+        public void Dispose()
+        {
+            Stop();
+        }
 
         public void Start()
         {
@@ -97,12 +119,12 @@ namespace Jasper.RabbitMQ
             if (ExchangeName.IsNotEmpty())
             {
                 channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), IsDurable);
-                channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
+                channel.QueueDeclare(QueueName, IsDurable, autoDelete: false, exclusive: false);
                 channel.QueueBind(QueueName, ExchangeName, "");
             }
             else
             {
-                channel.QueueDeclare(QueueName, durable: IsDurable, autoDelete: false, exclusive: false);
+                channel.QueueDeclare(QueueName, IsDurable, autoDelete: false, exclusive: false);
             }
 
             Channel = channel;
@@ -115,11 +137,7 @@ namespace Jasper.RabbitMQ
                 if (State == AgentState.Disconnected) return;
 
                 teardownConnection();
-
-
             }
-
-
         }
 
         private void teardownConnection()
@@ -135,33 +153,13 @@ namespace Jasper.RabbitMQ
             State = AgentState.Disconnected;
         }
 
-        public IModel Channel { get; private set; }
-
-        public bool IsDurable { get; }
-        public string ExchangeName { get; } = string.Empty;
-        public ExchangeType ExchangeType { get; private set; } = ExchangeType.Direct;
-        public string QueueName { get; }
-
-        public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
-
-        public IEnvelopeMapper EnvelopeMapping { get; set; } = new DefaultEnvelopeMapper();
-
-        public Func<IConnectionFactory, IConnection> ConnectionActivator { get; set; } = f => f.CreateConnection();
-
-
-
-        public void Dispose()
-        {
-            Stop();
-        }
-
         public ISender CreateSender(ITransportLogger logger, CancellationToken cancellation)
         {
             // TODO -- will need to create a reply uri & listener here
             return new RabbitMqSender(logger, this, cancellation);
         }
 
-        public IListeningAgent CreateListeningAgent(Uri uri, MessagingSettings settings, ITransportLogger logger)
+        public IListeningAgent CreateListeningAgent(Uri uri, JasperOptions settings, ITransportLogger logger)
         {
             return new RabbitMqListeningAgent(uri, logger, EnvelopeMapping, this);
         }
@@ -190,7 +188,6 @@ namespace Jasper.RabbitMQ
                     throw;
                 }
             }
-
 
 
             return Task.CompletedTask;

@@ -1,5 +1,5 @@
 ﻿using System;
-using Lamar.Codegen.Variables;
+using LamarCompiler.Model;
 using Marten;
 
 namespace Jasper.Persistence.Marten.Codegen

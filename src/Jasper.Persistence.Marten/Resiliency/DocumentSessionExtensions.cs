@@ -10,7 +10,6 @@ namespace Jasper.Persistence.Marten.Resiliency
 {
     public static class DocumentSessionExtensions
     {
-
         public static Task GetGlobalTxLock(this NpgsqlConnection conn, int lockId)
         {
             return conn.CreateCommand("SELECT pg_advisory_xact_lock(:id);").With("id", lockId, NpgsqlDbType.Integer)
@@ -19,26 +18,11 @@ namespace Jasper.Persistence.Marten.Resiliency
 
         public static async Task<bool> TryGetGlobalTxLock(this NpgsqlConnection conn, int lockId)
         {
-            var c = await conn.CreateCommand("SELECT pg_try_advisory_xact_lock(:id);").With("id", lockId, NpgsqlDbType.Integer)
+            var c = await conn.CreateCommand("SELECT pg_try_advisory_xact_lock(:id);")
+                .With("id", lockId, NpgsqlDbType.Integer)
                 .ExecuteScalarAsync();
 
-            return (bool)c;
-        }
-
-        public class AdvisoryLock
-        {
-            public bool Granted { get; }
-            public string Grant { get; }
-            public DateTime? Start { get; }
-            public long UniqueId { get; }
-
-            public AdvisoryLock(bool granted, string grant, DateTime? start, long uniqueId)
-            {
-                Granted = granted;
-                Grant = grant;
-                Start = start;
-                UniqueId = uniqueId;
-            }
+            return (bool) c;
         }
 
         public static async Task<IList<AdvisoryLock>> GetOpenLocks(this NpgsqlConnection conn)
@@ -83,10 +67,11 @@ select pg_locks.granted,
 
         public static async Task<bool> TryGetGlobalLock(this NpgsqlConnection conn, int lockId)
         {
-            var c = await conn.CreateCommand("SELECT pg_try_advisory_lock(:id);").With("id", lockId, NpgsqlDbType.Integer)
+            var c = await conn.CreateCommand("SELECT pg_try_advisory_lock(:id);")
+                .With("id", lockId, NpgsqlDbType.Integer)
                 .ExecuteScalarAsync();
 
-            return (bool)c;
+            return (bool) c;
         }
 
         public static Task ReleaseGlobalLock(this NpgsqlConnection conn, int lockId)
@@ -113,6 +98,22 @@ select pg_locks.granted,
         public static Task ReleaseGlobalLock(this IDocumentSession session, int lockId)
         {
             return session.Connection.ReleaseGlobalLock(lockId);
+        }
+
+        public class AdvisoryLock
+        {
+            public AdvisoryLock(bool granted, string grant, DateTime? start, long uniqueId)
+            {
+                Granted = granted;
+                Grant = grant;
+                Start = start;
+                UniqueId = uniqueId;
+            }
+
+            public bool Granted { get; }
+            public string Grant { get; }
+            public DateTime? Start { get; }
+            public long UniqueId { get; }
         }
     }
 }

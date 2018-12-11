@@ -1,3 +1,3 @@
 ﻿using Jasper;
 
-[assembly:JasperFeature]
+[assembly: JasperFeature]

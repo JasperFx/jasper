@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using Baseline.Expressions;
-using StoryTeller.Model;
 using StoryTeller.Results;
 using StoryTeller.Util;
 
@@ -16,38 +14,6 @@ namespace Jasper.Storyteller.Logging
                 .Select(x => new EnvelopeHistory(x.Key, x))
                 .ToArray();
         }
-
-        private HtmlTag toMessageTable()
-        {
-            var table = new TableTag();
-            table.AddClass("table").AddClass("table-striped");
-
-            table.AddHeaderRow(row =>
-            {
-                row.Header("Time").Attr("title",
-                    "This is the time in milliseconds since the specification started running that this message was first logged");
-                row.Header("Correlation Id");
-                row.Header("Message Type");
-                row.Header("Details");
-            });
-
-            foreach (var history in _envelopes)
-            {
-                table.AddBodyRow(row =>
-                {
-                    row.Cell(history.Time.ToString()).Style("text-align", "right");
-                    row.Cell(history.CorrelationId.ToString());
-                    row.Cell(history.MessageType);
-                    row.Add("td/a").Text("details").Attr("href", "#message-" + history.CorrelationId);
-                });
-            }
-
-
-
-
-            return table;
-        }
-
 
 
         public string ToHtml()
@@ -73,15 +39,38 @@ namespace Jasper.Storyteller.Logging
             }
 
 
-
-
-
-
             return div.ToString();
         }
 
         public string Title { get; } = "Messages";
         public string ShortTitle { get; } = "Messages";
         public int Count => _envelopes.Length;
+
+        private HtmlTag toMessageTable()
+        {
+            var table = new TableTag();
+            table.AddClass("table").AddClass("table-striped");
+
+            table.AddHeaderRow(row =>
+            {
+                row.Header("Time").Attr("title",
+                    "This is the time in milliseconds since the specification started running that this message was first logged");
+                row.Header("Correlation Id");
+                row.Header("Message Type");
+                row.Header("Details");
+            });
+
+            foreach (var history in _envelopes)
+                table.AddBodyRow(row =>
+                {
+                    row.Cell(history.Time.ToString()).Style("text-align", "right");
+                    row.Cell(history.CorrelationId.ToString());
+                    row.Cell(history.MessageType);
+                    row.Add("td/a").Text("details").Attr("href", "#message-" + history.CorrelationId);
+                });
+
+
+            return table;
+        }
     }
 }

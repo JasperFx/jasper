@@ -1,3 +1,3 @@
 ﻿using Lamar;
 
-[assembly:IgnoreAssembly]
+[assembly: IgnoreAssembly]

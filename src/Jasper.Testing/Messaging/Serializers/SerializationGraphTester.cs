@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Testing.Messaging.Runtime;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
@@ -20,7 +19,7 @@ namespace Jasper.Testing.Messaging.Serializers
                 TypeNameHandling = TypeNameHandling.All
             });
 
-            var envelope = new Envelope()
+            var envelope = new Envelope
             {
                 Data = Encoding.UTF8.GetBytes(json),
                 MessageType = null,
@@ -41,7 +40,7 @@ namespace Jasper.Testing.Messaging.Serializers
                 TypeNameHandling = TypeNameHandling.All
             });
 
-            var envelope = new Envelope()
+            var envelope = new Envelope
             {
                 Data = Encoding.UTF8.GetBytes(json),
                 MessageType = null,

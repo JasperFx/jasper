@@ -1,5 +1,4 @@
 ﻿using Jasper.Messaging.Tracking;
-using Jasper.Testing.Messaging;
 using Lamar;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,34 +33,25 @@ namespace Jasper.Testing.Samples
             Settings.Configure(context =>
             {
                 if (context.HostingEnvironment.IsDevelopment())
-                {
-                    // If in development, I want to replace some kind
-                    // of problematic 3rd party service wrapper with
-                    // a nicely behaved stub
                     Services.AddSingleton<IThirdPartyService, StubThirdPartyService>();
-                }
             });
 
             // ASP.Net Core idiomatic way
             Hosting.ConfigureServices((context, services) =>
             {
                 if (context.HostingEnvironment.IsDevelopment())
-                {
-                    // If in development, I want to replace some kind
-                    // of problematic 3rd party service wrapper with
-                    // a nicely behaved stub
                     services.AddSingleton<IThirdPartyService, StubThirdPartyService>();
-                }
             });
         }
     }
     // ENDSAMPLE
 
-    public interface IThirdPartyService{}
+    public interface IThirdPartyService
+    {
+    }
 
     public class StubThirdPartyService : IThirdPartyService
     {
-
     }
 
     public class GetAtTheContainer
@@ -77,8 +67,9 @@ namespace Jasper.Testing.Samples
             // Or if you are using ASP.Net Core bootstrapping,
             // the IWebHost.Services is actually the root
             // Lamar container
-            var container2 = (IContainer)host.Services;
+            var container2 = (IContainer) host.Services;
         }
+
         // ENDSAMPLE
     }
 }

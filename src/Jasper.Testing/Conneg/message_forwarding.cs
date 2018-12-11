@@ -1,13 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Conneg;
-using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Tracking;
-using Jasper.Testing.Messaging;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -17,7 +13,6 @@ namespace Jasper.Testing.Conneg
 {
     public class message_forwarding
     {
-
         [Fact]
         public async Task send_message_via_forwarding()
         {
@@ -53,9 +48,8 @@ namespace Jasper.Testing.Conneg
             }
             finally
             {
-                await runtime.Shutdown();
+                runtime.Dispose();
             }
-
         }
     }
 
@@ -67,7 +61,7 @@ namespace Jasper.Testing.Conneg
 
         public NewMessage Transform()
         {
-            return new NewMessage{FullName = $"{FirstName} {LastName}"};
+            return new NewMessage {FullName = $"{FirstName} {LastName}"};
         }
     }
 

@@ -3,17 +3,15 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
-using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Tcp
 {
-    [CacheResolver]
     public class TcpTransport : TransportBase
     {
-        public TcpTransport(IDurableMessagingFactory factory, ITransportLogger logger, MessagingSettings settings) : base("tcp", factory, logger, settings)
+        public TcpTransport(IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions settings) :
+            base("tcp", factory, logger, settings)
         {
         }
 
@@ -33,7 +31,7 @@ namespace Jasper.Messaging.Transports.Tcp
         }
 
 
-        protected override IListeningAgent buildListeningAgent(Uri uri, MessagingSettings settings)
+        protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings)
         {
             // check the uri for an ip address to bind to
             if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)
@@ -43,7 +41,6 @@ namespace Jasper.Messaging.Transports.Tcp
 
             var ipaddr = IPAddress.Parse(uri.Host);
             return new SocketListeningAgent(ipaddr, uri.Port, settings.Cancellation);
-
         }
 
         private static void assertNoDuplicatePorts(Uri[] incoming)

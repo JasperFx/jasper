@@ -6,15 +6,19 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
-using Jasper.Messaging.WorkerQueues;
-using Lamar.Codegen;
-using Lamar.Util;
+using LamarCompiler;
 
 namespace Jasper.Messaging
 {
     public class MessagingConfiguration
     {
+        public MessagingConfiguration()
+        {
+            Handling = new HandlerConfiguration(Graph);
+
+            Handling.GlobalPolicy<SagaFramePolicy>();
+        }
+
         public HandlerConfiguration Handling { get; }
 
 
@@ -23,24 +27,11 @@ namespace Jasper.Messaging
         public LocalWorkerSender LocalWorker { get; } = new LocalWorkerSender();
 
 
-
-        public HandlerGraph Graph { get;  } = new HandlerGraph();
-
-
-
-
-
-
-        public MessagingConfiguration()
-        {
-            Handling = new HandlerConfiguration(Graph);
-
-            Handling.GlobalPolicy<SagaFramePolicy>();
-        }
+        public HandlerGraph Graph { get; } = new HandlerGraph();
 
         public void Describe(JasperRuntime runtime, TextWriter writer)
         {
-            var settings = runtime.Get<MessagingSettings>();
+            var settings = runtime.Get<JasperOptions>();
 
             var transports = runtime.Get<ITransport[]>()
                 .Where(x => settings.StateFor(x.Protocol) == TransportState.Enabled);
@@ -71,24 +62,19 @@ namespace Jasper.Messaging
             writer.WriteLine();
         }
 
-        internal Task CompileHandlers(JasperRegistry registry, PerfTimer timer)
+        internal void StartCompiling(JasperRegistry registry)
         {
-            return Handling.Source.FindCalls(registry).ContinueWith(t =>
+            Compiling = Handling.Source.FindCalls(registry).ContinueWith(t =>
             {
-                timer.Record("Compile Handlers", () =>
-                {
-                    var calls = t.Result;
+                var calls = t.Result;
 
-                    if (calls != null && calls.Any()) Graph.AddRange(calls);
+                if (calls != null && calls.Any()) Graph.AddRange(calls);
 
-                    Graph.Group();
-                    Handling.ApplyPolicies(Graph, registry.CodeGeneration);
-
-                });
-
-
+                Graph.Group();
+                Handling.ApplyPolicies(Graph, registry.CodeGeneration);
             });
         }
 
+        internal Task Compiling { get; private set; }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Jasper;
 using Jasper.Configuration;
-using Jasper.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +42,7 @@ namespace Jasper.Testing.Samples
     {
         public int Threshold { get; set; } = 10;
 
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptionsBuilder registry)
         {
             // apply alterations
         }
@@ -97,13 +96,7 @@ namespace Bootstrapping.Configuration
 {
     public class MyJasperApp : JasperRegistry
     {
-        public MyJasperApp()
-        {
-            // Set up the application configuration
-            Configuration
-                .AddEnvironmentVariables()
-                .AddJsonFile("appsettings.json");
-        }
+
     }
 }
 
@@ -115,8 +108,6 @@ namespace Bootstrapping.Configuration2
         public MyJasperApp()
         {
             ServiceName = "My Jasper App";
-
-            Configuration.AddEnvironmentVariables();
 
             Transports.ListenForMessagesFrom("durable://localhost:2111/incoming");
         }

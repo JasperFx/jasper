@@ -1,4 +1,4 @@
-﻿using Lamar.Codegen.Variables;
+﻿using LamarCompiler.Model;
 
 namespace Jasper.Messaging.Model
 {
@@ -7,9 +7,7 @@ namespace Jasper.Messaging.Model
         public static void MarkAsNotCascading(this Variable variable)
         {
             if (!variable.Properties.ContainsKey(HandlerChain.NotCascading))
-            {
                 variable.Properties.Add(HandlerChain.NotCascading, true);
-            }
         }
 
         public static bool IsNotCascadingMessage(this Variable variable)

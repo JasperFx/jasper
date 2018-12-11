@@ -10,6 +10,25 @@ namespace Jasper.Testing.Util
     public class EnumerableExtensionsTests
     {
         [Fact]
+        public void should_not_throw_on_cycle()
+        {
+            var dependencies = new Dictionary<int, int[]>
+            {
+                {4, new[] {3}},
+                {1, new[] {9}},
+                {3, new[] {2}},
+                {5, new[] {4}},
+                {8, new[] {7}},
+                {6, new[] {5}},
+                {9, new[] {8}},
+                {7, new[] {6}},
+                {2, new[] {1}}
+            };
+
+            dependencies.Keys.TopologicalSort(x => dependencies[x], false);
+        }
+
+        [Fact]
         public void should_sort()
         {
             var dependencies = new Dictionary<int, int[]>
@@ -46,30 +65,7 @@ namespace Jasper.Testing.Util
             };
 
 
-
-            Exception<Exception>.ShouldBeThrownBy(() =>
-            {
-                dependencies.Keys.TopologicalSort(x => dependencies[x]);
-            });
-        }
-
-        [Fact]
-        public void should_not_throw_on_cycle()
-        {
-            var dependencies = new Dictionary<int, int[]>
-            {
-                {4, new[] {3}},
-                {1, new[] {9}},
-                {3, new[] {2}},
-                {5, new[] {4}},
-                {8, new[] {7}},
-                {6, new[] {5}},
-                {9, new[] {8}},
-                {7, new[] {6}},
-                {2, new[] {1}}
-            };
-
-            dependencies.Keys.TopologicalSort(x => dependencies[x], false);
+            Exception<Exception>.ShouldBeThrownBy(() => { dependencies.Keys.TopologicalSort(x => dependencies[x]); });
         }
     }
 }

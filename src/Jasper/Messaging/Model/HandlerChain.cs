@@ -3,24 +3,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
-using Jasper.Util;
 using Lamar;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
+using GenericEnumerableExtensions = Baseline.GenericEnumerableExtensions;
+using TypeExtensions = Baseline.TypeExtensions;
 
 namespace Jasper.Messaging.Model
 {
     public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasErrorHandlers
     {
         public const string NotCascading = "NotCascading";
+
+        public readonly List<MethodCall> Handlers = new List<MethodCall>();
+        private GeneratedType _generatedType;
+
+        private bool hasConfiguredFrames;
+
+        public HandlerChain(Type messageType)
+        {
+            MessageType = messageType ?? throw new ArgumentNullException(nameof(messageType));
+
+            TypeName = messageType.FullName.Replace(".", "_").Replace("+", "_");
+        }
+
+
+        private HandlerChain(MethodCall call) : this(call.Method.MessageType())
+        {
+            Handlers.Add(call);
+        }
+
+        public HandlerChain(IGrouping<Type, HandlerCall> grouping) : this(grouping.Key)
+        {
+            Handlers.AddRange(grouping);
+        }
+
+        public Type MessageType { get; }
+
+        public string TypeName { get; }
+
+        public MessageHandler Handler { get; set; }
+
+        public string SourceCode => _generatedType.SourceCode;
+        public int MaximumAttempts { get; set; } = 1;
+        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
 
         public static HandlerChain For<T>(Expression<Action<T>> expression)
         {
@@ -37,28 +69,13 @@ namespace Jasper.Messaging.Model
                 BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
 
             if (method == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(methodName), $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
-            }
+                throw new ArgumentOutOfRangeException(nameof(methodName),
+                    $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
 
             var call = new MethodCall(handlerType, method);
 
             return new HandlerChain(call);
         }
-
-        public Type MessageType { get; }
-
-        public HandlerChain(Type messageType)
-        {
-            MessageType = messageType ?? throw new ArgumentNullException(nameof(messageType));
-
-            TypeName = messageType.FullName.Replace(".", "_").Replace("+", "_");
-        }
-
-        public string TypeName { get; }
-
-        public readonly List<MethodCall> Handlers = new List<MethodCall>();
-        private GeneratedType _generatedType;
 
         public void AssembleType(GeneratedAssembly generatedAssembly, JasperGenerationRules rules)
         {
@@ -67,29 +84,26 @@ namespace Jasper.Messaging.Model
             handleMethod.Sources.Add(new MessageHandlerVariableSource(MessageType));
             handleMethod.Frames.AddRange(DetermineFrames(rules));
 
-            handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope), $"context.{nameof(IMessageContext.Envelope)}"));
-            handleMethod.DerivedVariables.Add(new Variable(typeof(IAdvancedMessagingActions), $"context.{nameof(IMessageContext.Advanced)}"));
+            handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
+                $"context.{nameof(IMessageContext.Envelope)}"));
+            handleMethod.DerivedVariables.Add(new Variable(typeof(IAdvancedMessagingActions),
+                $"context.{nameof(IMessageContext.Advanced)}"));
         }
 
         public virtual MessageHandler CreateHandler(IContainer container)
         {
-            var handler = container.QuickBuild(_generatedType.CompiledType).As<MessageHandler>();
+            var handler = TypeExtensions.As<MessageHandler>(container.QuickBuild(_generatedType.CompiledType));
             handler.Chain = this;
             Handler = handler;
 
             return handler;
         }
 
-        public MessageHandler Handler { get; set; }
-
-        private bool hasConfiguredFrames = false;
-
         public List<Frame> DetermineFrames(JasperGenerationRules rules)
         {
             if (!Handlers.Any())
-            {
-                throw new InvalidOperationException("No method handlers configured for message type " + MessageType.FullName);
-            }
+                throw new InvalidOperationException("No method handlers configured for message type " +
+                                                    MessageType.FullName);
 
             if (!hasConfiguredFrames)
             {
@@ -97,15 +111,12 @@ namespace Jasper.Messaging.Model
 
                 applyAttributesAndConfigureMethods(rules);
 
-                foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyHandlerChainAttribute)).OfType<ModifyHandlerChainAttribute>())
-                {
-                    attribute.Modify(this, rules);
-                }
+                foreach (var attribute in MessageType.GetTypeInfo()
+                    .GetCustomAttributes(typeof(ModifyHandlerChainAttribute))
+                    .OfType<ModifyHandlerChainAttribute>()) attribute.Modify(this, rules);
 
-                foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute)).OfType<ModifyChainAttribute>())
-                {
-                    attribute.Modify(this, rules);
-                }
+                foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute))
+                    .OfType<ModifyChainAttribute>()) attribute.Modify(this, rules);
             }
 
             var cascadingHandlers = determineCascadingMessages().ToArray();
@@ -118,21 +129,17 @@ namespace Jasper.Messaging.Model
             var i = 0;
 
             foreach (var handler in Handlers)
+            foreach (var create in handler.Creates)
             {
-                foreach (var create in handler.Creates)
-                {
-                    if (create.IsNotCascadingMessage()) continue;
+                if (create.IsNotCascadingMessage()) continue;
 
-                    // FUGLY. Jeremy is very ashamed of this code
-                    if (create.VariableType == typeof(object) || create.VariableType == typeof(object[]) ||
-                        create.VariableType == typeof(IEnumerable<object>))
-                    {
-                        create.OverrideName("outgoing" + ++i);
-                    }
+                // FUGLY. Jeremy is very ashamed of this code
+                if (create.VariableType == typeof(object) || create.VariableType == typeof(object[]) ||
+                    create.VariableType == typeof(IEnumerable<object>))
+                    create.OverrideName("outgoing" + ++i);
 
 
-                    yield return new CaptureCascadingMessages(create);
-                }
+                yield return new CaptureCascadingMessages(create);
             }
         }
 
@@ -140,21 +147,6 @@ namespace Jasper.Messaging.Model
         {
             return Handlers.ToArray();
         }
-
-
-        private HandlerChain(MethodCall @call) : this(@call.Method.MessageType())
-        {
-            Handlers.Add(@call);
-        }
-
-        public HandlerChain(IGrouping<Type, HandlerCall> grouping) : this(grouping.Key)
-        {
-            Handlers.AddRange(grouping);
-        }
-
-        public string SourceCode => _generatedType.SourceCode;
-        public int MaximumAttempts { get; set; } = 1;
-        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
 
 
         public void AddAbstractedHandler(HandlerCall call)
@@ -166,11 +158,8 @@ namespace Jasper.Messaging.Model
 
         public override string ToString()
         {
-            return $"{MessageType.NameInCode()} handled by {Handlers.Select(x => $"{x.HandlerType.NameInCode()}.{x.Method.Name}()").Join(", ")}";
+            return
+                $"{MessageType.NameInCode()} handled by {GenericEnumerableExtensions.Join(Handlers.Select(x => $"{x.HandlerType.NameInCode()}.{x.Method.Name}()"), ", ")}";
         }
-
-
-
     }
-
 }

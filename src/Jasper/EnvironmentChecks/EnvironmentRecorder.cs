@@ -5,7 +5,6 @@ using Jasper.Util;
 
 namespace Jasper.EnvironmentChecks
 {
-    [CacheResolver]
     public class EnvironmentRecorder : IEnvironmentRecorder
     {
         private readonly IList<Exception> _exceptions = new List<Exception>();
@@ -25,10 +24,7 @@ namespace Jasper.EnvironmentChecks
 
         public void AssertAllSuccessful()
         {
-            if (_exceptions.Any())
-            {
-                throw new AggregateException(_exceptions);
-            }
+            if (_exceptions.Any()) throw new AggregateException(_exceptions);
         }
     }
 }

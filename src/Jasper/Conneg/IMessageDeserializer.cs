@@ -36,12 +36,12 @@ namespace Jasper.Conneg
             return ReadData(data);
         }
 
-        public abstract T ReadData(byte[] data);
-
         public async Task<T1> ReadFromRequest<T1>(HttpRequest request)
         {
             return (await ReadData(request.Body)).As<T1>();
         }
+
+        public abstract T ReadData(byte[] data);
 
         protected abstract Task<T> ReadData(Stream stream);
     }

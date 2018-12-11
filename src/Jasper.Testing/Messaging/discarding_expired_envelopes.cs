@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Transports;
@@ -18,13 +17,11 @@ namespace Jasper.Testing.Messaging
         {
             var logger = Substitute.For<IMessageLogger>();
 
-            var runtime = await JasperRuntime.ForAsync(x =>
+            using (var runtime = JasperRuntime.For(x =>
             {
                 x.Handlers.DisableConventionalDiscovery();
                 x.Services.AddSingleton(logger);
-            });
-
-            try
+            }))
             {
                 var pipeline = runtime.Get<IHandlerPipeline>();
 
@@ -42,10 +39,7 @@ namespace Jasper.Testing.Messaging
                 envelope.Callback.Received().MarkComplete();
 #pragma warning restore 4014
             }
-            finally
-            {
-                await runtime.Shutdown();
-            }
+
         }
     }
 }

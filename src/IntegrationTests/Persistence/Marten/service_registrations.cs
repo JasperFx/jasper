@@ -2,7 +2,6 @@
 using Jasper;
 using Jasper.Persistence.Marten;
 using Marten;
-using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Persistence.Marten
@@ -29,7 +28,6 @@ namespace IntegrationTests.Persistence.Marten
                 }
             }
         }
-
     }
 
     public class FakeDoc

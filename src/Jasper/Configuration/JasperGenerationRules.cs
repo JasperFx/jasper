@@ -1,28 +1,27 @@
-﻿using Jasper.Messaging.Sagas;
-using Jasper.Persistence;
-using Lamar.Codegen;
+﻿using Jasper.Persistence;
+using LamarCompiler;
 
 namespace Jasper.Configuration
 {
     public class JasperGenerationRules : GenerationRules
     {
-        public static JasperGenerationRules Empty()
+        public JasperGenerationRules(string applicationNamespace) : base(applicationNamespace)
         {
-            return new JasperGenerationRules("Empty");
         }
 
         /// <summary>
-        /// The currently known strategy for persisting saga state
+        ///     The currently known strategy for persisting saga state
         /// </summary>
         public ISagaPersistenceFrameProvider SagaPersistence { get; set; } = new InMemorySagaPersistenceFrameProvider();
 
         /// <summary>
-        /// The currently known strategy for code generating transaction middleware
+        ///     The currently known strategy for code generating transaction middleware
         /// </summary>
         public ITransactionFrameProvider Transactions { get; set; } = new NulloTransactionFrameProvider();
 
-        public JasperGenerationRules(string applicationNamespace) : base(applicationNamespace)
+        public static JasperGenerationRules Empty()
         {
+            return new JasperGenerationRules("Empty");
         }
 
         public class NulloTransactionFrameProvider : ITransactionFrameProvider

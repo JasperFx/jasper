@@ -1,7 +1,5 @@
-﻿using System;
-using IntegrationTests.Persistence.Marten.Persistence.Resiliency;
+﻿using IntegrationTests.Persistence.Marten.Persistence.Resiliency;
 using Jasper;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 using Marten;
 

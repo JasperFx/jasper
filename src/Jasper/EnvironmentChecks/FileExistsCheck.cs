@@ -15,10 +15,7 @@ namespace Jasper.EnvironmentChecks
 
         public void Assert(JasperRuntime runtime)
         {
-            if (!File.Exists(_file))
-            {
-                throw new Exception($"File {_file} cannot be found!");
-            }
+            if (!File.Exists(_file)) throw new Exception($"File {_file} cannot be found!");
         }
 
         public string Description => ToString();
@@ -28,5 +25,6 @@ namespace Jasper.EnvironmentChecks
             return $"File {_file} exists";
         }
     }
+
     // ENDSAMPLE
 }

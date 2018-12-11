@@ -11,9 +11,7 @@ namespace Jasper.RabbitMQ
         {
             var factory = new ConnectionFactory
             {
-                HostName = "SomeServer",
-
-
+                HostName = "SomeServer"
             };
 
             var connection = factory.CreateConnection();
@@ -23,25 +21,21 @@ namespace Jasper.RabbitMQ
 
             channel.QueueDeclare("queueName");
 
-            channel.ExchangeDeclare(exchange:"name", type:"topic", durable:true);
+            channel.ExchangeDeclare("name", "topic", true);
 
-            channel.BasicPublish(exchange:"", routingKey:"queueName", body:new byte[0]);
+            channel.BasicPublish("", "queueName", body: new byte[0]);
 
 
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
-
-
-
-
                 //
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(" [x] Received {0}", message);
             };
 
-            channel.BasicConsume(queue: "queueName", autoAck: true, consumer: consumer);
+            channel.BasicConsume("queueName", true, consumer);
         }
     }
 }

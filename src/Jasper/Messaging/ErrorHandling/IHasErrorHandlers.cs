@@ -24,7 +24,8 @@ namespace Jasper.Messaging.ErrorHandling
         }
 
 
-        internal static IContinuation DetermineContinuation(this IHasErrorHandlers errorHandling, Envelope envelope, Exception ex)
+        internal static IContinuation DetermineContinuation(this IHasErrorHandlers errorHandling, Envelope envelope,
+            Exception ex)
         {
             foreach (var handler in errorHandling.ErrorHandlers)
             {
@@ -35,7 +36,8 @@ namespace Jasper.Messaging.ErrorHandling
             return null;
         }
 
-        public static ContinuationExpression OnException<T>(this IHasErrorHandlers handlers, Func<T, bool> filter = null) where T : Exception
+        public static ContinuationExpression OnException<T>(this IHasErrorHandlers handlers,
+            Func<T, bool> filter = null) where T : Exception
         {
             return new OnExceptionExpression<T>(handlers, filter);
         }
@@ -43,9 +45,7 @@ namespace Jasper.Messaging.ErrorHandling
         public static ContinuationExpression OnException(this IHasErrorHandlers handlers, Type type)
         {
             if (!type.CanBeCastTo<Exception>())
-            {
                 throw new InvalidOperationException($"{type.FullName} is not an Exception type");
-            }
 
             return typeof(OnExceptionExpression<>).CloseAndBuildAs<ContinuationExpression>(handlers, type);
         }
@@ -72,7 +72,6 @@ namespace Jasper.Messaging.ErrorHandling
 
             public OnExceptionExpression(IHasErrorHandlers parent) : this(parent, e => true)
             {
-
             }
 
             public OnExceptionExpression(IHasErrorHandlers parent, Func<T, bool> filter)
@@ -122,8 +121,6 @@ namespace Jasper.Messaging.ErrorHandling
                 return ContinueWith(new TContinuation());
             }
 
-            ContinuationExpression ThenContinueExpression.Then => this;
-
             public ThenContinueExpression RespondWithMessage(Func<Exception, Envelope, object> messageFunc)
             {
                 var handler = new RespondWithMessageHandler<T>(messageFunc);
@@ -132,8 +129,8 @@ namespace Jasper.Messaging.ErrorHandling
 
                 return this;
             }
+
+            ContinuationExpression ThenContinueExpression.Then => this;
         }
-
-
     }
 }

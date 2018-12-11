@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Testing.Messaging.Runtime;
-using Lamar.Codegen.Variables;
+using LamarCompiler.Model;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Bootstrapping
@@ -18,7 +17,6 @@ namespace Jasper.Testing.Messaging.Bootstrapping
             });
 
 
-
             chainFor<Message1>().ShouldHaveHandler<SpecialServiceUsingThing>(x => x.Handle(null, null));
         }
     }
@@ -27,13 +25,13 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     {
         public void Handle(Message1 message, SpecialService service)
         {
-
         }
     }
 
     public class SpecialServiceSource : StaticVariable
     {
-        public SpecialServiceSource() : base(typeof(SpecialService), $"{typeof(SpecialService).FullName}.{nameof(SpecialService.Instance)}")
+        public SpecialServiceSource() : base(typeof(SpecialService),
+            $"{typeof(SpecialService).FullName}.{nameof(SpecialService.Instance)}")
         {
         }
     }

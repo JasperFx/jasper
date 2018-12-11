@@ -70,9 +70,9 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
                 .FirstOrDefault(x => x.Name == PostgresqlEnvelopeStorage.IncomingTableName).Schema;
 
 
-
             return session.Connection
-                .CreateCommand($"select body, status, owner_id, execution_time, attempts from {schema}.{PostgresqlEnvelopeStorage.IncomingTableName}")
+                .CreateCommand(
+                    $"select body, status, owner_id, execution_time, attempts from {schema}.{PostgresqlEnvelopeStorage.IncomingTableName}")
                 .LoadEnvelopes();
         }
 
@@ -90,9 +90,9 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
                 .FirstOrDefault(x => x.Name == PostgresqlEnvelopeStorage.IncomingTableName).Schema;
 
 
-
             return session.Connection
-                .CreateCommand($"select body, '{TransportConstants.Outgoing}', owner_id, now() as execution_time, 0 from {schema}.{PostgresqlEnvelopeStorage.OutgoingTableName}")
+                .CreateCommand(
+                    $"select body, '{TransportConstants.Outgoing}', owner_id, now() as execution_time, 0 from {schema}.{PostgresqlEnvelopeStorage.OutgoingTableName}")
                 .LoadEnvelopes();
         }
 
@@ -102,7 +102,8 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
             session.QueueOperation(operation);
         }
 
-        public static void StoreOutgoing(this IDocumentSession session, EnvelopeTables marker, Envelope envelope, int ownerId)
+        public static void StoreOutgoing(this IDocumentSession session, EnvelopeTables marker, Envelope envelope,
+            int ownerId)
         {
             var operation = new StoreOutgoingEnvelope(marker.Outgoing, envelope, ownerId);
             session.QueueOperation(operation);

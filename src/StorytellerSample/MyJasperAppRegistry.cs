@@ -1,6 +1,4 @@
 ﻿using Jasper;
-using Jasper.Http;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Storyteller;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +20,6 @@ namespace StorytellerSample
     {
         public MyJasperStorytellerHarness()
         {
-
             // Customize the application by adding testing concerns,
             // extra logging, or maybe override service registrations
             // with stubs
@@ -66,7 +63,6 @@ namespace StorytellerSample
 
     public class Increment
     {
-
     }
 
     public class IncrementHandler
@@ -102,6 +98,4 @@ namespace StorytellerSample
         void LoadTestingData();
         void CleanUpTestRunData();
     }
-
-
 }

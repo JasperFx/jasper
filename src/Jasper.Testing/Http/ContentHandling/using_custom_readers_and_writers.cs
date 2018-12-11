@@ -19,7 +19,6 @@ namespace Jasper.Testing.Http.ContentHandling
         [Fact]
         public Task discovers_and_opts_into_the_one_reader_and_writer()
         {
-
             return scenario(_ =>
             {
                 _.Post.Text("Tamba Hali").ToUrl("/special/output");
@@ -31,19 +30,19 @@ namespace Jasper.Testing.Http.ContentHandling
 
     public class CustomReaderWriterEndpoint : IDisposable
     {
+        public void Dispose()
+        {
+            // nothing, just wanna test the codegen
+        }
+
         public SpecialOutput post_special_output(SpecialInput input)
         {
-            return new SpecialOutput{Value = input.Name};
+            return new SpecialOutput {Value = input.Name};
         }
 
         public XmlOutput post_xml_output(XmlInput input)
         {
-            return new XmlOutput(){Value = input.Name};
-        }
-
-        public void Dispose()
-        {
-            // nothing, just wanna test the codegen
+            return new XmlOutput {Value = input.Name};
         }
     }
 
@@ -72,6 +71,7 @@ namespace Jasper.Testing.Http.ContentHandling
         public string MessageType { get; } = typeof(SpecialInput).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(SpecialInput);
         public string ContentType { get; } = "text/special";
+
         public object ReadFromData(byte[] data)
         {
             var text = Encoding.UTF8.GetString(data);
@@ -97,6 +97,7 @@ namespace Jasper.Testing.Http.ContentHandling
     {
         public Type DotNetType { get; } = typeof(SpecialOutput);
         public string ContentType { get; } = "text/special";
+
         public byte[] Write(object model)
         {
             throw new NotSupportedException();

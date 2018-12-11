@@ -19,24 +19,6 @@ namespace Jasper.Testing.Http.Model
         }
 
         [Fact]
-        public void can_find_request()
-        {
-            matchesAndCanCreate<HttpRequest>();
-        }
-
-        [Fact]
-        public void can_find_response()
-        {
-            matchesAndCanCreate<HttpResponse>();
-        }
-
-        [Fact]
-        public void can_find_principal()
-        {
-            matchesAndCanCreate<ClaimsPrincipal>();
-        }
-
-        [Fact]
         public void can_find_authentication_manager()
         {
             matchesAndCanCreate<AuthenticationManager>();
@@ -46,6 +28,24 @@ namespace Jasper.Testing.Http.Model
         public void can_find_cancellation_token()
         {
             matchesAndCanCreate<CancellationToken>();
+        }
+
+        [Fact]
+        public void can_find_principal()
+        {
+            matchesAndCanCreate<ClaimsPrincipal>();
+        }
+
+        [Fact]
+        public void can_find_request()
+        {
+            matchesAndCanCreate<HttpRequest>();
+        }
+
+        [Fact]
+        public void can_find_response()
+        {
+            matchesAndCanCreate<HttpResponse>();
         }
 
         [Fact]

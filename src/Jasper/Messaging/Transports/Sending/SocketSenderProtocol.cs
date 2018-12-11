@@ -21,28 +21,19 @@ namespace Jasper.Messaging.Transports.Sending
                 await connection;
 
                 if (connection.IsCompleted)
-                {
                     using (var stream = client.GetStream())
                     {
                         var protocolTimeout = WireProtocol.Send(stream, batch, batch.Data, callback);
                         //var protocolTimeout = .TimeoutAfter(5000);
                         await protocolTimeout.ConfigureAwait(false);
 
-                        if (!protocolTimeout.IsCompleted)
-                        {
-                            await callback.TimedOut(batch);
-                        }
+                        if (!protocolTimeout.IsCompleted) await callback.TimedOut(batch);
 
                         if (protocolTimeout.IsFaulted)
-                        {
                             await callback.ProcessingFailure(batch, protocolTimeout.Exception);
-                        }
                     }
-                }
                 else
-                {
                     await callback.TimedOut(batch);
-                }
             }
         }
 
@@ -51,7 +42,6 @@ namespace Jasper.Messaging.Transports.Sending
             return string.Equals(Dns.GetHostName(), destination.Host, StringComparison.OrdinalIgnoreCase)
                    || destination.Host == "localhost"
                    || destination.Host == "127.0.0.1"
-
                 ? client.ConnectAsync(IPAddress.Loopback, destination.Port)
                 : client.ConnectAsync(destination.Host, destination.Port);
         }

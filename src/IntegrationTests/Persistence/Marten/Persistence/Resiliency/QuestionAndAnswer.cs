@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
+﻿namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
 {
     public class QuestionHandler
     {

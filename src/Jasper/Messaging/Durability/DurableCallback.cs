@@ -10,10 +10,10 @@ namespace Jasper.Messaging.Durability
     public class DurableCallback : IMessageCallback
     {
         private readonly Envelope _envelope;
+        private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistor _persistor;
         private readonly IWorkerQueue _queue;
         private readonly IRetries _retries;
-        private readonly ITransportLogger _logger;
 
         public DurableCallback(Envelope envelope, IWorkerQueue queue, IEnvelopePersistor persistor,
             IRetries retries, ITransportLogger logger)
@@ -76,7 +76,7 @@ namespace Jasper.Messaging.Durability
 
             try
             {
-                await _persistor.ScheduleExecution(new Envelope[] {envelope});
+                await _persistor.ScheduleExecution(new[] {envelope});
             }
             catch (Exception e)
             {

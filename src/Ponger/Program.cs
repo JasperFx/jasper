@@ -1,20 +1,17 @@
 ﻿using System;
+using Jasper;
 using Jasper.CommandLine;
 using Jasper.Messaging.Runtime.Invocation;
-using Jasper.Messaging.Transports.Configuration;
 using Oakton;
 using TestMessages;
 
 namespace Ponger
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
-            return JasperAgent.Run(args, _ =>
-            {
-                _.Transports.LightweightListenerAt(2601);
-            });
+            return JasperAgent.Run(args, _ => { _.Transports.LightweightListenerAt(2601); });
         }
     }
 

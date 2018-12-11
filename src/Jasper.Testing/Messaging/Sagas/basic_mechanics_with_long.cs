@@ -27,119 +27,12 @@ namespace Jasper.Testing.Messaging.Sagas
 
     public class LongDoThree
     {
-        [SagaIdentity]
-        public long TheSagaId { get; set; }
+        [SagaIdentity] public long TheSagaId { get; set; }
     }
 
     public class basic_mechanics_with_Long : SagaTestHarness<LongBasicWorkflow, LongWorkflowState>
     {
         private readonly long stateId = new Random().Next();
-
-        [Fact]
-        public async Task start_1()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            var state = LoadState(stateId);
-
-            state.ShouldNotBeNull();
-            state.Name.ShouldBe("Croaker");
-        }
-
-        [Fact]
-        public async Task start_2()
-        {
-
-            await send(new WildcardStart
-            {
-                Id = stateId.ToString(),
-                Name = "One Eye"
-            });
-
-            var state = LoadState(stateId);
-
-            state.ShouldNotBeNull();
-            state.Name.ShouldBe("One Eye");
-        }
-
-        [Fact]
-        public async Task update_with_no_saga_id_to_be_on_the_envelope()
-        {
-            await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
-            {
-                await invoke(new CompleteFour());
-            });
-
-        }
-
-        [Fact]
-        public async Task update_with_no_saga_id_to_be_on_the_envelope_or_message()
-        {
-            await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
-            {
-                await invoke(new LongCompleteThree());
-            });
-
-        }
-
-        [Fact]
-        public async Task straight_up_update_with_the_saga_id_on_the_message()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            var message = new LongCompleteThree
-            {
-                SagaId = stateId
-            };
-
-            await send(message);
-
-            var state = LoadState(stateId);
-            state.ThreeCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task update_with_message_that_uses_saga_identity_attributed_property()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            var message = new LongDoThree
-            {
-                TheSagaId = stateId
-            };
-
-            await send(message);
-
-            var state = LoadState(stateId);
-            state.ThreeCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
-        {
-            await send(new LongStart
-            {
-                Id = stateId,
-                Name = "Croaker"
-            });
-
-            await send(new CompleteFour(), stateId);
-
-            var state = LoadState(stateId);
-            state.FourCompleted.ShouldBeTrue();
-        }
 
         [Fact]
         public async Task complete()
@@ -169,7 +62,109 @@ namespace Jasper.Testing.Messaging.Sagas
             var state = LoadState(stateId);
             state.OneCompleted.ShouldBeTrue();
             state.TwoCompleted.ShouldBeTrue();
+        }
 
+        [Fact]
+        public async Task start_1()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            var state = LoadState(stateId);
+
+            state.ShouldNotBeNull();
+            state.Name.ShouldBe("Croaker");
+        }
+
+        [Fact]
+        public async Task start_2()
+        {
+            await send(new WildcardStart
+            {
+                Id = stateId.ToString(),
+                Name = "One Eye"
+            });
+
+            var state = LoadState(stateId);
+
+            state.ShouldNotBeNull();
+            state.Name.ShouldBe("One Eye");
+        }
+
+        [Fact]
+        public async Task straight_up_update_with_the_saga_id_on_the_message()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            var message = new LongCompleteThree
+            {
+                SagaId = stateId
+            };
+
+            await send(message);
+
+            var state = LoadState(stateId);
+            state.ThreeCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            await send(new CompleteFour(), stateId);
+
+            var state = LoadState(stateId);
+            state.FourCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task update_with_message_that_uses_saga_identity_attributed_property()
+        {
+            await send(new LongStart
+            {
+                Id = stateId,
+                Name = "Croaker"
+            });
+
+            var message = new LongDoThree
+            {
+                TheSagaId = stateId
+            };
+
+            await send(message);
+
+            var state = LoadState(stateId);
+            state.ThreeCompleted.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task update_with_no_saga_id_to_be_on_the_envelope()
+        {
+            await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
+            {
+                await invoke(new CompleteFour());
+            });
+        }
+
+        [Fact]
+        public async Task update_with_no_saga_id_to_be_on_the_envelope_or_message()
+        {
+            await Exception<IndeterminateSagaStateIdException>.ShouldBeThrownByAsync(async () =>
+            {
+                await invoke(new LongCompleteThree());
+            });
         }
     }
 }

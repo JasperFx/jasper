@@ -10,5 +10,6 @@ namespace Jasper.Messaging.Model
         // This method actually processes the incoming Envelope
         public abstract Task Handle(IMessageContext context);
     }
+
     // ENDSAMPLE
 }

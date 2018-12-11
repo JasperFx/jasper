@@ -4,9 +4,9 @@ using Jasper.CommandLine;
 
 namespace MyApp
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             // This bootstraps and runs the Jasper
             // application as defined by MyAppRegistry
@@ -16,5 +16,3 @@ namespace MyApp
     }
 }
 // ENDSAMPLE
-
-

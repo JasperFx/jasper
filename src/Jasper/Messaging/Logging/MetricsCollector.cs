@@ -1,27 +1,22 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Baseline.Dates;
 using Jasper.Messaging.Durability;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Logging
 {
-    [CacheResolver]
     public class MetricsCollector : BackgroundService
     {
+        private readonly IMessageLogger _logger;
         private readonly IMetrics _metrics;
         private readonly IEnvelopePersistor _persistor;
-        private readonly IMessageLogger _logger;
-        private readonly MessagingSettings _settings;
+        private readonly JasperOptions _settings;
         private readonly IWorkerQueue _workers;
 
         public MetricsCollector(IMetrics metrics, IEnvelopePersistor persistor, IMessageLogger logger,
-            MessagingSettings settings, IWorkerQueue workers)
+            JasperOptions settings, IWorkerQueue workers)
         {
             _metrics = metrics;
             _persistor = persistor;

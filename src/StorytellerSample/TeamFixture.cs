@@ -24,8 +24,8 @@ namespace StorytellerSample
             var message = new GamePlayed
             {
                 Date = day.Date,
-                Home = new TeamResult{Name = homeTeam, Score = homeScore},
-                Visitor = new TeamResult{Name = visitorTeam, Score = visitorScore}
+                Home = new TeamResult {Name = homeTeam, Score = homeScore},
+                Visitor = new TeamResult {Name = visitorTeam, Score = visitorScore}
             };
 
             return SendMessageAndWaitForCompletion(message);
@@ -37,5 +37,6 @@ namespace StorytellerSample
             return SendMessageAndWaitForCompletion(new UnhandledMessage());
         }
     }
+
     // ENDSAMPLE
 }

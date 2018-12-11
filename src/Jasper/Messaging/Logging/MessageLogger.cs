@@ -6,7 +6,6 @@ namespace Jasper.Messaging.Logging
 {
     public class MessageLogger : IMessageLogger
     {
-        private readonly IMetrics _metrics;
         public const int SentEventId = 100;
         public const int ReceivedEventId = 101;
         public const int ExecutionStartedEventId = 102;
@@ -17,17 +16,18 @@ namespace Jasper.Messaging.Logging
         public const int NoRoutesEventId = 107;
         public const int MovedToErrorQueueId = 108;
         public const int UndeliverableEventId = 108;
+        private readonly Action<ILogger, string, Guid, Exception> _executionFinished;
+        private readonly Action<ILogger, string, Guid, Exception> _executionStarted;
 
         private readonly ILogger _logger;
-        private readonly Action<ILogger, string, Guid, Uri, Exception> _sent;
-        private readonly Action<ILogger, string, Guid, Uri, Uri, Exception> _received;
-        private readonly Action<ILogger, string, Guid, Exception> _executionStarted;
-        private readonly Action<ILogger, string, Guid, Exception> _executionFinished;
-        private readonly Action<ILogger, string, Guid, Uri, Exception> _messageSucceeded;
         private readonly Action<ILogger, string, Guid, Uri, Exception> _messageFailed;
+        private readonly Action<ILogger, string, Guid, Uri, Exception> _messageSucceeded;
+        private readonly IMetrics _metrics;
+        private readonly Action<ILogger, Envelope, Exception> _movedToErrorQueue;
         private readonly Action<ILogger, string, Guid, Uri, Exception> _noHandler;
         private readonly Action<ILogger, Envelope, Exception> _noRoutes;
-        private readonly Action<ILogger, Envelope, Exception> _movedToErrorQueue;
+        private readonly Action<ILogger, string, Guid, Uri, Uri, Exception> _received;
+        private readonly Action<ILogger, string, Guid, Uri, Exception> _sent;
         private readonly Action<ILogger, Envelope, Exception> _undeliverable;
 
         public MessageLogger(ILoggerFactory factory, IMetrics metrics)
@@ -120,11 +120,11 @@ namespace Jasper.Messaging.Logging
             _undeliverable(_logger, envelope, null);
         }
 
-        public virtual void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        public virtual void LogException(Exception ex, Guid correlationId = default(Guid),
+            string message = "Exception detected:")
         {
             _metrics.LogException(ex);
             _logger.LogError(ex, message);
         }
-
     }
 }

@@ -24,31 +24,6 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _settings = settings;
         }
 
-        public List<Envelope> AllIncomingEnvelopes()
-        {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                conn.Open();
-
-                return conn
-                    .CreateCommand($"select body, status, owner_id, execution_time, attempts from {_settings.SchemaName}.{IncomingTable}")
-                    .LoadEnvelopes();
-            }
-        }
-
-        public List<Envelope> AllOutgoingEnvelopes()
-        {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                conn.Open();
-
-                return conn
-                    .CreateCommand($"select body, '{TransportConstants.Outgoing}', owner_id, NULL from {_settings.SchemaName}.{OutgoingTable}")
-                    .LoadEnvelopes();
-
-            }
-        }
-
         public async Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
             var table = BuildIdTable(envelopes);
@@ -77,18 +52,6 @@ namespace Jasper.Persistence.SqlServer.Persistence
                     .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
                     .ExecuteNonQueryAsync();
             }
-        }
-
-        public static DataTable BuildIdTable(IEnumerable<Envelope> envelopes)
-        {
-            var table = new DataTable();
-            table.Columns.Add(new DataColumn("ID", typeof(Guid)));
-            foreach (var envelope in envelopes)
-            {
-                table.Rows.Add(envelope.Id);
-            }
-
-            return table;
         }
 
         public async Task DeleteOutgoingEnvelopes(Envelope[] envelopes)
@@ -126,10 +89,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             var table = new DataTable();
             table.Columns.Add(new DataColumn("ID", typeof(Guid)));
-            foreach (var error in errors)
-            {
-                table.Rows.Add(error.Id);
-            }
+            foreach (var error in errors) table.Rows.Add(error.Id);
 
             var cmd = new SqlCommand();
             var builder = new CommandBuilder(cmd);
@@ -151,7 +111,8 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 var exMessage = builder.AddParameter(error.ExceptionMessage, SqlDbType.VarChar);
                 var body = builder.AddParameter(error.RawData, SqlDbType.VarBinary);
 
-                builder.Append($"insert into {_settings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
+                builder.Append(
+                    $"insert into {_settings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
             }
 
             builder.Apply();
@@ -175,7 +136,8 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 var time = builder.AddParameter(envelope.ExecutionTime.Value, SqlDbType.DateTimeOffset);
                 var attempts = builder.AddParameter(envelope.Attempts, SqlDbType.Int);
 
-                builder.Append($"update {_settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
+                builder.Append(
+                    $"update {_settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
             }
 
             builder.Apply();
@@ -196,12 +158,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
             {
                 await conn.OpenAsync();
 
-                var cmd = conn.CreateCommand($"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {_settings.SchemaName}.{DeadLetterTable} where id = @id");
+                var cmd = conn.CreateCommand(
+                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {_settings.SchemaName}.{DeadLetterTable} where id = @id");
                 cmd.AddNamedParameter("id", id, SqlDbType.UniqueIdentifier);
 
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    if (!(await reader.ReadAsync())) return null;
+                    if (!await reader.ReadAsync()) return null;
 
 
                     var report = new ErrorReport
@@ -256,7 +219,6 @@ values
                     .With("time", envelope.ExecutionTime, SqlDbType.DateTimeOffset)
                     .With("body", envelope.Serialize(), SqlDbType.VarBinary)
                     .ExecuteNonQueryAsync();
-
             }
         }
 
@@ -274,32 +236,6 @@ values
             }
         }
 
-        public static SqlCommand BuildIncomingStorageCommand(IEnumerable<Envelope> envelopes, SqlServerSettings settings)
-        {
-            var cmd = new SqlCommand();
-            var builder = new CommandBuilder(cmd);
-
-            foreach (var envelope in envelopes)
-            {
-                envelope.EnsureData();
-
-                var id = builder.AddParameter(envelope.Id, SqlDbType.UniqueIdentifier);
-                var status = builder.AddParameter(envelope.Status, SqlDbType.VarChar);
-                var owner = builder.AddParameter(envelope.OwnerId, SqlDbType.Int);
-                var attempts = builder.AddParameter(envelope.Attempts, SqlDbType.Int);
-                var time = builder.AddParameter(envelope.ExecutionTime, SqlDbType.DateTimeOffset);
-                var body = builder.AddParameter(envelope.Serialize(), SqlDbType.VarBinary);
-
-
-                builder.Append(
-                    $"insert into {settings.SchemaName}.{IncomingTable} (id, status, owner_id, execution_time, attempts, body) values (@{id.ParameterName}, @{status.ParameterName}, @{owner.ParameterName}, @{time.ParameterName}, @{attempts.ParameterName}, @{body.ParameterName});");
-            }
-
-            builder.Apply();
-
-            return cmd;
-        }
-
         public async Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
             var discardTable = BuildIdTable(discards);
@@ -312,10 +248,8 @@ values
                 await conn.CreateCommand(
                         $"EXEC {_settings.SchemaName}.uspDiscardAndReassignOutgoing @discards, @reassigned, @owner")
                     .With("discards", discardTable, SqlDbType.Structured, $"{_settings.SchemaName}.EnvelopeIdList")
-                    .With("reassigned", reassignedTable, SqlDbType.Structured,$"{_settings.SchemaName}.EnvelopeIdList")
+                    .With("reassigned", reassignedTable, SqlDbType.Structured, $"{_settings.SchemaName}.EnvelopeIdList")
                     .With("owner", nodeId, SqlDbType.Int).ExecuteNonQueryAsync();
-
-
             }
         }
 
@@ -361,7 +295,6 @@ values
                 await conn.OpenAsync();
 
 
-
                 using (var reader = await conn
                     .CreateCommand(
                         $"select status, count(*) from {_settings.SchemaName}.{IncomingTable} group by status")
@@ -373,23 +306,79 @@ values
                         var count = await reader.GetFieldValueAsync<int>(1);
 
                         if (status == TransportConstants.Incoming)
-                        {
                             counts.Incoming = count;
-                        }
-                        else if (status == TransportConstants.Scheduled)
-                        {
-                            counts.Scheduled = count;
-                        }
+                        else if (status == TransportConstants.Scheduled) counts.Scheduled = count;
                     }
                 }
 
-                counts.Outgoing = (int)await conn
-                        .CreateCommand($"select count(*) from {_settings.SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
+                counts.Outgoing = (int) await conn
+                    .CreateCommand($"select count(*) from {_settings.SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
             }
 
 
-
             return counts;
+        }
+
+        public List<Envelope> AllIncomingEnvelopes()
+        {
+            using (var conn = new SqlConnection(_settings.ConnectionString))
+            {
+                conn.Open();
+
+                return conn
+                    .CreateCommand(
+                        $"select body, status, owner_id, execution_time, attempts from {_settings.SchemaName}.{IncomingTable}")
+                    .LoadEnvelopes();
+            }
+        }
+
+        public List<Envelope> AllOutgoingEnvelopes()
+        {
+            using (var conn = new SqlConnection(_settings.ConnectionString))
+            {
+                conn.Open();
+
+                return conn
+                    .CreateCommand(
+                        $"select body, '{TransportConstants.Outgoing}', owner_id, NULL from {_settings.SchemaName}.{OutgoingTable}")
+                    .LoadEnvelopes();
+            }
+        }
+
+        public static DataTable BuildIdTable(IEnumerable<Envelope> envelopes)
+        {
+            var table = new DataTable();
+            table.Columns.Add(new DataColumn("ID", typeof(Guid)));
+            foreach (var envelope in envelopes) table.Rows.Add(envelope.Id);
+
+            return table;
+        }
+
+        public static SqlCommand BuildIncomingStorageCommand(IEnumerable<Envelope> envelopes,
+            SqlServerSettings settings)
+        {
+            var cmd = new SqlCommand();
+            var builder = new CommandBuilder(cmd);
+
+            foreach (var envelope in envelopes)
+            {
+                envelope.EnsureData();
+
+                var id = builder.AddParameter(envelope.Id, SqlDbType.UniqueIdentifier);
+                var status = builder.AddParameter(envelope.Status, SqlDbType.VarChar);
+                var owner = builder.AddParameter(envelope.OwnerId, SqlDbType.Int);
+                var attempts = builder.AddParameter(envelope.Attempts, SqlDbType.Int);
+                var time = builder.AddParameter(envelope.ExecutionTime, SqlDbType.DateTimeOffset);
+                var body = builder.AddParameter(envelope.Serialize(), SqlDbType.VarBinary);
+
+
+                builder.Append(
+                    $"insert into {settings.SchemaName}.{IncomingTable} (id, status, owner_id, execution_time, attempts, body) values (@{id.ParameterName}, @{status.ParameterName}, @{owner.ParameterName}, @{time.ParameterName}, @{attempts.ParameterName}, @{body.ParameterName});");
+            }
+
+            builder.Apply();
+
+            return cmd;
         }
 
         public static SqlCommand BuildOutgoingStorageCommand(Envelope[] envelopes, int ownerId,

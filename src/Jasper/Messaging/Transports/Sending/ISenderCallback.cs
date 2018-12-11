@@ -16,6 +16,5 @@ namespace Jasper.Messaging.Transports.Sending
         Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception);
         Task ProcessingFailure(Envelope outgoing, Exception exception);
         Task SenderIsLatched(OutgoingMessageBatch outgoing);
-
     }
 }

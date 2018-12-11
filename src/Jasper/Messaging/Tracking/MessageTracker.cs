@@ -11,17 +11,15 @@ namespace Jasper.Messaging.Tracking
 {
     public class MessageTracker
     {
-        private readonly LightweightCache<Type, List<TaskCompletionSource<Envelope>>>
-            _waiters = new LightweightCache<Type, List<TaskCompletionSource<Envelope>>>(t => new List<TaskCompletionSource<Envelope>>());
-
         private readonly ConcurrentBag<ITracker> _trackers = new ConcurrentBag<ITracker>();
+
+        private readonly LightweightCache<Type, List<TaskCompletionSource<Envelope>>>
+            _waiters = new LightweightCache<Type, List<TaskCompletionSource<Envelope>>>(t =>
+                new List<TaskCompletionSource<Envelope>>());
 
         public void Record(object message, Envelope envelope)
         {
-            foreach (var tracker in _trackers)
-            {
-                tracker.Check(envelope, message);
-            }
+            foreach (var tracker in _trackers) tracker.Check(envelope, message);
 
             var messageType = message.GetType();
             var list = _waiters[messageType];
@@ -49,10 +47,10 @@ namespace Jasper.Messaging.Tracking
 
     public class CountTracker<T> : ITracker
     {
+        private readonly TaskCompletionSource<bool> _completion = new TaskCompletionSource<bool>();
         private readonly int _expected;
         private readonly List<ITracker> _trackers;
-        private readonly TaskCompletionSource<bool> _completion = new TaskCompletionSource<bool>();
-        private int _count = 0;
+        private int _count;
 
         public CountTracker(int expected, List<ITracker> trackers)
         {
@@ -61,6 +59,7 @@ namespace Jasper.Messaging.Tracking
         }
 
         public Task<bool> Completion => _completion.Task;
+
         public void Check(Envelope envelope, object message)
         {
             if (message is T)

@@ -18,27 +18,26 @@ namespace Jasper.Conneg
 
     public abstract class MessageSerializerBase<T> : IMessageSerializer
     {
-        public string ContentType { get; }
-        public Type DotNetType { get; } = typeof(T);
-
         protected MessageSerializerBase(string contentType)
         {
             ContentType = contentType;
         }
+
+        public string ContentType { get; }
+        public Type DotNetType { get; } = typeof(T);
 
         public byte[] Write(object model)
         {
             return Write(model.As<T>());
         }
 
-        public abstract byte[] Write(T model);
-
         public Task WriteToStream(object model, HttpResponse response)
         {
             return WriteToStream(model.As<T>(), response);
         }
 
+        public abstract byte[] Write(T model);
+
         public abstract Task WriteToStream(T model, HttpResponse response);
     }
-
 }

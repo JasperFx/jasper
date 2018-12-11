@@ -10,6 +10,16 @@ namespace Jasper.Persistence.SqlServer.Schema
     {
         private readonly string _connectionString;
 
+        private readonly string[] _creationOrder =
+        {
+            "Creation.sql",
+            "uspDeleteIncomingEnvelopes.sql",
+            "uspDeleteOutgoingEnvelopes.sql",
+            "uspDiscardAndReassignOutgoing.sql",
+            "uspMarkIncomingOwnership.sql",
+            "uspMarkOutgoingOwnership.sql"
+        };
+
         public SchemaLoader(string connectionString)
         {
             _connectionString = connectionString;
@@ -66,16 +76,6 @@ namespace Jasper.Persistence.SqlServer.Schema
             }
         }
 
-        private readonly string[] _creationOrder = new string[]
-        {
-            "Creation.sql",
-            "uspDeleteIncomingEnvelopes.sql",
-            "uspDeleteOutgoingEnvelopes.sql",
-            "uspDiscardAndReassignOutgoing.sql",
-            "uspMarkIncomingOwnership.sql",
-            "uspMarkOutgoingOwnership.sql"
-        };
-
         public void CreateAll()
         {
             using (var conn = new SqlConnection(_connectionString))
@@ -84,11 +84,7 @@ namespace Jasper.Persistence.SqlServer.Schema
 
                 buildSchemaIfNotExists(conn);
 
-                foreach (var file in _creationOrder)
-                {
-                    execute(conn, file);
-                }
-
+                foreach (var file in _creationOrder) execute(conn, file);
             }
         }
 
@@ -102,12 +98,7 @@ namespace Jasper.Persistence.SqlServer.Schema
 
                 buildSchemaIfNotExists(conn);
 
-                foreach (var file in _creationOrder)
-                {
-                    execute(conn, file);
-                }
-
-
+                foreach (var file in _creationOrder) execute(conn, file);
             }
         }
 
@@ -116,10 +107,7 @@ namespace Jasper.Persistence.SqlServer.Schema
             var count = conn.CreateCommand("select count(*) from sys.schemas where name = @name")
                 .With("name", SchemaName).ExecuteScalar().As<int>();
 
-            if (count == 0)
-            {
-                conn.CreateCommand($"CREATE SCHEMA [{SchemaName}] AUTHORIZATION [dbo]").ExecuteNonQuery();
-            }
+            if (count == 0) conn.CreateCommand($"CREATE SCHEMA [{SchemaName}] AUTHORIZATION [dbo]").ExecuteNonQuery();
         }
     }
 }

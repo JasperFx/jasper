@@ -9,15 +9,15 @@ namespace Jasper.Messaging.WorkerQueues
 {
     public class WorkersGraph : IWorkersExpression
     {
+        private readonly Dictionary<string, bool> _durableAssignments = new Dictionary<string, bool>();
+        private readonly Dictionary<Type, bool> _durableAssignmentsByType = new Dictionary<Type, bool>();
         private readonly IList<Func<Type, bool>> _durableRules = new List<Func<Type, bool>>();
-
-        private readonly LightweightCache<string, WorkerSettings> _workers
-            = new LightweightCache<string, WorkerSettings>(name => new WorkerSettings(name));
 
         private readonly Dictionary<string, string> _workerAssignments = new Dictionary<string, string>();
         private readonly Dictionary<Type, string> _workerAssignmentsByType = new Dictionary<Type, string>();
-        private readonly Dictionary<string, bool> _durableAssignments = new Dictionary<string, bool>();
-        private readonly Dictionary<Type, bool> _durableAssignmentsByType = new Dictionary<Type, bool>();
+
+        private readonly LightweightCache<string, WorkerSettings> _workers
+            = new LightweightCache<string, WorkerSettings>(name => new WorkerSettings(name));
 
 
         public WorkersGraph()
@@ -29,19 +29,16 @@ namespace Jasper.Messaging.WorkerQueues
 
         public WorkerSettings[] AllWorkers => _workers.ToArray();
 
+        public WorkerSettings this[string queueName] => _workers[queueName.ToLower()];
+
         IWorkerSettings IWorkersExpression.Worker(string queueName)
         {
             return _workers[queueName.ToLower()];
         }
 
-        public WorkerSettings this[string queueName] => _workers[queueName.ToLower()];
-
         public Uri LoopbackUriFor(Type messageType)
         {
-            if (!_durableAssignmentsByType.ContainsKey(messageType))
-            {
-                analyzeMessageType(messageType);
-            }
+            if (!_durableAssignmentsByType.ContainsKey(messageType)) analyzeMessageType(messageType);
 
             var workerName = WorkerFor(messageType);
 
@@ -79,10 +76,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         public void Compile(IEnumerable<Type> messageTypes)
         {
-            foreach (var messageType in messageTypes)
-            {
-                analyzeMessageType(messageType);
-            }
+            foreach (var messageType in messageTypes) analyzeMessageType(messageType);
         }
 
         private void analyzeMessageType(Type messageType)
@@ -91,10 +85,9 @@ namespace Jasper.Messaging.WorkerQueues
             var alias = messageAlias;
 
 
-
             var worker = AllWorkers.FirstOrDefault(x => x.Matches(messageType));
 
-            bool isDurable = worker?.IsDurable ?? false;
+            var isDurable = worker?.IsDurable ?? false;
 
             var workerName = worker?.Name ?? TransportConstants.Default;
 
@@ -107,18 +100,12 @@ namespace Jasper.Messaging.WorkerQueues
                 worker = _workers[att.WorkerName];
                 worker.IsDurable = worker.IsDurable || att.IsDurable;
 
-                if (att.MaximumParallelization > 0)
-                {
-                    worker.Parallelization = att.MaximumParallelization;
-                }
+                if (att.MaximumParallelization > 0) worker.Parallelization = att.MaximumParallelization;
 
                 isDurable = isDurable || worker.IsDurable;
             }
 
-            if (messageType.HasAttribute<DurableAttribute>())
-            {
-                isDurable = true;
-            }
+            if (messageType.HasAttribute<DurableAttribute>()) isDurable = true;
 
             _workerAssignmentsByType.Add(messageType, workerName);
             _workerAssignments[messageAlias] = workerName;

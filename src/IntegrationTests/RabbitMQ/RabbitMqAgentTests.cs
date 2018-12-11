@@ -7,29 +7,6 @@ namespace IntegrationTests.RabbitMQ
 {
     public class RabbitMqAgentTests
     {
-        [Fact]
-        public void parse_a_uri_with_no_port()
-        {
-            var agent = new RabbitMqAgent("rabbitmq://localhost/something");
-            agent.ConnectionFactory.Port.ShouldBe(5672);
-        }
-
-        [Fact]
-        public void parse_a_uri_with_a_port()
-        {
-            var agent = new RabbitMqAgent("rabbitmq://localhost:5673/something");
-            agent.ConnectionFactory.Port.ShouldBe(5673);
-        }
-
-        [Fact]
-        public void throws_if_protocol_is_not_rabbitmq()
-        {
-            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() =>
-            {
-                var rabbitMqAgent = new RabbitMqAgent("tcp://localhost:5000");
-            });
-        }
-
         [Theory]
         [InlineData("rabbitmq://localhost")]
         [InlineData("rabbitmq://localhost/durable")]
@@ -46,7 +23,8 @@ namespace IntegrationTests.RabbitMQ
         [InlineData("rabbitmq://localhost/durable/durable/", true, "", ExchangeType.Direct, "durable")]
         [InlineData("rabbitmq://localhost/durable/fanout/three", true, "", ExchangeType.Fanout, "three")]
         [InlineData("rabbitmq://localhost/fanout/three", false, "", ExchangeType.Fanout, "three")]
-        [InlineData("rabbitmq://localhost/durable/fanout/exchange1/three", true, "exchange1", ExchangeType.Fanout, "three")]
+        [InlineData("rabbitmq://localhost/durable/fanout/exchange1/three", true, "exchange1", ExchangeType.Fanout,
+            "three")]
         [InlineData("rabbitmq://localhost/fanout/exchange1/three", false, "exchange1", ExchangeType.Fanout, "three")]
         public void parse_uri_patterns(
             string uri,
@@ -60,6 +38,29 @@ namespace IntegrationTests.RabbitMQ
             agent.ExchangeName.ShouldBe(exchangeName);
             agent.ExchangeType.ShouldBe(exchangeType);
             agent.QueueName.ShouldBe(queueName);
+        }
+
+        [Fact]
+        public void parse_a_uri_with_a_port()
+        {
+            var agent = new RabbitMqAgent("rabbitmq://localhost:5673/something");
+            agent.ConnectionFactory.Port.ShouldBe(5673);
+        }
+
+        [Fact]
+        public void parse_a_uri_with_no_port()
+        {
+            var agent = new RabbitMqAgent("rabbitmq://localhost/something");
+            agent.ConnectionFactory.Port.ShouldBe(5672);
+        }
+
+        [Fact]
+        public void throws_if_protocol_is_not_rabbitmq()
+        {
+            Exception<ArgumentOutOfRangeException>.ShouldBeThrownBy(() =>
+            {
+                var rabbitMqAgent = new RabbitMqAgent("tcp://localhost:5000");
+            });
         }
     }
 }

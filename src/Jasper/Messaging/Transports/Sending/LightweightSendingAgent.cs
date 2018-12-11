@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.Messaging.Transports.Sending
 {
     public class LightweightSendingAgent : SendingAgent
     {
-        public LightweightSendingAgent(Uri destination, ISender sender, ITransportLogger logger, MessagingSettings settings)
-        : base(destination, sender, logger, settings, new LightweightRetryAgent(sender, settings.Retries))
+        public LightweightSendingAgent(Uri destination, ISender sender, ITransportLogger logger,
+            JasperOptions settings)
+            : base(destination, sender, logger, settings, new LightweightRetryAgent(sender, settings.Retries))
         {
-
         }
 
         public override bool IsDurable => false;
@@ -32,10 +31,7 @@ namespace Jasper.Messaging.Transports.Sending
 
         public override async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
         {
-            foreach (var envelope in envelopes)
-            {
-                await EnqueueOutgoing(envelope);
-            }
+            foreach (var envelope in envelopes) await EnqueueOutgoing(envelope);
         }
 
         public override Task Successful(OutgoingMessageBatch outgoing)

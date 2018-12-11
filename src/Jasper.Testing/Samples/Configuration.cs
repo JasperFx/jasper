@@ -5,15 +5,10 @@ namespace Jasper.Testing.Samples
 {
     public class SampleApp : JasperRegistry
     {
-        public bool MyBoolean { get; set; }
-
         public SampleApp()
         {
             // SAMPLE: alter-settings
-            Settings.Alter<Jasper.Testing.Settings.MyFakeSettings>(_ =>
-            {
-                _.SomeSetting = 5;
-            });
+            Settings.Alter<MyFakeSettings>(_ => { _.SomeSetting = 5; });
 
             // or additionally use IConfiguration
             Settings.Alter<MyFakeSettings>((context, settings) =>
@@ -33,10 +28,15 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
 
             // SAMPLE: build-configuration
-            Configuration.SetBasePath("path")
-                .AddJsonFile("myconfig.json")
-                .AddJsonFile("myotherconfig.json.config")
-                .AddEnvironmentVariables();
+            Hosting.ConfigureAppConfiguration((context, config) =>
+            {
+                config.SetBasePath(context.HostingEnvironment.WebRootPath)
+                    .AddJsonFile("myconfig.json")
+                    .AddJsonFile("myotherconfig.json.config")
+                    .AddEnvironmentVariables();
+            });
+
+
 
             // ENDSAMPLE
 
@@ -49,12 +49,14 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
         }
 
+        public bool MyBoolean { get; set; }
+
         // SAMPLE: inject-settings
         public class MyApp : JasperRegistry
         {
             public MyApp()
             {
-                Configuration.AddJsonFile("mysettings.json");
+                Hosting.ConfigureAppConfiguration((context, config) => config.AddJsonFile("mysettings.json"));
             }
         }
 
@@ -69,26 +71,6 @@ namespace Jasper.Testing.Samples
         }
         // ENDSAMPLE
 
-        // SAMPLE: with-settings
-        public class MyApplication : JasperRegistry
-        {
-            public bool MyBoolean { get; set; }
-
-            public MyApplication()
-            {
-                Settings.With<MyFakeSettings>(_ =>
-                {
-                    if (_.SomeSetting == 1)
-                    {
-                        MyBoolean = true;
-                    }
-                });
-            }
-        }
-        // ENDSAMPLE
+        public class MySettings{}
     }
-
-
-
-
 }

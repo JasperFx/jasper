@@ -1,44 +1,43 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline;
+using Baseline.Reflection;
+using Jasper.Configuration;
+using Jasper.EnvironmentChecks;
+using Jasper.Http;
 using Jasper.Messaging;
-using Jasper.Messaging.Transports.Configuration;
 using Lamar;
-using Lamar.Codegen.Variables;
-using Lamar.Util;
+using Lamar.Scanning.Conventions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Jasper
 {
-    public partial class JasperRuntime : IDisposable
+    public class JasperRuntime : IDisposable
     {
-        private static ApplicationLifetime _lifetime;
+        private readonly IDisposable _host;
         private readonly Lazy<IMessageContext> _bus;
-        private bool isDisposing;
         private IContainer _container;
+        private bool isDisposing;
 
 
-        private JasperRuntime(JasperRegistry registry, PerfTimer timer)
+        private JasperRuntime(JasperRegistry registry, IWebHost host)
         {
-            Bootstrapping = timer;
-
-
-            registry.CodeGeneration.Sources.Add(new NowTimeVariableSource());
-
-            registry.CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);
-            registry.CodeGeneration.Assemblies.Add(registry.ApplicationAssembly);
-
+            _host = host;
             Registry = registry;
+            Container = host.Services.GetService<IContainer>();
 
             _bus = new Lazy<IMessageContext>(Get<IMessageContext>);
         }
 
-        internal MessagingSettings Settings { get; private set; }
-
-        public PerfTimer Bootstrapping { get; }
+        internal JasperOptions Settings { get; private set; }
 
         internal JasperRegistry Registry { get; }
 
@@ -56,7 +55,7 @@ namespace Jasper
             private set
             {
                 _container = value;
-                Settings = _container.GetInstance<MessagingSettings>();
+                Settings = _container.GetInstance<JasperOptions>();
             }
         }
 
@@ -165,6 +164,7 @@ namespace Jasper
             return bootstrap(registry);
         }
 
+
         /// <summary>
         ///     Shorthand to fetch a service from the application container by type
         /// </summary>
@@ -208,5 +208,78 @@ namespace Jasper
 
             Registry.Describe(this, writer);
         }
+
+        public void ExecuteAllEnvironmentChecks()
+        {
+            var checks = Container.Model.GetAllPossible<IEnvironmentCheck>();
+
+            var recorder = Container.GetInstance<IEnvironmentRecorder>();
+
+            foreach (var check in checks)
+                try
+                {
+                    check.Assert(this);
+                    recorder.Success(check.Description);
+                }
+                catch (Exception e)
+                {
+                    recorder.Failure(check.Description, e);
+                }
+
+            if (Get<JasperOptions>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
+        }
+
+        public static void ApplyExtensions(JasperRegistry registry)
+        {
+            var assemblies = FindExtensionAssemblies();
+
+            if (!assemblies.Any()) return;
+
+            var extensions = assemblies
+                .Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
+                .Where(x => x != null)
+                .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
+                .ToArray();
+
+            registry.ApplyExtensions(extensions);
+        }
+
+        public static Assembly[] FindExtensionAssemblies()
+        {
+            return AssemblyFinder
+                .FindAssemblies(txt => { }, false)
+                .Where(a => a.HasAttribute<JasperModuleAttribute>())
+                .ToArray();
+        }
+
+
+        private static Task<JasperRuntime> bootstrap(JasperRegistry registry)
+        {
+            var host = registry
+                .ToWebHostBuilder()
+                .Start();
+
+            var runtime = new JasperRuntime(registry, host);
+
+            runtime.Container.As<Container>().Configure(x => x.AddSingleton(runtime));
+
+            return Task.FromResult(runtime);
+        }
+
+        public void Dispose()
+        {
+            // Because StackOverflowException's are a drag
+            if (IsDisposed || isDisposing) return;
+
+            isDisposing = true;
+
+            _host.Dispose();
+
+            Container.As<Container>().DisposalLock = DisposalLock.Unlocked;
+            Container.Dispose();
+
+            IsDisposed = true;
+        }
+
     }
 }

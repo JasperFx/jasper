@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Baseline;
-using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -9,17 +8,11 @@ namespace Jasper.Testing.Messaging
     public class can_send_to_the_default_queue : SendingContext
     {
         [Fact]
-        public async Task send_to_the_default_queue()
+        public async Task can_still_receive_if_the_queue_does_not_exist()
         {
-            await StartTheReceiver(_ =>
-            {
-                _.Transports.ListenForMessagesFrom("tcp://localhost:2258");
-            });
+            await StartTheReceiver(_ => { _.Transports.ListenForMessagesFrom("tcp://localhost:2270"); });
 
-            await StartTheSender(_ =>
-            {
-                _.Publish.AllMessagesTo("tcp://localhost:2258");
-            });
+            await StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2270/unknown"); });
 
             var waiter = theTracker.WaitFor<Message1>();
 
@@ -32,17 +25,11 @@ namespace Jasper.Testing.Messaging
         }
 
         [Fact]
-        public async Task can_still_receive_if_the_queue_does_not_exist()
+        public async Task send_to_the_default_queue()
         {
-            await StartTheReceiver(_ =>
-            {
-                _.Transports.ListenForMessagesFrom("tcp://localhost:2270");
-            });
+            await StartTheReceiver(_ => { _.Transports.ListenForMessagesFrom("tcp://localhost:2258"); });
 
-            await StartTheSender(_ =>
-            {
-                _.Publish.AllMessagesTo("tcp://localhost:2270/unknown");
-            });
+            await StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2258"); });
 
             var waiter = theTracker.WaitFor<Message1>();
 

@@ -16,12 +16,9 @@ namespace Jasper.Testing.Messaging
                 await Bus.Send(new MessageWithNoRoutes());
             });
         }
-
-
     }
 
     public class MessageWithNoRoutes
     {
-
     }
 }

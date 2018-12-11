@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Jasper.Http.Model;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 
 namespace Jasper.Http.ContentHandling
 {

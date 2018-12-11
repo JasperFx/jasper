@@ -8,30 +8,26 @@ namespace Jasper.Util
     {
         public const int DefaultConsoleWidth = 120;
 
-        private static readonly int _consoleWidth = DefaultConsoleWidth;
-
-        public static string HL { get; private set;}
-
         static ConsoleWriter()
         {
             try
             {
-                _consoleWidth = Console.BufferWidth;
+                ConsoleBufferWidth = Console.BufferWidth;
             }
             catch
             {
                 // Console.BufferWidth(get) will throw exceptions in certain circumstances
             }
 
-            if (_consoleWidth < 10) // Mono will return 0 instead of throwing an exception
-            {
-                _consoleWidth = DefaultConsoleWidth;
-            }
+            if (ConsoleBufferWidth < 10) // Mono will return 0 instead of throwing an exception
+                ConsoleBufferWidth = DefaultConsoleWidth;
 
-            HL = new string('-', _consoleWidth);
+            HL = new string('-', ConsoleBufferWidth);
         }
 
-        public static int ConsoleBufferWidth => _consoleWidth;
+        public static string HL { get; }
+
+        public static int ConsoleBufferWidth { get; } = DefaultConsoleWidth;
 
         public static void Line()
         {
@@ -57,14 +53,15 @@ namespace Jasper.Util
         {
             Console.ForegroundColor = color;
             BreakIntoLines(indent, content)
-                .Each(l => Console.WriteLine((string) l));
+                .Each(l => Console.WriteLine(l));
             Console.ResetColor();
         }
+
         public static void Write(ConsoleColor color, string content)
         {
             Console.ForegroundColor = color;
             BreakIntoLines(content)
-                .Each(l=>Console.WriteLine(l));
+                .Each(l => Console.WriteLine(l));
             Console.ResetColor();
         }
 
@@ -84,10 +81,10 @@ namespace Jasper.Util
 
             while (input.Length > 0)
             {
-                var width = _consoleWidth - indent;
+                var width = ConsoleBufferWidth - indent;
                 var chomp = input.Length > width ? width : input.Length;
 
-                string c = new string(' ', indent) + input.Substring(0, chomp);
+                var c = new string(' ', indent) + input.Substring(0, chomp);
 
                 lines.Add(c);
                 input = input.Remove(0, chomp);
@@ -103,10 +100,10 @@ namespace Jasper.Util
             var lines = new List<string>();
 
 
-            while(input.Length > 0)
+            while (input.Length > 0)
             {
-                var chomp = input.Length > _consoleWidth ? _consoleWidth : input.Length;
-                string c = input.Substring(0, chomp);
+                var chomp = input.Length > ConsoleBufferWidth ? ConsoleBufferWidth : input.Length;
+                var c = input.Substring(0, chomp);
                 lines.Add(c);
                 input = input.Remove(0, chomp);
             }

@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Http;
 using Jasper.Messaging;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace AspNetCoreHosted
 {
@@ -21,19 +17,16 @@ namespace AspNetCoreHosted
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
 
                 // This is all you have to do to use Jasper
                 // with all its default behavior
                 .UseJasper();
+        }
     }
-
-
-
-
-
 
 
     public class CreateUser
@@ -95,6 +88,4 @@ namespace AspNetCoreHosted
             return Ok();
         }
     }
-
-
 }

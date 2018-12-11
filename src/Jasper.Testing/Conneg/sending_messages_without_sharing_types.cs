@@ -6,7 +6,6 @@ using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
-using Jasper.Testing.Messaging;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -19,14 +18,12 @@ namespace Jasper.Testing.Conneg
         public sending_messages_without_sharing_types()
         {
             theTracker = new MessageTracker();
-
-
         }
 
         public void Dispose()
         {
-            greenApp?.Shutdown();
-            blueApp?.Shutdown();
+            greenApp?.Dispose();
+            blueApp?.Dispose();
         }
 
         private JasperRuntime greenApp;

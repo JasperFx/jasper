@@ -18,10 +18,7 @@ namespace Jasper.Messaging.Runtime
             {
                 var numberOfMessages = br.ReadInt32();
                 var msgs = new Envelope[numberOfMessages];
-                for (int i = 0; i < numberOfMessages; i++)
-                {
-                    msgs[i] = readSingle(br);
-                }
+                for (var i = 0; i < numberOfMessages; i++) msgs[i] = readSingle(br);
                 return msgs;
             }
         }
@@ -46,14 +43,11 @@ namespace Jasper.Messaging.Runtime
                 },
                 Queue = br.ReadString(),
                 SubQueue = br.ReadString(),
-                SentAt = DateTime.FromBinary(br.ReadInt64()),
+                SentAt = DateTime.FromBinary(br.ReadInt64())
             };
             var headerCount = br.ReadInt32();
 
-            for (var j = 0; j < headerCount; j++)
-            {
-                msg.ReadData(br.ReadString(), br.ReadString());
-            }
+            for (var j = 0; j < headerCount; j++) msg.ReadData(br.ReadString(), br.ReadString());
 
             var byteCount = br.ReadInt32();
             msg.Data = br.ReadBytes(byteCount);
@@ -67,10 +61,7 @@ namespace Jasper.Messaging.Runtime
             using (var writer = new BinaryWriter(stream))
             {
                 writer.Write(messages.Count);
-                foreach (var message in messages)
-                {
-                    message.writeSingle(writer);
-                }
+                foreach (var message in messages) message.writeSingle(writer);
                 writer.Flush();
                 return stream.ToArray();
             }
@@ -110,18 +101,15 @@ namespace Jasper.Messaging.Runtime
                     headerData.Position = 0;
                     headerData.CopyTo(writer.BaseStream);
                 }
-
             }
 
             writer.Write(Data.Length);
             writer.Write(Data);
-
         }
 
 
         public void WriteToDictionary(IDictionary<string, object> dictionary)
         {
-
             dictionary.WriteProp(SourceKey, Source);
             dictionary.WriteProp(MessageTypeKey, MessageType);
             dictionary.WriteProp(ReplyUriKey, ReplyUri);
@@ -132,9 +120,7 @@ namespace Jasper.Messaging.Runtime
             dictionary.WriteProp(SagaIdKey, SagaId);
 
             if (AcceptedContentTypes != null && AcceptedContentTypes.Any())
-            {
                 dictionary.WriteProp(AcceptedContentTypesKey, AcceptedContentTypes.Join(","));
-            }
 
             dictionary.WriteProp(IdKey, Id);
             dictionary.WriteProp(ReplyRequestedKey, ReplyRequested);
@@ -142,7 +128,8 @@ namespace Jasper.Messaging.Runtime
 
             if (ExecutionTime.HasValue)
             {
-                var dateString = ExecutionTime.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+                var dateString = ExecutionTime.Value.ToUniversalTime()
+                    .ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
                 dictionary.Add(ExecutionTimeKey, dateString);
             }
 
@@ -152,15 +139,12 @@ namespace Jasper.Messaging.Runtime
             dictionary.WriteProp(SentAttemptsHeaderKey, SentAttempts);
             dictionary.WriteProp(ReceivedAtKey, ReceivedAt);
 
-            foreach (var pair in Headers)
-            {
-                dictionary.Add(pair.Key, pair.Value);
-            }
+            foreach (var pair in Headers) dictionary.Add(pair.Key, pair.Value);
         }
 
         private int writeHeaders(BinaryWriter writer)
         {
-            int count = 0;
+            var count = 0;
 
             writer.WriteProp(ref count, SourceKey, Source);
             writer.WriteProp(ref count, MessageTypeKey, MessageType);
@@ -172,9 +156,7 @@ namespace Jasper.Messaging.Runtime
             writer.WriteProp(ref count, SagaIdKey, SagaId);
 
             if (AcceptedContentTypes != null && AcceptedContentTypes.Any())
-            {
                 writer.WriteProp(ref count, AcceptedContentTypesKey, AcceptedContentTypes.Join(","));
-            }
 
             writer.WriteProp(ref count, IdKey, Id);
             writer.WriteProp(ref count, ReplyRequestedKey, ReplyRequested);
@@ -182,7 +164,8 @@ namespace Jasper.Messaging.Runtime
 
             if (ExecutionTime.HasValue)
             {
-                var dateString = ExecutionTime.Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+                var dateString = ExecutionTime.Value.ToUniversalTime()
+                    .ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
                 count++;
                 writer.Write(ExecutionTimeKey);
                 writer.Write(dateString);
@@ -204,7 +187,6 @@ namespace Jasper.Messaging.Runtime
 
             return count;
         }
-
     }
 
     internal static class BinaryWriterExtensions
@@ -229,8 +211,6 @@ namespace Jasper.Messaging.Runtime
 
                 count++;
             }
-
-
         }
 
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, Guid value)
@@ -242,8 +222,6 @@ namespace Jasper.Messaging.Runtime
 
                 count++;
             }
-
-
         }
 
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, bool value)
@@ -255,8 +233,6 @@ namespace Jasper.Messaging.Runtime
 
                 count++;
             }
-
-
         }
 
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, DateTime? value)
@@ -268,8 +244,6 @@ namespace Jasper.Messaging.Runtime
 
                 count++;
             }
-
-
         }
 
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, DateTimeOffset? value)
@@ -281,8 +255,6 @@ namespace Jasper.Messaging.Runtime
 
                 count++;
             }
-
-
         }
 
         public static void WriteProp(this BinaryWriter writer, ref int count, string key, Uri value)

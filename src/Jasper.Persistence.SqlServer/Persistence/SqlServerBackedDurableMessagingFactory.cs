@@ -9,7 +9,6 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 
@@ -17,13 +16,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerBackedDurableMessagingFactory : IDurableMessagingFactory
     {
-        public MessagingSettings Settings { get; }
-        private readonly SqlServerSettings _sqlServerSettings;
         private readonly ITransportLogger _logger;
         private readonly SqlServerEnvelopePersistor _persistor;
         private readonly EnvelopeRetries _retries;
+        private readonly SqlServerSettings _sqlServerSettings;
 
-        public SqlServerBackedDurableMessagingFactory(SqlServerSettings sqlServerSettings, ITransportLogger logger, MessagingSettings settings)
+        public SqlServerBackedDurableMessagingFactory(SqlServerSettings sqlServerSettings, ITransportLogger logger,
+            JasperOptions settings)
         {
             Settings = settings;
             _sqlServerSettings = sqlServerSettings;
@@ -32,6 +31,8 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             _retries = new EnvelopeRetries(_persistor, logger, settings);
         }
+
+        public JasperOptions Settings { get; }
 
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
         {
@@ -53,9 +54,24 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _persistor.ClearAllStoredMessages();
         }
 
+        public Task ScheduleJob(Envelope envelope)
+        {
+            envelope.OwnerId = TransportConstants.AnyNode;
+            envelope.Status = TransportConstants.Scheduled;
+
+            if (envelope.Message == null)
+                throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
+
+            if (!envelope.ExecutionTime.HasValue)
+                throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
+
+            return _persistor.StoreIncoming(envelope);
+        }
+
         public Task StoreOutgoing(SqlTransaction tx, IEnumerable<Envelope> envelopes)
         {
-            var cmd = SqlServerEnvelopePersistor.BuildOutgoingStorageCommand(envelopes.ToArray(), Settings.UniqueNodeId, _sqlServerSettings);
+            var cmd = SqlServerEnvelopePersistor.BuildOutgoingStorageCommand(envelopes.ToArray(), Settings.UniqueNodeId,
+                _sqlServerSettings);
             cmd.Transaction = tx;
             cmd.Connection = tx.Connection;
             return cmd.ExecuteNonQueryAsync();
@@ -68,24 +84,5 @@ namespace Jasper.Persistence.SqlServer.Persistence
             cmd.Connection = tx.Connection;
             return cmd.ExecuteNonQueryAsync();
         }
-
-        public Task ScheduleJob(Envelope envelope)
-        {
-            envelope.OwnerId = TransportConstants.AnyNode;
-            envelope.Status = TransportConstants.Scheduled;
-
-            if (envelope.Message == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
-            }
-
-            if (!envelope.ExecutionTime.HasValue)
-            {
-                throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
-            }
-
-            return _persistor.StoreIncoming(envelope);
-        }
-
     }
 }

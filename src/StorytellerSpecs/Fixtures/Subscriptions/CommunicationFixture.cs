@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
-using Jasper.Util;
 using Lamar;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -134,8 +130,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             _registry.ServiceName = serviceName;
         }
-
-
     }
 
     public class NodesCollection : IDisposable
@@ -164,6 +158,5 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
             return runtime;
         }
-
     }
 }

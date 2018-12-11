@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using Jasper.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Testing.Messaging.Runtime;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
 using Shouldly;
 using Xunit;
 
@@ -12,6 +10,50 @@ namespace Jasper.Testing.Messaging.Model
 {
     public class HandlerChainTester
     {
+        public class Target
+        {
+            [Middleware(typeof(FakeMiddleware1), typeof(FakeMiddleware2))]
+            public void Go(Message1 message)
+            {
+            }
+
+            public static void GoStatic(Message2 message)
+            {
+            }
+        }
+
+        public class FakeMiddleware1 : Frame
+        {
+            public FakeMiddleware1() : base(false)
+            {
+            }
+
+            public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+            {
+            }
+        }
+
+        public class FakeMiddleware2 : Frame
+        {
+            public FakeMiddleware2() : base(false)
+            {
+            }
+
+            public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+            {
+            }
+        }
+
+        [Fact]
+        public void apply_generic_middleware()
+        {
+            var chain = HandlerChain.For<Target>(x => x.Go(null));
+            var frames = chain.DetermineFrames(JasperGenerationRules.Empty());
+
+            chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
+            chain.Middleware.Any(x => x is FakeMiddleware2).ShouldBeTrue();
+        }
+
         [Fact]
         public void create_by_method()
         {
@@ -21,7 +63,6 @@ namespace Jasper.Testing.Messaging.Model
             var methodCall = chain.Handlers.Single();
             methodCall.HandlerType.ShouldBe(typeof(Target));
             methodCall.Method.Name.ShouldBe(nameof(Target.Go));
-
         }
 
         [Fact]
@@ -42,56 +83,5 @@ namespace Jasper.Testing.Messaging.Model
             var chain = HandlerChain.For<Target>(nameof(Target.GoStatic));
             chain.MaximumAttempts.ShouldBe(1);
         }
-
-        [Fact]
-        public void apply_generic_middleware()
-        {
-            var chain = HandlerChain.For<Target>(x => x.Go(null));
-            var frames = chain.DetermineFrames(JasperGenerationRules.Empty());
-
-            chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
-            chain.Middleware.Any(x => x is FakeMiddleware2).ShouldBeTrue();
-        }
-
-        public class Target
-        {
-            [Middleware(typeof(FakeMiddleware1), typeof(FakeMiddleware2))]
-            public void Go(Message1 message)
-            {
-
-            }
-
-            public static void GoStatic(Message2 message)
-            {
-
-            }
-
-
-        }
-
-        public class FakeMiddleware1 : Frame
-        {
-            public FakeMiddleware1() : base(false)
-            {
-            }
-
-            public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-            {
-
-            }
-        }
-
-        public class FakeMiddleware2 : Frame
-        {
-            public FakeMiddleware2() : base(false)
-            {
-            }
-
-            public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-            {
-
-            }
-        }
-
     }
 }

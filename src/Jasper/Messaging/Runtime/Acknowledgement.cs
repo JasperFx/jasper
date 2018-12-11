@@ -8,21 +8,20 @@ namespace Jasper.Messaging.Runtime
 
         protected bool Equals(Acknowledgement other)
         {
-            return string.Equals(CorrelationId, other.CorrelationId);
+            return Equals(CorrelationId, other.CorrelationId);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Acknowledgement) obj);
         }
 
         public override int GetHashCode()
         {
-            return (CorrelationId != null ? CorrelationId.GetHashCode() : 0);
+            return CorrelationId != null ? CorrelationId.GetHashCode() : 0;
         }
-
     }
 }

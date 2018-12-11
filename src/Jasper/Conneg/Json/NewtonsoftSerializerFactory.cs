@@ -1,12 +1,6 @@
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Baseline;
-using Jasper.Messaging;
-using Jasper.Util;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 
@@ -15,9 +9,9 @@ namespace Jasper.Conneg.Json
     // SAMPLE: NewtonsoftSerializer
     public class NewtonsoftSerializerFactory : ISerializerFactory
     {
-        private readonly ObjectPool<JsonSerializer> _serializerPool;
-        private readonly ArrayPool<char> _charPool;
         private readonly ArrayPool<byte> _bytePool;
+        private readonly ArrayPool<char> _charPool;
+        private readonly ObjectPool<JsonSerializer> _serializerPool;
 
         public NewtonsoftSerializerFactory(JsonSerializerSettings settings, ObjectPoolProvider pooling)
         {
@@ -57,7 +51,7 @@ namespace Jasper.Conneg.Json
         {
             return new NewtonsoftJsonWriter(messageType, _charPool, _bytePool, _serializerPool);
         }
-
     }
+
     // ENDSAMPLE
 }

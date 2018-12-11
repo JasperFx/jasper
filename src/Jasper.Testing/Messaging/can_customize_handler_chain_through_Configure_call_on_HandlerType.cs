@@ -18,14 +18,12 @@ namespace Jasper.Testing.Messaging
 
     public class SpecialMessage
     {
-
     }
 
     public class CustomizedHandler
     {
         public void Handle(SpecialMessage message)
         {
-
         }
 
         public static void Configure(HandlerChain chain)

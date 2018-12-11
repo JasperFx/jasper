@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Configuration;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 
@@ -12,9 +11,9 @@ namespace Jasper.ApplicationInsights
     public class ApplicationInsightsMetrics : IMetrics
     {
         private readonly TelemetryClient _client;
-        private readonly MessagingSettings _settings;
+        private readonly JasperOptions _settings;
 
-        public ApplicationInsightsMetrics(TelemetryClient client, MessagingSettings settings)
+        public ApplicationInsightsMetrics(TelemetryClient client, JasperOptions settings)
         {
             _client = client;
             _settings = settings;
@@ -24,7 +23,6 @@ namespace Jasper.ApplicationInsights
 
         public void MessageReceived(Envelope envelope)
         {
-
         }
 
         public void MessageExecuted(Envelope envelope)
@@ -36,8 +34,7 @@ namespace Jasper.ApplicationInsights
                 Name = envelope.MessageType,
                 Source = envelope.Source,
                 Id = envelope.Id.ToString(),
-                Timestamp = envelope.SentAt,
-
+                Timestamp = envelope.SentAt
             });
         }
 
@@ -48,12 +45,14 @@ namespace Jasper.ApplicationInsights
 
         public void CircuitBroken(Uri destination)
         {
-            _client.TrackEvent(nameof(CircuitBroken), new Dictionary<string, string>{{"Destination", destination.ToString()}, {"Node", _settings.NodeId}});
+            _client.TrackEvent(nameof(CircuitBroken),
+                new Dictionary<string, string> {{"Destination", destination.ToString()}, {"Node", _settings.NodeId}});
         }
 
         public void CircuitResumed(Uri destination)
         {
-            _client.TrackEvent(nameof(CircuitResumed), new Dictionary<string, string>{{"Destination", destination.ToString()}, {"Node", _settings.NodeId}});
+            _client.TrackEvent(nameof(CircuitResumed),
+                new Dictionary<string, string> {{"Destination", destination.ToString()}, {"Node", _settings.NodeId}});
         }
 
         public void LogLocalWorkerQueueDepth(int count)
@@ -61,9 +60,8 @@ namespace Jasper.ApplicationInsights
             _client.TrackMetric(new MetricTelemetry
             {
                 Name = "WorkerQueueCount",
-                Properties = { {"Node", _settings.NodeId}},
-                Count = count,
-
+                Properties = {{"Node", _settings.NodeId}},
+                Count = count
             });
         }
 
@@ -72,21 +70,21 @@ namespace Jasper.ApplicationInsights
             _client.TrackMetric(new MetricTelemetry
             {
                 Name = "PersistedIncomingCount",
-                Properties = { {"Node", _settings.NodeId}},
+                Properties = {{"Node", _settings.NodeId}},
                 Count = counts.Incoming
             });
 
             _client.TrackMetric(new MetricTelemetry
             {
                 Name = "PersistedScheduledCount",
-                Properties = { {"Node", _settings.NodeId}},
+                Properties = {{"Node", _settings.NodeId}},
                 Count = counts.Scheduled
             });
 
             _client.TrackMetric(new MetricTelemetry
             {
                 Name = "PersistedOutgoingCount",
-                Properties = { {"Node", _settings.NodeId}},
+                Properties = {{"Node", _settings.NodeId}},
                 Count = counts.Outgoing
             });
         }
@@ -94,16 +92,12 @@ namespace Jasper.ApplicationInsights
         public void MessagesReceived(IEnumerable<Envelope> envelopes)
         {
             foreach (var group in envelopes.GroupBy(x => x.MessageType))
-            {
                 _client.TrackMetric(new MetricTelemetry
                 {
                     Name = "MessagesReceived",
-                    Properties = { {"Node", _settings.NodeId}, {"MessageType", group.Key}},
+                    Properties = {{"Node", _settings.NodeId}, {"MessageType", group.Key}},
                     Count = group.Count()
                 });
-            }
-
-
         }
     }
 }

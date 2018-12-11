@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
 using Shouldly;
 using Xunit;
 

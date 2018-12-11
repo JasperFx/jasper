@@ -8,13 +8,13 @@ namespace Jasper.Storyteller.Logging
 {
     public class EnvelopeHistory
     {
-        public Guid CorrelationId { get; }
-
         public EnvelopeHistory(Guid correlationId, IEnumerable<EnvelopeRecord> records)
         {
             CorrelationId = correlationId;
             Records = records.OrderBy(x => x.Time).ToArray();
         }
+
+        public Guid CorrelationId { get; }
 
         public EnvelopeRecord[] Records { get; set; }
         public long Time => Records[0].Time;
@@ -53,15 +53,12 @@ namespace Jasper.Storyteller.Logging
             headers.WriteEnvelopeProperty(envelope, x => x.ReceivedAt);
 
 
-
             foreach (var pair in envelope.Headers)
-            {
                 headers.AddBodyRow(row =>
                 {
                     row.Cell(pair.Key);
                     row.Cell(pair.Value);
                 });
-            }
 
             var table = new TableTag();
 
@@ -86,20 +83,15 @@ namespace Jasper.Storyteller.Logging
                     row.Cell(record.ServiceName);
                     row.Cell(record.Message);
 
-                    if (record.ExceptionText.IsNotEmpty())
-                    {
-                        row.AddClass("bg-warning");
-                    }
+                    if (record.ExceptionText.IsNotEmpty()) row.AddClass("bg-warning");
                 });
 
                 if (record.ExceptionText.IsNotEmpty())
-                {
                     table.AddBodyRow(row =>
                     {
                         row.Attr("colSpan", "3");
                         row.Add("td/pre").Text(record.ExceptionText);
                     });
-                }
             }
 
             return div;

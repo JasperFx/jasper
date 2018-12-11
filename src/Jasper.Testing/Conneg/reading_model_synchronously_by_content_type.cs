@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
@@ -13,17 +12,17 @@ namespace Jasper.Testing.Conneg
 {
     public class reading_model_synchronously_by_content_type
     {
-        private ModelReader theReader;
-
         public reading_model_synchronously_by_content_type()
         {
             theReader = new ModelReader(new IMessageDeserializer[]
             {
                 new FakeReader("blue"),
                 new FakeReader("red"),
-                new FakeReader("green"),
+                new FakeReader("green")
             });
         }
+
+        private readonly ModelReader theReader;
 
         [Fact]
         public void read_with_a_single_accepts_type()
@@ -31,7 +30,7 @@ namespace Jasper.Testing.Conneg
             var bytes = Encoding.UTF8.GetBytes("Chiefs");
 
 
-            theReader.TryRead("blue", bytes, out object model)
+            theReader.TryRead("blue", bytes, out var model)
                 .ShouldBeTrue();
 
             model.As<ConnegMessage>().ContentType.ShouldBe("blue");
@@ -45,13 +44,11 @@ namespace Jasper.Testing.Conneg
             var bytes = Encoding.UTF8.GetBytes("Broncos");
 
 
-            theReader.TryRead("purple", bytes, out object model)
+            theReader.TryRead("purple", bytes, out var model)
                 .ShouldBeFalse();
 
             model.ShouldBeNull();
         }
-
-
     }
 
     internal class FakeReader : IMessageDeserializer
@@ -85,7 +82,6 @@ namespace Jasper.Testing.Conneg
         {
             throw new NotSupportedException();
         }
-
     }
 
     public class ConnegMessage

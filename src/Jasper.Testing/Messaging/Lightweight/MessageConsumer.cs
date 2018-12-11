@@ -1,7 +1,6 @@
 using System;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
-using Jasper.Testing.Messaging.Runtime;
 
 namespace Jasper.Testing.Messaging.Lightweight
 {
@@ -21,20 +20,14 @@ namespace Jasper.Testing.Messaging.Lightweight
 
         public void Consume(Envelope envelope, Message2 message)
         {
-            if (envelope.Attempts < 2)
-            {
-                throw new DivideByZeroException();
-            }
+            if (envelope.Attempts < 2) throw new DivideByZeroException();
 
             _tracker.Record(message, envelope);
         }
 
         public void Consume(Envelope envelope, TimeoutsMessage message)
         {
-            if (envelope.Attempts < 2)
-            {
-                throw new TimeoutException();
-            }
+            if (envelope.Attempts < 2) throw new TimeoutException();
 
             _tracker.Record(message, envelope);
         }

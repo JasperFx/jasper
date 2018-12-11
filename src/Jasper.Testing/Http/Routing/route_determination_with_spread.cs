@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Alba;
 using Baseline;
@@ -16,19 +15,19 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [Fact]
-        public void route_with_relative_path()
+        public async Task end_to_end_with_path_segments()
         {
-            var route = RouteBuilder.Build<SpreadHttpActions>(x => x.get_folder(null));
-            route.Pattern.ShouldBe("folder/...");
-            route.Segments.Last().ShouldBeOfType<Spread>();
-        }
+            await scenario(_ =>
+            {
+                _.Get.Url("/file/abc.txt");
+                _.ContentShouldBe("abc.txt");
+            });
 
-        [Fact]
-        public void route_with_path_segments()
-        {
-            var route = RouteBuilder.Build<SpreadHttpActions>(x => x.get_file(null));
-            route.Pattern.ShouldBe("file/...");
-            route.Segments.Last().ShouldBeOfType<Spread>();
+            await scenario(_ =>
+            {
+                _.Get.Url("/file/1/2/3/abc.txt");
+                _.ContentShouldBe("1-2-3-abc.txt");
+            });
         }
 
 
@@ -49,19 +48,19 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [Fact]
-        public async Task end_to_end_with_path_segments()
+        public void route_with_path_segments()
         {
-            await scenario(_ =>
-            {
-                _.Get.Url("/file/abc.txt");
-                _.ContentShouldBe("abc.txt");
-            });
+            var route = RouteBuilder.Build<SpreadHttpActions>(x => x.get_file(null));
+            route.Pattern.ShouldBe("file/...");
+            route.Segments.Last().ShouldBeOfType<Spread>();
+        }
 
-            await scenario(_ =>
-            {
-                _.Get.Url("/file/1/2/3/abc.txt");
-                _.ContentShouldBe("1-2-3-abc.txt");
-            });
+        [Fact]
+        public void route_with_relative_path()
+        {
+            var route = RouteBuilder.Build<SpreadHttpActions>(x => x.get_folder(null));
+            route.Pattern.ShouldBe("folder/...");
+            route.Segments.Last().ShouldBeOfType<Spread>();
         }
     }
 

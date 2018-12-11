@@ -14,25 +14,24 @@ namespace Jasper.Conneg
 {
     public abstract class SerializationGraph
     {
-        private readonly Dictionary<string, ISerializerFactory> _serializers = new Dictionary<string, ISerializerFactory>();
+        private readonly IList<Type> _otherTypes = new List<Type>();
 
         private readonly IList<IMessageDeserializer> _readers = new List<IMessageDeserializer>();
+
+        private readonly Dictionary<string, ISerializerFactory> _serializers =
+            new Dictionary<string, ISerializerFactory>();
+
         private readonly IList<IMessageSerializer> _writers = new List<IMessageSerializer>();
 
 
         private ImHashMap<string, ModelReader> _modelReaders = ImHashMap<string, ModelReader>.Empty;
         private ImHashMap<Type, ModelWriter> _modelWriters = ImHashMap<Type, ModelWriter>.Empty;
 
-        private readonly IList<Type> _otherTypes = new List<Type>();
-
         protected SerializationGraph(ObjectPoolProvider pooling, JsonSerializerSettings jsonSettings,
             IEnumerable<ISerializerFactory> serializers,
             IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
         {
-            foreach (var serializer in serializers)
-            {
-                _serializers.SmartAdd(serializer.ContentType, serializer);
-            }
+            foreach (var serializer in serializers) _serializers.SmartAdd(serializer.ContentType, serializer);
 
             if (!_serializers.ContainsKey("application/json"))
             {
@@ -42,8 +41,6 @@ namespace Jasper.Conneg
 
             _readers.AddRange(readers);
             _writers.AddRange(writers);
-
-
         }
 
         public IEnumerable<ISerializerFactory> Serializers => _serializers.Values;
@@ -53,45 +50,35 @@ namespace Jasper.Conneg
             var contentType = envelope.ContentType ?? "application/json";
 
             if (contentType.IsEmpty())
-            {
                 throw new EnvelopeDeserializationException($"No content type can be determined for {envelope}");
-            }
 
             if (envelope.Data == null || envelope.Data.Length == 0)
-            {
-                throw new EnvelopeDeserializationException($"No data on the Envelope");
-            }
+                throw new EnvelopeDeserializationException("No data on the Envelope");
 
             if (envelope.MessageType.IsNotEmpty())
             {
                 var reader = ReaderFor(envelope.MessageType);
                 if (reader.HasAnyReaders)
-                {
                     try
                     {
-                        if (reader.TryRead(envelope.ContentType, envelope.Data, out object model))
-                        {
-                            return model;
-                        }
+                        if (reader.TryRead(envelope.ContentType, envelope.Data, out var model)) return model;
                     }
                     catch (Exception ex)
                     {
                         throw EnvelopeDeserializationException.ForReadFailure(envelope, ex);
                     }
-                }
             }
 
             var messageType = envelope.MessageType ?? "application/json";
             if (_serializers.ContainsKey(messageType))
-            {
                 using (var stream = new MemoryStream(envelope.Data))
                 {
                     stream.Position = 0;
                     return _serializers[messageType].Deserialize(stream);
                 }
-            }
 
-            throw new EnvelopeDeserializationException($"Unknown content-type '{contentType}' and message-type '{envelope.MessageType}'");
+            throw new EnvelopeDeserializationException(
+                $"Unknown content-type '{contentType}' and message-type '{envelope.MessageType}'");
         }
 
         public ModelWriter WriterFor(Type messageType)

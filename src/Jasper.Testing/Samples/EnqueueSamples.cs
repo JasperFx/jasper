@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Messaging;
-using Jasper.Testing.Messaging.Runtime;
 
 namespace Jasper.Testing.Samples
 {
@@ -20,6 +19,7 @@ namespace Jasper.Testing.Samples
             // Enqueue a message locally & durably
             await bus.EnqueueDurably(new Message1());
         }
+
         // ENDSAMPLE
     }
 }

@@ -7,24 +7,23 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.WorkerQueues;
-using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Invocation
 {
     public interface IHandlerPipeline
     {
+        WorkersGraph Workers { get; }
         Task Invoke(Envelope envelope);
         Task InvokeNow(Envelope envelope);
-        WorkersGraph Workers { get; }
     }
 
     public class HandlerPipeline : IHandlerPipeline
     {
-        private readonly MessagingSerializationGraph _serializer;
         private readonly HandlerGraph _graph;
-        private readonly IMessagingRoot _root;
 
         private readonly IMissingHandler[] _missingHandlers;
+        private readonly IMessagingRoot _root;
+        private readonly MessagingSerializationGraph _serializer;
 
         public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IMessageLogger logger,
             IEnumerable<IMissingHandler> missingHandlers, IMessagingRoot root)
@@ -63,6 +62,37 @@ namespace Jasper.Messaging.Runtime.Invocation
                 // could never be handled
                 await envelope.Callback.MoveToErrors(envelope, e);
                 Logger.LogException(e, envelope.Id);
+            }
+        }
+
+
+        public async Task InvokeNow(Envelope envelope)
+        {
+            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
+
+            var handler = _graph.HandlerFor(envelope.Message.GetType());
+            if (handler == null)
+                throw new ArgumentOutOfRangeException(nameof(envelope),
+                    $"No known handler for message type {envelope.Message.GetType().FullName}");
+
+
+            var context = _root.ContextFor(envelope);
+            envelope.StartTiming();
+
+            try
+            {
+                await handler.Handle(context);
+
+                // TODO -- what do we do here if this fails? Compensating actions?
+                await context.SendAllQueuedOutgoingMessages();
+
+                envelope.MarkCompletion(true);
+            }
+            catch (Exception e)
+            {
+                envelope.MarkCompletion(false);
+                Logger.LogException(e, message: $"Invocation of {envelope} failed!");
+                throw;
             }
         }
 
@@ -105,45 +135,9 @@ namespace Jasper.Messaging.Runtime.Invocation
         }
 
 
-        public async Task InvokeNow(Envelope envelope)
-        {
-            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
-
-            var handler = _graph.HandlerFor(envelope.Message.GetType());
-            if (handler == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(envelope), $"No known handler for message type {envelope.Message.GetType().FullName}");
-            }
-
-
-
-            var context = _root.ContextFor(envelope);
-            envelope.StartTiming();
-
-            try
-            {
-                await handler.Handle(context);
-
-                // TODO -- what do we do here if this fails? Compensating actions?
-                await context.SendAllQueuedOutgoingMessages();
-
-                envelope.MarkCompletion(true);
-            }
-            catch (Exception e)
-            {
-                envelope.MarkCompletion(false);
-                Logger.LogException(e, message:$"Invocation of {envelope} failed!");
-                throw;
-            }
-        }
-
-
         private void deserialize(Envelope envelope)
         {
-            if (envelope.Message == null)
-            {
-                envelope.Message = _serializer.Deserialize(envelope);
-            }
+            if (envelope.Message == null) envelope.Message = _serializer.Deserialize(envelope);
         }
 
         public async Task ProcessMessage(Envelope envelope, IMessageContext context)
@@ -202,7 +196,6 @@ namespace Jasper.Messaging.Runtime.Invocation
             Logger.NoHandlerFor(envelope);
 
             foreach (var handler in _missingHandlers)
-            {
                 try
                 {
                     await handler.Handle(envelope, context);
@@ -211,17 +204,10 @@ namespace Jasper.Messaging.Runtime.Invocation
                 {
                     Logger.LogException(e);
                 }
-            }
 
-            if (envelope.AckRequested)
-            {
-                await context.Advanced.SendAcknowledgement();
-            }
+            if (envelope.AckRequested) await context.Advanced.SendAcknowledgement();
 
             await envelope.Callback.MarkComplete();
         }
-
-
-
     }
 }

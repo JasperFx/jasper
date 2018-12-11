@@ -5,6 +5,5 @@ namespace IntegrationTests.RabbitMQ
     [Collection("rabbitmq")]
     public abstract class RabbitMQContext
     {
-
     }
 }

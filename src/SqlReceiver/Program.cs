@@ -2,9 +2,9 @@
 
 namespace SqlReceiver
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             return JasperAgent.Run<ReceiverApp>(args);
         }

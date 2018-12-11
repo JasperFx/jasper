@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Http.Routing;
 using Jasper.Storyteller;
 using StoryTeller;
 
@@ -8,7 +7,6 @@ namespace StorytellerSample
     // SAMPLE: IncrementFixture
     public class IncrementFixture : MessagingFixture
     {
-
         [FormatAs("Send increment message from the other application")]
         public Task SendIncrementMessage()
         {
@@ -30,5 +28,6 @@ namespace StorytellerSample
             return counter.Count;
         }
     }
+
     // ENDSAMPLE
 }

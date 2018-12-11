@@ -6,6 +6,17 @@ namespace Jasper.Messaging.Runtime
     {
         private Stopwatch _stopwatch;
 
+        /// <summary>
+        ///     Did the envelope succeed during execution?
+        /// </summary>
+        public bool Succeeded { get; private set; }
+
+        /// <summary>
+        ///     Tracks the execution duration in milliseconds in the handling
+        ///     pipeline
+        /// </summary>
+        public long ExecutionDuration { get; private set; }
+
         internal void StartTiming()
         {
             _stopwatch = Stopwatch.StartNew();
@@ -20,16 +31,5 @@ namespace Jasper.Messaging.Runtime
 
             Succeeded = success;
         }
-
-        /// <summary>
-        /// Did the envelope succeed during execution?
-        /// </summary>
-        public bool Succeeded { get; private set; }
-
-        /// <summary>
-        /// Tracks the execution duration in milliseconds in the handling
-        /// pipeline
-        /// </summary>
-        public long ExecutionDuration { get; private set; }
     }
 }

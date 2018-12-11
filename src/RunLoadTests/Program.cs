@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Marten;
 using Oakton;
@@ -9,14 +6,11 @@ using TestMessages;
 
 namespace RunLoadTests
 {
-    class Program
+    internal class Program
     {
-        static Task<int> Main(string[] args)
+        private static Task<int> Main(string[] args)
         {
-            return CommandExecutor.For(x =>
-            {
-                x.RegisterCommands(typeof(Program).Assembly);
-            }).ExecuteAsync(args);
+            return CommandExecutor.For(x => { x.RegisterCommands(typeof(Program).Assembly); }).ExecuteAsync(args);
         }
     }
 
@@ -45,7 +39,5 @@ namespace RunLoadTests
     {
         public string ConnectionFlag { get; set; } =
             "Server=localhost;Database=jasper_testing;User Id=sa;Password=P@55w0rd";
-
-
     }
 }

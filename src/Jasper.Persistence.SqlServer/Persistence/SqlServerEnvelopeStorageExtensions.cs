@@ -42,8 +42,6 @@ namespace Jasper.Persistence.SqlServer.Persistence
                     envelope.OwnerId = reader.GetFieldValue<int>(2);
 
 
-
-
                     if (!reader.IsDBNull(3))
                     {
                         var raw = reader.GetFieldValue<DateTimeOffset>(3);

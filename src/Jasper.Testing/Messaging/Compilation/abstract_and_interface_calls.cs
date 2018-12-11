@@ -4,22 +4,11 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation
 {
-
     public class abstract_and_interface_calls : CompilationContext
     {
         public abstract_and_interface_calls()
         {
             theRegistry.Handlers.IncludeType<HandlerWithMultipleCalls>();
-        }
-
-        [Fact]
-        public async Task can_collate_interfaces()
-        {
-            var message = new SpecificMessage();
-
-            await Execute(message);
-
-            HandlerWithMultipleCalls.LastIMessage.ShouldBeSameAs(message);
         }
 
         [Fact]
@@ -32,18 +21,29 @@ namespace Jasper.Testing.Messaging.Compilation
             HandlerWithMultipleCalls.LastIMessage.ShouldBeSameAs(message);
             HandlerWithMultipleCalls.LastBaseMessage.ShouldBeSameAs(message);
         }
+
+        [Fact]
+        public async Task can_collate_interfaces()
+        {
+            var message = new SpecificMessage();
+
+            await Execute(message);
+
+            HandlerWithMultipleCalls.LastIMessage.ShouldBeSameAs(message);
+        }
     }
 
     public class HandlerWithMultipleCalls
     {
+        public static IMessage LastIMessage { get; set; }
+        public static BaseMessage LastBaseMessage { get; set; }
+
         public void Handle(SpecificMessage message)
         {
-
         }
 
         public void Handle(SpecificMessage2 message2)
         {
-
         }
 
         public void Handle(IMessage message)
@@ -55,28 +55,21 @@ namespace Jasper.Testing.Messaging.Compilation
         {
             LastBaseMessage = message;
         }
-
-        public static IMessage LastIMessage { get; set; }
-        public static BaseMessage LastBaseMessage { get; set; }
     }
 
     public interface IMessage
     {
-
     }
 
     public class SpecificMessage : IMessage
     {
-
     }
 
     public abstract class BaseMessage : IMessage
     {
-
     }
 
     public class SpecificMessage2 : BaseMessage
     {
-
     }
 }

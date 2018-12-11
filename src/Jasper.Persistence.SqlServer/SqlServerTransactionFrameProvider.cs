@@ -13,10 +13,8 @@ namespace Jasper.Persistence.SqlServer
         {
             var shouldFlushOutgoingMessages = false;
             if (chain is RouteChain)
-            {
                 shouldFlushOutgoingMessages = chain.As<RouteChain>().Action.Method.GetParameters()
                     .Any(x => x.ParameterType == typeof(IMessageContext));
-            }
 
 
             var frame = new SqlTransactionFrame {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};

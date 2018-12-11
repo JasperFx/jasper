@@ -36,10 +36,7 @@ namespace RunLoadTests
 
                 var tasks = new List<Task>();
 
-                for (int i = 0; i < input.ThreadsFlag; i++)
-                {
-                    tasks.Add(postInLoop(client, input, cancellation.Token));
-                }
+                for (var i = 0; i < input.ThreadsFlag; i++) tasks.Add(postInLoop(client, input, cancellation.Token));
 
 
                 Task.WaitAll(tasks.ToArray());

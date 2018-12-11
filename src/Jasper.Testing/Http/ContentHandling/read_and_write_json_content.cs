@@ -7,6 +7,10 @@ namespace Jasper.Testing.Http.ContentHandling
 {
     public class read_and_write_json_content : RegistryContext<HttpTestingApp>
     {
+        public read_and_write_json_content(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
+        {
+        }
+
         [Fact]
         public async Task read_and_write()
         {
@@ -26,10 +30,6 @@ namespace Jasper.Testing.Http.ContentHandling
 
             sum.Sum.ShouldBe(8);
         }
-
-        public read_and_write_json_content(RegistryFixture<HttpTestingApp> fixture) : base(fixture)
-        {
-        }
     }
 
     public class SomeNumbers
@@ -47,9 +47,7 @@ namespace Jasper.Testing.Http.ContentHandling
     {
         public static SumValue post_sum(SomeNumbers input)
         {
-            return new SumValue{Sum = input.X + input.Y};
+            return new SumValue {Sum = input.X + input.Y};
         }
     }
 }
-
-

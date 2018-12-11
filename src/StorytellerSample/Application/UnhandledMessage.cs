@@ -1,4 +1,6 @@
 ﻿namespace StorytellerSample.Application
 {
-    public class UnhandledMessage{}
+    public class UnhandledMessage
+    {
+    }
 }

@@ -11,7 +11,6 @@ namespace Jasper.Testing.Http.Routing
 {
     public class route_determination_and_usage_with_arguments : RegistryContext<RoutingApp>
     {
-
         public route_determination_and_usage_with_arguments(RegistryFixture<RoutingApp> fixture) : base(fixture)
         {
         }
@@ -19,6 +18,54 @@ namespace Jasper.Testing.Http.Routing
         private Route routeFor(Expression<Action<RouteEndpoints>> expression)
         {
             return RouteBuilder.Build(expression);
+        }
+
+        [Fact]
+        public async Task bool_arguments()
+        {
+            await scenario(_ =>
+            {
+                _.Get.Url("/bool/true");
+                _.ContentShouldBe("blue");
+            });
+
+            await scenario(_ =>
+            {
+                _.Get.Url("/bool/false");
+                _.ContentShouldBe("green");
+            });
+        }
+
+        [Fact]
+        public async Task char_arguments()
+        {
+            await scenario(_ =>
+            {
+                _.Get.Url("/letters/f/to/k");
+                _.ContentShouldBe("f-k");
+            });
+        }
+
+        [Fact]
+        public async Task double_argument()
+        {
+            await scenario(_ =>
+            {
+                _.Get.Url("/double/1.23");
+                _.ContentShouldBe("1.23");
+            });
+        }
+
+        [Fact]
+        public async Task guid_argument()
+        {
+            var id = Guid.NewGuid().ToString();
+
+            await scenario(_ =>
+            {
+                _.Get.Url("/guid/" + id);
+                _.ContentShouldBe($"*{id}*");
+            });
         }
 
 
@@ -45,56 +92,6 @@ namespace Jasper.Testing.Http.Routing
                 _.ContentShouldBe("11");
             });
         }
-
-        [Fact]
-        public async Task double_argument()
-        {
-            await scenario(_ =>
-            {
-                _.Get.Url("/double/1.23");
-                _.ContentShouldBe("1.23");
-            });
-        }
-
-        [Fact]
-        public async Task char_arguments()
-        {
-            await scenario(_ =>
-            {
-                _.Get.Url("/letters/f/to/k");
-                _.ContentShouldBe("f-k");
-            });
-        }
-
-        [Fact]
-        public async Task bool_arguments()
-        {
-            await scenario(_ =>
-            {
-                _.Get.Url("/bool/true");
-                _.ContentShouldBe("blue");
-            });
-
-            await scenario(_ =>
-            {
-                _.Get.Url("/bool/false");
-                _.ContentShouldBe("green");
-            });
-        }
-
-        [Fact]
-        public async Task guid_argument()
-        {
-            var id = Guid.NewGuid().ToString();
-
-            await scenario(_ =>
-            {
-                _.Get.Url("/guid/" + id);
-                _.ContentShouldBe($"*{id}*");
-            });
-        }
-
-
     }
 
     public class RouteEndpoints

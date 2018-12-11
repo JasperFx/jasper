@@ -1,24 +1,19 @@
-using Jasper;
 using System;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Jasper.Util;
 using Oakton;
-
 
 namespace Jasper.CommandLine
 {
     /// <summary>
-    /// Used to quickly turn a Jasper application into a console application
-    /// with administration commands
+    ///     Used to quickly turn a Jasper application into a console application
+    ///     with administration commands
     /// </summary>
     public static class JasperAgent
     {
-
-
         /// <summary>
-        /// Bootstrap and run the given JasperRegistry
+        ///     Bootstrap and run the given JasperRegistry
         /// </summary>
         /// <param name="registry"></param>
         /// <param name="args"></param>
@@ -27,9 +22,7 @@ namespace Jasper.CommandLine
         public static int Run(JasperRegistry registry, string[] args = null)
         {
             if (args == null || args.Length == 0 || args[0].StartsWith("-"))
-            {
-                args = new string[]{"run"}.Concat(args ?? new string[0]).ToArray();
-            }
+                args = new[] {"run"}.Concat(args ?? new string[0]).ToArray();
 
 
             if (registry == null) throw new ArgumentNullException(nameof(registry));
@@ -39,35 +32,24 @@ namespace Jasper.CommandLine
         }
 
 
-
         private static CommandExecutor buildExecutor(JasperRegistry registry)
         {
             return CommandExecutor.For(factory =>
             {
                 factory.RegisterCommands(typeof(RunCommand).GetTypeInfo().Assembly);
-                if (registry.ApplicationAssembly != null)
-                {
-                    factory.RegisterCommands(registry.ApplicationAssembly);
-                }
+                if (registry.ApplicationAssembly != null) factory.RegisterCommands(registry.ApplicationAssembly);
 
-                foreach (var assembly in JasperRuntime.FindExtensionAssemblies())
-                {
-                    factory.RegisterCommands(assembly);
-                }
+                foreach (var assembly in JasperRuntime.FindExtensionAssemblies()) factory.RegisterCommands(assembly);
 
                 factory.ConfigureRun = cmd =>
                 {
-                    if (cmd.Input is JasperInput)
-                    {
-                        cmd.Input.As<JasperInput>().Registry = registry;
-                    }
+                    if (cmd.Input is JasperInput) cmd.Input.As<JasperInput>().Registry = registry;
                 };
-
             });
         }
 
         /// <summary>
-        /// Bootstrap and run a Jasper application with customizations
+        ///     Bootstrap and run a Jasper application with customizations
         /// </summary>
         /// <param name="args"></param>
         /// <param name="configure"></param>
@@ -82,7 +64,7 @@ namespace Jasper.CommandLine
         }
 
         /// <summary>
-        /// Bootstrap and run a Jasper application with customizations
+        ///     Bootstrap and run a Jasper application with customizations
         /// </summary>
         /// <param name="args"></param>
         /// <param name="configure"></param>
@@ -93,7 +75,7 @@ namespace Jasper.CommandLine
         }
 
         /// <summary>
-        /// Bootstrap and run a basic Jasper application for this assemblhy
+        ///     Bootstrap and run a basic Jasper application for this assemblhy
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>

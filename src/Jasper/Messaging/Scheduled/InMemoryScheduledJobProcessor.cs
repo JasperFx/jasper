@@ -73,7 +73,8 @@ namespace Jasper.Messaging.Scheduled
             private readonly InMemoryScheduledJobProcessor _parent;
             private Task _task;
 
-            public InMemoryScheduledJob(InMemoryScheduledJobProcessor parent, Envelope envelope, DateTimeOffset executionTime)
+            public InMemoryScheduledJob(InMemoryScheduledJobProcessor parent, Envelope envelope,
+                DateTimeOffset executionTime)
             {
                 _parent = parent;
                 ExecutionTime = executionTime.ToUniversalTime();

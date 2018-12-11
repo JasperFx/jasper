@@ -8,7 +8,6 @@ namespace Jasper.Messaging.Logging
     {
         public void MessageReceived(Envelope envelope)
         {
-
         }
 
         public void MessageExecuted(Envelope envelope)
@@ -33,17 +32,14 @@ namespace Jasper.Messaging.Logging
 
         public void LogPersistedCounts(PersistedCounts counts)
         {
-
         }
 
         public void MessagesReceived(IEnumerable<Envelope> envelopes)
         {
-
         }
 
         public void LogLocalSendingQueueDepth(int sendingCount)
         {
-            
         }
     }
 }

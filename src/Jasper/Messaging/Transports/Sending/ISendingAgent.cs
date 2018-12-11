@@ -14,6 +14,8 @@ namespace Jasper.Messaging.Transports.Sending
 
         bool IsDurable { get; }
 
+        int QueuedCount { get; }
+
         // This would be called in the future by the outbox, assuming
         // that the envelope is already persisted and just needs to be sent out
         Task EnqueueOutgoing(Envelope envelope);
@@ -25,7 +27,5 @@ namespace Jasper.Messaging.Transports.Sending
         Task StoreAndForwardMany(IEnumerable<Envelope> envelopes);
 
         void Start();
-
-        int QueuedCount { get; }
     }
 }

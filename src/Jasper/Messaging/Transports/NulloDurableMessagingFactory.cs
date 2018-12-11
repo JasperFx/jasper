@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 
@@ -13,13 +12,15 @@ namespace Jasper.Messaging.Transports
     public class NulloDurableMessagingFactory : IDurableMessagingFactory
     {
         private readonly ITransportLogger _logger;
-        private readonly MessagingSettings _settings;
+        private readonly JasperOptions _settings;
 
-        public NulloDurableMessagingFactory(ITransportLogger logger, MessagingSettings settings)
+        public NulloDurableMessagingFactory(ITransportLogger logger, JasperOptions settings)
         {
             _logger = logger;
             _settings = settings;
         }
+
+        public IScheduledJobProcessor ScheduledJobs { get; set; }
 
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
         {
@@ -41,14 +42,10 @@ namespace Jasper.Messaging.Transports
             // nothing
         }
 
-        public IScheduledJobProcessor ScheduledJobs { get; set; }
-
         public Task ScheduleJob(Envelope envelope)
         {
             if (!envelope.ExecutionTime.HasValue)
-            {
                 throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
-            }
 
             ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
             return Task.CompletedTask;

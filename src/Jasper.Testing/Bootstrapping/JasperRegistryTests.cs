@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Testing.FakeStoreTypes;
-using Jasper.Testing.Messaging.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -35,16 +34,11 @@ namespace Jasper.Testing.Bootstrapping
             registry.Services.For<IFoo>().Use<Foo>();
             registry.Services.AddTransient<IFakeStore, FakeStore>();
 
-            var runtime = await JasperRuntime.ForAsync(registry);
-
-            try
+            using (var runtime = await JasperRuntime.ForAsync(registry))
             {
                 runtime.Container.DefaultRegistrationIs<IFoo, Foo>();
             }
-            finally
-            {
-                await runtime.Shutdown();
-            }
+
         }
     }
 }

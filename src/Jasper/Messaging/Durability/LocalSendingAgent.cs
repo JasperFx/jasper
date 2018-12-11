@@ -11,12 +11,11 @@ namespace Jasper.Messaging.Durability
 {
     public class LocalSendingAgent : ISendingAgent
     {
-        private readonly IWorkerQueue _queues;
-        private readonly SerializationGraph _serializers;
-        private readonly IRetries _retries;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistor _persistor;
-        public Uri Destination { get; }
+        private readonly IWorkerQueue _queues;
+        private readonly IRetries _retries;
+        private readonly SerializationGraph _serializers;
 
         public LocalSendingAgent(Uri destination, IWorkerQueue queues, IEnvelopePersistor persistor,
             SerializationGraph serializers, IRetries retries, ITransportLogger logger)
@@ -30,6 +29,8 @@ namespace Jasper.Messaging.Durability
 
             Destination = destination;
         }
+
+        public Uri Destination { get; }
 
         public void Dispose()
         {
@@ -60,18 +61,19 @@ namespace Jasper.Messaging.Durability
 
         public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
         {
-            foreach (var envelope in envelopes)
-            {
-                writeMessageData(envelope);
-            }
+            foreach (var envelope in envelopes) writeMessageData(envelope);
 
             await _persistor.StoreIncoming((Envelope[]) envelopes);
 
-            foreach (var envelope in envelopes)
-            {
-                await EnqueueOutgoing(envelope);
-            }
+            foreach (var envelope in envelopes) await EnqueueOutgoing(envelope);
         }
+
+        public void Start()
+        {
+            // Nothing
+        }
+
+        public int QueuedCount { get; } = 0;
 
         private void writeMessageData(Envelope envelope)
         {
@@ -82,12 +84,5 @@ namespace Jasper.Messaging.Durability
                 envelope.ContentType = writer.ContentType;
             }
         }
-
-        public void Start()
-        {
-            // Nothing
-        }
-
-        public int QueuedCount { get; } = 0;
     }
 }

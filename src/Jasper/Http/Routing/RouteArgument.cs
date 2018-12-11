@@ -8,7 +8,7 @@ using Baseline;
 using Baseline.Conversion;
 using Baseline.Reflection;
 using Jasper.Http.Routing.Codegen;
-using Lamar.Codegen.Frames;
+using LamarCompiler.Frames;
 
 namespace Jasper.Http.Routing
 {

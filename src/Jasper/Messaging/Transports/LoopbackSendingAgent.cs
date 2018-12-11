@@ -11,14 +11,15 @@ namespace Jasper.Messaging.Transports
     public class LoopbackSendingAgent : ISendingAgent
     {
         private readonly IWorkerQueue _queues;
-        public Uri Destination { get; }
-        public Uri DefaultReplyUri { get; set; }
 
         public LoopbackSendingAgent(Uri destination, IWorkerQueue queues)
         {
             _queues = queues ?? throw new ArgumentNullException(nameof(queues));
             Destination = destination;
         }
+
+        public Uri Destination { get; }
+        public Uri DefaultReplyUri { get; set; }
 
         public void Dispose()
         {
@@ -40,12 +41,8 @@ namespace Jasper.Messaging.Transports
                 _queues.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
                 return Task.CompletedTask;
             }
-            else
-            {
-                return _queues.Enqueue(envelope);
-            }
 
-
+            return _queues.Enqueue(envelope);
         }
 
         public Task StoreAndForward(Envelope envelope)
@@ -55,10 +52,7 @@ namespace Jasper.Messaging.Transports
 
         public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
         {
-            foreach (var envelope in envelopes)
-            {
-                await EnqueueOutgoing(envelope);
-            }
+            foreach (var envelope in envelopes) await EnqueueOutgoing(envelope);
         }
 
         public void Start()

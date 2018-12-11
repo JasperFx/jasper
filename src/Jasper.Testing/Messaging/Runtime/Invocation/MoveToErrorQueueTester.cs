@@ -10,12 +10,6 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
 {
     public class MoveToErrorQueueTester
     {
-        private Exception theException = new DivideByZeroException();
-        private MoveToErrorQueue theContinuation;
-        private Envelope theEnvelope = ObjectMother.Envelope();
-        private IMessageContext theContext = Substitute.For<IMessageContext>();
-        private IAdvancedMessagingActions advanced;
-
         public MoveToErrorQueueTester()
         {
             theContinuation = new MoveToErrorQueue(theException);
@@ -25,6 +19,12 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
             advanced = Substitute.For<IAdvancedMessagingActions>();
             theContext.Advanced.Returns(advanced);
         }
+
+        private readonly Exception theException = new DivideByZeroException();
+        private readonly MoveToErrorQueue theContinuation;
+        private readonly Envelope theEnvelope = ObjectMother.Envelope();
+        private readonly IMessageContext theContext = Substitute.For<IMessageContext>();
+        private readonly IAdvancedMessagingActions advanced;
 
         [Fact]
         public async Task should_mark_the_envelope_as_failed()
@@ -39,7 +39,8 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
         {
             await theContinuation.Execute(theContext, DateTime.UtcNow);
 
-            await advanced.Received().SendFailureAcknowledgement($"Moved message {theEnvelope.Id} to the Error Queue.\n{theException}");
+            await advanced.Received()
+                .SendFailureAcknowledgement($"Moved message {theEnvelope.Id} to the Error Queue.\n{theException}");
         }
     }
 }

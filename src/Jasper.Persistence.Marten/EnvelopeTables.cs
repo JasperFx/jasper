@@ -1,5 +1,4 @@
-﻿using Jasper.Messaging.Transports.Configuration;
-using Jasper.Persistence.Marten.Persistence.DbObjects;
+﻿using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Marten;
 using Marten.Schema;
 
@@ -7,8 +6,7 @@ namespace Jasper.Persistence.Marten
 {
     public class EnvelopeTables
     {
-
-        public EnvelopeTables(MessagingSettings settings, StoreOptions storeConfiguration)
+        public EnvelopeTables(JasperOptions settings, StoreOptions storeConfiguration)
         {
             Incoming = new DbObjectName(storeConfiguration.DatabaseSchemaName,
                 PostgresqlEnvelopeStorage.IncomingTableName);
@@ -18,7 +16,6 @@ namespace Jasper.Persistence.Marten
             CurrentNodeId = settings.UniqueNodeId;
 
             ServiceName = settings.ServiceName;
-
         }
 
         public string ServiceName { get; set; }

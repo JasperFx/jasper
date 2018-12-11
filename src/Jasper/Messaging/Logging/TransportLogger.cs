@@ -10,7 +10,6 @@ namespace Jasper.Messaging.Logging
 {
     public class TransportLogger : ITransportLogger
     {
-        private readonly IMetrics _metrics;
         public const int OutgoingBatchSucceededEventId = 200;
         public const int OutgoingBatchFailedEventId = 201;
         public const int IncomingBatchReceivedEventId = 202;
@@ -22,19 +21,20 @@ namespace Jasper.Messaging.Logging
         public const int DiscardedExpiredEventId = 208;
         public const int DiscardedUnknownTransportEventId = 209;
         public const int ListeningStatusChangedEventId = 210;
-
-        private readonly ILogger _logger;
-        private readonly Action<ILogger, int, Uri, Exception> _outgoingBatchSucceeded;
-        private readonly Action<ILogger, Uri, Exception> _outgoingBatchFailed;
-        private readonly Action<ILogger, int, Uri, Exception> _incomingBatchReceived;
         private readonly Action<ILogger, Uri, Exception> _circuitBroken;
         private readonly Action<ILogger, Uri, Exception> _circuitResumed;
-        private readonly Action<ILogger, Envelope, DateTimeOffset, Exception> _scheduledJobsQueued;
-        private readonly Action<ILogger, int, Exception> _recoveredIncoming;
-        private readonly Action<ILogger, int, Exception> _recoveredOutgoing;
         private readonly Action<ILogger, Envelope, Exception> _discardedExpired;
         private readonly Action<ILogger, Envelope, Exception> _discardedUnknownTransport;
+        private readonly Action<ILogger, int, Uri, Exception> _incomingBatchReceived;
         private readonly Action<ILogger, ListeningStatus, Exception> _listeningStatusChanged;
+
+        private readonly ILogger _logger;
+        private readonly IMetrics _metrics;
+        private readonly Action<ILogger, Uri, Exception> _outgoingBatchFailed;
+        private readonly Action<ILogger, int, Uri, Exception> _outgoingBatchSucceeded;
+        private readonly Action<ILogger, int, Exception> _recoveredIncoming;
+        private readonly Action<ILogger, int, Exception> _recoveredOutgoing;
+        private readonly Action<ILogger, Envelope, DateTimeOffset, Exception> _scheduledJobsQueued;
 
 
         public TransportLogger(ILoggerFactory factory, IMetrics metrics)
@@ -58,7 +58,8 @@ namespace Jasper.Messaging.Logging
                 "Sending agent for {destination} has resumed");
 
             _scheduledJobsQueued =
-                LoggerMessage.Define<Envelope, DateTimeOffset>(LogLevel.Information, ScheduledJobsQueuedForExecutionEventId,
+                LoggerMessage.Define<Envelope, DateTimeOffset>(LogLevel.Information,
+                    ScheduledJobsQueuedForExecutionEventId,
                     "Envelope {envelope} was scheduled locally for {date}");
 
             _recoveredIncoming = LoggerMessage.Define<int>(LogLevel.Information, RecoveredIncomingEventId,
@@ -110,9 +111,7 @@ namespace Jasper.Messaging.Logging
         public virtual void ScheduledJobsQueuedForExecution(IEnumerable<Envelope> envelopes)
         {
             foreach (var envelope in envelopes)
-            {
                 _scheduledJobsQueued(_logger, envelope, envelope.ExecutionTime.Value, null);
-            }
         }
 
         public virtual void RecoveredIncoming(IEnumerable<Envelope> envelopes)
@@ -127,18 +126,12 @@ namespace Jasper.Messaging.Logging
 
         public virtual void DiscardedExpired(IEnumerable<Envelope> envelopes)
         {
-            foreach (var envelope in envelopes)
-            {
-                _discardedExpired(_logger, envelope, null);
-            }
+            foreach (var envelope in envelopes) _discardedExpired(_logger, envelope, null);
         }
 
         public virtual void DiscardedUnknownTransport(IEnumerable<Envelope> envelopes)
         {
-            foreach (var envelope in envelopes)
-            {
-                _discardedUnknownTransport(_logger, envelope, null);
-            }
+            foreach (var envelope in envelopes) _discardedUnknownTransport(_logger, envelope, null);
         }
 
         public void ListeningStatusChange(ListeningStatus status)
@@ -146,7 +139,8 @@ namespace Jasper.Messaging.Logging
             _listeningStatusChanged(_logger, status, null);
         }
 
-        public virtual void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:")
+        public virtual void LogException(Exception ex, Guid correlationId = default(Guid),
+            string message = "Exception detected:")
         {
             _metrics.LogException(ex);
             _logger.LogError(correlationId == Guid.Empty ? message : message + correlationId, ex);

@@ -8,5 +8,6 @@
             return "Hello, world.";
         }
     }
+
     // ENDSAMPLE
 }

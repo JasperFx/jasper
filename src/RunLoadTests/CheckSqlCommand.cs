@@ -14,16 +14,20 @@ namespace RunLoadTests
             {
                 conn.Open();
 
-                var sentFromReceiver = (int)conn.CreateCommand("select count(*) from receiver.sent_track").ExecuteScalar();
-                var receivedAtReceiver = (int)conn.CreateCommand("select count(*) from receiver.received_track").ExecuteScalar();
+                var sentFromReceiver =
+                    (int) conn.CreateCommand("select count(*) from receiver.sent_track").ExecuteScalar();
+                var receivedAtReceiver =
+                    (int) conn.CreateCommand("select count(*) from receiver.received_track").ExecuteScalar();
 
-                var sentFromSender = (int)conn.CreateCommand("select count(*) from sender.sent_track").ExecuteScalar();
-                var receivedAtSender = (int)conn.CreateCommand("select count(*) from sender.received_track").ExecuteScalar();
+                var sentFromSender = (int) conn.CreateCommand("select count(*) from sender.sent_track").ExecuteScalar();
+                var receivedAtSender =
+                    (int) conn.CreateCommand("select count(*) from sender.received_track").ExecuteScalar();
 
 
                 if (sentFromSender == receivedAtReceiver)
                 {
-                    ConsoleWriter.Write(ConsoleColor.Green, "All messages successfully received from sender to receiver");
+                    ConsoleWriter.Write(ConsoleColor.Green,
+                        "All messages successfully received from sender to receiver");
                 }
                 else
                 {
@@ -33,7 +37,8 @@ namespace RunLoadTests
 
                 if (sentFromReceiver == receivedAtSender)
                 {
-                    ConsoleWriter.Write(ConsoleColor.Green, "All responses successfully received from receiver to sender");
+                    ConsoleWriter.Write(ConsoleColor.Green,
+                        "All responses successfully received from receiver to sender");
                 }
                 else
                 {

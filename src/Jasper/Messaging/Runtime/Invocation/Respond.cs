@@ -15,10 +15,9 @@ namespace Jasper.Messaging.Runtime.Invocation
 
     public class Response : ISendMyself
     {
-        private readonly object _message;
         private readonly IList<Action<Envelope, Envelope>> _actions = new List<Action<Envelope, Envelope>>();
+        private readonly object _message;
         private string _description;
-
 
 
         internal Response(object message)
@@ -31,14 +30,20 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         private Action<Envelope, Envelope> alter
         {
-            set
-            {
-                _actions.Add(value);
-            }
+            set => _actions.Add(value);
+        }
+
+        Envelope ISendMyself.CreateEnvelope(Envelope original)
+        {
+            var envelope = original.ForResponse(_message);
+
+            _actions.Each(x => x(original, envelope));
+
+            return envelope;
         }
 
         /// <summary>
-        /// Set custom headers on the outgoing message envelope
+        ///     Set custom headers on the outgoing message envelope
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -52,7 +57,7 @@ namespace Jasper.Messaging.Runtime.Invocation
         }
 
         /// <summary>
-        /// Send the response back to the original sender
+        ///     Send the response back to the original sender
         /// </summary>
         /// <returns></returns>
         public Response ToSender()
@@ -65,7 +70,7 @@ namespace Jasper.Messaging.Runtime.Invocation
 
 
         /// <summary>
-        /// Send the message to a specific destination
+        ///     Send the message to a specific destination
         /// </summary>
         /// <param name="uriString"></param>
         /// <returns></returns>
@@ -75,7 +80,7 @@ namespace Jasper.Messaging.Runtime.Invocation
         }
 
         /// <summary>
-        /// Send the message to a specific destination
+        ///     Send the message to a specific destination
         /// </summary>
         /// <param name="destination"></param>
         /// <returns></returns>
@@ -88,7 +93,7 @@ namespace Jasper.Messaging.Runtime.Invocation
         }
 
         /// <summary>
-        /// Scheduled execution until the designated time
+        ///     Scheduled execution until the designated time
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
@@ -101,7 +106,7 @@ namespace Jasper.Messaging.Runtime.Invocation
         }
 
         /// <summary>
-        /// Delay the execution by the time designated
+        ///     Delay the execution by the time designated
         /// </summary>
         /// <param name="timeSpan"></param>
         /// <returns></returns>
@@ -111,7 +116,7 @@ namespace Jasper.Messaging.Runtime.Invocation
         }
 
         /// <summary>
-        /// Make other customizations to the outgoing Envelope
+        ///     Make other customizations to the outgoing Envelope
         /// </summary>
         /// <param name="alteration"></param>
         /// <returns></returns>
@@ -119,15 +124,6 @@ namespace Jasper.Messaging.Runtime.Invocation
         {
             alter = (_, e) => alteration(e);
             return this;
-        }
-
-        Envelope ISendMyself.CreateEnvelope(Envelope original)
-        {
-            var envelope = original.ForResponse(_message);
-
-            _actions.Each(x => x(original, envelope));
-
-            return envelope;
         }
 
         public override string ToString()

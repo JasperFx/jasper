@@ -8,6 +8,13 @@ namespace Jasper.Testing.Messaging
 {
     public class invoke_message_and_expect_a_response : SendingContext
     {
+        // SAMPLE: using_global_request_and_reply
+        public async Task using_global_request_and_reply(IMessageContext messaging)
+        {
+            // Send a question to another application, and request that the handling
+            // service send back an answer
+            await messaging.SendAndExpectResponseFor<Answer>(new Question());
+        }
 
         [Fact]
         public async Task invoke_expecting_a_response()
@@ -21,14 +28,6 @@ namespace Jasper.Testing.Messaging
         }
 
         [Fact]
-        public async Task invoke_with_no_known_response_do_not_blow_up()
-        {
-            await StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
-            (await theReceiver.Messaging.Invoke<Answer>(new QuestionWithNoAnswer()))
-                .ShouldBeNull();
-        }
-
-        [Fact]
         public async Task invoke_with_expected_response_when_there_is_no_receiver()
         {
             await StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
@@ -36,16 +35,16 @@ namespace Jasper.Testing.Messaging
             {
                 await theReceiver.Messaging.Invoke<Answer>(new QuestionWithNoHandler());
             });
-
         }
 
-        // SAMPLE: using_global_request_and_reply
-        public async Task using_global_request_and_reply(IMessageContext messaging)
+        [Fact]
+        public async Task invoke_with_no_known_response_do_not_blow_up()
         {
-            // Send a question to another application, and request that the handling
-            // service send back an answer
-            await messaging.SendAndExpectResponseFor<Answer>(new Question());
+            await StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
+            (await theReceiver.Messaging.Invoke<Answer>(new QuestionWithNoAnswer()))
+                .ShouldBeNull();
         }
+
         // ENDSAMPLE
     }
 
@@ -63,12 +62,10 @@ namespace Jasper.Testing.Messaging
 
     public class QuestionWithNoHandler
     {
-
     }
 
     public class QuestionWithNoAnswer
     {
-
     }
 
     public class QuestionAndAnswer
@@ -84,7 +81,6 @@ namespace Jasper.Testing.Messaging
 
         public void Handle(QuestionWithNoAnswer question)
         {
-
         }
     }
 }

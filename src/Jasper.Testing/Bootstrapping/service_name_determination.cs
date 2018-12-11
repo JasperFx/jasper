@@ -12,7 +12,7 @@ namespace Jasper.Testing.Bootstrapping
             new MyApp2Registry().ServiceName.ShouldBe("MyApp2");
             new MyApp3().ServiceName.ShouldBe("MyApp3");
         }
-        
+
         [Fact]
         public void explicit_service_name_wins()
         {
@@ -28,17 +28,14 @@ namespace Jasper.Testing.Bootstrapping
 
     public class MyAppJasperRegistry : JasperRegistry
     {
-
     }
 
     public class MyApp2Registry : JasperRegistry
     {
-
     }
 
     public class MyApp3 : JasperRegistry
     {
-
     }
 
     public class MyApp4 : JasperRegistry

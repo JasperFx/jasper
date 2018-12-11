@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using Jasper.Http.Model;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.ContentHandling
 {
     public class SetStatusCode : Frame
     {
-        private Variable _response;
         private readonly Variable _return;
         private readonly string _usage;
+        private Variable _response;
 
         public SetStatusCode(int returnCode) : base(false)
         {

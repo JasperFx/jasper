@@ -10,9 +10,34 @@ using Xunit;
 
 namespace IntegrationTests.Persistence.SqlServer
 {
-    public class configuration_extension_methods: SqlServerContext
+    public class configuration_extension_methods : SqlServerContext
     {
+        [Fact]
+        public void bootstrap_with_configuration()
+        {
+            var registry = new JasperRegistry();
 
+            registry.Hosting.ConfigureAppConfiguration((_, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string>
+                    {{"connection", Servers.SqlServerConnectionString}});
+            });
+
+
+            registry.Settings.PersistMessagesWithSqlServer((c, s) =>
+            {
+                s.ConnectionString = c.Configuration["connection"];
+            });
+
+            using (var runtime = JasperRuntime.For(registry))
+            {
+                runtime.Container.Model.DefaultTypeFor<IDurableMessagingFactory>()
+                    .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
+
+                runtime.Get<SqlServerSettings>()
+                    .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
+            }
+        }
 
 
         [Fact]
@@ -28,28 +53,6 @@ namespace IntegrationTests.Persistence.SqlServer
                     .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
             }
         }
-
-        [Fact]
-        public void bootstrap_with_configuration()
-        {
-            var registry = new JasperRegistry();
-            registry.Configuration.AddInMemoryCollection(new Dictionary<string, string> {{"connection", Servers.SqlServerConnectionString}});
-
-            registry.Settings.PersistMessagesWithSqlServer((c, s) =>
-                {
-                    s.ConnectionString = c.Configuration["connection"];
-                });
-
-            using (var runtime = JasperRuntime.For(registry))
-            {
-                runtime.Container.Model.DefaultTypeFor<IDurableMessagingFactory>()
-                    .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
-
-                runtime.Get<SqlServerSettings>()
-                    .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
-            }
-        }
-
     }
 
     // SAMPLE: AppUsingSqlServer
@@ -58,7 +61,7 @@ namespace IntegrationTests.Persistence.SqlServer
         public AppUsingSqlServer()
         {
             // If you know the connection string
-            Settings.PersistMessagesWithSqlServer("your connection string", schema:"my_app_schema");
+            Settings.PersistMessagesWithSqlServer("your connection string", "my_app_schema");
 
             // Or using application configuration
             Settings.PersistMessagesWithSqlServer((context, settings) =>
@@ -81,5 +84,6 @@ namespace IntegrationTests.Persistence.SqlServer
             });
         }
     }
+
     // ENDSAMPLE
 }

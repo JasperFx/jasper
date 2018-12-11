@@ -1,7 +1,9 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Alba;
 using Jasper.Http;
 using Jasper.Messaging;
+using Jasper.TestSupport.Alba;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,61 +14,18 @@ using Xunit;
 
 namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
-
-
-
     public class can_bootstrap_a_bus_plus_aspnetcore_app_through_jasper_registry
     {
-
-        [Fact]
-        public async Task can_handle_an_http_request_through_Kestrel()
-        {
-            var theRuntime = await JasperRuntime.ForAsync<JasperServerApp>();
-
-            var options = theRuntime.Container.GetInstance<DbContextOptions<ApplicationDbContext>>();
-
-            theRuntime.Container.GetInstance<DbContextOptions<ApplicationDbContext>>("options").ShouldNotBeNull();
-
-
-            try
-            {
-                // has the message context registered
-                ShouldBeNullExtensions.ShouldNotBeNull(theRuntime.Get<IMessageContext>());
-
-                // has the registrations from Jasper
-                theRuntime.Get<IFoo>().ShouldBeOfType<Foo>();
-
-                using (var client = new HttpClient())
-                {
-                    var text = await client.GetStringAsync("http://localhost:5200");
-                    text.ShouldContain("Hello from a hybrid Jasper application");
-                }
-
-
-            }
-            finally
-            {
-                await theRuntime.Shutdown();
-            }
-        }
-
         [Fact]
         public async Task can_delegate_to_mvc_route_through_Kestrel()
         {
-            var theRuntime = await JasperRuntime.ForAsync<JasperServerApp>();
-
-
-            try
+            using (var theRuntime = JasperAlba.For<JasperServerApp>())
             {
-                using (var client = new HttpClient())
+                await theRuntime.Scenario(x =>
                 {
-                    var text = await client.GetStringAsync("http://localhost:5200/values/5");
-                    text.ShouldContain("5");
-                }
-            }
-            finally
-            {
-                await theRuntime.Shutdown();
+                    x.Get.Url("/values/5");
+                    x.ContentShouldContain("5");
+                });
             }
         }
 
@@ -76,13 +35,11 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
     {
         public void Handle(SomeMessage message)
         {
-
         }
     }
 
     public class SomeMessage
     {
-
     }
 
     // SAMPLE: ConfiguringAspNetCoreWithinJasperRegistry
@@ -96,7 +53,6 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
                 .UseKestrel()
                 .UseUrls("http://localhost:5200")
                 .UseStartup<Startup>();
-
         }
     }
     // ENDSAMPLE
@@ -121,16 +77,18 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         }
     }
 
-    public interface IFoo{}
+    public interface IFoo
+    {
+    }
 
     public class Foo : IFoo
     {
-        public ApplicationDbContext Context { get; }
-
         public Foo(ApplicationDbContext context)
         {
             Context = context;
         }
+
+        public ApplicationDbContext Context { get; }
     }
 
     public class ApplicationDbContext : DbContext
@@ -139,10 +97,10 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
             : base(options)
         {
         }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
         }
-
     }
 }

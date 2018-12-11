@@ -7,7 +7,6 @@ namespace Jasper.Testing.Samples
 {
     public class AspNetCoreIntegration
     {
-
     }
 
     // SAMPLE: AppWithMiddleware
@@ -39,6 +38,5 @@ namespace Jasper.Testing.Samples
 
     public class CustomMiddleware
     {
-
     }
 }

@@ -71,7 +71,6 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
 
-
         // SAMPLE: ScheduleLocally-At-5-PM-Tomorrow
         public async Task schedule_locally_at_5_tomorrow_afternoon(IMessageContext context, Guid issueId)
         {
@@ -89,6 +88,7 @@ namespace Jasper.Testing.Samples
             // to universal time in storage
             await context.ScheduleSend(timeout, time);
         }
+
         // ENDSAMPLE
     }
 

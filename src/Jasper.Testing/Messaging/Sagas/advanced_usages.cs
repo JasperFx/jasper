@@ -19,6 +19,5 @@ namespace Jasper.Testing.Messaging.Sagas
             state.ShouldNotBeNull();
             state.Name.ShouldBe("Goblin");
         }
-
     }
 }

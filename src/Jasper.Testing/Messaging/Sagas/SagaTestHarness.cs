@@ -14,6 +14,11 @@ namespace Jasper.Testing.Messaging.Sagas
         private MessageHistory _history;
         private JasperRuntime _runtime;
 
+        public void Dispose()
+        {
+            _runtime?.Dispose();
+        }
+
         protected async Task withApplication()
         {
             _runtime = await JasperRuntime.ForAsync(_ =>
@@ -32,15 +37,7 @@ namespace Jasper.Testing.Messaging.Sagas
 
         protected string codeFor<T>()
         {
-
             return _runtime.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
-        }
-
-        public void Dispose()
-        {
-#pragma warning disable 4014
-            _runtime?.Shutdown();
-#pragma warning restore 4014
         }
 
         protected virtual void configure(JasperRegistry registry)
@@ -50,27 +47,22 @@ namespace Jasper.Testing.Messaging.Sagas
 
         protected async Task invoke<T>(T message)
         {
-            if (_history == null)
-            {
-                await withApplication();
-            }
+            if (_history == null) await withApplication();
 
             await _runtime.Messaging.Invoke(message);
         }
 
         protected async Task send<T>(T message)
         {
-            if (_history == null)
-            {
-                await withApplication();
-            }
+            if (_history == null) await withApplication();
 
             await _history.WatchAsync(() => _runtime.Messaging.Send(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _runtime.Messaging.Send(message, e => e.SagaId = sagaId.ToString()), 10000);
+            return _history.WatchAsync(() => _runtime.Messaging.Send(message, e => e.SagaId = sagaId.ToString()),
+                10000);
         }
 
         protected TSagaState LoadState(object id)
@@ -81,12 +73,10 @@ namespace Jasper.Testing.Messaging.Sagas
 
     public static class HandlerConfigurationExtensions
     {
-        public static IHandlerConfiguration DisableConventionalDiscovery(this IHandlerConfiguration handlers, bool disabled = true)
+        public static IHandlerConfiguration DisableConventionalDiscovery(this IHandlerConfiguration handlers,
+            bool disabled = true)
         {
-            if (disabled)
-            {
-                handlers.Discovery(x => x.DisableConventionalDiscovery());
-            }
+            if (disabled) handlers.Discovery(x => x.DisableConventionalDiscovery());
 
             return handlers;
         }

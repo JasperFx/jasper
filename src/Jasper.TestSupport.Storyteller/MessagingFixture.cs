@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Baseline;
 using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
 using StoryTeller;
@@ -9,15 +8,15 @@ namespace Jasper.Storyteller
     public abstract class MessagingFixture : Fixture
     {
         /// <summary>
-        /// The service bus for the currently running application
+        ///     The service bus for the currently running application
         /// </summary>
         protected IMessageContext Bus => Context.Service<IMessageContext>();
 
         protected MessageHistory History => Context.Service<MessageHistory>();
 
         /// <summary>
-        /// Send a message and wait for all detected activity within the bus
-        /// to complete
+        ///     Send a message and wait for all detected activity within the bus
+        ///     to complete
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -27,8 +26,8 @@ namespace Jasper.Storyteller
         }
 
         /// <summary>
-        /// Send a message from an external node and wait for all detected activity within the bus
-        /// to complete
+        ///     Send a message from an external node and wait for all detected activity within the bus
+        ///     to complete
         /// </summary>
         /// <param name="message"></param>
         /// <param name="nodeName">The service name of another, external node</param>
@@ -39,7 +38,7 @@ namespace Jasper.Storyteller
         }
 
         /// <summary>
-        /// Find the
+        ///     Find the
         /// </summary>
         /// <param name="nodeName"></param>
         /// <returns></returns>

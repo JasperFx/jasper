@@ -2,10 +2,6 @@ namespace Jasper.Testing.Messaging.Runtime
 {
     public class Address
     {
-        public Address()
-        {
-        }
-
         public string City { get; set; }
         public string State { get; set; }
 
@@ -18,8 +14,8 @@ namespace Jasper.Testing.Messaging.Runtime
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Address)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Address) obj);
         }
 
         public override int GetHashCode()

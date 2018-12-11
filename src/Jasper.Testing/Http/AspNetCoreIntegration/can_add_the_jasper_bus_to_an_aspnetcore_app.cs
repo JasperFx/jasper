@@ -13,7 +13,6 @@ using Xunit;
 
 namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
-
     public class AspNetCombinedFixture : IDisposable
     {
         public IWebHost theHost;
@@ -48,6 +47,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         public async Task still_works()
         {
             var builder = WebHost.CreateDefaultBuilder()
+                .UseStartup<EmptyStartup>()
                 .UseJasper<SimpleJasperBusApp>();
 
             using (var theHost = builder.Build())
@@ -60,7 +60,6 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 
                     // See "get_hello" method
                     text.ShouldContain("hello");
-
                 }
             }
         }
@@ -68,14 +67,12 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 
     public class can_add_the_jasper_bus_to_an_aspnetcore_app : IClassFixture<AspNetCombinedFixture>
     {
-        private readonly IWebHost theHost;
-
-
         public can_add_the_jasper_bus_to_an_aspnetcore_app(AspNetCombinedFixture fixture)
         {
             theHost = fixture.theHost;
-
         }
+
+        private readonly IWebHost theHost;
 
         // ReSharper disable once UnusedMember.Global
         public void sample()
@@ -115,7 +112,6 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
             {
                 var text = await client.GetStringAsync("http://localhost:3003");
                 text.ShouldContain("Hello from a hybrid Jasper application");
-
             }
         }
 
@@ -126,20 +122,19 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
             {
                 var text = await client.GetStringAsync("http://localhost:3003/values");
                 text.ShouldContain("Hello from MVC Core");
-
             }
-        }
-
-        [Fact]
-        public void has_the_bus()
-        {
-            ShouldBeNullExtensions.ShouldNotBeNull(theHost.Services.GetService(typeof(IMessageContext)));
         }
 
         [Fact]
         public void captures_registrations_from_configure_registry()
         {
             theHost.Services.GetService(typeof(IFoo)).ShouldBeOfType<Foo>();
+        }
+
+        [Fact]
+        public void has_the_bus()
+        {
+            ShouldBeNullExtensions.ShouldNotBeNull(theHost.Services.GetService(typeof(IMessageContext)));
         }
 
         [Fact]
@@ -151,18 +146,12 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 
     // SAMPLE: SimpleJasperBusApp
     public class SimpleJasperBusApp : JasperRegistry
-    // ENDSAMPLE
+        // ENDSAMPLE
     {
-        public SimpleJasperBusApp()
-        {
-
-        }
     }
 
 
     public class CustomMiddleware
     {
-
     }
 }
-

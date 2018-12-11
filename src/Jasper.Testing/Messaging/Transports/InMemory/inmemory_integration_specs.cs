@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
-using Jasper.Testing.Messaging.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -53,15 +51,11 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
 
             await waiter;
 
-            if (!waiter.IsCompleted)
-            {
-                throw new Exception("Got no envelope!");
-            }
+            if (!waiter.IsCompleted) throw new Exception("Got no envelope!");
 
             var envelope = waiter.Result;
 
             envelope.ShouldNotBeNull();
         }
-
     }
 }

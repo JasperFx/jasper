@@ -11,43 +11,6 @@ namespace Jasper.Messaging.ErrorHandling
     {
         public static readonly RequeueContinuation Requeue = RequeueContinuation.Instance;
 
-        public void AddContinuation(IContinuation continuation)
-        {
-            Sources.Add(new ContinuationSource(continuation));
-        }
-
-        public override string ToString()
-        {
-            return $"If {Conditions.Select(x => x.ToString()).Join(", «")}, then {Sources.Select(x => x.ToString()).Join(", ")}";
-
-        }
-
-        public IContinuation Continuation(Envelope envelope, Exception ex)
-        {
-            var count = Sources.Count;
-            switch (count)
-            {
-                case 0:
-                    return Requeue;
-
-                case 1:
-                    return Sources.Single().DetermineContinuation(envelope, ex);
-
-                default:
-                    return new CompositeContinuation(Sources.Select(x => x.DetermineContinuation(envelope, ex)).ToArray());
-            }
-        }
-
-        public void AddCondition(IExceptionMatch condition)
-        {
-            Conditions.Add(condition);
-        }
-
-        public void AddContinuation(IContinuationSource source)
-        {
-            Sources.Add(source);
-        }
-
         public IList<IContinuationSource> Sources { get; } = new List<IContinuationSource>();
 
         public IList<IExceptionMatch> Conditions { get; } = new List<IExceptionMatch>();
@@ -64,6 +27,44 @@ namespace Jasper.Messaging.ErrorHandling
 
             return Conditions.All(x => x.Matches(envelope, ex));
         }
+
+        public void AddContinuation(IContinuation continuation)
+        {
+            Sources.Add(new ContinuationSource(continuation));
+        }
+
+        public override string ToString()
+        {
+            return
+                $"If {Conditions.Select(x => x.ToString()).Join(", «")}, then {Sources.Select(x => x.ToString()).Join(", ")}";
+        }
+
+        public IContinuation Continuation(Envelope envelope, Exception ex)
+        {
+            var count = Sources.Count;
+            switch (count)
+            {
+                case 0:
+                    return Requeue;
+
+                case 1:
+                    return Sources.Single().DetermineContinuation(envelope, ex);
+
+                default:
+                    return new CompositeContinuation(Sources.Select(x => x.DetermineContinuation(envelope, ex))
+                        .ToArray());
+            }
+        }
+
+        public void AddCondition(IExceptionMatch condition)
+        {
+            Conditions.Add(condition);
+        }
+
+        public void AddContinuation(IContinuationSource source)
+        {
+            Sources.Add(source);
+        }
     }
 
     public class ContinuationSource : IContinuationSource
@@ -73,12 +74,12 @@ namespace Jasper.Messaging.ErrorHandling
             Continuation = continuation;
         }
 
+        public IContinuation Continuation { get; }
+
         public IContinuation DetermineContinuation(Envelope envelope, Exception ex)
         {
             return Continuation;
         }
-
-        public IContinuation Continuation { get; }
 
         public override string ToString()
         {

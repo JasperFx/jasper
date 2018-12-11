@@ -12,15 +12,9 @@ namespace Jasper.Messaging.Model
             if (method == null) throw new ArgumentNullException(nameof(method));
 
             var parameters = method.GetParameters();
-            if (!parameters.Any())
-            {
-                return null;
-            }
+            if (!parameters.Any()) return null;
 
-            if (parameters.Length == 1)
-            {
-                return parameters.First().ParameterType;
-            }
+            if (parameters.Length == 1) return parameters.First().ParameterType;
 
             var matching = parameters.FirstOrDefault(x => x.Name.IsIn("message", "input", "@event", "command"));
 

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 
 namespace Jasper.Persistence.SqlServer.Resiliency
@@ -18,7 +17,7 @@ namespace Jasper.Persistence.SqlServer.Resiliency
 
 
         public SchedulingAgent(ISubscriberGraph subscribers, IWorkerQueue workers, SqlServerSettings mssqlSettings,
-            MessagingSettings settings, ITransportLogger logger, IRetries retries)
+            JasperOptions settings, ITransportLogger logger, IRetries retries)
             : base(settings, logger,
                 new RunScheduledJobs(workers, mssqlSettings, logger, retries, settings),
                 new RecoverIncomingMessages(workers, settings, mssqlSettings, logger),
@@ -50,13 +49,12 @@ namespace Jasper.Persistence.SqlServer.Resiliency
                 }
                 catch (Exception e)
                 {
-                    logger.LogException(e, message:"Running " + action);
+                    logger.LogException(e, message: "Running " + action);
                 }
-
             }
             catch (Exception e)
             {
-                logger.LogException(e, message:"Error trying to run " + action);
+                logger.LogException(e, message: "Error trying to run " + action);
                 _connection?.Dispose();
                 _connection = null;
             }
@@ -69,7 +67,6 @@ namespace Jasper.Persistence.SqlServer.Resiliency
             if (_connection?.State == ConnectionState.Open) return;
 
             if (_connection != null)
-            {
                 try
                 {
                     _connection.Close();
@@ -80,8 +77,6 @@ namespace Jasper.Persistence.SqlServer.Resiliency
                 {
                     logger.LogException(e);
                 }
-
-            }
 
             try
             {

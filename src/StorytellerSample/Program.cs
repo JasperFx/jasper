@@ -1,12 +1,11 @@
-﻿using System;
-using Jasper.Storyteller;
+﻿using Jasper.Storyteller;
 using StoryTeller;
 
 namespace StorytellerSample
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             // SAMPLE: adding-external-node
             var host = new JasperStorytellerHost<MyJasperAppRegistry>();

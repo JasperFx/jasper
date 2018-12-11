@@ -11,7 +11,6 @@ using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Marten.Util;
-using Npgsql;
 using NpgsqlTypes;
 
 namespace Jasper.Persistence.Marten.Resiliency
@@ -19,15 +18,16 @@ namespace Jasper.Persistence.Marten.Resiliency
     public class RunScheduledJobs : IMessagingAction
     {
         private readonly string _findReadyToExecuteJobs;
-        private readonly IWorkerQueue _workers;
-        private readonly EnvelopeTables _marker;
         private readonly ITransportLogger _logger;
-        private readonly IRetries _retries;
-        public readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
+        private readonly EnvelopeTables _marker;
         private readonly string _markOwnedIncomingSql;
         private readonly MartenEnvelopePersistor _persistor;
+        private readonly IRetries _retries;
+        private readonly IWorkerQueue _workers;
+        public readonly int ScheduledJobLockId = "scheduled-jobs".GetHashCode();
 
-        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, EnvelopeTables marker, ITransportLogger logger, IRetries retries)
+        public RunScheduledJobs(IWorkerQueue workers, IDocumentStore store, EnvelopeTables marker,
+            ITransportLogger logger, IRetries retries)
         {
             _workers = workers;
             _marker = marker;
@@ -36,25 +36,25 @@ namespace Jasper.Persistence.Marten.Resiliency
 
             _persistor = new MartenEnvelopePersistor(store, _marker);
 
-            _findReadyToExecuteJobs = $"select body from {marker.Incoming} where status = '{TransportConstants.Scheduled}' and execution_time <= :time";
-            _markOwnedIncomingSql = $"update {marker.Incoming} set owner_id = :owner, status = '{TransportConstants.Incoming}' where id = ANY(:idlist)";
+            _findReadyToExecuteJobs =
+                $"select body from {marker.Incoming} where status = '{TransportConstants.Scheduled}' and execution_time <= :time";
+            _markOwnedIncomingSql =
+                $"update {marker.Incoming} set owner_id = :owner, status = '{TransportConstants.Incoming}' where id = ANY(:idlist)";
 
             ScheduledJobLockId = $"{marker.ServiceName}-scheduled-jobs".GetHashCode();
         }
 
         public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
         {
-            var utcNow = DateTimeOffset.UtcNow;;
+            var utcNow = DateTimeOffset.UtcNow;
+            ;
 
             await ExecuteAtTime(session, utcNow);
         }
 
         public async Task<List<Envelope>> ExecuteAtTime(IDocumentSession session, DateTimeOffset utcNow)
         {
-            if (!await session.TryGetGlobalTxLock(ScheduledJobLockId))
-            {
-                return null;
-            }
+            if (!await session.TryGetGlobalTxLock(ScheduledJobLockId)) return null;
 
             var readyToExecute = await session.Connection
                 .CreateCommand(_findReadyToExecuteJobs)
@@ -86,6 +86,4 @@ namespace Jasper.Persistence.Marten.Resiliency
             return readyToExecute;
         }
     }
-
-
 }

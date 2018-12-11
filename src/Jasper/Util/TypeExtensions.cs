@@ -1,32 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Internal;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Baseline;
 using Jasper.Conneg;
-using Jasper.Messaging;
 
 namespace Jasper.Util
 {
     /// <summary>
-    /// Used to override Jasper's default behavior for identifying a message type.
-    /// Useful for integrating with other services without having to share a DTO
-    /// type
+    ///     Used to override Jasper's default behavior for identifying a message type.
+    ///     Useful for integrating with other services without having to share a DTO
+    ///     type
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class MessageIdentityAttribute : Attribute
     {
-        public string Alias { get; }
-
-        public int Version { get; set; }
-
         public MessageIdentityAttribute(string alias)
         {
             Alias = alias;
         }
+
+        public string Alias { get; }
+
+        public int Version { get; set; }
 
         public string GetName()
         {
@@ -37,6 +35,21 @@ namespace Jasper.Util
     public static class TypeExtensions
     {
         private static readonly Regex _aliasSanitizer = new Regex("<|>", RegexOptions.Compiled);
+
+        private static ImHashMap<Type, string> _typeNames = ImHashMap<Type, string>.Empty;
+
+
+        private static readonly Type[] _tupleTypes =
+        {
+            typeof(ValueTuple<>),
+            typeof(ValueTuple<,>),
+            typeof(ValueTuple<,,>),
+            typeof(ValueTuple<,,,>),
+            typeof(ValueTuple<,,,,>),
+            typeof(ValueTuple<,,,,,>),
+            typeof(ValueTuple<,,,,,,>),
+            typeof(ValueTuple<,,,,,,,>)
+        };
 
         public static bool IsInputTypeCandidate(this Type type)
         {
@@ -61,20 +74,16 @@ namespace Jasper.Util
             var sb = new StringBuilder();
 
             sb.Append(t.Name.Substring(0, t.Name.LastIndexOf("`", StringComparison.Ordinal)));
-            sb.Append(t.GetTypeInfo().GetGenericArguments().Aggregate("<", (aggregate, type) => aggregate + (aggregate == "<" ? "" : ",") + GetPrettyName(type)));
+            sb.Append(t.GetTypeInfo().GetGenericArguments().Aggregate("<",
+                (aggregate, type) => aggregate + (aggregate == "<" ? "" : ",") + GetPrettyName(type)));
             sb.Append(">");
 
             return sb.ToString();
         }
 
-        private static ImHashMap<Type, string> _typeNames = ImHashMap<Type, string>.Empty;
-
         public static string ToMessageTypeName(this Type type)
         {
-            if (_typeNames.TryFind(type, out var alias))
-            {
-                return alias;
-            }
+            if (_typeNames.TryFind(type, out var alias)) return alias;
 
             var name = toMessageTypeName(type);
             _typeNames = _typeNames.AddOrUpdate(type, name);
@@ -85,14 +94,10 @@ namespace Jasper.Util
         private static string toMessageTypeName(Type type)
         {
             if (type.HasAttribute<MessageIdentityAttribute>())
-            {
                 return type.GetAttribute<MessageIdentityAttribute>().GetName();
-            }
 
             if (type.CanBeCastTo<ClientMessage>() && type.IsConcreteWithDefaultCtor())
-            {
                 return Activator.CreateInstance(type).As<ClientMessage>().Type;
-            }
 
             if (type.Closes(typeof(IForwardsTo<>)))
             {
@@ -102,36 +107,17 @@ namespace Jasper.Util
 
             var nameToAlias = type.FullName;
             if (type.GetTypeInfo().IsGenericType)
-            {
                 nameToAlias = _aliasSanitizer.Replace(type.GetPrettyName(), string.Empty);
-            }
 
             var parts = new List<string> {nameToAlias};
-            if (type.IsNested)
-            {
-                parts.Insert(0, type.DeclaringType.Name);
-            }
+            if (type.IsNested) parts.Insert(0, type.DeclaringType.Name);
 
             return string.Join("_", parts);
         }
 
-
-        private static readonly Type[] _tupleTypes = new Type[]
-        {
-            typeof(ValueTuple<>),
-            typeof(ValueTuple<,>),
-            typeof(ValueTuple<,,>),
-            typeof(ValueTuple<,,,>),
-            typeof(ValueTuple<,,,,>),
-            typeof(ValueTuple<,,,,,>),
-            typeof(ValueTuple<,,,,,,>),
-            typeof(ValueTuple<,,,,,,,>)
-
-        };
-
         public static bool IsValueTuple(this Type type)
         {
-            return (type != null && type.IsGenericType) && _tupleTypes.Contains(type.GetGenericTypeDefinition());
+            return type != null && type.IsGenericType && _tupleTypes.Contains(type.GetGenericTypeDefinition());
         }
     }
 }

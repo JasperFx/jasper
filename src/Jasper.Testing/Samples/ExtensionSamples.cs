@@ -1,5 +1,4 @@
 ﻿using Jasper.Configuration;
-using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,21 +9,16 @@ namespace Jasper.Testing.Samples
     // SAMPLE: SampleExtension
     public class SampleExtension : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptionsBuilder registry)
         {
-            // Not sure *why* you'd do this, but you could
-            registry.Configuration.AddJsonFile("someFile.json");
-
-
             // Add service registrations
             registry.Services.AddTransient<IFoo, Foo>();
 
             // Alter settings within the application
-            registry.Settings.Alter<MessagingSettings>(_ =>
+            registry.Settings.Alter<JasperOptions>(_ =>
             {
                 _.JsonSerialization.TypeNameHandling = TypeNameHandling.All;
             });
-
         }
     }
     // ENDSAMPLE
@@ -37,6 +31,11 @@ namespace Jasper.Testing.Samples
         }
     }
 
-    public interface IFoo{}
-    public class Foo : IFoo{}
+    public interface IFoo
+    {
+    }
+
+    public class Foo : IFoo
+    {
+    }
 }

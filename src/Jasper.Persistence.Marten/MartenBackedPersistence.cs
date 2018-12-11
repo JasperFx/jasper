@@ -7,21 +7,19 @@ using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Jasper.Persistence.Marten.Persistence.Sagas;
 using Jasper.Persistence.Marten.Resiliency;
-using Lamar.Codegen;
-using Lamar.Codegen.Variables;
+using LamarCompiler.Model;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.Marten
 {
-
     /// <summary>
-    /// Opts into using Marten as the backing message store
+    ///     Opts into using Marten as the backing message store
     /// </summary>
     public class MartenBackedPersistence : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptionsBuilder registry)
         {
             registry.Services.AddTransient<IEnvelopePersistor, MartenEnvelopePersistor>();
             registry.Services.AddSingleton<IDurableMessagingFactory, MartenBackedDurableMessagingFactory>();
@@ -38,7 +36,6 @@ namespace Jasper.Persistence.Marten
             var frameProvider = new MartenSagaPersistenceFrameProvider();
             registry.CodeGeneration.SagaPersistence = frameProvider;
             registry.CodeGeneration.Transactions = frameProvider;
-
         }
     }
 

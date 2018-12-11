@@ -14,7 +14,6 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer;
@@ -81,7 +80,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 _.Services.AddSingleton<ISchedulingAgent>(_schedulerAgent);
 
 
-                _.Settings.Alter<MessagingSettings>(x =>
+                _.Settings.Alter<JasperOptions>(x =>
                 {
                     x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
                     x.ScheduledJobs.FirstExecution = 30.Minutes();
@@ -96,7 +95,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             _runtime.RebuildMessageStorage();
 
-            _currentNodeId = _runtime.Get<MessagingSettings>().UniqueNodeId;
+            _currentNodeId = _runtime.Get<JasperOptions>().UniqueNodeId;
 
             _owners["This Node"] = _currentNodeId;
         }

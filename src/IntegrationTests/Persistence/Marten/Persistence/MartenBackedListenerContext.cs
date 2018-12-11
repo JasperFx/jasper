@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
@@ -63,7 +63,6 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
             assertEnvelopeWasNotEnqueued(envelope);
         }
-
     }
 
     public class MartenBackedListenerContext : MartenContext, IDisposable
@@ -72,7 +71,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected DurableListener theListener;
-        protected MessagingSettings theSettings;
+        protected JasperOptions theSettings;
         protected IWorkerQueue theWorkerQueue;
 
 
@@ -91,7 +90,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
-            theSettings = new MessagingSettings();
+            theSettings = new JasperOptions();
 
             var tables = new EnvelopeTables(theSettings, new StoreOptions());
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Routing;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Settings;
 using Jasper.Util;
 
@@ -10,8 +8,8 @@ namespace Jasper.Messaging.Configuration
 {
     public class PublishingExpression
     {
-        private readonly JasperSettings _settings;
         private readonly MessagingConfiguration _bus;
+        private readonly JasperSettings _settings;
 
         internal PublishingExpression(JasperSettings settings, MessagingConfiguration bus)
         {
@@ -64,17 +62,27 @@ namespace Jasper.Messaging.Configuration
             };
 
             _settings.Messaging(x => x.AddSubscription(subscription));
+        }
 
+        /// <summary>
+        ///     Directs Jasper to try to publish all messages locally even if there are other
+        ///     subscribers for the message type
+        /// </summary>
+        public void AllMessagesLocally()
+        {
+            var rule = Subscription.All();
+            _settings.Messaging(x => x.LocalPublishing.Add(rule));
         }
 
         public class MessageTrackExpression
         {
-            private readonly RoutingScope _routingScope;
-            private readonly string _match;
-            private readonly JasperSettings _settings;
             private readonly MessagingConfiguration _bus;
+            private readonly string _match;
+            private readonly RoutingScope _routingScope;
+            private readonly JasperSettings _settings;
 
-            internal MessageTrackExpression(JasperSettings settings, MessagingConfiguration bus, RoutingScope routingScope, string match)
+            internal MessageTrackExpression(JasperSettings settings, MessagingConfiguration bus,
+                RoutingScope routingScope, string match)
             {
                 _settings = settings;
                 _bus = bus;
@@ -101,30 +109,18 @@ namespace Jasper.Messaging.Configuration
 
 
             /// <summary>
-            /// Publishes the matching messages locally in  addition to any other subscriber rules
+            ///     Publishes the matching messages locally in  addition to any other subscriber rules
             /// </summary>
             public void Locally()
             {
                 _settings.Messaging(x =>
                 {
-                    x.LocalPublishing.Add(new Subscription()
+                    x.LocalPublishing.Add(new Subscription
                     {
                         Scope = _routingScope, Match = _match
                     });
                 });
-
-
             }
-        }
-
-        /// <summary>
-        /// Directs Jasper to try to publish all messages locally even if there are other
-        /// subscribers for the message type
-        /// </summary>
-        public void AllMessagesLocally()
-        {
-            var rule = Subscription.All();
-            _settings.Messaging(x => x.LocalPublishing.Add(rule));
         }
     }
 }

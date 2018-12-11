@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
+using LamarCompiler.Frames;
 
 namespace Jasper.Configuration
 {
     /// <summary>
-    /// Attach one or more Jasper middleware frames by type
+    ///     Attach one or more Jasper middleware frames by type
     /// </summary>
     public class MiddlewareAttribute : ModifyChainAttribute
     {
@@ -15,11 +14,11 @@ namespace Jasper.Configuration
 
         public MiddlewareAttribute(params Type[] frameTypes)
         {
-            var notMatching = frameTypes.Where(x => !x.IsConcreteWithDefaultCtor() || !x.CanBeCastTo<Frame>()).ToArray();
+            var notMatching = frameTypes.Where(x => !x.IsConcreteWithDefaultCtor() || !x.CanBeCastTo<Frame>())
+                .ToArray();
             if (notMatching.Any())
-            {
-                throw new ArgumentOutOfRangeException($"Invalid Frame types: {notMatching.Select(x => x.FullName).Join(", ")}");
-            }
+                throw new ArgumentOutOfRangeException(
+                    $"Invalid Frame types: {notMatching.Select(x => x.FullName).Join(", ")}");
 
             _frameTypes = frameTypes;
         }

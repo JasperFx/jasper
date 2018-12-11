@@ -2,15 +2,10 @@
 
 namespace Jasper.Testing.Http.Routing
 {
-
     public class UrlGraphTests
     {
         private readonly UrlGraph theGraph = new UrlGraph();
 
-        public UrlGraphTests()
-        {
-
-        }
         /*
 
         [Fact]
@@ -137,8 +132,9 @@ namespace Jasper.Testing.Http.Routing
 
     public class TargetEndpoint
     {
-
     }
 
-    public class Input1 { }
+    public class Input1
+    {
+    }
 }

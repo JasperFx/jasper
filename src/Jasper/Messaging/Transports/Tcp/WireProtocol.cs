@@ -33,7 +33,8 @@ namespace Jasper.Messaging.Transports.Tcp
 
         // Nothing but actually sending here. Worry about timeouts and retries somewhere
         // else
-        public static async Task Send(Stream stream, OutgoingMessageBatch batch, byte[] messageBytes, ISenderCallback callback)
+        public static async Task Send(Stream stream, OutgoingMessageBatch batch, byte[] messageBytes,
+            ISenderCallback callback)
         {
             messageBytes = messageBytes ?? Envelope.Serialize(batch.Messages);
 
@@ -79,8 +80,6 @@ namespace Jasper.Messaging.Transports.Tcp
 
                 var bytes = await stream.ReadBytesAsync(length);
                 messages = Envelope.ReadMany(bytes);
-
-
             }
             catch (Exception e)
             {
@@ -93,7 +92,7 @@ namespace Jasper.Messaging.Transports.Tcp
             {
                 await receive(stream, callback, messages, uri);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await callback.Failed(ex, messages);
                 await stream.SendBuffer(ProcessingFailureBuffer);
@@ -114,7 +113,6 @@ namespace Jasper.Messaging.Transports.Tcp
             }
 
 
-
             var status = await callback.Received(uri, messages);
             switch (status)
             {
@@ -133,13 +131,9 @@ namespace Jasper.Messaging.Transports.Tcp
                     var ack = await stream.ReadExpectedBuffer(AcknowledgedBuffer);
 
                     if (ack)
-                    {
                         await callback.Acknowledged(messages);
-                    }
                     else
-                    {
                         await callback.NotAcknowledged(messages);
-                    }
                     break;
             }
         }

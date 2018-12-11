@@ -17,11 +17,11 @@ namespace Jasper.EnvironmentChecks
             _action(runtime);
         }
 
+        public string Description { get; }
+
         public override string ToString()
         {
             return Description;
         }
-
-        public string Description { get; }
     }
 }

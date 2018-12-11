@@ -4,7 +4,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
     public class ValuesController : Controller
     {
-        [HttpGet("/values")]// GET api/values
+        [HttpGet("/values")] // GET api/values
         public string Get()
         {
             return "Hello from MVC Core";
@@ -18,12 +18,12 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         }
 
         // POST api/values
-        public void Post([FromBody]string value)
+        public void Post([FromBody] string value)
         {
         }
 
         // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody] string value)
         {
         }
 

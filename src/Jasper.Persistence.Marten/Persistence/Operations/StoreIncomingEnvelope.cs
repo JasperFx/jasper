@@ -9,7 +9,6 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 {
     public class StoreIncomingEnvelope : IStorageOperation
     {
-        public Envelope Envelope { get; }
         private readonly DbObjectName _incomingTable;
 
         public StoreIncomingEnvelope(DbObjectName incomingTable, Envelope envelope)
@@ -17,6 +16,8 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
             Envelope = envelope;
             _incomingTable = incomingTable;
         }
+
+        public Envelope Envelope { get; }
 
         public void ConfigureCommand(CommandBuilder builder)
         {

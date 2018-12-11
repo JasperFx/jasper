@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
+using Alba;
 using Baseline;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
@@ -11,24 +11,21 @@ using TestMessages;
 
 namespace benchmarks
 {
-    [SimpleJob(warmupCount: 2)][MemoryDiagnoser]
+    [SimpleJob(warmupCount: 2)]
+    [MemoryDiagnoser]
     public class HttpPipelineBenchmark : IDisposable
     {
-        private JasperRuntime _runtime;
-        private string _json;
+        private readonly string _json;
+        private readonly SystemUnderTest _runtime;
 
         public HttpPipelineBenchmark()
         {
-            _runtime = JasperRuntime.For<Receiver1>();
+            _runtime = JasperAlba.For<Receiver1>();
 
             var directory = AppContext.BaseDirectory;
-            while (!File.Exists(directory.AppendPath("target.json")))
-            {
-                directory = directory.ParentDirectory();
-            }
+            while (!File.Exists(directory.AppendPath("target.json"))) directory = directory.ParentDirectory();
 
             _json = new FileSystem().ReadStringFromFile(directory.AppendPath("target.json"));
-
         }
 
         public void Dispose()
@@ -51,9 +48,6 @@ namespace benchmarks
     {
         public void post_target(Target target)
         {
-
         }
     }
-
-
 }

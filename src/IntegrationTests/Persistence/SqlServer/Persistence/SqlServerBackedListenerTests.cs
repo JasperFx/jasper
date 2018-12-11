@@ -46,6 +46,5 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
             assertEnvelopeWasNotEnqueued(envelope);
         }
-
     }
 }

@@ -9,15 +9,15 @@ namespace Jasper.Messaging.Transports.Util
     {
         public static async Task<byte[]> ReadBytesAsync(this Stream stream, long? length)
         {
-            byte[] buffer = new byte[length.Value];
-            int totalRead = 0;
+            var buffer = new byte[length.Value];
+            var totalRead = 0;
             int current;
             do
             {
                 current = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead).ConfigureAwait(false);
                 totalRead += current;
-            }
-            while (totalRead < length && current > 0);
+            } while (totalRead < length && current > 0);
+
             return buffer;
         }
 

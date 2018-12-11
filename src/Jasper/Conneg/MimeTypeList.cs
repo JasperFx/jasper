@@ -20,15 +20,24 @@ namespace Jasper.Conneg
                         ?? new string[0];
 
             _mimeTypes.AddRange(types);
-
         }
-
-        public string Raw { get; private set; }
 
         public MimeTypeList(params string[] mimeTypes)
         {
             Raw = mimeTypes.Select(x => x).Join(";");
             _mimeTypes.AddRange(mimeTypes);
+        }
+
+        public string Raw { get; }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            return _mimeTypes.GetEnumerator();
         }
 
         public void AddMimeType(string mimeType)
@@ -39,16 +48,6 @@ namespace Jasper.Conneg
         public bool Matches(params string[] mimeTypes)
         {
             return _mimeTypes.Intersect(mimeTypes).Any();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IEnumerator<string> GetEnumerator()
-        {
-            return _mimeTypes.GetEnumerator();
         }
 
         public override string ToString()

@@ -1,6 +1,5 @@
 ﻿using Jasper.Http.Model;
-using Lamar.Codegen;
-using Lamar.Compilation;
+using LamarCompiler;
 
 namespace Jasper.Http.Routing.Codegen
 {
@@ -12,7 +11,8 @@ namespace Jasper.Http.Routing.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"var {Variable.Usage} = {nameof(RouteHandler.ToPathSegments)}({Segments.Usage}, {Position});");
+            writer.Write(
+                $"var {Variable.Usage} = {nameof(RouteHandler.ToPathSegments)}({Segments.Usage}, {Position});");
             Next?.GenerateCode(method, writer);
         }
     }

@@ -20,19 +20,19 @@ using Xunit;
 
 namespace IntegrationTests.RabbitMQ
 {
-
     [Collection("marten")]
     public class end_to_end : RabbitMQContext
     {
         [Fact]
-        public async Task send_message_to_and_receive_through_rabbitmq()
+        public async Task can_stop_and_start()
         {
-            var runtime = await JasperRuntime.ForAsync<RabbitMqUsingApp>();
-
-
-
-            try
+            using (var runtime = await JasperRuntime.ForAsync<RabbitMqUsingApp>())
             {
+                var root = runtime.Get<IMessagingRoot>();
+                root.ListeningStatus = ListeningStatus.TooBusy;
+                root.ListeningStatus = ListeningStatus.Accepting;
+
+
                 var tracker = runtime.Get<MessageTracker>();
 
                 var watch = tracker.WaitFor<ColorChosen>();
@@ -44,25 +44,14 @@ namespace IntegrationTests.RabbitMQ
                 var colors = runtime.Get<ColorHistory>();
 
                 colors.Name.ShouldBe("Red");
+            }
 
-                // TODO -- let's look at the envelope too
-            }
-            finally
-            {
-                await runtime.Shutdown();
-            }
         }
 
         [Fact]
-        public async Task can_stop_and_start()
+        public async Task send_message_to_and_receive_through_rabbitmq()
         {
-            var runtime = await JasperRuntime.ForAsync<RabbitMqUsingApp>();
-
-            var root = runtime.Get<IMessagingRoot>();
-            root.ListeningStatus = ListeningStatus.TooBusy;
-            root.ListeningStatus = ListeningStatus.Accepting;
-
-            try
+            using (var runtime = await JasperRuntime.ForAsync<RabbitMqUsingApp>())
             {
                 var tracker = runtime.Get<MessageTracker>();
 
@@ -75,12 +64,6 @@ namespace IntegrationTests.RabbitMQ
                 var colors = runtime.Get<ColorHistory>();
 
                 colors.Name.ShouldBe("Red");
-
-                // TODO -- let's look at the envelope too
-            }
-            finally
-            {
-                await runtime.Shutdown();
             }
         }
 
@@ -125,8 +108,8 @@ namespace IntegrationTests.RabbitMQ
             }
             finally
             {
-                await publisher.Shutdown();
-                await receiver.Shutdown();
+                publisher.Dispose();
+                receiver.Dispose();
             }
         }
 
@@ -180,39 +163,29 @@ namespace IntegrationTests.RabbitMQ
                 receiver1.Get<ColorHistory>().Name.ShouldBe("Purple");
                 //receiver2.Get<ColorHistory>().Name.ShouldBe("Purple");
                 //receiver3.Get<ColorHistory>().Name.ShouldBe("Purple");
-
             }
             finally
             {
-                await publisher.Shutdown();
-                await receiver1.Shutdown();
-                await receiver2.Shutdown();
-                await receiver3.Shutdown();
+                publisher.Dispose();
+                receiver1.Dispose();
+                receiver2.Dispose();
+                receiver3.Dispose();
             }
-
         }
-
     }
-
-
-
-
-
 
 
     public class MessageTracker
     {
-        private readonly LightweightCache<Type, List<TaskCompletionSource<Envelope>>>
-            _waiters = new LightweightCache<Type, List<TaskCompletionSource<Envelope>>>(t => new List<TaskCompletionSource<Envelope>>());
-
         private readonly ConcurrentBag<ITracker> _trackers = new ConcurrentBag<ITracker>();
+
+        private readonly LightweightCache<Type, List<TaskCompletionSource<Envelope>>>
+            _waiters = new LightweightCache<Type, List<TaskCompletionSource<Envelope>>>(t =>
+                new List<TaskCompletionSource<Envelope>>());
 
         public void Record(object message, Envelope envelope)
         {
-            foreach (var tracker in _trackers)
-            {
-                tracker.Check(envelope, message);
-            }
+            foreach (var tracker in _trackers) tracker.Check(envelope, message);
 
             var messageType = message.GetType();
             var list = _waiters[messageType];
@@ -240,10 +213,10 @@ namespace IntegrationTests.RabbitMQ
 
     public class CountTracker<T> : ITracker
     {
+        private readonly TaskCompletionSource<bool> _completion = new TaskCompletionSource<bool>();
         private readonly int _expected;
         private readonly List<ITracker> _trackers;
-        private readonly TaskCompletionSource<bool> _completion = new TaskCompletionSource<bool>();
-        private int _count = 0;
+        private int _count;
 
         public CountTracker(int expected, List<ITracker> trackers)
         {
@@ -252,6 +225,7 @@ namespace IntegrationTests.RabbitMQ
         }
 
         public Task<bool> Completion => _completion.Task;
+
         public void Check(Envelope envelope, object message)
         {
             if (message is T)
@@ -308,6 +282,4 @@ namespace IntegrationTests.RabbitMQ
     {
         public string Name { get; set; }
     }
-
-
 }

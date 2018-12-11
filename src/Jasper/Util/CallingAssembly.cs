@@ -7,22 +7,20 @@ namespace Jasper.Util
 {
     internal class CallingAssembly
     {
+        private static readonly IList<string> _misses = new List<string>();
+
         internal static Assembly Find()
         {
-            string trace = Environment.StackTrace;
-
+            var trace = Environment.StackTrace;
 
 
             var parts = trace.Split('\n');
 
-            for (int i = 5; i < parts.Length; i++)
+            for (var i = 5; i < parts.Length; i++)
             {
                 var line = parts[i];
                 var assembly = findAssembly(line);
-                if (assembly != null && !isSystemAssembly(assembly))
-                {
-                    return assembly;
-                }
+                if (assembly != null && !isSystemAssembly(assembly)) return assembly;
             }
 
             return null;
@@ -42,8 +40,6 @@ namespace Jasper.Util
             return assembly.GetName().Name.StartsWith("System.");
         }
 
-        private static readonly IList<string> _misses = new List<string>();
-
         private static Assembly findAssembly(string stacktraceLine)
         {
             var candidate = stacktraceLine.Trim().Substring(3);
@@ -55,13 +51,12 @@ namespace Jasper.Util
             var names = candidate.Split('.');
             for (var i = names.Length - 2; i > 0; i--)
             {
-                var possibility = String.Join(".", names.Take(i).ToArray());
+                var possibility = string.Join(".", names.Take(i).ToArray());
 
                 if (_misses.Contains(possibility)) continue;
 
                 try
                 {
-
                     assembly = Assembly.Load(new AssemblyName(possibility));
                     break;
                 }
@@ -74,18 +69,13 @@ namespace Jasper.Util
             return assembly;
         }
 
-        public static Assembly DetermineApplicationAssembly(JasperRegistry registry)
+        public static Assembly DetermineApplicationAssembly(JasperOptionsBuilder registry)
         {
             var assembly = registry.GetType().Assembly;
             var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;
             if (!Equals(assembly, typeof(JasperRegistry).Assembly) && !isFeature)
-            {
                 return assembly;
-            }
-            else
-            {
-                return CallingAssembly.Find();
-            }
+            return Find();
         }
     }
 }

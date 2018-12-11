@@ -33,10 +33,7 @@ namespace Jasper.Messaging.Durability
         {
             await other.Persist(Queued.ToArray());
 
-            foreach (var envelope in Scheduled)
-            {
-                await other.ScheduleJob(envelope);
-            }
+            foreach (var envelope in Scheduled) await other.ScheduleJob(envelope);
         }
     }
 }

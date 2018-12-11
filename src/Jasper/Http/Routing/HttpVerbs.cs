@@ -12,6 +12,6 @@ namespace Jasper.Http.Routing
         public static readonly string PATCH = "PATCH";
         public static readonly string HEAD = "HEAD";
 
-        public static readonly IEnumerable<string> All = new string[] {GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD};
+        public static readonly IEnumerable<string> All = new[] {GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD};
     }
 }

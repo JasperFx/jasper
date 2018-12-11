@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.ContentHandling
@@ -10,14 +9,15 @@ namespace Jasper.Http.ContentHandling
     public class SetHeader : Frame
     {
         private Variable _response;
-        public string Name { get; }
-        public string Value { get; }
 
         public SetHeader(string name, string value) : base(false)
         {
             Name = name;
             Value = value;
         }
+
+        public string Name { get; }
+        public string Value { get; }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {

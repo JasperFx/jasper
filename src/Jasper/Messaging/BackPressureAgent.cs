@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Baseline.Dates;
 using Jasper.Messaging.Transports;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging
 {
-    [CacheResolver]
     public class BackPressureAgent : BackgroundService
     {
         private readonly IMessagingRoot _root;
@@ -36,16 +34,12 @@ namespace Jasper.Messaging
 
         public void ApplyBackPressure()
         {
-            double ratio = (double)_root.Workers.QueuedCount / (double)_root.Settings.MaximumLocalEnqueuedBackPressureThreshold;
+            var ratio = _root.Workers.QueuedCount / (double) _root.Settings.MaximumLocalEnqueuedBackPressureThreshold;
 
             if (_root.ListeningStatus == ListeningStatus.Accepting && ratio > 1.0)
-            {
                 _root.ListeningStatus = ListeningStatus.TooBusy;
-            }
             else if (_root.ListeningStatus == ListeningStatus.TooBusy && ratio < 0.8)
-            {
                 _root.ListeningStatus = ListeningStatus.Accepting;
-            }
         }
     }
 }

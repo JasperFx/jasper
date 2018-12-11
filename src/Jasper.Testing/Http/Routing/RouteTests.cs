@@ -8,16 +8,11 @@ namespace Jasper.Testing.Http.Routing
     public class RouteTests
     {
         [Fact]
-        public void blank_segment()
+        public void argument_in_brackets()
         {
-            Route.ToParameter("foo", 0).ShouldBeOfType<Segment>().Path.ShouldBe("foo");
-        }
-
-        [Fact]
-        public void spread()
-        {
-            Route.ToParameter("...", 4).ShouldBeOfType<Spread>()
-                .Position.ShouldBe(4);
+            var arg = Route.ToParameter("{bar}", 3).ShouldBeOfType<RouteArgument>();
+            arg.Position.ShouldBe(3);
+            arg.Key.ShouldBe("bar");
         }
 
         [Fact]
@@ -29,30 +24,21 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [Fact]
-        public void argument_in_brackets()
+        public void blank_segment()
         {
-            var arg = Route.ToParameter("{bar}", 3).ShouldBeOfType<RouteArgument>();
-            arg.Position.ShouldBe(3);
-            arg.Key.ShouldBe("bar");
+            Route.ToParameter("foo", 0).ShouldBeOfType<Segment>().Path.ShouldBe("foo");
         }
 
         [Fact]
-        public void spread_has_to_be_last()
+        public void cannot_have_a_spread()
         {
-            Action action = () =>
-            {
-                new Route("a/.../b", "GET");
-            };
-            action.ShouldThrow<ArgumentOutOfRangeException>();
+            Exception<InvalidOperationException>.ShouldBeThrownBy(() => { new Route("...", "GET"); });
         }
 
         [Fact]
         public void cannot_have_multiple_spreads_either()
         {
-            Action action = () =>
-            {
-                new Route("a/.../b/...", "GET");
-            };
+            Action action = () => { new Route("a/.../b/...", "GET"); };
 
             action.ShouldThrow<InvalidOperationException>();
         }
@@ -60,38 +46,37 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void cannot_have_only_an_argument()
         {
-            Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
-            {
-                new Route(":arg", "GET");
-            });
+            Exception<InvalidOperationException>.ShouldBeThrownBy(() => { new Route(":arg", "GET"); });
         }
 
         [Fact]
-        public void cannot_have_a_spread()
+        public void spread()
         {
-            Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
-            {
-                new Route("...", "GET");
-            });
+            Route.ToParameter("...", 4).ShouldBeOfType<Spread>()
+                .Position.ShouldBe(4);
         }
 
-
+        [Fact]
+        public void spread_has_to_be_last()
+        {
+            Action action = () => { new Route("a/.../b", "GET"); };
+            action.ShouldThrow<ArgumentOutOfRangeException>();
+        }
     }
 
     public class building_a_route_from_segments_Tests
     {
-        private readonly ISegment[] segments;
-        private readonly Route route;
-
         public building_a_route_from_segments_Tests()
         {
             segments = new ISegment[]
-            {new Segment("folder", 0), new Segment("folder2", 1), new RouteArgument("name", 2)};
+                {new Segment("folder", 0), new Segment("folder2", 1), new RouteArgument("name", 2)};
 
 
             route = new Route(segments, HttpVerbs.PUT);
-
         }
+
+        private readonly ISegment[] segments;
+        private readonly Route route;
 
         [Fact]
         public void should_build_the_pattern_from_the_segments()
@@ -106,17 +91,15 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [Fact]
-        public void still_has_the_original_segments()
-        {
-            route.Segments.ShouldHaveTheSameElementsAs(segments);
-        }
-
-        [Fact]
         public void still_derives_the_name()
         {
             route.Name.ShouldBe("PUT:folder/folder2/:name");
         }
 
-
+        [Fact]
+        public void still_has_the_original_segments()
+        {
+            route.Segments.ShouldHaveTheSameElementsAs(segments);
+        }
     }
 }

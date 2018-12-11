@@ -3,7 +3,6 @@ using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging.ErrorHandling
 {
-
     public class Always : IExceptionMatch
     {
         public static readonly Always Instance = new Always();

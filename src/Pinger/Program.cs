@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Jasper;
 using Jasper.CommandLine;
 using Jasper.Messaging;
-using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,9 +12,9 @@ using TestMessages;
 
 namespace Pinger
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             return JasperAgent.Run<JasperRegistry>(args, _ =>
             {
@@ -51,7 +50,6 @@ namespace Pinger
         public void Handle(PongMessage message)
         {
             ConsoleWriter.Write(ConsoleColor.Cyan, "Got a pong back with name: " + message.Name);
-
         }
     }
 
@@ -86,7 +84,7 @@ namespace Pinger
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            int count = 1;
+            var count = 1;
 
             return Task.Run(async () =>
             {
@@ -102,5 +100,6 @@ namespace Pinger
             }, stoppingToken);
         }
     }
+
     // ENDSAMPLE
 }

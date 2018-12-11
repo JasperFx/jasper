@@ -5,7 +5,7 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Util;
-using Lamar.Codegen.Frames;
+using LamarCompiler.Frames;
 
 namespace Jasper.Messaging.Model
 {
@@ -40,7 +40,7 @@ namespace Jasper.Messaging.Model
             return !hasOutput || !method.ReturnType.GetTypeInfo().IsValueType;
         }
 
-        public new static HandlerCall For<T>(Expression<Action<T>> method)
+        public static HandlerCall For<T>(Expression<Action<T>> method)
         {
             return new HandlerCall(typeof(T), ReflectionHelper.GetMethod(method));
         }

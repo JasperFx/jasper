@@ -26,4 +26,4 @@ using Module1;
 
 [assembly: Guid("4F18A2E4-5056-48C8-89BA-4837F6F983E4")]
 
-[assembly:JasperModule(typeof(Module1Extension))]
+[assembly: JasperModule(typeof(Module1Extension))]

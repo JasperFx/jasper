@@ -17,7 +17,6 @@ namespace IntegrationTests.Persistence.SqlServer
             using (var runtime = JasperRuntime.For(x =>
                 x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
-
                 runtime.Container.Model.HasRegistrationFor<SqlConnection>().ShouldBeTrue();
                 runtime.Container.Model.HasRegistrationFor<DbConnection>().ShouldBeTrue();
 
@@ -27,12 +26,10 @@ namespace IntegrationTests.Persistence.SqlServer
                 runtime.Container.Model.HasRegistrationFor<IEnvelopePersistor>().ShouldBeTrue();
 
 
-
                 runtime.Get<SqlConnection>().ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
                 runtime.Get<DbConnection>().ShouldBeOfType<SqlConnection>()
                     .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
             }
         }
-
     }
 }

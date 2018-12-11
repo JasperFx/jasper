@@ -10,6 +10,6 @@ namespace Jasper.Testing.Http.Routing
         public void canonical_path_is_just_the_segment()
         {
             new Segment("foo", 2).CanonicalPath().ShouldBe("foo");
-        } 
+        }
     }
 }

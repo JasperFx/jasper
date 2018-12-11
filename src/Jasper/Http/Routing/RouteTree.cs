@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing
 {
-
-
     public class RouteTree
     {
         private readonly IDictionary<string, Node> _all = new Dictionary<string, Node>();
@@ -31,10 +27,7 @@ namespace Jasper.Http.Routing
 
         public void AddRoute(Route route)
         {
-            if (string.IsNullOrEmpty(route.Pattern))
-            {
-                _home = route;
-            }
+            if (string.IsNullOrEmpty(route.Pattern)) _home = route;
 
             _leaves.SmartAdd(route.Pattern, route);
             var node = getNode(route.NodePath);
@@ -53,7 +46,6 @@ namespace Jasper.Http.Routing
                 var parent = getNode(node.ParentRoute);
                 parent.AddChild(node);
             }
-
 
 
             return node;
@@ -77,6 +69,5 @@ namespace Jasper.Http.Routing
         {
             return route.Trim().TrimStart('/').TrimEnd('/').Split('/');
         }
-
     }
 }

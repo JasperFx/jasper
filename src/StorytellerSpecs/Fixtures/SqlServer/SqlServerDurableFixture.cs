@@ -100,6 +100,7 @@ create table receiver.item_created
 
                 await context.SendAllQueuedOutgoingMessages();
             }
+
             // ENDSAMPLE
         }
 

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
-using Jasper.Testing.Messaging.Runtime;
 using Shouldly;
 using Xunit;
 
@@ -12,15 +11,6 @@ namespace Jasper.Testing.Messaging.Compilation
         public simple_async_message_handlers()
         {
             theRegistry.Handlers.IncludeType<AsyncHandler>();
-        }
-
-        [Fact]
-        public async Task execute_the_simplest_possible_instance_chain()
-        {
-            var message = new Message2();
-            await Execute(message);
-
-            AsyncHandler.LastMessage2.ShouldBeSameAs(message);
         }
 
         [Fact]
@@ -45,6 +35,15 @@ namespace Jasper.Testing.Messaging.Compilation
         public Task can_run_double_async_actions()
         {
             return Execute(new DoubleAction());
+        }
+
+        [Fact]
+        public async Task execute_the_simplest_possible_instance_chain()
+        {
+            var message = new Message2();
+            await Execute(message);
+
+            AsyncHandler.LastMessage2.ShouldBeSameAs(message);
         }
     }
 
@@ -92,11 +91,9 @@ namespace Jasper.Testing.Messaging.Compilation
 
     public class DoubleAction : IDoubleAction
     {
-
     }
 
     public interface IDoubleAction
     {
-
     }
 }

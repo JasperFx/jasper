@@ -5,8 +5,6 @@ using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
 using Jasper.Testing.FakeStoreTypes;
-using Jasper.Testing.Messaging.Compilation;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Testing.Samples.HandlerDiscovery;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute.Routing.Handlers;
@@ -34,9 +32,7 @@ namespace Jasper.Testing.Messaging
             var tracker = new MessageTracker();
             registry.Services.AddSingleton(tracker);
 
-            var runtime = await JasperRuntime.ForAsync(registry);
-
-            try
+            using (var runtime = JasperRuntime.For(registry))
             {
                 var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1
@@ -50,9 +46,37 @@ namespace Jasper.Testing.Messaging
 
                 received.Message.As<Message1>().Id.ShouldBe(message.Id);
             }
-            finally
+        }
+
+
+        [Fact]
+        public async Task enqueue_locally_lightweight()
+        {
+            var registry = new JasperRegistry();
+
+
+            registry.Handlers.IncludeType<RecordCallHandler>();
+            registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+            registry.Services.AddTransient<IMyService, MyService>();
+            registry.Services.AddTransient<IPongWriter, PongWriter>();
+
+            var tracker = new MessageTracker();
+            registry.Services.AddSingleton(tracker);
+
+            using (var runtime = await JasperRuntime.ForAsync(registry))
             {
-                await runtime.Shutdown();
+                var waiter = tracker.WaitFor<Message1>();
+                var message = new Message1
+                {
+                    Id = Guid.NewGuid()
+                };
+
+                await runtime.Get<IMessageContext>().EnqueueLightweight(message);
+
+                waiter.Wait(5.Seconds());
+                var received = waiter.Result;
+
+                received.Message.As<Message1>().Id.ShouldBe(message.Id);
             }
         }
 
@@ -75,9 +99,7 @@ namespace Jasper.Testing.Messaging
             var tracker = new MessageTracker();
             registry.Services.AddSingleton(tracker);
 
-            var runtime = await JasperRuntime.ForAsync(registry);
-
-            try
+            using (var runtime = await JasperRuntime.ForAsync(registry))
             {
                 var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1
@@ -91,48 +113,7 @@ namespace Jasper.Testing.Messaging
 
                 received.Message.As<Message1>().Id.ShouldBe(message.Id);
             }
-            finally
-            {
-                await runtime.Shutdown();
-            }
-        }
 
-
-        [Fact]
-        public async Task enqueue_locally_lightweight()
-        {
-            var registry = new JasperRegistry();
-
-
-            registry.Handlers.IncludeType<RecordCallHandler>();
-            registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
-            registry.Services.AddTransient<IMyService, MyService>();
-            registry.Services.AddTransient<IPongWriter, PongWriter>();
-
-            var tracker = new MessageTracker();
-            registry.Services.AddSingleton(tracker);
-
-            var runtime = await JasperRuntime.ForAsync(registry);
-
-            try
-            {
-                var waiter = tracker.WaitFor<Message1>();
-                var message = new Message1
-                {
-                    Id = Guid.NewGuid()
-                };
-
-                await runtime.Get<IMessageContext>().EnqueueLightweight(message);
-
-                waiter.Wait(5.Seconds());
-                var received = waiter.Result;
-
-                received.Message.As<Message1>().Id.ShouldBe(message.Id);
-            }
-            finally
-            {
-                await runtime.Shutdown();
-            }
         }
     }
 }

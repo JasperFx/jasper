@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
-using Lamar;
 
 namespace Jasper.Messaging.Model
 {
@@ -26,7 +24,4 @@ namespace Jasper.Messaging.Model
             return inner.Handle(context);
         }
     }
-
-
-
 }

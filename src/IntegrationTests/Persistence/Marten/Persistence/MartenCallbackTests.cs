@@ -7,7 +7,6 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence;
@@ -43,7 +42,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Status = TransportConstants.Incoming;
 
-            var marker = new EnvelopeTables(new MessagingSettings(), new StoreOptions());
+            var marker = new EnvelopeTables(new JasperOptions(), new StoreOptions());
 
             using (var session = theStore.OpenSession())
             {
@@ -54,7 +53,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
             var logger = TransportLogger.Empty();
             theRetries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, marker), logger,
-                new MessagingSettings());
+                new JasperOptions());
 
 
             var persistor = new MartenEnvelopePersistor(theStore, marker);

@@ -14,7 +14,7 @@ namespace Jasper.Http.Routing
     public static class RouteBuilder
     {
         public const string Index = "Index";
-        public static readonly string[] SpecialClassNames = new string[]{"HomeEndpoint", "ServiceEndpoint"};
+        public static readonly string[] SpecialClassNames = {"HomeEndpoint", "ServiceEndpoint"};
         public static readonly IList<string> InputTypeNames = new List<string> {"input", "query", "message", "body"};
         public static readonly Dictionary<string, string> SpecialMethodNames;
 
@@ -22,19 +22,17 @@ namespace Jasper.Http.Routing
         {
             SpecialMethodNames = new Dictionary<string, string>
             {
-                {Index, "GET"},
+                {Index, "GET"}
             };
 
             foreach (var httpVerb in HttpVerbs.All)
-            {
                 SpecialMethodNames.Add(httpVerb.ToLower().Capitalize(), httpVerb.ToUpper());
-            }
         }
 
         public static Route Build<T>(Expression<Action<T>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
-            return Build(typeof (T), method);
+            return Build(typeof(T), method);
         }
 
         public static Route Build(Type handlerType, MethodInfo method)
@@ -44,7 +42,6 @@ namespace Jasper.Http.Routing
 
         public static Route Build(string pattern, Type handlerType, MethodInfo method)
         {
-
             pattern = pattern.Replace("___", "-").Replace("__", "_@");
 
             var parts = pattern.Split('_')
@@ -53,13 +50,9 @@ namespace Jasper.Http.Routing
 
             var verb = HttpVerbs.All.FirstOrDefault(x => x.EqualsIgnoreCase(parts[0]));
             if (verb.IsNotEmpty())
-            {
                 parts = parts.Skip(1).ToArray();
-            }
             else
-            {
                 verb = HttpVerbs.GET;
-            }
 
             var segments = parts
                 .Select((x, position) => new Segment(x.ToLowerInvariant(), position))
@@ -74,9 +67,10 @@ namespace Jasper.Http.Routing
             }
 
 
-            Type inputType = DetermineInputType(method);
+            var inputType = DetermineInputType(method);
 
-            var hasPrimitives = method.GetParameters().Any(x => x.ParameterType == typeof(string) || RoutingFrames.CanParse(x.ParameterType));
+            var hasPrimitives = method.GetParameters().Any(x =>
+                x.ParameterType == typeof(string) || RoutingFrames.CanParse(x.ParameterType));
             if (hasPrimitives)
             {
                 for (var i = 0; i < segments.Length; i++)
@@ -104,16 +98,14 @@ namespace Jasper.Http.Routing
                         segments[i] = argument;
                     }
                 }
-
             }
 
             var spreads = method.GetParameters().Where(x => x.IsSpread()).ToArray();
-            if (spreads.Length > 1) throw new InvalidOperationException($"An HTTP action method can only take in either '{Route.PathSegments}' or '{Route.RelativePath}', but not both. Error with action {handlerType.FullName}.{method.Name}()");
+            if (spreads.Length > 1)
+                throw new InvalidOperationException(
+                    $"An HTTP action method can only take in either '{Route.PathSegments}' or '{Route.RelativePath}', but not both. Error with action {handlerType.FullName}.{method.Name}()");
 
-            if (spreads.Length == 1)
-            {
-                segments = segments.Concat(new ISegment[] {new Spread(segments.Length)}).ToArray();
-            }
+            if (spreads.Length == 1) segments = segments.Concat(new ISegment[] {new Spread(segments.Length)}).ToArray();
 
             var route = new Route(segments, verb)
             {
@@ -134,16 +126,9 @@ namespace Jasper.Http.Routing
 
             if (first.IsSpread()) return null;
 
-            if (InputTypeNames.Contains(first.Name, StringComparer.OrdinalIgnoreCase))
-            {
-                return first.ParameterType;
-            }
+            if (InputTypeNames.Contains(first.Name, StringComparer.OrdinalIgnoreCase)) return first.ParameterType;
 
             return first.ParameterType.IsInputTypeCandidate() ? first.ParameterType : null;
         }
-
-
     }
-
-
 }

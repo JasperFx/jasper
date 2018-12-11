@@ -11,20 +11,25 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerEnvelopeTransaction : IEnvelopeTransaction, IDisposable
     {
-        private readonly SqlTransaction _tx;
         private readonly SqlServerBackedDurableMessagingFactory _persistence;
+        private readonly SqlTransaction _tx;
 
         public SqlServerEnvelopeTransaction(IMessageContext context, SqlTransaction tx)
         {
-            _persistence = context.Advanced.Factory as SqlServerBackedDurableMessagingFactory ?? throw new InvalidOperationException("This message context is not using Sql Server-backed messaging persistence");
+            _persistence = context.Advanced.Factory as SqlServerBackedDurableMessagingFactory ??
+                           throw new InvalidOperationException(
+                               "This message context is not using Sql Server-backed messaging persistence");
             _tx = tx;
+        }
 
-
+        public void Dispose()
+        {
+            _tx?.Dispose();
         }
 
         public Task Persist(Envelope envelope)
         {
-            return Persist(new Envelope[] {envelope});
+            return Persist(new[] {envelope});
         }
 
         public Task Persist(Envelope[] envelopes)
@@ -39,19 +44,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.Status = TransportConstants.Scheduled;
 
-            return _persistence.StoreIncoming(_tx, new Envelope[] {envelope});
+            return _persistence.StoreIncoming(_tx, new[] {envelope});
         }
 
         public Task CopyTo(IEnvelopeTransaction other)
         {
-
-
-            throw new NotSupportedException($"Cannot copy data from an existing Sql Server envelope transaction to {other}. You may have erroneously enlisted an IMessageContext in a transaction twice.");
-        }
-
-        public void Dispose()
-        {
-            _tx?.Dispose();
+            throw new NotSupportedException(
+                $"Cannot copy data from an existing Sql Server envelope transaction to {other}. You may have erroneously enlisted an IMessageContext in a transaction twice.");
         }
     }
 }

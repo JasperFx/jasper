@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 using Baseline;
 using Jasper.Http.Model;
-using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing
 {
@@ -24,42 +22,10 @@ namespace Jasper.Http.Routing
     {
         public const string RelativePath = "relativePath";
         public const string PathSegments = "pathSegments";
-
-        /// <summary>
-        /// This is only for testing purposes
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public static Route For(string url, string httpMethod)
-        {
-            return new Route(url, httpMethod ?? HttpVerbs.GET);
-        }
-
-        public static ISegment ToParameter(string path, int position)
-        {
-            if (path == "...")
-            {
-                return new Spread(position);
-            }
-
-            if (path.StartsWith(":"))
-            {
-                var key = path.Trim(':');
-                return new RouteArgument(key, position);
-            }
-
-            if (path.StartsWith("{") && path.EndsWith("}"))
-            {
-                var key = path.TrimStart('{').TrimEnd('}');
-                return new RouteArgument(key, position);
-            }
-
-            return new Segment(path, position);
-        }
+        private readonly List<ISegment> _segments = new List<ISegment>();
 
         private Lazy<RouteArgument[]> _arguments;
         private Spread _spread;
-        private readonly List<ISegment> _segments = new List<ISegment>();
 
 
         public Route(string pattern, string httpMethod)
@@ -70,7 +36,7 @@ namespace Jasper.Http.Routing
             HttpMethod = httpMethod;
 
             var segments = pattern.Split('/');
-            for (int i = 0; i < segments.Length; i++)
+            for (var i = 0; i < segments.Length; i++)
             {
                 var segment = ToParameter(segments[i], i);
                 _segments.Add(segment);
@@ -79,25 +45,11 @@ namespace Jasper.Http.Routing
             validateSegments();
 
 
-
             Pattern = string.Join("/", _segments.Select(x => x.SegmentPath));
 
             Name = $"{HttpMethod}:{Pattern}";
 
             setupArgumentsAndSpread();
-        }
-
-        private void validateSegments()
-        {
-            if (_segments.FirstOrDefault() is Spread)
-            {
-                throw new InvalidOperationException($"'{Pattern}' is an invalid route. Cannot use a spread argument as the first segment");
-            }
-
-            if (_segments.FirstOrDefault() is RouteArgument)
-            {
-                throw new InvalidOperationException($"'{Pattern}' is an invalid route. Cannot use a route argument as the first segment");
-            }
         }
 
         public Route(ISegment[] segments, string httpVerb)
@@ -115,47 +67,20 @@ namespace Jasper.Http.Routing
         }
 
 
-
-        private void setupArgumentsAndSpread()
-        {
-            _arguments = new Lazy<RouteArgument[]>(() => _segments.OfType<RouteArgument>().ToArray());
-            _spread = _segments.OfType<Spread>().SingleOrDefault();
-
-            if (!HasSpread) return;
-
-            if (!Equals(_spread, _segments.Last()))
-                throw new ArgumentOutOfRangeException(nameof(Pattern),
-                    "The spread parameter can only be the last segment in a route");
-        }
-
-
-
         public IEnumerable<ISegment> Segments => _segments;
 
         public Type InputType { get; set; }
         public Type HandlerType { get; set; }
         public MethodInfo Method { get; set; }
 
-
-
-        public RouteArgument GetArgument(string key)
-        {
-            return _segments.OfType<RouteArgument>().FirstOrDefault(x => x.Key == key);
-        }
-
         public bool EndsWithArgument
         {
             get
             {
-                if (_segments.LastOrDefault() is RouteArgument)
-                {
-                    return true;
-                }
+                if (_segments.LastOrDefault() is RouteArgument) return true;
 
                 if (_segments.LastOrDefault() is Spread && _segments.Count >= 2)
-                {
                     return _segments[_segments.Count - 2] is RouteArgument;
-                }
 
                 return false;
             }
@@ -178,10 +103,7 @@ namespace Jasper.Http.Routing
             {
                 var segments = _segments.ToArray().Reverse().Skip(1).Reverse().ToArray();
 
-                if (HasSpread && EndsWithArgument)
-                {
-                    segments = _segments.ToArray().Reverse().Skip(2).Reverse().ToArray();
-                }
+                if (HasSpread && EndsWithArgument) segments = _segments.ToArray().Reverse().Skip(2).Reverse().ToArray();
 
                 return string.Join("/", segments.Select(x => x.CanonicalPath()));
             }
@@ -193,6 +115,65 @@ namespace Jasper.Http.Routing
 
         public RouteHandler Handler { get; set; }
         public RouteChain Chain { get; internal set; }
+
+        /// <summary>
+        ///     This is only for testing purposes
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static Route For(string url, string httpMethod)
+        {
+            return new Route(url, httpMethod ?? HttpVerbs.GET);
+        }
+
+        public static ISegment ToParameter(string path, int position)
+        {
+            if (path == "...") return new Spread(position);
+
+            if (path.StartsWith(":"))
+            {
+                var key = path.Trim(':');
+                return new RouteArgument(key, position);
+            }
+
+            if (path.StartsWith("{") && path.EndsWith("}"))
+            {
+                var key = path.TrimStart('{').TrimEnd('}');
+                return new RouteArgument(key, position);
+            }
+
+            return new Segment(path, position);
+        }
+
+        private void validateSegments()
+        {
+            if (_segments.FirstOrDefault() is Spread)
+                throw new InvalidOperationException(
+                    $"'{Pattern}' is an invalid route. Cannot use a spread argument as the first segment");
+
+            if (_segments.FirstOrDefault() is RouteArgument)
+                throw new InvalidOperationException(
+                    $"'{Pattern}' is an invalid route. Cannot use a route argument as the first segment");
+        }
+
+
+        private void setupArgumentsAndSpread()
+        {
+            _arguments = new Lazy<RouteArgument[]>(() => _segments.OfType<RouteArgument>().ToArray());
+            _spread = _segments.OfType<Spread>().SingleOrDefault();
+
+            if (!HasSpread) return;
+
+            if (!Equals(_spread, _segments.Last()))
+                throw new ArgumentOutOfRangeException(nameof(Pattern),
+                    "The spread parameter can only be the last segment in a route");
+        }
+
+
+        public RouteArgument GetArgument(string key)
+        {
+            return _segments.OfType<RouteArgument>().FirstOrDefault(x => x.Key == key);
+        }
 
 
         public IDictionary<string, string> ToParameters(object input)
@@ -208,7 +189,9 @@ namespace Jasper.Http.Routing
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-            if (model.GetType() != InputType) throw new ArgumentOutOfRangeException(nameof(model), $"This route maps to {InputType} but got {model.GetType()}");
+            if (model.GetType() != InputType)
+                throw new ArgumentOutOfRangeException(nameof(model),
+                    $"This route maps to {InputType} but got {model.GetType()}");
 
 
             _arguments.Value.Each(x => x.ApplyRouteDataToInput(model, dict));
@@ -234,8 +217,5 @@ namespace Jasper.Http.Routing
         {
             return "/" + _segments.Select(x => x.SegmentFromParameters(parameters)).Join("/");
         }
-
-
-
     }
 }

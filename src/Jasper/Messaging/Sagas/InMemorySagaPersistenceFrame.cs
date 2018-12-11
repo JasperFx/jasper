@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Messaging.Durability;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 
 namespace Jasper.Messaging.Sagas
 {
     public class InMemorySagaPersistenceFrame : AsyncFrame
     {
-        private readonly Variable _sagaId;
         private readonly SagaStateExistence _existence;
-        private Variable _persistor;
+        private readonly Variable _sagaId;
         private Variable _context;
+        private Variable _persistor;
 
         public InMemorySagaPersistenceFrame(Type documentType, Variable sagaId, SagaStateExistence existence)
         {
@@ -24,7 +23,7 @@ namespace Jasper.Messaging.Sagas
             Persistor = new Variable(typeof(InMemoryEnvelopeTransaction), this);
         }
 
-        public Variable Persistor { get;  }
+        public Variable Persistor { get; }
 
         public Variable Document { get; }
 
@@ -35,9 +34,8 @@ namespace Jasper.Messaging.Sagas
 
 
             if (_existence == SagaStateExistence.Existing)
-            {
-                writer.Write($"var {Document.Usage} = {_persistor.Usage}.{nameof(InMemorySagaPersistor.Load)}<{Document.VariableType.FullNameInCode()}>({_sagaId.Usage});");
-            }
+                writer.Write(
+                    $"var {Document.Usage} = {_persistor.Usage}.{nameof(InMemorySagaPersistor.Load)}<{Document.VariableType.FullNameInCode()}>({_sagaId.Usage});");
 
             Next?.GenerateCode(method, writer);
         }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Baseline.Dates;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Tcp;
 
 namespace Jasper.Messaging.Transports.Sending
@@ -9,9 +7,9 @@ namespace Jasper.Messaging.Transports.Sending
     public abstract class RetryAgent : IDisposable
     {
         protected readonly ISender _sender;
-        private int _failureCount = 0;
-        private Pinger _pinger;
         protected readonly RetrySettings _settings;
+        private int _failureCount;
+        private Pinger _pinger;
 
         public RetryAgent(ISender sender, RetrySettings settings)
         {
@@ -20,6 +18,12 @@ namespace Jasper.Messaging.Transports.Sending
         }
 
         public Uri Destination => _sender.Destination;
+
+        public void Dispose()
+        {
+            // Doesn't own the sender
+            _pinger?.Dispose();
+        }
 
         public async Task MarkFailed(OutgoingMessageBatch batch)
         {
@@ -47,8 +51,6 @@ namespace Jasper.Messaging.Transports.Sending
 #pragma warning restore 4014
                 }
             }
-
-
         }
 
         public abstract Task EnqueueForRetry(OutgoingMessageBatch batch);
@@ -73,12 +75,6 @@ namespace Jasper.Messaging.Transports.Sending
             _pinger = null;
 
             return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            // Doesn't own the sender
-            _pinger?.Dispose();
         }
     }
 }

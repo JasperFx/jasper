@@ -6,6 +6,19 @@ namespace Jasper.Testing.Http.Routing
 {
     public class MethodCallParserTests
     {
+        private List<object> fetch(string value)
+        {
+            return MethodCallParser.ToArguments<FakeEndpoint>(x => x.do_stuff(value));
+        }
+
+
+        [Fact]
+        public void resolve_properties_for_multiple_parameters()
+        {
+            MethodCallParser.ToArguments<FakeEndpoint>(x => x.complex("else", 3))
+                .ShouldHaveTheSameElementsAs("else", 3);
+        }
+
         [Fact]
         public void resolve_properties_for_one_parameter_passed_as_constant()
         {
@@ -27,19 +40,6 @@ namespace Jasper.Testing.Http.Routing
             var val = "other";
             MethodCallParser.ToArguments<FakeEndpoint>(x => x.do_stuff(val))
                 .ShouldHaveTheSameElementsAs("other");
-        }
-
-        private List<object> fetch(string value)
-        {
-            return MethodCallParser.ToArguments<FakeEndpoint>(x => x.do_stuff(value));
-        }
-
-
-        [Fact]
-        public void resolve_properties_for_multiple_parameters()
-        {
-            MethodCallParser.ToArguments<FakeEndpoint>(x => x.complex("else", 3))
-                .ShouldHaveTheSameElementsAs("else", 3);
         }
     }
 

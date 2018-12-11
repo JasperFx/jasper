@@ -150,6 +150,5 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
             var state = await LoadState(stateId);
             state.ThreeCompleted.ShouldBeTrue();
         }
-
     }
 }

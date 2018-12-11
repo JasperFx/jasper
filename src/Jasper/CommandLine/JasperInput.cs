@@ -9,8 +9,7 @@ namespace Jasper.CommandLine
     // SAMPLE: JasperInput
     public class JasperInput
     {
-        [IgnoreOnCommandLine]
-        public JasperRegistry Registry { get; set; }
+        [IgnoreOnCommandLine] public JasperRegistry Registry { get; set; }
 
         [Description("Use to override the ASP.Net Environment name")]
         public string EnvironmentFlag { get; set; }
@@ -27,10 +26,7 @@ namespace Jasper.CommandLine
 
             // The --log-level flag value overrides your application's
             // LogLevel
-            if (LogLevelFlag.HasValue)
-            {
-                Registry.ConfigureLogging(x => x.SetMinimumLevel(LogLevelFlag.Value));
-            }
+            if (LogLevelFlag.HasValue) Registry.ConfigureLogging(x => x.SetMinimumLevel(LogLevelFlag.Value));
 
             if (VerboseFlag)
             {
@@ -50,14 +46,12 @@ namespace Jasper.CommandLine
 
             // The --environment flag is used to set the environment
             // property on the IHostedEnvironment within your system
-            if (EnvironmentFlag.IsNotEmpty())
-            {
-                Registry.UseEnvironment(EnvironmentFlag);
-            }
+            if (EnvironmentFlag.IsNotEmpty()) Registry.UseEnvironment(EnvironmentFlag);
             // ENDSAMPLE
 
             return JasperRuntime.For(Registry);
         }
     }
+
     // ENDSAMPLE
 }

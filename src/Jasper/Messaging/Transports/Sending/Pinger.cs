@@ -6,10 +6,10 @@ namespace Jasper.Messaging.Transports.Sending
 {
     public class Pinger : IDisposable
     {
-        private readonly ISender _sender;
-        private readonly TimeSpan _cooldown;
         private readonly Func<Task> _callback;
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+        private readonly TimeSpan _cooldown;
+        private readonly ISender _sender;
         private Task _task;
 
         public Pinger(ISender sender, TimeSpan cooldown, Func<Task> callback)
@@ -19,6 +19,11 @@ namespace Jasper.Messaging.Transports.Sending
             _callback = callback;
 
             _task = Task.Run(pingUntilConnected, _cancellation.Token);
+        }
+
+        public void Dispose()
+        {
+            _cancellation.Cancel();
         }
 
         private async Task pingUntilConnected()
@@ -36,14 +41,8 @@ namespace Jasper.Messaging.Transports.Sending
                 }
                 catch (Exception)
                 {
-
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            _cancellation.Cancel();
         }
     }
 }

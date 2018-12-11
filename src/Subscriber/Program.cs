@@ -1,16 +1,13 @@
-using System;
 using Jasper;
 using Jasper.CommandLine;
-using Jasper.Http;
-using Jasper.Messaging.Transports.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using TestMessages;
 
 namespace Subscriber
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             return JasperAgent.Run<SubscriberApp>(args);
         }
@@ -31,12 +28,10 @@ namespace Subscriber
     {
         public void Handle(NewUser newGuy)
         {
-
         }
 
         public void Handle(DeleteUser deleted)
         {
-
         }
     }
 }

@@ -6,7 +6,6 @@ namespace Jasper.Messaging
     {
         public UnknownTransportException(string message) : base(message)
         {
-
         }
     }
 }

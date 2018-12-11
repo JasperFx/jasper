@@ -1,7 +1,4 @@
-﻿using Jasper;
-using Jasper.CommandLine;
-
-namespace MyApp
+﻿namespace MyApp
 {
 /*
     class SampleUsages

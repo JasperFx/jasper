@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Baseline;
 using Jasper.Conneg;
 using Jasper.Util;
 
@@ -10,10 +9,7 @@ namespace Jasper.Messaging.Runtime.Routing
     {
         public MessageRoute(Type messageType, Uri destination, string contentType)
         {
-            if (destination == null)
-            {
-                throw new ArgumentNullException(nameof(destination));
-            }
+            if (destination == null) throw new ArgumentNullException(nameof(destination));
 
             MessageType = messageType.ToMessageTypeName();
             DotNetType = messageType;
@@ -42,9 +38,7 @@ namespace Jasper.Messaging.Runtime.Routing
         public Envelope CloneForSending(Envelope envelope)
         {
             if (envelope.Message == null)
-            {
                 throw new ArgumentNullException(nameof(envelope.Message), "Envelope.Message cannot be null");
-            }
 
             var sending = envelope.Clone();
             sending.Id = CombGuidIdGeneration.NewGuid();
@@ -72,7 +66,8 @@ namespace Jasper.Messaging.Runtime.Routing
 
         public override string ToString()
         {
-            return $"{nameof(MessageType)}: {MessageType}, {nameof(DotNetType)}: {DotNetType}, {nameof(Destination)}: {Destination}, {nameof(ContentType)}: {ContentType}";
+            return
+                $"{nameof(MessageType)}: {MessageType}, {nameof(DotNetType)}: {DotNetType}, {nameof(Destination)}: {Destination}, {nameof(ContentType)}: {ContentType}";
         }
     }
 }

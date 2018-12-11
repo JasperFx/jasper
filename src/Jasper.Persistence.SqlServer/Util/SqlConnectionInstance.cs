@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Lamar;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
 using Lamar.IoC;
 using Lamar.IoC.Frames;
 using Lamar.IoC.Instances;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Persistence.SqlServer.Util
@@ -17,10 +16,13 @@ namespace Jasper.Persistence.SqlServer.Util
     {
         private Instance _settings;
 
-        public SqlConnectionInstance(Type serviceType) : base(serviceType, typeof(SqlConnection), ServiceLifetime.Scoped)
+        public SqlConnectionInstance(Type serviceType) : base(serviceType, typeof(SqlConnection),
+            ServiceLifetime.Scoped)
         {
             Name = Variable.DefaultArgName(serviceType);
         }
+
+        public override bool RequiresServiceProvider => false;
 
         public override Func<Scope, object> ToResolver(Scope topScope)
         {
@@ -31,8 +33,6 @@ namespace Jasper.Persistence.SqlServer.Util
         {
             return new SqlConnection(scope.GetInstance<SqlServerSettings>().ConnectionString);
         }
-
-        public override bool RequiresServiceProvider => false;
 
         public override Variable CreateVariable(BuildMode mode, ResolverVariables variables, bool isRoot)
         {
@@ -49,8 +49,8 @@ namespace Jasper.Persistence.SqlServer.Util
 
     public class SqlConnectionFrame : SyncFrame
     {
-        private readonly Variable _settings;
         private readonly Instance _instance;
+        private readonly Variable _settings;
 
         public SqlConnectionFrame(Variable settings, Instance instance)
         {
@@ -68,11 +68,10 @@ namespace Jasper.Persistence.SqlServer.Util
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"BLOCK:using ({_instance.ServiceType.FullNameInCode()} {Connection.Usage} = new {typeof(SqlConnection).FullName}({_settings.Usage}.{nameof(SqlServerSettings.ConnectionString)}))");
+            writer.Write(
+                $"BLOCK:using ({_instance.ServiceType.FullNameInCode()} {Connection.Usage} = new {typeof(SqlConnection).FullName}({_settings.Usage}.{nameof(SqlServerSettings.ConnectionString)}))");
             Next?.GenerateCode(method, writer);
             writer.FinishBlock();
         }
-
-
     }
 }

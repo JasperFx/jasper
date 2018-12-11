@@ -1,10 +1,9 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
-using Jasper.Conneg;
-using Jasper.Http.ContentHandling;
+using Jasper.Configuration;
 using Jasper.Http.Model;
-using Jasper.Messaging.Transports.Configuration;
-using Lamar.Util;
+using Lamar;
 using Newtonsoft.Json;
 
 namespace Jasper.Http
@@ -13,6 +12,7 @@ namespace Jasper.Http
     public partial class HttpSettings
     {
         internal readonly RouteGraph Routes = new RouteGraph();
+        private Task _findActions;
 
         public HttpSettings()
         {
@@ -31,25 +31,24 @@ namespace Jasper.Http
         public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings();
 
 
-        internal Task FindRoutes(JasperRuntime runtime, JasperRegistry registry, PerfTimer timer)
+        // Call this in UseJasper()
+        internal void StartFindingRoutes(Assembly assembly)
         {
-            var applicationAssembly = registry.ApplicationAssembly;
-            var generation = registry.CodeGeneration;
+            if (!Enabled) return;
 
-            return FindActions(applicationAssembly).ContinueWith(t =>
+            _findActions = FindActions(assembly).ContinueWith(t =>
             {
-                timer.Record("Find Routes", () =>
-                {
-                    var actions = t.Result;
-                    foreach (var methodCall in actions) Routes.AddRoute(methodCall);
-
-                });
-
-                var rules = timer.Record("Fetching Conneg Rules",
-                    () => runtime.Container.QuickBuild<ConnegRules>());
-
-                timer.Record("Build Routing Tree", () => { Routes.BuildRoutingTree(rules, generation, runtime); });
+                var actions = t.Result;
+                foreach (var methodCall in actions) Routes.AddRoute(methodCall);
             });
+        }
+
+        // Call this from the activator
+        internal Task BuildRouting(IContainer container, JasperGenerationRules generation)
+        {
+            if (!Enabled) return Task.CompletedTask;
+
+            return _findActions.ContinueWith(t => { Routes.BuildRoutingTree(generation, container); });
         }
 
 

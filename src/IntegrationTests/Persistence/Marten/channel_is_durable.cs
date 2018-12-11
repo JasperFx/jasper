@@ -26,6 +26,5 @@ namespace IntegrationTests.Persistence.Marten
                 channels.GetOrBuild("tcp://server2/durable".ToUri()).IsDurable.ShouldBeTrue();
             }
         }
-
     }
 }

@@ -17,11 +17,9 @@ namespace Jasper.Persistence.SqlServer
         {
             var returnValue = await tryGetLock(conn, lockId, owner, tx);
 
-            if ((int) returnValue < 0)
-            {
-                throw new Exception(String.Format("sp_getapplock failed with errorCode '{0}'",
+            if (returnValue < 0)
+                throw new Exception(string.Format("sp_getapplock failed with errorCode '{0}'",
                     returnValue));
-            }
         }
 
         private static async Task<int> tryGetLock(SqlConnection conn, int lockId, string owner, SqlTransaction tx)
@@ -36,7 +34,7 @@ namespace Jasper.Persistence.SqlServer
             cmd.Parameters.AddWithValue("LockOwner", owner).SqlDbType = SqlDbType.VarChar;
             cmd.Parameters.AddWithValue("LockTimeout", 1000);
 
-            SqlParameter returnValue = cmd.Parameters.Add("ReturnValue", SqlDbType.Int);
+            var returnValue = cmd.Parameters.Add("ReturnValue", SqlDbType.Int);
             returnValue.Direction = ParameterDirection.ReturnValue;
             await cmd.ExecuteNonQueryAsync();
 
@@ -45,21 +43,7 @@ namespace Jasper.Persistence.SqlServer
 
         public static async Task<bool> TryGetGlobalTxLock(this SqlConnection conn, SqlTransaction tx, int lockId)
         {
-            return (await tryGetLock(conn, lockId, "Transaction", tx)) >= 0;
-        }
-
-        public class AdvisoryLock
-        {
-            public bool Granted { get; }
-            public string Grant { get; }
-            public DateTime? Start { get; }
-
-            public AdvisoryLock(bool granted, string grant, DateTime? start)
-            {
-                Granted = granted;
-                Grant = grant;
-                Start = start;
-            }
+            return await tryGetLock(conn, lockId, "Transaction", tx) >= 0;
         }
 
 
@@ -70,7 +54,7 @@ namespace Jasper.Persistence.SqlServer
 
         public static async Task<bool> TryGetGlobalLock(this SqlConnection conn, int lockId)
         {
-            return (await tryGetLock(conn, lockId, "Session", null)) >= 0;
+            return await tryGetLock(conn, lockId, "Session", null) >= 0;
         }
 
         public static Task ReleaseGlobalLock(this SqlConnection conn, int lockId)
@@ -84,6 +68,20 @@ namespace Jasper.Persistence.SqlServer
             sqlCommand.Parameters.AddWithValue("LockOwner", "Session");
 
             return sqlCommand.ExecuteNonQueryAsync();
+        }
+
+        public class AdvisoryLock
+        {
+            public AdvisoryLock(bool granted, string grant, DateTime? start)
+            {
+                Granted = granted;
+                Grant = grant;
+                Start = start;
+            }
+
+            public bool Granted { get; }
+            public string Grant { get; }
+            public DateTime? Start { get; }
         }
     }
 }

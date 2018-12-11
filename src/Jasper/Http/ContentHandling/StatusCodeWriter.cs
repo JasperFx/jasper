@@ -8,7 +8,7 @@ namespace Jasper.Http.ContentHandling
         {
             if (chain.ResourceType != typeof(int)) return false;
 
-            
+
             chain.Postprocessors.Add(new SetStatusCode(chain));
             return true;
         }

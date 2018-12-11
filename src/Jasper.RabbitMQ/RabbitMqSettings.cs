@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using Jasper.Util;
+
 // ReSharper disable InconsistentlySynchronizedField
 
 namespace Jasper.RabbitMQ
 {
     public class RabbitMqSettings
     {
+        private readonly ConcurrentDictionary<Uri, RabbitMqAgent> _connectionFactories =
+            new ConcurrentDictionary<Uri, RabbitMqAgent>();
+
         private readonly object _locker = new object();
-        private readonly ConcurrentDictionary<Uri, RabbitMqAgent> _connectionFactories = new ConcurrentDictionary<Uri, RabbitMqAgent>();
 
         public RabbitMqAgent ForHost(string host, string queueName)
         {
@@ -41,7 +44,5 @@ namespace Jasper.RabbitMQ
                 return agent;
             }
         }
-
-
     }
 }

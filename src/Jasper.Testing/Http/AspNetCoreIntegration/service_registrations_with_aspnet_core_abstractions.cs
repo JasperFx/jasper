@@ -9,24 +9,12 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 {
     public class service_registrations_with_aspnet_core_abstractions
     {
-        [Fact]
-        public async Task services_registered_by_the_DI_abstraction_are_in_the_container()
+        public interface IService
         {
-            var registry = new JasperRegistry();
-            registry.Services.AddTransient<IService, FooService>();
+        }
 
-            var runtime = await JasperRuntime.ForAsync(registry);
-
-            try
-            {
-                runtime.Container.Model.For<IService>().Default.ImplementationType
-                    .ShouldBe(typeof(FooService));
-            }
-            finally
-            {
-                await runtime.Shutdown();
-            }
-
+        public class FooService : IService
+        {
         }
 
         [Fact]
@@ -35,21 +23,25 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
             var registry = new JasperRegistry();
             registry.Services.AddTransient<IService, FooService>();
 
-            var runtime = await JasperRuntime.ForAsync(registry);
-            try
+            using (var runtime = JasperRuntime.For(registry))
             {
-                ShouldBeNullExtensions.ShouldNotBeNull(runtime.Get<IServiceProvider>());
-                ShouldBeNullExtensions.ShouldNotBeNull(runtime.Get<IServiceScopeFactory>());
+                runtime.Get<IServiceProvider>().ShouldNotBeNull();
+                runtime.Get<IServiceScopeFactory>().ShouldNotBeNull();
             }
-            finally
-            {
-                await runtime.Shutdown();
-            }
-
         }
 
-        public interface IService{}
-        public class FooService : IService{}
+        [Fact]
+        public async Task services_registered_by_the_DI_abstraction_are_in_the_container()
+        {
+            var registry = new JasperRegistry();
+            registry.Services.AddTransient<IService, FooService>();
+
+            using (var runtime = JasperRuntime.For(registry))
+            {
+                runtime.Container.Model.For<IService>().Default.ImplementationType
+                    .ShouldBe(typeof(FooService));
+            }
+        }
     }
 
     public static class ContainerExtensions
@@ -58,10 +50,10 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         {
             runtime.Get<T>().ShouldBeOfType<TConcrete>();
             return runtime;
-
         }
 
-        public static JasperRuntime DefaultRegistrationIs(this JasperRuntime runtime, Type pluginType, Type concreteType)
+        public static JasperRuntime DefaultRegistrationIs(this JasperRuntime runtime, Type pluginType,
+            Type concreteType)
         {
             runtime.Get(pluginType).ShouldBeOfType(concreteType);
 

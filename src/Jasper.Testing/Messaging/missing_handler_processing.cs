@@ -5,7 +5,6 @@ using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
-using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
@@ -14,8 +13,8 @@ namespace Jasper.Testing.Messaging
         //[Fact] -- not reliable on CI
         public async Task missing_handlers_are_called()
         {
-             NoMessageHandler1.Reset();
-             NoMessageHandler2.Reset();
+            NoMessageHandler1.Reset();
+            NoMessageHandler2.Reset();
 
             await with(r =>
             {
@@ -43,12 +42,6 @@ namespace Jasper.Testing.Messaging
         public static readonly List<Envelope> Handled = new List<Envelope>();
         private static TaskCompletionSource<Envelope> _source;
 
-        public static void Reset()
-        {
-            Handled.Clear();
-            _source = new TaskCompletionSource<Envelope>();
-        }
-
         public static Task<Envelope> Finished => _source.Task;
 
         public Task Handle(Envelope envelope, IMessageContext context)
@@ -58,6 +51,12 @@ namespace Jasper.Testing.Messaging
 
 
             return Task.CompletedTask;
+        }
+
+        public static void Reset()
+        {
+            Handled.Clear();
+            _source = new TaskCompletionSource<Envelope>();
         }
     }
 
@@ -66,12 +65,6 @@ namespace Jasper.Testing.Messaging
         public static readonly List<Envelope> Handled = new List<Envelope>();
         private static TaskCompletionSource<Envelope> _source;
 
-        public static void Reset()
-        {
-            Handled.Clear();
-            _source = new TaskCompletionSource<Envelope>();
-        }
-
         public static Task<Envelope> Finished => _source.Task;
 
         public Task Handle(Envelope envelope, IMessageContext context)
@@ -81,10 +74,15 @@ namespace Jasper.Testing.Messaging
 
             return Task.CompletedTask;
         }
+
+        public static void Reset()
+        {
+            Handled.Clear();
+            _source = new TaskCompletionSource<Envelope>();
+        }
     }
 
     public class MessageWithNoHandler
     {
-
     }
 }

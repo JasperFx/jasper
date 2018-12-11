@@ -4,10 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests.Persistence.Marten;
-using IntegrationTests.RabbitMQ;
 using Jasper;
 using Jasper.Messaging;
-using Jasper.Messaging.Tracking;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Schema;
@@ -16,8 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Oakton;
-using Xunit;
-using MessageTracker = IntegrationTests.RabbitMQ.MessageTracker;
 
 namespace IntegrationTests
 {
@@ -52,7 +48,6 @@ namespace IntegrationTests
         {
             while (true)
             {
-
                 await _context.Send(new RabbitedMessage {Number = ++_number});
                 await Task.Delay(1.Seconds(), stoppingToken);
             }
@@ -111,6 +106,4 @@ namespace IntegrationTests
             ConsoleWriter.Write(ConsoleColor.Green, "Got " + message.Number);
         }
     }
-
-
 }

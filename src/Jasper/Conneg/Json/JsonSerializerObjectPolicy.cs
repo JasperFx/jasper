@@ -12,8 +12,14 @@ namespace Jasper.Conneg.Json
             _serializerSettings = serializerSettings;
         }
 
-        public JsonSerializer Create() => JsonSerializer.Create(_serializerSettings);
+        public JsonSerializer Create()
+        {
+            return JsonSerializer.Create(_serializerSettings);
+        }
 
-        public bool Return(JsonSerializer serializer) => true;
+        public bool Return(JsonSerializer serializer)
+        {
+            return true;
+        }
     }
 }

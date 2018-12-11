@@ -5,7 +5,7 @@ using Baseline.Reflection;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Invocation;
-using Lamar.Codegen.Frames;
+using LamarCompiler.Frames;
 using Shouldly;
 
 namespace Jasper.Testing.Messaging

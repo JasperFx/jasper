@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using Baseline;
 using Shouldly;
 
-
-
 namespace IntegrationTests
 {
     public static class Exception<T> where T : Exception
@@ -54,19 +52,18 @@ namespace IntegrationTests
 
     public static class SpecificationExtensions
     {
-
         public static void ShouldHaveTheSameElementsAs<T>(this IEnumerable<T> actual, IEnumerable<T> expected)
         {
-            var actualList = (actual is IList) ? (IList)actual : actual.ToList();
-            var expectedList = (expected is IList) ? (IList)expected : expected.ToList();
+            var actualList = actual is IList ? (IList) actual : actual.ToList();
+            var expectedList = expected is IList ? (IList) expected : expected.ToList();
 
             ShouldHaveTheSameElementsAs(actualList, expectedList);
         }
 
         public static void ShouldHaveTheSameElementsAs<T>(this IEnumerable<T> actual, params T[] expected)
         {
-            var actualList = (actual is IList) ? (IList)actual : actual.ToList();
-            var expectedList = (expected is IList) ? (IList)expected : expected.ToList();
+            var actualList = actual is IList ? (IList) actual : actual.ToList();
+            var expectedList = expected is IList ? (IList) expected : expected.ToList();
 
             ShouldHaveTheSameElementsAs(actualList, expectedList);
         }
@@ -80,18 +77,12 @@ namespace IntegrationTests
             {
                 actual.Count.ShouldBe(expected.Count);
 
-                for (var i = 0; i < actual.Count; i++)
-                {
-                    actual[i].ShouldBe(expected[i]);
-                }
+                for (var i = 0; i < actual.Count; i++) actual[i].ShouldBe(expected[i]);
             }
             catch (Exception)
             {
                 Debug.WriteLine("ACTUAL:");
-                foreach (var o in actual)
-                {
-                    Debug.WriteLine(o);
-                }
+                foreach (var o in actual) Debug.WriteLine(o);
                 throw;
             }
         }
@@ -116,7 +107,7 @@ namespace IntegrationTests
         public static T IsType<T>(this object actual)
         {
             actual.ShouldBeOfType(typeof(T));
-            return (T)actual;
+            return (T) actual;
         }
 
         public static object ShouldNotBeTheSameAs(this object actual, object expected)
@@ -186,6 +177,5 @@ namespace IntegrationTests
 
             return exception;
         }
-
     }
 }

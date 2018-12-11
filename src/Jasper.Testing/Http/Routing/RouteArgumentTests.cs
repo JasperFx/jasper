@@ -11,6 +11,108 @@ namespace Jasper.Testing.Http.Routing
 {
     public class RouteArgumentTests
     {
+        public class SomeEndpoint
+        {
+            public void go(string name, int number)
+            {
+            }
+        }
+
+        public class InputModel
+        {
+            public string Key;
+            public int Number;
+            public double Limit { get; set; }
+            public DateTime Expiration { get; set; }
+
+            public Color Color { get; set; }
+        }
+
+        public enum Color
+        {
+            Red,
+            Blue,
+            Yellow
+        }
+
+        [Fact]
+        public void can_override_the_arg_type()
+        {
+            var parameter = new RouteArgument("foo", 1);
+            parameter.ArgType = typeof(int);
+
+            parameter.ArgType.ShouldBe(typeof(int));
+        }
+
+        [Fact]
+        public void canonical_path()
+        {
+            var parameter = new RouteArgument("foo", 1);
+            parameter.CanonicalPath().ShouldBe("*");
+        }
+
+
+        [Fact]
+        public void create_route_parsing_frame_from_string_argument()
+        {
+            var arg = new RouteArgument("name", 1);
+            arg.ArgType = typeof(string);
+
+            var frame = arg.ToParsingFrame(null).ShouldBeOfType<StringRouteArgumentFrame>();
+            ShouldBeNullExtensions.ShouldNotBeNull(frame);
+            frame.Position.ShouldBe(1);
+            frame.Name.ShouldBe("name");
+        }
+
+        [Fact]
+        public void create_route_parsing_from_int_argument()
+        {
+            var arg = new RouteArgument("age", 3) {ArgType = typeof(int)};
+
+            var frame = arg.ToParsingFrame(null).ShouldBeOfType<ParsedRouteArgumentFrame>();
+            ShouldBeNullExtensions.ShouldNotBeNull(frame);
+            frame.Position.ShouldBe(3);
+            frame.Variable.Usage.ShouldBe("age");
+
+            frame.Variable.VariableType.ShouldBe(typeof(int));
+        }
+
+
+        [Fact]
+        public void get_parameters_from_field()
+        {
+            var arg = new RouteArgument("Key", 0);
+            arg.MapToField<InputModel>("Key");
+
+            arg.ArgType.ShouldBe(typeof(string));
+
+            arg.ReadRouteDataFromInput(new InputModel {Key = "Rand"})
+                .ShouldBe("Rand");
+        }
+
+        [Fact]
+        public void get_parameters_from_number_field()
+        {
+            var arg = new RouteArgument("Key", 0);
+            arg.MapToField<InputModel>("Number");
+
+            arg.ArgType.ShouldBe(typeof(int));
+
+            arg.ReadRouteDataFromInput(new InputModel {Number = 25})
+                .ShouldBe("25");
+        }
+
+        [Fact]
+        public void get_parameters_from_property()
+        {
+            var arg = new RouteArgument("Key", 0);
+            arg.MapToProperty<InputModel>(x => x.Color);
+
+
+            arg.ReadRouteDataFromInput(new InputModel {Color = Color.Blue})
+                .ShouldBe("Blue");
+        }
+
         [Fact]
         public void happy_path()
         {
@@ -36,41 +138,31 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [Fact]
-        public void canonical_path()
+        public void read_route_data_from_arguments()
         {
-            var parameter = new RouteArgument("foo", 1);
-            parameter.CanonicalPath().ShouldBe("*");
-        }
+            var method = ReflectionHelper.GetMethod<SomeEndpoint>(x => x.go(null, 3));
+            var param = method.GetParameters().Last();
 
-        [Fact]
-        public void the_default_arg_type_is_string()
-        {
-            var parameter = new RouteArgument("foo", 1);
-            parameter.ArgType.ShouldBe(typeof(string));
-        }
+            var arg = new RouteArgument("number", 0);
+            arg.MappedParameter = param;
 
-        [Fact]
-        public void can_override_the_arg_type()
-        {
-            var parameter = new RouteArgument("foo", 1);
-            parameter.ArgType = typeof (int);
+            var arguments = MethodCallParser.ToArguments<SomeEndpoint>(x => x.go(null, 3));
 
-            parameter.ArgType.ShouldBe(typeof(int));
+            arg.ReadRouteDataFromMethodArguments(arguments).ShouldBe("3");
         }
 
 
         [Fact]
-        public void get_parameters_from_field()
+        public void set_mapped_parameter()
         {
-            var arg = new RouteArgument("Key", 0);
-            arg.MapToField<InputModel>("Key");
+            var method = ReflectionHelper.GetMethod<SomeEndpoint>(x => x.go(null, 3));
+            var param = method.GetParameters().Last();
 
-            arg.ArgType.ShouldBe(typeof(string));
+            var arg = new RouteArgument("number", 0);
+            arg.MappedParameter = param;
 
-            arg.ReadRouteDataFromInput(new InputModel {Key = "Rand"})
-                .ShouldBe("Rand");
-
-
+            arg.ArgType.ShouldBe(typeof(int));
+            arg.MappedParameter.ShouldBe(param);
         }
 
         [Fact]
@@ -84,17 +176,10 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [Fact]
-        public void get_parameters_from_number_field()
+        public void the_default_arg_type_is_string()
         {
-            var arg = new RouteArgument("Key", 0);
-            arg.MapToField<InputModel>("Number");
-
-            arg.ArgType.ShouldBe(typeof(int));
-
-            arg.ReadRouteDataFromInput(new InputModel { Number = 25})
-                .ShouldBe("25");
-
-
+            var parameter = new RouteArgument("foo", 1);
+            parameter.ArgType.ShouldBe(typeof(string));
         }
 
         [Fact]
@@ -125,99 +210,6 @@ namespace Jasper.Testing.Http.Routing
             arg.ApplyRouteDataToInput(model, dict);
 
             model.Color.ShouldBe(Color.Yellow);
-
-        }
-
-        [Fact]
-        public void get_parameters_from_property()
-        {
-            var arg = new RouteArgument("Key", 0);
-            arg.MapToProperty<InputModel>(x => x.Color);
-
-
-            arg.ReadRouteDataFromInput(new InputModel {Color = Color.Blue})
-                .ShouldBe("Blue");
-        }
-
-
-        [Fact]
-        public void set_mapped_parameter()
-        {
-            var method = ReflectionHelper.GetMethod<SomeEndpoint>(x => x.go(null, 3));
-            var param = method.GetParameters().Last();
-
-            var arg = new RouteArgument("number", 0);
-            arg.MappedParameter = param;
-
-            arg.ArgType.ShouldBe(typeof(int));
-            arg.MappedParameter.ShouldBe(param);
-        }
-
-        [Fact]
-        public void read_route_data_from_arguments()
-        {
-            var method = ReflectionHelper.GetMethod<SomeEndpoint>(x => x.go(null, 3));
-            var param = method.GetParameters().Last();
-
-            var arg = new RouteArgument("number", 0);
-            arg.MappedParameter = param;
-
-            var arguments = MethodCallParser.ToArguments<SomeEndpoint>(x => x.go(null, 3));
-
-            arg.ReadRouteDataFromMethodArguments(arguments).ShouldBe("3");
-        }
-
-
-        [Fact]
-        public void create_route_parsing_frame_from_string_argument()
-        {
-            var arg = new RouteArgument("name", 1);
-            arg.ArgType = typeof(string);
-
-            var frame = arg.ToParsingFrame(null).ShouldBeOfType<StringRouteArgumentFrame>();
-            ShouldBeNullExtensions.ShouldNotBeNull(frame);
-            frame.Position.ShouldBe(1);
-            frame.Name.ShouldBe("name");
-        }
-
-        [Fact]
-        public void create_route_parsing_from_int_argument()
-        {
-            var arg = new RouteArgument("age", 3) {ArgType = typeof(int)};
-
-            var frame = arg.ToParsingFrame(null).ShouldBeOfType<ParsedRouteArgumentFrame>();
-            ShouldBeNullExtensions.ShouldNotBeNull(frame);
-            frame.Position.ShouldBe(3);
-            frame.Variable.Usage.ShouldBe("age");
-
-            frame.Variable.VariableType.ShouldBe(typeof(int));
-        }
-
-
-
-        public class SomeEndpoint
-        {
-            public void go(string name, int number)
-            {
-
-            }
-        }
-
-        public class InputModel
-        {
-            public string Key;
-            public int Number;
-            public double Limit { get; set; }
-            public DateTime Expiration { get; set; }
-
-            public Color Color { get; set; }
-        }
-
-        public enum Color
-        {
-            Red,
-            Blue,
-            Yellow
         }
     }
 }

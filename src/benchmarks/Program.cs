@@ -1,18 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Threading;
-using Baseline;
-using BenchmarkDotNet.Running;
-using Newtonsoft.Json;
+﻿using BenchmarkDotNet.Running;
 
 namespace benchmarks
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
             BenchmarkRunner.Run<InvokeBenchmark>();
             BenchmarkRunner.Run<HttpPipelineBenchmark>();
             //BenchmarkRunner.Run<PingPongBenchmark>();

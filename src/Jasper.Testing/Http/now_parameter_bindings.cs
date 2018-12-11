@@ -14,10 +14,7 @@ namespace Jasper.Testing.Http
         [Fact]
         public async Task use_datetime_argument()
         {
-            var result = await scenario(_ =>
-            {
-                _.Get.Url("/current/time");
-            });
+            var result = await scenario(_ => { _.Get.Url("/current/time"); });
 
             var time = DateTime.Parse(result.ResponseBody.ReadAsText());
 
@@ -29,10 +26,7 @@ namespace Jasper.Testing.Http
         public async Task use_datetimeoffset_argument()
         {
             var dateTimeOffset = DateTimeOffset.UtcNow;
-            var result = await scenario(_ =>
-            {
-                _.Get.Url("/current/offset/time");
-            });
+            var result = await scenario(_ => { _.Get.Url("/current/offset/time"); });
 
             var time = DateTimeOffset.Parse(result.ResponseBody.ReadAsText());
 
@@ -40,7 +34,6 @@ namespace Jasper.Testing.Http
             var seconds = dateTimeOffset.Subtract(time).Seconds;
             Math.Abs(seconds).ShouldBeLessThan(120);
         }
-
     }
 
     public class TimeEndpoint
@@ -52,7 +45,6 @@ namespace Jasper.Testing.Http
 
         public string get_current_offset_time(DateTimeOffset now)
         {
-
             return now.ToString("R");
         }
     }

@@ -21,17 +21,11 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
     public class SqlServerBackedMessagePersistenceTests : SqlServerContext, IDisposable
     {
-        private JasperRuntime theRuntime;
-        private Envelope theEnvelope;
-        private Envelope persisted;
-
         public SqlServerBackedMessagePersistenceTests()
         {
             theRuntime = JasperRuntime.For(_ =>
             {
-
                 _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-
             });
 
             theRuntime.RebuildMessageStorage();
@@ -47,11 +41,14 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             persisted = persistor.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
         }
 
-        [Fact]
-        public void should_persist_the_scheduled_envelope()
+        public void Dispose()
         {
-            persisted.ShouldNotBeNull();
+            theRuntime.Dispose();
         }
+
+        private readonly JasperRuntime theRuntime;
+        private readonly Envelope theEnvelope;
+        private readonly Envelope persisted;
 
         [Fact]
         public void should_be_in_scheduled_status()
@@ -65,9 +62,10 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
         }
 
-        public void Dispose()
+        [Fact]
+        public void should_persist_the_scheduled_envelope()
         {
-            theRuntime.Dispose();
+            persisted.ShouldNotBeNull();
         }
     }
 }

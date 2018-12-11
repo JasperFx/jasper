@@ -31,17 +31,14 @@ namespace Jasper.Testing.Util
     [MessageIdentity("MyThing")]
     public class AliasedMessage
     {
-
     }
 
     [MessageIdentity("MyThing", Version = 2)]
     public class AliasedMessage2
     {
-
     }
 
     public class MySpecialMessage
     {
-
     }
 }

@@ -6,8 +6,8 @@ using Jasper.Messaging.Model;
 namespace Jasper.Messaging.Configuration
 {
     /// <summary>
-    /// Applies an error policy that a message should be retried
-    /// whenever processing encounters the designated exception type
+    ///     Applies an error policy that a message should be retried
+    ///     whenever processing encounters the designated exception type
     /// </summary>
     public class RetryOnAttribute : ModifyHandlerChainAttribute
     {

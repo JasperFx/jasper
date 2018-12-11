@@ -8,25 +8,20 @@ namespace Jasper.Messaging.WorkerQueues
     {
         private readonly IList<Func<Type, bool>> _matches = new List<Func<Type, bool>>();
 
-        public bool Matches(Type messageType)
+        public WorkerSettings(string name)
         {
-            if (!_matches.Any()) return false;
-
-            return _matches.Any(x => x(messageType));
+            Name = name;
         }
 
         // Mostly for informative reasons
         public Uri Uri { get; set; }
         public string Name { get; }
 
-        public WorkerSettings(string name)
-        {
-            Name = name;
-        }
-
         public int Parallelization { get; set; } = 5;
 
-        IWorkerSettings IWorkerSettings.MaximumParallelization(int maximumParallelHandlers    )
+        public bool IsDurable { get; set; }
+
+        IWorkerSettings IWorkerSettings.MaximumParallelization(int maximumParallelHandlers)
         {
             Parallelization = maximumParallelHandlers;
             return this;
@@ -62,6 +57,11 @@ namespace Jasper.Messaging.WorkerQueues
             return this;
         }
 
-        public bool IsDurable { get; set; }
+        public bool Matches(Type messageType)
+        {
+            if (!_matches.Any()) return false;
+
+            return _matches.Any(x => x(messageType));
+        }
     }
 }

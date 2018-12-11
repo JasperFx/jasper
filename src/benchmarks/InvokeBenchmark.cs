@@ -6,7 +6,8 @@ using Jasper;
 
 namespace benchmarks
 {
-    [SimpleJob(warmupCount: 2)][MemoryDiagnoser]
+    [SimpleJob(warmupCount: 2)]
+    [MemoryDiagnoser]
     public class InvokeBenchmark : IDisposable
     {
         private readonly JasperRuntime _runtime;
@@ -16,31 +17,27 @@ namespace benchmarks
             _runtime = JasperRuntime.For<Sender1>();
         }
 
+        [Params(1, 10, 25)] public int Parallelization { get; set; }
+
         public void Dispose()
         {
             _runtime.Dispose();
         }
 
-        [Params(1, 10, 25)]
-        public int Parallelization { get; set; }
-
         [Benchmark]
         public Task InvokeMessage()
         {
-            if (Parallelization == 1) return _runtime.Messaging.Invoke(new UserCreated
-            {
-                Name = Guid.NewGuid().ToString()
-            });
+            if (Parallelization == 1)
+                return _runtime.Messaging.Invoke(new UserCreated
+                {
+                    Name = Guid.NewGuid().ToString()
+                });
 
             var tasks = new Task[Parallelization];
-            for (int i = 0; i < tasks.Length; i++)
-            {
+            for (var i = 0; i < tasks.Length; i++)
                 tasks[i] = _runtime.Messaging.Invoke(new UserCreated {Name = Guid.NewGuid().ToString()});
-            }
 
             return Task.WhenAll(tasks);
-
-
         }
     }
 }

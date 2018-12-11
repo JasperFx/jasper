@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Http.Model;
-using Jasper.Http.Routing.Codegen;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,7 +20,25 @@ namespace Jasper.Http.Routing
             HttpVerbs.All.Each(x => _trees.Add(x, new RouteTree(x)));
         }
 
-        public void Add(string method, string pattern,RequestDelegate appfunc)
+        public RequestDelegate NotFound { get; set; } = c =>
+        {
+            c.Response.StatusCode = 404;
+            c.Response.Headers["status-description"] = "Resource Not Found";
+            return c.Response.WriteAsync("Resource Not Found");
+        };
+
+        public UrlGraph Urls { get; } = new UrlGraph();
+
+        public RouteAdder Get => new RouteAdder(HttpVerbs.GET, this);
+        public RouteAdder Post => new RouteAdder(HttpVerbs.POST, this);
+        public RouteAdder Put => new RouteAdder(HttpVerbs.PUT, this);
+        public RouteAdder Delete => new RouteAdder(HttpVerbs.DELETE, this);
+        public RouteAdder Head => new RouteAdder(HttpVerbs.HEAD, this);
+        public RouteAdder Options => new RouteAdder(HttpVerbs.OPTIONS, this);
+        public RouteAdder Patch => new RouteAdder(HttpVerbs.PATCH, this);
+        public RouteHandlerBuilder HandlerBuilder { get; set; }
+
+        public void Add(string method, string pattern)
         {
             var route = new Route(pattern, method);
 
@@ -34,15 +49,6 @@ namespace Jasper.Http.Routing
         {
             return _hasRoutes;
         }
-
-        public RequestDelegate NotFound { get; set; } = c =>
-        {
-            c.Response.StatusCode = 404;
-            c.Response.Headers["status-description"] = "Resource Not Found";
-            return c.Response.WriteAsync("Resource Not Found");
-        };
-
-        public UrlGraph Urls { get; } = new UrlGraph();
 
         public void Add(Route route)
         {
@@ -81,21 +87,17 @@ namespace Jasper.Http.Routing
                 try
                 {
                     if (route.Handler == null)
-                    {
                         lock (route)
                         {
-                            if (route.Handler == null)
-                            {
-                                route.Handler = HandlerBuilder.Build(route.Chain);
-                            }
+                            if (route.Handler == null) route.Handler = HandlerBuilder.Build(route.Chain);
                         }
-                    }
 
                     await route.Handler.Handle(context);
                 }
                 catch (Exception e)
                 {
-                    context.RequestServices.GetService<ILogger<HttpContext>>().LogError(new EventId(500), e, "Request Failed");
+                    context.RequestServices.GetService<ILogger<HttpContext>>()
+                        .LogError(new EventId(500), e, "Request Failed");
                     context.Response.StatusCode = 500;
                     await context.Response.WriteAsync(e.ToString());
                 }
@@ -110,15 +112,6 @@ namespace Jasper.Http.Routing
             segments = RouteTree.ToSegments(context.Request.Path);
             return routeTree.Select(segments);
         }
-
-        public RouteAdder Get => new RouteAdder(HttpVerbs.GET, this);
-        public RouteAdder Post => new RouteAdder(HttpVerbs.POST, this);
-        public RouteAdder Put => new RouteAdder(HttpVerbs.PUT, this);
-        public RouteAdder Delete => new RouteAdder(HttpVerbs.DELETE, this);
-        public RouteAdder Head => new RouteAdder(HttpVerbs.HEAD, this);
-        public RouteAdder Options => new RouteAdder(HttpVerbs.OPTIONS, this);
-        public RouteAdder Patch => new RouteAdder(HttpVerbs.PATCH, this);
-        public RouteHandlerBuilder HandlerBuilder { get; set; }
     }
 
     public class RouteAdder
@@ -138,7 +131,7 @@ namespace Jasper.Http.Routing
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
 
-                _parent.Add(_httpVerb, pattern, value);
+                _parent.Add(_httpVerb, pattern);
             }
         }
     }

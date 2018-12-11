@@ -13,7 +13,7 @@ namespace Jasper.Messaging.Transports.Stub
     public static class StubTransportExtensions
     {
         /// <summary>
-        /// Retrieves the instance of the StubTransport within this application
+        ///     Retrieves the instance of the StubTransport within this application
         /// </summary>
         /// <param name="runtime"></param>
         /// <returns></returns>
@@ -23,7 +23,7 @@ namespace Jasper.Messaging.Transports.Stub
         }
 
         /// <summary>
-        /// Clears all record of messages sent to the stub transport
+        ///     Clears all record of messages sent to the stub transport
         /// </summary>
         /// <param name="runtime"></param>
         public static void ClearStubTransportSentList(this JasperRuntime runtime)
@@ -32,7 +32,7 @@ namespace Jasper.Messaging.Transports.Stub
         }
 
         /// <summary>
-        /// Retrieves an array of all the envelopes sent through the stub transport
+        ///     Retrieves an array of all the envelopes sent through the stub transport
         /// </summary>
         /// <param name="runtime"></param>
         /// <returns></returns>
@@ -40,10 +40,8 @@ namespace Jasper.Messaging.Transports.Stub
         {
             return runtime.GetStubTransport().Channels.SelectMany(x => x.Sent).ToArray();
         }
-
     }
 
-    [CacheResolver]
     public class StubTransport : ITransport
     {
         public LightweightCache<Uri, StubChannel> Channels;
@@ -51,18 +49,18 @@ namespace Jasper.Messaging.Transports.Stub
         public StubTransport()
 
         {
-            ReplyUri = new Uri($"stub://replies");
+            ReplyUri = new Uri("stub://replies");
         }
+
+        public bool WasDisposed { get; set; }
+        public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
 
         public void Dispose()
         {
             WasDisposed = true;
         }
 
-        public bool WasDisposed { get; set; }
-
         public string Protocol { get; } = "stub";
-        public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
 
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
@@ -80,10 +78,7 @@ namespace Jasper.Messaging.Transports.Stub
 
 
             var incoming = root.Settings.Listeners.Where(x => x.Scheme == "stub");
-            foreach (var uri in incoming)
-            {
-                Channels.FillDefault(uri);
-            }
+            foreach (var uri in incoming) Channels.FillDefault(uri);
         }
 
         public void Describe(TextWriter writer)

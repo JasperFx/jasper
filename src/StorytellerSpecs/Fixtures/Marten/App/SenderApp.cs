@@ -1,7 +1,6 @@
 ﻿using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.Marten;
 
 namespace StorytellerSpecs.Fixtures.Marten.App
@@ -22,7 +21,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Include<MartenBackedPersistence>();
 
-            Settings.Alter<MessagingSettings>(_ =>
+            Settings.Alter<JasperOptions>(_ =>
             {
                 _.ScheduledJobs.PollingTime = 1.Seconds();
                 _.ScheduledJobs.FirstExecution = 0.Seconds();

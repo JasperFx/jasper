@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Data;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Marten;
 using Marten.Services;
-using Marten.Util;
 using Npgsql;
-using NpgsqlTypes;
 
 namespace Jasper.Persistence.Marten.Resiliency
 {
@@ -25,18 +21,17 @@ namespace Jasper.Persistence.Marten.Resiliency
         private NpgsqlConnection _connection;
 
 
-        public SchedulingAgent(ISubscriberGraph subscribers, IWorkerQueue workers, IDocumentStore store, MessagingSettings settings, ITransportLogger logger, StoreOptions storeOptions, IRetries retries, EnvelopeTables tables)
+        public SchedulingAgent(ISubscriberGraph subscribers, IWorkerQueue workers, IDocumentStore store,
+            JasperOptions settings, ITransportLogger logger, StoreOptions storeOptions, IRetries retries,
+            EnvelopeTables tables)
             : base(settings, logger,
                 new RunScheduledJobs(workers, store, tables, logger, retries),
                 new RecoverIncomingMessages(workers, settings, tables, logger),
                 new RecoverOutgoingMessages(subscribers, settings, tables, logger),
                 new ReassignFromDormantNodes(tables, settings)
-
-
-                )
+            )
         {
             _store = store;
-
         }
 
 
@@ -67,8 +62,6 @@ namespace Jasper.Persistence.Marten.Resiliency
                 try
                 {
                     await action.Execute(session, this);
-
-
                 }
                 catch (Exception e)
                 {
@@ -76,10 +69,7 @@ namespace Jasper.Persistence.Marten.Resiliency
                 }
                 finally
                 {
-                    if (!tx.IsCompleted)
-                    {
-                        await tx.RollbackAsync();
-                    }
+                    if (!tx.IsCompleted) await tx.RollbackAsync();
 
                     session.Dispose();
                 }
@@ -97,7 +87,6 @@ namespace Jasper.Persistence.Marten.Resiliency
             if (_connection?.State == ConnectionState.Open) return;
 
             if (_connection != null)
-            {
                 try
                 {
                     _connection.Close();
@@ -108,10 +97,9 @@ namespace Jasper.Persistence.Marten.Resiliency
                 {
                     logger.LogException(e);
                 }
-            }
 
 
-                _connection = _store.Tenancy.Default.CreateConnection();
+            _connection = _store.Tenancy.Default.CreateConnection();
 
             try
             {
@@ -126,9 +114,7 @@ namespace Jasper.Persistence.Marten.Resiliency
                 _connection.Dispose();
                 _connection = null;
             }
-
         }
-
 
 
         protected override async Task openConnectionAndAttainNodeLock()
@@ -141,7 +127,6 @@ namespace Jasper.Persistence.Marten.Resiliency
 
             await retrieveLockForThisNode();
         }
-
 
 
         protected override async Task releaseNodeLockAndClose()
@@ -162,6 +147,5 @@ namespace Jasper.Persistence.Marten.Resiliency
 
             return _connection.GetGlobalLock(settings.UniqueNodeId);
         }
-
     }
 }

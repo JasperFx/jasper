@@ -11,8 +11,8 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 {
     public class DeleteEnvelopes : IStorageOperation
     {
-        private readonly DbObjectName _table;
         private readonly Guid[] _idlist;
+        private readonly DbObjectName _table;
 
         public DeleteEnvelopes(DbObjectName table, IEnumerable<Envelope> envelopes)
         {

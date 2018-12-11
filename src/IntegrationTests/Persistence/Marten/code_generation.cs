@@ -2,9 +2,7 @@
 using Jasper;
 using Jasper.Messaging.Model;
 using Jasper.Persistence;
-using Jasper.Persistence.Marten;
 using Marten;
-using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Persistence.Marten
@@ -13,7 +11,6 @@ namespace IntegrationTests.Persistence.Marten
     {
         public code_generation()
         {
-
             runtime = JasperRuntime.For<MartenUsingApp>();
         }
 

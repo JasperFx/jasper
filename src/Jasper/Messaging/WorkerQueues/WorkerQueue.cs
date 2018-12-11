@@ -9,69 +9,53 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 
 namespace Jasper.Messaging.WorkerQueues
 {
     public class WorkerQueue : IWorkerQueue
     {
-        private readonly IMessageLogger _logger;
-        private readonly MessagingSettings _settings;
         private readonly CancellationToken _cancellationToken;
+        private readonly IMessageLogger _logger;
+
         private readonly Dictionary<string, ActionBlock<Envelope>> _receivers
             = new Dictionary<string, ActionBlock<Envelope>>();
 
+        private readonly JasperOptions _settings;
 
-        public WorkerQueue(IMessageLogger logger, IHandlerPipeline pipeline, MessagingSettings settings)
+
+        public WorkerQueue(IMessageLogger logger, IHandlerPipeline pipeline, JasperOptions settings)
         {
             _logger = logger;
             Pipeline = pipeline;
             _settings = settings;
             _cancellationToken = _settings.Cancellation;
 
-            foreach (var worker in Pipeline.Workers.AllWorkers)
-            {
-                AddQueue(worker.Name, worker.Parallelization);
-            }
+            foreach (var worker in Pipeline.Workers.AllWorkers) AddQueue(worker.Name, worker.Parallelization);
 
             ScheduledJobs = new InMemoryScheduledJobProcessor(this);
         }
 
-        public IScheduledJobProcessor ScheduledJobs { get; }
-
         // Hate this, but leave it here
         internal IHandlerPipeline Pipeline { get; }
 
+        public IScheduledJobProcessor ScheduledJobs { get; }
+
         public Task Enqueue(Envelope envelope)
         {
-            if (envelope.Callback == null) throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Callback must be set before enqueuing the envelope");
+            if (envelope.Callback == null)
+                throw new ArgumentOutOfRangeException(nameof(envelope),
+                    "Envelope.Callback must be set before enqueuing the envelope");
 
             if (envelope.IsPing()) return Task.CompletedTask;
 
             var receiver = determineReceiver(envelope);
 
             return receiver.SendAsync(envelope, _cancellationToken);
-
-        }
-
-        private ActionBlock<Envelope> determineReceiver(Envelope envelope)
-        {
-            var queueName = envelope.Queue ?? Pipeline.Workers.WorkerFor(envelope.MessageType);
-
-
-            var receiver = _receivers.ContainsKey(queueName)
-                ? _receivers[queueName]
-                : _receivers[TransportConstants.Default];
-
-            return receiver;
         }
 
         public int QueuedCount
         {
-            get
-            {
-                return _receivers.Values.ToArray().Sum(x => x.InputCount);
-            }
+            get { return _receivers.Values.ToArray().Sum(x => x.InputCount); }
         }
 
         public void AddQueue(string queueName, int parallelization)
@@ -102,5 +86,16 @@ namespace Jasper.Messaging.WorkerQueues
             }
         }
 
+        private ActionBlock<Envelope> determineReceiver(Envelope envelope)
+        {
+            var queueName = envelope.Queue ?? Pipeline.Workers.WorkerFor(envelope.MessageType);
+
+
+            var receiver = _receivers.ContainsKey(queueName)
+                ? _receivers[queueName]
+                : _receivers[TransportConstants.Default];
+
+            return receiver;
+        }
     }
 }

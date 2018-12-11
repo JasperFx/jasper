@@ -1,6 +1,5 @@
 ﻿using Jasper;
 using Jasper.Messaging.Tracking;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,8 +17,6 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             Services.AddSingleton<MessageTracker>();
 
             Transports.DurableListenerAt(2345);
-
-
         }
     }
 }

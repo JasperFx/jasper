@@ -3,8 +3,6 @@ using Jasper.Persistence.SqlServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
-using TestMessages;
 
 namespace SqlReceiver
 {
@@ -12,7 +10,10 @@ namespace SqlReceiver
     {
         public ReceiverApp()
         {
-            Configuration.AddJsonFile("appsettings.json").AddEnvironmentVariables();
+            Hosting.ConfigureAppConfiguration((_, config) =>
+            {
+                config.AddJsonFile("appsettings.json").AddEnvironmentVariables();
+            });
 
             Hosting.UseUrls("http://*:5061").UseKestrel();
 
@@ -29,11 +30,7 @@ namespace SqlReceiver
             });
 
 
-            Settings.Configure(c =>
-            {
-                Transports.ListenForMessagesFrom(c.Configuration["listener"]);
-            });
-
+            Settings.Configure(c => { Transports.ListenForMessagesFrom(c.Configuration["listener"]); });
         }
     }
 }

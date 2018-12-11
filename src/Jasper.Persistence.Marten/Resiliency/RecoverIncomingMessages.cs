@@ -3,26 +3,23 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Marten.Util;
-using Npgsql;
 
 namespace Jasper.Persistence.Marten.Resiliency
 {
-
     public class RecoverIncomingMessages : IMessagingAction
     {
         public static readonly int IncomingMessageLockId = "recover-incoming-messages".GetHashCode();
+        private readonly string _findAtLargeEnvelopesSql;
         private readonly ITransportLogger _logger;
         private readonly EnvelopeTables _marker;
-        private readonly MessagingSettings _settings;
+        private readonly JasperOptions _settings;
         private readonly IWorkerQueue _workers;
-        private readonly string _findAtLargeEnvelopesSql;
 
-        public RecoverIncomingMessages(IWorkerQueue workers, MessagingSettings settings, EnvelopeTables marker,
+        public RecoverIncomingMessages(IWorkerQueue workers, JasperOptions settings, EnvelopeTables marker,
             ITransportLogger logger)
         {
             _workers = workers;
@@ -30,7 +27,8 @@ namespace Jasper.Persistence.Marten.Resiliency
             _marker = marker;
             _logger = logger;
 
-            _findAtLargeEnvelopesSql = $"select body from {marker.Incoming} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}' limit {settings.Retries.RecoveryBatchSize}";
+            _findAtLargeEnvelopesSql =
+                $"select body from {marker.Incoming} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}' limit {settings.Retries.RecoveryBatchSize}";
         }
 
         public async Task Execute(IDocumentSession session, ISchedulingAgent agent)
@@ -59,9 +57,7 @@ namespace Jasper.Persistence.Marten.Resiliency
 
             if (incoming.Count == _settings.Retries.RecoveryBatchSize &&
                 _workers.QueuedCount < _settings.MaximumLocalEnqueuedBackPressureThreshold)
-            {
                 agent.RescheduleIncomingRecovery();
-            }
         }
     }
 }

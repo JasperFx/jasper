@@ -6,7 +6,8 @@ namespace Jasper.Persistence.Marten.Persistence.DbObjects
 {
     public class OutgoingEnvelopeTable : Table
     {
-        public OutgoingEnvelopeTable(StoreOptions options) : base(new DbObjectName(options.DatabaseSchemaName, PostgresqlEnvelopeStorage.OutgoingTableName))
+        public OutgoingEnvelopeTable(StoreOptions options) : base(new DbObjectName(options.DatabaseSchemaName,
+            PostgresqlEnvelopeStorage.OutgoingTableName))
         {
             AddPrimaryKey(new TableColumn("id", "uuid"));
             AddColumn("owner_id", "int", "NOT NULL");

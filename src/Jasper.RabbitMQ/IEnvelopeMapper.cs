@@ -9,5 +9,6 @@ namespace Jasper.RabbitMQ
         void WriteFromEnvelope(Envelope envelope, IBasicProperties properties);
         Envelope ReadEnvelope(byte[] body, IBasicProperties properties);
     }
+
     // ENDSAMPLE
 }

@@ -6,13 +6,13 @@ using Marten;
 using Microsoft.Extensions.DependencyInjection;
 
 // SAMPLE: MartenExtension
-[assembly:JasperModule(typeof(MartenExtension))]
+[assembly: JasperModule(typeof(MartenExtension))]
 
 namespace Jasper.Persistence.Marten
 {
     public class MartenExtension : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptionsBuilder registry)
         {
             registry.Services.AddSingleton<IDocumentStore>(x =>
             {
@@ -28,10 +28,7 @@ namespace Jasper.Persistence.Marten
             registry.Services.AddScoped(c => c.GetService<IDocumentStore>().QuerySession());
 
             registry.CodeGeneration.Sources.Add(new SessionVariableSource());
-
         }
     }
-
-
 }
 // ENDSAMPLE

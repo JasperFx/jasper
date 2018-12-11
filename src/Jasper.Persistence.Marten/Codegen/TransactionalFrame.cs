@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Messaging;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Marten;
 
 namespace Jasper.Persistence.Marten.Codegen
 {
     public class TransactionalFrame : Frame
     {
-        private Variable _store;
+        private readonly IList<Loaded> _loadedDocs = new List<Loaded>();
+
+        private readonly IList<Variable> _saved = new List<Variable>();
         private Variable _context;
-        private bool _isUsingPersistence;
         private bool _createsSession;
+        private bool _isUsingPersistence;
+        private Variable _store;
 
         public TransactionalFrame() : base(true)
         {
-
         }
 
         public Variable Session { get; private set; }
-
-
-        private readonly IList<Loaded> _loadedDocs = new List<Loaded>();
 
         public Variable LoadDocument(Type documentType, Variable docId)
         {
@@ -35,35 +33,10 @@ namespace Jasper.Persistence.Marten.Codegen
             return document;
         }
 
-        private readonly IList<Variable> _saved = new List<Variable>();
-
         public void SaveDocument(Variable document)
         {
             _saved.Add(document);
         }
-
-        public class Loaded
-        {
-            private readonly Variable _document;
-            private readonly Type _documentType;
-            private readonly Variable _docId;
-
-            public Loaded(Variable document, Type documentType, Variable docId)
-            {
-                if (documentType == null) throw new ArgumentNullException(nameof(documentType));
-                _documentType = documentType;
-
-                _document = document ?? throw new ArgumentNullException(nameof(document));
-
-                _docId = docId ?? throw new ArgumentNullException(nameof(docId));
-            }
-
-            public void Write(ISourceWriter writer, Variable session)
-            {
-                writer.Write($"var {_document.Usage} = await {session.Usage}.{nameof(IDocumentSession.LoadAsync)}<{_documentType.FullNameInCode()}>({_docId.Usage});");
-            }
-        }
-
 
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
@@ -85,39 +58,51 @@ namespace Jasper.Persistence.Marten.Codegen
             yield return _store;
             if (_context != null) yield return _context;
             if (Session != null) yield return Session;
-
         }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             if (_createsSession)
-            {
-                writer.Write($"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
-            }
+                writer.Write(
+                    $"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
 
             if (_context != null && _isUsingPersistence)
-            {
-                writer.Write($"await {typeof(MessageContextExtensions).FullName}.{nameof(MessageContextExtensions.EnlistInTransaction)}({_context.Usage}, {Session.Usage});");
-            }
+                writer.Write(
+                    $"await {typeof(MessageContextExtensions).FullName}.{nameof(MessageContextExtensions.EnlistInTransaction)}({_context.Usage}, {Session.Usage});");
 
-            foreach (var loaded in _loadedDocs)
-            {
-                loaded.Write(writer, Session);
-            }
+            foreach (var loaded in _loadedDocs) loaded.Write(writer, Session);
 
             Next?.GenerateCode(method, writer);
 
 
             foreach (var saved in _saved)
-            {
                 writer.Write($"{Session.Usage}.{nameof(IDocumentSession.Store)}({saved.Usage});");
-            }
 
             writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}();");
 
-            if (_createsSession)
+            if (_createsSession) writer.FinishBlock();
+        }
+
+        public class Loaded
+        {
+            private readonly Variable _docId;
+            private readonly Variable _document;
+            private readonly Type _documentType;
+
+            public Loaded(Variable document, Type documentType, Variable docId)
             {
-                writer.FinishBlock();
+                if (documentType == null) throw new ArgumentNullException(nameof(documentType));
+                _documentType = documentType;
+
+                _document = document ?? throw new ArgumentNullException(nameof(document));
+
+                _docId = docId ?? throw new ArgumentNullException(nameof(docId));
+            }
+
+            public void Write(ISourceWriter writer, Variable session)
+            {
+                writer.Write(
+                    $"var {_document.Usage} = await {session.Usage}.{nameof(IDocumentSession.LoadAsync)}<{_documentType.FullNameInCode()}>({_docId.Usage});");
             }
         }
     }

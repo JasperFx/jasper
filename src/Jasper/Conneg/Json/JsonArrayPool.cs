@@ -20,10 +20,7 @@ namespace Jasper.Conneg.Json
 
         public void Return(T[] array)
         {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
+            if (array == null) throw new ArgumentNullException(nameof(array));
 
             _inner.Return(array);
         }

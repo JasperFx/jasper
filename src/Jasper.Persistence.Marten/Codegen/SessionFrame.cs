@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Marten;
 
 namespace Jasper.Persistence.Marten.Codegen
@@ -26,7 +25,8 @@ namespace Jasper.Persistence.Marten.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
+            writer.Write(
+                $"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
             Next?.GenerateCode(method, writer);
             writer.FinishBlock();
         }

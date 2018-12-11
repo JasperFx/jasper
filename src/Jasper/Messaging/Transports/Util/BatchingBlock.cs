@@ -8,18 +8,18 @@ namespace Jasper.Messaging.Transports.Util
 {
     public class BatchingBlock<T> : IDisposable
     {
-        private readonly TimeSpan _timeSpan;
         private readonly BatchBlock<T> _batchBlock;
+        private readonly TimeSpan _timeSpan;
         private readonly Timer _trigger;
 
         public BatchingBlock(int milliseconds, ITargetBlock<T[]> processor,
             CancellationToken cancellation = default(CancellationToken))
-        : this(milliseconds.Milliseconds(), processor, cancellation)
+            : this(milliseconds.Milliseconds(), processor, cancellation)
         {
-
         }
 
-        public BatchingBlock(TimeSpan timeSpan, ITargetBlock<T[]> processor, CancellationToken cancellation = default(CancellationToken))
+        public BatchingBlock(TimeSpan timeSpan, ITargetBlock<T[]> processor,
+            CancellationToken cancellation = default(CancellationToken))
         {
             _timeSpan = timeSpan;
             _batchBlock = new BatchBlock<T>(100, new GroupingDataflowBlockOptions
@@ -30,13 +30,11 @@ namespace Jasper.Messaging.Transports.Util
 
             _batchBlock.Completion.ContinueWith(x =>
             {
-                if (x.IsFaulted)
-                {
-                    Console.WriteLine(x.Exception);
-                }
+                if (x.IsFaulted) Console.WriteLine(x.Exception);
             });
 
-            _trigger = new Timer(o => {
+            _trigger = new Timer(o =>
+            {
                 try
                 {
                     _batchBlock.TriggerBatch();
@@ -48,11 +46,19 @@ namespace Jasper.Messaging.Transports.Util
             }, null, Timeout.Infinite, Timeout.Infinite);
 
 
-
             _batchBlock.LinkTo(processor);
         }
 
         public int ItemCount => _batchBlock.OutputCount;
+
+        public Task Completion => _batchBlock.Completion;
+
+
+        public void Dispose()
+        {
+            _trigger?.Dispose();
+            _batchBlock?.Complete();
+        }
 
         public Task SendAsync(T item)
         {
@@ -71,15 +77,6 @@ namespace Jasper.Messaging.Transports.Util
         public void Complete()
         {
             _batchBlock.Complete();
-        }
-
-        public Task Completion => _batchBlock.Completion;
-
-
-        public void Dispose()
-        {
-            _trigger?.Dispose();
-            _batchBlock?.Complete();
         }
     }
 }

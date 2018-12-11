@@ -12,10 +12,7 @@ namespace Jasper.Storyteller.Logging
         {
             var ul = new HtmlTag("ul");
 
-            foreach (var message in Messages)
-            {
-                ul.Add("li").Text(message);
-            }
+            foreach (var message in Messages) ul.Add("li").Text(message);
 
 
             return ul.ToString();

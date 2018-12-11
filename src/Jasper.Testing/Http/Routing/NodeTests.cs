@@ -7,18 +7,6 @@ namespace Jasper.Testing.Http.Routing
     public class NodeTests
     {
         [Fact]
-        public void parent_route()
-        {
-            ShouldBeNullExtensions.ShouldBeNull(new Node(string.Empty).ParentRoute);
-
-            new Node("a").ParentRoute.ShouldBe(string.Empty);
-
-            new Node("a/*").ParentRoute.ShouldBe("a");
-            new Node("a/*/b").ParentRoute.ShouldBe("a/*");
-            new Node("a/*/b/c").ParentRoute.ShouldBe("a/*/b");
-        }
-
-        [Fact]
         public void add_child_with_arg()
         {
             var node = new Node("a");
@@ -53,5 +41,16 @@ namespace Jasper.Testing.Http.Routing
             node.NamedNodes["b"].ShouldBeSameAs(child);
         }
 
+        [Fact]
+        public void parent_route()
+        {
+            ShouldBeNullExtensions.ShouldBeNull(new Node(string.Empty).ParentRoute);
+
+            new Node("a").ParentRoute.ShouldBe(string.Empty);
+
+            new Node("a/*").ParentRoute.ShouldBe("a");
+            new Node("a/*/b").ParentRoute.ShouldBe("a/*");
+            new Node("a/*/b/c").ParentRoute.ShouldBe("a/*/b");
+        }
     }
 }

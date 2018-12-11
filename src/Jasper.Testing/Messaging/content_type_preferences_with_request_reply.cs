@@ -4,10 +4,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging;
-using Jasper.Messaging.Transports;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
@@ -28,9 +25,6 @@ namespace Jasper.Testing.Messaging
 
             envelope.AcceptedContentTypes.Last().ShouldBe("application/json");
         }
-
-
-
     }
 
     public class Message1TextReader : IMessageDeserializer
@@ -38,6 +32,7 @@ namespace Jasper.Testing.Messaging
         public string MessageType { get; } = typeof(Message1).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(Message1);
         public string ContentType { get; } = "text/message1";
+
         public object ReadFromData(byte[] data)
         {
             throw new NotSupportedException();
@@ -54,6 +49,7 @@ namespace Jasper.Testing.Messaging
         public string MessageType { get; } = typeof(Message1).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(Message3);
         public string ContentType { get; } = "text/oddball";
+
         public object ReadFromData(byte[] data)
         {
             throw new NotSupportedException();

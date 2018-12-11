@@ -16,7 +16,6 @@ namespace Jasper.Testing.Messaging.Samples
 {
     public class error_handling
     {
-
     }
 
     // SAMPLE: ErrorHandlingPolicy
@@ -47,27 +46,25 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
     // SAMPLE: GlobalErrorHandlingConfiguration
-public class GlobalRetryApp : JasperRegistry
-{
-    public GlobalRetryApp()
+    public class GlobalRetryApp : JasperRegistry
     {
-        Handlers
-            .OnException<TimeoutException>()
-            .RetryLater(5.Seconds());
+        public GlobalRetryApp()
+        {
+            Handlers
+                .OnException<TimeoutException>()
+                .RetryLater(5.Seconds());
 
-        Handlers
-            .OnException<SecurityException>()
-            .MoveToErrorQueue();
+            Handlers
+                .OnException<SecurityException>()
+                .MoveToErrorQueue();
 
-        // You can also apply an additional filter on the
-        // exception type for finer grained policies
-        Handlers
-            .OnException<SocketException>(ex => ex.Message.Contains("not responding"))
-            .RetryLater(5.Seconds());
-
-
+            // You can also apply an additional filter on the
+            // exception type for finer grained policies
+            Handlers
+                .OnException<SocketException>(ex => ex.Message.Contains("not responding"))
+                .RetryLater(5.Seconds());
+        }
     }
-}
     // ENDSAMPLE
 
 
@@ -100,9 +97,11 @@ public class GlobalRetryApp : JasperRegistry
         public DateTime Time { get; set; }
         public string Purchaser { get; set; }
         public double Amount { get; set; }
-
     }
-    public class InvoiceApproved{}
+
+    public class InvoiceApproved
+    {
+    }
 
     // SAMPLE: configuring-error-handling-with-attributes
     public class AttributeUsingHandler
@@ -119,7 +118,9 @@ public class GlobalRetryApp : JasperRegistry
     }
     // ENDSAMPLE
 
-    public class SqlException : Exception{}
+    public class SqlException : Exception
+    {
+    }
 
     // SAMPLE: filtering-by-exception-type
     public class FilteredApp : JasperRegistry
@@ -162,10 +163,7 @@ public class GlobalRetryApp : JasperRegistry
         public RespondWithMessages()
         {
             Handlers.OnException<SecurityException>()
-                .RespondWithMessage((ex, envelope) =>
-                {
-                    return new FailedOnSecurity(ex.Message);
-                });
+                .RespondWithMessage((ex, envelope) => { return new FailedOnSecurity(ex.Message); });
         }
     }
     // ENDSAMPLE
@@ -183,10 +181,7 @@ public class GlobalRetryApp : JasperRegistry
     {
         public IContinuation DetermineContinuation(Envelope envelope, Exception ex)
         {
-            if (ex.Message.Contains("timed out"))
-            {
-                return new ScheduledRetryContinuation(3.Seconds());
-            }
+            if (ex.Message.Contains("timed out")) return new ScheduledRetryContinuation(3.Seconds());
 
             // If the handler doesn't apply to the exception,
             // return null to tell Jasper to try the next error handler (if any)
@@ -203,5 +198,6 @@ public class GlobalRetryApp : JasperRegistry
             Handlers.HandleErrorsWith<CustomErrorHandler>();
         }
     }
+
     // ENDSAMPLE
 }

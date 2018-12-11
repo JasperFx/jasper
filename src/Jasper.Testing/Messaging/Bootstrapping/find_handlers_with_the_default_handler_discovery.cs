@@ -8,7 +8,6 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 {
     public class find_handlers_with_the_default_handler_discovery : IntegrationContext
     {
-
         [Fact]
         public async Task can_find_appropriate_static_method()
         {

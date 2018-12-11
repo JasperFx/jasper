@@ -8,5 +8,6 @@ namespace Jasper.Messaging.Runtime.Invocation
     {
         Task Execute(IMessageContext context, DateTime utcNow);
     }
+
     // ENDSAMPLE
 }

@@ -9,7 +9,6 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
 using Jasper.Util;
@@ -19,15 +18,16 @@ namespace Jasper.Persistence.SqlServer.Resiliency
     public class RecoverOutgoingMessages : IMessagingAction
     {
         public static readonly int OutgoingMessageLockId = "recover-outgoing-messages".GetHashCode();
-        private readonly ISubscriberGraph _subscribers;
-        private readonly SqlServerSettings _mssqlSettings;
-        private readonly ITransportLogger _logger;
-        private readonly MessagingSettings _settings;
-        private readonly string _findUniqueDestinations;
-        private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
+        private readonly string _findOutgoingEnvelopesSql;
+        private readonly string _findUniqueDestinations;
+        private readonly ITransportLogger _logger;
+        private readonly SqlServerSettings _mssqlSettings;
+        private readonly JasperOptions _settings;
+        private readonly ISubscriberGraph _subscribers;
 
-        public RecoverOutgoingMessages(ISubscriberGraph subscribers, MessagingSettings settings, SqlServerSettings mssqlSettings,
+        public RecoverOutgoingMessages(ISubscriberGraph subscribers, JasperOptions settings,
+            SqlServerSettings mssqlSettings,
             ITransportLogger logger)
         {
             _subscribers = subscribers;
@@ -35,10 +35,39 @@ namespace Jasper.Persistence.SqlServer.Resiliency
             _mssqlSettings = mssqlSettings;
             _logger = logger;
 
-            _findUniqueDestinations = $"select distinct destination from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}";
-            _findOutgoingEnvelopesSql = $"select top {settings.Retries.RecoveryBatchSize} body from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
-            _deleteOutgoingSql = $"delete from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable} where owner_id = :owner and destination = @destination";
+            _findUniqueDestinations =
+                $"select distinct destination from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable}";
+            _findOutgoingEnvelopesSql =
+                $"select top {settings.Retries.RecoveryBatchSize} body from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
+            _deleteOutgoingSql =
+                $"delete from {_mssqlSettings.SchemaName}.{SqlServerEnvelopePersistor.OutgoingTable} where owner_id = :owner and destination = @destination";
+        }
 
+        public async Task Execute(SqlConnection conn, ISchedulingAgent agent)
+        {
+            if (!await conn.TryGetGlobalLock(OutgoingMessageLockId)) return;
+
+
+            try
+            {
+                var destinations = await FindAllOutgoingDestinations(conn);
+
+                var count = 0;
+                foreach (var destination in destinations)
+                {
+                    var found = await recoverFrom(destination, conn);
+
+                    count += found;
+                }
+
+                var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
+
+                if (wasMaxedOut) agent.RescheduleOutgoingRecovery();
+            }
+            finally
+            {
+                await conn.ReleaseGlobalLock(OutgoingMessageLockId);
+            }
         }
 
         public async Task<List<Uri>> FindAllOutgoingDestinations(SqlConnection conn)
@@ -58,46 +87,10 @@ namespace Jasper.Persistence.SqlServer.Resiliency
             return list;
         }
 
-        public async Task Execute(SqlConnection conn, ISchedulingAgent agent)
-        {
-            if (!await conn.TryGetGlobalLock(OutgoingMessageLockId))
-            {
-                return;
-            }
-
-
-            try
-            {
-                var destinations = await FindAllOutgoingDestinations(conn);
-
-                var count = 0;
-                foreach (var destination in destinations)
-                {
-                    var found = await recoverFrom(destination, conn);
-
-                    count += found;
-                }
-
-                var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
-
-                if (wasMaxedOut)
-                {
-                    agent.RescheduleOutgoingRecovery();
-                }
-            }
-            finally
-            {
-                await conn.ReleaseGlobalLock(OutgoingMessageLockId);
-            }
-        }
-
         private async Task<int> recoverFrom(Uri destination, SqlConnection conn)
         {
-
-
             try
             {
-
                 Envelope[] filtered = null;
                 List<Envelope> outgoing = null;
 
@@ -136,19 +129,16 @@ namespace Jasper.Persistence.SqlServer.Resiliency
                 _logger.RecoveredOutgoing(filtered);
 
                 foreach (var envelope in filtered)
-                {
                     try
                     {
                         await _subscribers.GetOrBuild(destination).QuickSend(envelope);
                     }
                     catch (Exception e)
                     {
-                        _logger.LogException(e, message:$"Unable to enqueue {envelope} for sending");
+                        _logger.LogException(e, message: $"Unable to enqueue {envelope} for sending");
                     }
-                }
 
                 return outgoing.Count();
-
             }
             catch (UnknownTransportException e)
             {
@@ -182,7 +172,8 @@ namespace Jasper.Persistence.SqlServer.Resiliency
         }
 
 
-        private async Task<Envelope[]> filterExpired(SqlConnection conn, SqlTransaction tx, IEnumerable<Envelope> outgoing)
+        private async Task<Envelope[]> filterExpired(SqlConnection conn, SqlTransaction tx,
+            IEnumerable<Envelope> outgoing)
         {
             var expiredMessages = outgoing.Where(x => x.IsExpired()).ToArray();
             _logger.DiscardedExpired(expiredMessages);
@@ -198,5 +189,4 @@ namespace Jasper.Persistence.SqlServer.Resiliency
             return outgoing.Where(x => !x.IsExpired()).ToArray();
         }
     }
-
 }

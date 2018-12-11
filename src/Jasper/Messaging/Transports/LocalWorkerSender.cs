@@ -10,10 +10,10 @@ namespace Jasper.Messaging.Transports
         private ISendingAgent _durable;
         private LoopbackSendingAgent _lightweight;
 
-        public void Start(IMessagingRoot root)
+        public void Dispose()
         {
-            _durable = root.Factory.BuildLocalAgent(TransportConstants.DurableLoopbackUri, root);
-            _lightweight = new LoopbackSendingAgent(TransportConstants.LoopbackUri, root.Workers);
+            _durable?.Dispose();
+            _lightweight?.Dispose();
         }
 
         public Task EnqueueDurably(params Envelope[] envelopes)
@@ -26,10 +26,10 @@ namespace Jasper.Messaging.Transports
             return _lightweight.StoreAndForwardMany(envelopes);
         }
 
-        public void Dispose()
+        public void Start(IMessagingRoot root)
         {
-            _durable?.Dispose();
-            _lightweight?.Dispose();
+            _durable = root.Factory.BuildLocalAgent(TransportConstants.DurableLoopbackUri, root);
+            _lightweight = new LoopbackSendingAgent(TransportConstants.LoopbackUri, root.Workers);
         }
     }
 }

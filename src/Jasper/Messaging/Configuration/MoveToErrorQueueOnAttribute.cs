@@ -6,7 +6,7 @@ using Jasper.Messaging.Model;
 namespace Jasper.Messaging.Configuration
 {
     /// <summary>
-    /// Move the message to the error queues on encountering the named Exception type
+    ///     Move the message to the error queues on encountering the named Exception type
     /// </summary>
     public class MoveToErrorQueueOnAttribute : ModifyHandlerChainAttribute
     {

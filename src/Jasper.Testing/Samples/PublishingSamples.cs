@@ -2,14 +2,12 @@
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Messaging;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
 
 namespace Jasper.Testing.Samples
 {
     public class PublishingSamples
     {
-
         // SAMPLE: CustomizingEnvelope
         public Task CustomizingEnvelope(IMessageContext bus)
         {
@@ -44,13 +42,6 @@ namespace Jasper.Testing.Samples
                 e.DeliverWithin(20.Seconds());
             });
             // ENDSAMPLE
-        }
-
-
-
-        public class ValidateInvoiceIsNotLate
-        {
-            public Guid InvoiceId { get; set; }
         }
 
         // SAMPLE: IServiceBus.Invoke
@@ -167,10 +158,13 @@ namespace Jasper.Testing.Samples
 
             // or
 
-            await bus.Send(@event, e =>
-            {
-                e.Destination = new Uri("tcp://server1:2222");
-            });
+            await bus.Send(@event, e => { e.Destination = new Uri("tcp://server1:2222"); });
+        }
+
+
+        public class ValidateInvoiceIsNotLate
+        {
+            public Guid InvoiceId { get; set; }
         }
         // ENDSAMPLE
 
@@ -182,9 +176,8 @@ namespace Jasper.Testing.Samples
             public string Item { get; set; }
         }
 
-        public class SomeMessage{}
-
+        public class SomeMessage
+        {
+        }
     }
-
-
 }

@@ -7,20 +7,19 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Resiliency;
 using Jasper.Persistence.SqlServer.Util;
-using Lamar.Codegen;
-using Lamar.Codegen.Variables;
 using Lamar.Scanning.Conventions;
+using LamarCompiler.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.SqlServer
 {
     /// <summary>
-    /// Activates the Sql Server backed message persistence
+    ///     Activates the Sql Server backed message persistence
     /// </summary>
     public class SqlServerBackedPersistence : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptionsBuilder registry)
         {
             registry.Settings.Require<SqlServerSettings>();
 
@@ -38,7 +37,6 @@ namespace Jasper.Persistence.SqlServer
             registry.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
 
             registry.CodeGeneration.Transactions = new SqlServerTransactionFrameProvider();
-
         }
     }
 

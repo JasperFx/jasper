@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Jasper.Messaging.Runtime
 {
@@ -16,53 +15,27 @@ namespace Jasper.Messaging.Runtime
 
         public static void WriteProp(this IDictionary<string, object> writer, string key, int value)
         {
-            if (value > 0)
-            {
-                writer.Add(key, value.ToString());
-            }
-
-
+            if (value > 0) writer.Add(key, value.ToString());
         }
 
         public static void WriteProp(this IDictionary<string, object> writer, string key, Guid value)
         {
-            if (value != Guid.Empty)
-            {
-                writer.Add(key, value.ToString());
-            }
-
-
+            if (value != Guid.Empty) writer.Add(key, value.ToString());
         }
 
         public static void WriteProp(this IDictionary<string, object> writer, string key, bool value)
         {
-            if (value)
-            {
-                writer.Add(key, "true");
-            }
-
-
+            if (value) writer.Add(key, "true");
         }
 
         public static void WriteProp(this IDictionary<string, object> writer, string key, DateTime? value)
         {
-            if (value.HasValue)
-            {
-                writer.Add(key, value.Value.ToString("o"));
-
-            }
-
-
+            if (value.HasValue) writer.Add(key, value.Value.ToString("o"));
         }
 
         public static void WriteProp(this IDictionary<string, object> writer, string key, DateTimeOffset? value)
         {
-            if (value.HasValue)
-            {
-                writer.Add(key, value.Value.ToString("o"));
-            }
-
-
+            if (value.HasValue) writer.Add(key, value.Value.ToString("o"));
         }
 
         public static void WriteProp(this IDictionary<string, object> writer, string key, Uri value)

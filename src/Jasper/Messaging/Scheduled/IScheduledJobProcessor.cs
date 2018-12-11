@@ -17,6 +17,5 @@ namespace Jasper.Messaging.Scheduled
         int Count();
 
         ScheduledJob[] QueuedJobs();
-
     }
 }

@@ -9,10 +9,6 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
 {
     public class MessageSucceededContinuationTester
     {
-        private Envelope theEnvelope = ObjectMother.Envelope();
-        private IMessageContext theMessageContext = Substitute.For<IMessageContext>();
-
-
         public MessageSucceededContinuationTester()
         {
             theEnvelope = ObjectMother.Envelope();
@@ -22,9 +18,10 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
 
             MessageSucceededContinuation.Instance
                 .Execute(theMessageContext, DateTime.UtcNow);
-
-
         }
+
+        private readonly Envelope theEnvelope = ObjectMother.Envelope();
+        private readonly IMessageContext theMessageContext = Substitute.For<IMessageContext>();
 
         [Fact]
         public void should_mark_the_message_as_successful()
@@ -37,16 +34,10 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
         {
             theMessageContext.Received().SendAllQueuedOutgoingMessages();
         }
-
     }
 
     public class MessageSucceededContinuation_failure_handling_Tester
     {
-        private Envelope theEnvelope = ObjectMother.Envelope();
-        private IMessageContext theMessageContext = Substitute.For<IMessageContext>();
-        private readonly Exception theException = new DivideByZeroException();
-        private IAdvancedMessagingActions advanced;
-
         public MessageSucceededContinuation_failure_handling_Tester()
         {
             theMessageContext.When(x => x.SendAllQueuedOutgoingMessages())
@@ -61,15 +52,20 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
                 .Execute(theMessageContext, DateTime.UtcNow);
         }
 
+        private readonly Envelope theEnvelope = ObjectMother.Envelope();
+        private readonly IMessageContext theMessageContext = Substitute.For<IMessageContext>();
+        private readonly Exception theException = new DivideByZeroException();
+        private readonly IAdvancedMessagingActions advanced;
 
         [Fact]
-        public void should_move_the_envelope_to_the_error_queue()
+        public void should_log_the_exception()
         {
             theEnvelope.Callback.Received().MoveToErrors(theEnvelope, theException);
         }
 
+
         [Fact]
-        public void should_log_the_exception()
+        public void should_move_the_envelope_to_the_error_queue()
         {
             theEnvelope.Callback.Received().MoveToErrors(theEnvelope, theException);
         }
@@ -79,10 +75,6 @@ namespace Jasper.Testing.Messaging.Runtime.Invocation
         {
             var message = "Sending cascading message failed: " + theException.Message;
             advanced.Received().SendFailureAcknowledgement(message);
-
         }
     }
-
-
-
 }

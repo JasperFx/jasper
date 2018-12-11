@@ -6,7 +6,6 @@ using Baseline;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Routing;
-using Jasper.Testing.Messaging.Runtime;
 using Jasper.Util;
 using NSubstitute;
 using Shouldly;
@@ -16,9 +15,6 @@ namespace Jasper.Testing.Messaging
 {
     public class MessageContextTester
     {
-        private readonly MockMessagingRoot theMessagingRoot = new MockMessagingRoot();
-        private MessageContext theBus;
-
         public MessageContextTester()
         {
             var original = ObjectMother.Envelope();
@@ -28,13 +24,15 @@ namespace Jasper.Testing.Messaging
             theBus = theMessagingRoot.ContextFor(original).As<MessageContext>();
         }
 
+        private readonly MockMessagingRoot theMessagingRoot = new MockMessagingRoot();
+        private readonly MessageContext theBus;
+
         private void routedTo(Envelope envelope, params string[] destinations)
         {
             var outgoing = destinations.Select(x => new Envelope
             {
                 Destination = x.ToUri(),
-                Message = envelope?.Message ?? new Message1(),
-
+                Message = envelope?.Message ?? new Message1()
             }).ToArray();
 
             var props = typeof(Envelope).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
@@ -43,7 +41,8 @@ namespace Jasper.Testing.Messaging
 
             foreach (var env in outgoing)
             {
-                var route = new MessageRoute(typeof(Message1), env?.Destination ?? destinations.First().ToUri(), "application/json");
+                var route = new MessageRoute(typeof(Message1), env?.Destination ?? destinations.First().ToUri(),
+                    "application/json");
                 route.Subscriber = Substitute.For<ISubscriber>();
                 route.Subscriber.IsDurable.Returns(true);
 
@@ -51,14 +50,22 @@ namespace Jasper.Testing.Messaging
             }
 
             if (envelope == null)
-            {
                 theMessagingRoot.Router.Route(Arg.Any<Envelope>()).Returns(outgoing);
-            }
             else
-            {
                 theMessagingRoot.Router.Route(envelope).Returns(outgoing);
-            }
+        }
 
+
+        [Fact]
+        public async Task publish_with_original_response()
+        {
+            routedTo(null, "tcp://server1:2222");
+            await theBus.Publish(new Message1());
+
+            var outgoing = theBus.Outstanding.Single();
+
+            outgoing.ParentId.ShouldBe(theBus.Envelope.Id);
+            outgoing.OriginalId.ShouldBe(theBus.Envelope.OriginalId);
         }
 
         [Fact]
@@ -76,30 +83,10 @@ namespace Jasper.Testing.Messaging
             outgoing.ParentId.ShouldBe(theBus.Envelope.Id);
             outgoing.OriginalId.ShouldBe(theBus.Envelope.OriginalId);
         }
-
-
-        [Fact]
-        public async Task publish_with_original_response()
-        {
-            routedTo(null, "tcp://server1:2222");
-            await theBus.Publish(new Message1());
-
-            var outgoing = theBus.Outstanding.Single();
-
-            outgoing.ParentId.ShouldBe(theBus.Envelope.Id);
-            outgoing.OriginalId.ShouldBe(theBus.Envelope.OriginalId);
-        }
-
-
-
-
     }
 
     public class when_creating_a_service_bus_with_acknowledgement_required_envelope
     {
-        private Envelope theEnvelope;
-        private Envelope theAcknowledgement;
-
         public when_creating_a_service_bus_with_acknowledgement_required_envelope()
         {
             theEnvelope = ObjectMother.Envelope();
@@ -113,20 +100,10 @@ namespace Jasper.Testing.Messaging
             var bus = root.ContextFor(theEnvelope);
 
             theAcknowledgement = bus.As<MessageContext>().Outstanding.Single();
-
         }
 
-        [Fact]
-        public void should_be_an_acknowledgement()
-        {
-            theAcknowledgement.ShouldNotBeNull();
-        }
-
-        [Fact]
-        public void ack_parent_id()
-        {
-            theAcknowledgement.ParentId.ShouldBe(theEnvelope.Id);
-        }
+        private readonly Envelope theEnvelope;
+        private readonly Envelope theAcknowledgement;
 
         [Fact]
         public void ack_destination()
@@ -139,6 +116,18 @@ namespace Jasper.Testing.Messaging
         {
             theAcknowledgement.Message.ShouldBeOfType<Acknowledgement>()
                 .CorrelationId.ShouldBe(theEnvelope.Id);
+        }
+
+        [Fact]
+        public void ack_parent_id()
+        {
+            theAcknowledgement.ParentId.ShouldBe(theEnvelope.Id);
+        }
+
+        [Fact]
+        public void should_be_an_acknowledgement()
+        {
+            theAcknowledgement.ShouldNotBeNull();
         }
     }
 }

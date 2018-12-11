@@ -9,7 +9,6 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         private MessageSucceededContinuation()
         {
-
         }
 
         public async Task Execute(IMessageContext context, DateTime utcNow)
@@ -34,6 +33,5 @@ namespace Jasper.Messaging.Runtime.Invocation
                 await envelope.Callback.MoveToErrors(envelope, ex);
             }
         }
-
     }
 }

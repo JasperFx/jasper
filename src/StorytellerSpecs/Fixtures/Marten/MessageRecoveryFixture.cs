@@ -13,7 +13,6 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Configuration;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Marten;
@@ -86,7 +85,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
                 _.Include<MartenBackedPersistence>();
 
-                _.Settings.Alter<MessagingSettings>(x =>
+                _.Settings.Alter<JasperOptions>(x =>
                 {
                     x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
                     x.ScheduledJobs.FirstExecution = 30.Minutes();
@@ -103,7 +102,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             theStore = _runtime.Get<IDocumentStore>();
             theStore.Advanced.Clean.DeleteAllDocuments();
 
-            _currentNodeId = _runtime.Get<MessagingSettings>().UniqueNodeId;
+            _currentNodeId = _runtime.Get<JasperOptions>().UniqueNodeId;
 
             _owners["This Node"] = _currentNodeId;
         }
@@ -240,7 +239,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             {
                 try
                 {
-                    await action.Execute(session, this );
+                    await action.Execute(session, this);
                 }
                 catch (Exception e)
                 {

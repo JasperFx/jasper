@@ -9,6 +9,13 @@ namespace Jasper.Messaging
         Uri Uri { get; }
         Uri ReplyUri { get; }
 
+        bool Latched { get; }
+
+        bool IsDurable { get; }
+
+        int QueuedCount { get; }
+        string[] ContentTypes { get; set; }
+
         bool ShouldSendMessage(Type messageType);
 
         // Rename this to FullSend?
@@ -16,19 +23,11 @@ namespace Jasper.Messaging
 
 
         /// <summary>
-        /// Bypasses serialization, modifiers, and persistence. Mostly used
-        /// by the outgoing "recovery" agents
+        ///     Bypasses serialization, modifiers, and persistence. Mostly used
+        ///     by the outgoing "recovery" agents
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
         Task QuickSend(Envelope envelope);
-
-        bool Latched { get; }
-
-        bool IsDurable { get; }
-
-        int QueuedCount { get; }
-        string[] ContentTypes { get; set; }
     }
-
 }

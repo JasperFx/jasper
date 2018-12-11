@@ -6,10 +6,9 @@ using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Lamar.Codegen;
-using Lamar.Codegen.Frames;
-using Lamar.Codegen.Variables;
-using Lamar.Compilation;
+using LamarCompiler;
+using LamarCompiler.Frames;
+using LamarCompiler.Model;
 using Shouldly;
 using Xunit;
 
@@ -17,25 +16,14 @@ namespace Jasper.Testing.Http
 {
     public class explicit_configuration_of_routes
     {
-
         [Fact]
-        public void applies_the_Configure_RoutedChain_method()
+        public void applies_attributes_against_the_IChain()
         {
-            var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_configured());
+            var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_wrapper3());
 
             var frames = chain.DetermineFrames(ConnegRules.Empty(), JasperGenerationRules.Empty());
 
-            frames.OfType<FakeTransaction>().Any().ShouldBeTrue();
-        }
-
-        [Fact]
-        public void applies_the_Configure_IChain_method()
-        {
-            var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_configured());
-
-            var frames = chain.DetermineFrames(ConnegRules.Empty(),JasperGenerationRules.Empty());
-
-            frames.OfType<FakeWrapper>().Any().ShouldBeTrue();
+            frames.OfType<FakeWrapper3>().Any().ShouldBeTrue();
         }
 
         [Fact]
@@ -49,13 +37,23 @@ namespace Jasper.Testing.Http
         }
 
         [Fact]
-        public void applies_attributes_against_the_IChain()
+        public void applies_the_Configure_IChain_method()
         {
-            var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_wrapper3());
+            var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_configured());
 
             var frames = chain.DetermineFrames(ConnegRules.Empty(), JasperGenerationRules.Empty());
 
-            frames.OfType<FakeWrapper3>().Any().ShouldBeTrue();
+            frames.OfType<FakeWrapper>().Any().ShouldBeTrue();
+        }
+
+        [Fact]
+        public void applies_the_Configure_RoutedChain_method()
+        {
+            var chain = RouteChain.For<ConfiguredEndpoint>(x => x.get_configured());
+
+            var frames = chain.DetermineFrames(ConnegRules.Empty(), JasperGenerationRules.Empty());
+
+            frames.OfType<FakeTransaction>().Any().ShouldBeTrue();
         }
     }
 
@@ -64,19 +62,16 @@ namespace Jasper.Testing.Http
     {
         public void get_configured()
         {
-
         }
 
         [FakeWrapper2]
         public void get_wrapper2()
         {
-
         }
 
         [FakeWrapper3]
         public void get_wrapper3()
         {
-
         }
 
         public static void Configure(RouteChain chain)
@@ -99,7 +94,6 @@ namespace Jasper.Testing.Http
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-
         }
     }
 
@@ -119,9 +113,13 @@ namespace Jasper.Testing.Http
         }
     }
 
-    public class FakeWrapper2 : FakeWrapper { }
-    public class FakeWrapper3 : FakeWrapper { }
+    public class FakeWrapper2 : FakeWrapper
+    {
+    }
 
+    public class FakeWrapper3 : FakeWrapper
+    {
+    }
 
 
     public class GenericFakeTransactionAttribute : ModifyChainAttribute
@@ -142,8 +140,8 @@ namespace Jasper.Testing.Http
 
     public class FakeTransaction : Frame
     {
-        private Variable _store;
         private readonly Variable _session;
+        private Variable _store;
 
         public FakeTransaction() : base(false)
         {
@@ -172,9 +170,9 @@ namespace Jasper.Testing.Http
 
     public class Tracking
     {
+        public bool CalledSaveChanges;
         public bool DisposedTheSession;
         public bool OpenedSession;
-        public bool CalledSaveChanges;
     }
 
     public class FakeStore : IFakeStore
@@ -217,6 +215,4 @@ namespace Jasper.Testing.Http
             _tracking.CalledSaveChanges = true;
         }
     }
-
-
 }
