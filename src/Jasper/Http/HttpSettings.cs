@@ -28,9 +28,6 @@ namespace Jasper.Http
         /// </summary>
         public bool Enabled { get; set; } = true;
 
-        public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings();
-
-
         // Call this in UseJasper()
         internal void StartFindingRoutes(Assembly assembly)
         {

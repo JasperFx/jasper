@@ -5,6 +5,7 @@ using Baseline;
 using Jasper.Conneg;
 using Jasper.Http.Model;
 using Microsoft.Extensions.ObjectPool;
+using Newtonsoft.Json;
 
 namespace Jasper.Http.ContentHandling
 {
@@ -118,7 +119,7 @@ namespace Jasper.Http.ContentHandling
         {
             var provider = new DefaultObjectPoolProvider();
 
-            var graph = new HttpSerializationGraph(new HttpSettings(), provider, new Forwarders(),
+            var graph = new HttpSerializationGraph(new JsonSerializerSettings(), provider, new Forwarders(),
                 new ISerializerFactory[0], new IMessageDeserializer[0], new IMessageSerializer[0]);
             return new ConnegRules(graph, new IReaderRule[0], new IWriterRule[0]);
         }
