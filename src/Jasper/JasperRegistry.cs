@@ -173,7 +173,7 @@ namespace Jasper
 
             public void Configure(IApplicationBuilder app)
             {
-
+                Console.WriteLine("Jasper 'Nullo' startup is being used to start the ASP.Net Core application");
             }
         }
 
