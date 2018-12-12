@@ -229,7 +229,7 @@ namespace Jasper
             if (Get<JasperOptions>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
         }
 
-        public static void ApplyExtensions(JasperRegistry registry)
+        public static void ApplyExtensions(JasperOptionsBuilder registry)
         {
             var assemblies = FindExtensionAssemblies();
 

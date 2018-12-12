@@ -62,7 +62,7 @@ namespace Jasper.Messaging
             writer.WriteLine();
         }
 
-        internal void StartCompiling(JasperRegistry registry)
+        internal void StartCompiling(JasperOptionsBuilder registry)
         {
             Compiling = Handling.Source.FindCalls(registry).ContinueWith(t =>
             {

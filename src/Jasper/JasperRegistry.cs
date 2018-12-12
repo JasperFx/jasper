@@ -50,20 +50,6 @@ namespace Jasper
         }
 
 
-
-
-        public ServiceRegistry CombineServices()
-        {
-            var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
-
-            var combined = new ServiceRegistry();
-            combined.AddRange(all);
-
-            combined.For<IDurableMessagingFactory>().UseIfNone<NulloDurableMessagingFactory>();
-
-            return combined;
-        }
-
         internal IWebHostBuilder InnerWebHostBuilder { get; } = createDefaultWebHostBuilder();
 
         private static IWebHostBuilder createDefaultWebHostBuilder()

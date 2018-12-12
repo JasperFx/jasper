@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using Baseline;
 using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Transports;
 using Jasper.Settings;
 using Jasper.Util;
 using Lamar;
 using LamarCompiler.Model;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Jasper
 {
@@ -26,13 +28,13 @@ namespace Jasper
         protected readonly ServiceRegistry _applicationServices = new ServiceRegistry();
         protected readonly ServiceRegistry _baseServices;
 
-        public JasperOptionsBuilder()
+        public JasperOptionsBuilder(string assemblyName = null)
         {
             HttpRoutes = new HttpSettings();
 
             Services = _applicationServices;
 
-            establishApplicationAssembly();
+            establishApplicationAssembly(assemblyName);
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
             CodeGeneration = new JasperGenerationRules($"{name.Replace(".", "_")}_Generated");
@@ -80,12 +82,18 @@ namespace Jasper
         /// </summary>
         public Assembly ApplicationAssembly { get; private set; }
 
-        private void establishApplicationAssembly()
+        private void establishApplicationAssembly(string assemblyName)
         {
-            if (GetType() == typeof(JasperRegistry))
+            if (assemblyName.IsNotEmpty())
+            {
+                ApplicationAssembly = Assembly.Load(assemblyName);
+            }
+            else if ((GetType() == typeof(JasperRegistry) || GetType() == typeof(JasperOptionsBuilder)))
             {
                 if (_rememberedCallingAssembly == null)
+                {
                     _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+                }
 
                 ApplicationAssembly = _rememberedCallingAssembly;
             }
@@ -206,6 +214,18 @@ namespace Jasper
             configure?.Invoke(extension);
 
             Include(extension);
+        }
+
+        public ServiceRegistry CombineServices()
+        {
+            var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
+
+            var combined = new ServiceRegistry();
+            combined.AddRange(all);
+
+            combined.For<IDurableMessagingFactory>().UseIfNone<NulloDurableMessagingFactory>();
+
+            return combined;
         }
     }
 }

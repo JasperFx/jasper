@@ -22,19 +22,22 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
                 {{"name", "MyJasperApp"}, {"TestingListener", "tcp://localhost:4532"}};
 
             var builder = new WebHostBuilder();
-            var host = builder
+            using (var host = builder
                 .ConfigureAppConfiguration(c => c.AddInMemoryCollection(configuration))
                 .UseServer(new NulloServer())
                 .UseEnvironment("Testing")
                 .UseStartup<Startup>()
                 .UseJasper()
-                .Start();
+                .Start())
+            {
+                var options = host.Services.GetRequiredService<JasperOptions>();
+
+                options.ServiceName.ShouldBe("MyJasperApp");
+                options.Listeners.Single(x => x.Scheme == "tcp").ShouldBe("tcp://localhost:4532".ToUri());
+            }
 
 
-            var options = host.Services.GetRequiredService<JasperOptions>();
 
-            options.ServiceName.ShouldBe("MyJasperApp");
-            options.Listeners.Single(x => x.Scheme == "tcp").ShouldBe("tcp://localhost:4532".ToUri());
         }
 
 

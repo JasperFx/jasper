@@ -12,6 +12,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AspNetCoreHosted\AspNetCoreHosted.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Storyteller\Jasper.TestSupport.Storyteller.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Alba\Jasper.TestSupport.Alba.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />

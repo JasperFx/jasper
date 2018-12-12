@@ -15,28 +15,28 @@ namespace Jasper
 {
     public static class WebHostBuilderExtensions
     {
-        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder, Action<T> overrides = null) where T : JasperRegistry, new ()
+        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder, Action<T> overrides = null) where T : JasperOptionsBuilder, new ()
         {
             var registry = new T();
             overrides?.Invoke(registry);
             return builder.UseJasper(registry);
         }
 
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperOptionsBuilder jasperBuilder)
         {
-            JasperRuntime.ApplyExtensions(registry);
+            JasperRuntime.ApplyExtensions(jasperBuilder);
 
-            registry.HttpRoutes.StartFindingRoutes(registry.ApplicationAssembly);
-            registry.Messaging.StartCompiling(registry);
+            jasperBuilder.HttpRoutes.StartFindingRoutes(jasperBuilder.ApplicationAssembly);
+            jasperBuilder.Messaging.StartCompiling(jasperBuilder);
 
-            registry.Settings.Apply(registry.Services);
+            jasperBuilder.Settings.Apply(jasperBuilder.Services);
 
             builder.ConfigureServices(s =>
             {
                 s.AddSingleton<IHostedService, JasperActivator>();
 
-                s.AddRange(registry.CombineServices());
-                s.AddSingleton(registry);
+                s.AddRange(jasperBuilder.CombineServices());
+                s.AddSingleton(jasperBuilder);
 
                 s.AddSingleton<IServiceProviderFactory<ServiceRegistry>, LamarServiceProviderFactory>();
                 s.AddSingleton<IServiceProviderFactory<IServiceCollection>, LamarServiceProviderFactory>();
@@ -49,7 +49,7 @@ namespace Jasper
 
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder)
         {
-            return builder.UseJasper(new JasperRegistry());
+            return builder.UseJasper(new JasperOptionsBuilder(builder.GetSetting(WebHostDefaults.ApplicationKey)));
         }
 
         public const string JasperRouterKey = "JasperRouter";
@@ -110,11 +110,11 @@ namespace Jasper
 
     internal class JasperActivator : IHostedService
     {
-        private readonly JasperRegistry _registry;
+        private readonly JasperOptionsBuilder _registry;
         private readonly IMessagingRoot _root;
         private readonly IContainer _container;
 
-        public JasperActivator(JasperRegistry registry, IMessagingRoot root, IContainer container)
+        public JasperActivator(JasperOptionsBuilder registry, IMessagingRoot root, IContainer container)
         {
             _registry = registry;
             _root = root;
