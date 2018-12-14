@@ -25,26 +25,29 @@ namespace Jasper
         private readonly IDisposable _host;
         private readonly Lazy<IMessageContext> _bus;
         private IContainer _container;
-        private bool isDisposing;
+        private bool _isDisposing;
+        private readonly JasperOptionsBuilder _registry;
 
 
-        private JasperRuntime(JasperRegistry registry, IWebHost host)
+
+        internal JasperRuntime(IWebHost host)
         {
             _host = host;
-            Registry = registry;
+            _registry = host.Services.GetRequiredService<JasperOptionsBuilder>();
             Container = host.Services.GetService<IContainer>();
+
+            Container.As<Container>().Configure(x => x.AddSingleton(this));
 
             _bus = new Lazy<IMessageContext>(Get<IMessageContext>);
         }
 
-        internal JasperOptions Settings { get; private set; }
+        private JasperOptions options { get; set; }
 
-        internal JasperRegistry Registry { get; }
 
         /// <summary>
         ///     The main application assembly for the running application
         /// </summary>
-        public Assembly ApplicationAssembly => Registry.ApplicationAssembly;
+        public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
 
         /// <summary>
         ///     The underlying Lamar container
@@ -55,7 +58,7 @@ namespace Jasper
             private set
             {
                 _container = value;
-                Settings = _container.GetInstance<JasperOptions>();
+                options = _container.GetInstance<JasperOptions>();
             }
         }
 
@@ -71,7 +74,7 @@ namespace Jasper
         /// <summary>
         ///     The logical name of the application from JasperRegistry.ServiceName
         /// </summary>
-        public string ServiceName => Settings?.ServiceName;
+        public string ServiceName => options?.ServiceName;
 
 
         /// <summary>
@@ -206,7 +209,7 @@ namespace Jasper
             var hosted = Container.GetAllInstances<IHostedService>();
             foreach (var hostedService in hosted) writer.WriteLine("Hosted Service: " + hostedService);
 
-            Registry.Describe(this, writer);
+            _registry.Describe(this, writer);
         }
 
         public void ExecuteAllEnvironmentChecks()
@@ -259,9 +262,9 @@ namespace Jasper
                 .ToWebHostBuilder()
                 .Start();
 
-            var runtime = new JasperRuntime(registry, host);
+            var runtime = new JasperRuntime(host);
 
-            runtime.Container.As<Container>().Configure(x => x.AddSingleton(runtime));
+
 
             return Task.FromResult(runtime);
         }
@@ -269,9 +272,9 @@ namespace Jasper
         public void Dispose()
         {
             // Because StackOverflowException's are a drag
-            if (IsDisposed || isDisposing) return;
+            if (IsDisposed || _isDisposing) return;
 
-            isDisposing = true;
+            _isDisposing = true;
 
             _host.Dispose();
 
