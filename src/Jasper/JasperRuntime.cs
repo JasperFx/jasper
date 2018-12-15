@@ -43,6 +43,8 @@ namespace Jasper
 
         private JasperOptions options { get; set; }
 
+        internal JasperGenerationRules CodeGeneration => _registry.CodeGeneration;
+
 
         /// <summary>
         ///     The main application assembly for the running application
@@ -268,6 +270,26 @@ namespace Jasper
 
             return Task.FromResult(runtime);
         }
+
+
+        /// <summary>
+        /// Create a new JasperRuntime without first running any of the
+        /// IHostedService services or starting any web service. Useful for
+        /// diagnostic commands
+        /// </summary>
+        /// <param name="registry"></param>
+        /// <returns></returns>
+        public static JasperRuntime Lightweight(JasperRegistry registry)
+        {
+            var host = registry
+                .ToWebHostBuilder()
+                .Build();
+
+            return new JasperRuntime(host);
+        }
+
+
+
 
         public void Dispose()
         {

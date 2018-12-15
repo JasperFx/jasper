@@ -10,11 +10,12 @@ namespace Jasper.Testing.CommandLine
         public void can_generate_code()
         {
             var input = new CodeInput();
-            input.Registry = new JasperRegistry();
+            var registry = new JasperRegistry();
+            input.Source = new RegistryRuntimeSource(registry);
 
 
-            input.Registry.Handlers.DisableConventionalDiscovery();
-            input.Registry.Handlers.IncludeType<MessageConsumer>();
+            registry.Handlers.DisableConventionalDiscovery();
+            registry.Handlers.IncludeType<MessageConsumer>();
 
             var cmd = new CodeCommand();
             cmd.Execute(input);

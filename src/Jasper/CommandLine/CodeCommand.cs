@@ -25,9 +25,9 @@ namespace Jasper.CommandLine
 
             // TODO -- need to replace this
             //input.Registry.Settings.Alter<JasperOptions>(x => x.HostedServicesEnabled = false);
-            var runtime = input.BuildRuntime();
+            var runtime = input.BuildRuntime(StartMode.Lightweight);
 
-            var rules = input.Registry.CodeGeneration;
+            var rules = runtime.CodeGeneration;
             var generatedAssembly = new GeneratedAssembly(rules);
 
             if (input.Match == CodeMatch.all || input.Match == CodeMatch.messages)

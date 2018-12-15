@@ -11,7 +11,7 @@ namespace Jasper.CommandLine
     {
         public override bool Execute(JasperInput input)
         {
-            var runtime = input.BuildRuntime();
+            var runtime = input.BuildRuntime(StartMode.Full);
 
             var done = new ManualResetEventSlim(false);
             var cts = new CancellationTokenSource();

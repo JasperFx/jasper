@@ -20,11 +20,11 @@ namespace Jasper.Testing.CommandLine
 
             var input = new JasperInput
             {
-                Registry = registry,
+                Source = new RegistryRuntimeSource(registry),
                 EnvironmentFlag = "Fake"
             };
 
-            using (var runtime = input.BuildRuntime())
+            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
             {
                 runtime.Get<IHostingEnvironment>()
                     .EnvironmentName.ShouldBe("Fake");
@@ -40,11 +40,11 @@ namespace Jasper.Testing.CommandLine
 
             var input = new JasperInput
             {
-                Registry = registry,
+                Source = new RegistryRuntimeSource(registry),
                 VerboseFlag = true
             };
 
-            using (var runtime = input.BuildRuntime())
+            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
             {
                 var providers = runtime.Container.GetAllInstances<ILoggerProvider>();
                 providers.OfType<ConsoleLoggerProvider>().Any().ShouldBeTrue();

@@ -9,7 +9,6 @@ namespace Jasper.CommandLine
     // SAMPLE: JasperInput
     public class JasperInput
     {
-        [IgnoreOnCommandLine] public JasperRegistry Registry { get; set; }
 
         [Description("Use to override the ASP.Net Environment name")]
         public string EnvironmentFlag { get; set; }
@@ -20,13 +19,16 @@ namespace Jasper.CommandLine
         [Description("Override the log level")]
         public LogLevel? LogLevelFlag { get; set; }
 
-        public JasperRuntime BuildRuntime()
+        [IgnoreOnCommandLine]
+        public IRuntimeSource Source { get; set; }
+
+        public JasperRuntime BuildRuntime(StartMode mode)
         {
             // SAMPLE: what-the-cli-is-doing
 
             // The --log-level flag value overrides your application's
             // LogLevel
-            if (LogLevelFlag.HasValue) Registry.ConfigureLogging(x => x.SetMinimumLevel(LogLevelFlag.Value));
+            if (LogLevelFlag.HasValue) Source.HostBuilder.ConfigureLogging(x => x.SetMinimumLevel(LogLevelFlag.Value));
 
             if (VerboseFlag)
             {
@@ -35,7 +37,7 @@ namespace Jasper.CommandLine
                 // The --verbose flag adds console and
                 // debug logging, as well as setting
                 // the minimum logging level down to debug
-                Registry.ConfigureLogging(x =>
+                Source.HostBuilder.ConfigureLogging(x =>
                 {
                     x.SetMinimumLevel(LogLevel.Debug);
 
@@ -46,10 +48,10 @@ namespace Jasper.CommandLine
 
             // The --environment flag is used to set the environment
             // property on the IHostedEnvironment within your system
-            if (EnvironmentFlag.IsNotEmpty()) Registry.UseEnvironment(EnvironmentFlag);
+            if (EnvironmentFlag.IsNotEmpty()) Source.HostBuilder.UseEnvironment(EnvironmentFlag);
             // ENDSAMPLE
 
-            return JasperRuntime.For(Registry);
+            return mode == StartMode.Full ? Source.Full() : Source.Lightweight();
         }
     }
 

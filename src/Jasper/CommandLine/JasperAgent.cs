@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Baseline;
+using Microsoft.AspNetCore.Hosting;
 using Oakton;
 
 namespace Jasper.CommandLine
@@ -28,22 +29,22 @@ namespace Jasper.CommandLine
             if (registry == null) throw new ArgumentNullException(nameof(registry));
 
 
-            return buildExecutor(registry).Execute(args);
+            return buildExecutor(new RegistryRuntimeSource(registry)).Execute(args);
         }
 
 
-        private static CommandExecutor buildExecutor(JasperRegistry registry)
+        private static CommandExecutor buildExecutor(IRuntimeSource source)
         {
             return CommandExecutor.For(factory =>
             {
                 factory.RegisterCommands(typeof(RunCommand).GetTypeInfo().Assembly);
-                if (registry.ApplicationAssembly != null) factory.RegisterCommands(registry.ApplicationAssembly);
+                if (source.ApplicationAssembly != null) factory.RegisterCommands(source.ApplicationAssembly);
 
                 foreach (var assembly in JasperRuntime.FindExtensionAssemblies()) factory.RegisterCommands(assembly);
 
                 factory.ConfigureRun = cmd =>
                 {
-                    if (cmd.Input is JasperInput) cmd.Input.As<JasperInput>().Registry = registry;
+                    if (cmd.Input is JasperInput) cmd.Input.As<JasperInput>().Source = source;
                 };
             });
         }
@@ -83,5 +84,75 @@ namespace Jasper.CommandLine
         {
             return Run(new JasperRegistry(), args);
         }
+    }
+
+    public enum StartMode
+    {
+        /// <summary>
+        /// Completely builds and starts the underlying IWebHost
+        /// </summary>
+        Full,
+
+        /// <summary>
+        /// Builds, but does not start the underlying IWebHost. Suitable for diagnostic commands
+        /// </summary>
+        Lightweight
+    }
+
+    public interface IRuntimeSource
+    {
+        JasperRuntime Lightweight();
+        JasperRuntime Full();
+
+        IWebHostBuilder HostBuilder { get; }
+        Assembly ApplicationAssembly { get; }
+    }
+
+    public class RegistryRuntimeSource : IRuntimeSource
+    {
+        private readonly JasperRegistry _registry;
+
+        public RegistryRuntimeSource(JasperRegistry registry)
+        {
+            _registry = registry;
+        }
+
+        public IWebHostBuilder HostBuilder => _registry.Hosting;
+        public Assembly ApplicationAssembly => _registry.ApplicationAssembly;
+
+        public JasperRuntime Lightweight()
+        {
+            return JasperRuntime.Lightweight(_registry);
+        }
+
+        public JasperRuntime Full()
+        {
+            return JasperRuntime.For(_registry);
+        }
+    }
+
+    public class WebHostBuilderRuntimeSource : IRuntimeSource
+    {
+        public WebHostBuilderRuntimeSource(IWebHostBuilder builder)
+        {
+            HostBuilder = builder;
+            ApplicationAssembly = Assembly.Load(builder.GetSetting(WebHostDefaults.ApplicationKey));
+        }
+
+        public JasperRuntime Lightweight()
+        {
+            var host = HostBuilder.Build();
+            return new JasperRuntime(host);
+        }
+
+        public JasperRuntime Full()
+        {
+            var host = HostBuilder.Start();
+            return new JasperRuntime(host);
+        }
+
+        public Assembly ApplicationAssembly { get; }
+
+        public IWebHostBuilder HostBuilder { get; }
     }
 }

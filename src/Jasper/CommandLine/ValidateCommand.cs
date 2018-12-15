@@ -11,13 +11,13 @@ namespace Jasper.CommandLine
         public override bool Execute(JasperInput input)
         {
             Console.WriteLine("Bootstrapping the system and running all checks...");
-            using (var runtime = input.BuildRuntime())
+            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
             {
                 Console.WriteLine("Generating code for all the message handlers, this might take a bit...");
                 Console.WriteLine();
                 Console.WriteLine();
 
-                var rules = input.Registry.CodeGeneration;
+                var rules = runtime.CodeGeneration;
                 var generatedAssembly = new GeneratedAssembly(rules);
                 var handlers = runtime.Get<HandlerGraph>();
                 foreach (var handler in handlers.Chains) handler.AssembleType(generatedAssembly, rules);

@@ -4,14 +4,12 @@ using Oakton;
 namespace Jasper.CommandLine
 {
     // SAMPLE: ServicesCommand
-    [Description("Display the known StructureMap service registrations")]
+    [Description("Display the known Lamar service registrations")]
     public class ServicesCommand : OaktonCommand<JasperInput>
     {
         public override bool Execute(JasperInput input)
         {
-            input.Registry.Settings.Alter<JasperOptions>(_ => { _.ThrowOnValidationErrors = false; });
-
-            using (var runtime = input.BuildRuntime())
+            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
             {
                 Console.WriteLine(runtime.Container.WhatDoIHave());
             }
