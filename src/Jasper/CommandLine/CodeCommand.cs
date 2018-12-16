@@ -23,8 +23,6 @@ namespace Jasper.CommandLine
             Console.WriteLine();
             Console.WriteLine();
 
-            // TODO -- need to replace this
-            //input.Registry.Settings.Alter<JasperOptions>(x => x.HostedServicesEnabled = false);
             var runtime = input.BuildRuntime(StartMode.Lightweight);
 
             var rules = runtime.CodeGeneration;

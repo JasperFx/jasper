@@ -22,14 +22,20 @@ namespace Jasper.CommandLine
         /// <exception cref="ArgumentNullException"></exception>
         public static int Run(JasperRegistry registry, string[] args = null)
         {
+            if (registry == null) throw new ArgumentNullException(nameof(registry));
+
+            var runtimeSource = new RegistryRuntimeSource(registry);
+
+            return Execute(runtimeSource, args);
+        }
+
+        internal static int Execute(IRuntimeSource runtimeSource, string[] args)
+        {
             if (args == null || args.Length == 0 || args[0].StartsWith("-"))
                 args = new[] {"run"}.Concat(args ?? new string[0]).ToArray();
 
 
-            if (registry == null) throw new ArgumentNullException(nameof(registry));
-
-
-            return buildExecutor(new RegistryRuntimeSource(registry)).Execute(args);
+            return buildExecutor(runtimeSource).Execute(args);
         }
 
 
@@ -83,6 +89,31 @@ namespace Jasper.CommandLine
         public static int RunBasic(string[] args)
         {
             return Run(new JasperRegistry(), args);
+        }
+
+
+        /// <summary>
+        /// Bootstrap and run a Jasper application for the configured IWebHostBuilder
+        /// </summary>
+        /// <param name="hostBuilder"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static int Run(IWebHostBuilder hostBuilder, string[] args)
+        {
+            if (hostBuilder == null) throw new ArgumentNullException(nameof(hostBuilder));
+            return Execute(new WebHostBuilderRuntimeSource(hostBuilder), args);
+        }
+
+        /// <summary>
+        /// Syntactical sugar to execute the Jasper command line for a configured WebHostBuilder
+        /// </summary>
+        /// <param name="hostBuilder"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static int RunJasper(this IWebHostBuilder hostBuilder, string[] args)
+        {
+            return Run(hostBuilder, args);
         }
     }
 

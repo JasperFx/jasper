@@ -22,6 +22,13 @@ namespace Jasper
             return builder.UseJasper(registry);
         }
 
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperOptionsBuilder> overrides)
+        {
+            var registry = new JasperOptionsBuilder();
+            overrides?.Invoke(registry);
+            return builder.UseJasper(registry);
+        }
+
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperOptionsBuilder jasperBuilder)
         {
             JasperRuntime.ApplyExtensions(jasperBuilder);
