@@ -19,7 +19,8 @@ namespace Jasper.Messaging.Configuration
 
         public override void Modify(HandlerChain chain, JasperGenerationRules rules)
         {
-            chain.OnException(_exceptionType).MoveToErrorQueue();
+            chain.Retries += _exceptionType.HandledBy()
+                .MoveToErrorQueue();
         }
     }
 }

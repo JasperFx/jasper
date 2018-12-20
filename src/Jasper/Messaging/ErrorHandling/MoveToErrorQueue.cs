@@ -13,18 +13,9 @@ namespace Jasper.Messaging.ErrorHandling
 
         public Exception Exception { get; }
 
-        public async Task Execute(IMessageContext context, DateTime utcNow)
+        public Task Execute(IMessageContext context, DateTime utcNow)
         {
-            var envelope = context.Envelope;
-
-
-            await context.Advanced.SendFailureAcknowledgement(
-                $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
-
-            await envelope.Callback.MoveToErrors(envelope, Exception);
-
-            context.Advanced.Logger.MessageFailed(envelope, Exception);
-            context.Advanced.Logger.MovedToErrorQueue(envelope, Exception);
+            return context.MoveToErrorQueue(Exception, utcNow);
         }
 
         public override string ToString()

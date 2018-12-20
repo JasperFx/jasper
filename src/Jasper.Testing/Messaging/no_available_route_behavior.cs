@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-    public class no_avalailable_route_behavior : IntegrationContext
+    public class no_available_route_behavior : IntegrationContext
     {
         [Fact]
         public async Task throw_no_route_exception_by_default()

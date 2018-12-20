@@ -19,7 +19,7 @@ namespace Jasper.Messaging.Configuration
 
         public override void Modify(HandlerChain chain, JasperGenerationRules rules)
         {
-            chain.MaximumAttempts = _attempts;
+            chain.Retries.MaximumAttempts = _attempts;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging.ErrorHandling;
+using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Lamar;
@@ -13,7 +15,7 @@ using LamarCompiler.Util;
 
 namespace Jasper.Messaging.Model
 {
-    public class HandlerGraph : IHasErrorHandlers
+    public class HandlerGraph : IHasRetryPolicies
     {
         public static readonly string Context = "context";
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
@@ -36,7 +38,7 @@ namespace Jasper.Messaging.Model
 
         public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
 
-        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
+        public RetryPolicyCollection Retries { get; set; } = new RetryPolicyCollection();
 
         private void assertNotGrouped()
         {
@@ -107,6 +109,7 @@ namespace Jasper.Messaging.Model
             _handlers = _handlers.AddOrUpdate(messageType, null);
             return null;
         }
+
 
 
         internal void Compile(JasperGenerationRules generation, IContainer container)

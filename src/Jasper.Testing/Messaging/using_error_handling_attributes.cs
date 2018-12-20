@@ -15,47 +15,10 @@ namespace Jasper.Testing.Messaging
         public async Task use_maximum_attempts()
         {
             await withAllDefaults();
-            chainFor<Message1>().MaximumAttempts.ShouldBe(3);
+            chainFor<Message1>().Retries.MaximumAttempts.ShouldBe(3);
         }
 
-        [Fact]
-        public async Task use_move_to_error_queue_on_attribute()
-        {
-            await withAllDefaults();
 
-            chainFor<Message4>().ShouldMoveToErrorQueue<DataMisalignedException>();
-        }
-
-        [Fact]
-        public async Task use_requeue_on_attribute()
-        {
-            await withAllDefaults();
-            chainFor<Message3>().ShouldHandleExceptionWith<NotImplementedException, RequeueContinuation>();
-        }
-
-        [Fact]
-        public async Task use_retry_later_attribute()
-        {
-            await withAllDefaults();
-
-            var continuation = chainFor<Message5>()
-                .ErrorHandlers.OfType<ErrorHandler>()
-                .Where(x => x.Conditions.Count == 1 &&
-                            x.Conditions.Single() is ExceptionTypeMatch<DivideByZeroException>)
-                .SelectMany(x => x.Sources)
-                .OfType<ContinuationSource>().Select(x => x.Continuation)
-                .OfType<ScheduledRetryContinuation>()
-                .Single();
-
-            continuation.Delay.ShouldBe(5.Seconds());
-        }
-
-        [Fact]
-        public async Task use_retry_on_attribute()
-        {
-            await withAllDefaults();
-            chainFor<Message2>().ShouldHandleExceptionWith<DivideByZeroException, RetryNowContinuation>();
-        }
     }
 
     public class ErrorCausingConsumer
@@ -80,7 +43,7 @@ namespace Jasper.Testing.Messaging
         {
         }
 
-        [RetryLaterOn(typeof(DivideByZeroException), 5)]
+        [RescheduleLater(typeof(DivideByZeroException), 5)]
         public void Handle(Message5 message)
         {
         }

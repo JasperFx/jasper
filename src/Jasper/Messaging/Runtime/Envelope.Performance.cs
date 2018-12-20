@@ -19,14 +19,17 @@ namespace Jasper.Messaging.Runtime
 
         internal void StartTiming()
         {
-            _stopwatch = Stopwatch.StartNew();
+            if (_stopwatch == null)
+            {
+                _stopwatch = Stopwatch.StartNew();
+            }
         }
 
         internal void MarkCompletion(bool success)
         {
-            _stopwatch.Stop();
+            _stopwatch?.Stop();
 
-            ExecutionDuration = _stopwatch.ElapsedMilliseconds;
+            if (_stopwatch != null) ExecutionDuration = _stopwatch.ElapsedMilliseconds;
             _stopwatch = null;
 
             Succeeded = success;

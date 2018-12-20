@@ -17,7 +17,7 @@ using TypeExtensions = Baseline.TypeExtensions;
 
 namespace Jasper.Messaging.Model
 {
-    public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasErrorHandlers
+    public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasRetryPolicies
     {
         public const string NotCascading = "NotCascading";
 
@@ -51,8 +51,8 @@ namespace Jasper.Messaging.Model
         public MessageHandler Handler { get; set; }
 
         public string SourceCode => _generatedType.SourceCode;
-        public int MaximumAttempts { get; set; } = 1;
-        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
+
+        public RetryPolicyCollection Retries { get; set; } = new RetryPolicyCollection();
 
         public static HandlerChain For<T>(Expression<Action<T>> expression)
         {

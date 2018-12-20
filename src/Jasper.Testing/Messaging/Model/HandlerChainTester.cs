@@ -78,10 +78,10 @@ namespace Jasper.Testing.Messaging.Model
         }
 
         [Fact]
-        public void default_number_of_max_attempts_is_1()
+        public void default_number_of_max_attempts_is_null()
         {
             var chain = HandlerChain.For<Target>(nameof(Target.GoStatic));
-            chain.MaximumAttempts.ShouldBe(1);
+            chain.Retries.MaximumAttempts.HasValue.ShouldBeFalse();
         }
     }
 }

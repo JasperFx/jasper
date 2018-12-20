@@ -41,10 +41,8 @@ namespace Jasper.Testing.Messaging.Lightweight
             receiver.Handlers.DisableConventionalDiscovery();
 
             receiver.Transports.ListenForMessagesFrom(theAddress);
-            receiver.Handlers.OnException<DivideByZeroException>().Requeue();
-            receiver.Handlers.OnException<TimeoutException>().RetryLater(10.Seconds());
 
-            receiver.Handlers.DefaultMaximumAttempts = 3;
+            receiver.Handlers.Retries.MaximumAttempts = 3;
             receiver.Handlers.IncludeType<MessageConsumer>();
 
             scheduledJobs = new FakeScheduledJobProcessor();

@@ -12,15 +12,17 @@ namespace Jasper.Messaging.Configuration
     public class RequeueOnAttribute : ModifyHandlerChainAttribute
     {
         private readonly Type _exceptionType;
+        private readonly int _attempts;
 
-        public RequeueOnAttribute(Type exceptionType)
+        public RequeueOnAttribute(Type exceptionType, int attempts = 3)
         {
             _exceptionType = exceptionType;
+            _attempts = attempts;
         }
 
         public override void Modify(HandlerChain chain, JasperGenerationRules rules)
         {
-            chain.OnException(_exceptionType).Requeue();
+            chain.Retries += _exceptionType.HandledBy().Requeue(_attempts);
         }
     }
 }

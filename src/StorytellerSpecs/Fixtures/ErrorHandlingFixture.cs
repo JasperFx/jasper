@@ -13,6 +13,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -41,36 +42,36 @@ namespace StorytellerSpecs.Fixtures
     [Hidden]
     public class GlobalErrorHandlingFixture : ErrorHandlingFixtureBase
     {
-        protected IHasErrorHandlers _errorHandling;
+        protected IHasRetryPolicies _errorHandling;
 
         public override void SetUp()
         {
-            _errorHandling = Context.State.Retrieve<IHasErrorHandlers>();
-            _errorHandling.ErrorHandlers.Clear();
+            _errorHandling = Context.State.Retrieve<IHasRetryPolicies>();
+            _errorHandling.Retries.Clear();
         }
 
         [FormatAs("Retry on {errorType}")]
         public void RetryOn(ErrorType errorType)
         {
-            _errorHandling.OnException(errorType.Type).Retry();
+            _errorHandling.Retries += errorType.Type.HandledBy().RetryAsync(3);
         }
 
         [FormatAs("Requeue on {errorType}")]
         public void RequeueOn(ErrorType errorType)
         {
-            _errorHandling.OnException(errorType.Type).Requeue();
+            _errorHandling.Retries += errorType.Type.HandledBy().Requeue(3);
         }
 
         [FormatAs("Move to error queue on {errorType}")]
         public void MoveToErrorQueue(ErrorType errorType)
         {
-            _errorHandling.OnException(errorType.Type).MoveToErrorQueue();
+            _errorHandling.Retries += errorType.Type.HandledBy().MoveToErrorQueue();
         }
 
         [FormatAs("Retry later in 5 seconds on {errorType}")]
         public void RetryLater(ErrorType errorType)
         {
-            _errorHandling.OnException(errorType.Type).RetryLater(5.Seconds());
+            _errorHandling.Retries += errorType.Type.HandledBy().Reschedule(5.Seconds(), 5.Seconds(), 5.Seconds());
         }
     }
 
@@ -86,7 +87,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Maximum Attempts for the Chain is {attempts}")]
         public void MaximumAttempts(int attempts)
         {
-            _errorHandling.As<HandlerChain>().MaximumAttempts = attempts;
+            _errorHandling.As<HandlerChain>().Retries.MaximumAttempts = attempts;
         }
     }
 
@@ -137,13 +138,13 @@ namespace StorytellerSpecs.Fixtures
         public IGrammar IfTheGlobalHandlingIs()
         {
             return Embed<GlobalErrorHandlingFixture>("If the global error handling is")
-                .Before(c => c.State.Store<IHasErrorHandlers>(_graph));
+                .Before(c => c.State.Store<IHasRetryPolicies>(_graph));
         }
 
         public IGrammar IfTheChainHandlingIs()
         {
             return Embed<ChainErrorHandlingFixture>("If the chain specific error handling is")
-                .Before(c => c.State.Store<IHasErrorHandlers>(_chain));
+                .Before(c => c.State.Store<IHasRetryPolicies>(_chain));
         }
 
         [Hidden]

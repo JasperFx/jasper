@@ -11,6 +11,7 @@ using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
+using Polly;
 
 namespace Jasper.Testing.Messaging.Samples
 {
@@ -27,9 +28,9 @@ namespace Jasper.Testing.Messaging.Samples
 
             foreach (var chain in matchingChains)
             {
-                chain.MaximumAttempts = 2;
-                chain.OnException<SqlException>()
-                    .Requeue();
+                chain.Retries.MaximumAttempts = 2;
+                chain.Retries.Add(x => x.Handle<SqlException>()
+                    .Requeue());
             }
         }
     }
@@ -50,19 +51,14 @@ namespace Jasper.Testing.Messaging.Samples
     {
         public GlobalRetryApp()
         {
-            Handlers
-                .OnException<TimeoutException>()
-                .RetryLater(5.Seconds());
+            Handlers.Retries.Add(x => x.Handle<TimeoutException>().Reschedule(5.Seconds()));
 
-            Handlers
-                .OnException<SecurityException>()
-                .MoveToErrorQueue();
+            Handlers.Retries.Add(x => x.Handle<SecurityException>().MoveToErrorQueue());
 
             // You can also apply an additional filter on the
             // exception type for finer grained policies
-            Handlers
-                .OnException<SocketException>(ex => ex.Message.Contains("not responding"))
-                .RetryLater(5.Seconds());
+            Handlers.Retries.Add(x => x.Handle<SocketException>(ex => ex.Message.Contains("not responding"))
+                .Reschedule(5.Seconds()));
         }
     }
     // ENDSAMPLE
@@ -73,10 +69,10 @@ namespace Jasper.Testing.Messaging.Samples
     {
         public static void Configure(HandlerChain chain)
         {
-            chain.OnException<IOException>()
-                .Requeue();
+            chain.Retries.Add(x => x.Handle<IOException>()
+                .Requeue());
 
-            chain.MaximumAttempts = 3;
+            chain.Retries.MaximumAttempts = 3;
         }
 
 
@@ -106,7 +102,7 @@ namespace Jasper.Testing.Messaging.Samples
     // SAMPLE: configuring-error-handling-with-attributes
     public class AttributeUsingHandler
     {
-        [RetryLaterOn(typeof(IOException), 5)]
+        [RescheduleLater(typeof(IOException), 5)]
         [RetryOn(typeof(SqlException))]
         [RequeueOn(typeof(InvalidOperationException))]
         [MoveToErrorQueueOn(typeof(DivideByZeroException))]
@@ -127,9 +123,9 @@ namespace Jasper.Testing.Messaging.Samples
     {
         public FilteredApp()
         {
-            Handlers.OnException<SqlException>().Requeue();
+            Handlers.Retries.Add(x => x.Handle<SqlException>().Requeue());
 
-            Handlers.OnException(typeof(InvalidOperationException)).Retry();
+            Handlers.Retries.Add(x => x.Handle<InvalidOperationException>().Retry());
         }
     }
     // ENDSAMPLE
@@ -139,34 +135,27 @@ namespace Jasper.Testing.Messaging.Samples
     {
         public ContinuationTypes()
         {
+            var policy = Policy<IContinuation>.Handle<SqlException>()
+                .Retry(3);
+
             // Try to execute the message again without going
             // back through the queue
-            Handlers.OnException<SqlException>().Retry();
+            Handlers.Retries.Add(x => x.Handle<SqlException>().Retry());
 
             // Retry the message again, but wait for the specified time
-            Handlers.OnException<SqlException>().RetryLater(3.Seconds());
+            Handlers.Retries.Add(x => x.Handle<SqlException>().Reschedule(3.Seconds()));
 
             // Put the message back into the queue where it will be
             // attempted again
-            Handlers.OnException<SqlException>().Requeue();
+            Handlers.Retries.Add(x => x.Handle<SqlException>().Requeue());
 
             // Move the message into the error queue for this transport
-            Handlers.OnException<SqlException>().MoveToErrorQueue();
+            Handlers.Retries.Add(x => x.Handle<SqlException>().MoveToErrorQueue());
         }
     }
     // ENDSAMPLE
 
 
-    // SAMPLE: RespondWithMessages
-    public class RespondWithMessages : JasperRegistry
-    {
-        public RespondWithMessages()
-        {
-            Handlers.OnException<SecurityException>()
-                .RespondWithMessage((ex, envelope) => { return new FailedOnSecurity(ex.Message); });
-        }
-    }
-    // ENDSAMPLE
 
     public class FailedOnSecurity
     {
@@ -176,28 +165,7 @@ namespace Jasper.Testing.Messaging.Samples
     }
 
 
-    // SAMPLE: CustomErrorHandler
-    public class CustomErrorHandler : IErrorHandler
-    {
-        public IContinuation DetermineContinuation(Envelope envelope, Exception ex)
-        {
-            if (ex.Message.Contains("timed out")) return new ScheduledRetryContinuation(3.Seconds());
 
-            // If the handler doesn't apply to the exception,
-            // return null to tell Jasper to try the next error handler (if any)
-            return null;
-        }
-    }
-    // ENDSAMPLE
 
-    // SAMPLE: Registering-CustomErrorHandler
-    public class CustomErrorHandlingApp : JasperRegistry
-    {
-        public CustomErrorHandlingApp()
-        {
-            Handlers.HandleErrorsWith<CustomErrorHandler>();
-        }
-    }
 
-    // ENDSAMPLE
 }

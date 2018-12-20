@@ -7,6 +7,8 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Util;
+using Polly;
 
 namespace Jasper.Messaging.Runtime.Invocation
 {
@@ -24,6 +26,10 @@ namespace Jasper.Messaging.Runtime.Invocation
         private readonly IMissingHandler[] _missingHandlers;
         private readonly IMessagingRoot _root;
         private readonly MessagingSerializationGraph _serializer;
+
+        private ImHashMap<Type, Func<IMessageContext, Task<IContinuation>>> _executors =
+            ImHashMap<Type, Func<IMessageContext, Task<IContinuation>>>.Empty;
+
 
         public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IMessageLogger logger,
             IEnumerable<IMissingHandler> missingHandlers, IMessagingRoot root)
@@ -144,8 +150,18 @@ namespace Jasper.Messaging.Runtime.Invocation
         {
             Logger.ExecutionStarted(envelope);
 
-            var handler = _graph.HandlerFor(envelope.Message.GetType());
-            if (handler == null)
+            Func<IMessageContext, Task<IContinuation>> executor = null;
+            try
+            {
+                executor = ExecutorFor(envelope.Message.GetType());
+            }
+            catch (Exception e)
+            {
+                Logger.LogException(e);
+                throw;
+            }
+
+            if (executor == null)
             {
                 await processNoHandlerLogic(envelope, context);
                 envelope.MarkCompletion(false);
@@ -157,39 +173,13 @@ namespace Jasper.Messaging.Runtime.Invocation
             }
             else
             {
-                var continuation = await executeChain(handler, context).ConfigureAwait(false);
+                var continuation = await executor(context);
+                Logger.ExecutionFinished(envelope);
 
-                await continuation.Execute(context, DateTime.UtcNow).ConfigureAwait(false);
+                await continuation.Execute(context, DateTime.UtcNow);
             }
         }
 
-        private async Task<IContinuation> executeChain(MessageHandler handler, IMessageContext context)
-        {
-            try
-            {
-                context.Envelope.Attempts++;
-
-                await handler.Handle(context).ConfigureAwait(false);
-
-                Logger.ExecutionFinished(context.Envelope);
-
-                context.Envelope.MarkCompletion(true);
-
-                return MessageSucceededContinuation.Instance;
-            }
-            catch (Exception e)
-            {
-                context.Envelope.MarkCompletion(false);
-                Logger.LogException(e, context.Envelope.Id, "Failure during message processing execution");
-                Logger.ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
-
-                if (context.Envelope.Attempts >= handler.Chain.MaximumAttempts) return new MoveToErrorQueue(e);
-
-                return handler.Chain.DetermineContinuation(context.Envelope, e)
-                       ?? _graph.DetermineContinuation(context.Envelope, e)
-                       ?? new MoveToErrorQueue(e);
-            }
-        }
 
         private async Task processNoHandlerLogic(Envelope envelope, IMessageContext context)
         {
@@ -208,6 +198,99 @@ namespace Jasper.Messaging.Runtime.Invocation
             if (envelope.AckRequested) await context.Advanced.SendAcknowledgement();
 
             await envelope.Callback.MarkComplete();
+        }
+
+        public Func<IMessageContext, Task<IContinuation>> ExecutorFor(Type messageType)
+        {
+            if (_executors.TryFind(messageType, out var executor)) return executor;
+
+            var handler = _graph.HandlerFor(messageType);
+
+            // Memoize the null
+            if (handler == null)
+            {
+                _executors = _executors.AddOrUpdate(messageType, null);
+                return null;
+            }
+
+            var policy = handler.Chain.Retries.BuildPolicy(_graph.Retries);
+
+            if (policy == null)
+            {
+                executor = async messageContext =>
+                {
+                    messageContext.Envelope.Attempts++;
+
+                    try
+                    {
+                        try
+                        {
+                            await handler.Handle(messageContext);
+                        }
+                        catch (Exception e)
+                        {
+                            messageContext.MarkFailure(e);
+                            return new MoveToErrorQueue(e);
+                        }
+
+                        messageContext.Envelope.MarkCompletion(true);
+
+                        return MessageSucceededContinuation.Instance;
+                    }
+                    catch (Exception e)
+                    {
+                        messageContext.MarkFailure(e);
+                        return new MoveToErrorQueue(e);
+                    }
+                };
+            }
+            else
+            {
+                executor = async messageContext =>
+                {
+                    messageContext.Envelope.Attempts++;
+                    messageContext.Envelope.StartTiming();
+
+                    try
+                    {
+                        var pollyContext = new Context();
+                        pollyContext.Store(messageContext);
+
+
+
+                        return await policy.ExecuteAsync(async c =>
+                        {
+                            var context = c.MessageContext();
+                            try
+                            {
+                                await handler.Handle(context);
+                            }
+                            catch (Exception e)
+                            {
+                                messageContext.MarkFailure(e);
+                                throw;
+                            }
+
+                            messageContext.Envelope.MarkCompletion(true);
+
+                            return MessageSucceededContinuation.Instance;
+                        }, pollyContext);
+                    }
+                    catch (Exception e)
+                    {
+                        messageContext.MarkFailure(e);
+                        return new MoveToErrorQueue(e);
+                    }
+                };
+            }
+
+
+
+
+
+            _executors = _executors.AddOrUpdate(messageType, executor);
+
+            return executor;
         }
     }
 }

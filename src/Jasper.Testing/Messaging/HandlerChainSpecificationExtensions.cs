@@ -45,24 +45,6 @@ namespace Jasper.Testing.Messaging
             chain.Middleware.OfType<T>().Any().ShouldBeTrue();
         }
 
-        public static void ShouldHandleExceptionWith<TEx, TContinuation>(this HandlerChain chain)
-            where TEx : Exception
-            where TContinuation : IContinuation
-        {
-            chain.ErrorHandlers.OfType<ErrorHandler>()
-                .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<TEx>)
-                .SelectMany(x => x.Sources)
-                .OfType<ContinuationSource>()
-                .Any(x => x.Continuation is TContinuation).ShouldBeTrue();
-        }
 
-        public static void ShouldMoveToErrorQueue<T>(this HandlerChain chain) where T : Exception
-        {
-            chain.ErrorHandlers.OfType<ErrorHandler>()
-                .Where(x => x.Conditions.Count() == 1 && x.Conditions.Single() is ExceptionTypeMatch<T>)
-                .SelectMany(x => x.Sources)
-                .OfType<MoveToErrorQueueHandler<T>>()
-                .Any().ShouldBeTrue();
-        }
     }
 }

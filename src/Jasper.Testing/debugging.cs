@@ -1,7 +1,11 @@
-﻿using Marten.Util;
+﻿using System.Data.SqlClient;
+using Jasper.Messaging.ErrorHandling;
+using Jasper.Messaging.Runtime.Invocation;
+using Marten.Util;
 using Xunit;
 using Xunit.Abstractions;
 using LamarCompiler;
+using Polly;
 
 namespace Jasper.Testing
 {
@@ -29,6 +33,14 @@ namespace Jasper.Testing
                     _output.WriteLine(
                         $"{singleton.ServiceType.GetTypeFullName()} --> {singleton.ImplementationType.FullNameInCode()} --> {singleton.Instance.GetType().Name}");
             }
+        }
+
+        [Fact]
+        public void playing_with_polly()
+        {
+            var builder = Policy<IContinuation>.Handle<SqlException>();
+
+
         }
 
     }

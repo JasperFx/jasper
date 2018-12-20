@@ -8,22 +8,6 @@
 
 [ErrorHandling]
 
-First, what about the case where the maximum attempts is capped at 1?
-
-|> IfTheChainHandlingIs
-    [ChainErrorHandling]
-    |> MaximumAttempts attempts=1
-    |> RequeueOn errorType=DivideByZeroException
-
-|> MessageAttempts
-    [Rows]
-    |> MessageAttempts-row Attempt=1, errorType=DivideByZeroException
-
-
-Does not matter that it's configured to retry the message on that exception because the attempts are capped
-
-|> MessageResult attempt=1, result=MovedToErrorQueue
-
 Now, move the maximum attempts up
 
 |> IfTheChainHandlingIs

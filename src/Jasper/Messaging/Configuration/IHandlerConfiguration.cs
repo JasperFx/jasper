@@ -9,14 +9,8 @@ using Jasper.Messaging.WorkerQueues;
 
 namespace Jasper.Messaging.Configuration
 {
-    public interface IHandlerConfiguration : IHasErrorHandlers
+    public interface IHandlerConfiguration : IHasRetryPolicies
     {
-        /// <summary>
-        ///     The default number of attempts to try to process a received message
-        ///     if there is no explicit configuration at the chain level. The default is 1
-        /// </summary>
-        int DefaultMaximumAttempts { get; set; }
-
         /// <summary>
         ///     Configure the default local worker queue
         /// </summary>
@@ -97,22 +91,18 @@ namespace Jasper.Messaging.Configuration
         }
 
         /// <summary>
-        ///     The default number of attempts to try to process a received message
-        ///     if there is no explicit configuration at the chain level. The default is 1
+        /// Polly policies for how Jasper should deal with message failures
         /// </summary>
-        public int DefaultMaximumAttempts { get; set; } = 1;
-
-
-        public IList<IErrorHandler> ErrorHandlers { get; } = new List<IErrorHandler>();
+        public RetryPolicyCollection Retries
+        {
+            get => _graph.Retries;
+            set => _graph.Retries = value;
+        }
 
 
         internal void ApplyPolicies(HandlerGraph graph, JasperGenerationRules rules)
         {
             foreach (var policy in _globals) policy.Apply(graph, rules);
-
-            graph.ErrorHandlers.AddRange(this.As<IHasErrorHandlers>().ErrorHandlers);
-
-            foreach (var chain in graph.Chains) chain.MaximumAttempts = DefaultMaximumAttempts;
         }
     }
 }
