@@ -21,12 +21,12 @@ namespace Jasper.Testing.Messaging.Transports.Sending
 
             theBatch = new OutgoingMessageBatch(theSender.Destination, new[]
             {
-                Envelope.ForPing(),
-                Envelope.ForPing(),
-                Envelope.ForPing(),
-                Envelope.ForPing(),
-                Envelope.ForPing(),
-                Envelope.ForPing()
+                Envelope.ForPing(TransportConstants.LoopbackUri),
+                Envelope.ForPing(TransportConstants.LoopbackUri),
+                Envelope.ForPing(TransportConstants.LoopbackUri),
+                Envelope.ForPing(TransportConstants.LoopbackUri),
+                Envelope.ForPing(TransportConstants.LoopbackUri),
+                Envelope.ForPing(TransportConstants.LoopbackUri)
             });
 
             theBatch.Messages.Each(x => x.Destination = theBatch.Destination);

@@ -1,46 +1,53 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
-using RabbitMQ.Client;
+using Jasper.Util;
+using Microsoft.Azure.Amqp.Framing;
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Core;
 
-namespace Jasper.RabbitMQ
+namespace Jasper.AzureServiceBus
 {
-    public class RabbitMqSender : ISender
+    public class AzureServiceBusSender : ISender
     {
-        private readonly PublicationAddress _address;
-        private readonly RabbitMqAgent _agent;
-        private readonly CancellationToken _cancellation;
-        private readonly ITransportLogger _logger;
         private readonly IEnvelopeMapper _mapper;
-        private ISenderCallback _callback;
+        private readonly ITransportLogger _logger;
+        private readonly CancellationToken _cancellation;
+        private IMessageSender _sender;
         private ActionBlock<Envelope> _sending;
         private ActionBlock<Envelope> _serialization;
+        private ISenderCallback _callback;
+        private readonly AzureServiceBusSettings _settings;
+        private readonly bool _isDurable;
 
-        public RabbitMqSender(ITransportLogger logger, RabbitMqAgent agent,
-            CancellationToken cancellation)
+        public AzureServiceBusSender(Uri destination, IEnvelopeMapper mapper, AzureServiceBusSettings settings, ITransportLogger logger, CancellationToken cancellation)
         {
-            _mapper = agent.EnvelopeMapping;
+            _mapper = mapper;
             _logger = logger;
-            _agent = agent;
             _cancellation = cancellation;
-            Destination = agent.Uri;
+            Destination = destination;
+            _settings = settings;
 
-            _address = agent.PublicationAddress();
+            _isDurable = destination.IsDurable();
         }
 
         public void Dispose()
         {
-            // Nothing, assuming that the agent owns the channel
+            _sender.CloseAsync().GetAwaiter().GetResult();
         }
+
+        public Uri Destination { get; }
+        public int QueuedCount => _sending.InputCount;
+        public bool Latched { get; private set; }
+
 
         public void Start(ISenderCallback callback)
         {
-            _agent.Start();
-
+            _sender = _settings.BuildSender(Destination);
             _callback = callback;
 
             _serialization = new ActionBlock<Envelope>(e =>
@@ -69,16 +76,11 @@ namespace Jasper.RabbitMQ
             return Task.CompletedTask;
         }
 
-        public Uri Destination { get; }
-        public int QueuedCount => _sending.InputCount;
-
-        public bool Latched { get; private set; }
-
         public Task LatchAndDrain()
         {
             Latched = true;
 
-            _agent.Stop();
+            _sender.CloseAsync().GetAwaiter().GetResult();
 
             _sending.Complete();
             _serialization.Complete();
@@ -99,31 +101,17 @@ namespace Jasper.RabbitMQ
 
         public Task Ping()
         {
-            return _agent.Ping(channel =>
-            {
-                var envelope = Envelope.ForPing(Destination);
-
-                var props = _agent.Channel.CreateBasicProperties();
-
-                _mapper.WriteFromEnvelope(envelope, props);
-                props.AppId = "Jasper";
-
-                channel.BasicPublish(_address, props, envelope.Data);
-            });
+            var envelope = Envelope.ForPing(Destination);
+            var message = _mapper.WriteFromEnvelope(envelope);
+            return _sender.SendAsync(message);
         }
 
         private async Task send(Envelope envelope)
         {
-            if (_agent.State == AgentState.Disconnected)
-                throw new InvalidOperationException($"The RabbitMQ agent for {_address} is disconnected");
-
             try
             {
-                var props = _agent.Channel.CreateBasicProperties();
-                props.Persistent = _agent.IsDurable;
-
-                _mapper.WriteFromEnvelope(envelope, props);
-                _agent.Channel.BasicPublish(_address, props, envelope.Data);
+                var message = _mapper.WriteFromEnvelope(envelope);
+                await _sender.SendAsync(message);
 
                 await _callback.Successful(envelope);
             }

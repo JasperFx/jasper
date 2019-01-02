@@ -38,7 +38,7 @@ namespace Jasper.Testing.Messaging.Runtime
         [Fact]
         public void envelope_for_ping()
         {
-            var envelope = Envelope.ForPing();
+            var envelope = Envelope.ForPing(TransportConstants.LoopbackUri);
             envelope.MessageType.ShouldBe(TransportConstants.PingMessageType);
             envelope.Data.ShouldNotBeNull();
         }

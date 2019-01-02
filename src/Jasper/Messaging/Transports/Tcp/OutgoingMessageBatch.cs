@@ -33,8 +33,7 @@ namespace Jasper.Messaging.Transports.Tcp
 
         public static OutgoingMessageBatch ForPing(Uri destination)
         {
-            var envelope = Envelope.ForPing();
-            envelope.Destination = destination;
+            var envelope = Envelope.ForPing(destination);
 
             return new OutgoingMessageBatch(destination, new[] {envelope})
             {

@@ -332,13 +332,14 @@ namespace Jasper.Messaging.Runtime
             return MessageType == TransportConstants.PingMessageType;
         }
 
-        public static Envelope ForPing()
+        public static Envelope ForPing(Uri destination)
         {
             return new Envelope
             {
                 MessageType = TransportConstants.PingMessageType,
                 Data = new byte[] {1, 2, 3, 4},
-                ContentType = "jasper/ping"
+                ContentType = "jasper/ping",
+                Destination = destination
             };
         }
 
