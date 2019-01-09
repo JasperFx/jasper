@@ -6,8 +6,9 @@ namespace benchmarks
     {
         private static void Main(string[] args)
         {
-            BenchmarkRunner.Run<InvokeBenchmark>();
-            BenchmarkRunner.Run<HttpPipelineBenchmark>();
+            BenchmarkRunner.Run<RoutingBenchmark>();
+            //BenchmarkRunner.Run<InvokeBenchmark>();
+            //BenchmarkRunner.Run<HttpPipelineBenchmark>();
             //BenchmarkRunner.Run<PingPongBenchmark>();
         }
     }
