@@ -20,8 +20,6 @@ namespace Jasper.Http.Model
                 _variables.Add(property.PropertyType, variable);
             }
 
-            var segments = new SegmentsFrame();
-            _variables.Add(typeof(string[]), segments.Segments);
         }
 
         public bool Matches(Type type)

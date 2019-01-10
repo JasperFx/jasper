@@ -48,10 +48,5 @@ namespace Jasper.Testing.Http.Model
             matchesAndCanCreate<HttpResponse>();
         }
 
-        [Fact]
-        public void can_find_variable_for_string_array_segments()
-        {
-            matchesAndCanCreate<string[]>();
-        }
     }
 }

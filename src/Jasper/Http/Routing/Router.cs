@@ -82,8 +82,6 @@ namespace Jasper.Http.Routing
             {
                 context.Response.StatusCode = 200;
 
-                context.SetSegments(segments);
-
                 try
                 {
                     if (route.Handler == null)
@@ -92,7 +90,7 @@ namespace Jasper.Http.Routing
                             if (route.Handler == null) route.Handler = HandlerBuilder.Build(route.Chain);
                         }
 
-                    await route.Handler.Handle(context);
+                    await route.Handler.Handle(context, segments);
                 }
                 catch (Exception e)
                 {

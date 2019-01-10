@@ -16,7 +16,7 @@ namespace Jasper.Http.Model
         public IMessageSerializer Writer { get; set; }
         public ModelReader ConnegReader { get; set; }
         public ModelWriter ConnegWriter { get; set; }
-        public abstract Task Handle(HttpContext httpContext);
+        public abstract Task Handle(HttpContext httpContext, string[] segments);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteText(string text, HttpResponse response)

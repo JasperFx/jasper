@@ -24,7 +24,6 @@ namespace Jasper.Http.Routing
                 if (path == string.Empty) await InvokeHome(context);
 
                 var segments = path.Split('/');
-                context.SetSegments(segments);
 
                 await Execute(context, segments);
             }
