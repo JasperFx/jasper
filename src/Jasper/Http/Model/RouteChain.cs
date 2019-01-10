@@ -27,10 +27,10 @@ namespace Jasper.Http.Model
 
         private bool _hasAppliedConfigureAndAttributes;
 
-        public RouteChain(MethodCall action)
+        public RouteChain(MethodCall action, Route route)
         {
             Action = action;
-            Route = RouteBuilder.Build(action.HandlerType, action.Method);
+            Route = route;
             TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}_{action.Method.Name}";
 
             InputType = RouteBuilder.DetermineInputType(action.Method);
@@ -39,16 +39,9 @@ namespace Jasper.Http.Model
             Route.Chain = this;
         }
 
-        public RouteChain(MethodCall action, string url)
+        public RouteChain(MethodCall action) : this(action, RouteBuilder.Build(action.HandlerType, action.Method))
         {
-            Action = action;
-            Route = RouteBuilder.Build(url, action.HandlerType, action.Method);
-            TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}_{action.Method.Name}";
 
-            InputType = RouteBuilder.DetermineInputType(action.Method);
-            ResourceType = action.ReturnVariable?.VariableType;
-
-            Route.Chain = this;
         }
 
         public string SourceCode => _generatedType.SourceCode;

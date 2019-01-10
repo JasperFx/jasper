@@ -85,14 +85,6 @@ namespace Jasper.Testing.Http.Routing
         }
 
 
-        [Fact]
-        public void retrieve_a_url_for_a_model_that_has_route_inputs()
-        {
-            urls.UrlFor(new ModelWithInputs
-            {
-                Name = "Jeremy"
-            }).ShouldBe("/find/Jeremy");
-        }
 
         [Fact]
         public void retrieve_by_controller_action_even_if_it_has_an_input_model()
@@ -123,14 +115,6 @@ namespace Jasper.Testing.Http.Routing
             urls.UrlFor(model).ShouldBe("/qsandroute/test/23?Param=42");
         }
         */
-
-        [Fact]
-        public void retrieve_url_by_urn_name_with_parameters()
-        {
-            var dict = new Dictionary<string, object> {{"Name", "Max"}};
-
-            urls.UrlFor("find_by_name", dict).ShouldBe("/find/Max");
-        }
 
 
         [Fact]
@@ -185,7 +169,7 @@ namespace Jasper.Testing.Http.Routing
         {
         }
 
-        public void B(Model7 input)
+        public void get_B(Model7 input)
         {
         }
 
@@ -202,12 +186,12 @@ namespace Jasper.Testing.Http.Routing
         {
         }
 
-        public void M5(Model3 input)
+        public void get_M5(Model3 input)
         {
         }
 
 
-        public string Default(DefaultModel model)
+        public string get_default(DefaultModel model)
         {
             return "welcome to the default view";
         }
@@ -215,15 +199,15 @@ namespace Jasper.Testing.Http.Routing
 
     public class TwoController
     {
-        public void M1()
+        public void get_m1()
         {
         }
 
-        public void M2()
+        public void get_m2()
         {
         }
 
-        public void M3()
+        public void get_m3()
         {
         }
 
@@ -238,7 +222,7 @@ namespace Jasper.Testing.Http.Routing
 
     public class OnlyOneActionController
     {
-        public void Go(Model8 input)
+        public void get_go(Model8 input)
         {
         }
     }

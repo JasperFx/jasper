@@ -70,31 +70,9 @@ namespace Jasper.Http.Model
             return _chains.GetEnumerator();
         }
 
-        public RouteChain AddRoute(Type handlerType, MethodInfo method, string url = null)
+        public RouteChain AddRoute(MethodCall methodCall)
         {
-            var methodCall = new MethodCall(handlerType, method);
-            return AddRoute(methodCall, url);
-        }
-
-        public RouteChain AddRoute<T>(string methodName, string url = null)
-        {
-            var method = typeof(T).GetMethod(methodName,
-                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-            if (method == null)
-                throw new ArgumentOutOfRangeException(nameof(method), "Could not find the designated method");
-
-            return AddRoute(typeof(T), method, url);
-        }
-
-        public RouteChain AddRoute<T>(Expression<Action<T>> expression, string url = null)
-        {
-            var method = ReflectionHelper.GetMethod(expression);
-            return AddRoute(typeof(T), method, url);
-        }
-
-        public RouteChain AddRoute(MethodCall methodCall, string url = null)
-        {
-            var route = url.IsNotEmpty() ? new RouteChain(methodCall, url) : new RouteChain(methodCall);
+            var route = new RouteChain(methodCall);
             _chains.Add(route);
 
             return route;

@@ -10,9 +10,9 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void assign_the_handler_type_and_method()
         {
-            var route = RouteBuilder.Build<SomeEndpoint>(x => x.Go());
+            var route = RouteBuilder.Build<SomeEndpoint>(x => x.post_go());
             route.HandlerType.ShouldBe(typeof(SomeEndpoint));
-            route.Method.Name.ShouldBe("Go");
+            route.Method.Name.ShouldBe("post_go");
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void picks_up_custom_route_name_from_attribute_if_any()
         {
-            var route = RouteBuilder.Build<SomeEndpoint>(x => x.Named());
+            var route = RouteBuilder.Build<SomeEndpoint>(x => x.get_named());
             route.Name.ShouldBe("Finn");
         }
 
@@ -43,18 +43,13 @@ namespace Jasper.Testing.Http.Routing
             route.InputType.ShouldBe(typeof(Message1));
         }
 
-        [Fact]
-        public void use_get_as_the_verb_by_default()
-        {
-            var route = RouteBuilder.Build<SomeEndpoint>(x => x.Go());
-            route.HttpMethod.ShouldBe(HttpVerbs.GET);
-        }
+
     }
 
     [JasperIgnore]
     public class SomeEndpoint
     {
-        public void Go()
+        public void post_go()
         {
         }
 
@@ -67,7 +62,7 @@ namespace Jasper.Testing.Http.Routing
         }
 
         [RouteName("Finn")]
-        public void Named()
+        public void get_named()
         {
             throw new NotImplementedException();
         }

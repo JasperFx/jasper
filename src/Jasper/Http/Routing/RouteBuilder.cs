@@ -7,6 +7,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Http.Routing.Codegen;
 using Jasper.Util;
+using LamarCompiler;
 
 namespace Jasper.Http.Routing
 {
@@ -16,18 +17,8 @@ namespace Jasper.Http.Routing
         public const string Index = "Index";
         public static readonly string[] SpecialClassNames = {"HomeEndpoint", "ServiceEndpoint"};
         public static readonly IList<string> InputTypeNames = new List<string> {"input", "query", "message", "body"};
-        public static readonly Dictionary<string, string> SpecialMethodNames;
 
-        static RouteBuilder()
-        {
-            SpecialMethodNames = new Dictionary<string, string>
-            {
-                {Index, "GET"}
-            };
-
-            foreach (var httpVerb in HttpVerbs.All)
-                SpecialMethodNames.Add(httpVerb.ToLower().Capitalize(), httpVerb.ToUpper());
-        }
+        public static IList<IPatternRule> PatternRules = new List<IPatternRule>{new HomeEndpointRule(), new DefaultRoutingRule()};
 
         public static Route Build<T>(Expression<Action<T>> expression)
         {
@@ -37,50 +28,31 @@ namespace Jasper.Http.Routing
 
         public static Route Build(Type handlerType, MethodInfo method)
         {
-            return Build(method.Name, handlerType, method);
+            var pattern = PatternRules.FirstValue(x => x.DetermineRoute(handlerType, method));
+            if (pattern == null) throw new InvalidOperationException($"Jasper does not know how to make an Http route from the method {handlerType.NameInCode()}.{method.Name}()");
+
+            return Build(pattern, handlerType, method);
         }
 
-        public static Route Build(string pattern, Type handlerType, MethodInfo method)
+        public static Route Build(RoutePattern pattern, Type handlerType, MethodInfo method)
         {
-            pattern = pattern.Replace("___", "-").Replace("__", "_@");
-
-            var parts = pattern.Split('_')
-                .Select(x => x.Replace("@", "_")).ToArray();
-
-
-            var verb = HttpVerbs.All.FirstOrDefault(x => x.EqualsIgnoreCase(parts[0]));
-            if (verb.IsNotEmpty())
-                parts = parts.Skip(1).ToArray();
-            else
-                verb = HttpVerbs.GET;
-
-            var segments = parts
-                .Select((x, position) => new Segment(x.ToLowerInvariant(), position))
-                .OfType<ISegment>()
-                .ToArray();
-
-            if (SpecialClassNames.Contains(handlerType.Name) && SpecialMethodNames.ContainsKey(method.Name))
-            {
-                pattern = "/";
-                verb = SpecialMethodNames[method.Name];
-                segments = new ISegment[0];
-            }
 
 
             var inputType = DetermineInputType(method);
 
             var hasPrimitives = method.GetParameters().Any(x =>
                 x.ParameterType == typeof(string) || RoutingFrames.CanParse(x.ParameterType));
+
             if (hasPrimitives)
             {
-                for (var i = 0; i < segments.Length; i++)
+                for (var i = 0; i < pattern.Segments.Length; i++)
                 {
-                    var current = parts[i];
+                    var current = pattern.Segments[i].SegmentPath;
                     var parameter = method.GetParameters().FirstOrDefault(x => x.Name == current);
                     if (parameter != null)
                     {
                         var argument = new RouteArgument(parameter, i);
-                        segments[i] = argument;
+                        pattern.Segments[i] = argument;
                     }
                 }
             }
@@ -88,14 +60,14 @@ namespace Jasper.Http.Routing
             {
                 var members = inputType.GetProperties().OfType<MemberInfo>().Concat(inputType.GetFields()).ToArray();
 
-                for (var i = 0; i < segments.Length; i++)
+                for (var i = 0; i < pattern.Segments.Length; i++)
                 {
-                    var current = parts[i];
+                    var current = pattern.Segments[i].SegmentPath;
                     var member = members.FirstOrDefault(x => x.Name == current);
                     if (member != null)
                     {
                         var argument = new RouteArgument(member, i);
-                        segments[i] = argument;
+                        pattern.Segments[i] = argument;
                     }
                 }
             }
@@ -105,9 +77,10 @@ namespace Jasper.Http.Routing
                 throw new InvalidOperationException(
                     $"An HTTP action method can only take in either '{Route.PathSegments}' or '{Route.RelativePath}', but not both. Error with action {handlerType.FullName}.{method.Name}()");
 
+            var segments = pattern.Segments;
             if (spreads.Length == 1) segments = segments.Concat(new ISegment[] {new Spread(segments.Length)}).ToArray();
 
-            var route = new Route(segments, verb)
+            var route = new Route(segments, pattern.Method)
             {
                 HandlerType = handlerType,
                 Method = method,

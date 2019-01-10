@@ -13,7 +13,6 @@ using Newtonsoft.Json;
 
 namespace Jasper.Http
 {
-    // TODO -- this should be "loadable" from JSON too
     public partial class HttpSettings
     {
         internal readonly RouteGraph Routes = new RouteGraph();
@@ -71,5 +70,11 @@ namespace Jasper.Http
             if (runtime.HttpAddresses == null) return;
             foreach (var url in runtime.HttpAddresses) writer.WriteLine($"Now listening on: {url}");
         }
+    }
+
+    public interface IRoutePatternStrategy
+    {
+        bool Matches(MethodInfo method);
+
     }
 }
