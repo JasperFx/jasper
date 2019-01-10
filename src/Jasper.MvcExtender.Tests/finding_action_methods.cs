@@ -127,6 +127,15 @@ namespace Jasper.MvcExtender.Tests
             chain.Route.Pattern.ShouldBe("api/todo");
         }
 
+        [Fact]
+        public void take_advantage_of_their_route_rules_empty_template()
+        {
+            var chain = _app.Routes.ChainForAction<TodoController>(x => x.Post());
+            chain.ShouldNotBeNull();
+            chain.Route.HttpMethod.ShouldBe("POST");
+            chain.Route.Pattern.ShouldBe("api/todo");
+        }
+
     }
 
     public class MyController1 : ControllerBase
@@ -170,6 +179,13 @@ namespace Jasper.MvcExtender.Tests
         public string GetList()
         {
             return "ok";
+        }
+
+
+        [HttpPost]
+        public int Post()
+        {
+            return 200;
         }
     }
 }
