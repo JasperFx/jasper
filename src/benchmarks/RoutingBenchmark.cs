@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Alba;
 using benchmarks.Routes;
+using Baseline;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using Jasper;
@@ -29,6 +30,7 @@ namespace benchmarks
 
             _routes = graph
                 .Select(x => x.Action.HandlerType)
+                .Where(x => x.IsConcreteWithDefaultCtor())
                 .Distinct()
                 .Select(Activator.CreateInstance)
                 .OfType<IHasUrls>()
@@ -60,6 +62,11 @@ namespace benchmarks
         {
             Method = method;
             Url = url;
+
+            if (!Url.StartsWith("/"))
+            {
+                Url = "/" + url;
+            }
         }
 
         public Task Run(SystemUnderTest system)
@@ -78,11 +85,11 @@ namespace benchmarks
                 case "DELETE":
                     return system.Scenario(x => x.Delete.Url(Url));
 
-                case "HEAd":
+                case "HEAD":
                     return system.Scenario(x => x.Head.Url(Url));
             }
 
-            throw new Exception("Bad request!");
+            throw new Exception("Bad request!, the method is " + Method);
         }
     }
 }
