@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
@@ -17,6 +18,7 @@ namespace Jasper.Http.Model
         public ModelWriter ConnegWriter { get; set; }
         public abstract Task Handle(HttpContext httpContext);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteText(string text, HttpResponse response)
         {
             response.Headers["content-type"] = "text/plain";

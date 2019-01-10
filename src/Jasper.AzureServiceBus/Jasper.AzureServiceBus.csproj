@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Jasper\Jasper.csproj" />
+      <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.2.1" />
+    </ItemGroup>
+
+</Project>
