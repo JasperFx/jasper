@@ -20,6 +20,8 @@ namespace Jasper.MvcExtender
             registry.HttpRoutes.IncludeTypes(x => x.CanBeCastTo<ControllerBase>());
             registry.HttpRoutes.IncludeMethods(x => x.HasAttribute<HttpMethodAttribute>());
 
+            registry.HttpRoutes.GlobalPolicy<ControllerUsagePolicy>();
+
             RouteBuilder.PatternRules.Insert(0, new HttpAttributePatternRule());
         }
     }

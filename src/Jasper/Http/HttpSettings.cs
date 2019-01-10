@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,7 @@ using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Lamar;
 using Newtonsoft.Json;
+using Polly;
 
 namespace Jasper.Http
 {
@@ -17,6 +19,8 @@ namespace Jasper.Http
     {
         internal readonly RouteGraph Routes = new RouteGraph();
         private Task _findActions;
+
+        private readonly IList<IRoutePolicy> _policies = new List<IRoutePolicy>();
 
         public HttpSettings()
         {
@@ -37,6 +41,24 @@ namespace Jasper.Http
 
 
             IncludeClassesSuffixedWithEndpoint();
+        }
+
+        /// <summary>
+        ///     Applies a handler policy to all known message handlers
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void GlobalPolicy<T>() where T : IRoutePolicy, new()
+        {
+            GlobalPolicy(new T());
+        }
+
+        /// <summary>
+        ///     Applies a handler policy to all known message handlers
+        /// </summary>
+        /// <param name="policy"></param>
+        public void GlobalPolicy(IRoutePolicy policy)
+        {
+            _policies.Add(policy);
         }
 
         /// <summary>
@@ -61,7 +83,16 @@ namespace Jasper.Http
         {
             if (!Enabled) return Task.CompletedTask;
 
-            return _findActions.ContinueWith(t => { Routes.BuildRoutingTree(generation, container); });
+            return _findActions.ContinueWith(t =>
+            {
+                foreach (var policy in _policies)
+                {
+                    policy.Apply(Routes, generation);
+                }
+
+
+                Routes.BuildRoutingTree(generation, container);
+            });
         }
 
 

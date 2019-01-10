@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Alba;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using Xunit.Abstractions;
@@ -8,13 +9,25 @@ namespace Jasper.MvcExtender.Tests
 {
     public class executing_controller_actions : IClassFixture<MvcExtendedApp>
     {
-        private readonly MvcExtendedApp _app;
-        private readonly ITestOutputHelper _output;
-
         public executing_controller_actions(MvcExtendedApp app, ITestOutputHelper output)
         {
             _app = app;
             _output = output;
+        }
+
+        private readonly MvcExtendedApp _app;
+        private readonly ITestOutputHelper _output;
+
+        [Fact]
+        public Task run_controller_action_that_uses_http_context_object()
+        {
+            var route = _app.Routes.ChainForAction<ExecutingController>(x => x.WriteIntoTheContext());
+
+            return _app.System.Scenario(x =>
+            {
+                x.Get.Url("/write");
+                x.ContentShouldContain("I wrote some stuff here");
+            });
         }
 
         [Fact]
@@ -26,8 +39,6 @@ namespace Jasper.MvcExtender.Tests
                 x.ContentShouldBe("Hello!");
             });
         }
-
-
     }
 
     public class ExecutingController : ControllerBase
@@ -36,6 +47,12 @@ namespace Jasper.MvcExtender.Tests
         public string Hello()
         {
             return "Hello!";
+        }
+
+        [HttpGet("write")]
+        public Task WriteIntoTheContext()
+        {
+            return HttpContext.Response.WriteAsync("I wrote some stuff here");
         }
     }
 }
