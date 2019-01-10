@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Jasper.MvcExtender\Jasper.MvcExtender.csproj" />
+      <ProjectReference Include="..\Jasper.TestSupport.Alba\Jasper.TestSupport.Alba.csproj" />
     </ItemGroup>
 
 </Project>

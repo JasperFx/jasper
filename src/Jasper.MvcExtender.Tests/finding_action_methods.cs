@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Alba;
 using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
+using Jasper.TestSupport.Alba;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -18,24 +20,21 @@ namespace Jasper.MvcExtender.Tests
     {
         public MvcExtendedApp()
         {
-            Host = new WebHostBuilder()
-                .UseStartup<Startup>()
-                .UseJasper()
-                .UseServer(new NulloServer())
-                .Build();
+            System = SystemUnderTest.For(x => x.UseStartup<Startup>().UseJasper());
 
 
-            Routes = Host.Services.GetRequiredService<RouteGraph>();
+
+            Routes = System.Services.GetRequiredService<RouteGraph>();
         }
 
         public RouteGraph Routes { get; set; }
 
 
-        public IWebHost Host { get; }
+        public SystemUnderTest System { get; }
 
         public void Dispose()
         {
-            Host?.Dispose();
+            System?.Dispose();
         }
     }
 
