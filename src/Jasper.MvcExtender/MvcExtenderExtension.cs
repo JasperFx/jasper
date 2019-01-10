@@ -4,7 +4,6 @@ using Baseline.Reflection;
 using Jasper;
 using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
-using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.MvcExtender;
 using Microsoft.AspNetCore.Mvc;

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Alba;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -49,6 +50,19 @@ namespace Jasper.MvcExtender.Tests
                 x.StatusCodeShouldBe(202);
             });
         }
+
+        [Fact]
+        public async Task use_json_writer()
+        {
+            var response = await _app.System.GetAsJson<Hero>("/json");
+            response.Name.ShouldBe("Wolverine");
+        }
+    }
+
+    public class Hero
+    {
+        public string Name { get; set; }
+        public string Affiliation { get; set; }
     }
 
     public class ExecutingController : ControllerBase
@@ -69,6 +83,16 @@ namespace Jasper.MvcExtender.Tests
         public IActionResult Result()
         {
             return StatusCode(202);
+        }
+
+        [HttpGet("json")]
+        public JsonResult WriteJson()
+        {
+            return new JsonResult(new Hero
+            {
+                Name = "Wolverine",
+                Affiliation = "Xmen"
+            });
         }
     }
 }
