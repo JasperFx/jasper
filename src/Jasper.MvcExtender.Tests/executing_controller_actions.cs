@@ -22,8 +22,6 @@ namespace Jasper.MvcExtender.Tests
         [Fact]
         public Task run_controller_action_that_uses_http_context_object()
         {
-            var route = _app.Routes.ChainForAction<ExecutingController>(x => x.WriteIntoTheContext());
-
             return _app.System.Scenario(x =>
             {
                 x.Get.Url("/write");
