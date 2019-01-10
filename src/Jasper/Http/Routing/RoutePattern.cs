@@ -33,5 +33,6 @@ namespace Jasper.Http.Routing
         public string Method { get; set; }
         public string Pattern { get; set; }
         public ISegment[] Segments { get; private set; }
+        public int Order { get; set; }
     }
 }

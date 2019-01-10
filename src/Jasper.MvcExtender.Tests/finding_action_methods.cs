@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using Jasper.Http;
 using Jasper.Http.Model;
+using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +84,24 @@ namespace Jasper.MvcExtender.Tests
             chain.ShouldNotBeNull();
             chain.Route.Pattern.ShouldBe("stuff/other");
         }
+
+        [Fact]
+        public void can_find_and_determine_route_from_HttpGet_marked_method_with_not_arguments()
+        {
+            var chain = _app.Routes.ChainForAction<MyController1>(x => x.Get1());
+            chain.ShouldNotBeNull();
+            chain.Route.Pattern.ShouldBe("one");
+        }
+
+        [Fact]
+        public void can_find_and_determine_route_from_HttpGet_marked_method_with_one_argument()
+        {
+            var chain = _app.Routes.ChainForAction<MyController1>(x => x.GetDog("Shiner"));
+            chain.ShouldNotBeNull();
+            chain.Route.Pattern.ShouldBe("dog/:name");
+            chain.Route.Segments.ElementAt(1).ShouldBeOfType<RouteArgument>()
+                .MappedParameter.Name.ShouldBe("name");
+        }
     }
 
     public class MyController1 : ControllerBase
@@ -89,6 +109,18 @@ namespace Jasper.MvcExtender.Tests
         public string get_stuff()
         {
             return "stuff";
+        }
+
+        [HttpGet("/one")]
+        public string Get1()
+        {
+            return "one";
+        }
+
+        [HttpGet("/dog/{name}")]
+        public string GetDog(string name)
+        {
+            return $"the dog is {name}";
         }
     }
 

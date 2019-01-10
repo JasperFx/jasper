@@ -48,11 +48,20 @@ namespace Jasper.Http.Routing
                 for (var i = 0; i < pattern.Segments.Length; i++)
                 {
                     var current = pattern.Segments[i].SegmentPath;
-                    var parameter = method.GetParameters().FirstOrDefault(x => x.Name == current);
+                    var isParameter = current.StartsWith("{") && current.EndsWith("}");
+                    var parameterName = current.TrimStart('{').TrimEnd('}');
+
+
+                    var parameter = method.GetParameters().FirstOrDefault(x => x.Name == parameterName);
                     if (parameter != null)
                     {
                         var argument = new RouteArgument(parameter, i);
                         pattern.Segments[i] = argument;
+                    }
+
+                    if (isParameter && parameter == null)
+                    {
+                        throw new InvalidOperationException($"Required parameter '{current}' could not be resoved in method {handlerType.FullNameInCode()}.{method.Name}()");
                     }
                 }
             }
