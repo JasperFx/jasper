@@ -3,11 +3,13 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper;
 using Jasper.Configuration;
+using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.MvcExtender;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 [assembly:JasperModule(typeof(MvcExtenderExtension))]
 
@@ -21,6 +23,8 @@ namespace Jasper.MvcExtender
             registry.HttpRoutes.IncludeMethods(x => x.HasAttribute<HttpMethodAttribute>());
 
             registry.HttpRoutes.GlobalPolicy<ControllerUsagePolicy>();
+
+            registry.Services.AddSingleton<IWriterRule, ActionResultWriterRule>();
 
             RouteBuilder.PatternRules.Insert(0, new HttpAttributePatternRule());
         }

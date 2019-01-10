@@ -39,6 +39,16 @@ namespace Jasper.MvcExtender.Tests
                 x.ContentShouldBe("Hello!");
             });
         }
+
+        [Fact]
+        public Task use_simplistic_action_result()
+        {
+            return _app.System.Scenario(x =>
+            {
+                x.Get.Url("/result");
+                x.StatusCodeShouldBe(202);
+            });
+        }
     }
 
     public class ExecutingController : ControllerBase
@@ -53,6 +63,12 @@ namespace Jasper.MvcExtender.Tests
         public Task WriteIntoTheContext()
         {
             return HttpContext.Response.WriteAsync("I wrote some stuff here");
+        }
+
+        [HttpGet("result")]
+        public IActionResult Result()
+        {
+            return StatusCode(202);
         }
     }
 }
