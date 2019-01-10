@@ -17,13 +17,13 @@ namespace Jasper.Testing.Http.Routing
         [Fact]
         public void methods_are_candidate_actions()
         {
-            HttpSettings
-                .IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue)))
+            var httpSettings = new HttpSettings();
+
+            httpSettings.MethodFilters.Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue)))
                 .ShouldBeTrue();
-            HttpSettings
-                .IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x =>
+            httpSettings.MethodFilters.Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x =>
                     x.get_with_dateoffset_time(DateTimeOffset.MaxValue))).ShouldBeTrue();
-            HttpSettings.IsCandidate(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_number_value(55)))
+            httpSettings.MethodFilters.Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_number_value(55)))
                 .ShouldBeTrue();
         }
 

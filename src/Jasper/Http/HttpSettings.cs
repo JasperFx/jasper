@@ -1,8 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Baseline;
+using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Http.Model;
+using Jasper.Http.Routing;
 using Lamar;
 using Newtonsoft.Json;
 
@@ -18,6 +23,18 @@ namespace Jasper.Http
         {
             _methodFilters = new ActionMethodFilter();
             _methodFilters.Excludes += m => m.Name == "Configure";
+
+            MethodFilters.Excludes += m => m.DeclaringType == typeof(object);
+            MethodFilters.Excludes += m => m.HasAttribute<JasperIgnoreAttribute>();
+            MethodFilters.Excludes += m => m.DeclaringType.HasAttribute<JasperIgnoreAttribute>();
+
+            MethodFilters.Includes += m => m.Name.EqualsIgnoreCase("Index");
+
+            MethodFilters.Includes += m =>
+            {
+                return HttpVerbs.All.Contains(m.Name, StringComparer.OrdinalIgnoreCase) ||
+                       HttpVerbs.All.Any(x => m.Name.StartsWith(x + "_", StringComparison.OrdinalIgnoreCase));
+            };
 
 
             IncludeClassesSuffixedWithEndpoint();

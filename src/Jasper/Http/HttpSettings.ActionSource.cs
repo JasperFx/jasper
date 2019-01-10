@@ -14,6 +14,8 @@ namespace Jasper.Http
 {
     public partial class HttpSettings
     {
+        // TODO -- add a composite filter for MethodInfo that's exposed
+
         private readonly List<Assembly> _assemblies = new List<Assembly>();
         private readonly CompositeFilter<MethodCall> _callFilters = new CompositeFilter<MethodCall>();
         private readonly IList<Type> _explicitTypes = new List<Type>();
@@ -24,19 +26,10 @@ namespace Jasper.Http
 
         public AppliesToExpression Applies { get; } = new AppliesToExpression();
 
-        public static bool IsCandidate(MethodInfo method)
-        {
-            if (method.DeclaringType == typeof(object)) return false;
-
-            if (method.HasAttribute<JasperIgnoreAttribute>()) return false;
-            if (method.DeclaringType.HasAttribute<JasperIgnoreAttribute>()) return false;
-
-            if (method.Name.EqualsIgnoreCase("Index")) return true;
-
-            return HttpVerbs.All.Contains(method.Name, StringComparer.OrdinalIgnoreCase) ||
-                   HttpVerbs.All.Any(x => method.Name.StartsWith(x + "_", StringComparison.OrdinalIgnoreCase));
-        }
-
+        /// <summary>
+        /// Controls which .Net methods are considered to be HTTP action methods
+        /// </summary>
+        public CompositeFilter<MethodInfo> MethodFilters => _methodFilters;
 
         internal async Task<MethodCall[]> FindActions(Assembly applicationAssembly)
         {
@@ -58,7 +51,6 @@ namespace Jasper.Http
         {
             return type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
                 .Where(_methodFilters.Matches)
-                .Where(IsCandidate)
                 .Select(m => buildAction(type, m))
                 .Where(_callFilters.Matches);
         }
