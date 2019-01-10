@@ -15,12 +15,12 @@ namespace benchmarks
 {
     [SimpleJob(warmupCount: 2)]
     [MemoryDiagnoser]
-    public class RoutingBenchmark : IDisposable
+    public class FastModeRoutingBenchmark : IDisposable
     {
         private TestRoute[] _routes;
         private SystemUnderTest _system;
 
-        public RoutingBenchmark()
+        public FastModeRoutingBenchmark()
         {
             var builder = new WebHostBuilder().UseJasper().Configure(app => app.UseJasper());
 
@@ -54,4 +54,5 @@ namespace benchmarks
             _system?.Dispose();
         }
     }
+
 }

@@ -1,7 +1,10 @@
 using System.Threading.Tasks;
 using Alba;
+using Lamar;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -22,6 +25,11 @@ namespace Jasper.MvcExtender.Tests
         [Fact]
         public Task run_controller_action_that_uses_http_context_object()
         {
+            var container = _app.System.Services.GetRequiredService<IContainer>();
+            var what = container.WhatDoIHave(serviceType:typeof(IStartupFilter));
+
+            _output.WriteLine(what);
+
             return _app.System.Scenario(x =>
             {
                 x.Get.Url("/write");

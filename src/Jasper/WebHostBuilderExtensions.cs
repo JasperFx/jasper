@@ -8,6 +8,7 @@ using Jasper.Messaging;
 using Lamar;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -40,6 +41,12 @@ namespace Jasper
 
             builder.ConfigureServices(s =>
             {
+
+                if (jasperBuilder.HttpRoutes.AspNetCoreCompliance == ComplianceMode.GoFaster)
+                {
+                    s.RemoveAll(x => x.ServiceType == typeof(IStartupFilter) && x.ImplementationType == typeof(AutoRequestServicesStartupFilter));
+                }
+
                 s.AddSingleton<IHostedService, JasperActivator>();
 
                 s.AddRange(jasperBuilder.CombineServices());

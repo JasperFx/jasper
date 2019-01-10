@@ -15,6 +15,20 @@ using Polly;
 
 namespace Jasper.Http
 {
+    public enum ComplianceMode{
+        /// <summary>
+        /// Use this mode to retain ASP.Net Core's built in scoped container behavior. This is only necessary if you are using middleware
+        /// or ActionFilters that use the HttpContext.RequestServices
+        /// </summary>
+        FullyCompliant,
+
+        /// <summary>
+        /// Faster performance by removing the built in ASP.Net Core scoped container per HTTP request behavior. May
+        /// break some ASP.Net Core middleware and ActionFilter usages
+        /// </summary>
+        GoFaster
+    }
+
     public partial class HttpSettings
     {
         internal readonly RouteGraph Routes = new RouteGraph();
@@ -42,6 +56,8 @@ namespace Jasper.Http
 
             IncludeClassesSuffixedWithEndpoint();
         }
+
+        public ComplianceMode AspNetCoreCompliance { get; set; } = ComplianceMode.FullyCompliant;
 
         /// <summary>
         ///     Applies a handler policy to all known message handlers

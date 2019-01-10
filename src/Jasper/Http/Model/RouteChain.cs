@@ -31,7 +31,7 @@ namespace Jasper.Http.Model
         {
             Action = action;
             Route = route;
-            TypeName = $"{Action.HandlerType.FullName.Replace(".", "_")}_{action.Method.Name}";
+            TypeName = $"{Action.HandlerType.FullNameInCode().Replace(".", "_")}_{action.Method.Name}";
 
             InputType = RouteBuilder.DetermineInputType(action.Method);
             ResourceType = action.ReturnVariable?.VariableType;

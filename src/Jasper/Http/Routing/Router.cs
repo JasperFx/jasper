@@ -94,8 +94,7 @@ namespace Jasper.Http.Routing
                 }
                 catch (Exception e)
                 {
-                    context.RequestServices.GetService<ILogger<HttpContext>>()
-                        .LogError(new EventId(500), e, "Request Failed");
+                    // TODO -- do some logging here!!!!
                     context.Response.StatusCode = 500;
                     await context.Response.WriteAsync(e.ToString());
                 }
