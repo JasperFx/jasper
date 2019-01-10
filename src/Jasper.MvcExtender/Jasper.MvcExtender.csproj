@@ -6,7 +6,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Jasper\Jasper.csproj" />
-      <PackageReference Include="Microsoft.AspNetCore.MVC.Core" Version="2.1.0" />
+      <PackageReference Include="Microsoft.AspNetCore.MVC" Version="2.1.0" />
     </ItemGroup>
 
 </Project>
