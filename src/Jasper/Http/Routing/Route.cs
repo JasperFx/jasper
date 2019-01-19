@@ -20,6 +20,8 @@ namespace Jasper.Http.Routing
 
     public class Route
     {
+        public static int Count = 0;
+
         public const string RelativePath = "relativePath";
         public const string PathSegments = "pathSegments";
         private readonly List<ISegment> _segments = new List<ISegment>();
@@ -35,19 +37,26 @@ namespace Jasper.Http.Routing
 
             HttpMethod = httpMethod;
 
-            var segments = pattern.Split('/');
-            for (var i = 0; i < segments.Length; i++)
+            if (pattern.IsEmpty())
             {
-                var segment = ToParameter(segments[i], i);
-                _segments.Add(segment);
+                Pattern = "";
+            }
+            else
+            {
+                var segments = pattern.Split('/');
+                for (var i = 0; i < segments.Length; i++)
+                {
+                    var segment = ToParameter(segments[i], i);
+                    _segments.Add(segment);
+                }
+
+                validateSegments();
+
+
+                Pattern = string.Join("/", _segments.Select(x => x.SegmentPath));
             }
 
-            validateSegments();
-
-
-            Pattern = string.Join("/", _segments.Select(x => x.SegmentPath));
-
-            Name = $"{HttpMethod}:{Pattern}";
+            Name = $"{HttpMethod}:/{Pattern}";
 
             setupArgumentsAndSpread();
         }
@@ -65,6 +74,10 @@ namespace Jasper.Http.Routing
 
             setupArgumentsAndSpread();
         }
+
+        public string Description => $"{HttpMethod}: {Pattern}";
+
+        public string VariableName { get; } = "Route" + ++Count;
 
 
         public IEnumerable<ISegment> Segments => _segments;
@@ -123,7 +136,7 @@ namespace Jasper.Http.Routing
         /// <returns></returns>
         public static Route For(string url, string httpMethod)
         {
-            return new Route(url, httpMethod ?? HttpVerbs.GET);
+            return new Route(url.TrimStart('/'), httpMethod ?? HttpVerbs.GET);
         }
 
         public static ISegment ToParameter(string path, int position)
@@ -216,6 +229,77 @@ namespace Jasper.Http.Routing
         public string ToUrlFromParameters(IDictionary<string, object> parameters)
         {
             return "/" + _segments.Select(x => x.SegmentFromParameters(parameters)).Join("/");
+        }
+
+        public void Place(RouteTree tree)
+        {
+            var method = tree.ForMethod(HttpMethod);
+
+
+
+            var count = _segments.Count;
+            switch (count)
+            {
+                case 0:
+                    method.Root = this;
+                    break;
+
+                case 1:
+                    if (HasSpread)
+                    {
+                        method.SpreadRoute = this;
+                    }
+                    else if (HasParameters)
+                    {
+                        method.ArgRoutes.Add(this);
+                    }
+                    else
+                    {
+                        method.Leaves.Add(this);
+                    }
+
+                    break;
+
+                default:
+                    RouteNode current = method;
+                    for (int i = 0; i < _segments.Count - 1; i++)
+                    {
+                        var segment = _segments[i];
+                        if (segment is Segment s)
+                        {
+                            current = current.ChildFor(s.SegmentPath);
+                        }
+                        else if (segment is RouteArgument)
+                        {
+                            current.ArgRoutes.Add(this);
+                            break;
+                        }
+                        else
+                        {
+                            current.SpreadRoute = this;
+                            break;
+                        }
+                    }
+
+                    var last = _segments.Last();
+
+                    if (last is Segment)
+                    {
+                        current.Leaves.Add(this);
+                    }
+                    else if (last is RouteArgument)
+                    {
+                        current.ArgRoutes.Add(this);
+                    }
+                    else
+                    {
+                        current.SpreadRoute = this;
+                    }
+
+                    break;
+
+
+            }
         }
     }
 }

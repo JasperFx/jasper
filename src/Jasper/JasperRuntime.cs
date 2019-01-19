@@ -298,7 +298,7 @@ namespace Jasper
 
             _isDisposing = true;
 
-            _host.Dispose();
+            _host.SafeDispose();
 
             Container.As<Container>().DisposalLock = DisposalLock.Unlocked;
             Container.Dispose();

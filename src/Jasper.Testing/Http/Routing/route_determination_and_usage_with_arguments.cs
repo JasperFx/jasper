@@ -3,12 +3,36 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Alba;
 using Jasper.Http.Routing;
+using Jasper.TestSupport.Alba;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Http.Routing
 {
+    public class FakeThing
+    {
+        public string get_chars_first_to_end(char first, char end, HttpRequest request)
+        {
+            return $"{first}-{end}";
+        }
+    }
+
+    public class troubleshooter
+    {
+        [Fact]
+        public async Task find_what_is_wrong()
+        {
+            var registry = new JasperRegistry();
+            registry.HttpRoutes.DisableConventionalDiscovery().IncludeType<FakeThing>();
+
+            using (var system = JasperAlba.For(registry))
+            {
+                await system.Scenario(x => x.Get.Url("/chars/a/to/c"));
+            }
+        }
+    }
+
     public class route_determination_and_usage_with_arguments : RegistryContext<RoutingApp>
     {
         public route_determination_and_usage_with_arguments(RegistryFixture<RoutingApp> fixture) : base(fixture)

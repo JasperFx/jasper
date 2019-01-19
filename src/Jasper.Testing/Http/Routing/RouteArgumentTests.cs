@@ -211,5 +211,6 @@ namespace Jasper.Testing.Http.Routing
 
             model.Color.ShouldBe(Color.Yellow);
         }
+
     }
 }

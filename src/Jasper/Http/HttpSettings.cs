@@ -9,7 +9,9 @@ using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
+using Jasper.Http.Routing.Codegen;
 using Lamar;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Polly;
 
@@ -95,9 +97,9 @@ namespace Jasper.Http
         }
 
         // Call this from the activator
-        internal Task BuildRouting(IContainer container, JasperGenerationRules generation)
+        internal Task<RouteTree> BuildRouting(IContainer container, JasperGenerationRules generation)
         {
-            if (!Enabled) return Task.CompletedTask;
+            if (!Enabled) return null;
 
             return _findActions.ContinueWith(t =>
             {
@@ -107,7 +109,15 @@ namespace Jasper.Http
                 }
 
 
-                Routes.BuildRoutingTree(generation, container);
+
+                Routes.AssertNoDuplicateRoutes();
+
+                var tree = new RouteTree(this, generation);
+
+                tree.CompileAll(container);
+
+
+                return tree;
             });
         }
 

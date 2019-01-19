@@ -89,14 +89,6 @@ namespace Jasper.Http.Model
             return new[] {Action};
         }
 
-
-        public void ApplyConneg(SerializationGraph graph)
-        {
-            if (InputType != null) ConnegReader = graph.ReaderFor(InputType);
-
-            if (ResourceType != null) ConnegWriter = graph.WriterFor(ResourceType);
-        }
-
         public override string ToString()
         {
             return $"{Route.HttpMethod}: {Route.Pattern}";
@@ -114,8 +106,14 @@ namespace Jasper.Http.Model
             handleMethod.DerivedVariables.AddRange(HttpContextVariables);
         }
 
+        private bool _hasDeterminedFrames = false;
+
         public List<Frame> DetermineFrames(ConnegRules rules, JasperGenerationRules codeRules)
         {
+            if (_hasDeterminedFrames) throw new InvalidOperationException("Has already determined frames");
+
+            _hasDeterminedFrames = true;
+
             if (!_hasAppliedConfigureAndAttributes)
             {
                 rules.Apply(this);
@@ -151,6 +149,19 @@ namespace Jasper.Http.Model
             handler.ConnegWriter = ConnegWriter;
 
             return handler;
+        }
+
+        public void WriteRouteMatchMethod(GeneratedType generatedType)
+        {
+            if (Route.Segments.OfType<RouteArgument>().Any())
+            {
+                var method = new GeneratedMethod($"Matches{Route.VariableName}", typeof(bool), new Argument(typeof(string[]), "segments"));
+                generatedType.AddMethod(method);
+
+                method.Frames.Add(new RouteMatchFrame(Route));
+            }
+
+
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Jasper.Testing.Samples
         {
             return "You posted something";
         }
+
     }
 
     public class AsyncEndpoints

@@ -6,14 +6,13 @@ using System.Reflection;
 using Baseline;
 using Baseline.Conversion;
 using Baseline.Reflection;
+using Jasper.Http.Model;
 using HandlerMethods = Baseline.LightweightCache<string, Jasper.Http.Routing.Route>;
 
 namespace Jasper.Http.Routing
 {
     public class UrlGraph : IUrlRegistry
     {
-        public static readonly Conversions Conversions = new Conversions();
-
         private readonly LightweightCache<Type, List<Route>> _routesByInputModel
             = new LightweightCache<Type, List<Route>>(_ => new List<Route>());
 
@@ -22,6 +21,18 @@ namespace Jasper.Http.Routing
 
         private readonly LightweightCache<string, Route> _routesPerName
             = new LightweightCache<string, Route>();
+
+        public UrlGraph()
+        {
+        }
+
+        public UrlGraph(RouteGraph routes)
+        {
+            foreach (var chain in routes)
+            {
+                Register(chain.Route);
+            }
+        }
 
         public string UrlFor(object model, string httpMethod = null)
         {

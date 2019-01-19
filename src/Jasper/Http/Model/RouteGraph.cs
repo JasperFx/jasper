@@ -19,7 +19,6 @@ namespace Jasper.Http.Model
         public static readonly string Context = "httpContext";
 
         private readonly IList<RouteChain> _chains = new List<RouteChain>();
-        public readonly Router Router = new Router();
 
         public IEnumerable<RouteChain> Gets
         {
@@ -93,18 +92,8 @@ namespace Jasper.Http.Model
             return _chains.FirstOrDefault(x => x.Action.HandlerType == typeof(T) && Equals(x.Action.Method, method));
         }
 
-        public void BuildRoutingTree(JasperGenerationRules generation, IContainer container)
-        {
-            var rules = container.QuickBuild<ConnegRules>();
 
-            Router.HandlerBuilder = new RouteHandlerBuilder(container, rules, generation);
-            assertNoDuplicateRoutes();
-
-            foreach (var route in _chains.Select(x => x.Route)) Router.Add(route);
-        }
-
-
-        private void assertNoDuplicateRoutes()
+        public void AssertNoDuplicateRoutes()
         {
             var duplicates = _chains
                 .GroupBy(x => x.Route.Name)

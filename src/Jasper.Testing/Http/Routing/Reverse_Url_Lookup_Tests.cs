@@ -14,7 +14,6 @@ namespace Jasper.Testing.Http.Routing
         {
             readType<OneController>();
             readType<TwoController>();
-            readType<QueryStringTestController>();
             readType<OnlyOneActionController>();
         }
 
@@ -97,25 +96,6 @@ namespace Jasper.Testing.Http.Routing
         {
             Exception<UrlResolutionException>.ShouldBeThrownBy(() => { urls.UrlFor(new UrlModel()); });
         }
-        /*
-        [Fact]
-        public void retrieve_a_url_for_a_model_that_has_querystring_inputs()
-        {
-            var model = new ModelWithQueryStringInput() { Param = 42 };
-
-            urls.UrlFor(model).ShouldBe("/qs/test?Param=42");
-        }
-        */
-        /*
-        [Fact]
-        public void retrieve_a_url_for_a_model_that_has_mixed_inputs()
-        {
-            var model = new ModelWithQueryStringAndRouteInput() { Param = 42, RouteParam = 23 };
-
-            urls.UrlFor(model).ShouldBe("/qsandroute/test/23?Param=42");
-        }
-        */
-
 
         [Fact]
         public void url_for_by_type_respects_the_absolute_path()
@@ -227,17 +207,6 @@ namespace Jasper.Testing.Http.Routing
         }
     }
 
-    public class QueryStringTestController
-    {
-        public void get_qs_test(ModelWithQueryStringInput input)
-        {
-        }
-
-        public void get_qsandroute_test_RouteParam(ModelWithQueryStringAndRouteInput input)
-        {
-        }
-    }
-
     public class ModelWithInputs
     {
         public string Name { get; set; }
@@ -298,15 +267,4 @@ namespace Jasper.Testing.Http.Routing
     {
     }
 
-    public class ModelWithQueryStringInput
-    {
-        [QueryString] public int Param { get; set; }
-    }
-
-    public class ModelWithQueryStringAndRouteInput
-    {
-        [QueryString] public int Param { get; set; }
-
-        public int RouteParam { get; set; }
-    }
 }

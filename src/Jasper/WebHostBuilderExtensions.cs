@@ -2,15 +2,20 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Http;
+using Jasper.Http.Model;
 using Jasper.Http.Routing;
+using Jasper.Http.Routing.Codegen;
 using Jasper.Messaging;
 using Lamar;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper
 {
@@ -74,18 +79,9 @@ namespace Jasper
             if (app.HasJasperBeenApplied())
                 throw new InvalidOperationException("Jasper has already been applied to this web application");
 
-            var router = app.Properties.ContainsKey(JasperRouterKey)
-                ? app.Properties[JasperRouterKey].As<Router>()
-                : app.ApplicationServices.GetRequiredService<Router>();
+            return Router.BuildOut(app);
 
-            app.MarkJasperHasBeenApplied();
 
-            return app.Use(next => c => router.Invoke(c, next));
-        }
-
-        internal static void StoreRouter(this IApplicationBuilder builder, Router router)
-        {
-            builder.Properties.Add(JasperRouterKey, router);
         }
 
         internal static void MarkJasperHasBeenApplied(this IApplicationBuilder builder)
@@ -106,16 +102,33 @@ namespace Jasper
         {
             return app =>
             {
+                var logger = app.ApplicationServices.GetRequiredService<ILogger<HttpSettings>>();
+
+                app.Use(inner =>
+                {
+                    return c =>
+                    {
+                        try
+                        {
+                            return inner(c);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError(e, $"Failed during an HTTP request for {c.Request.Method}: {c.Request.Path}");
+                            c.Response.StatusCode = 500;
+                            return c.Response.WriteAsync(e.ToString());
+                        }
+                    };
+                });
                 next(app);
                 if (!app.HasJasperBeenApplied())
                 {
-                    var router = app.Properties.ContainsKey(WebHostBuilderExtensions.JasperRouterKey)
-                        ? app.Properties[WebHostBuilderExtensions.JasperRouterKey].As<Router>()
-                        : app.ApplicationServices.GetRequiredService<Router>();
-
-                    app.MarkJasperHasBeenApplied();
-
-                    app.Run(router.Invoke);
+                    Router.BuildOut(app).Run(c =>
+                    {
+                        c.Response.StatusCode = 404;
+                        c.Response.Headers["status-description"] = "Resource Not Found";
+                        return c.Response.WriteAsync("Resource Not Found");
+                    });
                 }
             };
 
@@ -138,7 +151,6 @@ namespace Jasper
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await _registry.Messaging.Compiling;
-            await _registry.HttpRoutes.BuildRouting(_container, _registry.CodeGeneration);
 
             _root.Activate(_registry.Messaging.LocalWorker, _registry.CodeGeneration, _container);
         }

@@ -47,11 +47,12 @@ namespace Jasper
             this.AddSingleton<ConnegRules>();
 
             this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
-            this.AddSingleton(parent.HttpRoutes.Routes.Router);
             this.AddSingleton(parent.HttpRoutes.Routes);
-            ForSingletonOf<IUrlRegistry>().Use(parent.HttpRoutes.Routes.Router.Urls);
+            ForSingletonOf<IUrlRegistry>().Use<UrlGraph>();
 
             this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());
+
+
         }
 
         private void conneg(JasperOptionsBuilder parent)

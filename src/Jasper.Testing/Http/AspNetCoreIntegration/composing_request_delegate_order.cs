@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using Alba;
 using Jasper.Http;
+using Jasper.Http.Routing;
 using Jasper.TestSupport.Alba;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Jasper.Testing.Http.AspNetCoreIntegration
@@ -25,7 +27,6 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
             theRegistry.Handlers.DisableConventionalDiscovery(true);
 
             if (_runtime == null) _runtime = JasperAlba.For(theRegistry);
-
 
             return await _runtime.Scenario(configure);
         }

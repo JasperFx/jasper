@@ -6,13 +6,17 @@ using System.Reflection;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Http;
+using Jasper.Http.Routing;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Transports;
 using Jasper.Settings;
 using Jasper.Util;
 using Lamar;
+using Lamar.Scanning.Conventions;
+using LamarCompiler;
 using LamarCompiler.Model;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper
 {
@@ -45,6 +49,8 @@ namespace Jasper
 
 
             _baseServices = new JasperServiceRegistry(this);
+
+            _baseServices.AddSingleton<GenerationRules>(CodeGeneration);
 
             Settings = new JasperSettings(this);
             Settings.BindToConfigSection<JasperOptions>("Jasper");

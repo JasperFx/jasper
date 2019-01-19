@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Jasper.Http;
 using Jasper.Messaging;
+using Jasper.Testing.Samples;
 using Lamar;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -43,6 +44,18 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 
     public class can_add_jasper_to_default_web_host_builder
     {
+        [Fact]
+        public void troubleshooting()
+        {
+            var registry = new JasperRegistry();
+            registry.HttpRoutes.DisableConventionalDiscovery().IncludeType<SomeEndpoints>();
+
+            using (var runtime = JasperRuntime.For(registry))
+            {
+                
+            }
+        }
+
         [Fact]
         public async Task still_works()
         {

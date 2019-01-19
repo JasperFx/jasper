@@ -11,7 +11,7 @@ namespace benchmarks
     {
         private static void Main(string[] args)
         {
-            BenchmarkRunner.Run<RoutingBenchmark>();
+            //BenchmarkRunner.Run<RoutingBenchmark>();
             BenchmarkRunner.Run<FastModeRoutingBenchmark>();
             //BenchmarkRunner.Run<InvokeBenchmark>();
             //BenchmarkRunner.Run<HttpPipelineBenchmark>();
