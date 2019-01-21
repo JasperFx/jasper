@@ -62,26 +62,32 @@ namespace Jasper.Testing.Http.Routing
 
 
     [JasperIgnore]
+    // SAMPLE: ServiceEndpoint
     public class ServiceEndpoint
     {
+        // GET: /
         public string Index()
         {
             return "Hello, world";
         }
 
+        // GET: /
         public string Get()
         {
             return "Hello, world";
         }
 
+        // PUT: /
         public string Put()
         {
             return "Hello, world";
         }
 
+        // DELETE: /
         public string Delete()
         {
             return "Hello, world";
         }
     }
+    // ENDSAMPLE
 }

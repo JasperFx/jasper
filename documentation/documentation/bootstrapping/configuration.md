@@ -5,6 +5,14 @@
 For application configuration, Jasper supports both the built in .Net Core configuration and a form of strong typed configuration
 we call the ["Settings" model that was originally used in FubuMVC](https://jeremydmiller.com/2014/11/07/strong_typed_configuration/).
 
+## Idiomatic Jasper Configuration
+
+If you are bootstrapping directly with `JasperRuntime`, the inner `IWebHostBuilder` has these options, similar to the `WebHost.CreateDefaultBuilder()` functionality in ASP.Net Core:
+
+<[sample:default-configuration-options]>
+
+For the most part though, Jasper wants to use the built in *Settings* model for strong typed configuration discussed below.
+
 ## Quick Start
 
 Probably the most common scenario is to have a single configuration file mapped to a single object:

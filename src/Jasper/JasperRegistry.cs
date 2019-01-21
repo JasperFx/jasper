@@ -56,6 +56,7 @@ namespace Jasper
         {
             var builder = new WebHostBuilder();
 
+            // SAMPLE: default-configuration-options
             builder.ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
@@ -73,6 +74,7 @@ namespace Jasper
                     logging.AddDebug();
 
                 });
+            // ENDSAMPLE
 
             return builder;
         }

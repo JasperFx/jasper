@@ -60,6 +60,7 @@ namespace Jasper.Testing.Samples
             }
         }
 
+
         public class SettingsTest
         {
             private readonly MySettings _settings;

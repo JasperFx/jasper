@@ -9,6 +9,10 @@ The sample usage from the <[linkto:documentation/getting_started;title=getting s
 
 At runtime, `JasperAgent` uses the `JasperRegistry` you hand it to <[linkto:documentation/bootstrapping;title=bootstrap a JasperRuntime]> and run the application until the console process is stopped.
 
+Or if you'd prefer to bootstrap with `IWebHostBuilder`, you can still use `JasperAgent` like this:
+
+<[sample:simplest-aspnetcore-run-from-command-line]>
+
 You can also use the command line arguments to customize how the application runs like this:
 
 <[sample:JasperAgent-programmatic-customization]>
@@ -126,7 +130,15 @@ dotnet run -- code -f generated.cs
 As usual, this command also respects both the `--environment` and `--verbose` flags
 
 
+## Describe Command
 
+Just to preview information about your Jasper application, there's also the `describe` command that is used like this:
+
+```
+dotnet run -- describe
+```
+
+This will at least tell you what message types are handled and some basic information about any HTTP hosting.
 
 ## Custom Commands
 

@@ -60,15 +60,17 @@ namespace Jasper.Testing.Http.Routing
             });
         }
 
+        // SAMPLE: using-char-arguments
         [Fact]
         public async Task char_arguments()
         {
             await scenario(_ =>
             {
-                _.Get.Url("/letters/f/to/k");
-                _.ContentShouldBe("f-k");
+                _.Get.Url("/letters/b/to/q");
+                _.ContentShouldBe("b-q");
             });
         }
+        // ENDSAMPLE
 
         [Fact]
         public async Task double_argument()
@@ -125,10 +127,12 @@ namespace Jasper.Testing.Http.Routing
             return id.ToString("r");
         }
 
+        // SAMPLE: using-guid-route-argument
         public string get_guid_id(Guid id)
         {
             return $"*{id}*";
         }
+        // ENDSAMPLE
 
         public string get_bool_value(bool value)
         {
@@ -150,9 +154,12 @@ namespace Jasper.Testing.Http.Routing
             return number.ToString();
         }
 
+        // SAMPLE: using-multiple-arguments
         public string get_letters_first_to_end(char first, char end, HttpRequest request)
         {
             return $"{first}-{end}";
         }
+        // ENDSAMPLE
+
     }
 }

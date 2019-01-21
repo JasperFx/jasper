@@ -64,16 +64,22 @@ namespace Jasper.Testing.Http.Routing
         }
     }
 
+
     public class SpreadHttpActions
     {
+        // SAMPLE: SpreadHttpActions-by-path
+        // Responds to "GET: /folder/..."
         public string get_folder(string relativePath)
         {
             return relativePath;
         }
+        // ENDSAMPLE
 
+        // SAMPLE: SpreadHttpActions-by-segments
         public string get_file(string[] pathSegments)
         {
             return pathSegments.Join("-");
         }
+        // ENDSAMPLE
     }
 }

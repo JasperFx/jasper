@@ -1,5 +1,7 @@
-﻿using Jasper;
+﻿using AspNetCoreHosted;
+using Jasper;
 using Jasper.Configuration;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -157,4 +159,26 @@ namespace Bootstrapping.Configuration2
     }
 
     // ENDSAMPLE
+
+
+    public class Samples
+    {
+        public void using_web_host_builder()
+        {
+            // SAMPLE: aspnetcore-idiomatic-option-configuration
+            var builder = WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+
+                // Overwrite the environment name
+                .UseEnvironment("Development")
+
+                // Override Jasper settings
+                .UseJasper(x =>
+                {
+                    x.ServiceName = "MyApplicationService";
+                });
+
+            // ENDSAMPLE
+        }
+    }
 }

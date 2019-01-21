@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Jasper.CommandLine;
 using Jasper.Http;
 using Jasper.Messaging;
 using Jasper.Testing.Samples;
@@ -41,6 +42,42 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         }
     }
 
+    public class Samples
+    {
+        public void bootstrap()
+        {
+            // SAMPLE: simplest-aspnetcore-bootstrapping
+            var host = WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .UseJasper() // Use Jasper with all its
+                             // defaults
+                .Start();
+            // ENDSAMPLE
+        }
+
+        /*
+        // SAMPLE: simplest-aspnetcore-run-from-command-line
+        public static int Main(params string[] args)
+        {
+            var builder = WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .UseJasper();
+
+            return JasperAgent.Run(builder, args);
+        }
+        // ENDSAMPLE
+        */
+
+
+        /*
+        // SAMPLE: simplest-idiomatic-command-line
+        public static int Main(params string[] args)
+        {
+            return JasperAgent.RunBasic(args);
+        }
+        // ENDSAMPLE
+        */
+    }
 
     public class can_add_jasper_to_default_web_host_builder
     {
@@ -52,7 +89,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 
             using (var runtime = JasperRuntime.For(registry))
             {
-                
+
             }
         }
 
@@ -158,7 +195,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
     }
 
     // SAMPLE: SimpleJasperBusApp
-    public class SimpleJasperBusApp : JasperRegistry
+    public class SimpleJasperBusApp : JasperOptionsBuilder
         // ENDSAMPLE
     {
     }

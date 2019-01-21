@@ -43,6 +43,7 @@ namespace Jasper.Testing.Http.ContentHandling
         public int Sum { get; set; }
     }
 
+    // SAMPLE: NumbersEndpoint
     public class NumbersEndpoint
     {
         public static SumValue post_sum(SomeNumbers input)
@@ -50,4 +51,5 @@ namespace Jasper.Testing.Http.ContentHandling
             return new SumValue {Sum = input.X + input.Y};
         }
     }
+    // ENDSAMPLE
 }

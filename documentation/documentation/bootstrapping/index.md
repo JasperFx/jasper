@@ -1,20 +1,36 @@
 <!--title:Bootstrapping-->
 
-To configure and bootstrap a Jasper application, you are primarily interacting with just a handful of types:
+<[info]>
+Jasper uses the ASP.Net Core `IWebHostBuilder` infrastructure internally for bootstrapping now, even for idiomatic Jasper
+bootstrapping.
+<[/info]>
 
-1. `JasperRuntime` - this manages the lifecycle of a Jasper application from bootstrapping to cleanly shutting down the application and releasing resources. It also exposes the underlying IoC container for the application and several members that just provide information about the running application
-1. `JasperRegistry` - this class is used to configure all the options of a Jasper application
-1. `JasperAgent` - a static helper for bootstrapping and managing a `JasperRuntime` from
-a console application. See <[linkto:documentation/bootstrapping/console]> for more information
-1. `IWebHostBuilder.UseJasper()` or `IApplicationBuilder.AddJasper()` - extension methods provided to add Jasper to an ASP.Net Core application. See <[linkto:documentation/bootstrapping/aspnetcore]> for more information.
+All the examples in this page are using the default, "in the box" options for Jasper. To see what else can be configured or added to a Jasper application, see the folling topics:
 
-If you do not need to override or add to any of Jasper's default configuration, you can happily bootstrap a `JasperRuntime` like this:
+<[TableOfContents]>
+
+Jasper has its own idiomatic bootstrapping that is shown in a section below, but if you're already comfortable with ASP.Net Core, you can just use
+the `IWebHostBuilder` mechanism you already know and love to fire up a Jasper application in memory like so:
+
+<[sample:simplest-aspnetcore-bootstrapping]>
+
+More likely though, you'll want to run a Jasper-ized ASP.net Core application from a command line application. Jasper goes all in on command line tooling with quite a bit of its own diagnostics, so naturally it comes with a first class citizen for bootstrapping and executing from the command line
+with `JasperAgent` like so:
+
+<[sample:simplest-aspnetcore-run-from-command-line]>
+
+
+Or using Jasper's own idiomatic bootstrapping, you can happily bootstrap a `JasperRuntime` (Jasper's equivalent of ASP.net Core's `IWebHost`) like this:
 
 <[sample:Bootstrapping-Basic]>
 
 Which is just syntactical sugar for:
 
 <[sample:Bootstrapping-Basic2]>
+
+And likewise, to run a Jasper application from a command line application, you can again use `JasperRuntime` like so:
+
+<[sample:simplest-idiomatic-command-line]>
 
 This option might be enough to do some useful things with Jasper as a command executor at the least, but more likely you'll want to add other elements to your system like additional services to the <[linkto:documentation/ioc;title=underlying IoC container]>, <[linkto:documentation/messaging/configuration;title=the messaging configuration]>, or <[linkto:documentation/bootstrapping/aspnetcore;title=ASP.Net Core middleware]>.
 
@@ -30,7 +46,5 @@ And then use that to bootstrap your application:
 
 <[sample:Bootstrapping-with-custom-JasperRegistry]>
 
-See also:
 
-<[TableOfContents]>
 
