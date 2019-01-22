@@ -79,12 +79,15 @@ namespace Jasper.MvcExtender.Tests
             return "Hello!";
         }
 
+        // SAMPLE: using-HttpContext-in-Controller
         [HttpGet("write")]
         public Task WriteIntoTheContext()
         {
             return HttpContext.Response.WriteAsync("I wrote some stuff here");
         }
+        // ENDSAMPLE
 
+        // SAMPLE: using-IActionResult
         [HttpGet("result")]
         public IActionResult Result()
         {
@@ -100,5 +103,6 @@ namespace Jasper.MvcExtender.Tests
                 Affiliation = "Xmen"
             });
         }
+        // ENDSAMPLE
     }
 }

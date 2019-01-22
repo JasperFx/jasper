@@ -1,2 +1,4 @@
 endpoints
-resources
+conneg
+mvcextender
+policies

@@ -73,7 +73,7 @@ namespace Jasper.MvcExtender.Tests
         [Fact]
         public void will_find_jasper_actions_on_controller_base()
         {
-            var chain = _app.Routes.ChainForAction<MyController1>(x => x.get_stuff());
+            var chain = _app.Routes.ChainForAction<ControllerUsingMvcRouting>(x => x.get_stuff());
             chain.ShouldNotBeNull();
             chain.Route.HttpMethod.ShouldBe("GET");
             chain.Route.Pattern.ShouldBe("stuff");
@@ -82,7 +82,7 @@ namespace Jasper.MvcExtender.Tests
         [Fact]
         public void will_find_jasper_actions_on_controller()
         {
-            var chain = _app.Routes.ChainForAction<MyController2>(x => x.get_stuff_other());
+            var chain = _app.Routes.ChainForAction<ControllerUsingJasperRouting>(x => x.get_stuff_other());
             chain.ShouldNotBeNull();
             chain.Route.HttpMethod.ShouldBe("GET");
             chain.Route.Pattern.ShouldBe("stuff/other");
@@ -91,7 +91,7 @@ namespace Jasper.MvcExtender.Tests
         [Fact]
         public void can_find_and_determine_route_from_HttpGet_marked_method_with_no_arguments()
         {
-            var chain = _app.Routes.ChainForAction<MyController1>(x => x.Get1());
+            var chain = _app.Routes.ChainForAction<ControllerUsingMvcRouting>(x => x.Get1());
             chain.ShouldNotBeNull();
             chain.Route.HttpMethod.ShouldBe("GET");
             chain.Route.Pattern.ShouldBe("one");
@@ -100,7 +100,7 @@ namespace Jasper.MvcExtender.Tests
         [Fact]
         public void can_find_and_determine_route_from_HttpPost_marked_method_with_no_arguments()
         {
-            var chain = _app.Routes.ChainForAction<MyController1>(x => x.Post1());
+            var chain = _app.Routes.ChainForAction<ControllerUsingMvcRouting>(x => x.Post1());
 
             chain.ShouldNotBeNull();
             chain.Route.HttpMethod.ShouldBe("POST");
@@ -110,7 +110,7 @@ namespace Jasper.MvcExtender.Tests
         [Fact]
         public void can_find_and_determine_route_from_HttpGet_marked_method_with_one_argument()
         {
-            var chain = _app.Routes.ChainForAction<MyController1>(x => x.GetDog("Shiner"));
+            var chain = _app.Routes.ChainForAction<ControllerUsingMvcRouting>(x => x.GetDog("Shiner"));
             chain.ShouldNotBeNull();
             chain.Route.Pattern.ShouldBe("dog/:name");
             chain.Route.HttpMethod.ShouldBe("GET");
@@ -138,7 +138,8 @@ namespace Jasper.MvcExtender.Tests
 
     }
 
-    public class MyController1 : ControllerBase
+    // SAMPLE: ControllerUsingMvcRouting
+    public class ControllerUsingMvcRouting : ControllerBase
     {
         public string get_stuff()
         {
@@ -163,14 +164,21 @@ namespace Jasper.MvcExtender.Tests
             return $"the dog is {name}";
         }
     }
+    // ENDSAMPLE
 
-    public class MyController2 : Controller
+    // SAMPLE: ControllerUsingJasperRouting
+    public class ControllerUsingJasperRouting : Controller
     {
+        // Use idiomatic Jasper routing
+        // This would respond to "GET: /stuff/other"
         public string get_stuff_other()
         {
             return "other stuff";
         }
     }
+    // ENDSAMPLE
+
+    // SAMPLE: UsingRouteAttribute
 
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
@@ -182,10 +190,12 @@ namespace Jasper.MvcExtender.Tests
         }
 
 
+        // Responds to "POST: /api/todo"
         [HttpPost]
         public int Post()
         {
             return 200;
         }
     }
+    // ENDSAMPLE
 }

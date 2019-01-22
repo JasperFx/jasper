@@ -2,11 +2,11 @@ getting_started
 tutorials
 bootstrapping
 ioc
-messaging
 http
+messaging
 middleware_and_codegen
 conventions
+testing
 extensions
 diagnostics
-testing
 cli
