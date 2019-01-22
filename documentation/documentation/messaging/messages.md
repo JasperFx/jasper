@@ -27,9 +27,6 @@ First though, it might help to understand how Jasper reads the message when it r
 1. Invoke the matching reader to read the raw `byte[]` data into a .Net object
 1. Now that you know the actual .Net type for the message, select the proper message handler and off it goes
 
-Also see <[linkto:documentation/messaging/routing/subscriptions]> for more information about how the `content-type` data is used to match up
-subscriptions.
-
 ## Message Type Identity
 
 Let's say that you have a basic message structure like this:

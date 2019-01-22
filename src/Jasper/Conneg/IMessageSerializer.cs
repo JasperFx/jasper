@@ -12,6 +12,13 @@ namespace Jasper.Conneg
 
         string ContentType { get; }
         byte[] Write(object model);
+
+        /// <summary>
+        /// Called during HTTP requests
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="response"></param>
+        /// <returns></returns>
         Task WriteToStream(object model, HttpResponse response);
     }
     // ENDSAMPLE

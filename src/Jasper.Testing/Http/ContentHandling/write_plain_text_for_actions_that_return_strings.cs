@@ -10,6 +10,7 @@ namespace Jasper.Testing.Http.ContentHandling
         {
         }
 
+        // SAMPLE: StringEndpointSpec
         [Fact]
         public Task write_as_text()
         {
@@ -21,8 +22,10 @@ namespace Jasper.Testing.Http.ContentHandling
                 _.Header("content-length").SingleValueShouldEqual("11");
             });
         }
+        // ENDSAMPLE
     }
 
+    // SAMPLE: StringEndpoint
     public class StringEndpoint
     {
         public string get_string()
@@ -30,4 +33,5 @@ namespace Jasper.Testing.Http.ContentHandling
             return "some string";
         }
     }
+    // ENDSAMPLE
 }

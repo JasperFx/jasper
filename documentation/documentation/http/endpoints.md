@@ -13,7 +13,7 @@ arguments.
 
 Jasper uses a naming convention to scan through your application assembly (the assembly that holds either your ASP.Net Core `Startup` class or a `JasperRegistry` type) to find public methods that handle HTTP requests. Out of the box, the naming convention is:
 
-* Public types that are named with the suffix "Endpoint" and public method names that start with an HTTP verb and an underscore, like
+* Public types that are named with the suffix "Endpoint" or "Endpoints" and public method names that start with an HTTP verb and an underscore, like
   "get_something" or "post_something"
 * Public classes named either `HomeEndpoint` or `ServiceEndpoint`, and methods named after HTTP verbs like `Get()` or `Delete()` or `Head()`
 

@@ -31,6 +31,7 @@ namespace Jasper.Testing.Http.ContentHandling
             });
         }
 
+        // SAMPLE: StatusCodeEndpointSpec
         [Fact]
         public Task set_status_from_sync_action()
         {
@@ -40,6 +41,7 @@ namespace Jasper.Testing.Http.ContentHandling
                 _.StatusCodeShouldBe(201);
             });
         }
+        // ENDSAMPLE
 
         [Fact]
         public void sync_int_returning_action_is_action_candidate()
@@ -51,6 +53,7 @@ namespace Jasper.Testing.Http.ContentHandling
         }
     }
 
+    // SAMPLE: StatusCodeEndpoint
     public class StatusCodeEndpoint
     {
         public static int get_status1()
@@ -63,4 +66,5 @@ namespace Jasper.Testing.Http.ContentHandling
             return Task.FromResult(203);
         }
     }
+    // ENDSAMPLE
 }
