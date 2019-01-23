@@ -23,7 +23,11 @@ namespace Jasper.Settings
         public SettingsBuilder(Func<WebHostBuilderContext, T> source = null)
         {
             if (source == null)
-                _source = r => r.Configuration.Get<T>();
+                _source = r =>
+                {
+                    var sectionName = JasperSettings.ConfigSectionNameFor(typeof(T));
+                    return r.Configuration.GetSection(sectionName).Get<T>();
+                };
             else
                 _source = source;
         }

@@ -9,7 +9,7 @@ by default, and the `Uri` structure is *loopback://queuename*, where "queuename"
 
 <[sample:LoopbackTransportApp]>
 
-While you can use <[linkto:documentation/messaging/routing/static_routing;title=explicit publishing rules]> by message type to route messages locally to the loopback transport, it's probably easier to just use the explicit methods on `IServiceBus` shown below:
+While you can use <[linkto:documentation/messaging/routing/static_routing;title=explicit publishing rules]> by message type to route messages locally to the loopback transport, it's probably easier to just use the explicit methods on `IMessageContext` shown below:
 
 <[sample:enqueue-locally]>
 

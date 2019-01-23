@@ -21,6 +21,13 @@ namespace Jasper
 {
     public static class WebHostBuilderExtensions
     {
+        /// <summary>
+        /// Add Jasper to an ASP.Net Core application using a custom JasperOptionsBuilder (or JasperRegistry) type
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="overrides"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder, Action<T> overrides = null) where T : JasperOptionsBuilder, new ()
         {
             var registry = new T();
@@ -28,13 +35,32 @@ namespace Jasper
             return builder.UseJasper(registry);
         }
 
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperOptionsBuilder> overrides)
+        /// <summary>
+        /// Add Jasper to an ASP.Net Core application with optional configuration to Jasper
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="overrides">Programmatically configure Jasper options</param>
+        /// <param name="configure">Programmatically configure Jasper options using the application's IConfiguration and IHostingEnvironment</param>
+        /// <returns></returns>
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperOptionsBuilder> overrides = null, Action<WebHostBuilderContext, JasperOptions> configure = null)
         {
             var registry = new JasperOptionsBuilder();
             overrides?.Invoke(registry);
+
+            if (configure != null)
+            {
+                registry.Settings.Messaging(configure);
+            }
+
             return builder.UseJasper(registry);
         }
 
+        /// <summary>
+        /// Add Jasper to an ASP.Net Core application with a pre-built JasperOptionsBuilder
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="jasperBuilder"></param>
+        /// <returns></returns>
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperOptionsBuilder jasperBuilder)
         {
             JasperRuntime.ApplyExtensions(jasperBuilder);
@@ -66,14 +92,15 @@ namespace Jasper
             return builder;
         }
 
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder)
-        {
-            return builder.UseJasper(new JasperOptionsBuilder(builder.GetSetting(WebHostDefaults.ApplicationKey)));
-        }
-
-        public const string JasperRouterKey = "JasperRouter";
         public static readonly string JasperHasBeenApplied = "JasperHasBeenApplied";
 
+
+        /// <summary>
+        /// Add Jasper's middleware to the application's RequestDelegate pipeline
+        /// </summary>
+        /// <param name="app"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public static IApplicationBuilder UseJasper(this IApplicationBuilder app)
         {
             if (app.HasJasperBeenApplied())

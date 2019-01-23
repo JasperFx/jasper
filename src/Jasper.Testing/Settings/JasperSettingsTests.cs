@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper.Settings;
 using Microsoft.Extensions.Configuration;
 using Shouldly;
 using Xunit;
@@ -51,6 +52,15 @@ namespace Jasper.Testing.Settings
             }
         }
 
+        [Theory]
+        [InlineData(typeof(JasperOptions), "Jasper")]
+        [InlineData(typeof(FakeSettings), "Fake")]
+        [InlineData(typeof(JasperSettingsTests), "JasperSettingsTests")]
+        public void get_section_name(Type type, string sectionName)
+        {
+            JasperSettings.ConfigSectionNameFor(type).ShouldBe(sectionName);
+        }
+
         [Fact]
         public void can_alter_settings()
         {
@@ -70,7 +80,7 @@ namespace Jasper.Testing.Settings
 
             theRegistry.Settings.Alter<FakeSettings>((c, x) =>
             {
-                x.SomeSetting = int.Parse(c.Configuration["SomeSetting"]);
+                x.SomeSetting = int.Parse(c.Configuration.GetSection("MyFake")["SomeSetting"]);
             });
 
             with<FakeSettings>(x => x.SomeSetting.ShouldBe(1));

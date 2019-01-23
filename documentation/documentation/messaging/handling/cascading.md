@@ -8,7 +8,7 @@ your handler class use the `IMessageContext` interface as shown in this sample:
 <[sample:NoCascadingHandler]>
 
 The code above certainly works and this is consistent with most of the competing service bus tools. However, Jasper supports the concept of _cascading messages_
-that allow you to automatically send out objects returned from your handler methods without having to use `IServiceBus` as shown below:
+that allow you to automatically send out objects returned from your handler methods without having to use `IMessageContext` as shown below:
 
 <[sample:CascadingHandler]>
 
@@ -18,11 +18,11 @@ service bus as part of the same transaction with whatever routing rules apply to
 * Cascading messages returned from handler methods will not be sent out until after the original message succeeds and is part of the underlying
   transport transaction
 * Null's returned by handler methods are simply ignored
-* There is a significant performance advantage to using cascading messages instead of explicitly calling `IServiceBus.Send()` if you are using the
+* There is a significant performance advantage to using cascading messages instead of explicitly calling `IMessageContext.Send()` if you are using the
   LightningQueues transport
 * The cascading message feature was explicitly designed to make unit testing handler actions easier by shifting the test strategy 
   to [state-based](http://blog.jayfields.com/2008/02/state-based-testing.html) where you mostly need to verify the state of the response
-  objects instead of mock-heavy testing against calls to `IServiceBus`.
+  objects instead of mock-heavy testing against calls to `IMessageContext`.
 
 
 ## Request/Reply Scenarios
@@ -48,7 +48,7 @@ Assuming that `MyMessage` is configured to be sent to "Receiver," the following 
 1. Receiver handles the `MyMessage` message by calling the `CascadingHandler.Consume(MyMessage)` method
 1. Receiver sees the value of the "reply-requested" header matches the response, so it sends the `MyResponse` object back to Sender
 1. When Sender receives the matching `MyResponse` message that corresponds to the original `MyMessage`, it sets the completion back
-   to the Task returned by the `IServiceBus.Request<TResponse>()` method
+   to the Task returned by the `IMessageContext.Request<TResponse>()` method
 
 
 ## Conditional Responses

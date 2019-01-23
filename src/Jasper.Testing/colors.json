@@ -1,5 +1,7 @@
 ﻿{
-  "Blue": "#0000ff",
-  "Red": "#ff0000",
-  "Green": "#00ff00" 
+  "Colors": {
+    "Blue": "#0000ff",
+    "Red": "#ff0000",
+    "Green": "#00ff00"
+  }
 }

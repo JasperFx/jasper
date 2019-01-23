@@ -8,7 +8,7 @@ in the sample below, you can consume and process that message inline with this c
 The `Invoke()` method will **not** apply any error policies to retry the message if it fails and you will see exceptions bubble up on failures. This mechanism will process <[linkto:documentation/messaging/handling/cascading]> if the message succeeds.
 
 
-As an alternative, you can enqueue a message to a local queue to be handled later by the currently running node with `IServiceBus.Enqueue()`:
+As an alternative, you can enqueue a message to a local queue to be handled later by the currently running node with `IMessageContext.Enqueue()`:
 
 <[sample:IServiceBus.Enqueue]>
 

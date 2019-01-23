@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using Baseline.Dates;
 using Jasper.Messaging.ErrorHandling;
+using Jasper.Testing.Http;
 using Jasper.Testing.Messaging.Samples;
 using Jasper.Util;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Testing.Samples
@@ -117,4 +120,67 @@ namespace Jasper.Testing.Samples
     }
 
     // ENDSAMPLE
+
+
+
+    public class Samples
+    {
+        public void Go()
+        {
+
+            // SAMPLE: using-configuration-with-jasperoptions
+            var host = WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .UseJasper(configure: (context, options) =>
+                {
+                    // I'm not using it here, but you have access to
+                    // the ASP.Net Core HostingEnvironment
+                    var hosting = context.HostingEnvironment;
+
+                    // And the IConfiguration for your system
+                    var config = context.Configuration;
+
+                    // Add a transport listener at the Uri in
+                    // your configuration
+                    options.ListenForMessagesFrom(config["listener"]);
+
+                    // Add a subscription for a specific message type
+                    options.AddSubscription(Subscription.ForType<Message1>(config["outgoing"]));
+
+                    // Or add a subscription for all messages
+                    options.AddSubscription(Subscription.All(config["outgoing"]));
+                })
+                .Start();
+
+            // ENDSAMPLE
+        }
+
+        // SAMPLE: ConfigUsingApp
+        public class ConfigUsingApp : JasperRegistry
+        {
+            public ConfigUsingApp()
+            {
+                Settings.Messaging((context, options) =>
+                {
+                    // I'm not using it here, but you have access to
+                    // the ASP.Net Core HostingEnvironment
+                    var hosting = context.HostingEnvironment;
+
+                    // And the IConfiguration for your system
+                    var config = context.Configuration;
+
+                    // Add a transport listener at the Uri in
+                    // your configuration
+                    options.ListenForMessagesFrom(config["listener"]);
+
+                    // Add a subscription for a specific message type
+                    options.AddSubscription(Subscription.ForType<Message1>(config["outgoing"]));
+
+                    // Or add a subscription for all messages
+                    options.AddSubscription(Subscription.All(config["outgoing"]));
+                });
+            }
+        }
+        // ENDSAMPLE
+    }
 }

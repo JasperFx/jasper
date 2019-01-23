@@ -14,6 +14,14 @@ namespace Jasper.Settings
 
     public class JasperSettings : IHasRegistryParent
     {
+        public static string ConfigSectionNameFor(Type type)
+        {
+            if (type.Name.EndsWith("Settings")) return type.Name.Substring(0, type.Name.Length - 8);
+            if (type.Name.EndsWith("Options"))return type.Name.Substring(0, type.Name.Length - 7);
+
+            return type.Name;
+        }
+
         private readonly IList<Action<WebHostBuilderContext>>
             _configActions = new List<Action<WebHostBuilderContext>>();
 

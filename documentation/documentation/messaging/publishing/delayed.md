@@ -1,6 +1,6 @@
 <!--title:Scheduled Job Processing-->
 
-You can send messages with Jasper, but request that the processing of the message happen at some later time with `IServiceBus.ScheduleSend()`:
+You can send messages with Jasper, but request that the processing of the message happen at some later time with `IMessageContext.ScheduleSend()`:
 
 <[sample:send-delayed-message]>
 
