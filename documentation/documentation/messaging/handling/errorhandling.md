@@ -8,10 +8,10 @@ will be able to use all of Polly's many, many features with Jasper messaging ret
 
 The sad truth is that Jasper will not unfrequently hit exceptions as it processes messages. In all cases, Jasper will first log the exception using the standard ASP.Net Core `ILogger` abstraction. After that, it walks through the configured error handling policies to
 determine what to do next with the message. In the absence of any confugured error handling policies,
-JasperBus will move any message that causes an exception into the error queue for the
+Jasper will move any message that causes an exception into the error queue for the
 transport that the message arrived from on the first attempt.
 
-Today, JasperBus has the ability to:
+Today, Jasper has the ability to:
 
 * Enforce a maximum number of attempts to short circuit retries, with the default number being 1
 * Selectively apply remediation actions for a given type of `Exception`
@@ -19,6 +19,25 @@ Today, JasperBus has the ability to:
 * Choose to re-execute the message later
 * Just bail out and move the message out to the error queues
 * Apply error handling policies globally, by configured policies, or explicitly by chain
+* Use custom Polly error handling to do whatever you want, as long as the policy returns a Jasper `IContinuation` object
+
+
+## IContinuation
+
+If you want to write a custom error handler, you may need to write a custom `IContinuation` that just tells Jasper "what do I do now with this message?":
+
+<[sample:IContinuation]>
+
+Internally, Jasper has built in `IContinuation` strategies for retrying messages, moving messages to the error queue, and requeueing messages among others.
+
+## Exponential Backoff Policies
+
+By integrating Polly for our retry policies, Jasper gets [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff) retry scheduling nearly for free.
+
+To reschedule a message to be retried later at increasingly longer wait times, use this syntax:
+
+<[sample:AppWithErrorHandling]>
+
 
 
 ## Configuring Global Error Handling Rules
@@ -39,7 +58,7 @@ you can either use some in the box attributes on the message handler methods as 
 <[sample:configuring-error-handling-with-attributes]>
 
 If you prefer -- or have a use case that isn't supported by the attributes, you can take advantage of
-JasperBus's `Configure(HandlerChain)` convention to do it programmatically. To opt into this, add
+Jasper's `Configure(HandlerChain)` convention to do it programmatically. To opt into this, add
 a **static** method with the signature `public static void Configure(HandlerChain)` to your handler class
 as shown below:
 
@@ -62,8 +81,7 @@ To apply this policy, use this syntax in your `JasperBusRegistry`:
 
 ## Filtering on Exceptions
 
-To selectively respond to a certain exception type, you have these two built in methods to configure
-the error handling filtering:
+To selectively respond to a certain exception type, you have access to all of Polly's exception filtering mechanisms as shown below:
 
 <[sample:filtering-by-exception-type]>
 

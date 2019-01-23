@@ -12,7 +12,7 @@ For more information, see:
 * _Node_ - a running instance of a Jasper application. Do note that it's actually possible to run more than
   one Jasper application in the same process
 * _Transport_ - a supported mechanism for sending messages between running Jasper nodes
-* _Envelope_ - an object that wraps a message being sent or received by JasperBus that adds header metadata and helps control
+* _Envelope_ - an object that wraps a message being sent or received by Jasper that adds header metadata and helps control
   how messages are sent and received. See the [Envelope Wrapper pattern](http://www.enterpriseintegrationpatterns.com/patterns/messaging/EnvelopeWrapper.html) for more information
 * _Publish/Subscribe_ (pubsub) - messaging pattern that decouples the sending code from the routing to one or more recipients. One way communication from the sender
   to any receivers. See [Publish-Subscribe Channel](http://www.enterpriseintegrationpatterns.com/patterns/messaging/PublishSubscribeChannel.html) for more background.
