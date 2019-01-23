@@ -3,6 +3,7 @@ using Jasper.Http.Model;
 
 namespace Jasper.Http
 {
+    // SAMPLE: IRoutePolicy
     /// <summary>
     /// Use to apply your own conventions or policies to HTTP route handlers
     /// </summary>
@@ -15,4 +16,5 @@ namespace Jasper.Http
         /// <param name="rules"></param>
         void Apply(RouteGraph graph, JasperGenerationRules rules);
     }
+    // ENDSAMPLE
 }

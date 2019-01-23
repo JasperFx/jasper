@@ -5,6 +5,7 @@ using Alba;
 using Jasper.Http;
 using Lamar;
 using Marten;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,6 +65,26 @@ namespace Jasper.Testing.Http
             public string get_fast_text()
             {
                 return "some fast text";
+            }
+        }
+
+        public class ComplianceSample
+        {
+            public void Go()
+            {
+                // SAMPLE: GoFasterMode
+                // Idiomatic Jasper bootstrapping
+                var runtime = JasperRuntime.For(x =>
+                {
+                    x.HttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster;
+                });
+
+                // Or the ASP.Net Core way
+                var host = WebHost.CreateDefaultBuilder()
+                    .UseStartup<Startup>()
+                    .UseJasper(x => x.HttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster)
+                    .Start();
+                // ENDSAMPLE
             }
         }
     }

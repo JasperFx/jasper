@@ -5,6 +5,7 @@ using LamarCompiler.Model;
 
 namespace Jasper.Http.ContentHandling
 {
+    // SAMPLE: WriteText
     public class WriteText : IWriterRule
     {
         public bool TryToApply(RouteChain chain)
@@ -16,6 +17,7 @@ namespace Jasper.Http.ContentHandling
             return true;
         }
     }
+    // ENDSAMPLE
 
     public class CallWriteText : MethodCall
     {

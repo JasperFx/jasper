@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Jasper.MvcExtender
 {
+    // SAMPLE: ControllerUsagePolicy
     internal class ControllerUsagePolicy : IRoutePolicy
     {
         public void Apply(RouteGraph graph, JasperGenerationRules rules)
@@ -20,4 +21,5 @@ namespace Jasper.MvcExtender
                 });
         }
     }
+    // ENDSAMPLE
 }

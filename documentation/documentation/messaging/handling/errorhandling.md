@@ -1,5 +1,10 @@
 <!--title: Error Handling-->
 
+<[info]>
+Jasper originally used its own extensible error handling left over from its FubuMVC predecessor, but as of v0.9.5, Jasper uses 
+[Polly](https://github.com/App-vNext/Polly) under the covers for the message exception handling with just some custom extension methods for Jasper specific things. You
+will be able to use all of Polly's many, many features with Jasper messaging retries.
+<[/info]>
 
 The sad truth is that Jasper will not unfrequently hit exceptions as it processes messages. In all cases, Jasper will first log the exception using the standard ASP.Net Core `ILogger` abstraction. After that, it walks through the configured error handling policies to
 determine what to do next with the message. In the absence of any confugured error handling policies,
@@ -74,36 +79,3 @@ The `RetryLater()` function uses <[linkto:documentation/messaging/scheduled]>.
 See also <[linkto:documentation/messaging/handling/dead_letter_queue]> for more information.
 
 
-## Raise Other Messages
-
-You can also choose to send additional messages as a result of the exception. In this case, you can
-use the original message and the `Envelope` metadata plus the actual `Exception` to determine the
-message(s) to send out. Use this capability if you want to notify senders when a message fails.
-
-<[sample:RespondWithMessages]>
-
-** TODO -- talk about how to send it back to the original sender **
-
-## Custom Error Handlers
-
-If the built in recipes don't cover your exception handling needs, all isn't lost. You can bypass
-the helpers and write your own class that implements the `IErrorHandler` interface shown below:
-
-<[sample:IErrorHandler]>
-
-Your error handler needs to be able to look at an `Exception` and `Envelope`, then determine and return
-an `IContinuation` object that will be executed against the current message. That interface is shown below:
-
-<[sample:IContinuation]>
-
-Here's an example of a custom error handler:
-
-<[sample:CustomErrorHandler]>
-
-To register this custom error handler with your application, just add it to the `ErrorHandlers` collection:
-
-<[sample:Registering-CustomErrorHandler]>
-
-Note that you can apply custom error handlers either globally or by message type.
-
-TODO -- link to the docs on using IEnvelopeContext & Envelope, when they actually exist;)

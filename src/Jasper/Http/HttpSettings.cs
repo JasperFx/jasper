@@ -59,6 +59,9 @@ namespace Jasper.Http
             IncludeClassesSuffixedWithEndpoint();
         }
 
+        /// <summary>
+        /// Make your Jasper app faster in handling HTTP routes, or more compliant with ASP.Net Core
+        /// </summary>
         public ComplianceMode AspNetCoreCompliance { get; set; } = ComplianceMode.FullyCompliant;
 
         /// <summary>
@@ -122,7 +125,7 @@ namespace Jasper.Http
         }
 
 
-        public void Describe(JasperRuntime runtime, TextWriter writer)
+        internal void Describe(JasperRuntime runtime, TextWriter writer)
         {
             if (runtime.HttpAddresses == null) return;
             foreach (var url in runtime.HttpAddresses) writer.WriteLine($"Now listening on: {url}");

@@ -21,7 +21,9 @@ namespace Jasper.MvcExtender
             registry.HttpRoutes.IncludeTypes(x => x.CanBeCastTo<ControllerBase>());
             registry.HttpRoutes.IncludeMethods(x => x.HasAttribute<HttpMethodAttribute>());
 
+            // SAMPLE: applying-route-policy
             registry.HttpRoutes.GlobalPolicy<ControllerUsagePolicy>();
+            // ENDSAMPLE
 
             registry.Services.AddSingleton<IWriterRule, ActionResultWriterRule>();
 
