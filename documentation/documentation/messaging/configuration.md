@@ -6,7 +6,7 @@ The message bus capabilities of Jasper can be configured in a mix of ways:
 
 1. Through your application configuration file
 1. Directly through the `JasperOptions` model
-1. `JasperOptionsBuilder` or `JasperRegistry`, which ultimately are just fluent interface wrappers to just configure the underlying `JasperOptions` model
+1. `JasperRegistry`, which ultimately are just fluent interface wrappers to just configure the underlying `JasperOptions` model
 
 
 
@@ -72,7 +72,7 @@ In the JSON section above, the primary sections you care about are:
 ## Programmatic Configuration
 
 
-All system configuration for a Jasper application starts with the <[linkto:documentation/bootstrapping/configuring_jasper;title=JasperRegistry]> or `JasperOptionsBuilder` classes. Underneath `JasperRegistry` are these sections that are specific to the messaging support:
+All system configuration for a Jasper application starts with the <[linkto:documentation/bootstrapping/configuring_jasper;title=JasperRegistry]> or `JasperRegistry` classes. Underneath `JasperRegistry` are these sections that are specific to the messaging support:
 
 * `JasperRegistry.Handlers` - Configure policies about how message handlers are discovered, middleware is applied, and error handling policies. See <[linkto:documentation/messaging/handling]> for more information.
 * `JasperRegistry.Publish` - Optionally declare what messages or events are published by the Jasper system and any static publishing rules. See <[linkto:documentation/messaging/routing]> for more information.
