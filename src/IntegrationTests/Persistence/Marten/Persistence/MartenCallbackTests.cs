@@ -23,7 +23,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
     {
         public MartenCallbackTests()
         {
-            theRuntime = JasperRuntime.For(_ =>
+            theHost = JasperHost.For(_ =>
             {
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
 
@@ -34,7 +34,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
                 });
             });
 
-            theStore = theRuntime.Get<IDocumentStore>();
+            theStore = theHost.Get<IDocumentStore>();
 
             theStore.Advanced.Clean.CompletelyRemoveAll();
             theStore.Schema.ApplyAllConfiguredChangesToDatabase();
@@ -64,10 +64,10 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
         public void Dispose()
         {
-            theRuntime?.Dispose();
+            theHost?.Dispose();
         }
 
-        private readonly JasperRuntime theRuntime;
+        private readonly IJasperHost theHost;
         private readonly IDocumentStore theStore;
         private readonly Envelope theEnvelope;
         private readonly DurableCallback theCallback;
@@ -81,7 +81,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             theRetries.ErrorReportLogged.WaitOne(500);
 
 
-            var persistence = theRuntime.Get<MartenEnvelopePersistor>();
+            var persistence = theHost.Get<MartenEnvelopePersistor>();
 
             var report = await persistence.LoadDeadLetterEnvelope(theEnvelope.Id);
 

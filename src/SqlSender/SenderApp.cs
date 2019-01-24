@@ -11,18 +11,12 @@ namespace SqlSender
     {
         public SenderApp()
         {
-            Hosting.ConfigureAppConfiguration((_, config) =>
+            Hosting(builder =>
             {
-                config.AddJsonFile("appsettings.json").AddEnvironmentVariables();
+                builder.UseUrls("http://*:5060").UseKestrel();
             });
 
-            Hosting.UseUrls("http://*:5060").UseKestrel();
 
-            Hosting.ConfigureLogging(x =>
-            {
-                x.SetMinimumLevel(LogLevel.Error);
-                x.AddConsole();
-            });
 
             Settings.Alter<JasperOptions>(x => x.Retries.NodeReassignmentPollingTime = 5.Seconds());
 

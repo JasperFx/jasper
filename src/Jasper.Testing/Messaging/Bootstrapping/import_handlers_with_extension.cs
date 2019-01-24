@@ -9,11 +9,11 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     public class import_handlers_with_extension : BootstrappingContext
     {
         [Fact]
-        public async Task picks_up_on_handlers_from_extension()
+        public void picks_up_on_handlers_from_extension()
         {
             theRegistry.Include<MyExtension>();
 
-            var handlerChain = (await theHandlers()).HandlerFor<ExtensionMessage>().Chain;
+            var handlerChain = (theHandlers()).HandlerFor<ExtensionMessage>().Chain;
             handlerChain.Handlers.Single()
                 .HandlerType.ShouldBe(typeof(ExtensionThing));
         }
@@ -21,7 +21,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
     public class MyExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Handlers.IncludeType<ExtensionThing>();
         }

@@ -14,11 +14,14 @@ namespace Jasper.Testing.CommandLine
         {
             var input = new CodeInput();
             var registry = new JasperRegistry();
-            input.Source = new RegistryRuntimeSource(registry);
-
-
             registry.Handlers.DisableConventionalDiscovery();
             registry.Handlers.IncludeType<MessageConsumer>();
+
+            input.WebHostBuilder = JasperHost.CreateDefaultBuilder().UseJasper(registry);
+
+
+
+
 
             var cmd = new CodeCommand();
             cmd.Execute(input);
@@ -54,7 +57,7 @@ namespace Jasper.Testing.CommandLine
                 var registry = new JasperRegistry();
                 registry.Handlers.DisableConventionalDiscovery().IncludeType<MessageConsumer>();
 
-                JasperAgent.Run(registry, args).ShouldBe(0);
+                JasperHost.Run(registry, args).ShouldBe(0);
             }
             else
             {

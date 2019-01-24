@@ -23,7 +23,7 @@ namespace StorytellerSample
             // Customize the application by adding testing concerns,
             // extra logging, or maybe override service registrations
             // with stubs
-            Registry.Hosting.UseEnvironment("Testing");
+            Registry.Hosting(x => x.UseEnvironment("Testing"));
         }
 
         protected override void beforeAll()

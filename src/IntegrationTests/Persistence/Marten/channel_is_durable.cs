@@ -12,7 +12,7 @@ namespace IntegrationTests.Persistence.Marten
         [Fact]
         public void channels_that_are_or_are_not_durable()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperHost.For(_ =>
             {
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
                 _.Include<MartenBackedPersistence>();

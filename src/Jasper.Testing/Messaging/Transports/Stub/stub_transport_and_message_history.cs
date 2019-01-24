@@ -13,7 +13,7 @@ namespace Jasper.Testing.Messaging.Transports.Stub
         [Fact]
         public async Task can_use_stub_transport_to_catch_cascading_messages()
         {
-            var runtime1 = await JasperRuntime.ForAsync(x =>
+            var runtime1 = JasperHost.For(x =>
             {
                 x.Handlers.DisableConventionalDiscovery().IncludeType<QuestionAndAnswer>();
                 x.Include<MessageTrackingExtension>();

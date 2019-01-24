@@ -69,7 +69,7 @@ namespace Jasper.Util
             return assembly;
         }
 
-        public static Assembly DetermineApplicationAssembly(JasperOptionsBuilder registry)
+        public static Assembly DetermineApplicationAssembly(JasperRegistry registry)
         {
             var assembly = registry.GetType().Assembly;
             var isFeature = assembly.GetCustomAttribute<JasperFeatureAttribute>() != null;

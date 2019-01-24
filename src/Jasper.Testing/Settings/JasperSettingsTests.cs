@@ -20,7 +20,7 @@ namespace Jasper.Testing.Settings
 
         private void with<T>(Action<T> action)
         {
-            using (var runtime = JasperRuntime.For(theRegistry))
+            using (var runtime = JasperHost.For(theRegistry))
             {
                 var service = runtime.Get<T>();
                 action(service);
@@ -42,10 +42,10 @@ namespace Jasper.Testing.Settings
                 Handlers.DisableConventionalDiscovery();
 
 
-                Hosting.ConfigureAppConfiguration((_, config) =>
+                Hosting( x=> x.ConfigureAppConfiguration((_, config) =>
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string> {{"AppName", "WocketInMyPocket"}});
-                });
+                }));
 
 
                 Settings.Alter<JasperOptions>((c, options) => options.ServiceName = c.Configuration["AppName"]);
@@ -73,10 +73,10 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_apply_alterations_using_the_config()
         {
-            theRegistry.Hosting.ConfigureAppConfiguration((_, config) =>
+            theRegistry.Hosting( x => x.ConfigureAppConfiguration((_, config) =>
             {
                 config.AddJsonFile("appsettings.json");
-            });
+            }));
 
             theRegistry.Settings.Alter<FakeSettings>((c, x) =>
             {
@@ -87,20 +87,20 @@ namespace Jasper.Testing.Settings
         }
 
         [Fact]
-        public async Task can_configure_builder()
+        public void can_configure_builder()
         {
-            theRegistry.Hosting.ConfigureAppConfiguration((_, config) =>
+            theRegistry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
             {
                 config
                     .AddJsonFile("appsettings.json")
                     .AddJsonFile("colors.json");
-            });
+            }));
 
 
             theRegistry.Settings.Require<Colors>();
             theRegistry.Settings.Require<MyFakeSettings>();
 
-            using (var runtime = JasperRuntime.For(theRegistry))
+            using (var runtime = JasperHost.For(theRegistry))
             {
                 var colors = runtime.Get<Colors>();
                 var settings = runtime.Get<MyFakeSettings>();
@@ -115,10 +115,10 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_configure_settings()
         {
-            theRegistry.Hosting.ConfigureAppConfiguration((_, config) =>
+            theRegistry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
             {
                 config.AddJsonFile("nested.json");
-            });
+            }));
 
             theRegistry.Settings.Configure<Colors>(_ => _.GetSection("NestedSettings"));
 
@@ -129,10 +129,10 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_configure_settings_with_the_syntactical_sugure()
         {
-            theRegistry.Hosting.ConfigureAppConfiguration((_, config) =>
+            theRegistry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
             {
                 config.AddJsonFile("nested.json");
-            });
+            }));
 
             theRegistry.Settings.BindToConfigSection<Colors>("NestedSettings");
 
@@ -145,7 +145,7 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_customize_based_on_only_configuration()
         {
-            using (var runtime = JasperRuntime.For<UsingConfigApp>())
+            using (var runtime = JasperHost.For<UsingConfigApp>())
             {
                 runtime.ServiceName.ShouldBe("WocketInMyPocket");
             }
@@ -155,10 +155,10 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_read_settings()
         {
-            theRegistry.Hosting.ConfigureAppConfiguration((_, config) =>
+            theRegistry.Hosting( x=> x.ConfigureAppConfiguration((_, config) =>
             {
                 config.AddJsonFile("appsettings.json");
-            });
+            }));
 
             theRegistry.Settings.Require<MyFakeSettings>();
 

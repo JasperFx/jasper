@@ -13,9 +13,9 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
     {
         private readonly MessageTracker theTracker = new MessageTracker();
 
-        private Task configure()
+        private void configure()
         {
-            return with(_ =>
+            with(_ =>
             {
                 _.Publish.Message<Message1>().To("loopback://incoming");
 
@@ -30,9 +30,9 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
         }
 
         [Fact]
-        public async Task automatically_sticks_in_replies_queue()
+        public void automatically_sticks_in_replies_queue()
         {
-            await configure();
+            configure();
             Subscribers.HasSubscriber(TransportConstants.RetryUri)
                 .ShouldBeTrue();
         }
@@ -41,7 +41,7 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
         [Fact]
         public async Task send_a_message_and_get_the_response()
         {
-            await configure();
+            configure();
 
             var bus = Runtime.Get<IMessageContext>();
 

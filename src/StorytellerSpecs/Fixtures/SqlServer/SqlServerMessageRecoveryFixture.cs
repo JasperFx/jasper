@@ -34,7 +34,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
         private int _currentNodeId;
 
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
         private RecordingSchedulingAgent _schedulerAgent;
         private MessagingSerializationGraph _serializers;
         private RecordingWorkerQueue _workers;
@@ -71,7 +71,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             _workers = new RecordingWorkerQueue();
             _schedulerAgent = new RecordingSchedulingAgent();
 
-            _runtime = JasperRuntime.For(_ =>
+            _host = JasperHost.For(_ =>
             {
                 _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
                 _.Services.AddSingleton<ITransport, StubTransport>();
@@ -89,20 +89,20 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 });
             });
 
-            _runtime.Get<SqlServerBackedDurableMessagingFactory>().ClearAllStoredMessages();
+            _host.Get<SqlServerBackedDurableMessagingFactory>().ClearAllStoredMessages();
 
-            _serializers = _runtime.Get<MessagingSerializationGraph>();
+            _serializers = _host.Get<MessagingSerializationGraph>();
 
-            _runtime.RebuildMessageStorage();
+            _host.RebuildMessageStorage();
 
-            _currentNodeId = _runtime.Get<JasperOptions>().UniqueNodeId;
+            _currentNodeId = _host.Get<JasperOptions>().UniqueNodeId;
 
             _owners["This Node"] = _currentNodeId;
         }
 
         public override void TearDown()
         {
-            _runtime.Dispose();
+            _host.Dispose();
 
             foreach (var locker in _nodeLockers) locker.SafeDispose();
 
@@ -146,7 +146,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             getStubTransport().Channels[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
-            _runtime.Get<ISubscriberGraph>().GetOrBuild(channel);
+            _host.Get<ISubscriberGraph>().GetOrBuild(channel);
         }
 
 
@@ -166,7 +166,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private StubTransport getStubTransport()
         {
-            var stub = _runtime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
+            var stub = _host.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
             return stub;
         }
 
@@ -178,7 +178,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
         {
-            var persistor = _runtime.Get<SqlServerEnvelopePersistor>();
+            var persistor = _host.Get<SqlServerEnvelopePersistor>();
             return persistor.AllIncomingEnvelopes()
                 .Concat(persistor.AllOutgoingEnvelopes())
                 .Where(x => x.OwnerId == ownerId)
@@ -215,7 +215,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private async Task runAction<T>() where T : IMessagingAction
         {
-            var persistor = _runtime.Get<SqlServerEnvelopePersistor>();
+            var persistor = _host.Get<SqlServerEnvelopePersistor>();
 
             foreach (var envelope in _envelopes)
                 if (envelope.Status == TransportConstants.Outgoing)
@@ -227,7 +227,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             {
                 await conn.OpenAsync();
 
-                var action = _runtime.Get<T>();
+                var action = _host.Get<T>();
 
                 try
                 {

@@ -28,7 +28,7 @@ namespace Jasper
         /// <param name="overrides"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder, Action<T> overrides = null) where T : JasperOptionsBuilder, new ()
+        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder, Action<T> overrides = null) where T : JasperRegistry, new ()
         {
             var registry = new T();
             overrides?.Invoke(registry);
@@ -42,9 +42,9 @@ namespace Jasper
         /// <param name="overrides">Programmatically configure Jasper options</param>
         /// <param name="configure">Programmatically configure Jasper options using the application's IConfiguration and IHostingEnvironment</param>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperOptionsBuilder> overrides = null, Action<WebHostBuilderContext, JasperOptions> configure = null)
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperRegistry> overrides = null, Action<WebHostBuilderContext, JasperOptions> configure = null)
         {
-            var registry = new JasperOptionsBuilder();
+            var registry = new JasperRegistry(builder.GetSetting(WebHostDefaults.ApplicationKey));
             overrides?.Invoke(registry);
 
             if (configure != null)
@@ -59,29 +59,34 @@ namespace Jasper
         /// Add Jasper to an ASP.Net Core application with a pre-built JasperOptionsBuilder
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="jasperBuilder"></param>
+        /// <param name="registry"></param>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperOptionsBuilder jasperBuilder)
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
         {
-            JasperRuntime.ApplyExtensions(jasperBuilder);
+            registry.ConfigureWebHostBuilder(builder);
 
-            jasperBuilder.HttpRoutes.StartFindingRoutes(jasperBuilder.ApplicationAssembly);
-            jasperBuilder.Messaging.StartCompiling(jasperBuilder);
+            // ASP.Net Core will freak out if this isn't there
+            builder.UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
 
-            jasperBuilder.Settings.Apply(jasperBuilder.Services);
+            JasperHost.ApplyExtensions(registry);
+
+            registry.HttpRoutes.StartFindingRoutes(registry.ApplicationAssembly);
+            registry.Messaging.StartCompiling(registry);
+
+            registry.Settings.Apply(registry.Services);
 
             builder.ConfigureServices(s =>
             {
 
-                if (jasperBuilder.HttpRoutes.AspNetCoreCompliance == ComplianceMode.GoFaster)
+                if (registry.HttpRoutes.AspNetCoreCompliance == ComplianceMode.GoFaster)
                 {
                     s.RemoveAll(x => x.ServiceType == typeof(IStartupFilter) && x.ImplementationType == typeof(AutoRequestServicesStartupFilter));
                 }
 
                 s.AddSingleton<IHostedService, JasperActivator>();
 
-                s.AddRange(jasperBuilder.CombineServices());
-                s.AddSingleton(jasperBuilder);
+                s.AddRange(registry.CombineServices());
+                s.AddSingleton(registry);
 
                 s.AddSingleton<IServiceProviderFactory<ServiceRegistry>, LamarServiceProviderFactory>();
                 s.AddSingleton<IServiceProviderFactory<IServiceCollection>, LamarServiceProviderFactory>();
@@ -121,6 +126,30 @@ namespace Jasper
         {
             return builder.Properties.ContainsKey(JasperHasBeenApplied);
         }
+
+        /// <summary>
+        /// Syntactical sugar to execute the Jasper command line for a configured WebHostBuilder
+        /// </summary>
+        /// <param name="hostBuilder"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static int RunJasper(this IWebHostBuilder hostBuilder, string[] args)
+        {
+            return JasperHost.Run(hostBuilder, args);
+        }
+
+
+        /// <summary>
+        /// Start the application and return an IJasperHost for the application
+        /// </summary>
+        /// <param name="hostBuilder"></param>
+        /// <returns></returns>
+        public static IJasperHost StartJasper(this IWebHostBuilder hostBuilder)
+        {
+            var host = hostBuilder.Start();
+            return new JasperRuntime(host);
+        }
+
     }
 
     internal class RegisterJasperStartupFilter : IStartupFilter
@@ -164,11 +193,11 @@ namespace Jasper
 
     internal class JasperActivator : IHostedService
     {
-        private readonly JasperOptionsBuilder _registry;
+        private readonly JasperRegistry _registry;
         private readonly IMessagingRoot _root;
         private readonly IContainer _container;
 
-        public JasperActivator(JasperOptionsBuilder registry, IMessagingRoot root, IContainer container)
+        public JasperActivator(JasperRegistry registry, IMessagingRoot root, IContainer container)
         {
             _registry = registry;
             _root = root;
@@ -185,6 +214,19 @@ namespace Jasper
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+    }
+
+    internal class NulloStartup : IStartup
+    {
+        public IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            return new Container(services);
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            Console.WriteLine("Jasper 'Nullo' startup is being used to start the ASP.Net Core application");
         }
     }
 }

@@ -20,8 +20,8 @@ namespace StorytellerSpecs.Fixtures.Durability
 {
     public abstract class DurableFixture<TTriggerHandler, TItemCreatedHandler> : Fixture
     {
-        private JasperRuntime theReceiver;
-        private JasperRuntime theSender;
+        private IJasperHost theReceiver;
+        private IJasperHost theSender;
         private Jasper.Messaging.Tracking.MessageTracker theTracker;
 
         public override void SetUp()
@@ -47,18 +47,12 @@ namespace StorytellerSpecs.Fixtures.Durability
             senderRegistry.Publish.Message<Question>().To(publishingUri);
             senderRegistry.Publish.Message<ScheduledMessage>().To(publishingUri);
 
-            senderRegistry.Hosting.ConfigureLogging(x =>
-            {
-                x.AddConsole();
-                x.AddDebug();
-            });
-
 
             senderRegistry.Transports.DurableListenerAt(senderPort);
 
             configureSender(senderRegistry);
 
-            theSender = JasperRuntime.For(senderRegistry);
+            theSender = JasperHost.For(senderRegistry);
 
 
             var receiverRegistry = new JasperRegistry();
@@ -75,15 +69,10 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             receiverRegistry.Services.AddSingleton(theTracker);
 
-            receiverRegistry.Hosting.ConfigureLogging(x =>
-            {
-                x.AddConsole();
-                x.AddDebug();
-            });
-
             configureReceiver(receiverRegistry);
 
-            theReceiver = JasperRuntime.For(receiverRegistry);
+
+            theReceiver = JasperHost.For(receiverRegistry);
 
 
             initializeStorage(theSender, theReceiver);
@@ -96,7 +85,7 @@ namespace StorytellerSpecs.Fixtures.Durability
         }
 
 
-        protected abstract void initializeStorage(JasperRuntime sender, JasperRuntime receiver);
+        protected abstract void initializeStorage(IJasperHost sender, IJasperHost receiver);
 
         protected abstract void configureReceiver(JasperRegistry receiverRegistry);
 
@@ -129,10 +118,10 @@ namespace StorytellerSpecs.Fixtures.Durability
             return true;
         }
 
-        protected abstract ItemCreated loadItem(JasperRuntime receiver, Guid id);
+        protected abstract ItemCreated loadItem(IJasperHost receiver, Guid id);
 
 
-        protected abstract Task withContext(JasperRuntime sender, IMessageContext context,
+        protected abstract Task withContext(IJasperHost sender, IMessageContext context,
             Func<IMessageContext, Task> action);
 
         private Task send(Func<IMessageContext, Task> action)
@@ -255,7 +244,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             return true;
         }
 
-        protected abstract Envelope[] loadAllOutgoingEnvelopes(JasperRuntime sender);
+        protected abstract Envelope[] loadAllOutgoingEnvelopes(IJasperHost sender);
 
 
         [FormatAs("Can send a scheduled message with durable storage")]

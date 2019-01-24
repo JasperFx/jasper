@@ -47,7 +47,7 @@ namespace StorytellerSpecs.Fixtures.LQ
 
         public override void TearDown()
         {
-            var runtime = JasperRuntime.For(_registry);
+            var runtime = JasperHost.For(_registry);
 
             var graph = runtime.Get<HandlerGraph>();
 

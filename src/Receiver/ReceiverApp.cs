@@ -12,20 +12,23 @@ namespace Receiver
     {
         public ReceiverApp()
         {
-            Hosting.ConfigureAppConfiguration((_, config) =>
+            Hosting(builder =>
             {
-                config
-                    .AddJsonFile("appsettings.json")
-                    .AddEnvironmentVariables();
+                builder.ConfigureAppConfiguration((_, config) =>
+                {
+                    config
+                        .AddJsonFile("appsettings.json")
+                        .AddEnvironmentVariables();
+                })
+                .UseUrls("http://*:5061")
+                .UseKestrel()
+                .ConfigureLogging(x =>
+                {
+                    x.SetMinimumLevel(LogLevel.Information);
+                });
             });
 
-            Hosting.UseUrls("http://*:5061").UseKestrel();
 
-            Hosting.ConfigureLogging(x =>
-            {
-                //x.AddConsole();
-                x.SetMinimumLevel(LogLevel.Information);
-            });
 
             Settings.ConfigureMarten((config, options) =>
             {
@@ -40,7 +43,10 @@ namespace Receiver
             Include<MartenBackedPersistence>();
 
 
-            Settings.Configure(c => { Transports.ListenForMessagesFrom(c.Configuration["listener"]); });
+            Settings.Configure(c =>
+            {
+                Transports.ListenForMessagesFrom(c.Configuration["listener"]);
+            });
         }
     }
 }

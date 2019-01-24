@@ -125,7 +125,7 @@ namespace Jasper.Http
         }
 
 
-        internal void Describe(JasperRuntime runtime, TextWriter writer)
+        internal void Describe(IJasperHost runtime, TextWriter writer)
         {
             if (runtime.HttpAddresses == null) return;
             foreach (var url in runtime.HttpAddresses) writer.WriteLine($"Now listening on: {url}");

@@ -15,22 +15,22 @@ namespace IntegrationTests.Persistence.Marten.Persistence
     {
         public MartenEnvelopePersistorTests()
         {
-            var store = theRuntime.Get<IDocumentStore>();
+            var store = theHost.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
             store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
         }
 
         public void Dispose()
         {
-            theRuntime?.Dispose();
+            theHost?.Dispose();
         }
 
-        public JasperRuntime theRuntime = JasperRuntime.For<ItemReceiver>();
+        public IJasperHost theHost = JasperHost.For<ItemReceiver>();
 
         [Fact]
         public async Task get_counts()
         {
-            var thePersistor = theRuntime.Get<MartenEnvelopePersistor>();
+            var thePersistor = theHost.Get<MartenEnvelopePersistor>();
 
             var list = new List<Envelope>();
 

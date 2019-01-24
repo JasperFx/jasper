@@ -48,7 +48,7 @@ namespace Jasper.Messaging.Configuration
             return this;
         }
 
-        internal async Task<HandlerCall[]> FindCalls(JasperOptionsBuilder registry)
+        internal async Task<HandlerCall[]> FindCalls(JasperRegistry registry)
         {
             if (_conventionalDiscoveryDisabled) return _explicitTypes.SelectMany(actionsFromType).ToArray();
 

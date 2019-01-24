@@ -10,7 +10,7 @@
         ///     Make any alterations to the JasperRegistry for the application
         /// </summary>
         /// <param name="registry"></param>
-        void Configure(JasperOptionsBuilder registry);
+        void Configure(JasperRegistry registry);
     }
 
     // ENDSAMPLE

@@ -9,7 +9,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task throw_no_route_exception_by_default()
         {
-            await withAllDefaults();
+            withAllDefaults();
 
             await Exception<NoRoutesException>.ShouldBeThrownByAsync(async () =>
             {

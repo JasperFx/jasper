@@ -13,7 +13,7 @@ namespace IntegrationTests.Persistence.Marten
         {
             var code = "";
 
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperHost.For(_ =>
             {
                 _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
 

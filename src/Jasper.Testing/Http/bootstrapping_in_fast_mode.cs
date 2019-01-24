@@ -19,7 +19,7 @@ namespace Jasper.Testing.Http
         [Fact]
         public void should_be_auto_request_filter_present_in_fully_compliant_mode()
         {
-            using (var runtime = JasperRuntime.For(x => x.HttpRoutes.AspNetCoreCompliance = ComplianceMode.FullyCompliant))
+            using (var runtime = JasperHost.For(x => x.HttpRoutes.AspNetCoreCompliance = ComplianceMode.FullyCompliant))
             {
                 runtime.Container.Model.For<IStartupFilter>().Instances
                     .Any(x => x.ImplementationType == typeof(AutoRequestServicesStartupFilter))
@@ -30,7 +30,7 @@ namespace Jasper.Testing.Http
         [Fact]
         public void should_not_be_any_auto_request_filter()
         {
-            using (var runtime = JasperRuntime.For(x => x.HttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster))
+            using (var runtime = JasperHost.For(x => x.HttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster))
             {
                 runtime.Container.Model.For<IStartupFilter>().Instances
                     .Any(x => x.ImplementationType == typeof(AutoRequestServicesStartupFilter))
@@ -74,7 +74,7 @@ namespace Jasper.Testing.Http
             {
                 // SAMPLE: GoFasterMode
                 // Idiomatic Jasper bootstrapping
-                var runtime = JasperRuntime.For(x =>
+                var runtime = JasperHost.For(x =>
                 {
                     x.HttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster;
                 });

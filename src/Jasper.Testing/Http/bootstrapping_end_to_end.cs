@@ -75,7 +75,7 @@ namespace Jasper.Testing.Http
         {
             var service = new CustomHostedService();
 
-            var runtime = JasperRuntime.For<JasperRegistry>(_ => _.Services.AddSingleton<IHostedService>(service));
+            var runtime = JasperHost.For(_ => _.Services.AddSingleton<IHostedService>(service));
 
             service.WasStarted.ShouldBeTrue();
             service.WasStopped.ShouldBeFalse();
@@ -134,7 +134,7 @@ namespace Jasper.Testing.Http
 
     public class EndpointExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.HttpRoutes.IncludeType<ExtensionThing>();
         }

@@ -20,20 +20,20 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Jasper
 {
-    public class JasperRuntime : IDisposable
+    public class JasperRuntime : IJasperHost
     {
         private readonly IDisposable _host;
         private readonly Lazy<IMessageContext> _bus;
         private IContainer _container;
         private bool _isDisposing;
-        private readonly JasperOptionsBuilder _registry;
+        private readonly JasperRegistry _registry;
 
 
 
         internal JasperRuntime(IWebHost host)
         {
             _host = host;
-            _registry = host.Services.GetRequiredService<JasperOptionsBuilder>();
+            _registry = host.Services.GetRequiredService<JasperRegistry>();
             Container = host.Services.GetService<IContainer>();
 
             Container.As<Container>().Configure(x => x.AddSingleton(this));
@@ -42,9 +42,6 @@ namespace Jasper
         }
 
         private JasperOptions options { get; set; }
-
-        internal JasperGenerationRules CodeGeneration => _registry.CodeGeneration;
-
 
         /// <summary>
         ///     The main application assembly for the running application
@@ -71,103 +68,12 @@ namespace Jasper
         /// <summary>
         ///     Shortcut to retrieve an instance of the IServiceBus interface for the application
         /// </summary>
-        public IMessageContext Messaging => _bus.Value;
+        public IMessageSender Messaging => _bus.Value;
 
         /// <summary>
         ///     The logical name of the application from JasperRegistry.ServiceName
         /// </summary>
         public string ServiceName => options?.ServiceName;
-
-
-        /// <summary>
-        ///     Creates a Jasper application for the current executing assembly
-        ///     using all the default Jasper configurations
-        /// </summary>
-        /// <returns></returns>
-        public static JasperRuntime Basic()
-        {
-            return BasicAsync().GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        ///     Creates a Jasper application for the current executing assembly
-        ///     using all the default Jasper configurations
-        /// </summary>
-        /// <returns></returns>
-        public static Task<JasperRuntime> BasicAsync()
-        {
-            return bootstrap(new JasperRegistry());
-        }
-
-        /// <summary>
-        ///     Builds and initializes a JasperRuntime for the registry
-        /// </summary>
-        /// <param name="registry"></param>
-        /// <returns></returns>
-        public static JasperRuntime For(JasperRegistry registry)
-        {
-            return ForAsync(registry).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        ///     Builds and initializes a JasperRuntime for the registry
-        /// </summary>
-        /// <param name="registry"></param>
-        /// <returns></returns>
-        public static Task<JasperRuntime> ForAsync(JasperRegistry registry)
-        {
-            return bootstrap(registry);
-        }
-
-        /// <summary>
-        ///     Builds and initializes a JasperRuntime for the JasperRegistry of
-        ///     type T
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <typeparam name="T">The type of your JasperRegistry</typeparam>
-        /// <returns></returns>
-        public static JasperRuntime For<T>(Action<T> configure = null) where T : JasperRegistry, new()
-        {
-            return ForAsync(configure).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        ///     Builds and initializes a JasperRuntime for the JasperRegistry of
-        ///     type T
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <typeparam name="T">The type of your JasperRegistry</typeparam>
-        /// <returns></returns>
-        public static Task<JasperRuntime> ForAsync<T>(Action<T> configure = null) where T : JasperRegistry, new()
-        {
-            var registry = new T();
-            configure?.Invoke(registry);
-
-            return bootstrap(registry);
-        }
-
-        /// <summary>
-        ///     Builds and initializes a JasperRuntime for the configured JasperRegistry
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        public static JasperRuntime For(Action<JasperRegistry> configure)
-        {
-            return ForAsync(configure).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        ///     Builds and initializes a JasperRuntime for the configured JasperRegistry
-        /// </summary>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        public static Task<JasperRuntime> ForAsync(Action<JasperRegistry> configure)
-        {
-            var registry = new JasperRegistry();
-            configure?.Invoke(registry);
-
-            return bootstrap(registry);
-        }
 
 
         /// <summary>
@@ -233,62 +139,6 @@ namespace Jasper
 
             if (Get<JasperOptions>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
         }
-
-        public static void ApplyExtensions(JasperOptionsBuilder registry)
-        {
-            var assemblies = FindExtensionAssemblies();
-
-            if (!assemblies.Any()) return;
-
-            var extensions = assemblies
-                .Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
-                .Where(x => x != null)
-                .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
-                .ToArray();
-
-            registry.ApplyExtensions(extensions);
-        }
-
-        public static Assembly[] FindExtensionAssemblies()
-        {
-            return AssemblyFinder
-                .FindAssemblies(txt => { }, false)
-                .Where(a => a.HasAttribute<JasperModuleAttribute>())
-                .ToArray();
-        }
-
-
-        private static Task<JasperRuntime> bootstrap(JasperRegistry registry)
-        {
-            var host = registry
-                .ToWebHostBuilder()
-                .Start();
-
-            var runtime = new JasperRuntime(host);
-
-
-
-            return Task.FromResult(runtime);
-        }
-
-
-        /// <summary>
-        /// Create a new JasperRuntime without first running any of the
-        /// IHostedService services or starting any web service. Useful for
-        /// diagnostic commands
-        /// </summary>
-        /// <param name="registry"></param>
-        /// <returns></returns>
-        public static JasperRuntime Lightweight(JasperRegistry registry)
-        {
-            var host = registry
-                .ToWebHostBuilder()
-                .Build();
-
-            return new JasperRuntime(host);
-        }
-
-
 
 
         public void Dispose()

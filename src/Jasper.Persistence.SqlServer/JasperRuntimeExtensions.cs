@@ -8,7 +8,7 @@ namespace Jasper.Persistence.SqlServer
         ///     Drops and recreates the Sql Server backed persistence database objects
         /// </summary>
         /// <param name="runtime"></param>
-        public static void RebuildMessageStorage(this JasperRuntime runtime)
+        public static void RebuildMessageStorage(this IJasperHost runtime)
         {
             var settings = runtime.Get<SqlServerSettings>();
             var builder = new SchemaLoader(settings.ConnectionString, settings.SchemaName);

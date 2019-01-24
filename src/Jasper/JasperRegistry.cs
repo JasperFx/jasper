@@ -7,39 +7,90 @@ using Baseline;
 using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Http.Routing;
+using Jasper.Messaging;
+using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Transports;
 using Jasper.Settings;
 using Jasper.Util;
 using Lamar;
-using Microsoft.AspNetCore.Builder;
+using Lamar.Scanning.Conventions;
+using LamarCompiler;
+using LamarCompiler.Model;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Jasper
 {
     /// <summary>
     ///     Completely defines and configures a Jasper application
     /// </summary>
-    public class JasperRegistry : JasperOptionsBuilder, IWebHostBuilder
+    public class JasperRegistry : ITransportsExpression
     {
-        public JasperRegistry()
+        static JasperRegistry()
         {
-            // Specific to JasperRegistry
-            Hosting = this;
+            Container.Warmup();
+        }
+
+        private readonly IList<Action<IWebHostBuilder>> _builderAlterations
+            = new List<Action<IWebHostBuilder>>();
+
+        protected static Assembly _rememberedCallingAssembly;
+
+        protected readonly ServiceRegistry _applicationServices = new ServiceRegistry();
+        protected readonly ServiceRegistry _baseServices;
+
+        public JasperRegistry(string assemblyName = null)
+        {
+            HttpRoutes = new HttpSettings();
+
+            Services = _applicationServices;
+
+            establishApplicationAssembly(assemblyName);
+
+            var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
+            CodeGeneration = new JasperGenerationRules($"{name.Replace(".", "_")}_Generated");
+            CodeGeneration.Sources.Add(new NowTimeVariableSource());
+
+            CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+            CodeGeneration.Assemblies.Add(ApplicationAssembly);
+
+
+            _baseServices = new JasperServiceRegistry(this);
+
+            _baseServices.AddSingleton<GenerationRules>(CodeGeneration);
+
+            Settings = new JasperSettings(this);
+            Settings.BindToConfigSection<JasperOptions>("Jasper");
+
+
+
+            Publish = new PublishingExpression(Settings, Messaging);
+            Settings.Replace(HttpRoutes);
+
             deriveServiceName();
 
-            // ASP.Net Core will freak out if this isn't there
-            Hosting.UseSetting(WebHostDefaults.ApplicationKey, ApplicationAssembly.FullName);
+        }
+
+        /// <summary>
+        /// Apply configuration and alterations directly to the underlying
+        /// IWebHostBuilder of the running application when this JasperRegistry
+        /// is executed
+        /// </summary>
+        /// <param name="configure"></param>
+        public void Hosting(Action<IWebHostBuilder> configure)
+        {
+            _builderAlterations.Add(configure);
+        }
+
+        internal void ConfigureWebHostBuilder(IWebHostBuilder builder)
+        {
+            foreach (var alteration in _builderAlterations)
+            {
+                alteration(builder);
+            }
         }
 
 
-        /// <summary>
-        ///     Configure ASP.Net Core hosting for this Jasper application
-        /// </summary>
-        public IWebHostBuilder Hosting { get; }
 
         private void deriveServiceName()
         {
@@ -49,145 +100,176 @@ namespace Jasper
                 ServiceName = GetType().Name.Replace("JasperRegistry", "").Replace("Registry", "");
         }
 
-
-        internal IWebHostBuilder InnerWebHostBuilder { get; } = createDefaultWebHostBuilder();
-
-        private static IWebHostBuilder createDefaultWebHostBuilder()
-        {
-            var builder = new WebHostBuilder();
-
-            // SAMPLE: default-configuration-options
-            builder.ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    var env = hostingContext.HostingEnvironment;
-
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-                    config.AddEnvironmentVariables();
-
-                })
-                .ConfigureLogging((hostingContext, logging) =>
-                {
-                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    logging.AddConsole();
-                    logging.AddDebug();
-
-                });
-            // ENDSAMPLE
-
-            return builder;
-        }
-
-        IWebHost IWebHostBuilder.Build()
-        {
-            throw new NotSupportedException("Please bootstrap Jasper through JasperRuntime");
-        }
+        /// <summary>
+        ///     Configure how HTTP routes are discovered and handled
+        /// </summary>
+        public HttpSettings HttpRoutes { get; }
 
         /// <summary>
-        ///     Adds a delegate for configuring the <see cref="IConfigurationBuilder" /> that will construct an
-        ///     <see cref="IConfiguration" />.
+        ///     Configure or extend the Lamar code generation
         /// </summary>
-        /// <param name="configureDelegate">
-        ///     The delegate for configuring the <see cref="IConfigurationBuilder" /> that will be used
-        ///     to construct an <see cref="IConfiguration" />.
-        /// </param>
-        /// <returns>The <see cref="IWebHostBuilder" />.</returns>
-        /// <remarks>
-        ///     The <see cref="IConfiguration" /> and <see cref="ILoggerFactory" /> on the <see cref="WebHostBuilderContext" /> are
-        ///     uninitialized at this stage.
-        ///     The <see cref="IConfigurationBuilder" /> is pre-populated with the settings of the <see cref="IWebHostBuilder" />.
-        /// </remarks>
-        IWebHostBuilder IWebHostBuilder.ConfigureAppConfiguration(
-            Action<WebHostBuilderContext, IConfigurationBuilder> configureDelegate)
-        {
-            InnerWebHostBuilder.ConfigureAppConfiguration(configureDelegate);
-
-            return this;
-        }
+        public JasperGenerationRules CodeGeneration { get; }
 
         /// <summary>
-        ///     Adds a delegate for configuring additional services for the host or web application. This may be called
-        ///     multiple times.
+        ///     Register additional services to the underlying IoC container
         /// </summary>
-        /// <param name="configureServices">A delegate for configuring the <see cref="IServiceCollection" />.</param>
-        /// <returns>The <see cref="IWebHostBuilder" />.</returns>
-        IWebHostBuilder IWebHostBuilder.ConfigureServices(Action<IServiceCollection> configureServices)
-        {
-            InnerWebHostBuilder.ConfigureServices(configureServices);
-            return this;
-        }
+        public ServiceRegistry Services { get; private set; }
 
         /// <summary>
-        ///     Adds a delegate for configuring additional services for the host or web application. This may be called
-        ///     multiple times.
+        ///     Access to the strong typed configuration settings and alterations within
+        ///     a Jasper application
         /// </summary>
-        /// <param name="configureServices">A delegate for configuring the <see cref="IServiceCollection" />.</param>
-        /// <returns>The <see cref="IWebHostBuilder" />.</returns>
-        IWebHostBuilder IWebHostBuilder.ConfigureServices(Action<WebHostBuilderContext, IServiceCollection> configureServices)
-        {
-            InnerWebHostBuilder.ConfigureServices(configureServices);
-            return this;
-        }
+        public JasperSettings Settings { get; }
 
         /// <summary>
-        ///     Get the setting value from the configuration.
+        ///     The main application assembly for this Jasper system
         /// </summary>
-        /// <param name="key">The key of the setting to look up.</param>
-        /// <returns>The value the setting currently contains.</returns>
-        string IWebHostBuilder.GetSetting(string key)
-        {
-            return InnerWebHostBuilder.GetSetting(key);
-        }
+        public Assembly ApplicationAssembly { get; private set; }
 
-        /// <summary>
-        ///     Add or replace a setting in the configuration.
-        /// </summary>
-        /// <param name="key">The key of the setting to add or replace.</param>
-        /// <param name="value">The value of the setting to add or replace.</param>
-        /// <returns>The <see cref="IWebHostBuilder" />.</returns>
-        IWebHostBuilder IWebHostBuilder.UseSetting(string key, string value)
+        private void establishApplicationAssembly(string assemblyName)
         {
-            InnerWebHostBuilder.UseSetting(key, value);
-            return this;
-        }
-
-        internal class NulloStartup : IStartup
-        {
-            public IServiceProvider ConfigureServices(IServiceCollection services)
+            if (assemblyName.IsNotEmpty())
             {
-                return new Container(services);
+                ApplicationAssembly = Assembly.Load(assemblyName);
+            }
+            else if ((GetType() == typeof(JasperRegistry) || GetType() == typeof(JasperRegistry)))
+            {
+                if (_rememberedCallingAssembly == null)
+                {
+                    _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+                }
+
+                ApplicationAssembly = _rememberedCallingAssembly;
+            }
+            else
+            {
+                ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
             }
 
-            public void Configure(IApplicationBuilder app)
+            if (ApplicationAssembly == null)
+                throw new InvalidOperationException("Unable to determine an application assembly");
+        }
+
+        protected internal void Describe(IJasperHost runtime, TextWriter writer)
+        {
+            Messaging.Describe(runtime, writer);
+            HttpRoutes.Describe(runtime, writer);
+        }
+
+        private string _serviceName;
+        internal MessagingConfiguration Messaging { get; } = new MessagingConfiguration();
+
+        /// <summary>
+        ///     Options to control how Jasper discovers message handler actions, error
+        ///     handling, local worker queues, and other policies on message handling
+        /// </summary>
+        public IHandlerConfiguration Handlers => Messaging.Handling;
+
+
+        /// <summary>
+        ///     Configure static message routing rules and message publishing rules
+        /// </summary>
+        public PublishingExpression Publish { get; }
+
+        /// <summary>
+        ///     Configure or disable the built in transports
+        /// </summary>
+        public ITransportsExpression Transports => this;
+
+        /// <summary>
+        ///     Get or set the logical Jasper service name. By default, this is
+        ///     derived from the name of a custom JasperRegistry
+        /// </summary>
+        public string ServiceName
+        {
+            get => _serviceName;
+            set
             {
-                Console.WriteLine("Jasper 'Nullo' startup is being used to start the ASP.Net Core application");
+                _serviceName = value;
+                Settings.Messaging(x => x.ServiceName = value);
             }
         }
 
-        /// <summary>
-        /// Used by Jasper's Alba adapter. Creates the equivalent WebHostBuilder
-        /// for the configurations here.
-        /// </summary>
-        /// <returns></returns>
-        public IWebHostBuilder ToWebHostBuilder()
+
+        void ITransportsExpression.ListenForMessagesFrom(Uri uri)
         {
-            return InnerWebHostBuilder.ConfigureServices(s =>
+            Settings.Alter<JasperOptions>(x => x.ListenForMessagesFrom(uri));
+        }
+
+        void ITransportsExpression.ListenForMessagesFrom(string uriString)
+        {
+            Settings.Alter<JasperOptions>(x => x.ListenForMessagesFrom(uriString.ToUri()));
+        }
+
+        void ITransportsExpression.EnableTransport(string protocol)
+        {
+            Settings.Alter<JasperOptions>(x => x.EnableTransport(protocol));
+        }
+
+        void ITransportsExpression.DisableTransport(string protocol)
+        {
+            Settings.Alter<JasperOptions>(x => x.DisableTransport(protocol));
+        }
+
+        private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();
+
+        internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();
+
+        /// <summary>
+        ///     Read only view of the extensions that have been applied to this
+        ///     JasperRegistry
+        /// </summary>
+        public IReadOnlyList<IJasperExtension> AppliedExtensions => _appliedExtensions;
+
+        internal void ApplyExtensions(IJasperExtension[] extensions)
+        {
+            Settings.ApplyingExtensions = true;
+            Services = ExtensionServices;
+
+
+            foreach (var extension in extensions)
             {
-                if (s.All(x => x.ServiceType != typeof(IStartup)))
-                {
-                    s.AddSingleton<IStartup>(new JasperRegistry.NulloStartup());
-                }
+                extension.Configure(this);
+                _appliedExtensions.Add(extension);
+            }
 
-                if (s.All(x => x.ServiceType != typeof(IServer)))
-                {
-                    s.AddSingleton<IServer>(new NulloServer());
-                }
 
-                s.AddSingleton<IStartupFilter>(new RegisterJasperStartupFilter());
-            })
-                .UseJasper(this);
+            Services = _applicationServices;
+            Settings.ApplyingExtensions = false;
+        }
 
+        /// <summary>
+        ///     Applies the extension to this application
+        /// </summary>
+        /// <param name="extension"></param>
+        public void Include(IJasperExtension extension)
+        {
+            ApplyExtensions(new[] {extension});
+        }
+
+        /// <summary>
+        ///     Applies the extension with optional configuration to the application
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <typeparam name="T"></typeparam>
+        public void Include<T>(Action<T> configure = null) where T : IJasperExtension, new()
+        {
+            var extension = new T();
+            configure?.Invoke(extension);
+
+            Include(extension);
+        }
+
+        public ServiceRegistry CombineServices()
+        {
+            var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
+
+            var combined = new ServiceRegistry();
+            combined.AddRange(all);
+
+            combined.For<IDurableMessagingFactory>().UseIfNone<NulloDurableMessagingFactory>();
+
+            return combined;
         }
     }
 }

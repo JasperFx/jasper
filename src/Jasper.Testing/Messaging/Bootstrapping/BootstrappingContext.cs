@@ -14,7 +14,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         public readonly Uri Uri2 = new Uri("stub://2");
         public readonly Uri Uri3 = new Uri("stub://3");
         public readonly Uri Uri4 = new Uri("stub://4");
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
 
         public BootstrappingContext()
         {
@@ -29,20 +29,20 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _host?.Dispose();
         }
 
 
-        public async Task<JasperRuntime> theRuntime()
+        public IJasperHost theHost()
         {
-            if (_runtime == null) _runtime = await JasperRuntime.ForAsync(theRegistry);
+            if (_host == null) _host = JasperHost.For(theRegistry);
 
-            return _runtime;
+            return _host;
         }
 
-        public async Task<HandlerGraph> theHandlers()
+        public HandlerGraph theHandlers()
         {
-            return (await theRuntime()).Get<HandlerGraph>();
+            return (theHost()).Get<HandlerGraph>();
         }
     }
 }

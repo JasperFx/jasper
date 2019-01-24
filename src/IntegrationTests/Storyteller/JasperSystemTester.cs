@@ -70,7 +70,7 @@ namespace IntegrationTests.Storyteller
         }
 
         [Fact]
-        public async Task before_all_is_called_in_warmup_with_runtime()
+        public async Task before_all_is_called_in_warmup_with_host()
         {
             using (var system = new FakeStorytellerSystem())
             {
@@ -98,7 +98,7 @@ namespace IntegrationTests.Storyteller
 
 
         [Fact]
-        public async Task bootstraps_the_runtime()
+        public async Task bootstraps_the_host()
         {
             using (var system = JasperStorytellerHost.Basic(x => { x.HttpRoutes.DisableConventionalDiscovery(); }))
             {
@@ -123,7 +123,7 @@ namespace IntegrationTests.Storyteller
         }
 
         [Fact]
-        public async Task disposes_the_runtime()
+        public async Task disposes_the_host()
         {
             var system = new FakeStorytellerSystem();
 

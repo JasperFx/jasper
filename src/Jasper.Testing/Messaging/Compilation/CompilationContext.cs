@@ -17,10 +17,10 @@ namespace Jasper.Testing.Messaging.Compilation
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _host?.Dispose();
         }
 
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
 
 
         protected Envelope theEnvelope;
@@ -30,26 +30,26 @@ namespace Jasper.Testing.Messaging.Compilation
 
         protected void AllHandlersCompileSuccessfully()
         {
-            using (var runtime = JasperRuntime.For(theRegistry))
+            using (var runtime = JasperHost.For(theRegistry))
             {
                 runtime.Get<HandlerGraph>().Chains.Length.ShouldBeGreaterThan(0);
             }
 
         }
 
-        public async Task<MessageHandler> HandlerFor<TMessage>()
+        public MessageHandler HandlerFor<TMessage>()
         {
-            if (_runtime == null) _runtime = await JasperRuntime.ForAsync(theRegistry);
+            if (_host == null) _host = JasperHost.For(theRegistry);
 
 
-            return _runtime.Get<HandlerGraph>().HandlerFor(typeof(TMessage));
+            return _host.Get<HandlerGraph>().HandlerFor(typeof(TMessage));
         }
 
         public async Task<IMessageContext> Execute<TMessage>(TMessage message)
         {
-            var handler = await HandlerFor<TMessage>();
+            var handler = HandlerFor<TMessage>();
             theEnvelope = new Envelope(message);
-            var context = _runtime.Get<IMessagingRoot>().ContextFor(theEnvelope);
+            var context = _host.Get<IMessagingRoot>().ContextFor(theEnvelope);
 
             await handler.Handle(context);
 

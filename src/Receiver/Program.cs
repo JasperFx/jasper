@@ -1,4 +1,5 @@
-﻿using Jasper.CommandLine;
+﻿using Jasper;
+using Jasper.CommandLine;
 
 namespace Receiver
 {
@@ -6,7 +7,7 @@ namespace Receiver
     {
         private static int Main(string[] args)
         {
-            return JasperAgent.Run<ReceiverApp>(args);
+            return JasperHost.Run<ReceiverApp>(args);
         }
     }
 }

@@ -27,14 +27,14 @@ namespace Jasper.Testing.Bootstrapping
         }
 
         [Fact]
-        public async Task sets_up_the_container_with_services()
+        public void sets_up_the_container_with_services()
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery();
             registry.Services.For<IFoo>().Use<Foo>();
             registry.Services.AddTransient<IFakeStore, FakeStore>();
 
-            using (var runtime = await JasperRuntime.ForAsync(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 runtime.Container.DefaultRegistrationIs<IFoo, Foo>();
             }

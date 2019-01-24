@@ -18,7 +18,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
     {
         public MartenBackedMessagePersistenceTests()
         {
-            theRuntime = JasperRuntime.For(_ =>
+            theHost = JasperHost.For(_ =>
             {
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
                 _.ConfigureMarten(x =>
@@ -28,16 +28,16 @@ namespace IntegrationTests.Persistence.Marten.Persistence
                 });
             });
 
-            theRuntime.Get<IDocumentStore>().Schema.ApplyAllConfiguredChangesToDatabase();
+            theHost.Get<IDocumentStore>().Schema.ApplyAllConfiguredChangesToDatabase();
 
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
 
-            theRuntime.Get<MartenBackedDurableMessagingFactory>().ScheduleJob(theEnvelope).Wait(3.Seconds());
+            theHost.Get<MartenBackedDurableMessagingFactory>().ScheduleJob(theEnvelope).Wait(3.Seconds());
 
 
-            using (var session = theRuntime.Get<IDocumentStore>().LightweightSession())
+            using (var session = theHost.Get<IDocumentStore>().LightweightSession())
             {
                 persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
             }
@@ -45,10 +45,10 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
         public void Dispose()
         {
-            theRuntime.Dispose();
+            theHost.Dispose();
         }
 
-        private readonly JasperRuntime theRuntime;
+        private readonly IJasperHost theHost;
         private readonly Envelope theEnvelope;
         private readonly Envelope persisted;
 

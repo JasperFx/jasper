@@ -21,7 +21,7 @@ namespace StorytellerSpecs.Fixtures
     public class BusRoutingFixture : BusFixture
     {
         private JasperRegistry _registry;
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
         private MessageRoute[] _tracks;
 
 
@@ -93,9 +93,9 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
 
-            if (_runtime == null) _runtime = JasperRuntime.For(_registry);
+            if (_host == null) _host = JasperHost.For(_registry);
 
-            var router = _runtime.Get<IMessageRouter>();
+            var router = _host.Get<IMessageRouter>();
 
             _tracks = router.Route(messageType);
         }
@@ -126,8 +126,8 @@ namespace StorytellerSpecs.Fixtures
 
         public override void TearDown()
         {
-            _runtime?.Dispose();
-            _runtime = null;
+            _host?.Dispose();
+            _host = null;
         }
     }
 

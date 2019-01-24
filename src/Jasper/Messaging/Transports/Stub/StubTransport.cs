@@ -17,7 +17,7 @@ namespace Jasper.Messaging.Transports.Stub
         /// </summary>
         /// <param name="runtime"></param>
         /// <returns></returns>
-        public static StubTransport GetStubTransport(this JasperRuntime runtime)
+        public static StubTransport GetStubTransport(this IJasperHost runtime)
         {
             return runtime.Get<IMessagingRoot>().Transports.OfType<StubTransport>().Single();
         }
@@ -26,7 +26,7 @@ namespace Jasper.Messaging.Transports.Stub
         ///     Clears all record of messages sent to the stub transport
         /// </summary>
         /// <param name="runtime"></param>
-        public static void ClearStubTransportSentList(this JasperRuntime runtime)
+        public static void ClearStubTransportSentList(this IJasperHost runtime)
         {
             runtime.GetStubTransport().Channels.Each(x => x.Sent.Clear());
         }
@@ -36,7 +36,7 @@ namespace Jasper.Messaging.Transports.Stub
         /// </summary>
         /// <param name="runtime"></param>
         /// <returns></returns>
-        public static Envelope[] AllSentThroughTheStubTransport(this JasperRuntime runtime)
+        public static Envelope[] AllSentThroughTheStubTransport(this IJasperHost runtime)
         {
             return runtime.GetStubTransport().Channels.SelectMany(x => x.Sent).ToArray();
         }

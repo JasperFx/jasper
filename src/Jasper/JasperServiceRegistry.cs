@@ -21,7 +21,7 @@ namespace Jasper
 {
     internal class JasperServiceRegistry : ServiceRegistry
     {
-        public JasperServiceRegistry(JasperOptionsBuilder parent)
+        public JasperServiceRegistry(JasperRegistry parent)
         {
             For<IMetrics>().Use<NulloMetrics>();
             For<IHostedService>().Use<MetricsCollector>();
@@ -42,7 +42,7 @@ namespace Jasper
             aspnetcore(parent);
         }
 
-        private void aspnetcore(JasperOptionsBuilder parent)
+        private void aspnetcore(JasperRegistry parent)
         {
             this.AddSingleton<ConnegRules>();
 
@@ -55,7 +55,7 @@ namespace Jasper
 
         }
 
-        private void conneg(JasperOptionsBuilder parent)
+        private void conneg(JasperRegistry parent)
         {
             this.AddOptions();
 
@@ -71,7 +71,7 @@ namespace Jasper
             });
         }
 
-        private void messaging(JasperOptionsBuilder parent)
+        private void messaging(JasperRegistry parent)
         {
             ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
 

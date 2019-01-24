@@ -14,7 +14,7 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public void registrations()
         {
-            using (var runtime = JasperRuntime.For(x =>
+            using (var runtime = JasperHost.For(x =>
                 x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
                 runtime.Container.Model.HasRegistrationFor<SqlConnection>().ShouldBeTrue();

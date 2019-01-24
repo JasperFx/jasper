@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Jasper;
+using System;
 using Alba;
 using Baseline;
 using Jasper.Http.Routing;
-using LamarCompiler.Frames;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+
+[assembly:JasperFeature]
 
 namespace Jasper.TestSupport.Alba
 {
@@ -32,11 +35,34 @@ namespace Jasper.TestSupport.Alba
         /// <returns></returns>
         public static SystemUnderTest For(JasperRegistry registry)
         {
-            var builder = registry.ToWebHostBuilder();
+            var builder = JasperHost.CreateDefaultBuilder().UseJasper(registry);
             var system = new SystemUnderTest(builder, registry.ApplicationAssembly);
             system.As<ISystemUnderTest>().Urls = new JasperUrlLookup(system.Services.GetRequiredService<IUrlRegistry>());
 
             return system;
+        }
+
+        /// <summary>
+        /// Build an Alba SystemUnderTest for a Jasper-enabled ASP.Net Core application
+        /// with Jasper Url lookup
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static SystemUnderTest For(IWebHostBuilder builder)
+        {
+            builder.ConfigureServices(x => x.AddSingleton<IUrlLookup, JasperUrlLookup>());
+            return new SystemUnderTest(builder);
+        }
+
+        /// <summary>
+        /// Extension method that creates an Alba SystemUnderTest for an IWebHostBuilder
+        /// with Jasper based Url lookup
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static SystemUnderTest ToAlbaSystem(this IWebHostBuilder builder)
+        {
+            return For(builder);
         }
     }
 }

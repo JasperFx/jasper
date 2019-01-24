@@ -10,21 +10,21 @@ namespace Jasper.Testing.Messaging.Sagas
 {
     public class SagaFixture : IDisposable
     {
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _host?.Dispose();
         }
 
-        public async Task withRuntime()
+        public void withRuntime()
         {
-            if (_runtime == null) _runtime = await JasperRuntime.BasicAsync();
+            if (_host == null) _host = JasperHost.Basic();
         }
 
         public HandlerChain ChainFor<T>()
         {
-            return _runtime.Get<HandlerGraph>().ChainFor<T>();
+            return _host.Get<HandlerGraph>().ChainFor<T>();
         }
     }
 
@@ -43,24 +43,24 @@ namespace Jasper.Testing.Messaging.Sagas
         }
 
         [Fact]
-        public async Task finds_actions_on_saga_state_handler_classes()
+        public void finds_actions_on_saga_state_handler_classes()
         {
-            await _fixture.withRuntime();
+            _fixture.withRuntime();
 
             ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaMessage2>());
         }
 
         [Fact]
-        public async Task finds_actions_on_saga_state_orchestrates_methods()
+        public void finds_actions_on_saga_state_orchestrates_methods()
         {
-            await _fixture.withRuntime();
+            _fixture.withRuntime();
             ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaMessage1>());
         }
 
         [Fact]
-        public async Task finds_actions_on_saga_state_start_methods()
+        public void finds_actions_on_saga_state_start_methods()
         {
-            await _fixture.withRuntime();
+            _fixture.withRuntime();
             ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaStarter>());
         }
     }

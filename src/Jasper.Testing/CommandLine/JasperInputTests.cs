@@ -20,7 +20,7 @@ namespace Jasper.Testing.CommandLine
 
             var input = new JasperInput
             {
-                Source = new RegistryRuntimeSource(registry),
+                WebHostBuilder = JasperHost.CreateDefaultBuilder().UseJasper(registry),
                 EnvironmentFlag = "Fake"
             };
 
@@ -40,7 +40,7 @@ namespace Jasper.Testing.CommandLine
 
             var input = new JasperInput
             {
-                Source = new RegistryRuntimeSource(registry),
+                WebHostBuilder = JasperHost.CreateDefaultBuilder().UseJasper(registry),
                 VerboseFlag = true
             };
 

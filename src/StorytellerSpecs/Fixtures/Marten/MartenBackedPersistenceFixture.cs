@@ -23,10 +23,10 @@ namespace StorytellerSpecs.Fixtures.Marten
     {
         private StorytellerMessageLogger _messageLogger;
 
-        private LightweightCache<string, JasperRuntime> _receivers;
+        private LightweightCache<string, IJasperHost> _receivers;
         private DocumentStore _receiverStore;
 
-        private LightweightCache<string, JasperRuntime> _senders;
+        private LightweightCache<string, IJasperHost> _senders;
         private SenderLatchDetected _senderWatcher;
         private DocumentStore _sendingStore;
 
@@ -71,35 +71,22 @@ namespace StorytellerSpecs.Fixtures.Marten
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
             _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
 
-            _receivers = new LightweightCache<string, JasperRuntime>(key =>
+            _receivers = new LightweightCache<string, IJasperHost>(key =>
             {
                 var registry = new ReceiverApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
-                registry.Hosting.ConfigureLogging(x =>
-                {
-                    x.AddConsole();
-                    x.AddDebug();
-                });
-
-                return JasperRuntime.For(registry);
+                return JasperHost.For(registry);
             });
 
-            _senders = new LightweightCache<string, JasperRuntime>(key =>
+            _senders = new LightweightCache<string, IJasperHost>(key =>
             {
                 var registry = new SenderApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
                 registry.Services.For<ITransportLogger>().Use(_senderWatcher);
 
-
-                registry.Hosting.ConfigureLogging(x =>
-                {
-                    x.AddConsole();
-                    x.AddDebug();
-                });
-
-                return JasperRuntime.For(registry);
+                return JasperHost.For(registry);
             });
         }
 

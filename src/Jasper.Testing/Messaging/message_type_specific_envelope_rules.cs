@@ -16,7 +16,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void apply_message_type_rules_from_attributes()
         {
-            using (var runtime = JasperRuntime.Basic())
+            using (var runtime = JasperHost.Basic())
             {
                 var root = runtime.Get<IMessagingRoot>();
                 var envelope = new Envelope
@@ -34,7 +34,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void deliver_by_mechanics()
         {
-            using (var runtime = JasperRuntime.Basic())
+            using (var runtime = JasperHost.Basic())
             {
                 var root = runtime.Get<IMessagingRoot>();
                 var envelope = new Envelope
@@ -52,7 +52,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task see_the_customizations_happen_inside_of_message_context()
         {
-            using (var runtime = JasperRuntime.Basic())
+            using (var runtime = JasperHost.Basic())
             {
                 var context = runtime.Get<IMessageContext>();
 

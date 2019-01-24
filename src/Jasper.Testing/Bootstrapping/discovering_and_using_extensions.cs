@@ -8,9 +8,9 @@ namespace Jasper.Testing.Bootstrapping
     public class discovering_and_using_extensions
     {
         [Fact]
-        public async Task application_service_registrations_win()
+        public void application_service_registrations_win()
         {
-            using (var runtime = await JasperRuntime.ForAsync<AppWithOverrides>())
+            using (var runtime = JasperHost.For<AppWithOverrides>())
             {
                 runtime.Container.DefaultRegistrationIs<IModuleService, AppsModuleService>();
 

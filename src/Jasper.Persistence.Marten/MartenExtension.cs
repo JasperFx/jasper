@@ -12,7 +12,7 @@ namespace Jasper.Persistence.Marten
 {
     public class MartenExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Services.AddSingleton<IDocumentStore>(x =>
             {

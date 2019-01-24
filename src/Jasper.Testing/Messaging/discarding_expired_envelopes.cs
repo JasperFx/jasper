@@ -17,7 +17,7 @@ namespace Jasper.Testing.Messaging
         {
             var logger = Substitute.For<IMessageLogger>();
 
-            using (var runtime = JasperRuntime.For(x =>
+            using (var runtime = JasperHost.For(x =>
             {
                 x.Handlers.DisableConventionalDiscovery();
                 x.Services.AddSingleton(logger);

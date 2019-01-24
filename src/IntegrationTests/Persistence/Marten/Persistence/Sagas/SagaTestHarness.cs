@@ -15,11 +15,11 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
         where TSagaHandler : StatefulSagaOf<TSagaState>
     {
         private readonly MessageHistory _history;
-        private readonly JasperRuntime _runtime;
+        private readonly IJasperHost _host;
 
         protected SagaTestHarness()
         {
-            _runtime = JasperRuntime.For(_ =>
+            _host = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
@@ -39,21 +39,21 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
                 configure(_);
             });
 
-            _history = _runtime.Get<MessageHistory>();
+            _history = _host.Get<MessageHistory>();
 
-            var store = _runtime.Get<IDocumentStore>();
+            var store = _host.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
             store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
         }
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _host?.Dispose();
         }
 
         protected string codeFor<T>()
         {
-            return _runtime.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
+            return _host.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
         }
 
         protected virtual void configure(JasperRegistry registry)
@@ -63,18 +63,18 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 
         protected Task send<T>(T message)
         {
-            return _history.WatchAsync(() => _runtime.Messaging.Send(message), 10000);
+            return _history.WatchAsync(() => _host.Messaging.Send(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _runtime.Messaging.Send(message, e => e.SagaId = sagaId.ToString()),
+            return _history.WatchAsync(() => _host.Messaging.Send(message, e => e.SagaId = sagaId.ToString()),
                 10000);
         }
 
         protected async Task<TSagaState> LoadState(Guid id)
         {
-            using (var session = _runtime.Get<IQuerySession>())
+            using (var session = _host.Get<IQuerySession>())
             {
                 return await session.LoadAsync<TSagaState>(id);
             }
@@ -82,7 +82,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 
         protected async Task<TSagaState> LoadState(int id)
         {
-            using (var session = _runtime.Get<IQuerySession>())
+            using (var session = _host.Get<IQuerySession>())
             {
                 return await session.LoadAsync<TSagaState>(id);
             }
@@ -90,7 +90,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 
         protected async Task<TSagaState> LoadState(long id)
         {
-            using (var session = _runtime.Get<IQuerySession>())
+            using (var session = _host.Get<IQuerySession>())
             {
                 return await session.LoadAsync<TSagaState>(id);
             }
@@ -98,7 +98,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 
         protected async Task<TSagaState> LoadState(string id)
         {
-            using (var session = _runtime.Get<IQuerySession>())
+            using (var session = _host.Get<IQuerySession>())
             {
                 return await session.LoadAsync<TSagaState>(id);
             }

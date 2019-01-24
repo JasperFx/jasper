@@ -16,9 +16,9 @@ namespace Jasper.Testing.Messaging
         private readonly WorkTracker theTracker = new WorkTracker();
 
 
-        private Task configure()
+        private void configure()
         {
-            return with(_ =>
+            with(_ =>
             {
                 _.Services.AddSingleton(theTracker);
 
@@ -83,7 +83,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task exceptions_will_be_thrown_to_caller()
         {
-            await configure();
+            configure();
 
             var message = new Message5
             {
@@ -98,7 +98,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task will_log_an_exception()
         {
-            await configure();
+            configure();
 
             try
             {
@@ -114,7 +114,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task will_process_inline()
         {
-            await configure();
+            configure();
 
             var message = new Message5();
 
@@ -126,7 +126,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task will_send_cascading_messages()
         {
-            await configure();
+            configure();
 
             var message = new Message5();
 

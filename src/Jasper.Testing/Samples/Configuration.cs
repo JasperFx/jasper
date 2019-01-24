@@ -28,13 +28,13 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
 
             // SAMPLE: build-configuration
-            Hosting.ConfigureAppConfiguration((context, config) =>
+            Hosting(x => x.ConfigureAppConfiguration((context, config) =>
             {
                 config.SetBasePath(context.HostingEnvironment.WebRootPath)
                     .AddJsonFile("myconfig.json")
                     .AddJsonFile("myotherconfig.json.config")
                     .AddEnvironmentVariables();
-            });
+            }));
 
 
 
@@ -56,7 +56,7 @@ namespace Jasper.Testing.Samples
         {
             public MyApp()
             {
-                Hosting.ConfigureAppConfiguration((context, config) => config.AddJsonFile("mysettings.json"));
+                Hosting(x => x.ConfigureAppConfiguration((context, config) => config.AddJsonFile("mysettings.json")));
             }
         }
 

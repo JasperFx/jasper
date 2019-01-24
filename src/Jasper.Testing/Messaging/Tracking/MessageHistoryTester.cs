@@ -90,7 +90,7 @@ namespace Jasper.Testing.Messaging.Tracking
         [Fact]
         public async Task history_can_still_do_the_watch()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<MessageThatFailsHandler>();
                 _.Include<MessageTrackingExtension>();

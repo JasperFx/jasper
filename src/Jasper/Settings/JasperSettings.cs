@@ -9,7 +9,7 @@ namespace Jasper.Settings
 {
     public interface IHasRegistryParent
     {
-        JasperOptionsBuilder Parent { get; }
+        JasperRegistry Parent { get; }
     }
 
     public class JasperSettings : IHasRegistryParent
@@ -25,19 +25,19 @@ namespace Jasper.Settings
         private readonly IList<Action<WebHostBuilderContext>>
             _configActions = new List<Action<WebHostBuilderContext>>();
 
-        private readonly JasperOptionsBuilder _parent;
+        private readonly JasperRegistry _parent;
 
         private readonly Dictionary<Type, ISettingsBuilder> _settings
             = new Dictionary<Type, ISettingsBuilder>();
 
-        public JasperSettings(JasperOptionsBuilder parent)
+        public JasperSettings(JasperRegistry parent)
         {
             _parent = parent;
         }
 
         internal bool ApplyingExtensions { private get; set; }
 
-        JasperOptionsBuilder IHasRegistryParent.Parent => _parent;
+        JasperRegistry IHasRegistryParent.Parent => _parent;
 
         private SettingsBuilder<T> forType<T>(Func<WebHostBuilderContext, T> source = null) where T : class
         {

@@ -9,7 +9,7 @@ namespace Jasper.Testing.Samples
     // SAMPLE: SampleExtension
     public class SampleExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             // Add service registrations
             registry.Services.AddTransient<IFoo, Foo>();

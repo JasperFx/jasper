@@ -14,7 +14,7 @@ namespace Jasper.Testing.Bootstrapping
         {
             var service = new MyHostedService();
 
-            using (var runtime = JasperRuntime.For(x => x.Services.AddSingleton<IHostedService>(service)))
+            using (var runtime = JasperHost.For(x => x.Services.AddSingleton<IHostedService>(service)))
             {
                 service.WasStarted.ShouldBeTrue();
                 service.WasStopped.ShouldBeFalse();

@@ -87,7 +87,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
             var registry = new JasperRegistry();
             registry.HttpRoutes.DisableConventionalDiscovery().IncludeType<SomeEndpoints>();
 
-            using (var runtime = JasperRuntime.For(registry))
+            using (var runtime = JasperHost.For(registry))
             {
 
             }
@@ -125,7 +125,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         private readonly IWebHost theHost;
 
         // ReSharper disable once UnusedMember.Global
-        public void sample()
+        protected void sample()
         {
             // SAMPLE: ordering-middleware-with-jasper
             var builder = new WebHostBuilder();
@@ -195,7 +195,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
     }
 
     // SAMPLE: SimpleJasperBusApp
-    public class SimpleJasperBusApp : JasperOptionsBuilder
+    public class SimpleJasperBusApp : JasperRegistry
         // ENDSAMPLE
     {
     }

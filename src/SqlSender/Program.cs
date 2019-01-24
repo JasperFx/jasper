@@ -1,4 +1,5 @@
-﻿using Jasper.CommandLine;
+﻿using Jasper;
+using Jasper.CommandLine;
 
 namespace SqlSender
 {
@@ -6,7 +7,7 @@ namespace SqlSender
     {
         private static int Main(string[] args)
         {
-            return JasperAgent.Run<SenderApp>(args);
+            return JasperHost.Run<SenderApp>(args);
         }
     }
 }

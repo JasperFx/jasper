@@ -26,15 +26,15 @@ namespace Jasper.Testing.Conneg
             blueApp?.Dispose();
         }
 
-        private JasperRuntime greenApp;
-        private JasperRuntime blueApp;
+        private IJasperHost greenApp;
+        private IJasperHost blueApp;
         private readonly MessageTracker theTracker;
 
         [Fact]
         public async Task send_green_as_text_and_receive_as_blue()
         {
-            greenApp = await JasperRuntime.ForAsync<GreenApp>();
-            blueApp = await JasperRuntime.ForAsync(new BlueApp(theTracker));
+            greenApp = JasperHost.For<GreenApp>();
+            blueApp = JasperHost.For(new BlueApp(theTracker));
 
 
             theTracker.ShouldBeTheSameAs(blueApp.Get<MessageTracker>());
@@ -55,8 +55,8 @@ namespace Jasper.Testing.Conneg
         [Fact]
         public async Task send_green_that_gets_received_as_blue()
         {
-            greenApp = await JasperRuntime.ForAsync<GreenApp>();
-            blueApp = await JasperRuntime.ForAsync(new BlueApp(theTracker));
+            greenApp = JasperHost.For<GreenApp>();
+            blueApp = JasperHost.For(new BlueApp(theTracker));
 
             var waiter = theTracker.WaitFor<BlueMessage>();
 

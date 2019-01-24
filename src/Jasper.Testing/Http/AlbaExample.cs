@@ -59,16 +59,16 @@ namespace Jasper.Testing.Http
     {
         public AlbaExampleWithSharedContext(ApplicationFixture fixture)
         {
-            _runtime = fixture.Runtime;
+            _host = fixture.Runtime;
         }
 
-        private readonly SystemUnderTest _runtime;
+        private readonly SystemUnderTest _host;
 
 
         [Fact]
         public Task sample_alba_spec()
         {
-            return _runtime.Scenario(x =>
+            return _host.Scenario(x =>
             {
                 x.Get.Url("/salutations");
                 x.StatusCodeShouldBeOk();

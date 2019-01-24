@@ -9,7 +9,7 @@ namespace Jasper.Testing
     [Collection("integration")]
     public class IntegrationContext : IDisposable
     {
-        public JasperRuntime Runtime { get; private set; }
+        public IJasperHost Runtime { get; private set; }
 
         public IMessageContext Bus => Runtime.Get<IMessageContext>();
 
@@ -23,12 +23,12 @@ namespace Jasper.Testing
         }
 
 
-        protected Task withAllDefaults()
+        protected void withAllDefaults()
         {
-            return with(new JasperRegistry());
+            with(new JasperRegistry());
         }
 
-        protected async Task with(JasperRegistry registry)
+        protected void with(JasperRegistry registry)
         {
             registry.Services.Scan(_ =>
             {
@@ -36,23 +36,23 @@ namespace Jasper.Testing
                 _.WithDefaultConventions();
             });
 
-            Runtime = await JasperRuntime.ForAsync(registry);
+            Runtime = JasperHost.For(registry);
         }
 
-        protected Task with(Action<JasperRegistry> configuration)
+        protected void with(Action<JasperRegistry> configuration)
         {
             var registry = new JasperRegistry();
 
 
             configuration(registry);
 
-            return with(registry);
+            with(registry);
         }
 
-        protected Task with<T>() where T : JasperRegistry, new()
+        protected void with<T>() where T : JasperRegistry, new()
         {
             var registry = new T();
-            return with(registry);
+            with(registry);
         }
 
         protected HandlerChain chainFor<T>()

@@ -13,21 +13,21 @@ namespace Jasper.Testing.Samples
         public static void Go()
         {
             // SAMPLE: Bootstrapping-Basic
-            using (var runtime = JasperRuntime.Basic())
+            using (var runtime = JasperHost.Basic())
             {
                 // do stuff
             }
             // ENDSAMPLE
 
             // SAMPLE: Bootstrapping-Basic2
-            using (var runtime = JasperRuntime.For(new JasperRegistry()))
+            using (var runtime = JasperHost.For(new JasperRegistry()))
             {
                 // do stuff
             }
             // ENDSAMPLE
 
             // SAMPLE: Bootstrapping-Basic3
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperHost.For(_ =>
             {
                 _.Transports.ListenForMessagesFrom("tcp://localhost:2001");
             }))
@@ -44,7 +44,7 @@ namespace Jasper.Testing.Samples
     {
         public int Threshold { get; set; } = 10;
 
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             // apply alterations
         }
@@ -121,14 +121,14 @@ namespace Bootstrapping.Configuration2
         public static void Go()
         {
             // SAMPLE: Bootstrapping-with-custom-JasperRegistry
-            using (var runtime = JasperRuntime.For<MyJasperApp>())
+            using (var runtime = JasperHost.For<MyJasperApp>())
             {
                 // do stuff
             }
 
             // or
 
-            using (var runtime = JasperRuntime.For(new MyJasperApp()))
+            using (var runtime = JasperHost.For(new MyJasperApp()))
             {
                 // do stuff
             }
@@ -154,7 +154,7 @@ namespace Bootstrapping.Configuration2
         public EnvironmentNameRegistry()
         {
             // which is just a shortcut for:
-            Hosting.UseEnvironment("Production");
+            Hosting(x => x.UseEnvironment("Production"));
         }
     }
 

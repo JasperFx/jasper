@@ -11,7 +11,7 @@ namespace IntegrationTests.Persistence.Marten
         [Fact]
         public void registers_document_store_in_a_usable_way()
         {
-            using (var runtime = JasperRuntime.For<MartenUsingApp>())
+            using (var runtime = JasperHost.For<MartenUsingApp>())
             {
                 var doc = new FakeDoc {Id = Guid.NewGuid()};
 

@@ -25,8 +25,8 @@ namespace IntegrationTests
             new SchemaLoader(Servers.SqlServerConnectionString, "rabbit_receiver").RecreateAll();
             new SchemaLoader(Servers.SqlServerConnectionString, "rabbit_sender").RecreateAll();
 
-            var receiver = JasperRuntime.For<RabbitSender>();
-            var sender = JasperRuntime.For<RabbitReceiver>();
+            var receiver = JasperHost.For<RabbitSender>();
+            var sender = JasperHost.For<RabbitReceiver>();
 
             var source = new TaskCompletionSource<bool>();
 
@@ -60,12 +60,6 @@ namespace IntegrationTests
         {
             Handlers.DisableConventionalDiscovery();
 
-            Hosting.ConfigureLogging(x =>
-            {
-                x.AddConsole();
-                x.AddDebug();
-            });
-
             Publish.AllMessagesTo("rabbitmq://localhost:5672/numbers");
 
             Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "rabbit_sender");
@@ -79,12 +73,6 @@ namespace IntegrationTests
         public RabbitReceiver()
         {
             Handlers.DisableConventionalDiscovery().IncludeType<RabbitedMessageReceiver>();
-
-            Hosting.ConfigureLogging(x =>
-            {
-                x.AddConsole();
-                x.AddDebug();
-            });
 
             Transports.ListenForMessagesFrom("rabbitmq://localhost:5672/numbers");
 

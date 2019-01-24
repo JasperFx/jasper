@@ -12,16 +12,16 @@ namespace Jasper.Testing.Messaging.Sagas
         where TSagaHandler : StatefulSagaOf<TSagaState> where TSagaState : class
     {
         private MessageHistory _history;
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _host?.Dispose();
         }
 
-        protected async Task withApplication()
+        protected void withApplication()
         {
-            _runtime = await JasperRuntime.ForAsync(_ =>
+            _host = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
@@ -32,12 +32,12 @@ namespace Jasper.Testing.Messaging.Sagas
                 configure(_);
             });
 
-            _history = _runtime.Get<MessageHistory>();
+            _history = _host.Get<MessageHistory>();
         }
 
         protected string codeFor<T>()
         {
-            return _runtime.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
+            return _host.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
         }
 
         protected virtual void configure(JasperRegistry registry)
@@ -47,27 +47,27 @@ namespace Jasper.Testing.Messaging.Sagas
 
         protected async Task invoke<T>(T message)
         {
-            if (_history == null) await withApplication();
+            if (_history == null) withApplication();
 
-            await _runtime.Messaging.Invoke(message);
+            await _host.Messaging.Invoke(message);
         }
 
         protected async Task send<T>(T message)
         {
-            if (_history == null) await withApplication();
+            if (_history == null) withApplication();
 
-            await _history.WatchAsync(() => _runtime.Messaging.Send(message), 10000);
+            await _history.WatchAsync(() => _host.Messaging.Send(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _runtime.Messaging.Send(message, e => e.SagaId = sagaId.ToString()),
+            return _history.WatchAsync(() => _host.Messaging.Send(message, e => e.SagaId = sagaId.ToString()),
                 10000);
         }
 
         protected TSagaState LoadState(object id)
         {
-            return _runtime.Get<InMemorySagaPersistor>().Load<TSagaState>(id);
+            return _host.Get<InMemorySagaPersistor>().Load<TSagaState>(id);
         }
     }
 

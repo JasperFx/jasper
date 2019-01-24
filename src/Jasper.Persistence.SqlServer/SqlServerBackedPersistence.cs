@@ -19,7 +19,7 @@ namespace Jasper.Persistence.SqlServer
     /// </summary>
     public class SqlServerBackedPersistence : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Settings.Require<SqlServerSettings>();
 

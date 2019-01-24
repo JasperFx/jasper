@@ -10,9 +10,9 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task can_still_receive_if_the_queue_does_not_exist()
         {
-            await StartTheReceiver(_ => { _.Transports.ListenForMessagesFrom("tcp://localhost:2270"); });
+            StartTheReceiver(_ => { _.Transports.ListenForMessagesFrom("tcp://localhost:2270"); });
 
-            await StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2270/unknown"); });
+            StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2270/unknown"); });
 
             var waiter = theTracker.WaitFor<Message1>();
 
@@ -27,9 +27,9 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task send_to_the_default_queue()
         {
-            await StartTheReceiver(_ => { _.Transports.ListenForMessagesFrom("tcp://localhost:2258"); });
+            StartTheReceiver(_ => { _.Transports.ListenForMessagesFrom("tcp://localhost:2258"); });
 
-            await StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2258"); });
+            StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2258"); });
 
             var waiter = theTracker.WaitFor<Message1>();
 

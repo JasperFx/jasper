@@ -24,9 +24,9 @@ namespace StorytellerSpecs.Fixtures.SqlServer
     {
         private StorytellerMessageLogger _messageLogger;
 
-        private LightweightCache<string, JasperRuntime> _receivers;
+        private LightweightCache<string, IJasperHost> _receivers;
 
-        private LightweightCache<string, JasperRuntime> _senders;
+        private LightweightCache<string, IJasperHost> _senders;
         private SenderLatchDetected _senderWatcher;
 
         public SqlServerBackedPersistenceFixture()
@@ -67,22 +67,22 @@ create table receiver.trace_doc
 ").ExecuteNonQuery();
             }
 
-            _receivers = new LightweightCache<string, JasperRuntime>(key =>
+            _receivers = new LightweightCache<string, IJasperHost>(key =>
             {
                 var registry = new ReceiverApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
-                return JasperRuntime.For(registry);
+                return JasperHost.For(registry);
             });
 
-            _senders = new LightweightCache<string, JasperRuntime>(key =>
+            _senders = new LightweightCache<string, IJasperHost>(key =>
             {
                 var registry = new SenderApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
                 registry.Services.For<ITransportLogger>().Use(_senderWatcher);
 
-                return JasperRuntime.For(registry);
+                return JasperHost.For(registry);
             });
         }
 

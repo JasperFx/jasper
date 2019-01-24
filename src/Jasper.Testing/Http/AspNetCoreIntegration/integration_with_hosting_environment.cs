@@ -23,9 +23,9 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         }
 
         [Fact]
-        public async Task hosting_environment_app_name_is_application_assembly_name()
+        public void hosting_environment_app_name_is_application_assembly_name()
         {
-            using (var runtime = JasperRuntime.For<MySpecialRegistry>())
+            using (var runtime = JasperHost.For<MySpecialRegistry>())
 
             {
                 // This is important for the MVC and ASP.Net Core integration to work correctly
@@ -35,13 +35,13 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         }
 
         [Fact]
-        public async Task hosting_environment_uses_config()
+        public void hosting_environment_uses_config()
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery(true);
-            registry.Hosting.UseEnvironment("Fake");
+            registry.Hosting(x => x.UseEnvironment("Fake"));
 
-            using (var runtime = await JasperRuntime.ForAsync(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 runtime.Get<IHostingEnvironment>()
                     .EnvironmentName.ShouldBe("Fake");
@@ -50,13 +50,13 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         }
 
         [Fact]
-        public async Task hosting_environment_uses_config_2()
+        public void hosting_environment_uses_config_2()
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery(true);
-            registry.Hosting.UseEnvironment("Fake2");
+            registry.Hosting(x => x.UseEnvironment("Fake2"));
 
-            using (var runtime = await JasperRuntime.ForAsync(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 runtime.Get<IHostingEnvironment>()
                     .EnvironmentName.ShouldBe("Fake2");

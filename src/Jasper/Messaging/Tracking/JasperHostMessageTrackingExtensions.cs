@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Messaging.Tracking
 {
-    public static class JasperRuntimeMessageTrackingExtensions
+    public static class JasperHostMessageTrackingExtensions
     {
-        private static void validateMessageTrackerExists(this JasperRuntime runtime)
+        private static void validateMessageTrackerExists(this IJasperHost runtime)
         {
             var history = runtime.Container.Model.For<MessageHistory>().Default;
 
@@ -23,7 +23,7 @@ namespace Jasper.Messaging.Tracking
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static async Task SendMessageAndWait<T>(this JasperRuntime runtime, T message,
+        public static async Task SendMessageAndWait<T>(this IJasperHost runtime, T message,
             int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
@@ -42,7 +42,7 @@ namespace Jasper.Messaging.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this JasperRuntime runtime, Func<Task> action,
+        public static async Task ExecuteAndWait(this IJasperHost runtime, Func<Task> action,
             int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
@@ -60,7 +60,7 @@ namespace Jasper.Messaging.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this JasperRuntime runtime, Action action,
+        public static async Task ExecuteAndWait(this IJasperHost runtime, Action action,
             bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
@@ -78,7 +78,7 @@ namespace Jasper.Messaging.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this JasperRuntime runtime, Func<IMessageContext, Task> action,
+        public static async Task ExecuteAndWait(this IJasperHost runtime, Func<IMessageContext, Task> action,
             bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
@@ -97,7 +97,7 @@ namespace Jasper.Messaging.Tracking
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static async Task InvokeMessageAndWait<T>(this JasperRuntime runtime, T message,
+        public static async Task InvokeMessageAndWait<T>(this IJasperHost runtime, T message,
             int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();

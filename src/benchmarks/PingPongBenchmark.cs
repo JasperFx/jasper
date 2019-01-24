@@ -9,13 +9,13 @@ namespace benchmarks
     [MemoryDiagnoser]
     public class PingPongBenchmark : IDisposable
     {
-        private readonly JasperRuntime _receiving;
-        private readonly JasperRuntime _sender;
+        private readonly IJasperHost _receiving;
+        private readonly IJasperHost _sender;
 
         public PingPongBenchmark()
         {
-            _receiving = JasperRuntime.For<Receiver1>();
-            _sender = JasperRuntime.For<Sender1>();
+            _receiving = JasperHost.For<Receiver1>();
+            _sender = JasperHost.For<Sender1>();
         }
 
 

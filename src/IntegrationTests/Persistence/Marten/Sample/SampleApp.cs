@@ -36,46 +36,46 @@ namespace IntegrationTests.Persistence.Marten.Sample
     {
         public MessageInvocationTests()
         {
-            theRuntime = JasperRuntime.For<SampleApp>();
+            theHost = JasperHost.For<SampleApp>();
 
-            theRuntime.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
+            theHost.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
         }
 
         public void Dispose()
         {
-            theRuntime?.Dispose();
+            theHost?.Dispose();
         }
 
-        private readonly JasperRuntime theRuntime;
+        private readonly IJasperHost theHost;
 
         //[Fact] -- unreliable. May not actually be useful.
         public async Task using_ExecuteAndWait()
         {
-            await theRuntime.ExecuteAndWait(
-                () => theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"}));
+            await theHost.ExecuteAndWait(
+                () => theHost.Messaging.Invoke(new CreateUser {Name = "Tom"}));
 
 
-            using (var session = theRuntime.Get<IDocumentStore>().QuerySession())
+            using (var session = theHost.Get<IDocumentStore>().QuerySession())
             {
                 session.Load<User>("Tom").ShouldNotBeNull();
             }
 
-            theRuntime.Get<UserNames>()
+            theHost.Get<UserNames>()
                 .Names.Single().ShouldBe("Tom");
         }
 
         [Fact]
         public async Task using_ExecuteAndWaitSync()
         {
-            await theRuntime.ExecuteAndWait(() => { theRuntime.Messaging.Invoke(new CreateUser {Name = "Tom"}); });
+            await theHost.ExecuteAndWait(() => { theHost.Messaging.Invoke(new CreateUser {Name = "Tom"}); });
 
 
-            using (var session = theRuntime.Get<IDocumentStore>().QuerySession())
+            using (var session = theHost.Get<IDocumentStore>().QuerySession())
             {
                 session.Load<User>("Tom").ShouldNotBeNull();
             }
 
-            theRuntime.Get<UserNames>()
+            theHost.Get<UserNames>()
                 .Names.Single().ShouldBe("Tom");
         }
 
@@ -83,14 +83,14 @@ namespace IntegrationTests.Persistence.Marten.Sample
         [Fact]
         public async Task using_InvokeMessageAndWait()
         {
-            await theRuntime.InvokeMessageAndWait(new CreateUser {Name = "Bill"});
+            await theHost.InvokeMessageAndWait(new CreateUser {Name = "Bill"});
 
-            using (var session = theRuntime.Get<IDocumentStore>().QuerySession())
+            using (var session = theHost.Get<IDocumentStore>().QuerySession())
             {
                 session.Load<User>("Bill").ShouldNotBeNull();
             }
 
-            theRuntime.Get<UserNames>()
+            theHost.Get<UserNames>()
                 .Names.Single().ShouldBe("Bill");
         }
     }
@@ -101,12 +101,12 @@ namespace IntegrationTests.Persistence.Marten.Sample
         public AppUsingMessageTracking()
         {
             // TODO -- need to change this when GH-346 is done
-            Hosting.ConfigureAppConfiguration((context, config) =>
+            Hosting(x => x.ConfigureAppConfiguration((context, config) =>
             {
                 var environment = context.HostingEnvironment.EnvironmentName;
 
                 if (environment == "Development" || environment == "Testing") Include<MessageTrackingExtension>();
-            });
+            }));
         }
     }
     // ENDSAMPLE
@@ -117,7 +117,7 @@ namespace IntegrationTests.Persistence.Marten.Sample
         // SAMPLE: invoke_a_message_with_tracking
         public async Task invoke_a_message()
         {
-            using (var runtime = JasperRuntime.For<AppUsingMessageTracking>())
+            using (var runtime = JasperHost.For<AppUsingMessageTracking>())
             {
                 await runtime.InvokeMessageAndWait(new Message1());
 
@@ -131,7 +131,7 @@ namespace IntegrationTests.Persistence.Marten.Sample
         // SAMPLE: other-message-tracking-usages
         public async Task other_usages()
         {
-            using (var runtime = JasperRuntime.For<AppUsingMessageTracking>())
+            using (var runtime = JasperHost.For<AppUsingMessageTracking>())
             {
                 // Call IMessageContext.Invoke() and wait for all activity to finish
                 await runtime.InvokeMessageAndWait(new Message1());

@@ -29,7 +29,7 @@ namespace Jasper.Messaging
 
         public HandlerGraph Graph { get; } = new HandlerGraph();
 
-        public void Describe(JasperRuntime runtime, TextWriter writer)
+        public void Describe(IJasperHost runtime, TextWriter writer)
         {
             var settings = runtime.Get<JasperOptions>();
 
@@ -62,7 +62,7 @@ namespace Jasper.Messaging
             writer.WriteLine();
         }
 
-        internal void StartCompiling(JasperOptionsBuilder registry)
+        internal void StartCompiling(JasperRegistry registry)
         {
             Compiling = Handling.Source.FindCalls(registry).ContinueWith(t =>
             {

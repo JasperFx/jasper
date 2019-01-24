@@ -37,7 +37,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         private int _currentNodeId;
         private EnvelopeTables _marker;
 
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
         private RecordingSchedulingAgent _schedulerAgent;
         private MessagingSerializationGraph _serializers;
         private RecordingWorkerQueue _workers;
@@ -75,7 +75,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             _workers = new RecordingWorkerQueue();
             _schedulerAgent = new RecordingSchedulingAgent();
 
-            _runtime = JasperRuntime.For(_ =>
+            _host = JasperHost.For(_ =>
             {
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
                 _.Services.AddSingleton<ITransport, StubTransport>();
@@ -94,22 +94,22 @@ namespace StorytellerSpecs.Fixtures.Marten
                 });
             });
 
-            _runtime.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
+            _host.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
 
-            _marker = _runtime.Get<EnvelopeTables>();
-            _serializers = _runtime.Get<MessagingSerializationGraph>();
+            _marker = _host.Get<EnvelopeTables>();
+            _serializers = _host.Get<MessagingSerializationGraph>();
 
-            theStore = _runtime.Get<IDocumentStore>();
+            theStore = _host.Get<IDocumentStore>();
             theStore.Advanced.Clean.DeleteAllDocuments();
 
-            _currentNodeId = _runtime.Get<JasperOptions>().UniqueNodeId;
+            _currentNodeId = _host.Get<JasperOptions>().UniqueNodeId;
 
             _owners["This Node"] = _currentNodeId;
         }
 
         public override void TearDown()
         {
-            _runtime.Dispose();
+            _host.Dispose();
 
             foreach (var locker in _nodeLockers) locker.SafeDispose();
 
@@ -153,7 +153,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             getStubTransport().Channels[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
-            _runtime.Get<ISubscriberGraph>().GetOrBuild(channel);
+            _host.Get<ISubscriberGraph>().GetOrBuild(channel);
         }
 
 
@@ -173,7 +173,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         private StubTransport getStubTransport()
         {
-            var stub = _runtime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
+            var stub = _host.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
             return stub;
         }
 
@@ -234,7 +234,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 await session.SaveChangesAsync();
             }
 
-            var action = _runtime.Get<T>();
+            var action = _host.Get<T>();
             using (var session = theStore.LightweightSession())
             {
                 try

@@ -8,7 +8,7 @@ namespace Publisher
     {
         public static int Main(string[] args)
         {
-            return JasperAgent.Run<PublisherApp>(args);
+            return JasperHost.Run<PublisherApp>(args);
         }
     }
 

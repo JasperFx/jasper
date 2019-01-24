@@ -21,7 +21,7 @@ namespace Jasper.Testing.Http.ContentHandling
             Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
             Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
 
-            Hosting.Configure(app => app.UseJasper());
+            Hosting(x => x.Configure(app => app.UseJasper()));
         }
     }
 

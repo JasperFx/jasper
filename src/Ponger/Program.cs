@@ -11,7 +11,7 @@ namespace Ponger
     {
         private static int Main(string[] args)
         {
-            return JasperAgent.Run(args, _ => { _.Transports.LightweightListenerAt(2601); });
+            return JasperHost.Run(args, _ => { _.Transports.LightweightListenerAt(2601); });
         }
     }
 

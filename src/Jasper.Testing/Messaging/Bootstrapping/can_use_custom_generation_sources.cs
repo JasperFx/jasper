@@ -8,9 +8,9 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     public class can_use_custom_generation_sources : IntegrationContext
     {
         [Fact]
-        public async Task can_customize_source_code_generation()
+        public void can_customize_source_code_generation()
         {
-            await with(_ =>
+            with(_ =>
             {
                 _.CodeGeneration.Sources.Add(new SpecialServiceSource());
                 _.Handlers.IncludeType<SpecialServiceUsingThing>();

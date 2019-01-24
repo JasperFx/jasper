@@ -13,7 +13,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         {
             using (var host = Program.CreateWebHostBuilder(new string[0]).Start())
             {
-                var builder = host.Services.GetRequiredService<JasperOptionsBuilder>();
+                var builder = host.Services.GetRequiredService<JasperRegistry>();
                 builder.ApplicationAssembly.ShouldBe(typeof(AspNetCoreHosted.Startup).Assembly);
             }
 

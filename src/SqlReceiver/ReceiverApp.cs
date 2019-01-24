@@ -10,18 +10,9 @@ namespace SqlReceiver
     {
         public ReceiverApp()
         {
-            Hosting.ConfigureAppConfiguration((_, config) =>
-            {
-                config.AddJsonFile("appsettings.json").AddEnvironmentVariables();
-            });
 
-            Hosting.UseUrls("http://*:5061").UseKestrel();
+            Hosting(x => x.UseUrls("http://*:5061").UseKestrel());
 
-            Hosting.ConfigureLogging(x =>
-            {
-                x.SetMinimumLevel(LogLevel.Information);
-                x.AddConsole();
-            });
 
             Settings.PersistMessagesWithSqlServer((context, settings) =>
             {

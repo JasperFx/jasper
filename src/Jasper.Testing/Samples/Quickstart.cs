@@ -56,7 +56,7 @@ namespace Jasper.Testing.Samples2
     {
         public MyAppRegistry()
         {
-            Hosting.UseKestrel();
+            Hosting(x => x.UseKestrel());
         }
     }
 

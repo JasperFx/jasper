@@ -11,7 +11,7 @@ namespace IntegrationTests.Persistence.Marten
     {
         public code_generation()
         {
-            runtime = JasperRuntime.For<MartenUsingApp>();
+            runtime = JasperHost.For<MartenUsingApp>();
         }
 
         public void Dispose()
@@ -19,7 +19,7 @@ namespace IntegrationTests.Persistence.Marten
             runtime?.Dispose();
         }
 
-        private readonly JasperRuntime runtime;
+        private readonly IJasperHost runtime;
 
         [Fact]
         public void codegen_document_session_creation()

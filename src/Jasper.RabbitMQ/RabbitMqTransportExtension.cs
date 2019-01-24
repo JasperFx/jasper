@@ -10,7 +10,7 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMqTransportExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Settings.Require<RabbitMqSettings>();
             registry.Services.AddTransient<ITransport, RabbitMqTransport>();

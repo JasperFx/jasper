@@ -19,9 +19,9 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         [Fact]
         public async Task can_delegate_to_mvc_route_through_Kestrel()
         {
-            using (var theRuntime = JasperAlba.For<JasperServerApp>())
+            using (var theHost = JasperAlba.For<JasperServerApp>())
             {
-                await theRuntime.Scenario(x =>
+                await theHost.Scenario(x =>
                 {
                     x.Get.Url("/values/5");
                     x.ContentShouldContain("5");
@@ -49,10 +49,10 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         {
             Handlers.Discovery(x => x.DisableConventionalDiscovery());
 
-            Hosting
-                .UseKestrel()
+            Hosting(x =>
+                x.UseKestrel()
                 .UseUrls("http://localhost:5200")
-                .UseStartup<Startup>();
+                .UseStartup<Startup>());
         }
     }
     // ENDSAMPLE

@@ -21,7 +21,7 @@ namespace Jasper.Testing
         [Fact]
         public void see_registrations()
         {
-            using (var runtime = JasperRuntime.Basic())
+            using (var runtime = JasperHost.Basic())
             {
                 var singletons =
                     runtime.Container.Model.AllInstances;

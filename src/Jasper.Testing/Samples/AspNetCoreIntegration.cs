@@ -14,7 +14,7 @@ namespace Jasper.Testing.Samples
     {
         public AppWithMiddleware()
         {
-            Hosting.Configure(app =>
+            Hosting(x => x.Configure(app =>
             {
                 app.UseMiddleware<CustomMiddleware>();
 
@@ -30,7 +30,7 @@ namespace Jasper.Testing.Samples
 
                     return c.Response.WriteAsync("Not found");
                 });
-            });
+            }));
         }
     }
     // ENDSAMPLE

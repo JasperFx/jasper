@@ -16,19 +16,19 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
     {
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _host?.Dispose();
         }
 
         private readonly JasperRegistry theRegistry = new JasperRegistry();
-        private SystemUnderTest _runtime;
+        private SystemUnderTest _host;
 
         private async Task<IScenarioResult> scenario(Action<Scenario> configure)
         {
             theRegistry.Handlers.DisableConventionalDiscovery(true);
 
-            if (_runtime == null) _runtime = JasperAlba.For(theRegistry);
+            if (_host == null) _host = JasperAlba.For(theRegistry);
 
-            return await _runtime.Scenario(configure);
+            return await _host.Scenario(configure);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         [Fact]
         public Task default_404_behavior_with_middleware_in_front()
         {
-            theRegistry.Hosting.Configure(app =>
+            theRegistry.Hosting(x => x.Configure(app =>
             {
                 app.Use(next =>
                 {
@@ -56,7 +56,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
                         return next(context);
                     };
                 });
-            });
+            }));
 
             return scenario(_ =>
             {
@@ -71,7 +71,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         [Fact]
         public async Task put_jasper_in_the_middle()
         {
-            theRegistry.Hosting.Configure(app =>
+            theRegistry.Hosting(x => x.Configure(app =>
             {
                 app.Use(next =>
                 {
@@ -91,7 +91,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
                     c.Response.ContentType = "text/plain";
                     return c.Response.WriteAsync("middleware behind was called");
                 });
-            });
+            }));
 
             // Hit Jasper itself
             await scenario(_ =>
@@ -125,7 +125,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         [Fact]
         public async Task use_middleware_behind_jasper()
         {
-            theRegistry.Hosting.Configure(app =>
+            theRegistry.Hosting(x => x.Configure(app =>
             {
                 app.UseJasper();
 
@@ -135,7 +135,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
                     c.Response.ContentType = "text/plain";
                     return c.Response.WriteAsync("middleware behind was called");
                 });
-            });
+            }));
 
             await scenario(_ =>
             {
@@ -154,7 +154,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         [Fact]
         public Task use_middleware_in_front()
         {
-            theRegistry.Hosting.Configure(app =>
+            theRegistry.Hosting(x => x.Configure(app =>
             {
                 app.Use(next =>
                 {
@@ -165,7 +165,7 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
                         return next(context);
                     };
                 });
-            });
+            }));
 
             return scenario(_ =>
             {

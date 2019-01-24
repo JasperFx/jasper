@@ -11,7 +11,7 @@ namespace Jasper.ApplicationInsights
 {
     public class ApplicationInsightsExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Settings.Require<ApplicationInsightsSettings>();
 

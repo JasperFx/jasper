@@ -16,7 +16,7 @@ namespace Jasper.MvcExtender
 {
     public class MvcExtenderExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.HttpRoutes.IncludeTypes(x => x.CanBeCastTo<ControllerBase>());
             registry.HttpRoutes.IncludeMethods(x => x.HasAttribute<HttpMethodAttribute>());

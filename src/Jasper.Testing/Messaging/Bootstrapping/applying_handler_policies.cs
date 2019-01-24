@@ -13,9 +13,9 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     public class applying_handler_policies : IntegrationContext
     {
         [Fact]
-        public async Task can_apply_a_wrapper_to_all_chains()
+        public void can_apply_a_wrapper_to_all_chains()
         {
-            await with(_ => _.Handlers.GlobalPolicy<WrapWithSimple>());
+            with(_ => _.Handlers.GlobalPolicy<WrapWithSimple>());
 
             chainFor<MovieAdded>().Middleware.OfType<SimpleWrapper>().Any().ShouldBeTrue();
         }

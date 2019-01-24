@@ -18,7 +18,7 @@ namespace StorytellerSpecs.Fixtures
 {
     public class SendMessageFixture : BusFixture
     {
-        private JasperRuntime _runtime;
+        private JasperRuntime _host;
 
         public SendMessageFixture()
         {
@@ -31,10 +31,10 @@ namespace StorytellerSpecs.Fixtures
             return Embed<ServiceBusApplication>("If a service bus application is configured to")
                 .After(c =>
                 {
-                    _runtime = c.State.Retrieve<JasperRuntime>();
+                    _host = c.State.Retrieve<JasperRuntime>();
                     try
                     {
-                        _runtime.Get<IDurableMessagingFactory>().ClearAllStoredMessages();
+                        _host.Get<IDurableMessagingFactory>().ClearAllStoredMessages();
                     }
                     catch (Exception)
                     {
@@ -46,13 +46,13 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Send message {messageType} named {name}")]
         public void SendMessage([SelectionList("MessageTypes")] string messageType, string name)
         {
-            var history = _runtime.Get<MessageHistory>();
+            var history = _host.Get<MessageHistory>();
 
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() => { _runtime.Get<IMessageContext>().Send(message).Wait(); });
+            var waiter = history.Watch(() => { _host.Get<IMessageContext>().Send(message).Wait(); });
 
             waiter.Wait(5.Seconds());
 
@@ -63,7 +63,7 @@ namespace StorytellerSpecs.Fixtures
         public void SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
             [SelectionList("Channels")] Uri address)
         {
-            var history = _runtime.Get<MessageHistory>();
+            var history = _host.Get<MessageHistory>();
 
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
@@ -76,7 +76,7 @@ namespace StorytellerSpecs.Fixtures
 
         private IMessageContext bus()
         {
-            return _runtime.Get<IMessageContext>();
+            return _host.Get<IMessageContext>();
         }
 
         public IGrammar TheMessagesSentShouldBe()
@@ -87,7 +87,7 @@ namespace StorytellerSpecs.Fixtures
 
         private IList<MessageRecord> sent()
         {
-            return _runtime.Get<MessageTracker>().Records.Select(x =>
+            return _host.Get<MessageTracker>().Records.Select(x =>
             {
                 x.ReceivedAt = x.ReceivedAt.ToString().Replace("127.0.0.1", "localhost").ToUri();
 
@@ -106,7 +106,7 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _runtime.Get<IMessageContext>();
+            var sender = _host.Get<IMessageContext>();
             await sender.Send(envelope);
         }
 
@@ -121,13 +121,13 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _runtime.Get<IMessageContext>();
+            var sender = _host.Get<IMessageContext>();
             await sender.Publish(envelope);
         }
 
         public override void TearDown()
         {
-            _runtime.Dispose();
+            _host.Dispose();
         }
     }
 

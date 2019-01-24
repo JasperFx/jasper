@@ -98,7 +98,7 @@ namespace StorytellerSpecs.Fixtures
         private HandlerChain _chain;
         private HandlerGraph _graph;
         private ErrorCausingMessage _message;
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
         private AttemptTracker _tracker;
         private StubTransport _transport;
 
@@ -113,26 +113,26 @@ namespace StorytellerSpecs.Fixtures
             registry.Publish.Message<ErrorCausingMessage>()
                 .To("stub://1".ToUri());
 
-            _runtime = JasperRuntime.For(registry);
+            _host = JasperHost.For(registry);
 
-            _transport = _runtime.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
+            _transport = _host.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
 
-            _graph = _runtime.Get<HandlerGraph>();
+            _graph = _host.Get<HandlerGraph>();
             _chain = _graph.ChainFor<ErrorCausingMessage>();
 
 
-            _bus = _runtime.Get<IMessageContext>();
+            _bus = _host.Get<IMessageContext>();
         }
 
         public override void TearDown()
         {
-            _runtime.Dispose();
+            _host.Dispose();
 
             _graph = null;
             _chain = null;
             _transport = null;
             _bus = null;
-            _runtime = null;
+            _host = null;
         }
 
         public IGrammar IfTheGlobalHandlingIs()

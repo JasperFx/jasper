@@ -7,26 +7,8 @@ using Jasper.Messaging.Transports;
 
 namespace Jasper.Messaging
 {
-    public interface IMessageContext
+    public interface IMessageSender
     {
-        /// <summary>
-        ///     The envelope being currently handled. This will only be non-null during
-        ///     the handling of a message
-        /// </summary>
-        Envelope Envelope { get; }
-
-        /// <summary>
-        ///     Is the current context enlisted in a transaction?
-        /// </summary>
-        bool EnlistedInTransaction { get; }
-
-
-        /// <summary>
-        ///     Rarely used functions that are mostly consumed
-        ///     by Jasper itself
-        /// </summary>
-        IAdvancedMessagingActions Advanced { get; }
-
         /// <summary>
         ///     Publish a message to all known subscribers. Will throw an exception if there are no known subscribers
         /// </summary>
@@ -71,7 +53,6 @@ namespace Jasper.Messaging
         /// <returns></returns>
         Task Publish<T>(T message, Action<Envelope> customize);
 
-
         /// <summary>
         ///     Send to a specific destination rather than running the routing rules
         /// </summary>
@@ -88,7 +69,6 @@ namespace Jasper.Messaging
         /// </summary>
         Task Invoke(object message);
 
-
         /// <summary>
         ///     Invoke consumers for the relevant messages managed by the current
         ///     service bus instance and expect a response of type T from the processing. This happens immediately and on the
@@ -100,7 +80,6 @@ namespace Jasper.Messaging
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         Task<T> Invoke<T>(object message) where T : class;
-
 
         /// <summary>
         ///     Enqueues the message locally. Uses the message type to worker queue routing to determine
@@ -156,7 +135,6 @@ namespace Jasper.Messaging
         /// <returns></returns>
         Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null);
 
-
         /// <summary>
         ///     Schedule a message to be processed in this application at a specified time
         /// </summary>
@@ -174,6 +152,27 @@ namespace Jasper.Messaging
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         Task<Guid> Schedule<T>(T message, TimeSpan delay);
+    }
+
+    public interface IMessageContext : IMessageSender
+    {
+        /// <summary>
+        ///     The envelope being currently handled. This will only be non-null during
+        ///     the handling of a message
+        /// </summary>
+        Envelope Envelope { get; }
+
+        /// <summary>
+        ///     Is the current context enlisted in a transaction?
+        /// </summary>
+        bool EnlistedInTransaction { get; }
+
+
+        /// <summary>
+        ///     Rarely used functions that are mostly consumed
+        ///     by Jasper itself
+        /// </summary>
+        IAdvancedMessagingActions Advanced { get; }
 
 
         /// <summary>

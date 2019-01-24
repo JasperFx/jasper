@@ -32,7 +32,7 @@ namespace Jasper.Testing.Messaging
             var tracker = new MessageTracker();
             registry.Services.AddSingleton(tracker);
 
-            using (var runtime = JasperRuntime.For(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1
@@ -63,7 +63,7 @@ namespace Jasper.Testing.Messaging
             var tracker = new MessageTracker();
             registry.Services.AddSingleton(tracker);
 
-            using (var runtime = await JasperRuntime.ForAsync(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1
@@ -99,7 +99,7 @@ namespace Jasper.Testing.Messaging
             var tracker = new MessageTracker();
             registry.Services.AddSingleton(tracker);
 
-            using (var runtime = await JasperRuntime.ForAsync(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1

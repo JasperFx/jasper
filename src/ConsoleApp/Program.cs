@@ -1,5 +1,6 @@
 ﻿// SAMPLE: QuickStartConsoleMain
 
+using Jasper;
 using Jasper.CommandLine;
 
 namespace MyApp
@@ -11,7 +12,7 @@ namespace MyApp
             // This bootstraps and runs the Jasper
             // application as defined by MyAppRegistry
             // until the executable is stopped
-            return JasperAgent.Run<MyAppRegistry>(args);
+            return JasperHost.Run<MyAppRegistry>(args);
         }
     }
 }

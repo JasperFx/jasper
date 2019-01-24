@@ -23,30 +23,30 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
     {
         public SqlServerBackedMessagePersistenceTests()
         {
-            theRuntime = JasperRuntime.For(_ =>
+            theHost = JasperHost.For(_ =>
             {
                 _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
 
-            theRuntime.RebuildMessageStorage();
+            theHost.RebuildMessageStorage();
 
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
 
-            theRuntime.Get<SqlServerBackedDurableMessagingFactory>().ScheduleJob(theEnvelope).Wait(3.Seconds());
+            theHost.Get<SqlServerBackedDurableMessagingFactory>().ScheduleJob(theEnvelope).Wait(3.Seconds());
 
-            var persistor = theRuntime.Get<SqlServerEnvelopePersistor>();
+            var persistor = theHost.Get<SqlServerEnvelopePersistor>();
 
             persisted = persistor.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
         }
 
         public void Dispose()
         {
-            theRuntime.Dispose();
+            theHost.Dispose();
         }
 
-        private readonly JasperRuntime theRuntime;
+        private readonly IJasperHost theHost;
         private readonly Envelope theEnvelope;
         private readonly Envelope persisted;
 

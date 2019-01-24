@@ -5,9 +5,9 @@ namespace Module1
 {
     public class Module1Extension : IJasperExtension
     {
-        public static JasperOptionsBuilder Registry { get; set; }
+        public static JasperRegistry Registry { get; set; }
 
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             Registry = registry;
 

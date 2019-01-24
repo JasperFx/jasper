@@ -8,9 +8,9 @@ namespace Jasper.Testing.Messaging
     public class can_customize_handler_chain_through_Configure_call_on_HandlerType : IntegrationContext
     {
         [Fact]
-        public async Task the_configure_method_is_found_and_used()
+        public void the_configure_method_is_found_and_used()
         {
-            await withAllDefaults();
+            withAllDefaults();
 
             chainFor<SpecialMessage>().ShouldBeWrappedWith<FakeFrame>();
         }

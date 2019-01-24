@@ -15,9 +15,9 @@ namespace Jasper.Testing.Conneg
         public MessagingSerializationGraph theSerialization => Runtime.Get<MessagingSerializationGraph>();
 
         [Fact]
-        public async Task can_override_json_serialization_for_a_mesage()
+        public void can_override_json_serialization_for_a_mesage()
         {
-            await withAllDefaults();
+            withAllDefaults();
 
             // Not overridden, so it should be the default
             theSerialization.WriterFor(typeof(Message1))["application/json"]
@@ -29,9 +29,9 @@ namespace Jasper.Testing.Conneg
         }
 
         [Fact]
-        public async Task can_override_json_serialization_reader_for_a_message_type()
+        public void can_override_json_serialization_reader_for_a_message_type()
         {
-            await withAllDefaults();
+            withAllDefaults();
 
             // Not overridden, so it should be the default
             theSerialization.ReaderFor(typeof(Message4).ToMessageTypeName())["application/json"]
@@ -43,17 +43,17 @@ namespace Jasper.Testing.Conneg
         }
 
         [Fact]
-        public async Task scans_for_custom_readers_in_the_app_assembly()
+        public void scans_for_custom_readers_in_the_app_assembly()
         {
-            await withAllDefaults();
+            withAllDefaults();
             theSerialization.ReaderFor(typeof(Message1).ToMessageTypeName())
                 .ContentTypes.ShouldContain("green");
         }
 
         [Fact]
-        public async Task scans_for_custom_writers_in_the_app_assembly()
+        public void scans_for_custom_writers_in_the_app_assembly()
         {
-            await withAllDefaults();
+            withAllDefaults();
             theSerialization.WriterFor(typeof(Message5)).ContentTypes
                 .ShouldHaveTheSameElementsAs("application/json", "green", "blue");
         }

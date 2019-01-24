@@ -18,12 +18,12 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         }
 
         [Fact]
-        public async Task adds_the_core_service_provider_abstractions()
+        public void adds_the_core_service_provider_abstractions()
         {
             var registry = new JasperRegistry();
             registry.Services.AddTransient<IService, FooService>();
 
-            using (var runtime = JasperRuntime.For(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 runtime.Get<IServiceProvider>().ShouldNotBeNull();
                 runtime.Get<IServiceScopeFactory>().ShouldNotBeNull();
@@ -31,12 +31,12 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         }
 
         [Fact]
-        public async Task services_registered_by_the_DI_abstraction_are_in_the_container()
+        public void services_registered_by_the_DI_abstraction_are_in_the_container()
         {
             var registry = new JasperRegistry();
             registry.Services.AddTransient<IService, FooService>();
 
-            using (var runtime = JasperRuntime.For(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 runtime.Container.Model.For<IService>().Default.ImplementationType
                     .ShouldBe(typeof(FooService));
@@ -98,7 +98,6 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 
             return runtime;
 
-            return runtime;
         }
     }
 }

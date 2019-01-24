@@ -19,7 +19,7 @@ namespace Jasper.Persistence.Marten
     /// </summary>
     public class MartenBackedPersistence : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Services.AddTransient<IEnvelopePersistor, MartenEnvelopePersistor>();
             registry.Services.AddSingleton<IDurableMessagingFactory, MartenBackedDurableMessagingFactory>();

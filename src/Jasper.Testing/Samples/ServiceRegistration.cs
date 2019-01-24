@@ -37,11 +37,11 @@ namespace Jasper.Testing.Samples
             });
 
             // ASP.Net Core idiomatic way
-            Hosting.ConfigureServices((context, services) =>
+            Hosting(x => x.ConfigureServices((context, services) =>
             {
                 if (context.HostingEnvironment.IsDevelopment())
                     services.AddSingleton<IThirdPartyService, StubThirdPartyService>();
-            });
+            }));
         }
     }
     // ENDSAMPLE

@@ -23,7 +23,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             Title = "Sql Server Outbox & Scheduled Message Mechanics";
         }
 
-        protected override void initializeStorage(JasperRuntime sender, JasperRuntime receiver)
+        protected override void initializeStorage(IJasperHost sender, IJasperHost receiver)
         {
             sender.RebuildMessageStorage();
             receiver.RebuildMessageStorage();
@@ -61,7 +61,7 @@ create table receiver.item_created
             senderRegistry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
         }
 
-        protected override ItemCreated loadItem(JasperRuntime receiver, Guid id)
+        protected override ItemCreated loadItem(IJasperHost receiver, Guid id)
         {
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
@@ -81,7 +81,7 @@ create table receiver.item_created
             }
         }
 
-        protected override async Task withContext(JasperRuntime sender, IMessageContext context,
+        protected override async Task withContext(IJasperHost sender, IMessageContext context,
             Func<IMessageContext, Task> action)
         {
             // SAMPLE: basic-sql-server-outbox-sample
@@ -104,7 +104,7 @@ create table receiver.item_created
             // ENDSAMPLE
         }
 
-        protected override Envelope[] loadAllOutgoingEnvelopes(JasperRuntime sender)
+        protected override Envelope[] loadAllOutgoingEnvelopes(IJasperHost sender)
         {
             return sender.Get<IEnvelopePersistor>().As<SqlServerEnvelopePersistor>()
                 .AllOutgoingEnvelopes().ToArray();

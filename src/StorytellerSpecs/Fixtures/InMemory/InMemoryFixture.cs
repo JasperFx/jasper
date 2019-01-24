@@ -46,7 +46,7 @@ namespace StorytellerSpecs.Fixtures.InMemory
 
         public override void TearDown()
         {
-            var runtime = JasperRuntime.For(_registry);
+            var runtime = JasperHost.For(_registry);
 
             var graph = runtime.Get<HandlerGraph>();
 

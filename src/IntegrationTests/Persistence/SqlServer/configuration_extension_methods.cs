@@ -17,11 +17,11 @@ namespace IntegrationTests.Persistence.SqlServer
         {
             var registry = new JasperRegistry();
 
-            registry.Hosting.ConfigureAppConfiguration((_, config) =>
+            registry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
             {
                 config.AddInMemoryCollection(new Dictionary<string, string>
                     {{"connection", Servers.SqlServerConnectionString}});
-            });
+            }));
 
 
             registry.Settings.PersistMessagesWithSqlServer((c, s) =>
@@ -29,7 +29,7 @@ namespace IntegrationTests.Persistence.SqlServer
                 s.ConnectionString = c.Configuration["connection"];
             });
 
-            using (var runtime = JasperRuntime.For(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 runtime.Container.Model.DefaultTypeFor<IDurableMessagingFactory>()
                     .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
@@ -43,7 +43,7 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public void bootstrap_with_connection_string()
         {
-            using (var runtime = JasperRuntime.For(x =>
+            using (var runtime = JasperHost.For(x =>
                 x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
                 runtime.Container.Model.DefaultTypeFor<IDurableMessagingFactory>()

@@ -15,9 +15,9 @@ namespace Jasper.Testing.EnvironmentChecks
     public class EnvironmentChecksProcessing
     {
         [Fact]
-        public async Task do_not_fail_if_advanced_says_not_to_blow_up()
+        public void do_not_fail_if_advanced_says_not_to_blow_up()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.EnvironmentCheck<NegativeCheck>();
@@ -34,11 +34,11 @@ namespace Jasper.Testing.EnvironmentChecks
 
 
         [Fact]
-        public async Task fail_on_startup_with_negative_check()
+        public void fail_on_startup_with_negative_check()
         {
-            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
+            var aggregate = Exception<AggregateException>.ShouldBeThrownBy( () =>
             {
-                var runtime = await JasperRuntime.ForAsync(_ =>
+                var runtime = JasperHost.For(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 
@@ -53,11 +53,11 @@ namespace Jasper.Testing.EnvironmentChecks
         }
 
         [Fact]
-        public async Task fail_with_lambda_check()
+        public void fail_with_lambda_check()
         {
-            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
+            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
             {
-                var runtime = await JasperRuntime.ForAsync(_ =>
+                var runtime = JasperHost.For(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 
@@ -72,11 +72,11 @@ namespace Jasper.Testing.EnvironmentChecks
         }
 
         [Fact]
-        public async Task fail_with_lambda_check_with_service()
+        public void fail_with_lambda_check_with_service()
         {
-            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
+            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
             {
-                var runtime = await JasperRuntime.ForAsync(_ =>
+                var runtime = JasperHost.For(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 
@@ -88,11 +88,11 @@ namespace Jasper.Testing.EnvironmentChecks
         }
 
         [Fact]
-        public async Task finds_checks_that_were_not_registered_as_environment_check()
+        public void finds_checks_that_were_not_registered_as_environment_check()
         {
-            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
+            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
             {
-                var runtime = await JasperRuntime.ForAsync(_ =>
+                var runtime = JasperHost.For(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
                     _.Services.AddTransient<ISomeService, BadService>();
@@ -107,7 +107,7 @@ namespace Jasper.Testing.EnvironmentChecks
         [Fact]
         public void succeed_with_lambda_check()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
@@ -123,7 +123,7 @@ namespace Jasper.Testing.EnvironmentChecks
         [Fact]
         public void succeed_with_lambda_check_using_service()
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
@@ -137,11 +137,11 @@ namespace Jasper.Testing.EnvironmentChecks
         }
 
         [Fact]
-        public async Task timeout_on_task()
+        public void timeout_on_task()
         {
-            var aggregate = await Exception<AggregateException>.ShouldBeThrownByAsync(async () =>
+            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
             {
-                var runtime = await JasperRuntime.ForAsync(_ =>
+                var runtime = JasperHost.For(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
 

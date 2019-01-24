@@ -11,7 +11,7 @@ namespace Jasper.Messaging.Tracking
     /// </summary>
     public class MessageTrackingExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Services.AddSingleton<MessageHistory>();
 

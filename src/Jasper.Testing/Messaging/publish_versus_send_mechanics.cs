@@ -15,14 +15,14 @@ namespace Jasper.Testing.Messaging
     {
         public void Dispose()
         {
-            theRuntime?.Dispose();
+            theHost?.Dispose();
         }
 
-        private JasperRuntime theRuntime;
+        private IJasperHost theHost;
 
-        private async Task buildRuntime()
+        private void buildRuntime()
         {
-            theRuntime = await JasperRuntime.ForAsync(_ =>
+            theHost = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
@@ -35,23 +35,23 @@ namespace Jasper.Testing.Messaging
         }
 
         [Fact]
-        public async Task publish_message_with_no_known_subscribers()
+        public void publish_message_with_no_known_subscribers()
         {
-            await buildRuntime();
-            await theRuntime.Messaging.Publish(new Message3());
+            buildRuntime();
+            theHost.Messaging.Publish(new Message3());
 
-            theRuntime.AllSentThroughTheStubTransport().Any().ShouldBeFalse();
+            theHost.AllSentThroughTheStubTransport().Any().ShouldBeFalse();
         }
 
         [Fact]
         public async Task publish_with_known_subscribers()
         {
-            await buildRuntime();
+            buildRuntime();
 
-            await theRuntime.Messaging.Publish(new Message1());
-            await theRuntime.Messaging.Publish(new Message2());
+            await theHost.Messaging.Publish(new Message1());
+            await theHost.Messaging.Publish(new Message2());
 
-            var sent = theRuntime.AllSentThroughTheStubTransport();
+            var sent = theHost.AllSentThroughTheStubTransport();
 
             sent.Single(x => x.MessageType == typeof(Message1).ToMessageTypeName()).Destination
                 .ShouldBe("stub://one".ToUri());
@@ -64,20 +64,20 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task send_message_with_no_known_subscribers()
         {
-            await buildRuntime();
+            buildRuntime();
             await Exception<NoRoutesException>.ShouldBeThrownByAsync(async () =>
-                await theRuntime.Messaging.Send(new Message3()));
+                await theHost.Messaging.Send(new Message3()));
         }
 
 
         [Fact]
         public async Task send_with_known_subscribers()
         {
-            await buildRuntime();
-            await theRuntime.Messaging.Send(new Message1());
-            await theRuntime.Messaging.Send(new Message2());
+            buildRuntime();
+            await theHost.Messaging.Send(new Message1());
+            await theHost.Messaging.Send(new Message2());
 
-            var sent = theRuntime.AllSentThroughTheStubTransport();
+            var sent = theHost.AllSentThroughTheStubTransport();
 
             sent.Length.ShouldBe(3);
         }

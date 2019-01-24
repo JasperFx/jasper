@@ -21,19 +21,19 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         public SqlServerCallbackTests()
         {
             // SAMPLE: SqlServer-RebuildMessageStorage
-            theRuntime = JasperRuntime.For(_ =>
+            theHost = JasperHost.For(_ =>
             {
                 _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
 
-            theRuntime.RebuildMessageStorage();
+            theHost.RebuildMessageStorage();
             // ENDSAMPLE
 
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Status = TransportConstants.Incoming;
 
 
-            thePersistor = theRuntime.Get<SqlServerEnvelopePersistor>();
+            thePersistor = theHost.Get<SqlServerEnvelopePersistor>();
             thePersistor.StoreIncoming(theEnvelope).Wait(3.Seconds());
 
 
@@ -47,10 +47,10 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
         public void Dispose()
         {
-            theRuntime?.Dispose();
+            theHost?.Dispose();
         }
 
-        private readonly JasperRuntime theRuntime;
+        private readonly IJasperHost theHost;
         private readonly Envelope theEnvelope;
         private readonly DurableCallback theCallback;
         private readonly EnvelopeRetries theRetries;

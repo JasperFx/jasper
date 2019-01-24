@@ -12,9 +12,9 @@ namespace Jasper.Testing.Messaging
     public class using_error_handling_attributes : IntegrationContext
     {
         [Fact]
-        public async Task use_maximum_attempts()
+        public void use_maximum_attempts()
         {
-            await withAllDefaults();
+            withAllDefaults();
             chainFor<Message1>().Retries.MaximumAttempts.ShouldBe(3);
         }
 

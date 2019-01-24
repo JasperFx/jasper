@@ -44,7 +44,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
 
-        protected override void initializeStorage(JasperRuntime theSender, JasperRuntime theReceiver)
+        protected override void initializeStorage(IJasperHost theSender, IJasperHost theReceiver)
         {
             var senderStore = theSender.Get<IDocumentStore>();
             senderStore.Advanced.Clean.CompletelyRemoveAll();
@@ -59,7 +59,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             theReceiver.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
         }
 
-        protected override ItemCreated loadItem(JasperRuntime receiver, Guid id)
+        protected override ItemCreated loadItem(IJasperHost receiver, Guid id)
         {
             using (var session = receiver.Get<IDocumentStore>().QuerySession())
             {
@@ -68,7 +68,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
 
-        protected override async Task withContext(JasperRuntime sender, IMessageContext context,
+        protected override async Task withContext(IJasperHost sender, IMessageContext context,
             Func<IMessageContext, Task> action)
         {
             var senderStore = sender.Get<IDocumentStore>();
@@ -83,7 +83,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             }
         }
 
-        protected override Envelope[] loadAllOutgoingEnvelopes(JasperRuntime sender)
+        protected override Envelope[] loadAllOutgoingEnvelopes(IJasperHost sender)
         {
             using (var session = sender.Get<IDocumentStore>().QuerySession())
             {

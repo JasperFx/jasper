@@ -14,9 +14,9 @@ namespace Jasper.Testing.Messaging
     public class content_type_preferences_with_request_reply : IntegrationContext
     {
         [Fact]
-        public async Task envelope_has_accepts_for_known_response_readers()
+        public void envelope_has_accepts_for_known_response_readers()
         {
-            await withAllDefaults();
+            withAllDefaults();
 
             var envelope = Bus.As<MessageContext>().EnvelopeForRequestResponse<Message1>(new Message2());
 

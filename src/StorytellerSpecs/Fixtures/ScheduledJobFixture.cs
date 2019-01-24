@@ -11,7 +11,7 @@ namespace StorytellerSpecs.Fixtures
     public class ScheduledJobFixture : Fixture
     {
         private ScheduledMessageReceiver theReceiver;
-        private JasperRuntime theRuntime;
+        private IJasperHost theHost;
 
         public ScheduledJobFixture()
         {
@@ -23,24 +23,24 @@ namespace StorytellerSpecs.Fixtures
             var registry = new ScheduledMessageApp();
             theReceiver = registry.Receiver;
 
-            theRuntime = JasperRuntime.For(registry);
+            theHost = JasperHost.For(registry);
         }
 
         public override void TearDown()
         {
-            theRuntime?.Dispose();
+            theHost?.Dispose();
         }
 
         [FormatAs("Schedule message locally {id} for {seconds} from now")]
         public Task ScheduleMessage(int id, int seconds)
         {
-            return theRuntime.Messaging.Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Messaging.Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("Schedule send message {id} for {seconds} from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
-            return theRuntime.Messaging.ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Messaging.ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("The received message count should be {count}")]

@@ -15,7 +15,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
     {
         private bool _initialized;
         private NodesCollection _nodes;
-        private JasperRuntime _publisher;
+        private IJasperHost _publisher;
 
         public CommunicationFixture()
         {
@@ -134,7 +134,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
     public class NodesCollection : IDisposable
     {
-        private readonly IList<JasperRuntime> _runtimes = new List<JasperRuntime>();
+        private readonly IList<IJasperHost> _hosts = new List<IJasperHost>();
 
         public readonly Dictionary<Uri, Uri> Aliases = new Dictionary<Uri, Uri>();
         public readonly MessageHistory History = new MessageHistory();
@@ -143,18 +143,18 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public void Dispose()
         {
-            foreach (var runtime in _runtimes) runtime.Dispose();
+            foreach (var runtime in _hosts) runtime.Dispose();
         }
 
-        public JasperRuntime Add(JasperRegistry registry)
+        public IJasperHost Add(JasperRegistry registry)
         {
             registry.Services.For<MessageTracker>().Use(Tracker);
             registry.Services.For<MessageHistory>().Use(History);
 
             registry.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
 
-            var runtime = JasperRuntime.For(registry);
-            _runtimes.Add(runtime);
+            var runtime = JasperHost.For(registry);
+            _hosts.Add(runtime);
 
             return runtime;
         }

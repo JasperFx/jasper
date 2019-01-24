@@ -51,7 +51,7 @@ namespace Jasper.Storyteller
 
         private StorytellerMessageLogger _messageLogger;
 
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
         private Task _warmup;
 
 
@@ -69,25 +69,19 @@ namespace Jasper.Storyteller
             registry.Services.AddSingleton<MessageHistory>();
 
             registry.Services.ForSingletonOf<IMessageLogger>().Use<StorytellerMessageLogger>();
-
-            registry.Hosting.ConfigureLogging(x =>
-            {
-                x.AddConsole();
-                x.AddDebug();
-            });
         }
 
         public T Registry { get; }
 
-        public JasperRuntime Runtime
+        public IJasperHost Runtime
         {
             get
             {
-                if (_runtime == null)
+                if (_host == null)
                     throw new InvalidOperationException(
                         "This property is not available until Storyteller either \"warms up\" the system or until the first specification is executed");
 
-                return _runtime;
+                return _host;
             }
         }
 
@@ -107,10 +101,10 @@ namespace Jasper.Storyteller
 
         public void Dispose()
         {
-            if (_runtime != null)
+            if (_host != null)
             {
                 afterAll();
-                _runtime.Dispose();
+                _host.Dispose();
 
                 foreach (var node in _nodes.Values) node.Teardown();
             }
@@ -131,11 +125,11 @@ namespace Jasper.Storyteller
         {
             _warmup = Task.Factory.StartNew(() =>
             {
-                _runtime = JasperRuntime.For(Registry);
-                _messageLogger = _runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>();
-                _messageLogger.ServiceName = _runtime.ServiceName;
+                _host = JasperHost.For(Registry);
+                _messageLogger = _host.Get<IMessageLogger>().As<StorytellerMessageLogger>();
+                _messageLogger.ServiceName = _host.ServiceName;
 
-                _messageLogger = _runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>();
+                _messageLogger = _host.Get<IMessageLogger>().As<StorytellerMessageLogger>();
 
                 foreach (var node in _nodes.Values) node.Bootstrap(_messageLogger);
 
@@ -212,7 +206,7 @@ namespace Jasper.Storyteller
 
             public TService GetService<TService>()
             {
-                return _parent._runtime.Get<TService>();
+                return _parent._host.Get<TService>();
             }
 
             public ExternalNode NodeFor(string nodeName)
@@ -236,12 +230,12 @@ namespace Jasper.Storyteller
             _registry = registry;
         }
 
-        public JasperRuntime Runtime { get; private set; }
+        public IJasperHost Runtime { get; private set; }
 
         internal void Bootstrap(IMessageLogger logger)
         {
             _registry.Services.AddSingleton(logger);
-            Runtime = JasperRuntime.For(_registry);
+            Runtime = JasperHost.For(_registry);
         }
 
         public Task Send<T>(T message)

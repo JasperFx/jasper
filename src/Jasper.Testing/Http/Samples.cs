@@ -54,6 +54,8 @@ namespace Jasper.Testing.Http
         Task Create(Invoice invoice);
     }
 
+    [JasperIgnore]
+
     // SAMPLE: simple-json-post
     public class PostEndpoint
     {
@@ -194,7 +196,7 @@ namespace Jasper.Testing.Http
     // ENDSAMPLE
 
     // SAMPLE: overwriting-the-JSON-serialization-with-JasperRegistry
-    public class MySpecialJsonUsingApp : JasperOptionsBuilder
+    public class MySpecialJsonUsingApp : JasperRegistry
     {
         public MySpecialJsonUsingApp()
         {

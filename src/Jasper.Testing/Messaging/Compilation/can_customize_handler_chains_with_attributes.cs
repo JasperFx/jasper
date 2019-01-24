@@ -14,7 +14,7 @@ namespace Jasper.Testing.Messaging.Compilation
     {
         private void forMessage<T>(Action<HandlerChain> action)
         {
-            using (var runtime = JasperRuntime.For(_ =>
+            using (var runtime = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<FakeHandler1>();

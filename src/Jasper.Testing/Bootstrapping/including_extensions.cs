@@ -15,7 +15,7 @@ namespace Jasper.Testing.Bootstrapping
             registry.Include<OptionalExtension>();
             registry.Services.For<IColorService>().Use<BlueService>();
 
-            using (var runtime = JasperRuntime.For(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 runtime.Get<IColorService>()
                     .ShouldBeOfType<BlueService>();
@@ -33,7 +33,7 @@ namespace Jasper.Testing.Bootstrapping
 
             registry.Handlers.DisableConventionalDiscovery(true);
 
-            using (var runtime = JasperRuntime.For(registry))
+            using (var runtime = JasperHost.For(registry))
             {
                 runtime.Get<IColorService>()
                     .ShouldBeOfType<RedService>();
@@ -57,7 +57,7 @@ namespace Jasper.Testing.Bootstrapping
 
     public class OptionalExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Services.For<IColorService>().Use<RedService>();
         }

@@ -22,16 +22,16 @@ namespace Jasper.Testing.Messaging.Lightweight
 
         private static int port = 2114;
 
-        private JasperRuntime theSender;
+        private IJasperHost theSender;
         private readonly Uri theAddress = $"tcp://localhost:{++port}/incoming".ToUri();
         private readonly MessageTracker theTracker = new MessageTracker();
-        private JasperRuntime theReceiver;
+        private IJasperHost theReceiver;
         private FakeScheduledJobProcessor scheduledJobs;
 
 
-        private async Task getReady()
+        private void getReady()
         {
-            theSender = await JasperRuntime.ForAsync(_ =>
+            theSender = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Services.AddSingleton(theTracker);
@@ -51,13 +51,13 @@ namespace Jasper.Testing.Messaging.Lightweight
 
             receiver.Services.For<MessageTracker>().Use(theTracker);
 
-            theReceiver = await JasperRuntime.ForAsync(receiver);
+            theReceiver = JasperHost.For(receiver);
         }
 
         [Fact]
         public async Task can_apply_requeue_mechanics()
         {
-            await getReady();
+            getReady();
 
             var waiter = theTracker.WaitFor<Message2>();
 
@@ -71,7 +71,7 @@ namespace Jasper.Testing.Messaging.Lightweight
         [Fact]
         public async Task can_send_from_one_node_to_another()
         {
-            await getReady();
+            getReady();
 
             var waiter = theTracker.WaitFor<Message1>();
 
@@ -85,7 +85,7 @@ namespace Jasper.Testing.Messaging.Lightweight
         [Fact]
         public async Task tags_the_envelope_with_the_source()
         {
-            await getReady();
+            getReady();
 
             var waiter = theTracker.WaitFor<Message2>();
 

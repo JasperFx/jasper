@@ -49,24 +49,6 @@ namespace Jasper.Testing.Samples
 
 
 
-    // SAMPLE: configuring-via-uri-lookup
-    public class MyAppUsingUriLookups : JasperRegistry
-    {
-        public MyAppUsingUriLookups()
-        {
-            Hosting.ConfigureAppConfiguration((context, config) =>
-            {
-                config.AddInMemoryCollection(new Dictionary<string, string> {{"incoming", "tcp://server3:2000"}});
-            });
-
-
-            // This usage assumes that there is a value in the configuration
-            // with the key "incoming" that corresponds to a Uri
-            Transports.ListenForMessagesFrom("config://incoming");
-        }
-    }
-    // ENDSAMPLE
-
     // SAMPLE: LightweightTransportApp
     public class LightweightTransportApp : JasperRegistry
     {

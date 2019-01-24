@@ -32,7 +32,7 @@ namespace StorytellerSpecs.Fixtures
 
         public override void TearDown()
         {
-            var runtime = JasperRuntime.For(_registry);
+            var runtime = JasperHost.For(_registry);
 
             // Goofy, but gets things hooked up here
             runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>().Start(Context);

@@ -10,7 +10,7 @@ namespace Jasper.AzureServiceBus
 {
     public class AzureServiceBusTransportExtension : IJasperExtension
     {
-        public void Configure(JasperOptionsBuilder registry)
+        public void Configure(JasperRegistry registry)
         {
             registry.Settings.Require<AzureServiceBusSettings>();
             registry.Services.AddTransient<ITransport, AzureServiceBusTransport>();

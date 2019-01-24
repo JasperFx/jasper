@@ -1,5 +1,6 @@
 ﻿using System;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Messaging.Model;
@@ -25,7 +26,7 @@ namespace Jasper.CommandLine
 
             var runtime = input.BuildRuntime(StartMode.Lightweight);
 
-            var rules = runtime.CodeGeneration;
+            var rules = runtime.Get<JasperGenerationRules>();
             var generatedAssembly = new GeneratedAssembly(rules);
 
             if (input.Match == CodeMatch.all || input.Match == CodeMatch.messages)

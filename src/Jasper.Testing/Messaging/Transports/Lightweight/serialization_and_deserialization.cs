@@ -33,7 +33,6 @@ namespace Jasper.Testing.Messaging.Transports.Lightweight
         private readonly Envelope outgoing;
         private Envelope _incoming;
         private readonly PropertyInfo sentAttempts;
-        private DateTimeOffset today;
 
         private Envelope incoming
         {

@@ -10,9 +10,9 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     public class activation_and_teardown : BootstrappingContext
     {
         [Fact]
-        public async Task transport_is_disposed()
+        public void transport_is_disposed()
         {
-            var runtime = await theRuntime();
+            var runtime = theHost();
             var transport = runtime.Get<ITransport[]>().OfType<StubTransport>().Single();
             transport.WasDisposed.ShouldBeFalse();
 

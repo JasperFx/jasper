@@ -26,7 +26,7 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task can_stop_and_start()
         {
-            using (var runtime = await JasperRuntime.ForAsync<RabbitMqUsingApp>())
+            using (var runtime = JasperHost.For<RabbitMqUsingApp>())
             {
                 var root = runtime.Get<IMessagingRoot>();
                 root.ListeningStatus = ListeningStatus.TooBusy;
@@ -51,7 +51,7 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq()
         {
-            using (var runtime = await JasperRuntime.ForAsync<RabbitMqUsingApp>())
+            using (var runtime = JasperHost.For<RabbitMqUsingApp>())
             {
                 var tracker = runtime.Get<MessageTracker>();
 
@@ -72,10 +72,9 @@ namespace IntegrationTests.RabbitMQ
         {
             var uri = "rabbitmq://localhost:5672/durable/messages2";
 
-            var publisher = await JasperRuntime.ForAsync(_ =>
+            var publisher = JasperHost.For(_ =>
             {
                 _.Publish.AllMessagesTo(uri);
-                _.Hosting.ConfigureLogging(x => x.AddConsole());
 
                 _.Include<MartenBackedPersistence>();
 
@@ -84,12 +83,11 @@ namespace IntegrationTests.RabbitMQ
 
             publisher.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
 
-            var receiver = await JasperRuntime.ForAsync(_ =>
+            var receiver = JasperHost.For(_ =>
             {
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
-                _.Hosting.ConfigureLogging(x => x.AddConsole());
 
                 _.Include<MartenBackedPersistence>();
 
@@ -118,34 +116,30 @@ namespace IntegrationTests.RabbitMQ
         {
             var uri = "rabbitmq://localhost:5672/fanout/north/messages";
 
-            var publisher = await JasperRuntime.ForAsync(_ =>
+            var publisher = JasperHost.For(_ =>
             {
                 _.Publish.AllMessagesTo(uri);
-                _.Hosting.ConfigureLogging(x => x.AddConsole());
             });
 
-            var receiver1 = await JasperRuntime.ForAsync(_ =>
+            var receiver1 = JasperHost.For(_ =>
             {
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
-                _.Hosting.ConfigureLogging(x => x.AddConsole());
             });
 
-            var receiver2 = await JasperRuntime.ForAsync(_ =>
+            var receiver2 = JasperHost.For(_ =>
             {
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
-                _.Hosting.ConfigureLogging(x => x.AddConsole());
             });
 
-            var receiver3 = await JasperRuntime.ForAsync(_ =>
+            var receiver3 = JasperHost.For(_ =>
             {
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
-                _.Hosting.ConfigureLogging(x => x.AddConsole());
             });
 
             var wait1 = receiver1.Get<MessageTracker>().WaitFor<ColorChosen>();
@@ -245,12 +239,6 @@ namespace IntegrationTests.RabbitMQ
     {
         public RabbitMqUsingApp()
         {
-            Hosting.ConfigureLogging(x =>
-            {
-                x.AddConsole();
-                x.AddDebug();
-            });
-
             Transports.ListenForMessagesFrom("rabbitmq://localhost:5672/messages3");
 
             Services.AddSingleton<ColorHistory>();

@@ -16,11 +16,11 @@ namespace benchmarks
     public class HttpPipelineBenchmark : IDisposable
     {
         private readonly string _json;
-        private readonly SystemUnderTest _runtime;
+        private readonly SystemUnderTest _host;
 
         public HttpPipelineBenchmark()
         {
-            _runtime = JasperAlba.For<Receiver1>();
+            _host = JasperAlba.For<Receiver1>();
 
             var directory = AppContext.BaseDirectory;
             while (!File.Exists(directory.AppendPath("target.json"))) directory = directory.ParentDirectory();
@@ -30,13 +30,13 @@ namespace benchmarks
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _host?.Dispose();
         }
 
         [Benchmark]
         public Task RunRequest()
         {
-            return _runtime.Scenario(_ =>
+            return _host.Scenario(_ =>
             {
                 _.Post.Url("/target");
                 _.Body.JsonInputIs(_json);

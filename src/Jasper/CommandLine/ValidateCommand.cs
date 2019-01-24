@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Configuration;
 using Jasper.Messaging.Model;
 using LamarCompiler;
 using Oakton;
@@ -17,7 +18,7 @@ namespace Jasper.CommandLine
                 Console.WriteLine();
                 Console.WriteLine();
 
-                var rules = runtime.CodeGeneration;
+                var rules = runtime.Get<JasperGenerationRules>();
                 var generatedAssembly = new GeneratedAssembly(rules);
                 var handlers = runtime.Get<HandlerGraph>();
                 foreach (var handler in handlers.Chains) handler.AssembleType(generatedAssembly, rules);

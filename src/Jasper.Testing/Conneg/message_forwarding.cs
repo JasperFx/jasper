@@ -20,7 +20,7 @@ namespace Jasper.Testing.Conneg
             var channel = "tcp://localhost:2345/incoming".ToUri();
 
 
-            var runtime = await JasperRuntime.ForAsync(_ =>
+            var runtime = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery(true);
                 _.Handlers.IncludeType<NewMessageHandler>();

@@ -17,8 +17,8 @@ namespace IntegrationTests.Persistence.Marten.Persistence
     {
         public end_to_end_with_persistence()
         {
-            theSender = JasperRuntime.For<ItemSender>();
-            theReceiver = JasperRuntime.For<ItemReceiver>();
+            theSender = JasperHost.For<ItemSender>();
+            theReceiver = JasperHost.For<ItemReceiver>();
             theTracker = theReceiver.Get<MessageTracker>();
 
             var senderStore = theSender.Get<IDocumentStore>();
@@ -36,8 +36,8 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             theReceiver?.Dispose();
         }
 
-        private readonly JasperRuntime theSender;
-        private readonly JasperRuntime theReceiver;
+        private readonly IJasperHost theSender;
+        private readonly IJasperHost theReceiver;
         private readonly MessageTracker theTracker;
 
 

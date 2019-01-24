@@ -9,8 +9,8 @@ namespace Jasper.Testing.Messaging
     {
         private readonly JasperRegistry receiverRegistry = new JasperRegistry();
         private readonly JasperRegistry senderRegistry = new JasperRegistry();
-        protected JasperRuntime theReceiver;
-        protected JasperRuntime theSender;
+        protected IJasperHost theReceiver;
+        protected IJasperHost theSender;
         protected MessageTracker theTracker;
 
         public SendingContext()
@@ -30,15 +30,15 @@ namespace Jasper.Testing.Messaging
             theReceiver?.Dispose();
         }
 
-        protected async Task StartTheSender(Action<JasperRegistry> configure)
+        protected void StartTheSender(Action<JasperRegistry> configure)
         {
             configure(senderRegistry);
-            theSender = await JasperRuntime.ForAsync(senderRegistry);
+            theSender = JasperHost.For(senderRegistry);
         }
 
-        protected async Task RestartTheSender()
+        protected void RestartTheSender()
         {
-            theSender = await JasperRuntime.ForAsync(senderRegistry);
+            theSender = JasperHost.For(senderRegistry);
         }
 
         protected void StopTheSender()
@@ -46,15 +46,15 @@ namespace Jasper.Testing.Messaging
             theSender?.Dispose();
         }
 
-        protected async Task StartTheReceiver(Action<JasperRegistry> configure)
+        protected void StartTheReceiver(Action<JasperRegistry> configure)
         {
             configure(receiverRegistry);
-            theReceiver = await JasperRuntime.ForAsync(receiverRegistry);
+            theReceiver = JasperHost.For(receiverRegistry);
         }
 
-        protected async Task RestartTheReceiver()
+        protected void RestartTheReceiver()
         {
-            theSender = await JasperRuntime.ForAsync(receiverRegistry);
+            theSender = JasperHost.For(receiverRegistry);
         }
 
         protected void StopTheReceiver()

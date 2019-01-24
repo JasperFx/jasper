@@ -18,7 +18,7 @@ namespace IntegrationTests.Persistence.Marten
         [Fact]
         public async Task the_transactional_middleware_works()
         {
-            using (var runtime = JasperRuntime.For<MartenUsingApp>())
+            using (var runtime = JasperHost.For<MartenUsingApp>())
             {
                 var command = new CreateDocCommand();
                 await runtime.Messaging.Invoke(command);

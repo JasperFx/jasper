@@ -18,24 +18,24 @@ namespace Jasper.Testing.Bootstrapping
 
     public class BootstrappingFixture : IDisposable
     {
-        private JasperRuntime _runtime;
+        private IJasperHost _host;
         public FakeServer Server = new FakeServer();
 
         public CustomHostedService theHostedService = new CustomHostedService();
 
         public void Dispose()
         {
-            _runtime?.Dispose();
+            _host?.Dispose();
         }
 
-        public async Task<JasperRuntime> WithRuntime()
+        public IJasperHost WithHost()
         {
-            if (_runtime == null)
+            if (_host == null)
             {
                 Server = new FakeServer();
                 theHostedService = new CustomHostedService();
 
-                _runtime = await JasperRuntime.ForAsync(_ =>
+                _host = JasperHost.For(_ =>
                 {
                     _.Handlers.DisableConventionalDiscovery();
                     _.Services.AddTransient<IFakeStore, FakeStore>();
@@ -47,13 +47,13 @@ namespace Jasper.Testing.Bootstrapping
                 });
             }
 
-            return _runtime;
+            return _host;
         }
 
         public void Shutdown()
         {
-            _runtime.Dispose();
-            _runtime = null;
+            _host.Dispose();
+            _host = null;
         }
     }
 
@@ -68,17 +68,17 @@ namespace Jasper.Testing.Bootstrapping
         private readonly BootstrappingFixture theFixture;
 
         [Fact]
-        public async Task can_determine_the_application_assembly()
+        public void can_determine_the_application_assembly()
         {
-            var runtime = await theFixture.WithRuntime();
+            var runtime = theFixture.WithHost();
 
             runtime.ApplicationAssembly.ShouldBe(GetType().Assembly);
         }
 
         [Fact]
-        public async Task can_use_custom_hosted_service_without_aspnet()
+        public void can_use_custom_hosted_service_without_aspnet()
         {
-            await theFixture.WithRuntime();
+            theFixture.WithHost();
 
             theFixture.theHostedService.WasStarted.ShouldBeTrue();
             theFixture.theHostedService.WasStopped.ShouldBeFalse();
@@ -89,25 +89,25 @@ namespace Jasper.Testing.Bootstrapping
         }
 
         [Fact]
-        public async Task has_the_hosted_environment()
+        public void has_the_hosted_environment()
         {
-            var runtime = await theFixture.WithRuntime();
+            var runtime = theFixture.WithHost();
 
             runtime.Container.ShouldHaveRegistration<IHostingEnvironment, HostingEnvironment>();
         }
 
         [Fact]
-        public async Task registrations_from_the_main_registry_are_applied()
+        public void registrations_from_the_main_registry_are_applied()
         {
-            var runtime = await theFixture.WithRuntime();
+            var runtime = theFixture.WithHost();
 
             runtime.Container.DefaultRegistrationIs<IMainService, MainService>();
         }
 
         [Fact]
-        public async Task starts_and_stops_the_server()
+        public void starts_and_stops_the_server()
         {
-            var runtime = await theFixture.WithRuntime();
+            var runtime = theFixture.WithHost();
 
             var server = theFixture.Server;
 
@@ -146,13 +146,13 @@ namespace Jasper.Testing.Bootstrapping
         public IFeatureCollection Features { get; } = new FeatureCollection();
     }
 
-    public class when_bootstrapping_a_runtime_with_multiple_features : IDisposable
+    public class when_bootstrapping_a_host_with_multiple_features : IDisposable
     {
         private readonly JasperRegistry theRegistry = new JasperRegistry();
 
-        private readonly JasperRuntime theRuntime;
+        private readonly IJasperHost theHost;
 
-        public when_bootstrapping_a_runtime_with_multiple_features()
+        public when_bootstrapping_a_host_with_multiple_features()
         {
             theRegistry.Handlers.DisableConventionalDiscovery();
 
@@ -161,24 +161,24 @@ namespace Jasper.Testing.Bootstrapping
             theRegistry.Services.AddTransient<IFakeStore, FakeStore>();
 
 
-            theRuntime = JasperRuntime.For(theRegistry);
+            theHost = JasperHost.For(theRegistry);
         }
 
         public void Dispose()
         {
-            theRuntime?.Dispose();
+            theHost?.Dispose();
         }
     }
 
-    public class when_shutting_down_the_runtime
+    public class when_shutting_down_the_host
     {
         private readonly MainService mainService = new MainService();
 
         private readonly JasperRegistry theRegistry = new JasperRegistry();
 
-        private readonly JasperRuntime theRuntime;
+        private readonly IJasperHost theHost;
 
-        public when_shutting_down_the_runtime()
+        public when_shutting_down_the_host()
         {
             theRegistry.Handlers.DisableConventionalDiscovery();
             theRegistry.Services.AddSingleton<IMainService>(mainService);
@@ -186,9 +186,9 @@ namespace Jasper.Testing.Bootstrapping
             theRegistry.Services.AddTransient<IFakeStore, FakeStore>();
 
 
-            theRuntime = JasperRuntime.For(theRegistry);
+            theHost = JasperHost.For(theRegistry);
 
-            theRuntime.Dispose();
+            theHost.Dispose();
         }
     }
 

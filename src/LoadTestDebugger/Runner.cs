@@ -5,6 +5,8 @@ using Alba;
 using Jasper;
 using Jasper.TestSupport.Alba;
 using Marten;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Receiver;
@@ -19,9 +21,8 @@ namespace LoadTestDebugger
     {
         public Runner()
         {
-            _sender = JasperAlba.For<SenderApp>(app =>
-            {
-                app.Hosting.ConfigureAppConfiguration((_, config) =>
+            _sender = new WebHostBuilder()
+                .ConfigureAppConfiguration((_, config) =>
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string>
                     {
@@ -29,25 +30,27 @@ namespace LoadTestDebugger
                         {"receiver", "tcp://localhost:2222/durable"},
                         {"listener", "tcp://localhost:2333/durable"}
                     });
-                });
-
-            });
+                })
+                .UseJasper<SenderApp>()
+                .ToAlbaSystem();
 
             //_sender.Get<IDocumentStore>().Tenancy.Default.EnsureStorageExists(typeof(Envelope));
             //_sender.Get<IDocumentStore>().Tenancy.Default.EnsureStorageExists(typeof(SentTrack));
             //_sender.Get<IDocumentStore>().Tenancy.Default.EnsureStorageExists(typeof(ReceivedTrack));
 
-            _receiver = JasperAlba.For<ReceiverApp>(app =>
-            {
-                app.Hosting.ConfigureAppConfiguration((_, config) =>
+
+            _receiver = new WebHostBuilder()
+                .ConfigureAppConfiguration((_, config) =>
                 {
                     config.AddInMemoryCollection(new Dictionary<string, string>
                     {
                         {"marten", "Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres"},
                         {"listener", "tcp://localhost:2222/durable"}
                     });
-                });
-            });
+                })
+                .UseJasper<ReceiverApp>()
+                .ToAlbaSystem();
+
 
             //_receiver.Get<IDocumentStore>().Tenancy.Default.EnsureStorageExists(typeof(Envelope));
             //_receiver.Get<IDocumentStore>().Tenancy.Default.EnsureStorageExists(typeof(SentTrack));

@@ -151,7 +151,7 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("12.) JasperRuntime is registered")]
-        public bool jasper_runtime_is_registered()
+        public bool jasper_host_is_registered()
         {
             return theContainer.Model.HasRegistrationFor<JasperRuntime>();
         }
@@ -264,18 +264,22 @@ namespace StorytellerSpecs.Fixtures
         {
             Services.For<BootstrappingToken>().Use(new BootstrappingToken(Id));
 
-            Hosting.ConfigureAppConfiguration(c =>
+            Hosting(builder =>
             {
-                c.AddInMemoryCollection(new Dictionary<string, string> {{"foo", "bar"}});
-                c.AddInMemoryCollection(new Dictionary<string, string> {{"team", "chiefs"}});
+                builder.ConfigureAppConfiguration(c =>
+                {
+                    c.AddInMemoryCollection(new Dictionary<string, string> {{"foo", "bar"}});
+                    c.AddInMemoryCollection(new Dictionary<string, string> {{"team", "chiefs"}});
+                })
+                .ConfigureServices(s => s.AddTransient<IService, ServiceFromJasperRegistryConfigure>())
+                .ConfigureServices((c, services) =>
+                {
+                    if (c.HostingEnvironment.EnvironmentName == "Green") services.AddTransient<IService, GreenService>();
+                });
             });
 
-            Hosting.ConfigureServices(s => s.AddTransient<IService, ServiceFromJasperRegistryConfigure>());
 
-            Hosting.ConfigureServices((c, services) =>
-            {
-                if (c.HostingEnvironment.EnvironmentName == "Green") services.AddTransient<IService, GreenService>();
-            });
+
 
 
             Settings.Alter<BootstrappingSetting>((context, settings) =>

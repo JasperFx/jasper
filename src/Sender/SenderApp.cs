@@ -12,16 +12,22 @@ namespace Sender
     {
         public SenderApp()
         {
-            Hosting.ConfigureAppConfiguration((_, config) =>
+            Hosting(x =>
             {
-                config
-                    .AddJsonFile("appsettings.json")
-                    .AddEnvironmentVariables();
+                x.ConfigureAppConfiguration((_, config) =>
+                {
+                    config
+                        .AddJsonFile("appsettings.json")
+                        .AddEnvironmentVariables();
+                })
+                .UseUrls("http://*:5060").UseKestrel()
+                .ConfigureLogging(logging =>
+                {
+                    logging.SetMinimumLevel(LogLevel.Error);
+                });
+
             });
 
-            Hosting.UseUrls("http://*:5060").UseKestrel();
-
-            Hosting.ConfigureLogging(x => { x.SetMinimumLevel(LogLevel.Error); });
 
             Settings.ConfigureMarten((config, options) =>
             {

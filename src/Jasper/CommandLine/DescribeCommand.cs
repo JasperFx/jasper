@@ -10,7 +10,7 @@ namespace Jasper.CommandLine
         {
             using (var runtime = input.BuildRuntime(StartMode.Lightweight))
             {
-                runtime.Get<JasperOptionsBuilder>().Describe(runtime, Console.Out);
+                runtime.Get<JasperRegistry>().Describe(runtime, Console.Out);
             }
 
             return true;
