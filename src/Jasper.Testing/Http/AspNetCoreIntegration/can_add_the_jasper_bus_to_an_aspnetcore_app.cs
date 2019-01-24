@@ -22,9 +22,8 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
         public AspNetCombinedFixture()
         {
             // SAMPLE: adding-jasper-to-aspnetcore-app
-            var builder = new WebHostBuilder();
+            var builder = WebHost.CreateDefaultBuilder();
             builder
-                .UseKestrel()
                 .UseUrls("http://localhost:3003")
                 .UseStartup<Startup>() //;
                 .UseJasper<SimpleJasperBusApp>();

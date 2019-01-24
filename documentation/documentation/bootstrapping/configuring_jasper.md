@@ -8,27 +8,12 @@ discussions of setting up Jasper applications:
 * <[linkto:documentation/http]> for information on configuring ASP.Net Core middleware and customizing Jasper's HTTP service support
 * <[linkto:documentation/messaging]> for setting up messaging receivers, subscriptions, and publishing in your application
 
-## Service Name and Hosting Environment
+## Service Name
 
-
-By default, Jasper derives a descriptive _ServiceName_ for your application by taking the class name of your `JasperRegistry` and stripping off
-any "JasperRegistry" or "Registry" suffix. For diagnostic purposes you may want to override the service name like so:
+By default, Jasper derives a descriptive _ServiceName_ for your application by taking the class name of your custom `JasperRegistry` and stripping off
+any "JasperRegistry" or "Registry" suffix. If you are not using a custom `JasperRegistry`, Jasper will use the main application assembly name as the service name. For diagnostic purposes you may want to override the service name like so:
 
 <[sample:CustomServiceRegistry]>
-
-Jasper exposes the [ASP.Net Core Environment name](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/environments) with this usage:
-
-<[sample:EnvironmentNameRegistry]>
-
-You can use the `EnvironmentName` property within the constructor function of your `JasperRegistry` to do conditional configuration based on environment just like you would in an ASP.Net Core application:
-
-<[sample:UsingEnvironmentName]>
-
-You can also access the current application directory and other information from the `IHostedEnvironment` property on the context object in both signatures.
-
-If you are using `IWebHostBuilder` for bootstrapping, the Jasper service name and ASP.Net Core environment can be set like this:
-
-<[sample:aspnetcore-idiomatic-option-configuration]>
 
 ## Service Registrations
 
@@ -36,11 +21,11 @@ If you are using `IWebHostBuilder` for bootstrapping, the Jasper service name an
 
 Like most application frameworks in .Net, Jasper uses an IoC container to do basic composition within its runtime pipeline. You can add your own registrations to the application container directly in any combination of:
 
-1. The `Startup.ConfigureServices()` method
+1. The `Startup.ConfigureServices()` method. Use this mechanism if you need to do conditional registrations based on the hosting environment. I.e., apply this service if in "Testing" or this other one if in "Development."
 1. Using the `IWebHostBuilder.ConfigureServices()` extension method
-1. With `JasperOptionsBuilder.Services` / `JasperRegistry.Services` for [Lamar-centric](https://jasperfx.github.io/lamar) registrations.
+1. With `JasperRegistry.Services` for [Lamar-centric](https://jasperfx.github.io/lamar) registrations (which also supports the ASP.Net Core service registrations as well).
 
-But, the Jasper team **strongly recommends that you make all your service registrations in one place** for easier debugging later.
+But, the Jasper team **strongly recommends that you make all your service registrations in one place as much as possible** for easier debugging later.
 
 Using your `JasperRegistry`:
 

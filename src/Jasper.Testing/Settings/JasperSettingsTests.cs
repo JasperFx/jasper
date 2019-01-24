@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Settings;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -51,6 +53,30 @@ namespace Jasper.Testing.Settings
                 Settings.Alter<JasperOptions>((c, options) => options.ServiceName = c.Configuration["AppName"]);
             }
         }
+
+        // SAMPLE: UsingStartupForConfigurationOfSettings
+        public class Startup
+        {
+            private readonly JasperOptions _options;
+            private readonly IConfiguration _configuration;
+            private readonly IHostingEnvironment _hosting;
+
+            public Startup(JasperOptions options, IConfiguration configuration, IHostingEnvironment hosting)
+            {
+                _options = options;
+                _configuration = configuration;
+                _hosting = hosting;
+            }
+
+            public void Configure(IApplicationBuilder app)
+            {
+                // modify the JasperOptions with your IConfiguration
+                // and IHostingEnvironment
+            }
+
+
+        }
+        // ENDSAMPLE
 
         [Theory]
         [InlineData(typeof(JasperOptions), "Jasper")]

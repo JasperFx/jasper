@@ -9,8 +9,6 @@ play nice as a citizen in the greater ASP.Net Core ecosystem. To that end, you c
 just a service bus or command executor or as just another part of the ASP.Net Core runtime pipeline.
 
 
-## If ASP.Net Core is in charge...
-
 First off, let's say that you just want to use Jasper as messaging infrastructure inside of an ASP.Net Core application. With that in mind, let's say that you have a `JasperOptionsBuilder` like this:
 
 <[sample:SimpleJasperBusApp]>
@@ -31,17 +29,4 @@ To control the order of where Jasper executes within your ASP.Net Core applicati
 explicitly add the Jasper middleware like this:
 
 <[sample:ordering-middleware-with-jasper]>
-
-## If Jasper is in charge...
-
-If you choose to use Jasper idiomatically, it can bootstrap ASP.Net Core itself if you're using the HTTP features. `JasperRegistry.Hosting` exposes the ASP.Net `IWebHostBuilder` to configure the Http hosting as shown below:
-
-<[sample:ConfiguringAspNetCoreWithinJasperRegistry]>
-
-In the case above, Jasper will automatically configure itself as the `RequestDelegate` for the application.
-
-To get more precise with how ASP.Net Core middleware is ordered with Jasper, you can again use the
-`AddJasper()` extension method:
-
-<[sample:AppWithMiddleware]>
 

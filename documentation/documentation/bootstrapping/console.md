@@ -1,15 +1,26 @@
 <!--title:Jasper in Console Applications-->
 
-At this time, the Jasper team is focused on hosting applications either in IIS (or nginx) or as a console application that would be suitable for
-running in a Docker container. To that end, we've added the `JasperHost` static class as a helper for standing up Jasper in a console application.
+<[info]>
+Jasper uses the related [Oakton](https://jasperfx.github.io/oakton) project for command line parsing and its command runner extensibility. "Oakton" is
+a small community just to the North of Jasper's namesake.
+<[/info]>
 
-The sample usage from the <[linkto:documentation/getting_started;title=getting started]> topic would look like this:
+At this time, the Jasper team is focused on hosting applications either in IIS (or nginx) or as a console application that would be suitable for
+running in a Docker container. To that end, we've added the `JasperHost` static class as a helper for standing up Jasper in a console application. You obviously want to run the application from a command line, and Jasper certainly does that, but the real value is the additional diagnostic commands
+documented on this page that will help you diagnose problems or just generally understand your Jasper application better. The command line usage is also extensible.
+
+If you're using `IWebHostBuilder` to bootstrap your application, you can opt into Jasper's expanded command line support with code similar to this hybrid MVC Core / Jasper application that utilizes an extension method called `RunJasper(args)` to execute a Jasper application at the command line:
+
+<[sample:MvcCoreHybrid.Program]>
+
+Likewise, this sample usage from the <[linkto:documentation/getting_started;title=getting started]> topic for a headless Jasper application
+ could look like this:
 
 <[sample:QuickStartConsoleMain]>
 
-At runtime, `JasperHost` uses the `JasperRegistry` you hand it to <[linkto:documentation/bootstrapping;title=bootstrap a IJasperHost]> and run the application until the console process is stopped.
+At runtime, `JasperHost` can use the `JasperRegistry` you hand it to <[linkto:documentation/bootstrapping;title=bootstrap a IJasperHost]> and run the application until the console process is stopped.
 
-Or if you'd prefer to bootstrap with `IWebHostBuilder`, you can still use `JasperHost` like this:
+Or again, if you'd prefer to bootstrap with `IWebHostBuilder`, you can still use `JasperHost` like this:
 
 <[sample:simplest-aspnetcore-run-from-command-line]>
 

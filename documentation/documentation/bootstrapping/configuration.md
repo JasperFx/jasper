@@ -1,19 +1,16 @@
 <!--title: Application Configuration and Settings-->
 
-<div class="alert alert-info"><b>Note!</b> All of the code snippets shown in this topic apply to the JasperRegistry syntax</div>
+<[info]> 
+All of the code snippets shown in this topic apply to the JasperRegistry syntax
+<[/info]>
 
-For application configuration, Jasper supports both the built in .Net Core configuration and a form of strong typed configuration
-we call the ["Settings" model that was originally used in FubuMVC](https://jeremydmiller.com/2014/11/07/strong_typed_configuration/).
+Because Jasper applications are also ASP.Net Core applications, the built in [ASP.Net Core configuration just works](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-2.2), and that is configured the way
+you're probably already used to using with the `IWebHostBuilder` model.
 
-## Idiomatic Jasper Configuration
+On top of that, Jasper supports a form of strong typed configuration
+we call the ["Settings" model that was originally used in FubuMVC](https://jeremydmiller.com/2014/11/07/strong_typed_configuration/). This is a lighterweight alternative to ASP.Net Core's `IOptions` model (which is also usable with Jasper).
 
-If you are bootstrapping directly with `JasperRuntime`, the inner `IWebHostBuilder` has these options, similar to the `WebHost.CreateDefaultBuilder()` functionality in ASP.Net Core:
-
-<[sample:default-configuration-options]>
-
-For the most part though, Jasper wants to use the built in *Settings* model for strong typed configuration discussed below.
-
-## Quick Start
+## Settings Quick Start
 
 Probably the most common scenario is to have a single configuration file mapped to a single object:
 
@@ -29,32 +26,22 @@ Probably the most common scenario is to have a single configuration file mapped 
 Application configuration can come from a mix of the built in .Net Core configuration sources and programmatic options set in either your
 `JasperRegistry` or a loaded extension. While you make all the declarations in your `JasperRegistry` class, Jasper takes some steps to execute the usage of configuration options at bootstrapping time like so:
 
-1. Build out the .Net Core `IConfigurationRoot` object based on the sources added to `JasperRegistry.Configuration`.
-1. Apply any of the actions registered by `Settings.WithConfig()`
-1. Loads the default data for known `Settings` types
+1. Loads the default data for known `Settings` types by looking first for a configuration section named with the prefix of your `Settings` type name.
 1. Apply all the `JasperRegistry.Settings.Alter()` or `Replace()` delegates from registered extensions in the order that they were registered
 1. Apply all the `JasperRegistry.Settings.Alter()` or `Replace()` delegates configured in your `JasperRegistry` in the order that they were
    registered to ensure that the application specific options always win out over the base options or options coming from an extension
-1. Finally, apply all the `JasperRegistry.Settings.With()` delegates configured in your `JasperRegistry` to use the final, configured versions of
-   `Settings` objects to alter your application setup
 
-## Add Configuration Sources
 
-Jasper uses the [.NET Core ConfigurationBuilder](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration) to get config data and bind it to objects.
 
-<[sample:build-configuration]>
+## Alter the Settings Objects with IConfiguration
 
-If you need to bind a settings class that does not follow the convention of ending with `Settings` then use the `Configure` method to tell Jasper which class you want to bind.
+If you're already using an ASP.Net Core `Startup` class for configuring your application, the easiest way to configure
+Jasper `Settings` objects based on that configuration is to just inject that class into your `Startup` and work directly against it as
+shown in this example:
 
-<[sample:configure-settings]>
+<[sample:UsingStartupForConfigurationOfSettings]>
 
-If a settings class needs additional information to bind correctly, such as being in a nested sub-section, use the `Configure` method.
-
-<[sample:configure-settings2]>
-
-## Alter the Application with IConfiguration
-
-To actually use the compiled configuration to alter the current `JasperRegistry` that defines
+Otherwise, you can do this as well within your `JasperRegistry` class that defines
 your application like this simple example that just plucks a value from configuration and applies
 that to the `ServiceName` for the application:
 
@@ -71,9 +58,3 @@ It may be necessary to modify a settings object after it has been loaded from co
 or completely replaced:
 
 <[sample:replace-settings]>
-
-## Modify Application
-
-The `JasperRegistry` (or the application that inherits from `JasperRegistry`) can be modified using loaded settings:
-
-<[sample:with-settings]>

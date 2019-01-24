@@ -3,7 +3,7 @@
 /*
     class SampleUsages
     {
-        // SAMPLE: JasperAgent-programmatic-customization
+        // SAMPLE: JasperHost-programmatic-customization
         static int Main(string[] args)
         {
             return JasperAgent.Run<MyAppRegistry>(args, _ =>
