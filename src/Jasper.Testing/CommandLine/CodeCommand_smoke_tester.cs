@@ -54,7 +54,7 @@ namespace Jasper.Testing.CommandLine
         {
             if (sourceType == SourceType.JasperRegistry)
             {
-                var registry = new JasperRegistry();
+                var registry = new JasperRegistry(GetType().Assembly.GetName().Name);
                 registry.Handlers.DisableConventionalDiscovery().IncludeType<MessageConsumer>();
 
                 JasperHost.Run(registry, args).ShouldBe(0);

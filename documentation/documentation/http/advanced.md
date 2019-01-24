@@ -35,7 +35,7 @@ around endpoint actions implemented by `ControllerBase` classes for some MVC Cor
 
 <[sample:ControllerUsagePolicy]>
 
-To actually apply a route policy, you can add it to the `JasperOptionsBuilder.HttpRoutes.GlobalPolicy()` method as shown below:
+To actually apply a route policy, you can add it to the `JasperRegistry.HttpRoutes.GlobalPolicy()` method as shown below:
 
 <[sample:applying-route-policy]>
 

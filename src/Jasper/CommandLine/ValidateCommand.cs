@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Configuration;
+using Jasper.Http;
 using Jasper.Messaging.Model;
 using LamarCompiler;
 using Oakton;
@@ -22,6 +23,17 @@ namespace Jasper.CommandLine
                 var generatedAssembly = new GeneratedAssembly(rules);
                 var handlers = runtime.Get<HandlerGraph>();
                 foreach (var handler in handlers.Chains) handler.AssembleType(generatedAssembly, rules);
+
+
+
+                Console.WriteLine();
+                Console.WriteLine("Trying to compile the routes...");
+
+                var router = runtime.Get<HttpSettings>().BuildRouting(runtime.Container, runtime.Get<JasperGenerationRules>())
+                    .GetAwaiter().GetResult();
+
+
+
             }
 
             ConsoleWriter.Write(ConsoleColor.Green, "All systems good!");

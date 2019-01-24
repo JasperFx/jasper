@@ -87,6 +87,11 @@ namespace Jasper.Http
         /// </summary>
         public bool Enabled { get; set; } = true;
 
+        /// <summary>
+        /// After bootstrapping, this would be the compiled router for the HTTP support
+        /// </summary>
+        public Router Router { get; internal set; }
+
         // Call this in UseJasper()
         internal void StartFindingRoutes(Assembly assembly)
         {
@@ -116,7 +121,6 @@ namespace Jasper.Http
                 Routes.AssertNoDuplicateRoutes();
 
                 var tree = new RouteTree(this, generation);
-
                 tree.CompileAll(container);
 
 

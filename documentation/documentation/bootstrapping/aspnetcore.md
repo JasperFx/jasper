@@ -9,7 +9,7 @@ play nice as a citizen in the greater ASP.Net Core ecosystem. To that end, you c
 just a service bus or command executor or as just another part of the ASP.Net Core runtime pipeline.
 
 
-First off, let's say that you just want to use Jasper as messaging infrastructure inside of an ASP.Net Core application. With that in mind, let's say that you have a `JasperOptionsBuilder` like this:
+First off, let's say that you just want to use Jasper as messaging infrastructure inside of an ASP.Net Core application. With that in mind, let's say that you have a `JasperRegistry` like this:
 
 <[sample:SimpleJasperBusApp]>
 
