@@ -9,18 +9,39 @@ All the examples in this page are using the default, "in the box" options for Ja
 
 <[TableOfContents]>
 
-Jasper has its own idiomatic bootstrapping that is shown in a section below, but if you're already comfortable with ASP.Net Core, you can just use
-the `IWebHostBuilder` mechanism you already know and love to fire up a Jasper application in memory like so:
+Even if running "headless" (i.e., without Kestrel), Jasper applications are effectively ASP.Net Core applications and use the ASP.Net Core `IWebHostBuilder` for all bootstrapping and application lifecycle events. 
+
+In its simplest possible setup, you can fire up a Jasper application in memory like so:
 
 <[sample:simplest-aspnetcore-bootstrapping]>
 
 More likely though, you'll want to run a Jasper-ized ASP.net Core application from a command line application. Jasper goes all in on command line tooling with quite a bit of its own diagnostics, so naturally it comes with a first class citizen for bootstrapping and executing from the command line
-with `JasperAgent` like so:
+with `JasperHost` like so:
 
 <[sample:simplest-aspnetcore-run-from-command-line]>
 
+Or with the usage of an extension method in Jasper, this is an exact equivalent:
 
-Or using Jasper's own idiomatic bootstrapping, you can happily bootstrap a `JasperRuntime` (Jasper's equivalent of ASP.net Core's `IWebHost`) like this:
+<[sample:simplest-aspnetcore-run-from-command-line-2]>
+
+
+
+
+
+
+## Headless Applications
+
+If you are building a Jasper application that does not expose any HTTP endpoints or needs to customize the underlying `IWebHostBuilder`, you can use
+`JasperHost.CreateDefaultBuilder()` as shown below to create a pre-configured `IWebHostBuilder` that is lighter than `WebHost.CreateDefaultBuilder()` that you would use for HTTP projects:
+
+<[sample:Bootstrapping-Basic2]>
+
+This default `IWebHostBuilder` behind the scenes is this:
+
+<[sample:default-configuration-options]>
+
+
+There is also a shortcut for bootstrapping directly with `JasperHost` like this:
 
 <[sample:Bootstrapping-Basic]>
 

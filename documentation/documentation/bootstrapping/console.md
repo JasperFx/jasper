@@ -1,27 +1,27 @@
 <!--title:Jasper in Console Applications-->
 
 At this time, the Jasper team is focused on hosting applications either in IIS (or nginx) or as a console application that would be suitable for
-running in a Docker container. To that end, we've added the `JasperAgent` static class as a helper for standing up Jasper in a console application.
+running in a Docker container. To that end, we've added the `JasperHost` static class as a helper for standing up Jasper in a console application.
 
 The sample usage from the <[linkto:documentation/getting_started;title=getting started]> topic would look like this:
 
 <[sample:QuickStartConsoleMain]>
 
-At runtime, `JasperAgent` uses the `JasperRegistry` you hand it to <[linkto:documentation/bootstrapping;title=bootstrap a JasperRuntime]> and run the application until the console process is stopped.
+At runtime, `JasperHost` uses the `JasperRegistry` you hand it to <[linkto:documentation/bootstrapping;title=bootstrap a IJasperHost]> and run the application until the console process is stopped.
 
-Or if you'd prefer to bootstrap with `IWebHostBuilder`, you can still use `JasperAgent` like this:
+Or if you'd prefer to bootstrap with `IWebHostBuilder`, you can still use `JasperHost` like this:
 
 <[sample:simplest-aspnetcore-run-from-command-line]>
 
 You can also use the command line arguments to customize how the application runs like this:
 
-<[sample:JasperAgent-programmatic-customization]>
+<[sample:JasperHost-programmatic-customization]>
 
 Or like this:
 
 <[sample:JasperAgent-programmatic-construction]>
 
-Let's say that your Jasper application compiles to `MyApp.exe` and uses the `JasperAgent` class
+Let's say that your Jasper application compiles to `MyApp.exe` and uses the `JasperHost` class
 to run the commands. In that case you can run your application simply by typing `MyApp` at the
 command line with no arguments.
 
@@ -159,7 +159,7 @@ To make that more concrete, here is how the built in `services` command uses `Ja
 
 <[sample:ServicesCommand]>
 
-Do note that the command will be responsible for disposing and shutting down the running `JasperRuntime`.
+Do note that the command will be responsible for disposing and shutting down the running `IJasperHost`.
 
 
 

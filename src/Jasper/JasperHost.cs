@@ -42,7 +42,7 @@ namespace Jasper
 
             if (applicationAssembly == null)
             {
-                var name = runtimeSource.GetSetting(WebHostDefaults.EnvironmentKey);
+                var name = runtimeSource.GetSetting(WebHostDefaults.ApplicationKey);
                 if (name.IsNotEmpty())
                 {
                     applicationAssembly = Assembly.Load(name);
@@ -214,14 +214,14 @@ namespace Jasper
         /// <returns></returns>
         public static IWebHostBuilder CreateDefaultBuilder()
         {
-            var builder = new WebHostBuilder();
-
             // SAMPLE: default-configuration-options
-            builder.ConfigureAppConfiguration((hostingContext, config) =>
+            return new WebHostBuilder()
+                .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
 
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    config
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
                     config.AddEnvironmentVariables();
@@ -254,8 +254,6 @@ namespace Jasper
                     s.AddSingleton<IStartupFilter>(new RegisterJasperStartupFilter());
                 });
             // ENDSAMPLE
-
-            return builder;
         }
     }
 }

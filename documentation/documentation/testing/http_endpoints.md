@@ -11,7 +11,7 @@ An Alba specification might look like this:
 
 <[sample:AlbaScenarioUsage]>
 
-In real usage though, you'd probably want to reuse your `JasperRuntime` object between tests because that object can be a little expenseive timewise to construct, and you almost always want your test suite to run as quickly as possible for faster feedback. If you were using [xUnit.Net](https://xunit.github.io/), you might take an approach where you use a shared fixture for the `JasperRuntime` like this:
+In real usage though, you'd probably want to reuse your `IJasperHost` object between tests because that object can be a little expenseive timewise to construct, and you almost always want your test suite to run as quickly as possible for faster feedback. If you were using [xUnit.Net](https://xunit.github.io/), you might take an approach where you use a shared fixture for the `IJasperHost` like this:
 
 <[sample:AlbaScenarioUsageShared]>
 

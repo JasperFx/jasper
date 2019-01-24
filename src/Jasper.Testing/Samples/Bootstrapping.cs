@@ -13,14 +13,16 @@ namespace Jasper.Testing.Samples
         public static void Go()
         {
             // SAMPLE: Bootstrapping-Basic
-            using (var runtime = JasperHost.Basic())
+            using (var host = JasperHost.Basic())
             {
                 // do stuff
             }
             // ENDSAMPLE
 
             // SAMPLE: Bootstrapping-Basic2
-            using (var runtime = JasperHost.For(new JasperRegistry()))
+            using (var host = JasperHost.CreateDefaultBuilder()
+                .UseJasper()
+                .StartJasper())
             {
                 // do stuff
             }

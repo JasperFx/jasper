@@ -70,6 +70,20 @@ namespace Jasper.Testing.Http.AspNetCoreIntegration
 
 
         /*
+        // SAMPLE: simplest-aspnetcore-run-from-command-line-2
+        public static int Main(params string[] args)
+        {
+            return WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .UseJasper()
+                .RunJasper(args);
+        }
+        // ENDSAMPLE
+        */
+
+
+
+        /*
         // SAMPLE: simplest-idiomatic-command-line
         public static int Main(params string[] args)
         {

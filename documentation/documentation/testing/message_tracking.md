@@ -8,7 +8,7 @@ To at least amerliorate the issues around timing, Jasper comes with the "Message
 
 <[sample:AppUsingMessageTracking]>
 
-Now, in testing you can use extension methods off of `JasperRuntime` that will execute an action with the service bus and 
+Now, in testing you can use extension methods off of `IJasperHost` that will execute an action with the service bus and 
 wait until all the work started (messages sent should be received, cascading messages should be completed, etc.) has completed --
 or it times out in a reasonable time.
 

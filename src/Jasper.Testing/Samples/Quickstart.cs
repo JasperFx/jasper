@@ -1,5 +1,7 @@
 ﻿using System;
 using Jasper.Http;
+using Jasper.Testing.Http;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Jasper.Testing.Samples
@@ -22,12 +24,14 @@ namespace Jasper.Testing.Samples
         public static void EntryPoint()
         {
             // SAMPLE: QuickStart-Add-To-AspNetCore
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseJasper<ServiceBusApp>()
-                .Build();
+            var host = WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
 
-            host.Run();
+                // Adds Jasper to your ASP.Net Core application
+                // with default configuration
+                .UseJasper()
+                .Start();
+
             // ENDSAMPLE
         }
     }

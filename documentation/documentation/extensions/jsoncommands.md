@@ -12,7 +12,7 @@ To use `Jasper.JsonCommands`, just add the Nuget to your project, and type `dotn
 
 ## Exporting Json Schema
 
-Assuming that you are using the `JasperAgent` class as a harness for your Jasper application, you can use this command to export JSON schema files for all the known message types that your system handles:
+Assuming that you are using the `JasperHost` class as a harness for your Jasper application, you can use this command to export JSON schema files for all the known message types that your system handles:
 
 ```
 dotnet run -- export-json-schema /schemafiles

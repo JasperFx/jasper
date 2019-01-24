@@ -17,7 +17,11 @@ Jasper tries very hard to be a good citizen within the greater ASP.Net Core ecos
 
 ## Standalone Jasper Application
 
-To create a standalone Jasper service, the quickest thing to do is to use a [dotnet new](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new?tabs=netcore21) template. First, install the latest `JasperTemplates` with this command:
+<[info]>
+Even internally, Jasper uses ASP.Net Core's Hosting model for bootstrapping
+<[/info]>
+
+To create a standalone, headless Jasper service, the quickest thing to do is to use a [dotnet new](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new?tabs=netcore21) template. First, install the latest `JasperTemplates` with this command:
 
 ```
 dotnet new --install JasperTemplates
@@ -69,11 +73,6 @@ If you prefer to use typical ASP.Net Core bootstrapping or want to add Jasper me
 
 <[sample:QuickStart-Add-To-AspNetCore]>
 
-The `T` constraint will refer to the Jasper configuration for your hybrid Jasper/ASP.Net Core application, this time in a subclass of the `JasperHttpRegistry` class that's just a specialized version of
-`JasperRegistry`:
-
-<[sample:ServiceBusApp]>
-
 See <[linkto:documentation/bootstrapping/aspnetcore]> for more information about configuring Jasper through ASP.Net Core hosting.
 
 
@@ -83,7 +82,7 @@ The obligatory "Hello World" http endpoint is just this:
 
 <[sample:QuickStartHomeEndpoint]>
 
-As long as that class is in the same assembly as your `JasperHttpRegistry` class, Jasper will find it and make the "Get" method handle the root url of your application.
+As long as that class is in the main application assembly, Jasper will find it and make the "Get" method handle the root url of your application.
 
 See <[linkto:documentation/http]> for more information about Jasper's HTTP handling features.
 
