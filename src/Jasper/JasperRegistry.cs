@@ -39,7 +39,11 @@ namespace Jasper
         protected readonly ServiceRegistry _applicationServices = new ServiceRegistry();
         protected readonly ServiceRegistry _baseServices;
 
-        public JasperRegistry(string assemblyName = null)
+        public JasperRegistry() : this(null)
+        {
+        }
+
+        public JasperRegistry(string assemblyName)
         {
             HttpRoutes = new HttpSettings();
 
