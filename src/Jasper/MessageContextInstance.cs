@@ -14,14 +14,16 @@ namespace Jasper
 {
     public class MessageContextInstance : Instance
     {
+        private readonly Type _serviceType;
         private IMessagingRoot _root;
         private Instance _rootInstance;
 
-        public MessageContextInstance() : base(
-            typeof(IMessageContext),
+        public MessageContextInstance(Type serviceType) : base(
+            serviceType,
             typeof(MessageContext),
             ServiceLifetime.Transient)
         {
+            _serviceType = serviceType;
             Name = Variable.DefaultArgName<IMessageContext>();
         }
 
@@ -66,7 +68,7 @@ namespace Jasper
 
             public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
             {
-                writer.Write($"var {Variable.Usage} = {_root.Usage}.{nameof(IMessagingRoot.NewContext)}();");
+                writer.Write($"{Variable.VariableType.FullNameInCode()} {Variable.Usage} = {_root.Usage}.{nameof(IMessagingRoot.NewContext)}();");
                 Next?.GenerateCode(method, writer);
             }
         }

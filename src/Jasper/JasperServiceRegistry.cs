@@ -102,7 +102,9 @@ namespace Jasper
             MessagingRootService(x => x.Router);
             MessagingRootService(x => x.ScheduledJobs);
 
-            For<IMessageContext>().Use(new MessageContextInstance());
+            For<IMessageContext>().Use(new MessageContextInstance(typeof(IMessageContext)));
+            For<IMessageContext>().Use(new MessageContextInstance(typeof(ICommandBus)));
+            For<IMessageContext>().Use(new MessageContextInstance(typeof(IMessagePublisher)));
 
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
 

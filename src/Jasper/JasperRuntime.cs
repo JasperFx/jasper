@@ -68,7 +68,7 @@ namespace Jasper
         /// <summary>
         ///     Shortcut to retrieve an instance of the IServiceBus interface for the application
         /// </summary>
-        public IMessageSender Messaging => _bus.Value;
+        public IMessagePublisher Messaging => _bus.Value;
 
         /// <summary>
         ///     The logical name of the application from JasperRegistry.ServiceName
