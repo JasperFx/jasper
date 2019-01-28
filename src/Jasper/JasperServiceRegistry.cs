@@ -11,6 +11,7 @@ using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
+using Jasper.Util.Lamar;
 using Lamar;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +37,8 @@ namespace Jasper
 
             For<IHostedService>().Use<BackPressureAgent>();
 
-
+            Policies.Add(new LoggerPolicy());
+            Policies.Add(new OptionsPolicy());
 
             conneg(parent);
             messaging(parent);
