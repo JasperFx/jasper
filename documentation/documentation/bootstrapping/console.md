@@ -89,6 +89,8 @@ MyApp validate
 which also respects the same `--environment` and `--verbose` flags as the run command. This command will bootstrap the application, run all the environment tests and start up validations, report on the success or failure, and shut down the application. Do note that if any environment tests fail, this command will return a non-zero return code that should be sufficient to let any
 build scripting tool you're using know that the validation failed.
 
+The `validate` command will also validate the Lamar configuration and run any environment tests exposed through Lamar.
+
 ## List Registered Services
 
 Jasper only supports the [Lamar container](https://github.com/jasperfx/lamar) (the replacement for the venerable [StructureMap](http://structuremap.github.io) container). To query the current state of service registrations, use this command:

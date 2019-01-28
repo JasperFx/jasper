@@ -1,4 +1,6 @@
-﻿namespace Jasper.EnvironmentChecks
+﻿using Lamar;
+
+namespace Jasper.EnvironmentChecks
 {
     // SAMPLE: IEnvironmentCheck
     /// <summary>
@@ -22,4 +24,6 @@
     }
 
     // ENDSAMPLE
+
+
 }

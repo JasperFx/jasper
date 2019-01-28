@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Messaging.Model;
+using Lamar;
 using LamarCompiler;
 using Oakton;
 
@@ -15,6 +16,9 @@ namespace Jasper.CommandLine
             Console.WriteLine("Bootstrapping the system and running all checks...");
             using (var runtime = input.BuildRuntime(StartMode.Lightweight))
             {
+                Console.WriteLine("Validating the Lamar configuration and executing all Lamar environment checks");
+                runtime.Container.AssertConfigurationIsValid(AssertMode.Full);
+
                 Console.WriteLine("Generating code for all the message handlers, this might take a bit...");
                 Console.WriteLine();
                 Console.WriteLine();
