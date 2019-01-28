@@ -16,12 +16,12 @@ namespace Jasper.TestSupport.Alba
 
         public string UrlFor<T>(Expression<Action<T>> expression, string httpMethod)
         {
-            return _urls.UrlFor(expression, httpMethod);
+            return _urls.UrlFor(expression);
         }
 
         public string UrlFor<T>(string method)
         {
-            return _urls.UrlFor<T>(method);
+            return _urls.UrlForType<T>(method);
         }
 
         public string UrlFor<T>(T input, string httpMethod)

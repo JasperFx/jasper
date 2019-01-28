@@ -89,7 +89,7 @@ namespace Jasper.Testing.Http
         public void reverse_url_lookup_by_input_model()
         {
             var urls = Runtime.Services.GetRequiredService<IUrlRegistry>();
-            urls.UrlFor<OtherModel>().ShouldBe("/other");
+            urls.UrlForType<OtherModel>().ShouldBe("/other");
         }
 
         [Fact]

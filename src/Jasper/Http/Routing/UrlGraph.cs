@@ -40,7 +40,7 @@ namespace Jasper.Http.Routing
             return route.ToUrlFromInputModel(model);
         }
 
-        public string UrlFor<T>(string httpMethod = null)
+        public string UrlForType<T>(string httpMethod = null)
         {
             var route = RouteFor<T>(httpMethod);
 
@@ -58,7 +58,7 @@ namespace Jasper.Http.Routing
             return "/" + route.Pattern;
         }
 
-        public string UrlFor<THandler>(Expression<Action<THandler>> expression, string httpMethod = null)
+        public string UrlFor<THandler>(Expression<Action<THandler>> expression)
         {
             var method = ReflectionHelper.GetMethod(expression);
 
