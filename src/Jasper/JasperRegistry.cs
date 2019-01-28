@@ -24,7 +24,7 @@ namespace Jasper
     /// <summary>
     ///     Completely defines and configures a Jasper application
     /// </summary>
-    public class JasperRegistry : ITransportsExpression
+    public class JasperRegistry : IFullTransportsExpression
     {
         static JasperRegistry()
         {
@@ -178,7 +178,7 @@ namespace Jasper
         /// <summary>
         ///     Configure or disable the built in transports
         /// </summary>
-        public ITransportsExpression Transports => this;
+        public IFullTransportsExpression Transports => this;
 
         /// <summary>
         ///     Get or set the logical Jasper service name. By default, this is
@@ -213,6 +213,11 @@ namespace Jasper
         void ITransportsExpression.DisableTransport(string protocol)
         {
             Settings.Alter<JasperOptions>(x => x.DisableTransport(protocol));
+        }
+
+        void IFullTransportsExpression.ListenForMessagesFromUriValueInConfig(string configKey)
+        {
+            Settings.Messaging((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey)));
         }
 
         private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();

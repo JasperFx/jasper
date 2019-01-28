@@ -121,6 +121,40 @@ namespace Jasper.Messaging.Configuration
                     });
                 });
             }
+
+            /// <summary>
+            /// Publish messages matching this rule to the Uri value
+            /// found in IConfiguration[configKey]
+            /// </summary>
+            /// <param name="configKey">The configuration key that holds the designated Uri</param>
+            public void ToUriValueInConfig(string configKey)
+            {
+                _settings.Messaging((c, options) =>
+                {
+                    var subscription = new Subscription
+                    {
+                        Match = _match,
+                        Scope = _routingScope,
+                        Uri = c.Configuration.TryGetUri(configKey)
+                    };
+
+                    options.AddSubscription(subscription);
+                });
+            }
+        }
+
+        /// <summary>
+        /// Send all messages published through this application to the Uri
+        /// value in configuration with the designated key
+        /// </summary>
+        /// <param name="configKey">The value of IConfiguration[configKey] to find the Uri</param>
+        public void AllMessagesToUriValueInConfig(string configKey)
+        {
+            _settings.Alter<JasperOptions>((c, options) =>
+            {
+                var uri = c.Configuration.TryGetUri(configKey);
+                options.AddSubscription(Subscription.All(uri));
+            });
         }
     }
 }

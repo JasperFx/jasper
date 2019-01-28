@@ -2,11 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Messaging.Transports;
+using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Util
 {
     public static class UriExtensions
     {
+        public static Uri TryGetUri(this IConfiguration config, string key)
+        {
+            try
+            {
+                return config[key].ToUri();
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException($"Failed to read an expected Uri from configuration with the key '{key}'");
+            }
+        }
+
         private static readonly HashSet<string> _locals =
             new HashSet<string>(new[] {"localhost", "127.0.0.1"}, StringComparer.OrdinalIgnoreCase);
 
