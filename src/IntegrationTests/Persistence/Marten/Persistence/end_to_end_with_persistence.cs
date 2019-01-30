@@ -7,6 +7,7 @@ using Jasper;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
 using Shouldly;
@@ -26,8 +27,8 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             theReceiver = JasperHost.For<ItemReceiver>();
             theTracker = theReceiver.Get<MessageTracker>();
 
-            theSender.Get<IEnvelopePersistor>().Admin.RebuildSchemaObjects();
-            theReceiver.Get<IEnvelopePersistor>().Admin.RebuildSchemaObjects();
+            theSender.RebuildMessageStorage();
+            theReceiver.RebuildMessageStorage();
 
         }
 
@@ -92,7 +93,8 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
             waiter.IsCompleted.ShouldBeTrue();
 
-            using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
+            var documentStore = theReceiver.Get<IDocumentStore>();
+            using (var session = documentStore.QuerySession())
             {
                 var item2 = session.Load<ItemCreated>(item.Id);
                 if (item2 == null)

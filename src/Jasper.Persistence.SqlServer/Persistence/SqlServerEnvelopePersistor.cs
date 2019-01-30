@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -322,6 +323,11 @@ values
 
 
             return counts;
+        }
+
+        public void Describe(TextWriter writer)
+        {
+            writer.WriteLine($"Sql Server Envelope Storage in Schema '{_settings.SchemaName}'");
         }
 
         public List<Envelope> AllIncomingEnvelopes()

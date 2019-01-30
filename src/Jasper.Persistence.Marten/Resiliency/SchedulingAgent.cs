@@ -119,8 +119,6 @@ namespace Jasper.Persistence.Marten.Resiliency
 
         protected override async Task openConnectionAndAttainNodeLock()
         {
-            _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
-
             _connection = _store.Tenancy.Default.CreateConnection();
 
             await _connection.OpenAsync(settings.Cancellation);

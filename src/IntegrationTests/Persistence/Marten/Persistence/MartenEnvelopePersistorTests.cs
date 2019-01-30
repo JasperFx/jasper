@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Jasper;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten.Persistence;
 using Marten;
 using Shouldly;
@@ -17,7 +18,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
         {
             var store = theHost.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
-            store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
+            theHost.RebuildMessageStorage();
         }
 
         public void Dispose()

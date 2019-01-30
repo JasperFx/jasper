@@ -14,7 +14,7 @@ namespace Jasper.CommandLine
         public override bool Execute(JasperInput input)
         {
             Console.WriteLine("Bootstrapping the system and running all checks...");
-            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
+            using (var runtime = input.BuildHost(StartMode.Lightweight))
             {
                 Console.WriteLine("Validating the Lamar configuration and executing all Lamar environment checks");
                 runtime.Container.AssertConfigurationIsValid(AssertMode.Full);

@@ -40,19 +40,16 @@ namespace Jasper.Persistence.Marten.Persistence
 
         public ISendingAgent BuildSendingAgent(Uri destination, ISender sender, CancellationToken cancellation)
         {
-            _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
             return new DurableSendingAgent(destination, sender, _logger, Settings, _retries, _persistor);
         }
 
         public ISendingAgent BuildLocalAgent(Uri destination, IMessagingRoot root)
         {
-            _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
             return new LocalSendingAgent(destination, root.Workers, _persistor, root.Serialization, _retries, _logger);
         }
 
         public IListener BuildListener(IListeningAgent agent, IMessagingRoot root)
         {
-            _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
             return new DurableListener(agent, root.Workers, _logger, Settings, _retries, _persistor);
         }
 

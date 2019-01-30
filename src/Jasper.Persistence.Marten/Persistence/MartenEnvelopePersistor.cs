@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
@@ -183,6 +184,9 @@ namespace Jasper.Persistence.Marten.Persistence
             return counts;
         }
 
-
+        public void Describe(TextWriter writer)
+        {
+            writer.WriteLine($"Persistent Envelope storage using Marten & Postgresql in schema '{_tables.SchemaName}'");
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace Jasper.Testing.CommandLine
                 EnvironmentFlag = "Fake"
             };
 
-            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
+            using (var runtime = input.BuildHost(StartMode.Lightweight))
             {
                 runtime.Get<IHostingEnvironment>()
                     .EnvironmentName.ShouldBe("Fake");
@@ -44,7 +44,7 @@ namespace Jasper.Testing.CommandLine
                 VerboseFlag = true
             };
 
-            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
+            using (var runtime = input.BuildHost(StartMode.Lightweight))
             {
                 var providers = runtime.Container.GetAllInstances<ILoggerProvider>();
                 providers.OfType<ConsoleLoggerProvider>().Any().ShouldBeTrue();

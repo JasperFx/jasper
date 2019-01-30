@@ -22,8 +22,4 @@
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Persistence\Marten" />
-    <Folder Include="Persistence\SqlServer" />
-  </ItemGroup>
 </Project>

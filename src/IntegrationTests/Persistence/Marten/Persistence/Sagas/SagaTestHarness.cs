@@ -43,7 +43,6 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 
             var store = _host.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
-            store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
         }
 
         public void Dispose()

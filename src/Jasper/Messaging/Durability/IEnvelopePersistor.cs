@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -37,6 +38,8 @@ namespace Jasper.Messaging.Durability
         Task StoreOutgoing(Envelope[] envelopes, int ownerId);
 
         Task<PersistedCounts> GetPersistedCounts();
+
+        void Describe(TextWriter writer);
     }
 
     public class NulloEnvelopePersistor : IEnvelopePersistor, IEnvelopeStorageAdmin
@@ -114,19 +117,25 @@ namespace Jasper.Messaging.Durability
             return Task.FromResult(new PersistedCounts());
         }
 
+        public void Describe(TextWriter writer)
+        {
+            writer.WriteLine("No persistent envelope storage");
+        }
+
         public void ClearAllPersistedEnvelopes()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("There is no durable envelope storage");
         }
 
         public void RebuildSchemaObjects()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("There is no durable envelope storage");
         }
 
         public string CreateSql()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("There is no durable envelope storage");
+            return string.Empty;
         }
 
     }

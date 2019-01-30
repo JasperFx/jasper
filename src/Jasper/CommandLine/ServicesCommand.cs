@@ -9,7 +9,7 @@ namespace Jasper.CommandLine
     {
         public override bool Execute(JasperInput input)
         {
-            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
+            using (var runtime = input.BuildHost(StartMode.Lightweight))
             {
                 Console.WriteLine(runtime.Container.WhatDoIHave());
             }

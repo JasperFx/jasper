@@ -24,7 +24,7 @@ namespace Jasper.CommandLine
             Console.WriteLine();
             Console.WriteLine();
 
-            var runtime = input.BuildRuntime(StartMode.Lightweight);
+            var runtime = input.BuildHost(StartMode.Lightweight);
 
             var rules = runtime.Get<JasperGenerationRules>();
             var generatedAssembly = new GeneratedAssembly(rules);

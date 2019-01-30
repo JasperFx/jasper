@@ -46,17 +46,10 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         protected override void initializeStorage(IJasperHost theSender, IJasperHost theReceiver)
         {
-            var senderStore = theSender.Get<IDocumentStore>();
-            senderStore.Advanced.Clean.CompletelyRemoveAll();
-            senderStore.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
+            theSender.RebuildMessageStorage();
 
-            theSender.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
+            theReceiver.RebuildMessageStorage();
 
-            var receiverStore = theReceiver.Get<IDocumentStore>();
-            receiverStore.Advanced.Clean.CompletelyRemoveAll();
-            receiverStore.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
-
-            theReceiver.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
         }
 
         protected override ItemCreated loadItem(IJasperHost receiver, Guid id)

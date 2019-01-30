@@ -35,7 +35,7 @@ namespace Jasper.JsonCommands
                 system.CreateDirectory(directory);
             }
 
-            using (var runtime = input.BuildRuntime(StartMode.Lightweight))
+            using (var runtime = input.BuildHost(StartMode.Lightweight))
             {
                 var handlers = runtime.Get<HandlerGraph>();
                 var messageTypes = handlers.Chains.Select(x => x.MessageType)

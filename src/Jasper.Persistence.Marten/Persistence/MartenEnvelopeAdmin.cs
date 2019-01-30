@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Baseline;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -37,7 +38,18 @@ namespace Jasper.Persistence.Marten.Persistence
 
         public void RebuildSchemaObjects()
         {
-            _store.Advanced.Clean.CompletelyRemove(typeof(Envelope));
+            var documentStore = _store.As<DocumentStore>();
+
+
+            using (var conn = documentStore.Tenancy.Default.CreateConnection())
+            {
+                conn.Open();
+
+                conn.CreateCommand($"DROP TABLE IF EXISTS {_tables.Incoming} CASCADE").ExecuteNonQuery();
+                conn.CreateCommand($"DROP TABLE IF EXISTS {_tables.Outgoing} CASCADE").ExecuteNonQuery();
+            }
+
+
             _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
 
             _store.Advanced.Clean.CompletelyRemove(typeof(ErrorReport));

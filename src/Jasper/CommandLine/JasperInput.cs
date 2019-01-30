@@ -24,7 +24,7 @@ namespace Jasper.CommandLine
 
         [IgnoreOnCommandLine] public Assembly ApplicationAssembly { get; set; }
 
-        public IJasperHost BuildRuntime(StartMode mode)
+        public IJasperHost BuildHost(StartMode mode)
         {
             // SAMPLE: what-the-cli-is-doing
 
