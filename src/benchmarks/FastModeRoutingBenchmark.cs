@@ -5,11 +5,13 @@ using Alba;
 using benchmarks.Routes;
 using Baseline;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Jobs;
 using Jasper;
+using Jasper.Http;
 using Jasper.Http.Model;
+using Jasper.MvcExtender;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace benchmarks
 {
@@ -19,10 +21,15 @@ namespace benchmarks
     {
         private TestRoute[] _routes;
         private SystemUnderTest _system;
+        private SystemUnderTest _aspnetSystem;
+        private SystemUnderTest _hybridSystem;
 
         public FastModeRoutingBenchmark()
         {
-            var builder = new WebHostBuilder().UseJasper().Configure(app => app.UseJasper());
+            var builder = new WebHostBuilder()
+                .ConfigureLogging(x => { x.ClearProviders(); })
+                .UseJasper(x => x.HttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster)
+                .Configure(app => app.UseJasper());
 
             _system = new SystemUnderTest(builder);
 
@@ -36,6 +43,24 @@ namespace benchmarks
                 .OfType<IHasUrls>()
                 .SelectMany(x => x.Urls().Select(url => new TestRoute(x.Method, url)))
                 .ToArray();
+
+
+            var aspnetBuilder = AspNetCorePerfTarget.Program.CreateWebHostBuilder(new string[0])
+                .UseStartup<AspNetCorePerfTarget.Startup>();
+
+            _aspnetSystem = new SystemUnderTest(aspnetBuilder);
+
+            var hybridBuilder = JasperHost.CreateDefaultBuilder().UseJasper<HybridRegistry>();
+
+            _hybridSystem = new SystemUnderTest(hybridBuilder);
+        }
+
+        public class HybridRegistry : JasperRegistry
+        {
+            public HybridRegistry() : base("AspNetCorePerfTarget")
+            {
+                Include<MvcExtenderExtension>();
+            }
         }
 
         [Benchmark]
@@ -47,11 +72,31 @@ namespace benchmarks
             }
         }
 
+        [Benchmark]
+        public async Task RunAspNetRequests()
+        {
+            foreach (var testRoute in _routes)
+            {
+                await testRoute.Run(_aspnetSystem);
+            }
+        }
+
+        [Benchmark]
+        public async Task RunHybridRequests()
+        {
+            foreach (var testRoute in _routes)
+            {
+                await testRoute.Run(_hybridSystem);
+            }
+        }
+
 
 
         public void Dispose()
         {
             _system?.Dispose();
+            _aspnetSystem?.Dispose();
+            _hybridSystem?.Dispose();
         }
     }
 

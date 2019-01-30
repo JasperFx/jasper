@@ -10,13 +10,32 @@ namespace Jasper.Http.Model
 {
     public abstract class RouteHandler
     {
+        /// <summary>
+        /// Handles the actual HTTP request
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <param name="segments"></param>
+        /// <returns></returns>
+        public abstract Task Handle(HttpContext httpContext, string[] segments);
+
+
+
+
+
+
+
+
+
+
+
+
         public RouteChain Chain { get; set; }
 
         public IMessageDeserializer Reader { get; set; }
         public IMessageSerializer Writer { get; set; }
         public ModelReader ConnegReader { get; set; }
         public ModelWriter ConnegWriter { get; set; }
-        public abstract Task Handle(HttpContext httpContext, string[] segments);
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task WriteText(string text, HttpResponse response)

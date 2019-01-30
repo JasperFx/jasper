@@ -63,8 +63,12 @@ namespace Jasper.Persistence.Marten.Codegen
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             if (_createsSession)
+            {
+                writer.BlankLine();
+                writer.WriteComment("Open a new document session");
                 writer.Write(
                     $"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
+            }
 
             if (_context != null && _isUsingPersistence)
                 writer.Write(
@@ -78,6 +82,8 @@ namespace Jasper.Persistence.Marten.Codegen
             foreach (var saved in _saved)
                 writer.Write($"{Session.Usage}.{nameof(IDocumentSession.Store)}({saved.Usage});");
 
+            writer.BlankLine();
+            writer.WriteComment("Commit the unit of work");
             writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}();");
 
             if (_createsSession) writer.FinishBlock();

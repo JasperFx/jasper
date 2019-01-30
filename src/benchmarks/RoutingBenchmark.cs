@@ -5,7 +5,6 @@ using Alba;
 using benchmarks.Routes;
 using Baseline;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Attributes.Jobs;
 using Jasper;
 using Jasper.Http.Model;
 using Microsoft.AspNetCore.Hosting;

@@ -22,22 +22,31 @@ namespace benchmarks
 
         public Task Run(SystemUnderTest system)
         {
-            switch (Method)
+
+
+            try
             {
-                case "GET":
-                    return system.Scenario(x => x.Get.Url(Url));
+                switch (Method)
+                {
+                    case "GET":
+                        return system.Scenario(x => x.Get.Url(Url));
 
-                case "POST":
-                    return system.Scenario(x => x.Post.Url(Url));
+                    case "POST":
+                        return system.Scenario(x => x.Post.Url(Url));
 
-                case "PUT":
-                    return system.Scenario(x => x.Put.Url(Url));
+                    case "PUT":
+                        return system.Scenario(x => x.Put.Url(Url));
 
-                case "DELETE":
-                    return system.Scenario(x => x.Delete.Url(Url));
+                    case "DELETE":
+                        return system.Scenario(x => x.Delete.Url(Url));
 
-                case "HEAD":
-                    return system.Scenario(x => x.Head.Url(Url));
+                    case "HEAD":
+                        return system.Scenario(x => x.Head.Url(Url));
+                }
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException($"Error trying to run url '{Url}'");
             }
 
             throw new Exception("Bad request!, the method is " + Method);
