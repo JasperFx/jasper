@@ -1,6 +1,6 @@
-﻿using Jasper.Persistence.SqlServer.Schema;
+﻿using Jasper.Messaging.Durability;
 
-namespace Jasper.Persistence.SqlServer
+namespace Jasper.Persistence
 {
     public static class JasperRuntimeExtensions
     {
@@ -10,9 +10,7 @@ namespace Jasper.Persistence.SqlServer
         /// <param name="runtime"></param>
         public static void RebuildMessageStorage(this IJasperHost runtime)
         {
-            var settings = runtime.Get<SqlServerSettings>();
-            var builder = new SchemaLoader(settings.ConnectionString, settings.SchemaName);
-            builder.RecreateAll();
+            runtime.Get<IEnvelopePersistor>().Admin.RebuildSchemaObjects();
         }
     }
 }

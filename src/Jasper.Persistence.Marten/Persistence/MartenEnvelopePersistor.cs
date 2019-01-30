@@ -21,7 +21,11 @@ namespace Jasper.Persistence.Marten.Persistence
         {
             _store = store;
             _tables = tables;
+
+            Admin = new MartenEnvelopeAdmin(store, tables);
         }
+
+        public IEnvelopeStorageAdmin Admin { get; }
 
         public async Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
@@ -178,5 +182,7 @@ namespace Jasper.Persistence.Marten.Persistence
 
             return counts;
         }
+
+
     }
 }

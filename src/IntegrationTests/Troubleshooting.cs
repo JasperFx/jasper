@@ -22,8 +22,8 @@ namespace IntegrationTests
         //[Fact] -- used this just once for troubleshooting RabbitMQ disconnect/reconnect issues
         public Task go()
         {
-            new SchemaLoader(Servers.SqlServerConnectionString, "rabbit_receiver").RecreateAll();
-            new SchemaLoader(Servers.SqlServerConnectionString, "rabbit_sender").RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString, "rabbit_receiver").RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString, "rabbit_sender").RecreateAll();
 
             var receiver = JasperHost.For<RabbitSender>();
             var sender = JasperHost.For<RabbitReceiver>();

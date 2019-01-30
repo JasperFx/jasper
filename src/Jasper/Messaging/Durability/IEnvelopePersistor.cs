@@ -5,8 +5,18 @@ using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging.Durability
 {
+    public interface IEnvelopeStorageAdmin
+    {
+        void ClearAllPersistedEnvelopes();
+        void RebuildSchemaObjects();
+        string CreateSql();
+    }
+
+
     public interface IEnvelopePersistor
     {
+        IEnvelopeStorageAdmin Admin { get; }
+
         Task DeleteIncomingEnvelopes(Envelope[] envelopes);
         Task DeleteIncomingEnvelope(Envelope envelope);
         Task DeleteOutgoingEnvelopes(Envelope[] envelopes);
@@ -29,8 +39,10 @@ namespace Jasper.Messaging.Durability
         Task<PersistedCounts> GetPersistedCounts();
     }
 
-    public class NulloEnvelopePersistor : IEnvelopePersistor
+    public class NulloEnvelopePersistor : IEnvelopePersistor, IEnvelopeStorageAdmin
     {
+        public IEnvelopeStorageAdmin Admin => this;
+
         public Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
             throw new NotImplementedException();
@@ -101,5 +113,21 @@ namespace Jasper.Messaging.Durability
             // Nothing to do, but keeps the metrics from blowing up
             return Task.FromResult(new PersistedCounts());
         }
+
+        public void ClearAllPersistedEnvelopes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RebuildSchemaObjects()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string CreateSql()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

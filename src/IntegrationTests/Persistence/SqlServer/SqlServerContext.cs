@@ -8,7 +8,7 @@ namespace IntegrationTests.Persistence.SqlServer
     {
         protected SqlServerContext()
         {
-            var loader = new SchemaLoader(Servers.SqlServerConnectionString);
+            var loader = new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString);
             loader.RecreateAll();
         }
     }

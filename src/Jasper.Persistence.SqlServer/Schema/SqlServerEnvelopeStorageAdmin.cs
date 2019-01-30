@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.IO;
 using System.Reflection;
 using Baseline;
+using Jasper.Messaging.Durability;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Schema
 {
-    public class SchemaLoader
+    public class SqlServerEnvelopeStorageAdmin : IEnvelopeStorageAdmin
     {
         private readonly string _connectionString;
 
@@ -20,12 +22,12 @@ namespace Jasper.Persistence.SqlServer.Schema
             "uspMarkOutgoingOwnership.sql"
         };
 
-        public SchemaLoader(string connectionString)
+        public SqlServerEnvelopeStorageAdmin(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public SchemaLoader(string connectionString, string schemaName)
+        public SqlServerEnvelopeStorageAdmin(string connectionString, string schemaName)
         {
             _connectionString = connectionString;
             SchemaName = schemaName;
@@ -46,7 +48,7 @@ namespace Jasper.Persistence.SqlServer.Schema
 
         private static string toScript(string fileName, string schema)
         {
-            var text = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(SchemaLoader), fileName)
+            var text = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(SqlServerEnvelopeStorageAdmin), fileName)
                 .ReadAllText();
 
             return text.Replace("%SCHEMA%", schema);
@@ -108,6 +110,62 @@ namespace Jasper.Persistence.SqlServer.Schema
                 .With("name", SchemaName).ExecuteScalar().As<int>();
 
             if (count == 0) conn.CreateCommand($"CREATE SCHEMA [{SchemaName}] AUTHORIZATION [dbo]").ExecuteNonQuery();
+        }
+
+        void IEnvelopeStorageAdmin.ClearAllPersistedEnvelopes()
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                try
+                {
+                    conn.CreateCommand($"truncate table {SchemaName}.jasper_outgoing_envelopes;truncate table {SchemaName}.jasper_incoming_envelopes;truncate table {SchemaName}.jasper_dead_letters;").ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    throw new InvalidOperationException("Failure trying to execute the truncate table statements for the envelope storage", e);
+                }
+
+            }
+        }
+
+        void IEnvelopeStorageAdmin.RebuildSchemaObjects()
+        {
+            DropAll();
+            RecreateAll();
+        }
+
+        string IEnvelopeStorageAdmin.CreateSql()
+        {
+            var writer = new StringWriter();
+            writer.WriteLine(
+                $@"
+IF EXISTS (SELECT name FROM sys.schemas WHERE name = N'{SchemaName}')
+   BEGIN
+      PRINT 'Dropping the {SchemaName} schema'
+      DROP SCHEMA [{SchemaName}]
+END
+GO
+PRINT '    Creating the {SchemaName} schema'
+GO
+CREATE SCHEMA [{SchemaName}] AUTHORIZATION [dbo]
+GO
+
+");
+
+            foreach (var file in _creationOrder)
+            {
+                var sql = toScript(file, SchemaName);
+                writer.WriteLine(sql);
+                writer.WriteLine("GO");
+                writer.WriteLine();
+            }
+
+
+
+            return writer.ToString();
+
         }
     }
 }

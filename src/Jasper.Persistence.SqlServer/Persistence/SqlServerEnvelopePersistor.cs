@@ -7,10 +7,12 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
+
     public class SqlServerEnvelopePersistor : IEnvelopePersistor
     {
         public const string IncomingTable = "jasper_incoming_envelopes";
@@ -22,7 +24,10 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public SqlServerEnvelopePersistor(SqlServerSettings settings)
         {
             _settings = settings;
+            Admin = new SqlServerEnvelopeStorageAdmin(settings.ConnectionString, settings.SchemaName);
         }
+
+        public IEnvelopeStorageAdmin Admin { get; }
 
         public async Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {

@@ -33,7 +33,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
         public SqlServerBackedListenerContext()
         {
-            new SchemaLoader(Servers.SqlServerConnectionString).RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString).RecreateAll();
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 

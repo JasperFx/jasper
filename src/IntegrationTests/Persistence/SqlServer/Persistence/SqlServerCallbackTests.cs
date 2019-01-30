@@ -8,6 +8,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Persistence;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using NSubstitute;

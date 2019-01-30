@@ -43,8 +43,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             _senderWatcher = new SenderLatchDetected(new LoggerFactory());
 
-            new SchemaLoader(Servers.SqlServerConnectionString, "receiver").RecreateAll();
-            new SchemaLoader(Servers.SqlServerConnectionString, "sender").RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString, "receiver").RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString, "sender").RecreateAll();
 
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {

@@ -16,6 +16,7 @@ using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Persistence;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Resiliency;
