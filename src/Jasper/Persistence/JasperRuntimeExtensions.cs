@@ -7,10 +7,22 @@ namespace Jasper.Persistence
         /// <summary>
         ///     Drops and recreates the Sql Server backed persistence database objects
         /// </summary>
-        /// <param name="runtime"></param>
-        public static void RebuildMessageStorage(this IJasperHost runtime)
+        /// <param name="host"></param>
+        public static void RebuildMessageStorage(this IJasperHost host)
         {
-            runtime.Get<IEnvelopePersistor>().Admin.RebuildSchemaObjects();
+            host.Get<IEnvelopePersistor>().Admin.RebuildSchemaObjects();
         }
+
+        /// <summary>
+        /// Remove any persisted incoming, scheduled, or outgoing message
+        /// envelopes from your underlying database
+        /// </summary>
+        /// <param name="host"></param>
+        public static void ClearAllPersistedMessages(this IJasperHost host)
+        {
+            host.Get<IEnvelopePersistor>().Admin.ClearAllPersistedEnvelopes();
+        }
+
+
     }
 }

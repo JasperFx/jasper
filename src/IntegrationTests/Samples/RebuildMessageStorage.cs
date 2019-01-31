@@ -1,0 +1,59 @@
+using System;
+using Jasper;
+using Jasper.Persistence;
+using Jasper.Persistence.SqlServer;
+using Xunit;
+
+namespace IntegrationTests.Samples
+{
+    // SAMPLE: SqlServerPersistedMessageApp
+    public class MyJasperApp : JasperRegistry
+    {
+        public MyJasperApp()
+        {
+            // Enables Sql Server-backed message persistence using
+            // a connection string from your application's appsettings.json
+            Settings.PersistMessagesWithSqlServer((c, settings) =>
+            {
+                settings.ConnectionString = c.Configuration["connectionString"];
+            });
+        }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: MyJasperAppFixture
+    public class MyJasperAppFixture : IDisposable
+    {
+        public MyJasperAppFixture()
+        {
+            Host = JasperHost.For<MyJasperApp>();
+
+            // This extension method will blow away any existing
+            // schema items for message persistence in your configured
+            // database and then rebuilds the message persistence objects
+            // before the *first* integration test runs
+            Host.RebuildMessageStorage();
+        }
+
+        public IJasperHost Host { get;  }
+
+        public void Dispose()
+        {
+            Host?.Dispose();
+        }
+
+
+    }
+
+    // An xUnit test fixture that uses our MyJasperAppFixture
+    public class IntegrationTester : IClassFixture<MyJasperAppFixture>
+    {
+        private readonly MyJasperAppFixture _fixture;
+
+        public IntegrationTester(MyJasperAppFixture fixture)
+        {
+            _fixture = fixture;
+        }
+    }
+    // ENDSAMPLE
+}

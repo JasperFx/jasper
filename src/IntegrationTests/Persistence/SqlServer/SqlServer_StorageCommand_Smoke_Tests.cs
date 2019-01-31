@@ -16,7 +16,7 @@ namespace IntegrationTests.Persistence.SqlServer
         {
             var registry = new JasperRegistry();
             registry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-
+s
             var args = commandLine.Split(' ');
             JasperHost.Run(registry, args).ShouldBe(0);
         }

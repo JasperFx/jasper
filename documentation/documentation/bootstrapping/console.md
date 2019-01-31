@@ -175,4 +175,7 @@ To make that more concrete, here is how the built in `services` command uses `Ja
 Do note that the command will be responsible for disposing and shutting down the running `IJasperHost`.
 
 
+## Message Storage
+
+See <[linkto:documentation/messaging/transports/durable]> for documentation on using the command line tooling to manage message storage.
 

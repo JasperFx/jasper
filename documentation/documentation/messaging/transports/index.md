@@ -13,7 +13,6 @@ Jasper comes out of the box with these transports:
 
 * <[linkto:documentation/messaging/transports/tcp]> associated with the "tcp" scheme in Uri definitions
 * <[linkto:documentation/messaging/transports/loopback]> associated with the "loopback" scheme in Uri definitions
-* <[linkto:documentation/messaging/transports/http]> associated with the "http" scheme that just accepts message batches through an ASP.Net Core route
 
 There is also an addon for a <[linkto:documentation/messaging/transports/rabbitmq]> based on [RabbitMQ](https://www.rabbitmq.com/).
 
@@ -22,7 +21,9 @@ and possibly [Kafka](https://kafka.apache.org/) are part of the Jasper roadmap.
 
 It is important to note that all of the transport types can be used in either a lightweight [fire and forget](http://www.enterpriseintegrationpatterns.com/patterns/conversation/FireAndForget.html) with limited retries, or with durable, [store and forward messaging](https://en.wikipedia.org/wiki/Store_and_forward) or [guaranteed delivery](http://www.enterpriseintegrationpatterns.com/patterns/messaging/GuaranteedMessaging.html). For durable messaging.
 
-See <[linkto:documentation/messaging/transports/durable]> for more information about durable messaging support in Jasper.
+See also:
+
+<[TableOfContents]>
 
 
 ## Disable All Transports
