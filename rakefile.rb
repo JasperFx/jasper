@@ -86,6 +86,8 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
+	sh "dotnet test src/Jasper.MvcExtender.Tests/Jasper.MvcExtender.Tests.csproj --no-restore"
+
 end
 
 desc "Integration Tests"
