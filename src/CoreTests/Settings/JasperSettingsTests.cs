@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Jasper;
 using Jasper.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Settings
+namespace CoreTests.Settings
 {
     public class JasperSettingsTests
     {

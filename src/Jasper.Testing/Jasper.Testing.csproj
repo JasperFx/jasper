@@ -10,12 +10,6 @@
     <None Update="appsettings.json;colors.json;nested.json;subscriptions.json;messaging.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="colors.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AspNetCoreHosted\AspNetCoreHosted.csproj" />

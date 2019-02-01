@@ -1,7 +1,8 @@
-﻿using Jasper.Testing.Settings;
+﻿using CoreTests.Settings;
+using Jasper;
 using Microsoft.Extensions.Configuration;
 
-namespace Jasper.Testing.Samples
+namespace CoreTests.Samples
 {
     public class SampleApp : JasperRegistry
     {

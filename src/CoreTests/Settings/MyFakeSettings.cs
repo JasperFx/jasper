@@ -1,4 +1,4 @@
-﻿namespace Jasper.Testing.Settings
+﻿namespace CoreTests.Settings
 {
     public class MyFakeSettings
     {
