@@ -81,4 +81,4 @@ You can also create a handler for `IMessage` like this one:
 
 When Jasper handles the `MessageOne` message, it first calls all the specific handlers for that message type,
 then will call any handlers that handle a more generic message type (interface or abstract class most likely) where
-the specific type can be cast to the generic type. You can clearly see this behavior by examining the <[linkto:documentation/diagnostics;title=handler chain diagnostics]>.
+the specific type can be cast to the generic type. 

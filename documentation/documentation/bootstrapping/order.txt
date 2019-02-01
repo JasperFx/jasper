@@ -1,5 +1,8 @@
 configuring_jasper
+aspnetcore
 configuration
 console
-aspnetcore
+ioc
+logging
+ihostedservice
 environment_tests

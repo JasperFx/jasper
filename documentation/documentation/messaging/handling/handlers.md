@@ -66,7 +66,7 @@ constructor like this example that takes in a dependency on an `IDocumentSession
 
 <[sample:HandlerBuiltByConstructorInjection]>
 
-See <[linkto:documentation/ioc]> for more information about how Jasper integrates the application's IoC container.
+See <[linkto:documentation/bootstrapping/ioc]> for more information about how Jasper integrates the application's IoC container.
 
 ## Method Injection
 
@@ -82,7 +82,7 @@ So, what can be injected as an argument to your message handler?
 1. Any service that is registered in your application's IoC container
 1. `Envelope`
 1. The current time in UTC if you have a parameter like `DateTime now` or `DateTimeOffset now`
-1. Services or variables that match a registered code generation strategy. See <[linkto:documentation/middleware_and_codegen]> for more information on this mechanism.
+1. Services or variables that match a registered code generation strategy. See <[linkto:documentation/bootstrapping/middleware_and_codegen]> for more information on this mechanism.
 
 ## Cascading Messages from Actions
 

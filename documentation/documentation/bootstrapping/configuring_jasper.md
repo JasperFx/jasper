@@ -31,7 +31,7 @@ Using your `JasperRegistry`:
 
 <[sample:Bootstrapping-ServiceRegistrations]>
 
-See <[linkto:documentation/ioc]> for a lot more information about how Jasper uses an IoC container because it is a little bit different than other .Net frameworks.
+See <[linkto:documentation/bootstrapping/ioc]> for a lot more information about how Jasper uses an IoC container because it is a little bit different than other .Net frameworks.
 
 ## Adding Extensions
 

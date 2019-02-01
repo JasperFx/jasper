@@ -1,3 +1,3 @@
 <!--title:Configuring Middleware for Handlers-->
 
-Also talk about attributes
+See <[linkto:documentation/bootstrapping/middleware_and_codegen]> for more information on using middleware with message handlers.

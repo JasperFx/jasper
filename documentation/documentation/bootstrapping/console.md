@@ -1,4 +1,4 @@
-<!--title:Jasper in Console Applications-->
+<!--title:Jasper Command Line Support-->
 
 <[info]>
 Jasper uses the related [Oakton](https://jasperfx.github.io/oakton) project for command line parsing and its command runner extensibility. "Oakton" is
@@ -101,10 +101,6 @@ MyApp services
 
 And again, this command respects both the `--environment` and `--verbose` flags
 
-## Subscriptions
-
-See <[linkto:documentation/messaging/routing/subscriptions]> for information about the `subscriptions` command and related workflow for exporting, updating, or validating dynamic
-subscriptions.
 
 
 ## Preview Generated Code

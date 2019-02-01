@@ -11,4 +11,3 @@ are flushed into the outgoing sending queue after the action runs.
 
 <[sample:SqlServerOutboxWithSqlTransaction]>
 
-See also <[linkto:documentation/extensions/marten/outbox]>

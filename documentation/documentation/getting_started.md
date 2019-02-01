@@ -4,24 +4,20 @@
 Jasper only targets Netstandard 2.0 at this time.
 <[/info]>
 
-Jasper is a framework for command processing inside of .Net Core services. The command execution pipeline can be used as:
+Jasper is a framework for building services on .Net Core. The killer feature of Jasper (we think) is its very efficient command execution
+pipeline that can be used as:
 
-1. A "mediator" type pipeline or an in memory messaging bus within a different framework like ASP.Net Core
-1. Used as a service bus in conjunction with topic-based queues like [RabbitMQ](https://www.rabbitmq.com/) for asynchronous messaging between services
-1. A lightweight service bus using its own transport mechanism
 1. An alternative for building HTTP services with ASP.Net Core
+1. A "mediator" type pipeline or an in memory messaging bus within a different framework like ASP.Net Core
+1. When used in conjunction with low level messaging infrastructure tools like [RabbitMQ](https://www.rabbitmq.com/), a full fledged asynchronous messaging platform for robust communication and interaction between services
+1. A lightweight service bus using its own transport mechanism
 1. Any combination of the above
 
-Jasper can either be in charge of your service's lifecycle as the primary application framework, or be added to an existing ASP.Net Core application. 
-Jasper tries very hard to be a good citizen within the greater ASP.Net Core ecosystem. 
+Jasper tries very hard to be a good citizen within the greater ASP.Net Core ecosystem and even when used in "headless" services, uses many elements of ASP.Net Core (logging, configuration, bootstrapping, hosted services) rather than try to reinvent something new. 
 
 ## Standalone Jasper Application
 
-<[info]>
-Even internally, Jasper uses ASP.Net Core's Hosting model for bootstrapping
-<[/info]>
-
-To create a standalone, headless Jasper service, the quickest thing to do is to use a [dotnet new](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new?tabs=netcore21) template. First, install the latest `JasperTemplates` with this command:
+To create a standalone, headless Jasper service with no exposed HTTP endpoints, the quickest thing to do is to use a [dotnet new](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new?tabs=netcore21) template. First, install the latest `JasperTemplates` with this command:
 
 ```
 dotnet new --install JasperTemplates

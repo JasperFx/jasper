@@ -1,7 +1,5 @@
 <!--title:Message Persistence-->
 
-TODO -- need to talk about *how* to get the database schema elements applied
-
 The message persistence requires and adds these tables to your schema:
 
 1. `jasper_incoming_envelopes` - stores incoming and scheduled envelopes until they are successfully processed

@@ -1,6 +1,6 @@
 <!--title:Long Running Processes with IHostedService-->
 
-Even if not running within an ASP.Net Core bootstrapped system, Jasper supports the ASP.Net [IHostedService](https://www.stevejgordon.co.uk/asp-net-core-2-ihostedservice)
+Jasper supports the ASP.Net [IHostedService](https://www.stevejgordon.co.uk/asp-net-core-2-ihostedservice)
 interface to start and stop long running processes or startup and teardown actions in addition to the messaging or
 http handler support.
 

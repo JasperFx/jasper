@@ -53,6 +53,7 @@ namespace Jasper.Testing.Settings
                 Settings.Alter<JasperOptions>((c, options) => options.ServiceName = c.Configuration["AppName"]);
             }
         }
+        // ENDSAMPLE
 
         // SAMPLE: UsingStartupForConfigurationOfSettings
         public class Startup

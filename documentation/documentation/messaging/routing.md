@@ -14,7 +14,3 @@ _SendMessage****_ methods as shown below:
 
 Do note that doing the message type filtering by namespace will also include child namespaces. In
 our own usage we try to rely on either namespace rules or by using shared message assemblies. 
-
-See also the <[linkto:documentation/messaging/routing/subscriptions]>
-
-

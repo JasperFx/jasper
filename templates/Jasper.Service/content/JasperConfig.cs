@@ -9,9 +9,7 @@ namespace JasperService
     {
         public JasperConfig()
         {
-            Configuration
-                .AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables();
+            // Add any necessary jasper options
         }
     }
 

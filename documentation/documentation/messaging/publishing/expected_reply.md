@@ -6,7 +6,3 @@ For that scenario, Jasper provides this functionality with the syntax shown belo
 
 <[sample:using_global_request_and_reply]>
 
-This functionality is different than the <[linkto:documentation/messaging/publishing/requestreply]> in that it doesn't wait for the 
-response coming back from the receiving service in the call to `IMessageContext`. Use this mechanism to create simple workflows between
-applications.
-
