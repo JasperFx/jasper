@@ -13,6 +13,9 @@ using Newtonsoft.Json.Converters;
 
 namespace Jasper
 {
+    /// <summary>
+    /// Configures the Jasper messaging transports in your application
+    /// </summary>
     public class JasperOptions : ITransportsExpression
     {
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();

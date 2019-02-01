@@ -120,6 +120,9 @@ namespace Jasper
             _registry.Describe(this, writer);
         }
 
+        /// <summary>
+        /// Execute all the environment checks for this application
+        /// </summary>
         public void ExecuteAllEnvironmentChecks()
         {
             var checks = Container.Model.GetAllPossible<IEnvironmentCheck>();

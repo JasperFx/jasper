@@ -10,9 +10,9 @@ using LamarCompiler.Frames;
 using LamarCompiler.Model;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper
+namespace Jasper.Configuration
 {
-    public class MessageContextInstance : Instance
+    internal class MessageContextInstance : Instance
     {
         private readonly Type _serviceType;
         private IMessagingRoot _root;

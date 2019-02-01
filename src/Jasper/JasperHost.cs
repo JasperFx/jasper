@@ -16,7 +16,9 @@ using Oakton;
 
 namespace Jasper
 {
-
+    /// <summary>
+    /// Used to bootstrap a Jasper application
+    /// </summary>
     public static class JasperHost
     {
         /// <summary>

@@ -5,7 +5,7 @@ APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 TEMPLATE_VERSION = "0.9.1.3"
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
-BUILD_VERSION = '0.9.0'
+BUILD_VERSION = '0.9.5'
 
 tc_build_number = ENV["APPVEYOR_BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')
@@ -222,7 +222,7 @@ end
 
 desc 'Build and test templates'
 task :templates => [:clean] do
-    
+
 
 	Dir.chdir "templates/Jasper.Service" do
 		sh "nuget pack jasperservice.nuspec -Version #{TEMPLATE_VERSION}"

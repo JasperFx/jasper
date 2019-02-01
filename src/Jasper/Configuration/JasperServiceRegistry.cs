@@ -18,7 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
 
-namespace Jasper
+namespace Jasper.Configuration
 {
     internal class JasperServiceRegistry : ServiceRegistry
     {

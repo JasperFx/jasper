@@ -13,9 +13,9 @@ using LamarCompiler.Frames;
 using LamarCompiler.Model;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper
+namespace Jasper.Configuration
 {
-    public class MessagingRootInstance<T> : Instance
+    internal class MessagingRootInstance<T> : Instance
     {
         private readonly PropertyInfo _property;
         private Instance _root;

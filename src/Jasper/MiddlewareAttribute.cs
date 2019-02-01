@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
+using Jasper.Configuration;
 using LamarCompiler.Frames;
 
-namespace Jasper.Configuration
+namespace Jasper
 {
     /// <summary>
     ///     Attach one or more Jasper middleware frames by type

@@ -63,6 +63,7 @@ namespace Jasper.Testing.Samples
     }
     // ENDSAMPLE
 
+
     // SAMPLE: StopwatchAttribute
     public class StopwatchAttribute : ModifyChainAttribute
     {
@@ -73,6 +74,7 @@ namespace Jasper.Testing.Samples
     }
     // ENDSAMPLE
 
+    [JasperIgnore]
     // SAMPLE: ClockedEndpoint
     public class ClockedEndpoint
     {
