@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using LamarCompiler.Model;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Bootstrapping

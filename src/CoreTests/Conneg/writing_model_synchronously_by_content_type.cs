@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Conneg
+namespace CoreTests.Conneg
 {
     public class writing_model_synchronously_by_content_type
     {

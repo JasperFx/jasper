@@ -5,10 +5,12 @@ using Jasper.Conneg.Json;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Conneg
+namespace CoreTests.Conneg
 {
     public class registering_and_discovering_custom_readers_and_writers : IntegrationContext
     {
@@ -26,6 +28,14 @@ namespace Jasper.Testing.Conneg
             // Overridden
             theSerialization.WriterFor(typeof(OverriddenJsonMessage))["application/json"]
                 .ShouldBeOfType<OverrideJsonWriter>();
+        }
+
+        public class ConnegHandler
+        {
+            public void Handle(Message4 message)
+            {
+
+            }
         }
 
         [Fact]

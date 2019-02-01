@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Baseline;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging

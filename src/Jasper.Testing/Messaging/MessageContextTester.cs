@@ -9,6 +9,7 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Util;
 using NSubstitute;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging

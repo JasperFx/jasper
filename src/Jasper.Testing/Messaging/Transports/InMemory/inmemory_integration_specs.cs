@@ -5,6 +5,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Transports.InMemory

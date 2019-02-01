@@ -8,6 +8,7 @@ using Jasper.Util;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using TestMessages;
 
 namespace Jasper.Testing.Samples
 {

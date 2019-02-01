@@ -9,6 +9,7 @@ using Jasper.Testing.Samples.HandlerDiscovery;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute.Routing.Handlers;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging

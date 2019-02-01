@@ -3,6 +3,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Serializers;
 using Newtonsoft.Json;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Serializers

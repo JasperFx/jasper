@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
 using Marten;
+using TestMessages;
 
 namespace Jasper.Testing.Samples
 {

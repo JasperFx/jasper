@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Util;
 
-namespace Jasper.Testing
+namespace TestMessages
 {
     [MessageIdentity("Message1")]
     public class Message1

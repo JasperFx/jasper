@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Conneg
+namespace CoreTests.Conneg
 {
     public class sending_messages_without_sharing_types : IDisposable
     {
@@ -37,7 +38,7 @@ namespace Jasper.Testing.Conneg
             blueApp = JasperHost.For(new BlueApp(theTracker));
 
 
-            theTracker.ShouldBeTheSameAs(blueApp.Get<MessageTracker>());
+            theTracker.ShouldBeSameAs(blueApp.Get<MessageTracker>());
 
             var waiter = theTracker.WaitFor<BlueMessage>();
 

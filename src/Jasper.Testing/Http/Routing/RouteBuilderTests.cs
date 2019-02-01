@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Http.Routing;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Http.Routing

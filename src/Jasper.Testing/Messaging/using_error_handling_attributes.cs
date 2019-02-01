@@ -5,6 +5,7 @@ using Baseline.Dates;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging

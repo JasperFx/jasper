@@ -4,6 +4,7 @@ using System.Reflection;
 using Baseline.Reflection;
 using Jasper.Messaging.Model;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Model

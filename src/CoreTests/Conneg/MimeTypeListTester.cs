@@ -3,7 +3,7 @@ using Jasper.Conneg;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Conneg
+namespace CoreTests.Conneg
 {
     public class MimeTypeListTester
     {

@@ -7,6 +7,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Lightweight

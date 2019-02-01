@@ -7,6 +7,7 @@ using Jasper.Messaging;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging

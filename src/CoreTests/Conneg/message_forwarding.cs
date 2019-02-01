@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Conneg
+namespace CoreTests.Conneg
 {
     public class message_forwarding
     {
@@ -22,7 +23,7 @@ namespace Jasper.Testing.Conneg
 
             var runtime = JasperHost.For(_ =>
             {
-                _.Handlers.DisableConventionalDiscovery(true);
+                _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<NewMessageHandler>();
 
                 _.Services.AddSingleton(tracker);

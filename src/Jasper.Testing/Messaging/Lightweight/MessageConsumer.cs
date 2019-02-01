@@ -1,6 +1,7 @@
 using System;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
+using TestMessages;
 
 namespace Jasper.Testing.Messaging.Lightweight
 {

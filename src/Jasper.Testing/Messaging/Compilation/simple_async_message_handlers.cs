@@ -2,6 +2,7 @@
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation

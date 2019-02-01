@@ -4,6 +4,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Runtime

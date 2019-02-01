@@ -2,6 +2,7 @@
 using Jasper.Testing.FakeStoreTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Messaging.Compilation
