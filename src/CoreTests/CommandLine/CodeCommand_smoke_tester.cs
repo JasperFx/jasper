@@ -1,11 +1,11 @@
-﻿using Jasper.CommandLine;
+﻿using Jasper;
+using Jasper.CommandLine;
 using Jasper.Messaging.Configuration;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.CommandLine
+namespace CoreTests.CommandLine
 {
     public class CodeCommand_smoke_tester
     {

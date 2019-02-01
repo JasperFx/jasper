@@ -3,9 +3,7 @@ using Baseline;
 using Jasper.Http;
 using Lamar;
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -40,12 +38,5 @@ namespace Jasper.Testing
         {
             theHost.Services.ShouldBeOfType<Container>();
         }
-    }
-
-    public class EmptyStartup
-    {
-        public void ConfigureServices(IServiceCollection services){}
-
-        public void Configure(IApplicationBuilder app){}
     }
 }
