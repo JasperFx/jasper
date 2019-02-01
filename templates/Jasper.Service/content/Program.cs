@@ -7,7 +7,7 @@ namespace JasperService
     {
         static int Main(string[] args)
         {
-            // The application is configured through the MyApp class
+            // The application is configured through the MyApp clas
             return JasperHost.Run<JasperConfig>(args);
         }
     }
