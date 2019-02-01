@@ -4,13 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.EnvironmentChecks;
 using Jasper.Messaging.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.EnvironmentChecks
+namespace CoreTests.EnvironmentChecks
 {
     public class EnvironmentChecksProcessing
     {
@@ -36,7 +37,7 @@ namespace Jasper.Testing.EnvironmentChecks
         [Fact]
         public void fail_on_startup_with_negative_check()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy( () =>
+            var aggregate = Should.Throw<AggregateException>( () =>
             {
                 var runtime = JasperHost.For(_ =>
                 {
@@ -55,7 +56,7 @@ namespace Jasper.Testing.EnvironmentChecks
         [Fact]
         public void fail_with_lambda_check()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = Should.Throw<AggregateException>(() =>
             {
                 var runtime = JasperHost.For(_ =>
                 {
@@ -74,7 +75,7 @@ namespace Jasper.Testing.EnvironmentChecks
         [Fact]
         public void fail_with_lambda_check_with_service()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = Should.Throw<AggregateException>(() =>
             {
                 var runtime = JasperHost.For(_ =>
                 {
@@ -90,7 +91,7 @@ namespace Jasper.Testing.EnvironmentChecks
         [Fact]
         public void finds_checks_that_were_not_registered_as_environment_check()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = Should.Throw<AggregateException>(() =>
             {
                 var runtime = JasperHost.For(_ =>
                 {
@@ -139,7 +140,7 @@ namespace Jasper.Testing.EnvironmentChecks
         [Fact]
         public void timeout_on_task()
         {
-            var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() =>
+            var aggregate = Should.Throw<AggregateException>(() =>
             {
                 var runtime = JasperHost.For(_ =>
                 {
