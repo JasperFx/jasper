@@ -18,7 +18,7 @@ namespace StorytellerSpecs.Fixtures
 {
     public class SendMessageFixture : BusFixture
     {
-        private JasperRuntime _host;
+        private IJasperHost _host;
 
         public SendMessageFixture()
         {
@@ -31,7 +31,7 @@ namespace StorytellerSpecs.Fixtures
             return Embed<ServiceBusApplication>("If a service bus application is configured to")
                 .After(c =>
                 {
-                    _host = c.State.Retrieve<JasperRuntime>();
+                    _host = c.State.Retrieve<IJasperHost>();
                     try
                     {
                         _host.Get<IDurableMessagingFactory>().ClearAllStoredMessages();

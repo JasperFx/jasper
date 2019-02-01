@@ -49,6 +49,7 @@ namespace Jasper.Persistence.Marten.Persistence
                 conn.CreateCommand($"DROP TABLE IF EXISTS {_tables.Outgoing} CASCADE").ExecuteNonQuery();
             }
 
+            _store.Advanced.Clean.CompletelyRemove(typeof(Envelope));
 
             _store.Tenancy.Default.EnsureStorageExists(typeof(Envelope));
 

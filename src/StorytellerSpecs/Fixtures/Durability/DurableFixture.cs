@@ -9,6 +9,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Persistence;
 using Jasper.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,6 +54,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             configureSender(senderRegistry);
 
             theSender = JasperHost.For(senderRegistry);
+            theSender.RebuildMessageStorage();
 
 
             var receiverRegistry = new JasperRegistry();
@@ -73,6 +75,7 @@ namespace StorytellerSpecs.Fixtures.Durability
 
 
             theReceiver = JasperHost.For(receiverRegistry);
+            theReceiver.RebuildMessageStorage();
 
 
             initializeStorage(theSender, theReceiver);
