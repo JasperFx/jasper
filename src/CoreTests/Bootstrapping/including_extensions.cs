@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using Jasper;
 using Jasper.Configuration;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Bootstrapping
+namespace CoreTests.Bootstrapping
 {
     public class including_extensions
     {
@@ -11,7 +11,7 @@ namespace Jasper.Testing.Bootstrapping
         public void the_application_still_wins()
         {
             var registry = new JasperRegistry();
-            registry.Handlers.DisableConventionalDiscovery(true);
+            registry.Handlers.DisableConventionalDiscovery();
             registry.Include<OptionalExtension>();
             registry.Services.For<IColorService>().Use<BlueService>();
 
@@ -31,7 +31,7 @@ namespace Jasper.Testing.Bootstrapping
             registry.Include<OptionalExtension>();
             // ENDSAMPLE
 
-            registry.Handlers.DisableConventionalDiscovery(true);
+            registry.Handlers.DisableConventionalDiscovery();
 
             using (var runtime = JasperHost.For(registry))
             {

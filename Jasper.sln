@@ -81,6 +81,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCorePerfTarget", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NdcDemo", "src\NdcDemo\NdcDemo.csproj", "{D6B12FAD-51C6-45DD-90AF-86DB54F3109C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTests", "src\CoreTests\CoreTests.csproj", "{79146D00-9690-4717-9E08-FF00B587322C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -499,6 +501,18 @@ Global
 		{D6B12FAD-51C6-45DD-90AF-86DB54F3109C}.Release|x64.Build.0 = Release|Any CPU
 		{D6B12FAD-51C6-45DD-90AF-86DB54F3109C}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6B12FAD-51C6-45DD-90AF-86DB54F3109C}.Release|x86.Build.0 = Release|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Debug|x64.Build.0 = Debug|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Debug|x86.Build.0 = Debug|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Release|x64.ActiveCfg = Release|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Release|x64.Build.0 = Release|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Release|x86.ActiveCfg = Release|Any CPU
+		{79146D00-9690-4717-9E08-FF00B587322C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

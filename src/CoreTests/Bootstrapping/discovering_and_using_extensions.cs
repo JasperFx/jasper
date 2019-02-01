@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using Jasper;
 using Module1;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Bootstrapping
+namespace CoreTests.Bootstrapping
 {
     public class discovering_and_using_extensions
     {
@@ -32,7 +32,7 @@ namespace Jasper.Testing.Bootstrapping
     {
         public AppWithOverrides()
         {
-            Handlers.DisableConventionalDiscovery(true);
+            Handlers.DisableConventionalDiscovery();
 
             Settings.Alter<ModuleSettings>(_ => _.From = "Application");
 

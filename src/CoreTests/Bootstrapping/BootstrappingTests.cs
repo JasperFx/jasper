@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Testing.FakeStoreTypes;
+using CoreTests.FakeStoreTypes;
+using Jasper;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http.Features;
@@ -11,7 +12,7 @@ using Shouldly;
 using Xunit;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
-namespace Jasper.Testing.Bootstrapping
+namespace CoreTests.Bootstrapping
 {
     // make collection
     // test IApplicationLifetime

@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Jasper.Testing.FakeStoreTypes;
+﻿using CoreTests.FakeStoreTypes;
+using Jasper;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Bootstrapping
+namespace CoreTests.Bootstrapping
 {
     public class JasperRegistryTests
     {
