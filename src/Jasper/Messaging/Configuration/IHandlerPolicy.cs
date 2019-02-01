@@ -3,6 +3,7 @@ using Jasper.Messaging.Model;
 
 namespace Jasper.Messaging.Configuration
 {
+    // SAMPLE: IHandlerPolicy
     /// <summary>
     ///     Use to apply your own conventions or policies to message handlers
     /// </summary>
@@ -15,4 +16,5 @@ namespace Jasper.Messaging.Configuration
         /// <param name="rules"></param>
         void Apply(HandlerGraph graph, JasperGenerationRules rules);
     }
+    // ENDSAMPLE
 }

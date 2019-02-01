@@ -1,4 +1,4 @@
-<!--title:Bootstrapping-->
+<!--title:Bootstrapping & Configuration-->
 
 <[info]>
 Jasper uses the ASP.Net Core `IWebHostBuilder` infrastructure internally for bootstrapping now, even for idiomatic Jasper

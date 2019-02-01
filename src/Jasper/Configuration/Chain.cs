@@ -7,6 +7,10 @@ using LamarCompiler.Frames;
 
 namespace Jasper.Configuration
 {
+    /// <summary>
+    /// Base class to use for applying middleware or other alterations to generic
+    /// IChains (either RouteChain or HandlerChain)
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public abstract class ModifyChainAttribute : Attribute
     {
@@ -19,11 +23,31 @@ namespace Jasper.Configuration
         void Modify(T chain, JasperGenerationRules rules);
     }
 
+    // SAMPLE: IChain
+    /// <summary>
+    /// Models the middleware arrangement for either an HTTP route execution
+    /// or the execution of a message
+    /// </summary>
     public interface IChain
     {
+        /// <summary>
+        /// Frames that would be initially placed in front of
+        /// the primary action(s)
+        /// </summary>
         IList<Frame> Middleware { get; }
+
+        /// <summary>
+        /// Frames that would be initially placed behind the primary
+        /// action(s)
+        /// </summary>
         IList<Frame> Postprocessors { get; }
+
+        /// <summary>
+        /// A description of this frame
+        /// </summary>
+        string Description { get; }
     }
+    // ENDSAMPLE
 
 
     public abstract class Chain<TChain, TModifyAttribute> : IChain
@@ -33,6 +57,7 @@ namespace Jasper.Configuration
         public IList<Frame> Middleware { get; } = new List<Frame>();
 
         public IList<Frame> Postprocessors { get; } = new List<Frame>();
+        public abstract string Description { get; }
 
         protected abstract MethodCall[] handlerCalls();
 

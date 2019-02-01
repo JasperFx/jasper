@@ -2,7 +2,7 @@ namespace benchmarks.Routes
 {
     public class DeepGetEndpoint : IHasUrls
     {
-        public string get_start_from_to_end(int from, int end)
+        public static string get_start_from_to_end(int from, int end)
         {
             return "something";
         }

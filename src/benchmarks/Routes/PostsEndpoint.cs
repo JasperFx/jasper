@@ -18,17 +18,17 @@ namespace benchmarks.Routes
 
         public string Method { get; } = "POST";
 
-        public void post_dog_number(int number)
+        public static void post_dog_number(int number)
         {
 
         }
 
-        public void post_dog_name_age(string name, int age)
+        public static void post_dog_name_age(string name, int age)
         {
 
         }
 
-        public void post_cat_name(string name)
+        public static void post_cat_name(string name)
         {
 
         }

@@ -12,7 +12,7 @@ namespace Jasper.Testing.Messaging
         {
             withAllDefaults();
 
-            chainFor<SpecialMessage>().ShouldBeWrappedWith<FakeFrame>();
+            chainFor<SpecialMessage>().ShouldBeWrappedWith<CustomFrame>();
         }
     }
 
@@ -20,15 +20,18 @@ namespace Jasper.Testing.Messaging
     {
     }
 
+    // SAMPLE: customized-handler-using-Configure
     public class CustomizedHandler
     {
         public void Handle(SpecialMessage message)
         {
+            // actually handle the SpecialMessage
         }
 
         public static void Configure(HandlerChain chain)
         {
-            chain.Middleware.Add(new FakeFrame());
+            chain.Middleware.Add(new CustomFrame());
         }
     }
+    // ENDSAMPLE
 }

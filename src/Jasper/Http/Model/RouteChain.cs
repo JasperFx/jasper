@@ -44,6 +44,8 @@ namespace Jasper.Http.Model
 
         }
 
+        public override string Description => $"Route '{Route.Description}'";
+
         public string SourceCode => _generatedType.SourceCode;
 
         public ModelWriter ConnegWriter { get; set; }
@@ -55,10 +57,24 @@ namespace Jasper.Http.Model
 
         public string TypeName { get; }
 
+        /// <summary>
+        /// The .Net method that implements this route
+        /// </summary>
         public MethodCall Action { get; }
 
+        /// <summary>
+        /// Information about the HTTP route pattern for this RouteChain
+        /// </summary>
         public Route Route { get; }
+
+        /// <summary>
+        /// May be null
+        /// </summary>
         public Type InputType { get; }
+
+        /// <summary>
+        /// May be null
+        /// </summary>
         public Type ResourceType { get; }
 
         public static RouteChain For<T>(Expression<Action<T>> expression)

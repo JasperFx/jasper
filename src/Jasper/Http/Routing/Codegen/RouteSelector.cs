@@ -12,7 +12,7 @@ namespace Jasper.Http.Routing.Codegen
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Matches(string first, string second)
         {
-            return string.Compare(first, second, StringComparison.OrdinalIgnoreCase) == 0;
+            return first.Equals(second);
         }
 
 

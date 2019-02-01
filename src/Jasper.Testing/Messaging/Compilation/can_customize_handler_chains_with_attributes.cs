@@ -82,13 +82,13 @@ namespace Jasper.Testing.Messaging.Compilation
     {
         public override void Modify(HandlerChain chain, JasperGenerationRules rules)
         {
-            chain.Middleware.Add(new FakeFrame());
+            chain.Middleware.Add(new CustomFrame());
         }
     }
 
-    public class FakeFrame : Frame
+    public class CustomFrame : Frame
     {
-        public FakeFrame() : base(false)
+        public CustomFrame() : base(false)
         {
         }
 

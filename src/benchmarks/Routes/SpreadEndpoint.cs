@@ -4,12 +4,12 @@ namespace benchmarks.Routes
 {
     public class SpreadEndpoint : IHasUrls
     {
-        public string get_folder(string relativePath)
+        public static string get_folder(string relativePath)
         {
             return relativePath;
         }
 
-        public string get_file(string[] pathSegments)
+        public static string get_file(string[] pathSegments)
         {
             return pathSegments.Join("-");
         }

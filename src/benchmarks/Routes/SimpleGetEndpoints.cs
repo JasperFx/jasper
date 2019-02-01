@@ -2,14 +2,14 @@ namespace benchmarks.Routes
 {
     public class SimpleGetEndpoints : IHasUrls
     {
-        public void get_one(){}
-        public void get_two(){}
-        public void get_three(){}
-        public void get_four(){}
-        public void get_five(){}
-        public void get_six(){}
-        public void get_seven(){}
-        public void get_eight(){}
+        public static void get_one(){}
+        public static void get_two(){}
+        public static void get_three(){}
+        public static void get_four(){}
+        public static void get_five(){}
+        public static void get_six(){}
+        public static void get_seven(){}
+        public static void get_eight(){}
 
         public string[] Urls()
         {

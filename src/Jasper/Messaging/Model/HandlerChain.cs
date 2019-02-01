@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
@@ -31,6 +32,8 @@ namespace Jasper.Messaging.Model
             MessageType = messageType ?? throw new ArgumentNullException(nameof(messageType));
 
             TypeName = messageType.FullName.Replace(".", "_").Replace("+", "_");
+
+            Description = "Message Handler for " + MessageType.FullNameInCode();
         }
 
 
@@ -44,14 +47,29 @@ namespace Jasper.Messaging.Model
             Handlers.AddRange(grouping);
         }
 
+        /// <summary>
+        /// A textual description of this HandlerChain
+        /// </summary>
+        public override string Description { get; }
+
         public Type MessageType { get; }
 
+        /// <summary>
+        /// Jasper's string identification for this message type
+        /// </summary>
         public string TypeName { get; }
 
-        public MessageHandler Handler { get; set; }
+        internal MessageHandler Handler { get; set; }
 
-        public string SourceCode => _generatedType.SourceCode;
+        /// <summary>
+        /// After the MessageHandler for this chain is generated & compiled, this property will
+        /// hold the generated source code
+        /// </summary>
+        public string SourceCode => _generatedType?.SourceCode;
 
+        /// <summary>
+        /// Configure the retry policies and error handling for this chain
+        /// </summary>
         public RetryPolicyCollection Retries { get; set; } = new RetryPolicyCollection();
 
         public static HandlerChain For<T>(Expression<Action<T>> expression)
@@ -77,7 +95,7 @@ namespace Jasper.Messaging.Model
             return new HandlerChain(call);
         }
 
-        public void AssembleType(GeneratedAssembly generatedAssembly, JasperGenerationRules rules)
+        internal void AssembleType(GeneratedAssembly generatedAssembly, JasperGenerationRules rules)
         {
             _generatedType = generatedAssembly.AddType(TypeName, typeof(MessageHandler));
             var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
@@ -90,15 +108,22 @@ namespace Jasper.Messaging.Model
                 $"context.{nameof(IMessageContext.Advanced)}"));
         }
 
-        public virtual MessageHandler CreateHandler(IContainer container)
+        internal MessageHandler CreateHandler(IContainer container)
         {
-            var handler = TypeExtensions.As<MessageHandler>(container.QuickBuild(_generatedType.CompiledType));
+            var handler = container.QuickBuild(_generatedType.CompiledType).As<MessageHandler>();
             handler.Chain = this;
             Handler = handler;
 
             return handler;
         }
 
+        /// <summary>
+        /// Used internally to create the initial list of ordered Frames
+        /// that will be used to generate the MessageHandler
+        /// </summary>
+        /// <param name="rules"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public List<Frame> DetermineFrames(JasperGenerationRules rules)
         {
             if (!Handlers.Any())
@@ -148,7 +173,11 @@ namespace Jasper.Messaging.Model
             return Handlers.ToArray();
         }
 
-
+        /// <summary>
+        /// Add a secondary message handler for the message type that will
+        /// execute after the primary action(s)
+        /// </summary>
+        /// <param name="call"></param>
         public void AddAbstractedHandler(HandlerCall call)
         {
             var clone = call.Clone(MessageType);

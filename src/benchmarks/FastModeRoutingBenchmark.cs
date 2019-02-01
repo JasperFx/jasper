@@ -80,6 +80,8 @@ namespace benchmarks
                 await testRoute.Run(_aspnetSystem);
             }
         }
+/*
+
 
         [Benchmark]
         public async Task RunHybridRequests()
@@ -89,7 +91,7 @@ namespace benchmarks
                 await testRoute.Run(_hybridSystem);
             }
         }
-
+*/
 
 
         public void Dispose()
@@ -98,6 +100,7 @@ namespace benchmarks
             _aspnetSystem?.Dispose();
             _hybridSystem?.Dispose();
         }
+
     }
 
 }
