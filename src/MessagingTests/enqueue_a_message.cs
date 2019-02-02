@@ -5,6 +5,7 @@ using Baseline.Dates;
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
+using MessagingTests.Lightweight;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute.Routing.Handlers;
 using Shouldly;
@@ -28,7 +29,8 @@ namespace MessagingTests
                 x.TheCallingAssembly();
                 x.WithDefaultConventions();
             });
-            registry.Handlers.IncludeType<RecordCallHandler>();
+            registry.Handlers.IncludeType<MessageConsumer>();
+
             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
 
             var tracker = new MessageTracker();
@@ -91,8 +93,7 @@ namespace MessagingTests
                 x.TheCallingAssembly();
                 x.WithDefaultConventions();
             });
-            registry.Handlers.IncludeType<RecordCallHandler>();
-            registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+            registry.Handlers.IncludeType<MessageConsumer>();
 
             registry.Handlers.Worker("foo").MaximumParallelization(3);
 

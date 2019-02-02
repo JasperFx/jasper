@@ -128,6 +128,8 @@ namespace Jasper.Http
             });
         }
 
+        public Task IsReady => _findActions;
+
 
         internal void Describe(IJasperHost runtime, TextWriter writer)
         {

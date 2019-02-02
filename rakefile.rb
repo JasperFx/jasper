@@ -18,9 +18,8 @@ task :ci => [:test, :commands, :pack, :appVeyorPush]
 #task :ci => [:default, :commands, :pack, :appVeyorPush]
 
 
-task :default => [:test, :integrationtests, :storyteller]
-task :full => [:default, :integrationtests]
-
+task :default => [:test, :integrationtests]
+task :full => [:default, :storyteller]
 
 
 

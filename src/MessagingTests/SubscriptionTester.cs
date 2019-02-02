@@ -1,5 +1,7 @@
+using Green;
 using Jasper;
 using Jasper.Messaging.Runtime.Routing;
+using Red;
 using Shouldly;
 using TestMessages;
 using Xunit;
@@ -8,13 +10,15 @@ namespace MessagingTests
 {
     public class SubscriptionTester
     {
+        public class RandomClass{}
+
         [Fact]
         public void negative_assembly_test()
         {
-            var rule = new Subscription(typeof(NewUser).Assembly);
+            var rule = new Subscription(typeof(RandomClass).Assembly);
             rule.Matches(typeof(Message1)).ShouldBeFalse();
             rule.Matches(typeof(Message2)).ShouldBeFalse();
-            rule.Matches(GetType()).ShouldBeFalse();
+            rule.Matches(GetType()).ShouldBeTrue();
         }
 
         [Fact]
@@ -56,17 +60,13 @@ namespace MessagingTests
         }
     }
 
-    public class RedMessage1
-    {
-    }
 
-    public class RedMessage2
-    {
-    }
 
-    public class RedMessage3
-    {
-    }
+
+}
+
+namespace Green
+{
 
     public class GreenMessage1
     {
@@ -79,4 +79,22 @@ namespace MessagingTests
     public class GreenMessage3
     {
     }
+}
+
+
+
+namespace Red
+{
+    public class RedMessage1
+    {
+    }
+
+    public class RedMessage2
+    {
+    }
+
+    public class RedMessage3
+    {
+    }
+
 }
