@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Jasper.Conneg;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace CoreTests.Conneg

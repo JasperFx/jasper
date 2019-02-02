@@ -10,6 +10,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace CoreTests.Conneg

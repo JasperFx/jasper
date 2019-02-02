@@ -8,6 +8,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace CoreTests.Conneg

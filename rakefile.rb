@@ -85,7 +85,9 @@ desc 'Run the unit tests'
 task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
-	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
+	sh "dotnet test src/CoreTests/CoreTests.csproj --no-restore"
+	sh "dotnet test src/HttpTests/HttpTests.csproj --no-restore"
+	sh "dotnet test src/MessagingTests/MessagingTests.csproj --no-restore"
 	sh "dotnet test src/Jasper.MvcExtender.Tests/Jasper.MvcExtender.Tests.csproj --no-restore"
 
 end

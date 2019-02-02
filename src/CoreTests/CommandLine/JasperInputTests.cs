@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Debug;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace CoreTests.CommandLine

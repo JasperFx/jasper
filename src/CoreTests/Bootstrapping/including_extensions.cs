@@ -1,6 +1,7 @@
 ﻿using Jasper;
 using Jasper.Configuration;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace CoreTests.Bootstrapping

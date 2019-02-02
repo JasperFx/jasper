@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Configuration;
 
-namespace CoreTests
+namespace TestingSupport
 {
     public static class HandlerConfigurationExtensions
     {

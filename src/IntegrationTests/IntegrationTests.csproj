@@ -8,10 +8,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-    <PackageReference Include="Shouldly" Version="3.0.0" />
-    <PackageReference Include="NSubstitute" Version="3.0.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
@@ -20,6 +18,7 @@
     <ProjectReference Include="..\Jasper.TestSupport.Storyteller\Jasper.TestSupport.Storyteller.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Alba\Jasper.TestSupport.Alba.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
+    <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
 </Project>

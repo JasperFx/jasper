@@ -1,13 +1,12 @@
 using System;
 using System.Linq;
 using Baseline;
-using Jasper;
 using Lamar;
 using Lamar.IoC;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
-namespace CoreTests
+namespace TestingSupport
 {
         public static class ContainerExtensions
     {

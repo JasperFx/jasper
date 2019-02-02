@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace CoreTests.Settings

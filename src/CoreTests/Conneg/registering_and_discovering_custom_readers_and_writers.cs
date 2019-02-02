@@ -7,6 +7,7 @@ using Jasper.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Shouldly;
+using TestingSupport;
 using TestMessages;
 using Xunit;
 
@@ -66,6 +67,14 @@ namespace CoreTests.Conneg
             withAllDefaults();
             theSerialization.WriterFor(typeof(Message5)).ContentTypes
                 .ShouldHaveTheSameElementsAs("application/json", "green", "blue");
+        }
+    }
+
+    public class Message1Handler
+    {
+        public void Handle(Message1 message)
+        {
+
         }
     }
 

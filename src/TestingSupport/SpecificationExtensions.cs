@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Shouldly;
 
-namespace CoreTests
+namespace TestingSupport
 {
     public static class SpecificationExtensions
     {

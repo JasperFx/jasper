@@ -8,6 +8,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
 using Marten;
+using TestingSupport;
 
 namespace IntegrationTests.Persistence.Marten.Persistence.Sagas
 {

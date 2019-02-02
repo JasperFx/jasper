@@ -9,6 +9,7 @@ using Jasper.EnvironmentChecks;
 using Jasper.Messaging.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace CoreTests.EnvironmentChecks

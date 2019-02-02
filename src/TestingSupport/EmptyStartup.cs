@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CoreTests
+namespace TestingSupport
 {
     public class EmptyStartup
     {
