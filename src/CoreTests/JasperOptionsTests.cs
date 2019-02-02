@@ -1,7 +1,8 @@
-﻿using Shouldly;
+﻿using Jasper;
+using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing
+namespace CoreTests
 {
     public class JasperOptionsTests
     {
