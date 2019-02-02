@@ -7,7 +7,6 @@ using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Testing.Util;
 using LamarCompiler;
 using LamarCompiler.Frames;
 using LamarCompiler.Model;

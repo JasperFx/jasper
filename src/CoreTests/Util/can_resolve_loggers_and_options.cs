@@ -1,7 +1,5 @@
 using System.IO;
-using System.Linq;
-using Lamar;
-using Microsoft.AspNetCore;
+using Jasper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +8,7 @@ using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Util
+namespace CoreTests.Util
 {
     public class Thing
     {
