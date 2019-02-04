@@ -26,7 +26,7 @@ dotnet new --install JasperTemplates
 Next, build a new application using the `jasper` template in this case called "JasperApp" with this command:
 
 ```
-dotnet new jasper -o JasperApp
+dotnet new jasper.service -o JasperApp
 ```
 
 Finally, if you run this new application with this command:
