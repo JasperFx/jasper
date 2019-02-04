@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Jeremy D. Miller",
+    "classifications": [
+        "Jasper", "Http"
+    ],
+    "identity": "Jasper.Http",
+    "name": "Jasper Http",
+    "shortName": "jasper.http",
+    "sourceName": "JasperHttp",
+    "preferNameDirectory" : true
+
+}

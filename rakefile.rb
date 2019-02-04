@@ -227,8 +227,8 @@ desc 'Build and test templates'
 task :templates => [:clean] do
 
 
-	Dir.chdir "templates/Jasper.Service" do
-		sh "nuget pack jasperservice.nuspec -Version #{TEMPLATE_VERSION}"
+	Dir.chdir "templates" do
+		sh "nuget pack jaspertemplates.nuspec -Version #{TEMPLATE_VERSION}"
 	end
 
 	if Dir.exists? 'template-target'
@@ -238,9 +238,10 @@ task :templates => [:clean] do
 
   Dir.chdir "template-target" do
     sh "dotnet new --uninstall JasperTemplates"
-    sh "dotnet new --uninstall jasper"
-		sh "dotnet new -i ../templates/Jasper.Service/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
-		sh "dotnet new jasper"
+    sh "dotnet new --uninstall jasper.service"
+    sh "dotnet new --uninstall jasper.http"
+		sh "dotnet new -i ../templates/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
+		sh "dotnet new jasper.service"
 		sh "dotnet restore"
 		sh "dotnet run -- run"
 	end
