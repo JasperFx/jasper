@@ -150,7 +150,7 @@ task :appVeyorPush do
     next
   end
 
-  sh "appveyor PushArtifact templates/Jasper.Service/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
+  sh "appveyor PushArtifact templates/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
 
 
   Dir.glob('./artifacts/*.*') do |file|
