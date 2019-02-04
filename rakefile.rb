@@ -124,8 +124,8 @@ end
 
 desc 'Build Nuspec packages'
 task :pack do
-  Dir.chdir "templates/Jasper.Service" do
-		sh "nuget pack jasperservice.nuspec -Version #{TEMPLATE_VERSION}"
+  Dir.chdir "templates" do
+		sh "nuget pack jaspertemplates.nuspec -Version #{TEMPLATE_VERSION}"
 	end
 
   pack_nuget 'Jasper'
