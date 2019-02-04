@@ -6,7 +6,7 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Jasper" Version="0.9.5" />
+    <PackageReference Include="Jasper" Version="0.9.6" />
   </ItemGroup>
     <ItemGroup>
     <None Update="appsettings.json">
