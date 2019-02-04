@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using Baseline.Dates;
 using Jasper.Messaging.Runtime;
-using Jasper.Testing;
 using Jasper.Util;
 using Microsoft.Azure.ServiceBus;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.AzureServiceBus.Tests

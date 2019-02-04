@@ -155,15 +155,6 @@ namespace HttpTests.AspNetCoreIntegration
         }
 
 
-        [Fact]
-        public async Task can_handle_an_http_request_through_Kestrel()
-        {
-            using (var client = new HttpClient())
-            {
-                var text = await client.GetStringAsync("http://localhost:3003");
-                text.ShouldContain("Hello from a hybrid Jasper application");
-            }
-        }
 
         [Fact]
         public async Task can_handle_an_http_request_through_Kestrel_to_MVC_route()

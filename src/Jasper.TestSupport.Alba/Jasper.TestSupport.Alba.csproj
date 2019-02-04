@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Alba HTTP Contract Testing Support for JasperFx Applications</Description>
-    <VersionPrefix>0.9.5</VersionPrefix>
+    <VersionPrefix>0.9.6</VersionPrefix>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>

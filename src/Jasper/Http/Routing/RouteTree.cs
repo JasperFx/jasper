@@ -18,10 +18,14 @@ namespace Jasper.Http.Routing
 {
     public class RouteTree
     {
+        public static string[] Empty = new string[0];
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string[] ToSegments(string route)
         {
-            return route.Trim().TrimStart('/').TrimEnd('/').Split('/');
+            if (route == "/") return Empty;
+
+            return route.TrimStart('/').TrimEnd('/').Split('/');
         }
 
 
@@ -65,7 +69,7 @@ namespace Jasper.Http.Routing
         public void CompileAll(IContainer container)
         {
             var connegRules = container.GetInstance<ConnegRules>();
-            
+
             foreach (var route in _settings.Routes)
             {
                 route.AssemblyType(_assembly, connegRules, _rules);
@@ -75,7 +79,7 @@ namespace Jasper.Http.Routing
             {
                 methodRoutes.AssemblySelector(_assembly, _settings.Routes);
             }
-            
+
             container.CompileWithInlineServices(_assembly);
 
             foreach (var methodRoutes in _methods)
