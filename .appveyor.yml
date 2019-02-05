@@ -32,10 +32,12 @@ dotnet_csproj:
   file_version: '{version}.{build}'
   informational_version: '{version}.{build}'
 
+  
+
 
 build_script:
 - cmd: >-
-    rake ci version={version}
+    rake ci
 test: off
 
 deploy:
