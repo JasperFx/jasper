@@ -1,5 +1,4 @@
-release: 0.9.7
-version: {release}.{build}
+version: 0.9.7.{build}
 image: Visual Studio 2017
 
 
@@ -39,7 +38,7 @@ dotnet_csproj:
 
 build_script:
 - cmd: >-
-    rake ci
+    rake ci version=0.9.7
 test: off
 
 deploy:
