@@ -60,7 +60,7 @@ namespace Jasper.Configuration
             public NewContextFrame(MessageContextInstance instance, Variable root)
             {
                 _root = root;
-                Variable = new ServiceVariable(instance, this);
+                Variable = new ServiceVariable(instance, this, ServiceDeclaration.ServiceType);
                 uses.Add(root);
             }
 

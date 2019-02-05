@@ -15,9 +15,11 @@ namespace Ponger
         }
     }
 
+
+    // SAMPLE: PingHandler
     public class PingHandler
     {
-        public object Handle(PingMessage message)
+        public Response Handle(PingMessage message)
         {
             ConsoleWriter.Write(ConsoleColor.Cyan, "Got a ping with name: " + message.Name);
 
@@ -26,7 +28,11 @@ namespace Ponger
                 Name = message.Name
             };
 
+            // Don't know if you'd use this very often,
+            // but this is a special syntax that will send
+            // the "response" back to the original sender
             return Respond.With(response).ToSender();
         }
     }
+    // ENDSAMPLE
 }

@@ -18,6 +18,7 @@ namespace TestMessages
         public int Number3;
     }
 
+    // SAMPLE: PingAndPongMessage
     public class PingMessage
     {
         public Guid Id { get; set; }
@@ -29,6 +30,7 @@ namespace TestMessages
         public Guid Id { get; set; }
         public string Name { get; set; }
     }
+    // ENDSAMPLE
 
 
     public class UserCreated

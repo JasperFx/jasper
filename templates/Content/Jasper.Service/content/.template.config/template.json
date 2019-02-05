@@ -7,7 +7,7 @@
     "identity": "Jasper.Service",
     "name": "Jasper Service",
     "shortName": "jasper.service",
-    "sourceName": "Jasper.Service",
+    "sourceName": "JasperService",
     "preferNameDirectory" : true
 
 }

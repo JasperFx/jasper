@@ -45,6 +45,7 @@ namespace Pinger
     }
     // ENDSAMPLE
 
+    // SAMPLE: PongHandler
     public class PongHandler
     {
         public void Handle(PongMessage message)
@@ -52,6 +53,7 @@ namespace Pinger
             ConsoleWriter.Write(ConsoleColor.Cyan, "Got a pong back with name: " + message.Name);
         }
     }
+    // ENDSAMPLE
 
     public class HomeEndpoint
     {
