@@ -71,7 +71,7 @@ namespace benchmarks
                 await testRoute.Run(_system);
             }
         }
-
+/*
         [Benchmark]
         public async Task RunAspNetRequests()
         {
@@ -80,7 +80,7 @@ namespace benchmarks
                 await testRoute.Run(_aspnetSystem);
             }
         }
-/*
+
 
 
         [Benchmark]
