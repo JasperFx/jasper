@@ -19,7 +19,8 @@ namespace JasperHttp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            // This is required for ASP.Net Core, but we'd recommend that you keep all of your registrations
+            // in one place. So either here, or in the JasperConfig class
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,7 +32,6 @@ namespace JasperHttp
                 app.UseHsts();
 
             app.UseHttpsRedirection();
-            app.UseMvc();
         }
     }
 }

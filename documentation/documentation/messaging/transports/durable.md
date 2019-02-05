@@ -1,4 +1,4 @@
-<!--title:Durable Messaging-->
+<!--title:Store and Forward Messaging-->
 
 
 Jasper supports durable message persistence using your application's database for "[store and forward](https://en.wikipedia.org/wiki/Store_and_forward)" queueing with all possible Jasper transport options, including the built in <[linkto:documentation/messaging/transports/durable]>, <[linkto:documentation/messaging/transports/rabbitmq]>. and <[linkto:documentation/messaging/transports/azureservicebus]>.

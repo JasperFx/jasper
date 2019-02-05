@@ -88,13 +88,15 @@ namespace Jasper.Conneg.Json
 
         public async Task WriteToStream(object model, HttpResponse response)
         {
+            response.Headers["content-type"] = ContentType;
+
             using (var textWriter =
                 new HttpResponseStreamWriter(response.Body, Encoding.UTF8, 1024, _bytePool, _charPool))
             using (var jsonWriter = new JsonTextWriter(textWriter)
             {
                 ArrayPool = _jsonCharPool,
-                CloseOutput = false
-                //AutoCompleteOnClose = false // TODO -- put this in if we upgrad Newtonsoft
+                CloseOutput = false,
+                AutoCompleteOnClose = false
             })
             {
                 var serializer = _serializerPool.Get();
@@ -110,7 +112,7 @@ namespace Jasper.Conneg.Json
                 }
             }
 
-            response.Headers["content-type"] = ContentType;
+
         }
 
         public Type DotNetType { get; }
