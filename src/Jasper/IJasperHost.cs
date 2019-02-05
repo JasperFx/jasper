@@ -33,6 +33,8 @@ namespace Jasper
         /// </summary>
         string ServiceName { get; }
 
+        bool IsDisposed { get; }
+
         /// <summary>
         ///     Writes a textual report about the configured transports and servers
         ///     for this application

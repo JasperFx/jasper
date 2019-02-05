@@ -15,6 +15,10 @@ namespace MessagingTests.Transports.InMemory
     {
         private readonly MessageTracker theTracker = new MessageTracker();
 
+        public inmemory_integration_specs(DefaultApp @default) : base(@default)
+        {
+        }
+
         private void configure()
         {
             with(_ =>
@@ -45,7 +49,7 @@ namespace MessagingTests.Transports.InMemory
         {
             configure();
 
-            var bus = Runtime.Get<IMessageContext>();
+            var bus = Host.Get<IMessageContext>();
 
             var waiter = theTracker.WaitFor<Message1>();
 

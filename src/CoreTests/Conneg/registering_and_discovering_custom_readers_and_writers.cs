@@ -15,12 +15,15 @@ namespace CoreTests.Conneg
 {
     public class registering_and_discovering_custom_readers_and_writers : IntegrationContext
     {
-        public MessagingSerializationGraph theSerialization => Runtime.Get<MessagingSerializationGraph>();
+        public registering_and_discovering_custom_readers_and_writers(DefaultApp @default) : base(@default)
+        {
+        }
+
+        public MessagingSerializationGraph theSerialization => Host.Get<MessagingSerializationGraph>();
 
         [Fact]
         public void can_override_json_serialization_for_a_mesage()
         {
-            withAllDefaults();
 
             // Not overridden, so it should be the default
             theSerialization.WriterFor(typeof(Message1))["application/json"]
@@ -42,7 +45,6 @@ namespace CoreTests.Conneg
         [Fact]
         public void can_override_json_serialization_reader_for_a_message_type()
         {
-            withAllDefaults();
 
             // Not overridden, so it should be the default
             theSerialization.ReaderFor(typeof(Message4).ToMessageTypeName())["application/json"]
@@ -56,7 +58,6 @@ namespace CoreTests.Conneg
         [Fact]
         public void scans_for_custom_readers_in_the_app_assembly()
         {
-            withAllDefaults();
             theSerialization.ReaderFor(typeof(Message1).ToMessageTypeName())
                 .ContentTypes.ShouldContain("green");
         }
@@ -64,7 +65,6 @@ namespace CoreTests.Conneg
         [Fact]
         public void scans_for_custom_writers_in_the_app_assembly()
         {
-            withAllDefaults();
             theSerialization.WriterFor(typeof(Message5)).ContentTypes
                 .ShouldHaveTheSameElementsAs("application/json", "green", "blue");
         }

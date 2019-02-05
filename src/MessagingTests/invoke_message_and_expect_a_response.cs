@@ -10,7 +10,7 @@ namespace MessagingTests
     public class invoke_message_and_expect_a_response : SendingContext
     {
         // SAMPLE: using_global_request_and_reply
-        public async Task using_global_request_and_reply(IMessageContext messaging)
+        internal async Task using_global_request_and_reply(IMessageContext messaging)
         {
             // Send a question to another application, and request that the handling
             // service send back an answer

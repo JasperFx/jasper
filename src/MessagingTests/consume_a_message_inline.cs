@@ -18,6 +18,10 @@ namespace MessagingTests
         private readonly WorkTracker theTracker = new WorkTracker();
 
 
+        public consume_a_message_inline(DefaultApp @default) : base(@default)
+        {
+        }
+
         private void configure()
         {
             with(_ =>

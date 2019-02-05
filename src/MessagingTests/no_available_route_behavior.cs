@@ -11,12 +11,14 @@ namespace MessagingTests
         [Fact]
         public async Task throw_no_route_exception_by_default()
         {
-            withAllDefaults();
-
             await Should.ThrowAsync<NoRoutesException>(async () =>
             {
                 await Bus.Send(new MessageWithNoRoutes());
             });
+        }
+
+        public no_available_route_behavior(DefaultApp @default) : base(@default)
+        {
         }
     }
 

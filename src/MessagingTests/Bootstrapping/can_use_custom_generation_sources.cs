@@ -8,6 +8,10 @@ namespace MessagingTests.Bootstrapping
 {
     public class can_use_custom_generation_sources : IntegrationContext
     {
+        public can_use_custom_generation_sources(DefaultApp @default) : base(@default)
+        {
+        }
+
         [Fact]
         public void can_customize_source_code_generation()
         {

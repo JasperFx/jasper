@@ -12,6 +12,10 @@ namespace MessagingTests.Bootstrapping
 {
     public class applying_handler_policies : IntegrationContext
     {
+        public applying_handler_policies(DefaultApp @default) : base(@default)
+        {
+        }
+
         [Fact]
         public void can_apply_a_wrapper_to_all_chains()
         {

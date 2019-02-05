@@ -12,11 +12,13 @@ namespace MessagingTests
         [Fact]
         public void use_maximum_attempts()
         {
-            withAllDefaults();
             chainFor<Message1>().Retries.MaximumAttempts.ShouldBe(3);
         }
 
 
+        public using_error_handling_attributes(DefaultApp @default) : base(@default)
+        {
+        }
     }
 
     public class ErrorCausingConsumer

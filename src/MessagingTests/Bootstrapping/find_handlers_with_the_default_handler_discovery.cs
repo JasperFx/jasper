@@ -10,18 +10,19 @@ namespace MessagingTests.Bootstrapping
 {
     public class find_handlers_with_the_default_handler_discovery : IntegrationContext
     {
+        public find_handlers_with_the_default_handler_discovery(DefaultApp @default) : base(@default)
+        {
+        }
+
         [Fact]
         public void can_find_appropriate_static_method()
         {
-            withAllDefaults();
-
             chainFor<MovieRemoved>().Handlers.Any().ShouldBeTrue();
         }
 
         [Fact]
         public void can_find_handlers_from_static_classes()
         {
-            withAllDefaults();
             chainFor<StaticClassMessage>().Handlers.Single().HandlerType
                 .ShouldBe(typeof(StaticClassHandler));
         }
@@ -29,28 +30,24 @@ namespace MessagingTests.Bootstrapping
         [Fact]
         public void does_not_find_handlers_that_do_not_match_the_type_naming_convention()
         {
-            withAllDefaults();
             chainFor<MovieAdded>().ShouldNotHaveHandler<MovieWatcher>(x => x.Handle(null));
         }
 
         [Fact]
         public void finds_classes_suffixed_as_Consumer()
         {
-            withAllDefaults();
             chainFor<Event1>().ShouldHaveHandler<EventConsumer>(x => x.Consume(new Event1()));
         }
 
         [Fact]
         public void finds_classes_suffixed_as_Handler()
         {
-            withAllDefaults();
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Consume(new MovieAdded()));
         }
 
         [Fact]
         public void finds_interface_messages_too()
         {
-            withAllDefaults();
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handles((IMovieEvent) null));
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handles((MovieEvent) null));
             chainFor<MovieRemoved>().ShouldHaveHandler<NetflixHandler>(x => x.Handles((IMovieEvent) null));
@@ -60,7 +57,6 @@ namespace MessagingTests.Bootstrapping
         [Fact]
         public void ignore_class_marked_as_NotHandler()
         {
-            withAllDefaults();
             chainFor<MovieAdded>()
                 .ShouldNotHaveHandler<BlockbusterHandler>(x => x.Handle(new MovieAdded()));
         }
@@ -77,13 +73,16 @@ namespace MessagingTests.Bootstrapping
         [Fact]
         public void will_find_methods_with_parameters_other_than_the_message()
         {
-            withAllDefaults();
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle(null, null));
         }
     }
 
     public class customized_finding : IntegrationContext
     {
+        public customized_finding(DefaultApp @default) : base(@default)
+        {
+        }
+
         [Fact]
         public void extra_suffix()
         {
