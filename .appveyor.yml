@@ -1,5 +1,7 @@
-version: 0.9.7
+release: 0.9.7
+version: {release}.{build}
 image: Visual Studio 2017
+
 
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
@@ -26,13 +28,13 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
-  assembly_version: '{version}'
-  file_version: '{version}.{build}'
-  informational_version: '{version}.{build}'
+  version: '{release}'
+  package_version: '{release}'
+  assembly_version: '{release}'
+  file_version: '{version}'
+  informational_version: '{version}'
 
-  
+
 
 
 build_script:
