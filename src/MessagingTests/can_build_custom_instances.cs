@@ -6,7 +6,7 @@ using Xunit;
 
 namespace MessagingTests
 {
-    public class can_build_custom_instances
+    public class can_build_custom_instances : IntegrationContext
     {
         [Theory]
         [InlineData(typeof(ICommandBus))]
@@ -14,11 +14,12 @@ namespace MessagingTests
         [InlineData(typeof(IMessagePublisher))]
         public void can_build(Type serviceType)
         {
-            using (var runtime = JasperHost.Basic())
-            {
-                runtime.Container.GetInstance(serviceType)
-                    .ShouldNotBeNull();
-            }
+            Host.Get(serviceType)
+                .ShouldNotBeNull();
+        }
+
+        public can_build_custom_instances(DefaultApp @default) : base(@default)
+        {
         }
     }
 }

@@ -12,63 +12,58 @@ using Xunit;
 
 namespace MessagingTests
 {
-    public class message_type_specific_envelope_rules
+    public class message_type_specific_envelope_rules : IntegrationContext
     {
+        public message_type_specific_envelope_rules(DefaultApp @default) : base(@default)
+        {
+        }
+
         [Fact]
         public void apply_message_type_rules_from_attributes()
         {
-            using (var runtime = JasperHost.Basic())
+            var root = Host.Get<IMessagingRoot>();
+            var envelope = new Envelope
             {
-                var root = runtime.Get<IMessagingRoot>();
-                var envelope = new Envelope
-                {
-                    Message = new MySpecialMessage()
-                };
+                Message = new MySpecialMessage()
+            };
 
-                root.ApplyMessageTypeSpecificRules(envelope);
+            root.ApplyMessageTypeSpecificRules(envelope);
 
-                envelope.Headers["special"].ShouldBe("true");
-            }
+            envelope.Headers["special"].ShouldBe("true");
         }
 
 
         [Fact]
         public void deliver_by_mechanics()
         {
-            using (var runtime = JasperHost.Basic())
+            var root = Host.Get<IMessagingRoot>();
+            var envelope = new Envelope
             {
-                var root = runtime.Get<IMessagingRoot>();
-                var envelope = new Envelope
-                {
-                    Message = new MySpecialMessage()
-                };
+                Message = new MySpecialMessage()
+            };
 
-                root.ApplyMessageTypeSpecificRules(envelope);
+            root.ApplyMessageTypeSpecificRules(envelope);
 
-                envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
-            }
+            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
         }
 
 
         [Fact]
         public async Task see_the_customizations_happen_inside_of_message_context()
         {
-            using (var runtime = JasperHost.Basic())
-            {
-                var context = runtime.Get<IMessageContext>();
+            var context = Host.Get<IMessageContext>();
 
-                // Just to force the message context to pool up the envelope instead
-                // of sending it out
-                await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
+            // Just to force the message context to pool up the envelope instead
+            // of sending it out
+            await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
 
-                var mySpecialMessage = new MySpecialMessage();
+            var mySpecialMessage = new MySpecialMessage();
 
-                await context.Send("tcp://localhost:2001".ToUri(), mySpecialMessage);
+            await context.Send("tcp://localhost:2001".ToUri(), mySpecialMessage);
 
-                var outgoing = context.As<MessageContext>().Outstanding.Single();
+            var outgoing = context.As<MessageContext>().Outstanding.Single();
 
-                outgoing.Headers["special"].ShouldBe("true");
-            }
+            outgoing.Headers["special"].ShouldBe("true");
         }
     }
 

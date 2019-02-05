@@ -30,6 +30,11 @@ namespace MessagingTests
                 Host = JasperHost.Basic();
             }
         }
+
+        public HandlerChain ChainFor<T>()
+        {
+            return Host.Get<HandlerGraph>().ChainFor<T>();
+        }
     }
 
 

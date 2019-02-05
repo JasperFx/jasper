@@ -8,34 +8,15 @@ using Xunit;
 
 namespace MessagingTests.Sagas
 {
-    public class SagaFixture : IDisposable
+
+    public class saga_action_discovery : IntegrationContext
     {
-        private IJasperHost _host;
+        private DefaultApp _fixture;
 
-        public void Dispose()
+        public saga_action_discovery(DefaultApp @default) : base(@default)
         {
-            _host?.Dispose();
+            _fixture = @default;
         }
-
-        public void withRuntime()
-        {
-            if (_host == null) _host = JasperHost.Basic();
-        }
-
-        public HandlerChain ChainFor<T>()
-        {
-            return _host.Get<HandlerGraph>().ChainFor<T>();
-        }
-    }
-
-    public class saga_action_discovery : IClassFixture<SagaFixture>
-    {
-        public saga_action_discovery(SagaFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
-        private readonly SagaFixture _fixture;
 
         private HandlerChain chainFor<T>()
         {
@@ -45,23 +26,20 @@ namespace MessagingTests.Sagas
         [Fact]
         public void finds_actions_on_saga_state_handler_classes()
         {
-            _fixture.withRuntime();
 
-            ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaMessage2>());
+            chainFor<SagaMessage2>().ShouldNotBeNull();
         }
 
         [Fact]
         public void finds_actions_on_saga_state_orchestrates_methods()
         {
-            _fixture.withRuntime();
-            ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaMessage1>());
+            chainFor<SagaMessage1>().ShouldNotBeNull();
         }
 
         [Fact]
         public void finds_actions_on_saga_state_start_methods()
         {
-            _fixture.withRuntime();
-            ShouldBeNullExtensions.ShouldNotBeNull(chainFor<SagaStarter>());
+            chainFor<SagaStarter>().ShouldNotBeNull();
         }
     }
 

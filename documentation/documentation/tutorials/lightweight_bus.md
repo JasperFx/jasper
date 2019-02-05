@@ -213,8 +213,66 @@ Application started. Press Ctrl+C to shut down.
 
 ```
 
-Then start *Pinger* with the same `dotnet run` command from the root of the *Pinger* project:
+Then start *Pinger* with the same `dotnet run` command from the root of the *Pinger* project and well, you'll get a boatload of logging like this:
 
 ```
-MORE HERE
+dbug: Jasper.Messages[101]
+      Received PongMessage#0168be78-ddcd-43b6-8fc4-15cc855354c3 at tcp://localhost:3050/ from tcp://localhost:3051/
+Got a pong back with name: Message18
+dbug: Jasper.Messages[102]
+      Started processing PongMessage#0168be78-ddcd-43b6-8fc4-15cc855354c3
+dbug: Jasper.Messages[103]
+      Finished processing PongMessage#0168be78-ddcd-43b6-8fc4-15cc855354c3
+info: Jasper.Messages[104]
+      Successfully processed message PongMessage#0168be78-ddcd-43b6-8fc4-15cc855354c3 from tcp://localhost:3051/
+dbug: Jasper.Messages[100]
+      Sent PingMessage#0168be78-e0ed-4eec-8081-05e7b1f36006 to tcp://localhost:3051/
+info: Jasper.Transports[204]
+      Sending agent for tcp://localhost:3051/ has resumed
+dbug: Jasper.Transports[200]
+      Successfully sent 1 messages to tcp://localhost:3051/
+dbug: Jasper.Transports[202]
+      Received 1 message(s) from tcp://localhost:3051/
+dbug: Jasper.Messages[101]
+      Received PongMessage#0168be78-e1b9-4bc8-bc58-98cdccf9824b at tcp://localhost:3050/ from tcp://localhost:3051/
+dbug: Jasper.Messages[102]
+      Started processing PongMessage#0168be78-e1b9-4bc8-bc58-98cdccf9824b
+Got a pong back with name: Message19
+dbug: Jasper.Messages[103]
+      Finished processing PongMessage#0168be78-e1b9-4bc8-bc58-98cdccf9824b
+info: Jasper.Messages[104]
+      Successfully processed message PongMessage#0168be78-e1b9-4bc8-bc58-98cdccf9824b from tcp://localhost:3051/
+dbug: Jasper.Messages[100]
+      Sent PingMessage#0168be78-e4da-4c36-95e3-aa9d15ee0ff2 to tcp://localhost:3051/
+info: Jasper.Transports[204]
+      Sending agent for tcp://localhost:3051/ has resumed
+dbug: Jasper.Transports[200]
+      Successfully sent 1 messages to tcp://localhost:3051/
+dbug: Jasper.Transports[202]
+      Received 1 message(s) from tcp://localhost:3051/
+dbug: Jasper.Messages[101]
+      Received PongMessage#0168be78-e5a7-4e03-9894-4c3f61ed7413 at tcp://localhost:3050/ from tcp://localhost:3051/
+dbug: Jasper.Messages[102]
+      Started processing PongMessage#0168be78-e5a7-4e03-9894-4c3f61ed7413
+Got a pong back with name: Message20
+dbug: Jasper.Messages[103]
+      Finished processing PongMessage#0168be78-e5a7-4e03-9894-4c3f61ed7413
+info: Jasper.Messages[104]
+      Successfully processed message PongMessage#0168be78-e5a7-4e03-9894-4c3f61ed7413 from tcp://localhost:3051/
+dbug: Jasper.Messages[100]
+      Sent PingMessage#0168be78-e8c5-4130-a919-81bfe235becb to tcp://localhost:3051/
+info: Jasper.Transports[204]
+      Sending agent for tcp://localhost:3051/ has resumed
+dbug: Jasper.Transports[200]
+      Successfully sent 1 messages to tcp://localhost:3051/
+dbug: Jasper.Transports[202]
+      Received 1 message(s) from tcp://localhost:3051/
+dbug: Jasper.Messages[101]
+      Received PongMessage#0168be78-e991-41b9-b1f0-16ee2fa75377 at tcp://localhost:3050/ from tcp://localhost:3051/
+dbug: Jasper.Messages[102]
+      Started processing PongMessage#0168be78-e991-41b9-b1f0-16ee2fa75377
+Got a pong back with name: Message21
+
 ```
+
+Alright, you've got a fully functional system of two services who constantly chat with each other. For more information about the topics we covered in this tutorial, see the documentation for <[linkto:documentation/messaging]>
