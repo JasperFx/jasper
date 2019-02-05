@@ -2,10 +2,14 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-TEMPLATE_VERSION = "0.9.6"
+BUILD_VERSION =  ENV['version'].nil? ? '0.9.7' : ENV['version']
+puts "Build version is #{BUILD_VERSION}"
+
+
+TEMPLATE_VERSION = BUILD_VERSION
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
-BUILD_VERSION = '0.9.6'
+
 
 tc_build_number = ENV["APPVEYOR_BUILD_NUMBER"]
 build_revision = tc_build_number || Time.new.strftime('5%H%M')

@@ -1,5 +1,6 @@
-version: 0.9.6.{build}
+version: 0.9.7
 image: Visual Studio 2017
+fullbuild: {version}.{build}
 
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
@@ -23,10 +24,19 @@ install:
   - bundle install
   - dotnet --version
 
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{fullbuild}'
+  file_version: '{fullbuild}'
+  informational_version: '{fullbuild}'
+
 
 build_script:
 - cmd: >-
-    rake ci
+    rake ci version={version}
 test: off
 
 deploy:

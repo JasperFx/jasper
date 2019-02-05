@@ -2,7 +2,6 @@
 
     <PropertyGroup>
       <Description>Use MVC Core constructs and Controllers directly within Jasper</Description>
-      <VersionPrefix>0.9.6</VersionPrefix>
       <Authors>Jeremy D. Miller</Authors>
       <TargetFramework>netstandard2.0</TargetFramework>
       <DebugType>portable</DebugType>

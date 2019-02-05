@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>ApplicationInsights metrics integration for Jasper messaging applications</Description>
-    <VersionPrefix>0.9.6</VersionPrefix>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>portable</DebugType>
