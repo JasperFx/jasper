@@ -2,6 +2,7 @@
 using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
+using Lamar;
 using Xunit;
 
 namespace MessagingTests
@@ -14,6 +15,8 @@ namespace MessagingTests
         }
 
         public IJasperHost Host { get; private set; }
+
+        public IContainer Container => Host.Container;
 
         public void Dispose()
         {
@@ -41,8 +44,9 @@ namespace MessagingTests
 
             Host = _default.Host;
 
-
         }
+
+        public IContainer Container => Host.Container;
 
         public IJasperHost Host { get; private set; }
 
