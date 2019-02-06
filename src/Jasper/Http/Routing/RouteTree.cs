@@ -23,6 +23,7 @@ namespace Jasper.Http.Routing
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string[] ToSegments(string route)
         {
+            if (route == "/") return Empty;
             return route.Split('/').Skip(1).ToArray();
         }
 

@@ -10,6 +10,8 @@ namespace Jasper.Http.Model
 {
     public abstract class RouteHandler
     {
+        private const string ResourceNotFound = "Resource not found";
+
         /// <summary>
         /// Handles the actual HTTP request
         /// </summary>
@@ -20,13 +22,30 @@ namespace Jasper.Http.Model
 
 
 
+        public Task UseWriter(object model, HttpResponse response)
+        {
+            var writer = Writer;
 
+            return UseWriter(model, response, writer);
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task UseWriter(object model, HttpResponse response, IMessageSerializer writer)
+        {
+            if (model == null)
+            {
+                response.StatusCode = 404;
+                response.ContentType = "text/plain";
+                response.ContentLength = ResourceNotFound.Length;
 
-
-
-
-
+                return response.WriteAsync(ResourceNotFound);
+            }
+            else
+            {
+                response.ContentType = writer.ContentType;
+                return writer.WriteToStream(model, response);
+            }
+        }
 
 
         public RouteChain Chain { get; set; }

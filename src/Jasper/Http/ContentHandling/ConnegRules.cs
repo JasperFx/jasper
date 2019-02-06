@@ -66,7 +66,7 @@ namespace Jasper.Http.ContentHandling
             if (customWriters.Length == 1)
             {
                 chain.Writer = customWriters.Single();
-                chain.Postprocessors.Add(new UseWriter(chain, true));
+                chain.Postprocessors.Add(new UseWriter(chain));
             }
             else if (customWriters.Length > 1)
             {
@@ -74,12 +74,12 @@ namespace Jasper.Http.ContentHandling
                 var selectWriter = new SelectWriter();
                 chain.Middleware.Add(selectWriter);
                 chain.Middleware.Add(new CheckForMissing(406, selectWriter.ReturnVariable));
-                chain.Middleware.Add(new UseWriter(chain, false));
+                chain.Middleware.Add(new UseChosenWriter(chain));
             }
             else
             {
                 chain.Writer = _serializers.JsonWriterFor(chain.ResourceType);
-                chain.Postprocessors.Add(new UseWriter(chain, true));
+                chain.Postprocessors.Add(new UseWriter(chain));
             }
 
             return true;

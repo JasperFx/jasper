@@ -65,22 +65,16 @@ namespace Jasper.Conneg.Json
             }
         }
 
-        public async Task<T> ReadFromRequest<T>(HttpRequest request)
+        public Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             var stream = request.Body;
 
-            if (!stream.CanSeek)
-            {
-                // JSON.Net does synchronous reads. In order to avoid blocking on the stream, we asynchronously
-                // read everything into a buffer, and then seek back to the beginning.
-                request.EnableRewind();
 
-                await stream.DrainAsync(CancellationToken.None);
-                stream.Seek(0L, SeekOrigin.Begin);
-            }
 
             // TODO -- the encoding should vary here
-            return (T) read(stream, Encoding.UTF8, typeof(T));
+            var user = (T) read(stream, Encoding.UTF8, typeof(T));
+
+            return Task.FromResult(user);
         }
 
         private object read(Stream stream, Encoding encoding, Type targetType)

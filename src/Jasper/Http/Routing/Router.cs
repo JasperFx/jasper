@@ -24,7 +24,9 @@ namespace Jasper.Http.Routing
         {
             var handler = _finder.Value.SelectRoute(context, out var segments);
 
-            return handler?.Handle(context, segments) ?? next(context);
+            if (handler == null) return next(context);
+
+            return handler.Handle(context, segments);
         }
 
         public RequestDelegate Apply(RequestDelegate next)

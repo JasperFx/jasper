@@ -84,14 +84,6 @@ namespace Jasper.Http.Model
             return _chains.FirstOrDefault(x => x.Action.HandlerType == typeof(T) && Equals(x.Action.Method, method));
         }
 
-        public RouteChain ChainForAction<T>(string methodName)
-        {
-            var method = typeof(T).GetMethod(methodName,
-                BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-
-            return _chains.FirstOrDefault(x => x.Action.HandlerType == typeof(T) && Equals(x.Action.Method, method));
-        }
-
 
         public void AssertNoDuplicateRoutes()
         {

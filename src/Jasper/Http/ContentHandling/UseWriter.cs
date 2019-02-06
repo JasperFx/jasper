@@ -10,13 +10,26 @@ namespace Jasper.Http.ContentHandling
     public class UseWriter : MethodCall
     {
         private static readonly MethodInfo _method =
-            ReflectionHelper.GetMethod<IMessageSerializer>(x => x.WriteToStream(null, null));
+            ReflectionHelper.GetMethod<RouteHandler>(x => x.UseWriter(null, null));
 
-        public UseWriter(RouteChain chain, bool isLocal) : base(typeof(IMessageSerializer), _method)
+        public UseWriter(RouteChain chain) : base(typeof(IMessageSerializer), _method)
         {
             Arguments[0] = chain.Action.ReturnVariable;
 
-            if (isLocal) Target = new Variable(typeof(IMessageSerializer), nameof(RouteHandler.Writer));
+            IsLocal = true;
+        }
+    }
+
+    public class UseChosenWriter : MethodCall
+    {
+        private static readonly MethodInfo _method = typeof(RouteHandler).GetMethod(nameof(RouteHandler.UseWriter),
+            BindingFlags.Public | BindingFlags.Static);
+
+        public UseChosenWriter(RouteChain chain) : base(typeof(IMessageSerializer), _method)
+        {
+            Arguments[0] = chain.Action.ReturnVariable;
+
+            IsLocal = true;
         }
     }
 }
