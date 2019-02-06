@@ -25,6 +25,8 @@ If you want, go ahead and start up the new HTTP service by typing `dotnet run`, 
 
 <[img:content/HelloFromMyJasperHttpService.png]>
 
+*The home route shown above is implemented in a class called `HomeEndpoint` that's written out by the dotnet new template you'll probably either want to modify or delete.*
+
 If you open the generated project and look at the constituent parts, you'll see the application entry point in `Program`:
 
 ```
@@ -125,9 +127,14 @@ Let's say that we're writing some kind of web service that will govern *User* en
 and to be really crude, let's say that `User` objects are persisted and loaded through an in memory `UserRepository`:
 
 ```
-    public class UserRepository
+    public interface IUserRepository
     {
-        public readonly IList<User> Users = new List<User>();
+        IList<User> Users { get; }
+    }
+    
+    public class UserRepository : IUserRepository
+    {
+        public IList<User> Users { get; } = new List<User>();
 
         public UserRepository()
         {
@@ -144,7 +151,7 @@ And we need to add this as a singleton-scoped object in our application's IoC co
     {
         public JasperConfig()
         {
-            Services.AddSingleton<UserRepository>();
+            Services.AddSingleton<IUserRepository, UserRepository>();
         }
     }
 ```
@@ -154,7 +161,7 @@ Now, let's add an HTTP endpoint that will return a `User` document by name as JS
 ```
     public static class UserEndpoints
     {
-        public static User get_user_name(string name, UserRepository users)
+        public static User get_user_name(string name, IUserRepository users)
         {
             return users.Users.FirstOrDefault(x => x.Name == name);
         }
@@ -163,5 +170,26 @@ Now, let's add an HTTP endpoint that will return a `User` document by name as JS
 
 I'll start up the application again, and open the browser to "https://localhost:5001/user/Luke":
 
-MORE HERE, HERE, HERE
+<[img:content/GetLuke.png]>
+
+To recap the behavior you're seeing here:
+
+* Jasper derives the route pattern "GET: /user/:name" from the method signature `get_user_name`. First, it's an HTTP *GET* because the method name starts with "get_". The parameter `name` is considered to be a route argument just by having the same name as a method "segment" when the method name is split by the underscore character.
+* Jasper will use *method injection* to pass in the `IUserRepository`at runtime, and it "knows" to do this by interrogating the underlying IoC service registrations for the application
+* The sensible default convention Jasper uses is to render the resource `User` is as JSON, with the content-type header set to *application/json*.
+
+Next, let's add another method to `UserEndpoints` that will allow us to POST a new `User` to our service:
+
+```
+        public static int post_user(User user, IUserRepository users)
+        {
+            users.Users.Add(user);
+
+            return 201; // Created
+        }
+```
+
+In the above case, since the `User user` argument is considered to be the body of the request since it's a concrete type that is the first argument. `IUserRepository` is again *method injected* as it was in the previous route. Because this action return an `int` (`Task<int>` would work as well for asynchronous methods and *soon* `ValueTask<int>`), Jasper assumes that this return value should be the `HttpResponse.StatusCode` value.
+
+There we go, in one quick tutorial you've seen an overview of Jasper's HTTP service support and most of its baked in naming conventions. For a whole lot more information, see <[linkto:documentation/http]>.
 
