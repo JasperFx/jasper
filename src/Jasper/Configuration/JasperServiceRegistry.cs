@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Jasper.Conneg;
 using Jasper.EnvironmentChecks;
 using Jasper.Http.ContentHandling;
+using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util.Lamar;
 using Lamar;
+using Lamar.IoC.Instances;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +30,8 @@ namespace Jasper.Configuration
         {
             For<IMetrics>().Use<NulloMetrics>();
             For<IHostedService>().Use<MetricsCollector>();
+
+            Policies.Add(new HandlerAndRoutePolicy(parent.HttpRoutes.Routes, parent.Messaging.Graph));
 
             this.AddLogging();
 
@@ -118,6 +124,40 @@ namespace Jasper.Configuration
         public void MessagingRootService<T>(Expression<Func<IMessagingRoot, T>> expression) where T : class
         {
             For<T>().Use(new MessagingRootInstance<T>(expression));
+        }
+    }
+
+    internal class HandlerAndRoutePolicy : IFamilyPolicy
+    {
+        private readonly RouteGraph _routes;
+        private readonly HandlerGraph _handlers;
+
+        public HandlerAndRoutePolicy(RouteGraph routes, HandlerGraph handlers)
+        {
+            _routes = routes;
+            _handlers = handlers;
+        }
+
+        private bool matches(Type type)
+        {
+            if (_routes.Any(x => x.Action.HandlerType == type)) return true;
+
+
+            var handlerTypes = _handlers.Chains.SelectMany(x => x.Handlers)
+                .Select(x => x.HandlerType);
+
+            return handlerTypes.Contains(type);
+        }
+
+        public ServiceFamily Build(Type type, ServiceGraph serviceGraph)
+        {
+            if (matches(type))
+            {
+                var instance = new ConstructorInstance(type, type, ServiceLifetime.Scoped);
+                return new ServiceFamily(type, new IDecoratorPolicy[0], instance);
+            }
+
+            return null;
         }
     }
 }
