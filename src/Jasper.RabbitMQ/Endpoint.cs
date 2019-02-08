@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,14 @@ namespace Jasper.RabbitMQ
     {
         Connected,
         Disconnected
+    }
+
+    public enum ExchangeType
+    {
+        Direct,
+        Fanout,
+        Topic,
+        Headers
     }
 
     public class Endpoint : IDisposable
@@ -133,6 +142,27 @@ namespace Jasper.RabbitMQ
             }
 
             BrokerUri = new Uri($"rabbitmq://{Host}:{Port}");
+        }
+
+        public Uri ToFullUri()
+        {
+            var segments = new List<string>();
+
+            if (Durable)
+            {
+                segments.Add(TransportConstants.Durable);
+            }
+
+            segments.Add(ExchangeType.ToString().ToLower());
+
+            if (ExchangeName.IsNotEmpty())
+            {
+                segments.Add(ExchangeName);
+            }
+
+            segments.Add(Queue);
+
+            return new Uri($"{BrokerUri}{segments.Join("/")}");
         }
 
         public Uri Uri { get; }

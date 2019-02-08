@@ -121,7 +121,7 @@ namespace IntegrationTests.RabbitMQ
             var endpoint = new Endpoint("default", "host=server2;topic=foo.bar;queue=foo");
             endpoint.Topic.ShouldBe("foo.bar");
         }
-        
+
                 [Theory]
         [InlineData("rabbitmq://localhost")]
         [InlineData("rabbitmq://localhost/durable")]
@@ -153,6 +153,21 @@ namespace IntegrationTests.RabbitMQ
             agent.ExchangeName.ShouldBe(exchangeName);
             agent.ExchangeType.ShouldBe(exchangeType);
             agent.Queue.ShouldBe(queueName);
+        }
+
+        [Theory]
+        [InlineData("rabbitmq://localhost:5672/direct/one")]
+        [InlineData("rabbitmq://localhost:5672/durable/fanout/two")]
+        [InlineData("rabbitmq://localhost:5672/durable/direct/four")]
+        [InlineData("rabbitmq://localhost:5672/durable/fanout/three")]
+        [InlineData("rabbitmq://localhost:5672/fanout/three")]
+        [InlineData("rabbitmq://localhost:5672/durable/fanout/exchange1/three")]
+        [InlineData("rabbitmq://localhost:5672/fanout/exchange1/three")]
+        public void generate_full_uri(
+            string uri)
+        {
+            var agent = new Endpoint(uri.ToUri());
+            agent.ToFullUri().ShouldBe(uri.ToUri());
         }
 
         [Fact]
