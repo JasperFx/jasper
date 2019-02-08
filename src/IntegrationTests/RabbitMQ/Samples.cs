@@ -37,20 +37,16 @@ namespace IntegrationTests.RabbitMQ
             Settings.Alter<RabbitMqSettings>(settings =>
             {
                 // Retrieve the Jasper "agent" by the full Uri:
-                var agent = settings.For("rabbitmq://server1/queue1");
+                var endpoint = settings.For("rabbitmq://server1/queue1");
 
                 // Customize the underlying ConnectionFactory for security mechanisms,
                 // timeouts, and many other settings
-                agent.ConnectionFactory.ContinuationTimeout = TimeSpan.FromSeconds(5);
-
-
-                // Customize how Jasper creates the connection from the connection factory
-                agent.ConnectionActivator = factory => factory.CreateConnection("MyClientProvidedName");
+                endpoint.Broker.ConnectionFactory.ContinuationTimeout = TimeSpan.FromSeconds(5);
 
 
                 // Customize or change how Jasper maps Envelopes to and from
                 // the RabbitMQ properties
-                agent.EnvelopeMapping = new CustomEnvelopeMapping();
+                endpoint.EnvelopeMapping = new CustomEnvelopeMapping();
             });
         }
     }

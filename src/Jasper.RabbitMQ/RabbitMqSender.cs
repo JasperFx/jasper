@@ -12,7 +12,7 @@ namespace Jasper.RabbitMQ
     public class RabbitMqSender : ISender
     {
         private readonly PublicationAddress _address;
-        private readonly RabbitMqAgent _agent;
+        private readonly Endpoint _endpoint;
         private readonly CancellationToken _cancellation;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopeMapper _mapper;
@@ -20,16 +20,16 @@ namespace Jasper.RabbitMQ
         private ActionBlock<Envelope> _sending;
         private ActionBlock<Envelope> _serialization;
 
-        public RabbitMqSender(ITransportLogger logger, RabbitMqAgent agent,
+        public RabbitMqSender(ITransportLogger logger, Endpoint endpoint,
             CancellationToken cancellation)
         {
-            _mapper = agent.EnvelopeMapping;
+            _mapper = endpoint.EnvelopeMapping;
             _logger = logger;
-            _agent = agent;
+            _endpoint = endpoint;
             _cancellation = cancellation;
-            Destination = agent.Uri;
+            Destination = endpoint.Uri;
 
-            _address = agent.PublicationAddress();
+            _address = endpoint.PublicationAddress();
         }
 
         public void Dispose()
@@ -39,7 +39,7 @@ namespace Jasper.RabbitMQ
 
         public void Start(ISenderCallback callback)
         {
-            _agent.Start();
+            _endpoint.Start();
 
             _callback = callback;
 
@@ -78,7 +78,7 @@ namespace Jasper.RabbitMQ
         {
             Latched = true;
 
-            _agent.Stop();
+            _endpoint.Stop();
 
             _sending.Complete();
             _serialization.Complete();
@@ -99,11 +99,11 @@ namespace Jasper.RabbitMQ
 
         public Task Ping()
         {
-            return _agent.Ping(channel =>
+            return _endpoint.Ping(channel =>
             {
                 var envelope = Envelope.ForPing(Destination);
 
-                var props = _agent.Channel.CreateBasicProperties();
+                var props = _endpoint.Channel.CreateBasicProperties();
 
                 _mapper.WriteFromEnvelope(envelope, props);
                 props.AppId = "Jasper";
@@ -114,16 +114,17 @@ namespace Jasper.RabbitMQ
 
         private async Task send(Envelope envelope)
         {
-            if (_agent.State == AgentState.Disconnected)
+            if (_endpoint.State == AgentState.Disconnected)
                 throw new InvalidOperationException($"The RabbitMQ agent for {_address} is disconnected");
 
             try
             {
-                var props = _agent.Channel.CreateBasicProperties();
-                props.Persistent = _agent.IsDurable;
+                var props = _endpoint.Channel.CreateBasicProperties();
+                props.Persistent = _endpoint.Durable;
 
                 _mapper.WriteFromEnvelope(envelope, props);
-                _agent.Channel.BasicPublish(_address, props, envelope.Data);
+
+                _endpoint.Channel.BasicPublish(_address, props, envelope.Data);
 
                 await _callback.Successful(envelope);
             }

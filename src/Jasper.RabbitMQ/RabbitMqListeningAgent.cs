@@ -9,7 +9,7 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMqListeningAgent : IListeningAgent
     {
-        private readonly RabbitMqAgent _agent;
+        private readonly Endpoint _agent;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopeMapper _mapper;
         private readonly string _queue;
@@ -17,13 +17,13 @@ namespace Jasper.RabbitMQ
         private MessageConsumer _consumer;
 
         public RabbitMqListeningAgent(Uri address, ITransportLogger logger, IEnvelopeMapper mapper,
-            RabbitMqAgent agent)
+            Endpoint agent)
         {
             _logger = logger;
             _mapper = mapper;
             _agent = agent;
             Address = address;
-            _queue = agent.QueueName;
+            _queue = agent.Queue;
         }
 
         public void Dispose()
