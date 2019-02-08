@@ -13,16 +13,6 @@ namespace Jasper.RabbitMQ
 
         private readonly object _locker = new object();
 
-        public RabbitMqAgent ForHost(string host, string queueName)
-        {
-            return For($"rabbitmq://{host}/{queueName}");
-        }
-
-        public RabbitMqAgent ForHostAndPort(string host, int port, string queueName)
-        {
-            return For($"rabbitmq://{host}:{port}/{queueName}");
-        }
-
         public RabbitMqAgent For(string uriString)
         {
             return For(uriString.ToUri());

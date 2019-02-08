@@ -15,12 +15,6 @@ namespace Jasper.AzureServiceBus
             return new QueueClient(ConnectionString, queueName);
         }
 
-        public IMessageReceiver BuildReceiver(Uri uri)
-        {
-            var queueName = uri.QueueName();
-            return new MessageReceiver(ConnectionString, queueName);
-        }
-
         public IMessageSender BuildSender(Uri destination)
         {
             var queueName = destination.QueueName();

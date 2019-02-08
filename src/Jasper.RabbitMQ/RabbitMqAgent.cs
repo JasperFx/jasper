@@ -120,6 +120,8 @@ namespace Jasper.RabbitMQ
             {
                 channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), IsDurable);
                 channel.QueueDeclare(QueueName, IsDurable, autoDelete: false, exclusive: false);
+
+                // TODO -- routingKey is required for direct and topic
                 channel.QueueBind(QueueName, ExchangeName, "");
             }
             else
