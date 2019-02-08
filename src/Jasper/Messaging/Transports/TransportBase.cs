@@ -37,6 +37,8 @@ namespace Jasper.Messaging.Transports
         public string Protocol { get; }
         public Uri ReplyUri { get; protected set; }
 
+
+
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
             var batchedSender = createSender(uri, cancellation);
@@ -80,6 +82,8 @@ namespace Jasper.Messaging.Transports
                 listener.Start();
             }
         }
+
+        public IEnumerable<IListener> Listeners => _listeners;
 
         public void Describe(TextWriter writer)
         {

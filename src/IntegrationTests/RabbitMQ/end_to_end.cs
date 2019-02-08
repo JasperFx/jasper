@@ -11,6 +11,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
+using Jasper.RabbitMQ;
 using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +53,26 @@ namespace IntegrationTests.RabbitMQ
         public async Task send_message_to_and_receive_through_rabbitmq()
         {
             using (var runtime = JasperHost.For<RabbitMqUsingApp>())
+            {
+                var tracker = runtime.Get<MessageTracker>();
+
+                var watch = tracker.WaitFor<ColorChosen>();
+
+                await runtime.Messaging.Send(new ColorChosen {Name = "Red"});
+
+                await watch;
+
+                var colors = runtime.Get<ColorHistory>();
+
+                colors.Name.ShouldBe("Red");
+            }
+        }
+
+
+        [Fact]
+        public async Task send_message_to_and_receive_through_rabbitmq_using_connection_string()
+        {
+            using (var runtime = JasperHost.For<RabbitMqUsingApp2>())
             {
                 var tracker = runtime.Get<MessageTracker>();
 
@@ -245,6 +266,26 @@ namespace IntegrationTests.RabbitMQ
             Services.AddSingleton<MessageTracker>();
 
             Publish.AllMessagesTo("rabbitmq://localhost:5672/messages3");
+
+            Include<MessageTrackingExtension>();
+        }
+    }
+
+    public class RabbitMqUsingApp2 : JasperRegistry
+    {
+        public RabbitMqUsingApp2()
+        {
+            Settings.Alter<RabbitMqSettings>(settings =>
+            {
+                settings.Connections.Add("messages3", "host=localhost;queue=messages3");
+            });
+
+            Transports.ListenForMessagesFrom("rabbitmq://messages3");
+
+            Services.AddSingleton<ColorHistory>();
+            Services.AddSingleton<MessageTracker>();
+
+            Publish.AllMessagesTo("rabbitmq://messages3");
 
             Include<MessageTrackingExtension>();
         }
