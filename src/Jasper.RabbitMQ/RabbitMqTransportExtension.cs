@@ -13,7 +13,7 @@ namespace Jasper.RabbitMQ
         public void Configure(JasperRegistry registry)
         {
             registry.Settings.Require<RabbitMqSettings>();
-            registry.Services.AddTransient<ITransport, RabbitMqTransport>();
+            registry.Services.AddSingleton<ITransport, RabbitMqTransport>();
         }
     }
 }
