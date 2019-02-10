@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
@@ -20,19 +21,28 @@ namespace Jasper.RabbitMQ
 
         protected override ISender createSender(Uri uri, CancellationToken cancellation)
         {
-            var agent = _settings.For(uri);
+            var agent = _settings.ForEndpoint(uri);
             agent.Start();
             return agent.CreateSender(logger, cancellation);
         }
 
         protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
         {
+            var replies = _settings.ForEndpoint(_settings.ReplyUri);
+            if (replies != null)
+            {
+                ReplyUri = replies.ToFullUri();
+                return incoming.Concat(new Uri[] {replies.Uri}).Distinct().ToArray();
+            }
+
+
+
             return incoming;
         }
 
         protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings)
         {
-            var agent = _settings.For(uri);
+            var agent = _settings.ForEndpoint(uri);
             agent.Start();
             return agent.CreateListeningAgent(uri, settings, logger);
         }

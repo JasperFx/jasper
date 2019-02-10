@@ -37,7 +37,7 @@ namespace IntegrationTests.RabbitMQ
             Settings.Alter<RabbitMqSettings>(settings =>
             {
                 // Retrieve the Jasper "agent" by the full Uri:
-                var endpoint = settings.For("rabbitmq://server1/queue1");
+                var endpoint = settings.ForEndpoint("rabbitmq://server1/queue1");
 
                 // Customize the underlying ConnectionFactory for security mechanisms,
                 // timeouts, and many other settings

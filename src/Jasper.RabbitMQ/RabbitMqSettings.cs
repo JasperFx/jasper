@@ -12,17 +12,17 @@ namespace Jasper.RabbitMQ
     {
         private readonly ConcurrentDictionary<Uri, Endpoint> _endpoints =
             new ConcurrentDictionary<Uri, Endpoint>();
-        
+
         private readonly ConcurrentDictionary<Uri, Broker> _brokers = new ConcurrentDictionary<Uri, Broker>();
 
         private readonly object _locker = new object();
 
-        public Endpoint For(string uriString)
+        public Endpoint ForEndpoint(string uriString)
         {
-            return For(uriString.ToUri());
+            return ForEndpoint(uriString.ToUri());
         }
 
-        public Endpoint For(Uri uri)
+        public Endpoint ForEndpoint(Uri uri)
         {
             if (_endpoints.ContainsKey(uri)) return _endpoints[uri];
 
@@ -31,27 +31,32 @@ namespace Jasper.RabbitMQ
                 if (_endpoints.ContainsKey(uri)) return _endpoints[uri];
 
 
-                Endpoint endpoint;
+                Endpoint endpoint = _endpoints.Values.FirstOrDefault(x => x.ToFullUri() == uri);
 
-                if (uri.Segments.Any())
+
+                if (endpoint == null)
                 {
-                    endpoint = new Endpoint(uri);
-                }
-                else
-                {
-                    if (Connections.TryGetValue(uri.Host, out var connectionString))
+                    if (uri.Segments.Any() && uri.Segments.First() != "/")
                     {
-                        endpoint = new Endpoint(uri.Host, connectionString);
+                        endpoint = new Endpoint(uri);
                     }
                     else
                     {
-                        throw new ArgumentOutOfRangeException(nameof(uri), $"Unknown connection key '{uri.Host}' for the Rabbit MQ uri {uri}");
+                        if (Connections.TryGetValue(uri.Host, out var connectionString))
+                        {
+                            endpoint = new Endpoint(uri.Host, connectionString);
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
                 }
 
                 endpoint.Broker = BrokerFor(endpoint.BrokerUri);
 
                 _endpoints[endpoint.Uri] = endpoint;
+                _endpoints[endpoint.ToFullUri()] = endpoint;
 
                 return endpoint;
             }
@@ -63,12 +68,17 @@ namespace Jasper.RabbitMQ
             {
                 return broker;
             }
-            
+
             broker = new Broker(brokerUri);
             _brokers[brokerUri] = broker;
 
             return broker;
         }
+
+        /// <summary>
+        /// Designate a Uri to be the listener for incoming replies to this application
+        /// </summary>
+        public Uri ReplyUri { get; set; } = new Uri("rabbitmq://replies");
 
 
         public Dictionary<string, string> Connections { get; set; } = new Dictionary<string, string>();

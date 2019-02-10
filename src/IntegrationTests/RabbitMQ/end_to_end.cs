@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -10,8 +11,10 @@ using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Jasper.RabbitMQ;
+using Jasper.Util;
 using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,6 +73,60 @@ namespace IntegrationTests.RabbitMQ
 
 
         [Fact]
+        public void use_replies_config_automatically()
+        {
+            using (var runtime = JasperHost.For(x =>
+            {
+                x.Settings.Alter<RabbitMqSettings>(settings =>
+                {
+                    settings.Connections.Add("messages3", "host=localhost;queue=messages3");
+                    settings.Connections.Add("replies", "host=localhost;queue=replies");
+                });
+
+                x.Transports.ListenForMessagesFrom("rabbitmq://messages3");
+
+            }))
+            {
+                var transport = runtime.Get<ITransport[]>().OfType<RabbitMqTransport>().Single();
+
+                var uri = "rabbitmq://localhost:5672/direct/replies".ToUri();
+                transport.ReplyUri.ShouldBe(uri);
+
+                transport.Listeners.Any(x => x.Address == "rabbitmq://replies".ToUri()).ShouldBeTrue();
+            }
+        }
+
+
+        [Fact]
+        public void use_explicit_replies_if_it_exists()
+        {
+            using (var runtime = JasperHost.For(x =>
+            {
+                x.HttpRoutes.DisableConventionalDiscovery();
+
+                x.Settings.Alter<RabbitMqSettings>(settings =>
+                {
+                    settings.Connections.Add("messages3", "host=localhost;queue=messages3");
+                    settings.Connections.Add("replies", "host=localhost;queue=replies");
+                    settings.Connections.Add("replies2", "host=localhost;queue=replies2");
+
+                    settings.ReplyUri = "rabbitmq://replies2".ToUri();
+                });
+
+                x.Transports.ListenForMessagesFrom("rabbitmq://messages3");
+
+            }))
+            {
+                var transport = runtime.Get<ITransport[]>().OfType<RabbitMqTransport>().Single();
+
+                var uri = "rabbitmq://localhost:5672/direct/replies2".ToUri();
+                transport.ReplyUri.ShouldBe(uri);
+
+                transport.Listeners.Any(x => x.Address == new Uri("rabbitmq://replies2")).ShouldBeTrue();
+            }
+        }
+
+        [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_using_connection_string()
         {
             using (var runtime = JasperHost.For<RabbitMqUsingApp2>())
@@ -99,10 +156,12 @@ namespace IntegrationTests.RabbitMQ
 
                 _.Include<MartenBackedPersistence>();
 
-                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
+                _.Settings.ConfigureMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                });
             });
-
-            publisher.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
 
             var receiver = JasperHost.For(_ =>
             {
@@ -278,6 +337,7 @@ namespace IntegrationTests.RabbitMQ
             Settings.Alter<RabbitMqSettings>(settings =>
             {
                 settings.Connections.Add("messages3", "host=localhost;queue=messages3");
+                settings.Connections.Add("replies", "host=localhost;queue=replies");
             });
 
             Transports.ListenForMessagesFrom("rabbitmq://messages3");
