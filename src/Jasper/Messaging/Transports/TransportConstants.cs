@@ -5,6 +5,9 @@ namespace Jasper.Messaging.Transports
 {
     public static class TransportConstants
     {
+        public const string Topic = "topic";
+        public const string Queue = "queue";
+
         public const string SerializedEnvelope = "binary/envelope";
         public const string ScheduledEnvelope = "scheduled-envelope";
 

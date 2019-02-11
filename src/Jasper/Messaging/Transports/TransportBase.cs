@@ -43,12 +43,10 @@ namespace Jasper.Messaging.Transports
         {
             var batchedSender = createSender(uri, cancellation);
 
-            ISendingAgent agent;
-
-            if (uri.IsDurable())
-                agent = _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation);
-            else
-                agent = new LightweightSendingAgent(uri, batchedSender, logger, JasperOptions);
+            
+            var agent = uri.IsDurable() 
+                ? _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation) 
+                : new LightweightSendingAgent(uri, batchedSender, logger, JasperOptions);
 
             agent.DefaultReplyUri = ReplyUri;
             agent.Start();
