@@ -67,5 +67,6 @@ namespace MessagingTests
         {
             theScheduledEnvelope.ContentType.ShouldBe(TransportConstants.SerializedEnvelope);
         }
+
     }
 }

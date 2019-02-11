@@ -48,6 +48,10 @@ namespace Jasper
             UniqueNodeId = Guid.NewGuid().ToString().GetHashCode();
         }
 
+        /// <summary>
+        /// Latch any message publishing to local handlers through the loopback mechanisms. Default is false.
+        /// </summary>
+        public bool DisableLocalPublishing { get; set; } = false;
 
         [JsonIgnore] public int UniqueNodeId { get; }
 

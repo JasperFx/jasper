@@ -129,9 +129,7 @@ namespace Jasper.Messaging
 
         public void ApplyMessageTypeSpecificRules(Envelope envelope)
         {
-            if (envelope.Message == null)
-                throw new ArgumentOutOfRangeException(nameof(envelope),
-                    "Envelope.Message is required for this operation");
+            if (envelope.Message == null) return;
 
             var messageType = envelope.Message.GetType();
             if (!_messageRules.TryFind(messageType, out var rules))

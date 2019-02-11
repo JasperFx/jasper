@@ -5,6 +5,7 @@ using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 
@@ -48,25 +49,41 @@ namespace Jasper.Messaging.Runtime.Routing
 
         public MessageRoute RouteForDestination(Envelope envelope)
         {
-            var messageType = envelope.Message.GetType();
-            var routes = Route(messageType);
-
-            var candidate = routes.FirstOrDefault(x => x.MatchesEnvelope(envelope));
-            if (candidate != null) return candidate;
-
-
-            var modelWriter = _serializers.WriterFor(messageType);
-            var contentType = envelope.ContentType ??
-                              envelope.AcceptedContentTypes.Intersect(modelWriter.ContentTypes).FirstOrDefault()
-                              ?? "application/json";
-
-
             var channel = _subscribers.GetOrBuild(envelope.Destination);
-            return new MessageRoute(
-                messageType,
-                modelWriter,
-                channel,
-                contentType);
+
+
+            if (envelope.Message != null)
+            {
+                var messageType = envelope.Message.GetType();
+                var routes = Route(messageType);
+
+                var candidate = routes.FirstOrDefault(x => x.MatchesEnvelope(envelope));
+                if (candidate != null) return candidate;
+
+
+                var modelWriter = _serializers.WriterFor(messageType);
+                var contentType = envelope.ContentType ??
+                                  envelope.AcceptedContentTypes.Intersect(modelWriter.ContentTypes).FirstOrDefault()
+                                  ?? "application/json";
+
+                return new MessageRoute(
+                    messageType,
+                    modelWriter,
+                    channel,
+                    contentType);
+            }
+            else if (envelope.Data != null)
+            {
+                return new MessageRoute(envelope, channel);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(envelope), "Missing message");
+            }
+
+
+
+
         }
 
         public Envelope[] Route(Envelope envelope)
@@ -132,6 +149,8 @@ namespace Jasper.Messaging.Runtime.Routing
 
         private void applyLocalPublishingRules(Type messageType, List<MessageRoute> list)
         {
+            if (_settings.DisableLocalPublishing) return;
+
             if (_handlers.CanHandle(messageType) && _settings.LocalPublishing.Any(x => x.Matches(messageType)))
             {
                 var route = createLocalRoute(messageType);

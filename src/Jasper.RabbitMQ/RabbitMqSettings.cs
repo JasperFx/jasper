@@ -36,7 +36,7 @@ namespace Jasper.RabbitMQ
 
                 if (endpoint == null)
                 {
-                    if (uri.Segments.Length > 2)
+                    if (uri.Segments.Any(x => x != "/"))
                     {
                         endpoint = new Endpoint(uri);
                     }

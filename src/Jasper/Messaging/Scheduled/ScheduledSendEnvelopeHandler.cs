@@ -7,6 +7,11 @@ namespace Jasper.Messaging.Scheduled
 
     public class ScheduledSendEnvelopeHandler : MessageHandler
     {
+        public ScheduledSendEnvelopeHandler()
+        {
+            Chain = new HandlerChain(typeof(Envelope));
+        }
+
         public override Task Handle(IMessageContext context)
         {
             var scheduled = (Envelope)context.Envelope.Message;

@@ -385,6 +385,8 @@ namespace Jasper.Messaging.Runtime
 
         public Envelope ForScheduledSend(ISubscriber scheduleSendSubscriber)
         {
+            EnsureData();
+
             return new Envelope
             {
                 Message = this,
@@ -394,7 +396,8 @@ namespace Jasper.Messaging.Runtime
                 Destination = TransportConstants.DurableLoopbackUri,
                 Status = TransportConstants.Scheduled,
                 OwnerId = TransportConstants.AnyNode,
-                Subscriber = scheduleSendSubscriber
+                Subscriber = scheduleSendSubscriber,
+                Writer = EnvelopeReaderWriter.Instance
             };
         }
     }

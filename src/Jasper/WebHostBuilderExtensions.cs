@@ -206,9 +206,17 @@ namespace Jasper
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _registry.Messaging.Compiling;
+            try
+            {
+                await _registry.Messaging.Compiling;
 
-            _root.Activate(_registry.Messaging.LocalWorker, _registry.CodeGeneration, _container);
+                _root.Activate(_registry.Messaging.LocalWorker, _registry.CodeGeneration, _container);
+            }
+            catch (Exception e)
+            {
+                _root.Logger.LogException(e);
+                throw;
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

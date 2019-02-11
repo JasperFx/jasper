@@ -10,6 +10,7 @@ namespace Jasper.Messaging.Runtime.Routing
         public MessageRoute(Type messageType, Uri destination, string contentType)
         {
             if (destination == null) throw new ArgumentNullException(nameof(destination));
+            if (messageType == null) throw new ArgumentNullException(nameof(messageType));
 
             MessageType = messageType.ToMessageTypeName();
             DotNetType = messageType;
@@ -21,6 +22,14 @@ namespace Jasper.Messaging.Runtime.Routing
             : this(messageType, subscriber.Uri, contentType)
         {
             Writer = writer[contentType];
+            Subscriber = subscriber;
+        }
+
+        public MessageRoute(Envelope envelope, ISubscriber subscriber)
+        {
+            if (envelope.Destination == null) throw new ArgumentNullException(nameof(envelope.Destination));
+
+            MessageType = envelope.MessageType;
             Subscriber = subscriber;
         }
 
@@ -37,12 +46,14 @@ namespace Jasper.Messaging.Runtime.Routing
 
         public Envelope CloneForSending(Envelope envelope)
         {
-            if (envelope.Message == null)
+            if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message), "Envelope.Message cannot be null");
 
             var sending = envelope.Clone();
             sending.Id = CombGuidIdGeneration.NewGuid();
             sending.OriginalId = envelope.Id;
+
+            sending.Data = envelope.Data;
 
             sending.ReplyUri = envelope.ReplyUri ?? Subscriber.ReplyUri;
 

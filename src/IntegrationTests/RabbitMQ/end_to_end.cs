@@ -14,6 +14,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Jasper.RabbitMQ;
+using Jasper.Settings;
 using Jasper.Util;
 using Marten;
 using Microsoft.AspNetCore.Hosting;
@@ -62,25 +63,6 @@ namespace IntegrationTests.RabbitMQ
                 var watch = tracker.WaitFor<ColorChosen>();
 
                 await runtime.Messaging.Send(new ColorChosen {Name = "Red"});
-
-                await watch;
-
-                var colors = runtime.Get<ColorHistory>();
-
-                colors.Name.ShouldBe("Red");
-            }
-        }
-
-        [Fact]
-        public async Task send_scheduled_message_to_and_receive_through_rabbitmq()
-        {
-            using (var runtime = JasperHost.For<RabbitMqUsingApp>())
-            {
-                var tracker = runtime.Get<MessageTracker>();
-
-                var watch = tracker.WaitFor<ColorChosen>();
-
-                await runtime.Messaging.ScheduleSend(new ColorChosen {Name = "Red"}, 10.Seconds());
 
                 await watch;
 
@@ -210,6 +192,62 @@ namespace IntegrationTests.RabbitMQ
             }
         }
 
+
+        [Fact]
+        public async Task schedule_send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
+        {
+            var uri = "rabbitmq://localhost:5672/durable/messages2";
+
+            var publisher = JasperHost.For(_ =>
+            {
+                _.HttpRoutes.DisableConventionalDiscovery();
+
+                _.Publish.AllMessagesTo(uri);
+
+                _.Include<MartenBackedPersistence>();
+
+                _.Settings.ConfigureMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                });
+            });
+
+            publisher.RebuildMessageStorage();
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.HttpRoutes.DisableConventionalDiscovery();
+
+                _.Transports.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+                _.Services.AddSingleton<MessageTracker>();
+
+                _.Include<MartenBackedPersistence>();
+
+                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
+            });
+
+            receiver.RebuildMessageStorage();
+
+            var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
+
+            try
+            {
+                await publisher.Messaging.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds());
+
+                await wait;
+
+                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
+        }
+
+
         [Fact]
         public async Task use_fan_out_exchange()
         {
@@ -338,6 +376,8 @@ namespace IntegrationTests.RabbitMQ
     {
         public RabbitMqUsingApp()
         {
+            HttpRoutes.DisableConventionalDiscovery();
+
             Transports.ListenForMessagesFrom("rabbitmq://localhost:5672/messages3");
 
             Services.AddSingleton<ColorHistory>();

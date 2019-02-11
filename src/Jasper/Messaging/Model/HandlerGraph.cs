@@ -14,6 +14,7 @@ using Jasper.Util;
 using Lamar;
 using LamarCompiler;
 using LamarCompiler.Util;
+using Polly;
 
 namespace Jasper.Messaging.Model
 {
@@ -35,6 +36,8 @@ namespace Jasper.Messaging.Model
 
         public HandlerGraph()
         {
+            // All of this is to seed the handler and its associated retry policies
+            // for scheduling outgoing messages
             _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler());
         }
 

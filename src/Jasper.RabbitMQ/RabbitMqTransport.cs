@@ -43,6 +43,11 @@ namespace Jasper.RabbitMQ
         protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings)
         {
             var agent = _settings.ForEndpoint(uri);
+            if (agent == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(uri), $"Could not resolve a Rabbit MQ endpoint for the Uri '{uri}'");
+            }
+
             agent.Start();
             return agent.CreateListeningAgent(uri, settings, logger);
         }

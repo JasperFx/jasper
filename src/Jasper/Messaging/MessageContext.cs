@@ -55,7 +55,7 @@ namespace Jasper.Messaging
 
         public async Task<Guid> SendEnvelope(Envelope envelope)
         {
-            if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
+            if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
 
             var outgoing = _root.Router.Route(envelope);
             if (envelope.IsDelayed(DateTime.UtcNow))

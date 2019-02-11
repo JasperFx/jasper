@@ -13,6 +13,8 @@ namespace Jasper.Messaging.Scheduled
         public string MessageType { get; } = TransportConstants.ScheduledEnvelope;
         public Type DotNetType { get; } = typeof(Envelope);
         public string ContentType { get; } = TransportConstants.SerializedEnvelope;
+        public static IMessageSerializer Instance { get; } = new EnvelopeReaderWriter();
+
         public object ReadFromData(byte[] data)
         {
             return Envelope.Deserialize(data);
