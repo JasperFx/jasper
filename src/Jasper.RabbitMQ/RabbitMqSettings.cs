@@ -31,7 +31,7 @@ namespace Jasper.RabbitMQ
                 if (_endpoints.ContainsKey(uri)) return _endpoints[uri];
 
 
-                Endpoint endpoint = _endpoints.Values.FirstOrDefault(x => x.ToFullUri() == uri);
+                var endpoint = _endpoints.Values.FirstOrDefault(x => x.ToFullUri() == uri);
 
 
                 if (endpoint == null)

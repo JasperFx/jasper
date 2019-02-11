@@ -71,6 +71,25 @@ namespace IntegrationTests.RabbitMQ
             }
         }
 
+        [Fact]
+        public async Task send_scheduled_message_to_and_receive_through_rabbitmq()
+        {
+            using (var runtime = JasperHost.For<RabbitMqUsingApp>())
+            {
+                var tracker = runtime.Get<MessageTracker>();
+
+                var watch = tracker.WaitFor<ColorChosen>();
+
+                await runtime.Messaging.ScheduleSend(new ColorChosen {Name = "Red"}, 10.Seconds());
+
+                await watch;
+
+                var colors = runtime.Get<ColorHistory>();
+
+                colors.Name.ShouldBe("Red");
+            }
+        }
+
 
         [Fact]
         public void use_replies_config_automatically()
