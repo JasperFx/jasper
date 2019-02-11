@@ -12,22 +12,22 @@ namespace Jasper.RabbitMQ
     public class RabbitMqSender : ISender
     {
         private readonly PublicationAddress _address;
-        private readonly Endpoint _endpoint;
+        private readonly RabbitMqEndpoint _endpoint;
         private readonly CancellationToken _cancellation;
         private readonly ITransportLogger _logger;
-        private readonly IEnvelopeMapper _mapper;
+        private readonly IRabbitMqProtocol _protocol;
         private ISenderCallback _callback;
         private ActionBlock<Envelope> _sending;
         private ActionBlock<Envelope> _serialization;
 
-        public RabbitMqSender(ITransportLogger logger, Endpoint endpoint,
+        public RabbitMqSender(ITransportLogger logger, RabbitMqEndpoint endpoint,
             CancellationToken cancellation)
         {
-            _mapper = endpoint.EnvelopeMapping;
+            _protocol = endpoint.Protocol;
             _logger = logger;
             _endpoint = endpoint;
             _cancellation = cancellation;
-            Destination = endpoint.Uri;
+            Destination = endpoint.Uri.ToUri();
 
             _address = endpoint.PublicationAddress();
         }
@@ -39,7 +39,7 @@ namespace Jasper.RabbitMQ
 
         public void Start(ISenderCallback callback)
         {
-            _endpoint.Start();
+            _endpoint.Connect();
 
             _callback = callback;
 
@@ -105,7 +105,7 @@ namespace Jasper.RabbitMQ
 
                 var props = _endpoint.Channel.CreateBasicProperties();
 
-                _mapper.WriteFromEnvelope(envelope, props);
+                _protocol.WriteFromEnvelope(envelope, props);
                 props.AppId = "Jasper";
 
                 channel.BasicPublish(_address, props, envelope.Data);
@@ -124,7 +124,7 @@ namespace Jasper.RabbitMQ
                 var props = _endpoint.Channel.CreateBasicProperties();
                 props.Persistent = _endpoint.Durable;
 
-                _mapper.WriteFromEnvelope(envelope, props);
+                _protocol.WriteFromEnvelope(envelope, props);
 
                 _endpoint.Channel.BasicPublish(_address, props, envelope.Data);
 

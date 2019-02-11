@@ -108,10 +108,10 @@ namespace IntegrationTests.RabbitMQ
                 x.Settings.Alter<RabbitMqSettings>(settings =>
                 {
                     settings.Connections.Add("messages3", "host=localhost;queue=messages3");
-                    settings.Connections.Add("replies", "host=localhost;queue=replies");
-                    settings.Connections.Add("replies2", "host=localhost;queue=replies2");
+                    settings.Connections.Add("replies", "host=localhost");
+                    settings.Connections.Add("replies2", "host=localhost");
 
-                    settings.ReplyUri = "rabbitmq://replies2".ToUri();
+                    settings.ReplyUri = new TransportUri("rabbitmq://replies2/queue/replies2");
                 });
 
                 x.Transports.ListenForMessagesFrom("rabbitmq://messages3");

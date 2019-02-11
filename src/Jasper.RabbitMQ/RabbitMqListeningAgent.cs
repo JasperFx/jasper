@@ -9,15 +9,15 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMqListeningAgent : IListeningAgent
     {
-        private readonly Endpoint _agent;
+        private readonly RabbitMqEndpoint _agent;
         private readonly ITransportLogger _logger;
-        private readonly IEnvelopeMapper _mapper;
+        private readonly IRabbitMqProtocol _mapper;
         private readonly string _queue;
         private IReceiverCallback _callback;
         private MessageConsumer _consumer;
 
-        public RabbitMqListeningAgent(Uri address, ITransportLogger logger, IEnvelopeMapper mapper,
-            Endpoint agent)
+        public RabbitMqListeningAgent(Uri address, ITransportLogger logger, IRabbitMqProtocol mapper,
+            RabbitMqEndpoint agent)
         {
             _logger = logger;
             _mapper = mapper;
@@ -73,11 +73,11 @@ namespace Jasper.RabbitMQ
             private readonly IReceiverCallback _callback;
             private readonly IModel _channel;
             private readonly ITransportLogger _logger;
-            private readonly IEnvelopeMapper _mapper;
+            private readonly IRabbitMqProtocol _mapper;
             private bool _latched;
 
             public MessageConsumer(IReceiverCallback callback, ITransportLogger logger, IModel channel,
-                IEnvelopeMapper mapper, Uri address) : base(channel)
+                IRabbitMqProtocol mapper, Uri address) : base(channel)
             {
                 _callback = callback;
                 _logger = logger;

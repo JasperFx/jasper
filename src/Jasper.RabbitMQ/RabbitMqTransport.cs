@@ -8,48 +8,30 @@ using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMqTransport : TransportBase
+    public class RabbitMqTransport : ExternalTransportBase<RabbitMqSettings, RabbitMqEndpoint>
     {
         private readonly RabbitMqSettings _settings;
 
-        public RabbitMqTransport(RabbitMqSettings rabbitMqSettings, IDurableMessagingFactory factory,
-            ITransportLogger logger, JasperOptions options)
-            : base("rabbitmq", factory, logger, options)
+        public RabbitMqTransport(RabbitMqSettings settings, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions) : base("rabbitmq", settings, factory, logger, jasperOptions)
         {
-            _settings = rabbitMqSettings;
+            _settings = settings;
         }
 
-        protected override ISender createSender(Uri uri, CancellationToken cancellation)
+        protected override ISender buildSender(TransportUri transportUri, RabbitMqEndpoint endpoint, CancellationToken cancellation)
         {
-            var agent = _settings.ForEndpoint(uri);
-            agent.Start();
-            return agent.CreateSender(logger, cancellation);
+            endpoint.Connect();
+            return endpoint.CreateSender(logger, cancellation);
         }
 
-        protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
+        protected override IListeningAgent buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint, JasperOptions settings)
         {
-            var replies = _settings.ForEndpoint(_settings.ReplyUri);
-            if (replies != null)
+            if (endpoint == null)
             {
-                ReplyUri = replies.ToFullUri();
-                return incoming.Concat(new Uri[] {replies.Uri}).Distinct().ToArray();
+                throw new ArgumentOutOfRangeException(nameof(transportUri), $"Could not resolve a Rabbit MQ endpoint for the Uri '{transportUri}'");
             }
 
-
-
-            return incoming;
-        }
-
-        protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings)
-        {
-            var agent = _settings.ForEndpoint(uri);
-            if (agent == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(uri), $"Could not resolve a Rabbit MQ endpoint for the Uri '{uri}'");
-            }
-
-            agent.Start();
-            return agent.CreateListeningAgent(uri, settings, logger);
+            endpoint.Connect();
+            return endpoint.CreateListeningAgent(transportUri.ToUri(), settings, logger);
         }
     }
 }

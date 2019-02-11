@@ -11,13 +11,13 @@ using Xunit;
 
 namespace IntegrationTests.RabbitMQ
 {
-    public class DefaultEnvelopeMapperTests
+    public class DefaultRabbitMqProtocolTests
     {
-        public DefaultEnvelopeMapperTests()
+        public DefaultRabbitMqProtocolTests()
         {
             _mapped = new Lazy<Envelope>(() =>
             {
-                var mapper = new DefaultEnvelopeMapper();
+                var mapper = new DefaultRabbitMqProtocol();
                 mapper.WriteFromEnvelope(theOriginal, theEventArgs.BasicProperties);
 
                 return mapper.ReadEnvelope(theEventArgs.Body, theEventArgs.BasicProperties);
@@ -161,7 +161,7 @@ namespace IntegrationTests.RabbitMQ
                 {
                     Headers = new Dictionary<string, object>()
                 };
-                new DefaultEnvelopeMapper().WriteFromEnvelope(theEnvelope, props);
+                new DefaultRabbitMqProtocol().WriteFromEnvelope(theEnvelope, props);
 
                 return props;
             });

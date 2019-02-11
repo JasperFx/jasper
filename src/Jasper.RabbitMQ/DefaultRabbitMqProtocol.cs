@@ -4,7 +4,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
 {
-    public class DefaultEnvelopeMapper : IEnvelopeMapper
+    public class DefaultRabbitMqProtocol : IRabbitMqProtocol
     {
         public virtual Envelope ReadEnvelope(byte[] data, IBasicProperties props)
         {

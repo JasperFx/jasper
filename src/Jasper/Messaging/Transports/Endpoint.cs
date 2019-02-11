@@ -2,14 +2,14 @@ using System;
 
 namespace Jasper.Messaging.Transports
 {
-    public abstract class Endpoint<TProtocol>
+    public abstract class Endpoint<TProtocol> : IDisposable
     {
+        public TransportUri Uri { get; }
         private TProtocol _protocol;
-        public string Name { get; }
 
-        public Endpoint(string name, TProtocol defaultProtocol)
+        public Endpoint(TransportUri uri, TProtocol defaultProtocol)
         {
-            Name = name;
+            Uri = uri;
             _protocol = defaultProtocol;
         }
 
@@ -22,5 +22,7 @@ namespace Jasper.Messaging.Transports
                 _protocol = value;
             }
         }
+
+        public abstract void Dispose();
     }
 }

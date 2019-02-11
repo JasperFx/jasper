@@ -14,20 +14,9 @@ namespace Jasper.RabbitMQ
                 throw new ArgumentOutOfRangeException(nameof(uri), "The protocol must be 'rabbitmq'");
             Uri = uri;
 
-            ConnectionFactory.Port = uri.IsDefaultPort ? 5672 : uri.Port;
-            ConnectionFactory.HostName = uri.Host;
+
         }
 
-        public IConnection OpenConnection()
-        {
-            return AmqpTcpEndpoints.Any()
-                ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
-                : ConnectionFactory.CreateConnection();
-        }
-
-        public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
-
-        public IList<AmqpTcpEndpoint> AmqpTcpEndpoints { get; } = new List<AmqpTcpEndpoint>();
 
         public Uri Uri { get; }
 

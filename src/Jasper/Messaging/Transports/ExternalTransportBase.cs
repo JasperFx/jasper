@@ -20,8 +20,8 @@ namespace Jasper.Messaging.Transports
         protected sealed override ISender createSender(Uri uri, CancellationToken cancellation)
         {
             var transportUri = new TransportUri(uri);
-            var endpoint = _settings.For(transportUri.ConnectionName);
-            
+            var endpoint = _settings.For(transportUri);
+
             if (endpoint == null) throw new ArgumentOutOfRangeException(nameof(uri), $"Unknown {Protocol} connection named '{transportUri.ConnectionName}'");
 
 
@@ -30,12 +30,12 @@ namespace Jasper.Messaging.Transports
 
         protected abstract ISender buildSender(TransportUri transportUri, TEndpoint endpoint,
             CancellationToken cancellation);
-        
+
         protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings)
         {
             var transportUri = new TransportUri(uri);
-            var endpoint = _settings.For(transportUri.ConnectionName);
-            
+            var endpoint = _settings.For(transportUri);
+
             if (endpoint == null) throw new ArgumentOutOfRangeException(nameof(uri), $"Unknown {Protocol} connection named '{transportUri.ConnectionName}'");
 
             return buildListeningAgent(transportUri, endpoint, settings);
@@ -45,7 +45,9 @@ namespace Jasper.Messaging.Transports
 
         protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
         {
-            var replies = _settings.For(ReplyUri.Host);
+            if (ReplyUri == null) return incoming;
+
+            var replies = _settings.For(new TransportUri(ReplyUri));
             if (replies != null)
             {
                 return incoming.Concat(new Uri[] {ReplyUri}).Distinct().ToArray();

@@ -37,21 +37,22 @@ namespace IntegrationTests.RabbitMQ
             Settings.Alter<RabbitMqSettings>(settings =>
             {
                 // Retrieve the Jasper "agent" by the full Uri:
-                var endpoint = settings.ForEndpoint("rabbitmq://server1/queue1");
+                settings.ConfigureEndpoint("rabbitmq://connection1/queue/queue1", endpoint =>
+                {
+                    // Customize the underlying ConnectionFactory for security mechanisms,
+                    // timeouts, and many other settings
+                    endpoint.ConnectionFactory.ContinuationTimeout = TimeSpan.FromSeconds(5);
 
-                // Customize the underlying ConnectionFactory for security mechanisms,
-                // timeouts, and many other settings
-                endpoint.Broker.ConnectionFactory.ContinuationTimeout = TimeSpan.FromSeconds(5);
 
-
-                // Customize or change how Jasper maps Envelopes to and from
-                // the RabbitMQ properties
-                endpoint.EnvelopeMapping = new CustomEnvelopeMapping();
+                    // Customize or change how Jasper maps Envelopes to and from
+                    // the RabbitMQ properties
+                    endpoint.Protocol = new CustomRabbitMqProtocol();
+                });
             });
         }
     }
 
-    public class CustomEnvelopeMapping : DefaultEnvelopeMapper
+    public class CustomRabbitMqProtocol : DefaultRabbitMqProtocol
     {
         public override Envelope ReadEnvelope(byte[] data, IBasicProperties props)
         {
