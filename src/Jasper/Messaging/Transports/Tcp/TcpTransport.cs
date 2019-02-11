@@ -10,8 +10,8 @@ namespace Jasper.Messaging.Transports.Tcp
 {
     public class TcpTransport : TransportBase
     {
-        public TcpTransport(IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions settings) :
-            base("tcp", factory, logger, settings)
+        public TcpTransport(IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions options) :
+            base("tcp", factory, logger, options)
         {
         }
 

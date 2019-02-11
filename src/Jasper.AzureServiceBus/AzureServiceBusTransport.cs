@@ -12,8 +12,8 @@ namespace Jasper.AzureServiceBus
         private readonly AzureServiceBusSettings _asbSettings;
         private readonly IEnvelopeMapper _mapper;
 
-        public AzureServiceBusTransport(IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions settings, AzureServiceBusSettings asbSettings, IEnvelopeMapper mapper)
-            : base("azureservicebus", factory, logger, settings)
+        public AzureServiceBusTransport(IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions options, AzureServiceBusSettings asbSettings, IEnvelopeMapper mapper)
+            : base("azureservicebus", factory, logger, options)
         {
             _asbSettings = asbSettings;
             _mapper = mapper;

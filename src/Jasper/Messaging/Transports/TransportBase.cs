@@ -20,11 +20,11 @@ namespace Jasper.Messaging.Transports
         private ListeningStatus _status = ListeningStatus.Accepting;
 
         public TransportBase(string protocol, IDurableMessagingFactory factory, ITransportLogger logger,
-            JasperOptions settings)
+            JasperOptions options)
         {
             _durableMessagingFactory = factory;
             this.logger = logger;
-            JasperOptions = settings;
+            JasperOptions = options;
             Protocol = protocol;
         }
 
