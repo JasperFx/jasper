@@ -50,7 +50,7 @@ namespace Jasper.Messaging.Runtime
 
         public Envelope RebuildEnvelope()
         {
-            return Envelope.Read(RawData);
+            return Envelope.Deserialize(RawData);
         }
     }
 }

@@ -70,6 +70,8 @@ namespace Jasper.Messaging.Transports.Stub
         {
         }
 
+        public bool SupportsNativeScheduledSend { get; } = false;
+
         public int QueuedCount { get; } = 0;
     }
 }

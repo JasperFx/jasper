@@ -12,6 +12,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Sagas;
+using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util.Lamar;
@@ -37,6 +38,9 @@ namespace Jasper.Configuration
 
             For<IMessageLogger>().Use<MessageLogger>().Singleton();
             For<ITransportLogger>().Use<TransportLogger>().Singleton();
+
+            For<IMessageSerializer>().Use<EnvelopeReaderWriter>();
+            For<IMessageDeserializer>().Use<EnvelopeReaderWriter>();
 
 
             this.AddSingleton(parent.CodeGeneration);

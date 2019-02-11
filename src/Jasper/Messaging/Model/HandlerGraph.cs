@@ -6,7 +6,9 @@ using Baseline;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging.ErrorHandling;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
+using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Lamar;
@@ -30,6 +32,11 @@ namespace Jasper.Messaging.Model
         private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
 
         private bool _hasGrouped;
+
+        public HandlerGraph()
+        {
+            _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler());
+        }
 
         /// <summary>
         ///     Policies and routing for local message handling

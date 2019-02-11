@@ -18,7 +18,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 while (await reader.ReadAsync())
                 {
                     var bytes = await reader.GetFieldValueAsync<byte[]>(0);
-                    var envelope = Envelope.Read(bytes);
+                    var envelope = Envelope.Deserialize(bytes);
 
                     list.Add(envelope);
                 }
@@ -37,7 +37,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 while (reader.Read())
                 {
                     var bytes = reader.GetFieldValue<byte[]>(0);
-                    var envelope = Envelope.Read(bytes);
+                    var envelope = Envelope.Deserialize(bytes);
                     envelope.Status = reader.GetFieldValue<string>(1);
                     envelope.OwnerId = reader.GetFieldValue<int>(2);
 

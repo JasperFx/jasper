@@ -5,6 +5,9 @@ namespace Jasper.Messaging.Transports
 {
     public static class TransportConstants
     {
+        public const string SerializedEnvelope = "binary/envelope";
+        public const string ScheduledEnvelope = "scheduled-envelope";
+
         public const string Durable = "durable";
         public static readonly string Loopback = "loopback";
 

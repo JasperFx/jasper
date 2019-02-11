@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 
 namespace Jasper.Messaging.Runtime
 {
+    [MessageIdentity("envelope")]
     public partial class Envelope
     {
         private DateTimeOffset? _deliverBy;
@@ -379,6 +380,18 @@ namespace Jasper.Messaging.Runtime
         internal string GetMessageTypeName()
         {
             return Message?.GetType().Name ?? MessageType;
+        }
+
+        public Envelope ForScheduledSend()
+        {
+            return new Envelope
+            {
+                Message = this,
+                MessageType = TransportConstants.ScheduledEnvelope,
+                ExecutionTime = ExecutionTime,
+                ContentType = TransportConstants.SerializedEnvelope,
+                Destination = TransportConstants.ScheduledUri
+            };
         }
     }
 }

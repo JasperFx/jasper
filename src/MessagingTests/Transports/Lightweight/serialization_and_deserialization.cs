@@ -42,7 +42,7 @@ namespace MessagingTests.Transports.Lightweight
                 if (_incoming == null)
                 {
                     var messageBytes = outgoing.Serialize();
-                    _incoming = Envelope.Read(messageBytes);
+                    _incoming = Envelope.Deserialize(messageBytes);
                 }
 
                 return _incoming;

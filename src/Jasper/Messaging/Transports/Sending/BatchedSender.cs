@@ -130,6 +130,8 @@ namespace Jasper.Messaging.Transports.Sending
             return _protocol.SendBatch(_callback, batch);
         }
 
+        public bool SupportsNativeScheduledSend { get; } = true;
+
         public Task Enqueue(Envelope message)
         {
             if (_batching == null) throw new InvalidOperationException("This agent has not been started");

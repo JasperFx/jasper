@@ -68,6 +68,8 @@ namespace StorytellerSpecs.Fixtures
             return Task.CompletedTask;
         }
 
+        public bool SupportsNativeScheduledSend { get; } = true;
+
         public override void SetUp()
         {
             _latched = false;

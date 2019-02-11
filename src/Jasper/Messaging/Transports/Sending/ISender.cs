@@ -23,5 +23,7 @@ namespace Jasper.Messaging.Transports.Sending
         /// </summary>
         /// <returns></returns>
         Task Ping();
+
+        bool SupportsNativeScheduledSend { get; }
     }
 }

@@ -23,7 +23,7 @@ namespace Jasper.Messaging.Runtime
             }
         }
 
-        public static Envelope Read(byte[] buffer)
+        public static Envelope Deserialize(byte[] buffer)
         {
             using (var ms = new MemoryStream(buffer))
             using (var br = new BinaryReader(ms))

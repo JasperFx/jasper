@@ -106,6 +106,8 @@ namespace Jasper.AzureServiceBus
             return _sender.SendAsync(message);
         }
 
+        public bool SupportsNativeScheduledSend { get; } = true;
+
         private async Task send(Envelope envelope)
         {
             try

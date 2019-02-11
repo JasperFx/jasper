@@ -81,5 +81,7 @@ namespace MessagingTests.Transports.Sending
 
             return Task.CompletedTask;
         }
+
+        public bool SupportsNativeScheduledSend { get; } = true;
     }
 }

@@ -112,6 +112,8 @@ namespace Jasper.RabbitMQ
             });
         }
 
+        public bool SupportsNativeScheduledSend { get; } = false;
+
         private async Task send(Envelope envelope)
         {
             if (_endpoint.State == AgentState.Disconnected)
