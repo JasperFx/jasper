@@ -50,7 +50,7 @@ namespace Jasper.Messaging.Runtime.Routing
 
             sending.Writer = Writer;
             sending.Destination = Destination;
-            sending.Route = this;
+            sending.Subscriber = Subscriber;
 
             return sending;
         }

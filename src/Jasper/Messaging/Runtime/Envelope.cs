@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime.Routing;
+using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
@@ -188,7 +189,7 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public int OwnerId { get; set; } = 0;
 
-        internal MessageRoute Route { get; set; }
+        internal ISubscriber Subscriber { get; set; }
 
         /// <summary>
         ///     Used by IMessageContext.Invoke<T> to denote the response type
@@ -357,23 +358,23 @@ namespace Jasper.Messaging.Runtime
         {
             if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
 
-            if (Route == null) throw new InvalidOperationException("This envelope has not been routed");
+            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
 
             _enqueued = true;
 
 
-            return Route.Subscriber.Send(this);
+            return Subscriber.Send(this);
         }
 
         internal Task QuickSend()
         {
             if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
 
-            if (Route == null) throw new InvalidOperationException("This envelope has not been routed");
+            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
 
             _enqueued = true;
 
-            return Route.Subscriber.QuickSend(this);
+            return Subscriber.QuickSend(this);
         }
 
 
@@ -382,7 +383,7 @@ namespace Jasper.Messaging.Runtime
             return Message?.GetType().Name ?? MessageType;
         }
 
-        public Envelope ForScheduledSend()
+        public Envelope ForScheduledSend(ISubscriber scheduleSendSubscriber)
         {
             return new Envelope
             {
@@ -390,7 +391,10 @@ namespace Jasper.Messaging.Runtime
                 MessageType = TransportConstants.ScheduledEnvelope,
                 ExecutionTime = ExecutionTime,
                 ContentType = TransportConstants.SerializedEnvelope,
-                Destination = TransportConstants.ScheduledUri
+                Destination = TransportConstants.DurableLoopbackUri,
+                Status = TransportConstants.Scheduled,
+                OwnerId = TransportConstants.AnyNode,
+                Subscriber = scheduleSendSubscriber
             };
         }
     }

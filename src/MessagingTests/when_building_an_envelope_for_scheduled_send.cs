@@ -1,7 +1,9 @@
 using System;
+using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -11,6 +13,7 @@ namespace MessagingTests
     {
         private Envelope theOriginal;
         private Envelope theScheduledEnvelope;
+        private ISubscriber theSubscriber;
 
         public when_building_an_envelope_for_scheduled_send()
         {
@@ -18,7 +21,9 @@ namespace MessagingTests
             theOriginal.ExecutionTime = DateTime.UtcNow.Date.AddDays(2);
             theOriginal.Destination = "tcp://server3:2345".ToUri();
 
-            theScheduledEnvelope = theOriginal.ForScheduledSend();
+            theSubscriber = Substitute.For<ISubscriber>();
+
+            theScheduledEnvelope = theOriginal.ForScheduledSend(theSubscriber);
         }
 
         [Fact]
@@ -36,7 +41,19 @@ namespace MessagingTests
         [Fact]
         public void destination_is_scheduled_queue()
         {
-            theScheduledEnvelope.Destination.ShouldBe(TransportConstants.ScheduledUri);
+            theScheduledEnvelope.Destination.ShouldBe(TransportConstants.DurableLoopbackUri);
+        }
+
+        [Fact]
+        public void status_should_be_scheduled()
+        {
+            theScheduledEnvelope.Status.ShouldBe(TransportConstants.Scheduled);
+        }
+
+        [Fact]
+        public void owner_should_be_any_node()
+        {
+            theScheduledEnvelope.OwnerId.ShouldBe(TransportConstants.AnyNode);
         }
 
         [Fact]

@@ -38,16 +38,14 @@ namespace MessagingTests
 
             var props = typeof(Envelope).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
             var prop = props
-                .FirstOrDefault(x => x.PropertyType == typeof(MessageRoute));
+                .FirstOrDefault(x => x.PropertyType == typeof(ISubscriber));
 
             foreach (var env in outgoing)
             {
-                var route = new MessageRoute(typeof(Message1), env?.Destination ?? destinations.First().ToUri(),
-                    "application/json");
-                route.Subscriber = Substitute.For<ISubscriber>();
-                route.Subscriber.IsDurable.Returns(true);
+                var subscriber = Substitute.For<ISubscriber>();
+                subscriber.IsDurable.Returns(true);
 
-                prop.SetValue(env, route);
+                prop.SetValue(env, subscriber);
             }
 
             if (envelope == null)

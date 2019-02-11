@@ -71,5 +71,7 @@ namespace Jasper.Messaging
             _logger = logger;
             _agent = agent;
         }
+
+        public bool SupportsNativeScheduledSend => _agent.SupportsNativeScheduledSend;
     }
 }

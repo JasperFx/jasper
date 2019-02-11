@@ -8,6 +8,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Routing;
+using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
 
@@ -57,7 +58,25 @@ namespace Jasper.Messaging
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
             var outgoing = _root.Router.Route(envelope);
-            foreach (var env in outgoing) _root.ApplyMessageTypeSpecificRules(env);
+            if (envelope.IsDelayed(DateTime.UtcNow))
+            {
+                for (int i = 0; i < outgoing.Length; i++)
+                {
+                    _root.ApplyMessageTypeSpecificRules(outgoing[i]);
+
+                    if (!outgoing[i].Subscriber.SupportsNativeScheduledSend)
+                    {
+                        outgoing[i] = outgoing[i].ForScheduledSend(new ScheduleSendSubscriber(this));
+                    }
+                }
+            }
+            else
+            {
+                foreach (var env in outgoing) _root.ApplyMessageTypeSpecificRules(env);
+            }
+
+
+
 
             trackEnvelopeCorrelation(outgoing);
 
@@ -212,9 +231,14 @@ namespace Jasper.Messaging
             envelope.Status = TransportConstants.Scheduled;
             envelope.OwnerId = TransportConstants.AnyNode;
 
+            return ScheduleEnvelope(envelope).ContinueWith(_ => envelope.Id);
+        }
+
+        internal Task ScheduleEnvelope(Envelope envelope)
+        {
             return EnlistedInTransaction
-                ? Transaction.ScheduleJob(envelope).ContinueWith(_ => envelope.Id)
-                : Factory.ScheduleJob(envelope).ContinueWith(_ => envelope.Id);
+                ? Transaction.ScheduleJob(envelope)
+                : Factory.ScheduleJob(envelope);
         }
 
         public Task<Guid> Schedule<T>(T message, TimeSpan delay)
@@ -350,10 +374,7 @@ namespace Jasper.Messaging
                 Destination = Envelope.ReplyUri,
                 SagaId = Envelope.SagaId,
                 Message = new Acknowledgement {CorrelationId = Envelope.Id},
-                Route = new MessageRoute(typeof(Acknowledgement), Envelope.ReplyUri, "application/json")
-                {
-                    Subscriber = _root.Subscribers.GetOrBuild(Envelope.ReplyUri)
-                },
+                Subscriber = _root.Subscribers.GetOrBuild(Envelope.ReplyUri),
                 Writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement))
             };
 
@@ -364,7 +385,7 @@ namespace Jasper.Messaging
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(x => x.Route.Subscriber.IsDurable).ToArray());
+                await Transaction.Persist(outgoing.Where(x => x.Subscriber.IsDurable).ToArray());
 
                 _outstanding.AddRange(outgoing);
             }

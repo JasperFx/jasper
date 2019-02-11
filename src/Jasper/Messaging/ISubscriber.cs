@@ -15,6 +15,7 @@ namespace Jasper.Messaging
 
         int QueuedCount { get; }
         string[] ContentTypes { get; set; }
+        bool SupportsNativeScheduledSend { get; }
 
         bool ShouldSendMessage(Type messageType);
 
