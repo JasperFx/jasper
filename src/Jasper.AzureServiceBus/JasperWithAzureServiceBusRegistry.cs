@@ -3,6 +3,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace Jasper.AzureServiceBus
 {
+    /// <summary>
+    /// Can be used as a recipe for integrating Azure Service Bus with Jasper through
+    /// application configuration
+    /// </summary>
     public abstract class JasperWithAzureServiceBusRegistry : JasperRegistry
     {
         public JasperWithAzureServiceBusRegistry()
