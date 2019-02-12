@@ -24,7 +24,6 @@ namespace Jasper.AzureServiceBus.Internal
                 ? new QueueClient(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.TokenProvider, endpoint.TransportType, endpoint.ReceiveMode, endpoint.RetryPolicy)
                 : new QueueClient(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.ReceiveMode, endpoint.RetryPolicy);
 
-
             _protocol = endpoint.Protocol;
             Address = endpoint.Uri.ToUri();
         }

@@ -13,7 +13,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\IntegrationTests\IntegrationTests.csproj" />
       <ProjectReference Include="..\Jasper.AzureServiceBus\Jasper.AzureServiceBus.csproj" />
+      <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
       <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
 
     </ItemGroup>
