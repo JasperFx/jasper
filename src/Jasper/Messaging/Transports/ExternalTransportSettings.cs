@@ -87,7 +87,6 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        // TODO -- use the service name if you can?
         public TransportUri ReplyUri { get; set; }
     }
 }
