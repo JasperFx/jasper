@@ -103,6 +103,8 @@ namespace Jasper.AzureServiceBus.Internal
         {
             var envelope = Envelope.ForPing(Destination);
             var message = _protocol.WriteFromEnvelope(envelope);
+            message.SessionId = Guid.NewGuid().ToString();
+
             return _sender.SendAsync(message);
         }
 
@@ -113,6 +115,7 @@ namespace Jasper.AzureServiceBus.Internal
             try
             {
                 var message = _protocol.WriteFromEnvelope(envelope);
+                message.SessionId = Guid.NewGuid().ToString();
 
                 if (envelope.IsDelayed(DateTime.UtcNow))
                 {

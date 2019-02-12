@@ -21,7 +21,7 @@ namespace Jasper.AzureServiceBus.Tests
     public class end_to_end
     {
         // TODO -- make this puppy be pulled from an environment variable? Something ignored?
-        public const string ConnectionString = "Endpoint=sb://jaspertest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=/SnqkkF1Vx0n8GjbzWFmPHeW5vmxCP8dJ7OSZrR9g4k=";
+        public const string ConnectionString = "Endpoint=sb://jaspertest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tYfuj6uX/L2kolyKi+dc7Jztu45vHVp4wf3W+YBoXHc=";
 
 
         [Fact]
@@ -121,7 +121,7 @@ namespace Jasper.AzureServiceBus.Tests
         }
 
         [Fact]
-        public async Task schedule_send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
+        public async Task schedule_send_message_to_and_receive_through_asb_with_durable_transport_option()
         {
             var uri = "azureservicebus://jasper/durable/queue/messages";
 

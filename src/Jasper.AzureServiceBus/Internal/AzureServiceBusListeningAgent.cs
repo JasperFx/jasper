@@ -40,7 +40,6 @@ namespace Jasper.AzureServiceBus.Internal
         public void Start(IReceiverCallback callback)
         {
             _callback = callback;
-
             var options = new SessionHandlerOptions(handleException);
 
             _client.RegisterSessionHandler(handleMessage, options);
