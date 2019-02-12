@@ -101,5 +101,36 @@ namespace Jasper.Messaging.Transports
         {
             return new TransportUri(Protocol, connectionName, Durable, QueueName, TopicName);
         }
+
+        protected bool Equals(TransportUri other)
+        {
+            return string.Equals(Protocol, other.Protocol) && string.Equals(TopicName, other.TopicName) && string.Equals(QueueName, other.QueueName) && string.Equals(ConnectionName, other.ConnectionName) && Durable == other.Durable;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TransportUri) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Protocol != null ? Protocol.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (TopicName != null ? TopicName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (QueueName != null ? QueueName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ConnectionName != null ? ConnectionName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ Durable.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Protocol)}: {Protocol}, {nameof(TopicName)}: {TopicName}, {nameof(QueueName)}: {QueueName}, {nameof(ConnectionName)}: {ConnectionName}, {nameof(Durable)}: {Durable}";
+        }
     }
 }
