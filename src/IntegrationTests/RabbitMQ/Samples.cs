@@ -2,6 +2,7 @@
 using Jasper;
 using Jasper.Messaging.Runtime;
 using Jasper.RabbitMQ;
+using Jasper.RabbitMQ.Internal;
 using RabbitMQ.Client;
 
 namespace IntegrationTests.RabbitMQ

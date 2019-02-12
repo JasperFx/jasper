@@ -45,11 +45,12 @@ namespace Jasper.Messaging.Transports
 
         protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
         {
-            if (ReplyUri == null) return incoming;
+            if (_settings.ReplyUri == null) return incoming;
 
-            var replies = _settings.For(new TransportUri(ReplyUri));
+            var replies = _settings.For(_settings.ReplyUri);
             if (replies != null)
             {
+                ReplyUri = _settings.ReplyUri.ToUri();
                 return incoming.Concat(new Uri[] {ReplyUri}).Distinct().ToArray();
             }
 

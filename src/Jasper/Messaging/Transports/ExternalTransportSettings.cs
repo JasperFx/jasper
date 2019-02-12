@@ -14,16 +14,32 @@ namespace Jasper.Messaging.Transports
 
         protected abstract TEndpoint buildEndpoint(TransportUri uri, string connectionString);
 
+        /// <summary>
+        /// Configure a specific endpoint
+        /// </summary>
+        /// <param name="uriString"></param>
+        /// <param name="alteration"></param>
         public void ConfigureEndpoint(string uriString, Action<TEndpoint> alteration)
         {
             ConfigureEndpoint(new TransportUri(uriString), alteration);
         }
-        
+
+        /// <summary>
+        /// Configure a specific endpoint
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="alteration"></param>
         public void ConfigureEndpoint(Uri uri, Action<TEndpoint> alteration)
         {
             ConfigureEndpoint(new TransportUri(uri), alteration);
         }
 
+        /// <summary>
+        /// Configure a specific endpoint
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="alteration"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public void ConfigureEndpoint(TransportUri uri, Action<TEndpoint> alteration)
         {
             var endpoint = For(uri);
@@ -32,11 +48,21 @@ namespace Jasper.Messaging.Transports
             alteration(endpoint);
         }
 
+        /// <summary>
+        /// Try to resolve the endpoint for the given Uri
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public TEndpoint For(string uri)
         {
             return For(new TransportUri(uri));
         }
 
+        /// <summary>
+        /// Try to resolve the endpoint for the given TransportUri
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public TEndpoint For(TransportUri uri)
         {
             if (_endpoints.TryFind(uri, out var endpoint))

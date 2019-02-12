@@ -7,7 +7,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using RabbitMQ.Client;
 
-namespace Jasper.RabbitMQ
+namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqSender : ISender
     {
@@ -27,7 +27,7 @@ namespace Jasper.RabbitMQ
             _logger = logger;
             _endpoint = endpoint;
             _cancellation = cancellation;
-            Destination = endpoint.Uri.ToUri();
+            Destination = endpoint.TransportUri.ToUri();
 
             _address = endpoint.PublicationAddress();
         }
@@ -122,7 +122,7 @@ namespace Jasper.RabbitMQ
             try
             {
                 var props = _endpoint.Channel.CreateBasicProperties();
-                props.Persistent = _endpoint.Durable;
+                props.Persistent = _endpoint.TransportUri.Durable;
 
                 _protocol.WriteFromEnvelope(envelope, props);
 

@@ -14,6 +14,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Jasper.RabbitMQ;
+using Jasper.RabbitMQ.Internal;
 using Jasper.Settings;
 using Jasper.Util;
 using Marten;
@@ -73,29 +74,6 @@ namespace IntegrationTests.RabbitMQ
         }
 
 
-        [Fact]
-        public void use_replies_config_automatically()
-        {
-            using (var runtime = JasperHost.For(x =>
-            {
-                x.Settings.Alter<RabbitMqSettings>(settings =>
-                {
-                    settings.Connections.Add("messages3", "host=localhost;queue=messages3");
-                    settings.Connections.Add("replies", "host=localhost;queue=replies");
-                });
-
-                x.Transports.ListenForMessagesFrom("rabbitmq://messages3");
-
-            }))
-            {
-                var transport = runtime.Get<ITransport[]>().OfType<RabbitMqTransport>().Single();
-
-                var uri = "rabbitmq://localhost:5672/direct/replies".ToUri();
-                transport.ReplyUri.ShouldBe(uri);
-
-                transport.Listeners.Any(x => x.Address == "rabbitmq://replies".ToUri()).ShouldBeTrue();
-            }
-        }
 
 
         [Fact]
@@ -107,23 +85,23 @@ namespace IntegrationTests.RabbitMQ
 
                 x.Settings.Alter<RabbitMqSettings>(settings =>
                 {
-                    settings.Connections.Add("messages3", "host=localhost;queue=messages3");
+                    settings.Connections.Add("messages3", "host=localhost");
                     settings.Connections.Add("replies", "host=localhost");
                     settings.Connections.Add("replies2", "host=localhost");
 
                     settings.ReplyUri = new TransportUri("rabbitmq://replies2/queue/replies2");
                 });
 
-                x.Transports.ListenForMessagesFrom("rabbitmq://messages3");
+                x.Transports.ListenForMessagesFrom("rabbitmq://messages3/queue/messages3");
 
             }))
             {
                 var transport = runtime.Get<ITransport[]>().OfType<RabbitMqTransport>().Single();
 
-                var uri = "rabbitmq://localhost:5672/direct/replies2".ToUri();
+                var uri = "rabbitmq://replies2/queue/replies2".ToUri();
                 transport.ReplyUri.ShouldBe(uri);
 
-                transport.Listeners.Any(x => x.Address == new Uri("rabbitmq://replies2")).ShouldBeTrue();
+                transport.Listeners.Any(x => x.Address == new Uri("rabbitmq://replies2/queue/replies2")).ShouldBeTrue();
             }
         }
 
@@ -149,10 +127,11 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
-            var uri = "rabbitmq://localhost:5672/durable/messages2";
+            var uri = "rabbitmq://localhost/durable/queue/messages2";
 
             var publisher = JasperHost.For(_ =>
             {
+                _.Settings.AddRabbitMqHost("localhost");
                 _.Publish.AllMessagesTo(uri);
 
                 _.Include<MartenBackedPersistence>();
@@ -166,6 +145,8 @@ namespace IntegrationTests.RabbitMQ
 
             var receiver = JasperHost.For(_ =>
             {
+                _.Settings.AddRabbitMqHost("localhost");
+
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
@@ -196,10 +177,12 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task schedule_send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
-            var uri = "rabbitmq://localhost:5672/durable/messages2";
+            var uri = "rabbitmq://localhost:5672/durable/queue/messages2";
 
             var publisher = JasperHost.For(_ =>
             {
+                _.Settings.AddRabbitMqHost("localhost");
+
                 _.HttpRoutes.DisableConventionalDiscovery();
 
                 _.Publish.AllMessagesTo(uri);
@@ -217,6 +200,8 @@ namespace IntegrationTests.RabbitMQ
 
             var receiver = JasperHost.For(_ =>
             {
+                _.Settings.AddRabbitMqHost("localhost");
+
                 _.HttpRoutes.DisableConventionalDiscovery();
 
                 _.Transports.ListenForMessagesFrom(uri);
@@ -251,15 +236,25 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task use_fan_out_exchange()
         {
-            var uri = "rabbitmq://localhost:5672/fanout/north/messages";
+            var uri = "rabbitmq://localhost/queue/messages";
 
             var publisher = JasperHost.For(_ =>
             {
+                _.Settings.ConfigureRabbitMq(settings =>
+                {
+                    settings.Connections.Add("localhost", "host=localhost;ExchangeType=fanout;ExchangeName=north");
+                });
+
                 _.Publish.AllMessagesTo(uri);
             });
 
             var receiver1 = JasperHost.For(_ =>
             {
+                _.Settings.ConfigureRabbitMq(settings =>
+                {
+                    settings.Connections.Add("localhost", "host=localhost;ExchangeType=fanout;ExchangeName=north");
+                });
+
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
@@ -267,6 +262,11 @@ namespace IntegrationTests.RabbitMQ
 
             var receiver2 = JasperHost.For(_ =>
             {
+                _.Settings.ConfigureRabbitMq(settings =>
+                {
+                    settings.Connections.Add("localhost", "host=localhost;ExchangeType=fanout;ExchangeName=north");
+                });
+
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
@@ -274,6 +274,11 @@ namespace IntegrationTests.RabbitMQ
 
             var receiver3 = JasperHost.For(_ =>
             {
+                _.Settings.ConfigureRabbitMq(settings =>
+                {
+                    settings.Connections.Add("localhost", "host=localhost;ExchangeType=fanout;ExchangeName=north");
+                });
+
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
@@ -376,14 +381,16 @@ namespace IntegrationTests.RabbitMQ
     {
         public RabbitMqUsingApp()
         {
+            Settings.AddRabbitMqHost("localhost");
+
             HttpRoutes.DisableConventionalDiscovery();
 
-            Transports.ListenForMessagesFrom("rabbitmq://localhost:5672/messages3");
+            Transports.ListenForMessagesFrom("rabbitmq://localhost/queue/messages3");
 
             Services.AddSingleton<ColorHistory>();
             Services.AddSingleton<MessageTracker>();
 
-            Publish.AllMessagesTo("rabbitmq://localhost:5672/messages3");
+            Publish.AllMessagesTo("rabbitmq://localhost/queue/messages3");
 
             Include<MessageTrackingExtension>();
         }
@@ -393,18 +400,20 @@ namespace IntegrationTests.RabbitMQ
     {
         public RabbitMqUsingApp2()
         {
+            Settings.AddRabbitMqHost("localhost");
+
             Settings.Alter<RabbitMqSettings>(settings =>
             {
-                settings.Connections.Add("messages3", "host=localhost;queue=messages3");
-                settings.Connections.Add("replies", "host=localhost;queue=replies");
+                settings.Connections.Add("messages3", "host=localhost");
+                settings.Connections.Add("replies", "host=localhost");
             });
 
-            Transports.ListenForMessagesFrom("rabbitmq://messages3");
+            Transports.ListenForMessagesFrom("rabbitmq://messages3/queue/messages3");
 
             Services.AddSingleton<ColorHistory>();
             Services.AddSingleton<MessageTracker>();
 
-            Publish.AllMessagesTo("rabbitmq://messages3");
+            Publish.AllMessagesTo("rabbitmq://messages3/queue/messages3");
 
             Include<MessageTrackingExtension>();
         }

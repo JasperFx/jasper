@@ -5,7 +5,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using RabbitMQ.Client;
 
-namespace Jasper.RabbitMQ
+namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqListeningAgent : IListeningAgent
     {
@@ -23,7 +23,7 @@ namespace Jasper.RabbitMQ
             _mapper = mapper;
             _agent = agent;
             Address = address;
-            _queue = agent.Queue;
+            _queue = agent.TransportUri.QueueName;
         }
 
         public void Dispose()

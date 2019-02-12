@@ -8,25 +8,12 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
+using Jasper.RabbitMQ.Internal;
 using Jasper.Util;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
 {
-    public enum AgentState
-    {
-        Connected,
-        Disconnected
-    }
-
-    public enum ExchangeType
-    {
-        Direct,
-        Fanout,
-        Topic,
-        Headers
-    }
-
     public class RabbitMqEndpoint : Endpoint<IRabbitMqProtocol>
     {
         private readonly object _locker = new object();
@@ -38,9 +25,11 @@ namespace Jasper.RabbitMQ
             if (uri.Protocol != "rabbitmq")
                 throw new ArgumentOutOfRangeException(nameof(uri), "The protocol must be 'rabbitmq'");
 
-            Uri = uri;
+            Port = 5672;
 
-            var parts = connectionString.ToDelimitedArray(';');
+            TransportUri = uri;
+
+            var parts = connectionString.Trim(';').ToDelimitedArray(';');
             foreach (var part in parts)
             {
                 var keyValues = part.Split('=');
@@ -65,10 +54,6 @@ namespace Jasper.RabbitMQ
                 {
                     ExchangeType = (ExchangeType) Enum.Parse(typeof(ExchangeType), value, true);
                 }
-                else if (key.EqualsIgnoreCase(nameof(Durable)))
-                {
-                    Durable = bool.Parse(value);
-                }
                 else if (key.EqualsIgnoreCase(nameof(Topic)))
                 {
                     Topic = value;
@@ -81,7 +66,7 @@ namespace Jasper.RabbitMQ
 
             }
 
-            if (Uri.QueueName.IsEmpty())
+            if (TransportUri.QueueName.IsEmpty())
             {
                 throw new ArgumentOutOfRangeException(nameof(connectionString), "Queue is required, but not specified");
             }
@@ -93,31 +78,45 @@ namespace Jasper.RabbitMQ
 
         }
 
-        public IConnection OpenConnection()
-        {
-            return AmqpTcpEndpoints.Any()
-                ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
-                : ConnectionFactory.CreateConnection();
-        }
-
+        /// <summary>
+        /// Configure how the connection to Rabbit MQ will be created, including authentication information
+        /// </summary>
         public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
 
+        /// <summary>
+        /// Override the server and port bindings of any opened connections
+        /// </summary>
         public IList<AmqpTcpEndpoint> AmqpTcpEndpoints { get; } = new List<AmqpTcpEndpoint>();
 
 
 
-        public TransportUri Uri { get; }
+        /// <summary>
+        /// Information about the configured Rabbit MQ endpoint
+        /// </summary>
+        public TransportUri TransportUri { get; }
 
+        /// <summary>
+        /// The Rabbit MQ exchange name, maybe be null or empty
+        /// </summary>
         public string ExchangeName { get; } = string.Empty;
-        public ExchangeType ExchangeType { get; } = ExchangeType.Direct;
-        public string Queue { get; }
 
+        /// <summary>
+        /// The type of exchange this endpoint will try to bind to
+        /// </summary>
+        public ExchangeType ExchangeType { get; } = ExchangeType.Direct;
+
+        /// <summary>
+        /// ConnectionFactory.HostName
+        /// </summary>
         public string Host
         {
             get => ConnectionFactory.HostName;
             private set => ConnectionFactory.HostName = value;
         }
 
+        /// <summary>
+        /// ConnectionFactory.Port
+        /// </summary>
         public int Port
         {
             get => ConnectionFactory.Port;
@@ -125,16 +124,14 @@ namespace Jasper.RabbitMQ
         }
         public string Topic { get; } = null;
 
-        public bool Durable { get; }
 
-        public Broker Broker { get; internal set; }
 
-        public AgentState State { get; private set; } = AgentState.Disconnected;
+        internal AgentState State { get; private set; } = AgentState.Disconnected;
 
         internal IModel Channel { get; private set; }
 
 
-        public void Connect()
+        internal void Connect()
         {
             lock (_locker)
             {
@@ -148,30 +145,32 @@ namespace Jasper.RabbitMQ
 
         private void startNewConnection()
         {
-            _connection = OpenConnection();
+            _connection = AmqpTcpEndpoints.Any()
+                ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
+                : ConnectionFactory.CreateConnection();
 
 
 
             var channel = _connection.CreateModel();
-            channel.CreateBasicProperties().Persistent = Durable;
+            channel.CreateBasicProperties().Persistent = TransportUri.Durable;
 
             if (ExchangeName.IsNotEmpty())
             {
-                channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), Durable);
-                channel.QueueDeclare(Queue, Durable, autoDelete: false, exclusive: false);
+                channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), TransportUri.Durable);
+                channel.QueueDeclare(TransportUri.QueueName, TransportUri.Durable, autoDelete: false, exclusive: false);
 
                 // TODO -- routingKey is required for direct and topic
-                channel.QueueBind(Queue, ExchangeName, "");
+                channel.QueueBind(TransportUri.QueueName, ExchangeName, "");
             }
             else
             {
-                channel.QueueDeclare(Queue, Durable, autoDelete: false, exclusive: false);
+                channel.QueueDeclare(TransportUri.QueueName, TransportUri.Durable, autoDelete: false, exclusive: false);
             }
 
             Channel = channel;
         }
 
-        public void Stop()
+        internal void Stop()
         {
             lock (_locker)
             {
@@ -199,22 +198,22 @@ namespace Jasper.RabbitMQ
             Stop();
         }
 
-        public ISender CreateSender(ITransportLogger logger, CancellationToken cancellation)
+        internal ISender CreateSender(ITransportLogger logger, CancellationToken cancellation)
         {
             return new RabbitMqSender(logger, this, cancellation);
         }
 
-        public IListeningAgent CreateListeningAgent(Uri uri, JasperOptions options, ITransportLogger logger)
+        internal IListeningAgent CreateListeningAgent(Uri uri, JasperOptions options, ITransportLogger logger)
         {
             return new RabbitMqListeningAgent(uri, logger, Protocol, this);
         }
 
-        public PublicationAddress PublicationAddress()
+        internal PublicationAddress PublicationAddress()
         {
-            return new PublicationAddress(ExchangeType.ToString(), ExchangeName, Queue);
+            return new PublicationAddress(ExchangeType.ToString(), ExchangeName, TransportUri.QueueName);
         }
 
-        public Task Ping(Action<IModel> action)
+        internal Task Ping(Action<IModel> action)
         {
             lock (_locker)
             {

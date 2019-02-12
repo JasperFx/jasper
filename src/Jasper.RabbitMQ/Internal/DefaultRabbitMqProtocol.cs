@@ -2,7 +2,7 @@
 using Jasper.Messaging.Runtime;
 using RabbitMQ.Client;
 
-namespace Jasper.RabbitMQ
+namespace Jasper.RabbitMQ.Internal
 {
     public class DefaultRabbitMqProtocol : IRabbitMqProtocol
     {

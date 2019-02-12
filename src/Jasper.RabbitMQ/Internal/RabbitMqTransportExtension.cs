@@ -1,12 +1,12 @@
 ﻿using Jasper;
 using Jasper.Configuration;
 using Jasper.Messaging.Transports;
-using Jasper.RabbitMQ;
+using Jasper.RabbitMQ.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: JasperModule(typeof(RabbitMqTransportExtension))]
 
-namespace Jasper.RabbitMQ
+namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqTransportExtension : IJasperExtension
     {
