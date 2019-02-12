@@ -20,8 +20,11 @@ namespace Jasper.AzureServiceBus.Internal
         {
             _logger = logger;
 
-            // TODO -- need to configure everything possible here on the Endpoint
-            _client = new QueueClient(endpoint.ConnectionString, endpoint.Uri.QueueName);
+            _client = endpoint.TokenProvider != null
+                ? new QueueClient(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.TokenProvider, endpoint.TransportType, endpoint.ReceiveMode, endpoint.RetryPolicy)
+                : new QueueClient(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.ReceiveMode, endpoint.RetryPolicy);
+
+
             _protocol = endpoint.Protocol;
             Address = endpoint.Uri.ToUri();
         }

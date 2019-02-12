@@ -1,5 +1,7 @@
 using Jasper.AzureServiceBus.Internal;
 using Jasper.Messaging.Transports;
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Primitives;
 
 namespace Jasper.AzureServiceBus
 {
@@ -16,5 +18,13 @@ namespace Jasper.AzureServiceBus
         }
 
         public string ConnectionString { get; }
+
+        public RetryPolicy RetryPolicy { get; set; } = Microsoft.Azure.ServiceBus.RetryPolicy.Default;
+
+        public TransportType TransportType { get; set; } = TransportType.Amqp;
+
+        public ITokenProvider TokenProvider { get; set; }
+
+        public ReceiveMode ReceiveMode { get; set; } = ReceiveMode.PeekLock;
     }
 }

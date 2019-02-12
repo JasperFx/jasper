@@ -5,6 +5,7 @@ using System.Threading.Tasks.Dataflow;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Core;
 
 namespace Jasper.AzureServiceBus.Internal
@@ -28,9 +29,11 @@ namespace Jasper.AzureServiceBus.Internal
             Destination = endpoint.Uri.ToUri();
 
 
-            // TODO -- let's research this a bit. Expose RetryPolicy on the Endpoint too
-            // ITokenProvider?
-            _sender = new MessageSender(endpoint.ConnectionString, endpoint.Uri.QueueName);
+            // TODO -- let's research this a bit. topics will be different
+            _sender = endpoint.TokenProvider != null
+                ? new MessageSender(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.TokenProvider,
+                    endpoint.TransportType, endpoint.RetryPolicy)
+                : new MessageSender(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.RetryPolicy);
         }
 
         public void Dispose()
@@ -110,7 +113,15 @@ namespace Jasper.AzureServiceBus.Internal
             try
             {
                 var message = _protocol.WriteFromEnvelope(envelope);
-                await _sender.SendAsync(message);
+
+                if (envelope.IsDelayed(DateTime.UtcNow))
+                {
+                    await _sender.ScheduleMessageAsync(message, envelope.ExecutionTime.Value);
+                }
+                else
+                {
+                    await _sender.SendAsync(message);
+                }
 
                 await _callback.Successful(envelope);
             }
