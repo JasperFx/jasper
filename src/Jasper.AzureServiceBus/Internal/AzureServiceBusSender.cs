@@ -5,34 +5,32 @@ using System.Threading.Tasks.Dataflow;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
-using Jasper.Util;
-using Microsoft.Azure.Amqp.Framing;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Core;
 
-namespace Jasper.AzureServiceBus
+namespace Jasper.AzureServiceBus.Internal
 {
     public class AzureServiceBusSender : ISender
     {
-        private readonly IEnvelopeMapper _mapper;
+        private readonly IAzureServiceBusProtocol _protocol;
         private readonly ITransportLogger _logger;
         private readonly CancellationToken _cancellation;
-        private IMessageSender _sender;
+        private readonly IMessageSender _sender;
         private ActionBlock<Envelope> _sending;
         private ActionBlock<Envelope> _serialization;
         private ISenderCallback _callback;
-        private readonly AzureServiceBusSettings _settings;
-        private readonly bool _isDurable;
 
-        public AzureServiceBusSender(Uri destination, IEnvelopeMapper mapper, AzureServiceBusSettings settings, ITransportLogger logger, CancellationToken cancellation)
+        public AzureServiceBusSender(AzureServiceBusEndpoint endpoint, ITransportLogger logger,
+            CancellationToken cancellation)
         {
-            _mapper = mapper;
+            _protocol = endpoint.Protocol;
             _logger = logger;
             _cancellation = cancellation;
-            Destination = destination;
-            _settings = settings;
+            Destination = endpoint.Uri.ToUri();
 
-            _isDurable = destination.IsDurable();
+
+            // TODO -- let's research this a bit. Expose RetryPolicy on the Endpoint too
+            // ITokenProvider?
+            _sender = new MessageSender(endpoint.ConnectionString, endpoint.Uri.QueueName);
         }
 
         public void Dispose()
@@ -47,7 +45,6 @@ namespace Jasper.AzureServiceBus
 
         public void Start(ISenderCallback callback)
         {
-            _sender = _settings.BuildSender(Destination);
             _callback = callback;
 
             _serialization = new ActionBlock<Envelope>(e =>
@@ -102,7 +99,7 @@ namespace Jasper.AzureServiceBus
         public Task Ping()
         {
             var envelope = Envelope.ForPing(Destination);
-            var message = _mapper.WriteFromEnvelope(envelope);
+            var message = _protocol.WriteFromEnvelope(envelope);
             return _sender.SendAsync(message);
         }
 
@@ -112,7 +109,7 @@ namespace Jasper.AzureServiceBus
         {
             try
             {
-                var message = _mapper.WriteFromEnvelope(envelope);
+                var message = _protocol.WriteFromEnvelope(envelope);
                 await _sender.SendAsync(message);
 
                 await _callback.Successful(envelope);

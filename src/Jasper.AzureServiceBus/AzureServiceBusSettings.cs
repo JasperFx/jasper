@@ -1,24 +1,17 @@
 using System;
+using System.Collections.Generic;
+using Jasper.Messaging.Transports;
 using Jasper.Util;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Core;
 
 namespace Jasper.AzureServiceBus
 {
-    public class AzureServiceBusSettings
+    public class AzureServiceBusSettings : ExternalTransportSettings<AzureServiceBusEndpoint>
     {
-        public string ConnectionString { get; set; }
-
-        public IQueueClient BuildClient(Uri uri)
+        protected override AzureServiceBusEndpoint buildEndpoint(TransportUri uri, string connectionString)
         {
-            var queueName = uri.QueueName();
-            return new QueueClient(ConnectionString, queueName);
-        }
-
-        public IMessageSender BuildSender(Uri destination)
-        {
-            var queueName = destination.QueueName();
-            return new MessageSender(ConnectionString, queueName);
+            return new AzureServiceBusEndpoint(uri, connectionString);
         }
     }
 }

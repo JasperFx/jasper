@@ -3,9 +3,9 @@ using Baseline;
 using Jasper.Messaging.Runtime;
 using Microsoft.Azure.ServiceBus;
 
-namespace Jasper.AzureServiceBus
+namespace Jasper.AzureServiceBus.Internal
 {
-    public class DefaultEnvelopeMapper : IEnvelopeMapper
+    public class DefaultAzureServiceBusProtocol : IAzureServiceBusProtocol
     {
         public Message WriteFromEnvelope(Envelope envelope)
         {

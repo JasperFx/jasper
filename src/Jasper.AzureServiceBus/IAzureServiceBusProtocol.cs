@@ -3,7 +3,7 @@ using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus
 {
-    public interface IEnvelopeMapper
+    public interface IAzureServiceBusProtocol
     {
         Message WriteFromEnvelope(Envelope envelope);
         Envelope ReadEnvelope(Message message);

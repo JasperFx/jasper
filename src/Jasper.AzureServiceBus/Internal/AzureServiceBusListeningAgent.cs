@@ -7,22 +7,25 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using Microsoft.Azure.ServiceBus;
 
-namespace Jasper.AzureServiceBus
+namespace Jasper.AzureServiceBus.Internal
 {
     public class AzureServiceBusListeningAgent : IListeningAgent
     {
-        private readonly IEnvelopeMapper _mapper;
+        private readonly IAzureServiceBusProtocol _protocol;
         private readonly ITransportLogger _logger;
         private readonly IQueueClient _client;
         private IReceiverCallback _callback;
 
-        public AzureServiceBusListeningAgent(AzureServiceBusSettings settings, IEnvelopeMapper mapper, Uri address, ITransportLogger logger)
+        public AzureServiceBusListeningAgent(AzureServiceBusEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
         {
-            _mapper = mapper;
             _logger = logger;
-            Address = address;
-            _client = settings.BuildClient(address);
+
+            // TODO -- need to configure everything possible here on the Endpoint
+            _client = new QueueClient(endpoint.ConnectionString, endpoint.Uri.QueueName);
+            _protocol = endpoint.Protocol;
+            Address = endpoint.Uri.ToUri();
         }
+
 
         public void Dispose()
         {
@@ -55,7 +58,7 @@ namespace Jasper.AzureServiceBus
 
             try
             {
-                envelope = _mapper.ReadEnvelope(message);
+                envelope = _protocol.ReadEnvelope(message);
             }
             catch (Exception e)
             {

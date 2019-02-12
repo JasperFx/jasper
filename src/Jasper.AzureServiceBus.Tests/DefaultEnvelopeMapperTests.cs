@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Baseline.Dates;
+using Jasper.AzureServiceBus.Internal;
 using Jasper.Messaging.Runtime;
 using Jasper.Util;
 using Microsoft.Azure.ServiceBus;
@@ -16,7 +17,7 @@ namespace Jasper.AzureServiceBus.Tests
         {
             _mapped = new Lazy<Envelope>(() =>
             {
-                var mapper = new DefaultEnvelopeMapper();
+                var mapper = new DefaultAzureServiceBusProtocol();
                 var message = mapper.WriteFromEnvelope(theOriginal);
 
                 return mapper.ReadEnvelope(message);
@@ -153,7 +154,7 @@ namespace Jasper.AzureServiceBus.Tests
         {
             _properties = new Lazy<Message>(() =>
             {
-                return new DefaultEnvelopeMapper().WriteFromEnvelope(theEnvelope);
+                return new DefaultAzureServiceBusProtocol().WriteFromEnvelope(theEnvelope);
 
             });
         }
