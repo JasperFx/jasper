@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
+using Jasper.Util;
 using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus.Internal
@@ -14,27 +18,36 @@ namespace Jasper.AzureServiceBus.Internal
     {
         private readonly IAzureServiceBusProtocol _protocol;
         private readonly AzureServiceBusEndpoint _endpoint;
+        private readonly HandlerGraph _handlers;
         private readonly ITransportLogger _logger;
         private readonly CancellationToken _cancellation;
         private IReceiverCallback _callback;
-        private IClientEntity _listeningClient;
 
-        public AzureServiceBusListeningAgent(AzureServiceBusEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
+        private readonly IList<IClientEntity> _clientEntities = new List<IClientEntity>();
+
+
+        public AzureServiceBusListeningAgent(AzureServiceBusEndpoint endpoint, HandlerGraph handlers,
+            ITransportLogger logger, CancellationToken cancellation)
         {
             _endpoint = endpoint;
+            _handlers = handlers;
             _logger = logger;
             _cancellation = cancellation;
 
 
             _protocol = endpoint.Protocol;
             Address = endpoint.Uri.ToUri();
-
         }
 
 
         public void Dispose()
         {
-            _listeningClient.CloseAsync().GetAwaiter().GetResult();
+            foreach (var entity in _clientEntities)
+            {
+                entity.CloseAsync().GetAwaiter().GetResult();
+            }
+
+
         }
 
         public Uri Address { get; }
@@ -53,36 +66,45 @@ namespace Jasper.AzureServiceBus.Internal
             var retryPolicy = _endpoint.RetryPolicy;
             var receiveMode = _endpoint.ReceiveMode;
             var transportType = _endpoint.TransportType;
+            var topicName = _endpoint.Uri.TopicName;
 
-            if (_endpoint.Uri.TopicName.IsEmpty())
+            if (topicName.IsEmpty())
             {
-
-
                 var client = tokenProvider != null
                     ? new QueueClient(connectionString, queueName, tokenProvider, transportType, receiveMode, retryPolicy)
                     : new QueueClient(connectionString, queueName, receiveMode, retryPolicy);
 
                 client.RegisterSessionHandler(handleMessage, options);
 
-                _listeningClient = client;
+                _clientEntities.Add(client);
             }
             else if (_endpoint.Uri.IsMessageSpecificTopic())
             {
+                var topicNames = _handlers.Chains.Select(x => x.MessageType.ToMessageTypeName().ToLower());
+                foreach (var name in topicNames)
+                {
+                    var client = tokenProvider != null
+                        ? new SubscriptionClient(connectionString, name, subscriptionName, tokenProvider,
+                            transportType, receiveMode, retryPolicy)
+                        : new SubscriptionClient(connectionString, name, subscriptionName,
+                            receiveMode, retryPolicy);
 
-                throw new NotImplementedException();
+                    client.RegisterSessionHandler(handleMessage, options);
 
+                    _clientEntities.Add(client);
+                }
             }
             else
             {
                 var client = tokenProvider != null
-                    ? new SubscriptionClient(connectionString, _endpoint.Uri.TopicName, subscriptionName, tokenProvider,
+                    ? new SubscriptionClient(connectionString, topicName, subscriptionName, tokenProvider,
                         transportType, receiveMode, retryPolicy)
-                    : new SubscriptionClient(connectionString, _endpoint.Uri.TopicName, subscriptionName,
+                    : new SubscriptionClient(connectionString, topicName, subscriptionName,
                         receiveMode, retryPolicy);
 
                 client.RegisterSessionHandler(handleMessage, options);
 
-                _listeningClient = client;
+                _clientEntities.Add(client);
             }
 
 

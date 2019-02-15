@@ -1,5 +1,6 @@
 using System.Threading;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
@@ -21,10 +22,11 @@ namespace Jasper.AzureServiceBus.Internal
             return new AzureServiceBusSender(endpoint, logger, cancellation);
         }
 
-        protected override IListeningAgent buildListeningAgent(TransportUri transportUri, AzureServiceBusEndpoint endpoint,
-            JasperOptions settings)
+        protected override IListeningAgent buildListeningAgent(TransportUri transportUri,
+            AzureServiceBusEndpoint endpoint,
+            JasperOptions settings, HandlerGraph handlers)
         {
-            return new AzureServiceBusListeningAgent(endpoint, logger, settings.Cancellation);
+            return new AzureServiceBusListeningAgent(endpoint, handlers, logger, settings.Cancellation);
         }
     }
 }

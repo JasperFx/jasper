@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Baseline;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
@@ -43,9 +44,9 @@ namespace Jasper.Messaging.Transports
         {
             var batchedSender = createSender(uri, cancellation);
 
-            
-            var agent = uri.IsDurable() 
-                ? _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation) 
+
+            var agent = uri.IsDurable()
+                ? _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation)
                 : new LightweightSendingAgent(uri, batchedSender, logger, JasperOptions);
 
             agent.DefaultReplyUri = ReplyUri;
@@ -68,7 +69,7 @@ namespace Jasper.Messaging.Transports
 
             foreach (var uri in incoming)
             {
-                var agent = buildListeningAgent(uri, settings);
+                var agent = buildListeningAgent(uri, settings, root.Handlers);
                 agent.Status = _status;
 
                 var listener = uri.IsDurable()
@@ -108,6 +109,6 @@ namespace Jasper.Messaging.Transports
         protected abstract ISender createSender(Uri uri, CancellationToken cancellation);
 
         protected abstract Uri[] validateAndChooseReplyChannel(Uri[] incoming);
-        protected abstract IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings);
+        protected abstract IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings, HandlerGraph handlers);
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 
@@ -31,7 +32,7 @@ namespace Jasper.Messaging.Transports.Tcp
         }
 
 
-        protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings)
+        protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings, HandlerGraph handlers)
         {
             // check the uri for an ip address to bind to
             if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)

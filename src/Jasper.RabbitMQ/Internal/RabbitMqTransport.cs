@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
@@ -19,7 +20,8 @@ namespace Jasper.RabbitMQ.Internal
             return endpoint.CreateSender(logger, cancellation);
         }
 
-        protected override IListeningAgent buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint, JasperOptions settings)
+        protected override IListeningAgent buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint,
+            JasperOptions settings, HandlerGraph handlers)
         {
             if (endpoint == null)
             {

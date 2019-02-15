@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 
@@ -31,17 +32,18 @@ namespace Jasper.Messaging.Transports
         protected abstract ISender buildSender(TransportUri transportUri, TEndpoint endpoint,
             CancellationToken cancellation);
 
-        protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings)
+        protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings, HandlerGraph handlers)
         {
             var transportUri = new TransportUri(uri);
             var endpoint = _settings.For(transportUri);
 
             if (endpoint == null) throw new ArgumentOutOfRangeException(nameof(uri), $"Unknown {Protocol} connection named '{transportUri.ConnectionName}'");
 
-            return buildListeningAgent(transportUri, endpoint, settings);
+            return buildListeningAgent(transportUri, endpoint, settings, handlers);
         }
 
-        protected abstract IListeningAgent buildListeningAgent(TransportUri transportUri, TEndpoint endpoint, JasperOptions settings);
+        protected abstract IListeningAgent buildListeningAgent(TransportUri transportUri, TEndpoint endpoint,
+            JasperOptions settings, HandlerGraph handlers);
 
         protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
         {

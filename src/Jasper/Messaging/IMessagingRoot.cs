@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Routing;
@@ -27,6 +28,7 @@ namespace Jasper.Messaging
         IDurableMessagingFactory Factory { get; }
         ITransport[] Transports { get; }
         ListeningStatus ListeningStatus { get; set; }
+        HandlerGraph Handlers { get; }
 
         IMessageContext NewContext();
         IMessageContext ContextFor(Envelope envelope);

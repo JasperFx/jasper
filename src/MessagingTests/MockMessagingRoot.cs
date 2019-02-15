@@ -3,6 +3,7 @@ using Jasper;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Routing;
@@ -68,5 +69,7 @@ namespace MessagingTests
         {
             return new MessageContext(this, envelope);
         }
+
+        public HandlerGraph Handlers { get; } = new HandlerGraph();
     }
 }

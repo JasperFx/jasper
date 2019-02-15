@@ -35,7 +35,7 @@ namespace MessagingTests
         {
             var uri = new TransportUri(protocol, connectionName, durable, queueName:queue, topicName:topic);
 
-            uri.ToUri().ShouldBe(uri.ToUri());
+            uri.ToUri().ShouldBe(uriString.ToUri());
         }
 
         [Fact]

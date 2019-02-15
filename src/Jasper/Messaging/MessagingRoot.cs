@@ -21,7 +21,6 @@ namespace Jasper.Messaging
 {
     public class MessagingRoot : IDisposable, IMessagingRoot
     {
-        private readonly HandlerGraph _handlers;
         private readonly ITransportLogger _transportLogger;
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
@@ -37,7 +36,7 @@ namespace Jasper.Messaging
             ITransportLogger transportLogger)
         {
             Settings = settings;
-            _handlers = handlers;
+            Handlers = handlers;
             _transportLogger = transportLogger;
             Factory = factory;
             Subscribers = subscribers;
@@ -112,10 +111,10 @@ namespace Jasper.Messaging
             JasperGenerationRules generation, IContainer container)
         {
 
-            _handlers.Compile(generation, container);
+            Handlers.Compile(generation, container);
 
 
-            _handlers.Workers.Compile(_handlers.Chains.Select(x => x.MessageType));
+            Handlers.Workers.Compile(Handlers.Chains.Select(x => x.MessageType));
 
 
             localWorker.Start(this);
@@ -125,6 +124,8 @@ namespace Jasper.Messaging
                 ((SubscriberGraph) Subscribers).Start(this);
             }
         }
+
+        public HandlerGraph Handlers { get; }
 
 
         public void ApplyMessageTypeSpecificRules(Envelope envelope)
@@ -143,7 +144,7 @@ namespace Jasper.Messaging
 
         public bool ShouldBeDurable(Type messageType)
         {
-            return _handlers.Workers.ShouldBeDurable(messageType);
+            return Handlers.Workers.ShouldBeDurable(messageType);
         }
 
         private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
