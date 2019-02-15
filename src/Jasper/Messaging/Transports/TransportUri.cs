@@ -7,6 +7,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Transports
 {
+
     public class TransportUri
     {
         public TransportUri(Uri uri)
@@ -28,6 +29,8 @@ namespace Jasper.Messaging.Transports
             }
 
         }
+
+        public bool IsMessageSpecificTopic() => TopicName == "*";
 
         private void readSegments(Queue<string> segments, Uri uri)
         {
@@ -51,6 +54,10 @@ namespace Jasper.Messaging.Transports
                     QueueName = value;
                     break;
 
+                case TransportConstants.Subscription:
+                    SubscriptionName = value;
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(uri),
                         $"Invalid Transport Uri 'uri'. Unable to read queue and/or topic");
@@ -61,18 +68,21 @@ namespace Jasper.Messaging.Transports
         {
         }
 
-        public TransportUri(string protocol, string connectionName, bool durable, string queueName = null, string topicName = null)
+        public TransportUri(string protocol, string connectionName, bool durable, string queueName = null, string topicName = null, string subscriptionName = null)
         {
             Protocol = protocol;
             TopicName = topicName;
             QueueName = queueName;
             ConnectionName = connectionName;
             Durable = durable;
+            SubscriptionName = subscriptionName;
         }
 
         public string Protocol { get; }
         public string TopicName { get; private set; }
         public string QueueName { get; private set; }
+
+        public string SubscriptionName { get; private set; }
         public string ConnectionName { get; }
         public bool Durable { get; }
 
@@ -94,6 +104,11 @@ namespace Jasper.Messaging.Transports
                 uriString += $"/topic/{TopicName}";
             }
 
+            if (SubscriptionName.IsNotEmpty())
+            {
+                uriString += $"/subscription/{SubscriptionName}";
+            }
+
             return new Uri(uriString);
         }
 
@@ -104,7 +119,7 @@ namespace Jasper.Messaging.Transports
 
         protected bool Equals(TransportUri other)
         {
-            return string.Equals(Protocol, other.Protocol) && string.Equals(TopicName, other.TopicName) && string.Equals(QueueName, other.QueueName) && string.Equals(ConnectionName, other.ConnectionName) && Durable == other.Durable;
+            return string.Equals(Protocol, other.Protocol) && string.Equals(TopicName, other.TopicName) && string.Equals(QueueName, other.QueueName) && string.Equals(SubscriptionName, other.SubscriptionName) && string.Equals(ConnectionName, other.ConnectionName) && Durable == other.Durable;
         }
 
         public override bool Equals(object obj)
@@ -122,15 +137,11 @@ namespace Jasper.Messaging.Transports
                 var hashCode = (Protocol != null ? Protocol.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (TopicName != null ? TopicName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (QueueName != null ? QueueName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (SubscriptionName != null ? SubscriptionName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ConnectionName != null ? ConnectionName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ Durable.GetHashCode();
                 return hashCode;
             }
-        }
-
-        public override string ToString()
-        {
-            return $"{nameof(Protocol)}: {Protocol}, {nameof(TopicName)}: {TopicName}, {nameof(QueueName)}: {QueueName}, {nameof(ConnectionName)}: {ConnectionName}, {nameof(Durable)}: {Durable}";
         }
     }
 }

@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Baseline;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
@@ -12,10 +15,15 @@ namespace Jasper.AzureServiceBus.Internal
 {
     public class AzureServiceBusSender : ISender
     {
+        private readonly object _locker = new object();
+        private readonly ConcurrentDictionary<string, ISenderClient> _senders
+            = new ConcurrentDictionary<string, ISenderClient>();
+
         private readonly IAzureServiceBusProtocol _protocol;
+        private readonly AzureServiceBusEndpoint _endpoint;
         private readonly ITransportLogger _logger;
         private readonly CancellationToken _cancellation;
-        private readonly IMessageSender _sender;
+        private ISenderClient _sender;
         private ActionBlock<Envelope> _sending;
         private ActionBlock<Envelope> _serialization;
         private ISenderCallback _callback;
@@ -24,21 +32,20 @@ namespace Jasper.AzureServiceBus.Internal
             CancellationToken cancellation)
         {
             _protocol = endpoint.Protocol;
+            _endpoint = endpoint;
             _logger = logger;
             _cancellation = cancellation;
             Destination = endpoint.Uri.ToUri();
-
-
-            // TODO -- let's research this a bit. topics will be different
-            _sender = endpoint.TokenProvider != null
-                ? new MessageSender(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.TokenProvider,
-                    endpoint.TransportType, endpoint.RetryPolicy)
-                : new MessageSender(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.RetryPolicy);
         }
 
         public void Dispose()
         {
-            _sender.CloseAsync().GetAwaiter().GetResult();
+            _sender?.CloseAsync().GetAwaiter().GetResult();
+
+            foreach (var azureServiceBusSender in _senders.Values)
+            {
+                azureServiceBusSender.CloseAsync().GetAwaiter().GetResult();
+            }
         }
 
         public Uri Destination { get; }
@@ -63,11 +70,44 @@ namespace Jasper.AzureServiceBus.Internal
                 }
             });
 
-            _sending = new ActionBlock<Envelope>(send, new ExecutionDataflowBlockOptions
+            // The variance here should be in constructing the sending & buffer blocks
+            if (_endpoint.Uri.TopicName.IsEmpty())
             {
-                CancellationToken = _cancellation
-            });
+                _sender = _endpoint.TokenProvider != null
+                    ? new MessageSender(_endpoint.ConnectionString, _endpoint.Uri.QueueName, _endpoint.TokenProvider,
+                        _endpoint.TransportType, _endpoint.RetryPolicy)
+                    : new MessageSender(_endpoint.ConnectionString, _endpoint.Uri.QueueName, _endpoint.RetryPolicy);
+
+                _sending = new ActionBlock<Envelope>(sendBySession, new ExecutionDataflowBlockOptions
+                {
+                    CancellationToken = _cancellation
+                });
+            }
+            else if (_endpoint.Uri.IsMessageSpecificTopic())
+            {
+                _sending = new ActionBlock<Envelope>(sendByMessageTopicAndSession, new ExecutionDataflowBlockOptions
+                {
+                    CancellationToken = _cancellation
+                });
+            }
+            else
+            {
+                _sender = _endpoint.TokenProvider != null
+                    ? new TopicClient(_endpoint.ConnectionString, _endpoint.Uri.TopicName, _endpoint.TokenProvider,
+                        _endpoint.TransportType, _endpoint.RetryPolicy)
+                    : new TopicClient(_endpoint.ConnectionString, _endpoint.Uri.TopicName,
+                        _endpoint.RetryPolicy);
+
+                _sending = new ActionBlock<Envelope>(sendBySession, new ExecutionDataflowBlockOptions
+                {
+                    CancellationToken = _cancellation
+                });
+            }
+
+
+
         }
+
 
         public Task Enqueue(Envelope envelope)
         {
@@ -110,20 +150,59 @@ namespace Jasper.AzureServiceBus.Internal
 
         public bool SupportsNativeScheduledSend { get; } = true;
 
-        private async Task send(Envelope envelope)
+        private async Task sendBySession(Envelope envelope)
+        {
+            await sendBySession(envelope, _sender);
+        }
+
+        private Task sendByMessageTopicAndSession(Envelope envelope)
+        {
+            var sender = findTopicSenderFor(envelope);
+            return sendBySession(envelope, sender);
+        }
+
+        private ISenderClient findTopicSenderFor(Envelope envelope)
+        {
+            if (_senders.TryGetValue(envelope.MessageType, out var sender))
+            {
+                return sender;
+            }
+
+            lock (_locker)
+            {
+                if (_senders.TryGetValue(envelope.MessageType, out sender))
+                {
+                    return sender;
+                }
+
+                sender = _endpoint.TokenProvider != null
+                    ? new TopicClient(_endpoint.ConnectionString, _endpoint.Uri.TopicName, _endpoint.TokenProvider,
+                        _endpoint.TransportType, _endpoint.RetryPolicy)
+                    : new TopicClient(_endpoint.ConnectionString, _endpoint.Uri.TopicName,
+                        _endpoint.RetryPolicy);
+
+                _senders[envelope.MessageType] = sender;
+
+                return sender;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private async Task sendBySession(Envelope envelope, ISenderClient senderClient)
         {
             try
             {
                 var message = _protocol.WriteFromEnvelope(envelope);
                 message.SessionId = Guid.NewGuid().ToString();
 
+
                 if (envelope.IsDelayed(DateTime.UtcNow))
                 {
-                    await _sender.ScheduleMessageAsync(message, envelope.ExecutionTime.Value);
+                    await senderClient.ScheduleMessageAsync(message, envelope.ExecutionTime.Value);
                 }
                 else
                 {
-                    await _sender.SendAsync(message);
+                    await senderClient.SendAsync(message);
                 }
 
                 await _callback.Successful(envelope);
@@ -140,5 +219,7 @@ namespace Jasper.AzureServiceBus.Internal
                 }
             }
         }
+
+
     }
 }

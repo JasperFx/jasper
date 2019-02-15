@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -12,26 +13,28 @@ namespace Jasper.AzureServiceBus.Internal
     public class AzureServiceBusListeningAgent : IListeningAgent
     {
         private readonly IAzureServiceBusProtocol _protocol;
+        private readonly AzureServiceBusEndpoint _endpoint;
         private readonly ITransportLogger _logger;
-        private readonly IQueueClient _client;
+        private readonly CancellationToken _cancellation;
         private IReceiverCallback _callback;
+        private IClientEntity _listeningClient;
 
         public AzureServiceBusListeningAgent(AzureServiceBusEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
         {
+            _endpoint = endpoint;
             _logger = logger;
+            _cancellation = cancellation;
 
-            _client = endpoint.TokenProvider != null
-                ? new QueueClient(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.TokenProvider, endpoint.TransportType, endpoint.ReceiveMode, endpoint.RetryPolicy)
-                : new QueueClient(endpoint.ConnectionString, endpoint.Uri.QueueName, endpoint.ReceiveMode, endpoint.RetryPolicy);
 
             _protocol = endpoint.Protocol;
             Address = endpoint.Uri.ToUri();
+
         }
 
 
         public void Dispose()
         {
-            _client.CloseAsync().GetAwaiter().GetResult();
+            _listeningClient.CloseAsync().GetAwaiter().GetResult();
         }
 
         public Uri Address { get; }
@@ -40,9 +43,49 @@ namespace Jasper.AzureServiceBus.Internal
         public void Start(IReceiverCallback callback)
         {
             _callback = callback;
+
             var options = new SessionHandlerOptions(handleException);
 
-            _client.RegisterSessionHandler(handleMessage, options);
+            var connectionString = _endpoint.ConnectionString;
+            var tokenProvider = _endpoint.TokenProvider;
+            var subscriptionName = _endpoint.Uri.SubscriptionName;
+            var queueName = _endpoint.Uri.QueueName;
+            var retryPolicy = _endpoint.RetryPolicy;
+            var receiveMode = _endpoint.ReceiveMode;
+            var transportType = _endpoint.TransportType;
+
+            if (_endpoint.Uri.TopicName.IsEmpty())
+            {
+
+
+                var client = tokenProvider != null
+                    ? new QueueClient(connectionString, queueName, tokenProvider, transportType, receiveMode, retryPolicy)
+                    : new QueueClient(connectionString, queueName, receiveMode, retryPolicy);
+
+                client.RegisterSessionHandler(handleMessage, options);
+
+                _listeningClient = client;
+            }
+            else if (_endpoint.Uri.IsMessageSpecificTopic())
+            {
+
+                throw new NotImplementedException();
+
+            }
+            else
+            {
+                var client = tokenProvider != null
+                    ? new SubscriptionClient(connectionString, _endpoint.Uri.TopicName, subscriptionName, tokenProvider,
+                        transportType, receiveMode, retryPolicy)
+                    : new SubscriptionClient(connectionString, _endpoint.Uri.TopicName, subscriptionName,
+                        receiveMode, retryPolicy);
+
+                client.RegisterSessionHandler(handleMessage, options);
+
+                _listeningClient = client;
+            }
+
+
         }
 
         private Task handleException(ExceptionReceivedEventArgs arg)

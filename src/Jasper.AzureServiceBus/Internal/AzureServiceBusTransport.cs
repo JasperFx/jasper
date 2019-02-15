@@ -8,11 +8,11 @@ namespace Jasper.AzureServiceBus.Internal
 {
     public class AzureServiceBusTransport : ExternalTransportBase<AzureServiceBusSettings, AzureServiceBusEndpoint>
     {
-        public const string Protocol = "azureservicebus";
+        public const string ProtocolName = "azureservicebus";
 
 
         public AzureServiceBusTransport(AzureServiceBusSettings settings, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions)
-            : base(Protocol, settings, factory, logger, jasperOptions)
+            : base(ProtocolName, settings, factory, logger, jasperOptions)
         {
         }
 
