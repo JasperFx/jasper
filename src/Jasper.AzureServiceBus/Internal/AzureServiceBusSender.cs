@@ -176,9 +176,9 @@ namespace Jasper.AzureServiceBus.Internal
                 }
 
                 sender = _endpoint.TokenProvider != null
-                    ? new TopicClient(_endpoint.ConnectionString, _endpoint.Uri.TopicName, _endpoint.TokenProvider,
+                    ? new TopicClient(_endpoint.ConnectionString, envelope.MessageType, _endpoint.TokenProvider,
                         _endpoint.TransportType, _endpoint.RetryPolicy)
-                    : new TopicClient(_endpoint.ConnectionString, _endpoint.Uri.TopicName,
+                    : new TopicClient(_endpoint.ConnectionString, envelope.MessageType,
                         _endpoint.RetryPolicy);
 
                 _senders[envelope.MessageType] = sender;

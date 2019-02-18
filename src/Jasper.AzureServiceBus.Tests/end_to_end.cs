@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
@@ -8,12 +9,14 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Jasper.RabbitMQ;
+using Jasper.Util;
 using Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.AzureServiceBus.Tests
@@ -183,7 +186,117 @@ namespace Jasper.AzureServiceBus.Tests
 
 
 
+        [Fact]
+        public async Task send_message_to_and_receive_through_asb_with_named_topic()
+        {
+            var uri = "azureservicebus://jasper/topic/special";
 
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
+                _.Publish.AllMessagesTo(uri);
+                _.Handlers.DisableConventionalDiscovery();
+
+            });
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
+
+                _.Transports.ListenForMessagesFrom("azureservicebus://jasper/subscription/receiver/topic/special");
+                _.Services.AddSingleton<MessageTracker>();
+
+                _.Handlers.DisableConventionalDiscovery().IncludeType<TracksMessage<SpecialTopic>>();
+
+            });
+
+            var wait = receiver.Get<MessageTracker>().WaitFor<SpecialTopic>();
+
+            try
+            {
+                var message = new SpecialTopic();
+                await publisher.Messaging.Send(message);
+
+                var received = await wait;
+                received.Message.ShouldBeOfType<SpecialTopic>()
+                    .Id.ShouldBe(message.Id);
+
+
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
+        }
+
+
+
+
+
+
+        [Fact]
+        public async Task send_message_to_and_receive_through_asb_with_wildcard_topics()
+        {
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
+                _.Publish.AllMessagesTo("azureservicebus://jasper/topic/*");
+                _.Handlers.DisableConventionalDiscovery();
+
+            });
+
+            var receiver1 = JasperHost.For(_ =>
+            {
+                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
+
+                _.Transports.ListenForMessagesFrom("azureservicebus://jasper/subscription/receiver1/topic/*");
+                _.Services.AddSingleton<MessageTracker>();
+
+                _.Handlers.DisableConventionalDiscovery()
+                    .IncludeType<TracksMessage<TopicA>>()
+                    .IncludeType<TracksMessage<TopicB>>();
+
+            });
+
+            var receiver2 = JasperHost.For(_ =>
+            {
+                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
+
+                _.Transports.ListenForMessagesFrom("azureservicebus://jasper/subscription/receiver2/topic/*");
+                _.Services.AddSingleton<MessageTracker>();
+
+                _.Handlers.DisableConventionalDiscovery()
+                    .IncludeType<TracksMessage<TopicC>>();
+
+            });
+
+            var waitForA = receiver1.Get<MessageTracker>().WaitFor<TopicA>();
+            var waitForB = receiver1.Get<MessageTracker>().WaitFor<TopicB>();
+            var waitForC = receiver2.Get<MessageTracker>().WaitFor<TopicC>();
+
+            try
+            {
+                var topicA = new TopicA();
+                var topicB = new TopicB();
+                var topicC = new TopicC();
+
+                await publisher.Messaging.Send(topicA);
+                await publisher.Messaging.Send(topicB);
+                await publisher.Messaging.Send(topicC);
+
+                var receivedA = (await waitForA).Message.ShouldBeOfType<TopicA>();
+                var receivedB = (await waitForB).Message.ShouldBeOfType<TopicB>();
+                var receivedC = (await waitForC).Message.ShouldBeOfType<TopicC>();
+
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver1.Dispose();
+                receiver2.Dispose();
+            }
+        }
 
 
 
@@ -235,4 +348,37 @@ namespace Jasper.AzureServiceBus.Tests
     {
         public string Name { get; set; }
     }
+
+    public class TracksMessage<T>
+    {
+        public void Handle(T message, MessageTracker tracker, Envelope envelope)
+        {
+            tracker.Record(message, envelope);
+        }
+    }
+
+    [MessageIdentity("A")]
+
+    public class TopicA
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+
+    [MessageIdentity("B")]
+    public class TopicB
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+
+    [MessageIdentity("C")]
+    public class TopicC
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+
+    public class SpecialTopic
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+
 }
