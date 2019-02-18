@@ -45,33 +45,4 @@ namespace Jasper.Messaging.Tracking
         void Check(Envelope envelope, object message);
     }
 
-    public class CountTracker<T> : ITracker
-    {
-        private readonly TaskCompletionSource<bool> _completion = new TaskCompletionSource<bool>();
-        private readonly int _expected;
-        private readonly List<ITracker> _trackers;
-        private int _count;
-
-        public CountTracker(int expected, List<ITracker> trackers)
-        {
-            _expected = expected;
-            _trackers = trackers;
-        }
-
-        public Task<bool> Completion => _completion.Task;
-
-        public void Check(Envelope envelope, object message)
-        {
-            if (message is T)
-            {
-                Interlocked.Increment(ref _count);
-
-                if (_count >= _expected)
-                {
-                    _completion.TrySetResult(true);
-                    _trackers.Remove(this);
-                }
-            }
-        }
-    }
 }
