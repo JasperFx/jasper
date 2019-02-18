@@ -225,3 +225,6 @@ log.txt
 
 BenchmarkDotNet.Artifacts
 template-target
+
+
+src/Jasper.AzureServiceBus.Tests/appsettings.json
