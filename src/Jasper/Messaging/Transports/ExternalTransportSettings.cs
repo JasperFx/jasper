@@ -1,18 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Baseline;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Transports
 {
     public abstract class ExternalTransportSettings<TEndpoint> where TEndpoint : class
     {
+        private readonly string _protocol;
+        private readonly string[] _validTransportUriKeys;
         private ImHashMap<TransportUri, TEndpoint> _endpoints = ImHashMap<TransportUri,TEndpoint>.Empty;
 
         private readonly object _locker = new object();
 
+
+        protected ExternalTransportSettings(string protocol, params string[] validTransportUriKeys)
+        {
+            _protocol = protocol;
+            _validTransportUriKeys = validTransportUriKeys;
+        }
+
         public Dictionary<string, string> Connections { get; set; } = new Dictionary<string, string>();
 
         protected abstract TEndpoint buildEndpoint(TransportUri uri, string connectionString);
+
+
 
         /// <summary>
         /// Configure a specific endpoint
@@ -70,6 +83,16 @@ namespace Jasper.Messaging.Transports
                 return endpoint;
             }
 
+            if (uri.Protocol != _protocol) throw new ArgumentOutOfRangeException($"Invalid uri protocol '{uri.Protocol}', expected '{_protocol}'");
+
+            var keys = uri.UriKeys();
+
+            var invalids = keys.Where(x => !_validTransportUriKeys.Contains(x));
+            if (invalids.Any())
+            {
+                throw new ArgumentOutOfRangeException($"Invalid {nameof(TransportUri)} value(s) for transport \"{uri.Protocol}\": {invalids.Join(", ")}");
+            }
+
             lock (_locker)
             {
                 if (_endpoints.TryFind(uri, out endpoint))
@@ -86,6 +109,7 @@ namespace Jasper.Messaging.Transports
 
             }
         }
+
 
         public TransportUri ReplyUri { get; set; }
     }
