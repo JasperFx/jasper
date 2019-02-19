@@ -53,6 +53,13 @@ namespace MessagingTests
         }
 
         [Fact]
+        public void write_uri_with_routingkey()
+        {
+            var uri = new TransportUri("rabbitmq", "conn1", true, routingKey:"routing1");
+            uri.ToUri().ShouldBe(new Uri("rabbitmq://conn1/durable/routingkey/routing1"));
+        }
+
+        [Fact]
         public void replace_connection()
         {
             var uri = new TransportUri("rabbitmq://conn1/topic/foo");

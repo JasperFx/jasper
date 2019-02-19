@@ -58,6 +58,10 @@ namespace Jasper.Messaging.Transports
                     SubscriptionName = value;
                     break;
 
+                case TransportConstants.Routing:
+                    RoutingKey = value;
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(uri),
                         $"Invalid Transport Uri 'uri'. Unable to read queue and/or topic");
@@ -68,7 +72,7 @@ namespace Jasper.Messaging.Transports
         {
         }
 
-        public TransportUri(string protocol, string connectionName, bool durable, string queueName = null, string topicName = null, string subscriptionName = null)
+        public TransportUri(string protocol, string connectionName, bool durable, string queueName = null, string topicName = null, string subscriptionName = null, string routingKey = null)
         {
             Protocol = protocol;
             TopicName = topicName;
@@ -76,6 +80,7 @@ namespace Jasper.Messaging.Transports
             ConnectionName = connectionName;
             Durable = durable;
             SubscriptionName = subscriptionName;
+            RoutingKey = routingKey;
         }
 
         public string Protocol { get; }
@@ -85,6 +90,8 @@ namespace Jasper.Messaging.Transports
         public string SubscriptionName { get; private set; }
         public string ConnectionName { get; }
         public bool Durable { get; }
+
+        public string RoutingKey { get; private set; }
 
         public Uri ToUri()
         {
@@ -107,6 +114,11 @@ namespace Jasper.Messaging.Transports
             if (SubscriptionName.IsNotEmpty())
             {
                 uriString += $"/subscription/{SubscriptionName}";
+            }
+
+            if (RoutingKey.IsNotEmpty())
+            {
+                uriString += $"/{TransportConstants.Routing}/{RoutingKey}";
             }
 
             return new Uri(uriString);

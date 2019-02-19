@@ -122,6 +122,8 @@ namespace Jasper.RabbitMQ
             get => ConnectionFactory.Port;
             set => ConnectionFactory.Port = value;
         }
+
+        [Obsolete("Use the Transport Uri instead?")]
         public string Topic { get; } = null;
 
 
