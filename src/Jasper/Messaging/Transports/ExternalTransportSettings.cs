@@ -62,6 +62,19 @@ namespace Jasper.Messaging.Transports
         }
 
         /// <summary>
+        /// Make the same alteration to all endpoints for a named connection
+        /// </summary>
+        /// <param name="connectionName"></param>
+        /// <param name="alteration"></param>
+        public void ConfigureEndpointsForConnection(string connectionName, Action<TEndpoint> alteration)
+        {
+            foreach (var endpoint in _endpoints.Enumerate().Where(x => x.Key.ConnectionName.EqualsIgnoreCase(connectionName)).Select(x => x.Value))
+            {
+                alteration(endpoint);
+            }
+        }
+
+        /// <summary>
         /// Try to resolve the endpoint for the given Uri
         /// </summary>
         /// <param name="uri"></param>
