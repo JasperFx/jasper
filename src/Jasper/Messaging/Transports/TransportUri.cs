@@ -10,6 +10,8 @@ namespace Jasper.Messaging.Transports
 
     public class TransportUri
     {
+        private readonly Dictionary<string, string> _values = new Dictionary<string, string>();
+
         public TransportUri(Uri uri)
         {
             Protocol = uri.Scheme;
@@ -47,19 +49,10 @@ namespace Jasper.Messaging.Transports
             switch (next)
             {
                 case TransportConstants.Topic:
-                    TopicName = value;
-                    break;
-
                 case TransportConstants.Queue:
-                    QueueName = value;
-                    break;
-
                 case TransportConstants.Subscription:
-                    SubscriptionName = value;
-                    break;
-
                 case TransportConstants.Routing:
-                    RoutingKey = value;
+                    _values.SmartAdd(next, value);
                     break;
 
                 default:
@@ -75,50 +68,64 @@ namespace Jasper.Messaging.Transports
         public TransportUri(string protocol, string connectionName, bool durable, string queueName = null, string topicName = null, string subscriptionName = null, string routingKey = null)
         {
             Protocol = protocol;
-            TopicName = topicName;
-            QueueName = queueName;
+
+            set(TransportConstants.Topic, topicName);
+            set(TransportConstants.Queue, queueName);
+            set(TransportConstants.Subscription, subscriptionName);
+            set(TransportConstants.Routing, routingKey);
+
+
             ConnectionName = connectionName;
             Durable = durable;
-            SubscriptionName = subscriptionName;
-            RoutingKey = routingKey;
+        }
+
+        public string[] UriKeys()
+        {
+            return _values.Keys.ToArray();
+        }
+
+        private void set(string key, string value)
+        {
+            if (value.IsEmpty())
+            {
+                return;
+            }
+
+            _values.Add(key, value);
+        }
+
+        private string get(string key)
+        {
+            if (_values.TryGetValue(key, out var value))
+            {
+                return value;
+            }
+
+            return null;
         }
 
         public string Protocol { get; }
-        public string TopicName { get; private set; }
-        public string QueueName { get; private set; }
+        public string TopicName => get(TransportConstants.Topic);
+        public string QueueName => get(TransportConstants.Queue);
 
-        public string SubscriptionName { get; private set; }
+        public string SubscriptionName => get(TransportConstants.Subscription);
         public string ConnectionName { get; }
         public bool Durable { get; }
 
-        public string RoutingKey { get; private set; }
+        public string RoutingKey => get(TransportConstants.Routing);
 
         public Uri ToUri()
         {
             var uriString = $"{Protocol}://{ConnectionName}";
+
             if (Durable)
             {
                 uriString += "/durable";
             }
 
-            if (QueueName.IsNotEmpty())
+            if (_values.Any())
             {
-                uriString += $"/queue/{QueueName}";
-            }
-
-            if (TopicName.IsNotEmpty())
-            {
-                uriString += $"/topic/{TopicName}";
-            }
-
-            if (SubscriptionName.IsNotEmpty())
-            {
-                uriString += $"/subscription/{SubscriptionName}";
-            }
-
-            if (RoutingKey.IsNotEmpty())
-            {
-                uriString += $"/{TransportConstants.Routing}/{RoutingKey}";
+                uriString += "/" + _values.Select(x => $"{x.Key}/{x.Value}").Join("/");
             }
 
             return new Uri(uriString);
