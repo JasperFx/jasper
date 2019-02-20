@@ -39,6 +39,30 @@ namespace MessagingTests
         }
 
         [Fact]
+        public void clone_for_topic()
+        {
+            var uri = new TransportUri(
+                "rabbitmq",
+                "conn1",
+                true,
+                "queue1",
+                "*",
+                "subscription1",
+                "routingKey1");
+
+            var clone = uri.CloneForTopic("topic1");
+
+            clone.Protocol.ShouldBe(uri.Protocol);
+            clone.ConnectionName.ShouldBe(uri.ConnectionName);
+            clone.Durable.ShouldBe(uri.Durable);
+            clone.QueueName.ShouldBe(uri.QueueName);
+            clone.SubscriptionName.ShouldBe(uri.SubscriptionName);
+            clone.RoutingKey.ShouldBe(uri.RoutingKey);
+
+            clone.TopicName.ShouldBe("topic1");
+        }
+
+        [Fact]
         public void read_subscription()
         {
             var uri = new TransportUri("azureservicebus://conn1/subscription/one");

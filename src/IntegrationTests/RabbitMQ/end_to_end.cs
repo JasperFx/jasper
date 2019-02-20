@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace IntegrationTests.RabbitMQ
@@ -154,6 +155,45 @@ namespace IntegrationTests.RabbitMQ
                 _.Include<MartenBackedPersistence>();
 
                 _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
+            });
+
+            var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
+
+            try
+            {
+                await publisher.Messaging.Send(new ColorChosen {Name = "Orange"});
+
+                await wait;
+
+                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
+        }
+
+
+        [Fact]
+        public async Task send_message_to_and_receive_through_rabbitmq_with_routing_key()
+        {
+            var uri = "rabbitmq://localhost/queue/messages2/routingkey/key2";
+
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Settings.AddRabbitMqHost("localhost");
+                _.Publish.AllMessagesTo(uri);
+
+            });
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.Settings.AddRabbitMqHost("localhost");
+
+                _.Transports.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+                _.Services.AddSingleton<MessageTracker>();
             });
 
             var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
@@ -308,6 +348,126 @@ namespace IntegrationTests.RabbitMQ
                 receiver3.Dispose();
             }
         }
+
+
+
+
+
+        [Fact]
+        public async Task send_message_to_and_receive_through_asb_with_named_topic()
+        {
+            var uri = "rabbitmq://localhost/topic/special";
+
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Settings.AddRabbitMqHost("localhost");
+                _.Publish.AllMessagesTo(uri);
+                _.Handlers.DisableConventionalDiscovery();
+
+            });
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.Settings.AddRabbitMqHost("localhost");
+
+                _.Transports.ListenForMessagesFrom("rabbitmq://localhost/topic/special");
+                _.Services.AddSingleton<MessageTracker>();
+
+                _.Handlers.DisableConventionalDiscovery().IncludeType<TracksMessage<SpecialTopic>>();
+
+            });
+
+            var wait = receiver.Get<MessageTracker>().WaitFor<SpecialTopic>();
+
+            try
+            {
+                var message = new SpecialTopic();
+                await publisher.Messaging.Send(message);
+
+                var received = await wait;
+                received.Message.ShouldBeOfType<SpecialTopic>()
+                    .Id.ShouldBe(message.Id);
+
+
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
+        }
+
+
+
+
+
+
+        [Fact]
+        public async Task send_message_to_and_receive_through_asb_with_wildcard_topics()
+        {
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Settings.AddRabbitMqHost("localhost");
+                _.Publish.AllMessagesTo("rabbitmq://localhost/topic/*");
+                _.Handlers.DisableConventionalDiscovery();
+
+            });
+
+            var receiver1 = JasperHost.For(_ =>
+            {
+                _.Settings.AddRabbitMqHost("localhost");
+
+                _.Transports.ListenForMessagesFrom("rabbitmq://localhost/topic/*");
+                _.Services.AddSingleton<MessageTracker>();
+
+                _.Handlers.DisableConventionalDiscovery()
+                    .IncludeType<TracksMessage<TopicA>>()
+                    .IncludeType<TracksMessage<TopicB>>();
+
+            });
+
+            var receiver2 = JasperHost.For(_ =>
+            {
+                _.Settings.AddRabbitMqHost("localhost");
+
+                _.Transports.ListenForMessagesFrom("rabbitmq://localhost/topic/*");
+                _.Services.AddSingleton<MessageTracker>();
+
+                _.Handlers.DisableConventionalDiscovery()
+                    .IncludeType<TracksMessage<TopicC>>();
+
+            });
+
+            var waitForA = receiver1.Get<MessageTracker>().WaitFor<TopicA>();
+            var waitForB = receiver1.Get<MessageTracker>().WaitFor<TopicB>();
+            var waitForC = receiver2.Get<MessageTracker>().WaitFor<TopicC>();
+
+            try
+            {
+                var topicA = new TopicA();
+                var topicB = new TopicB();
+                var topicC = new TopicC();
+
+                await publisher.Messaging.Send(topicA);
+                await publisher.Messaging.Send(topicB);
+                await publisher.Messaging.Send(topicC);
+
+                var receivedA = (await waitForA).Message.ShouldBeOfType<TopicA>();
+                var receivedB = (await waitForB).Message.ShouldBeOfType<TopicB>();
+                var receivedC = (await waitForC).Message.ShouldBeOfType<TopicC>();
+
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver1.Dispose();
+                receiver2.Dispose();
+            }
+        }
+
+
+
+
     }
 
 
@@ -372,5 +532,37 @@ namespace IntegrationTests.RabbitMQ
     public class ColorChosen
     {
         public string Name { get; set; }
+    }
+
+    public class TracksMessage<T>
+    {
+        public void Handle(T message, MessageTracker tracker, Envelope envelope)
+        {
+            tracker.Record(message, envelope);
+        }
+    }
+
+    [MessageIdentity("A")]
+
+    public class TopicA
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+
+    [MessageIdentity("B")]
+    public class TopicB
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+
+    [MessageIdentity("C")]
+    public class TopicC
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+    }
+
+    public class SpecialTopic
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
     }
 }

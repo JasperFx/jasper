@@ -32,6 +32,11 @@ namespace Jasper.Messaging.Transports
 
         }
 
+        public TransportUri CloneForTopic(string topicName)
+        {
+            return new TransportUri(Protocol, ConnectionName, Durable, QueueName, topicName, SubscriptionName, RoutingKey);
+        }
+
         public bool IsMessageSpecificTopic() => TopicName == "*";
 
         private void readSegments(Queue<string> segments, Uri uri)
@@ -91,7 +96,14 @@ namespace Jasper.Messaging.Transports
                 return;
             }
 
-            _values.Add(key, value);
+            if (_values.ContainsKey(key))
+            {
+                _values[key] = value;
+            }
+            else
+            {
+                _values.Add(key, value);
+            }
         }
 
         private string get(string key)

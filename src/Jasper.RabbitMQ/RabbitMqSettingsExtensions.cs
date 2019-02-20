@@ -13,6 +13,11 @@ namespace Jasper.RabbitMQ
             settings.Alter<RabbitMqSettings>(s => s.Connections.Add(host, connectionString));
         }
 
+        public static void AddRabbitMqConnection(this JasperSettings settings, string connectionName, string connectionString)
+        {
+            settings.Alter<RabbitMqSettings>(s => s.Connections.Add(connectionName, connectionString));
+        }
+
         /// <summary>
         /// Register configuration of the Rabbit MQ transport
         /// </summary>

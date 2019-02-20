@@ -54,10 +54,6 @@ namespace Jasper.RabbitMQ
                 {
                     ExchangeType = (ExchangeType) Enum.Parse(typeof(ExchangeType), value, true);
                 }
-                else if (key.EqualsIgnoreCase(nameof(Topic)))
-                {
-                    Topic = value;
-                }
                 else
                 {
                     throw new ArgumentOutOfRangeException(nameof(connectionString), $"Unknown connection string parameter '{key}'");
@@ -123,8 +119,7 @@ namespace Jasper.RabbitMQ
             set => ConnectionFactory.Port = value;
         }
 
-        [Obsolete("Use the Transport Uri instead?")]
-        public string Topic { get; } = null;
+        public string Topic => Uri.TopicName;
 
 
 
@@ -161,8 +156,21 @@ namespace Jasper.RabbitMQ
                 channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), TransportUri.Durable);
                 channel.QueueDeclare(TransportUri.QueueName, TransportUri.Durable, autoDelete: false, exclusive: false);
 
-                // TODO -- routingKey is required for direct and topic
-                channel.QueueBind(TransportUri.QueueName, ExchangeName, "");
+                if (ExchangeType == ExchangeType.Topic)
+                {
+                    if (TransportUri.TopicName.IsEmpty())
+                    {
+                        throw new InvalidOperationException($"Topic name is required to connect to a topic exchange. Invalid Uri is '{TransportUri.ToUri()}'");
+                    }
+
+                    channel.QueueBind(TransportUri.QueueName, ExchangeName, TransportUri.TopicName);
+                }
+                else
+                {
+                    channel.QueueBind(TransportUri.QueueName, ExchangeName, TransportUri.RoutingKey ?? "");
+                }
+
+
             }
             else
             {
