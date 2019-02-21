@@ -5,6 +5,7 @@ using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.RabbitMQ.Internal
 {
@@ -28,8 +29,17 @@ namespace Jasper.RabbitMQ.Internal
                 throw new ArgumentOutOfRangeException(nameof(transportUri), $"Could not resolve a Rabbit MQ endpoint for the Uri '{transportUri}'");
             }
 
-            endpoint.Connect();
-            return endpoint.CreateListeningAgent(transportUri.ToUri(), settings, logger);
+            if (transportUri.IsMessageSpecificTopic())
+            {
+                return new RabbitMqMessageSpecificTopicListeningAgent(endpoint, handlers, transportUri, logger, settings);
+            }
+            else
+            {
+                endpoint.Connect();
+                return endpoint.CreateListeningAgent(transportUri.ToUri(), settings, logger);
+            }
+
+
         }
     }
 }

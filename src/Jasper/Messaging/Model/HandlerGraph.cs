@@ -176,5 +176,10 @@ namespace Jasper.Messaging.Model
         {
             return _chains.TryFind(messageType, out var chain);
         }
+
+        public string[] ValidMessageTypeNames()
+        {
+            return Chains.Select(x => x.MessageType.ToMessageTypeName()).ToArray();
+        }
     }
 }

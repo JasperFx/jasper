@@ -4,7 +4,6 @@ namespace Jasper.RabbitMQ
     {
         Direct,
         Fanout,
-        Topic,
-        Headers
+        Topic
     }
 }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Logging;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
@@ -62,6 +63,8 @@ namespace Jasper.RabbitMQ
 
             }
 
+
+
             if (TransportUri.QueueName.IsEmpty())
             {
                 throw new ArgumentOutOfRangeException(nameof(connectionString), "Queue is required, but not specified");
@@ -72,6 +75,28 @@ namespace Jasper.RabbitMQ
                 throw new ArgumentOutOfRangeException(nameof(connectionString), "Host is required, but not specified");
             }
 
+        }
+
+        private RabbitMqEndpoint(TransportUri uri, IRabbitMqProtocol protocol, ConnectionFactory factory, string exchangeName, ExchangeType exchangeType) : base(uri, protocol)
+        {
+            ConnectionFactory = factory;
+            ExchangeName = exchangeName;
+            ExchangeType = exchangeType;
+        }
+
+        public RabbitMqEndpoint[] SpreadForMessageSpecificTopics(string[] topicNames)
+        {
+            if (!Uri.IsMessageSpecificTopic()) throw new InvalidOperationException($"{TransportUri.ToUri()} is not a message specific topic Uri");
+
+
+            return topicNames.Select(topic =>
+            {
+                var uri = TransportUri.CloneForTopic(topic);
+                var endpoint = new RabbitMqEndpoint(uri, Protocol, ConnectionFactory, ExchangeName, ExchangeType);
+                endpoint.AmqpTcpEndpoints.AddRange(AmqpTcpEndpoints);
+
+                return endpoint;
+            }).ToArray();
         }
 
         /// <summary>
@@ -216,11 +241,6 @@ namespace Jasper.RabbitMQ
         internal IListeningAgent CreateListeningAgent(Uri uri, JasperOptions options, ITransportLogger logger)
         {
             return new RabbitMqListeningAgent(uri, logger, Protocol, this);
-        }
-
-        internal PublicationAddress PublicationAddress()
-        {
-            return new PublicationAddress(ExchangeType.ToString(), ExchangeName, TransportUri.QueueName);
         }
 
         internal Task Ping(Action<IModel> action)

@@ -29,7 +29,7 @@ namespace Jasper.RabbitMQ.Internal
             _cancellation = cancellation;
             Destination = endpoint.TransportUri.ToUri();
 
-            _address = endpoint.PublicationAddress();
+            _address = new PublicationAddress(endpoint.ExchangeType.ToString(), endpoint.ExchangeName ?? "", endpoint.TransportUri.QueueName);
         }
 
         public void Dispose()

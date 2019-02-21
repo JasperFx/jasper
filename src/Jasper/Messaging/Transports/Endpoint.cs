@@ -7,10 +7,10 @@ namespace Jasper.Messaging.Transports
         public TransportUri Uri { get; }
         private TProtocol _protocol;
 
-        public Endpoint(TransportUri uri, TProtocol defaultProtocol)
+        public Endpoint(TransportUri uri, TProtocol protocol)
         {
             Uri = uri;
-            _protocol = defaultProtocol;
+            _protocol = protocol;
         }
 
         public TProtocol Protocol

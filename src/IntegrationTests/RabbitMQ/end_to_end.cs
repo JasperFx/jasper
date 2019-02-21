@@ -354,7 +354,7 @@ namespace IntegrationTests.RabbitMQ
 
 
         [Fact]
-        public async Task send_message_to_and_receive_through_asb_with_named_topic()
+        public async Task send_message_to_and_receive_through_rabbitmq_with_named_topic()
         {
             var uri = "rabbitmq://localhost/topic/special";
 
@@ -403,7 +403,7 @@ namespace IntegrationTests.RabbitMQ
 
 
         [Fact]
-        public async Task send_message_to_and_receive_through_asb_with_wildcard_topics()
+        public async Task send_message_to_and_receive_through_rabbitmq_with_wildcard_topics()
         {
             var publisher = JasperHost.For(_ =>
             {

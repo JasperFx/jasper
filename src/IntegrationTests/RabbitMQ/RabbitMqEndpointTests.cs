@@ -89,13 +89,6 @@ namespace IntegrationTests.RabbitMQ
             endpoint.ExchangeType.ShouldBe(ExchangeType.Fanout);
         }
 
-        [Fact]
-        public void read_topic()
-        {
-            var endpoint = new RabbitMqEndpoint(theUri, "host=server2;topic=foo.bar");
-            endpoint.Topic.ShouldBe("foo.bar");
-        }
-
 
     }
 
