@@ -178,7 +178,7 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_routing_key()
         {
-            var uri = "rabbitmq://localhost/queue/messages2/routingkey/key2";
+            var uri = "rabbitmq://localhost/queue/messages5/routingkey/key2";
 
             var publisher = JasperHost.For(_ =>
             {
@@ -217,7 +217,7 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task schedule_send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
-            var uri = "rabbitmq://localhost:5672/durable/queue/messages2";
+            var uri = "rabbitmq://localhost:5672/durable/queue/messages11";
 
             var publisher = JasperHost.For(_ =>
             {
@@ -356,7 +356,7 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_named_topic()
         {
-            var uri = "rabbitmq://localhost/topic/special";
+            var uri = "rabbitmq://localhost/queue/messages4/topic/special";
 
             var publisher = JasperHost.For(_ =>
             {
@@ -370,7 +370,7 @@ namespace IntegrationTests.RabbitMQ
             {
                 _.Settings.AddRabbitMqHost("localhost");
 
-                _.Transports.ListenForMessagesFrom("rabbitmq://localhost/topic/special");
+                _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<MessageTracker>();
 
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TracksMessage<SpecialTopic>>();
@@ -405,10 +405,11 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_wildcard_topics()
         {
+            var uriString = "rabbitmq://localhost/queue/messages8/topic/*";
             var publisher = JasperHost.For(_ =>
             {
                 _.Settings.AddRabbitMqHost("localhost");
-                _.Publish.AllMessagesTo("rabbitmq://localhost/topic/*");
+                _.Publish.AllMessagesTo(uriString);
                 _.Handlers.DisableConventionalDiscovery();
 
             });
@@ -417,7 +418,7 @@ namespace IntegrationTests.RabbitMQ
             {
                 _.Settings.AddRabbitMqHost("localhost");
 
-                _.Transports.ListenForMessagesFrom("rabbitmq://localhost/topic/*");
+                _.Transports.ListenForMessagesFrom(uriString);
                 _.Services.AddSingleton<MessageTracker>();
 
                 _.Handlers.DisableConventionalDiscovery()
@@ -430,7 +431,7 @@ namespace IntegrationTests.RabbitMQ
             {
                 _.Settings.AddRabbitMqHost("localhost");
 
-                _.Transports.ListenForMessagesFrom("rabbitmq://localhost/topic/*");
+                _.Transports.ListenForMessagesFrom(uriString);
                 _.Services.AddSingleton<MessageTracker>();
 
                 _.Handlers.DisableConventionalDiscovery()

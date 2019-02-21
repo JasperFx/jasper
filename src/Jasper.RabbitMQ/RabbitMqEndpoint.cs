@@ -82,6 +82,7 @@ namespace Jasper.RabbitMQ
             ConnectionFactory = factory;
             ExchangeName = exchangeName;
             ExchangeType = exchangeType;
+            TransportUri = uri;
         }
 
         public RabbitMqEndpoint[] SpreadForMessageSpecificTopics(string[] topicNames)
