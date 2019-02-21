@@ -26,6 +26,9 @@ namespace Jasper.RabbitMQ
             if (uri.Protocol != "rabbitmq")
                 throw new ArgumentOutOfRangeException(nameof(uri), "The protocol must be 'rabbitmq'");
 
+            if (uri.QueueName.IsEmpty())
+                throw new ArgumentOutOfRangeException(nameof(uri), "A queue name is required for Rabbit MQ endpoints");
+
             Port = 5672;
 
             TransportUri = uri;
