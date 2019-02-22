@@ -1,6 +1,7 @@
 using System;
 using Jasper.Settings;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Jasper.RabbitMQ
 {
@@ -10,12 +11,12 @@ namespace Jasper.RabbitMQ
         {
             var connectionString = $"host={host};port={port}";
 
-            settings.Alter<RabbitMqSettings>(s => s.Connections.Add(host, connectionString));
+            settings.Alter<RabbitMqOptions>(s => s.Connections.Add(host, connectionString));
         }
 
         public static void AddRabbitMqConnection(this JasperSettings settings, string connectionName, string connectionString)
         {
-            settings.Alter<RabbitMqSettings>(s => s.Connections.Add(connectionName, connectionString));
+            settings.Alter<RabbitMqOptions>(s => s.Connections.Add(connectionName, connectionString));
         }
 
         /// <summary>
@@ -23,7 +24,7 @@ namespace Jasper.RabbitMQ
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
-        public static void ConfigureRabbitMq(this JasperSettings settings, Action<RabbitMqSettings> configure)
+        public static void ConfigureRabbitMq(this JasperSettings settings, Action<RabbitMqOptions> configure)
         {
             settings.Alter(configure);
         }
@@ -33,9 +34,9 @@ namespace Jasper.RabbitMQ
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
-        public static void ConfigureRabbitMq(this JasperSettings settings, Action<WebHostBuilderContext, RabbitMqSettings> configure)
+        public static void ConfigureRabbitMq(this JasperSettings settings, Action<RabbitMqOptions, IHostingEnvironment, IConfiguration> configure)
         {
-            settings.Alter(configure);
+            settings.Alter<RabbitMqOptions>((context, x) => configure(x, context.HostingEnvironment, context.Configuration));
         }
     }
 }

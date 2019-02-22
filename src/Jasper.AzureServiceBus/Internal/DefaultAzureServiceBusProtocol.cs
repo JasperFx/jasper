@@ -5,6 +5,7 @@ using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus.Internal
 {
+    // SAMPLE: DefaultAzureServiceBusProtocol
     public class DefaultAzureServiceBusProtocol : IAzureServiceBusProtocol
     {
         public Message WriteFromEnvelope(Envelope envelope)
@@ -18,18 +19,17 @@ namespace Jasper.AzureServiceBus.Internal
                 ReplyTo = envelope.ReplyUri?.ToString(),
                 ReplyToSessionId = envelope.ParentId.ToString(),
 
-
-
-
-
             };
+
+            if (envelope.ExecutionTime.HasValue)
+            {
+                message.ScheduledEnqueueTimeUtc = envelope.ExecutionTime.Value.UtcDateTime;
+            }
 
             if (envelope.DeliverBy.HasValue)
             {
                 message.TimeToLive = envelope.DeliverBy.Value.Subtract(DateTimeOffset.UtcNow);
             }
-
-
 
             envelope.WriteToDictionary(message.UserProperties);
 
@@ -56,4 +56,5 @@ namespace Jasper.AzureServiceBus.Internal
             return envelope;
         }
     }
+    // ENDSAMPLE
 }

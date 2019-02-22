@@ -80,6 +80,11 @@ namespace Jasper.AzureServiceBus.Internal
             }
             else if (_endpoint.Uri.IsMessageSpecificTopic())
             {
+                if (_endpoint.Uri.SubscriptionName.IsEmpty())
+                {
+                    throw new InvalidOperationException($"Invalid listener Uri '{_endpoint.Uri.ToUri()}', 'subscription' is required when listening to a topic.");
+                }
+
                 var topicNames = _handlers.Chains.Select(x => x.MessageType.ToMessageTypeName().ToLower());
                 foreach (var name in topicNames)
                 {

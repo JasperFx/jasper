@@ -1,4 +1,9 @@
-<!--title:Scheduled Job Processing-->
+<!--title:Scheduled Message Delivery and Execution-->
+
+<[info]>
+Whenever possible, Jasper tries to use any kind of scheduled delivery functionality native to the underlying transport. If there is no native facility,
+this is done by polling against the configured message storage of your Jasper system.
+<[/info]>
 
 You can send messages with Jasper, but request that the processing of the message happen at some later time with `IMessageContext.ScheduleSend()`:
 

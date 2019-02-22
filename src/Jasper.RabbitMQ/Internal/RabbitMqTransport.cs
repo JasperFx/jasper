@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqTransport : ExternalTransportBase<RabbitMqSettings, RabbitMqEndpoint>
+    public class RabbitMqTransport : ExternalTransportBase<RabbitMqOptions, RabbitMqEndpoint>
     {
-        public RabbitMqTransport(RabbitMqSettings settings, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions) : base("rabbitmq", settings, factory, logger, jasperOptions)
+        public RabbitMqTransport(RabbitMqOptions options, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions) : base("rabbitmq", options, factory, logger, jasperOptions)
         {
         }
 

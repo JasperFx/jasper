@@ -84,7 +84,7 @@ namespace IntegrationTests.RabbitMQ
             {
                 x.HttpRoutes.DisableConventionalDiscovery();
 
-                x.Settings.Alter<RabbitMqSettings>(settings =>
+                x.Settings.Alter<RabbitMqOptions>(settings =>
                 {
                     settings.Connections.Add("messages3", "host=localhost");
                     settings.Connections.Add("replies", "host=localhost");
@@ -497,7 +497,7 @@ namespace IntegrationTests.RabbitMQ
         {
             Settings.AddRabbitMqHost("localhost");
 
-            Settings.Alter<RabbitMqSettings>(settings =>
+            Settings.Alter<RabbitMqOptions>(settings =>
             {
                 settings.Connections.Add("messages3", "host=localhost");
                 settings.Connections.Add("replies", "host=localhost");

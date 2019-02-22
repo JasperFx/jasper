@@ -10,18 +10,18 @@ namespace Jasper.Messaging.Transports
 {
     public abstract class ExternalTransportBase<TSettings, TEndpoint> : TransportBase where TSettings : ExternalTransportSettings<TEndpoint> where TEndpoint : class
     {
-        private readonly TSettings _settings;
+        private readonly TSettings _options;
 
-        public ExternalTransportBase(string protocol, TSettings settings, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions)
+        public ExternalTransportBase(string protocol, TSettings options, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions)
             : base(protocol, factory, logger, jasperOptions)
         {
-            _settings = settings;
+            _options = options;
         }
 
         protected sealed override ISender createSender(Uri uri, CancellationToken cancellation)
         {
             var transportUri = new TransportUri(uri);
-            var endpoint = _settings.For(transportUri);
+            var endpoint = _options.For(transportUri);
 
             if (endpoint == null) throw new ArgumentOutOfRangeException(nameof(uri), $"Unknown {Protocol} connection named '{transportUri.ConnectionName}'");
 
@@ -35,7 +35,7 @@ namespace Jasper.Messaging.Transports
         protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings, HandlerGraph handlers)
         {
             var transportUri = new TransportUri(uri);
-            var endpoint = _settings.For(transportUri);
+            var endpoint = _options.For(transportUri);
 
             if (endpoint == null) throw new ArgumentOutOfRangeException(nameof(uri), $"Unknown {Protocol} connection named '{transportUri.ConnectionName}'");
 
@@ -47,12 +47,12 @@ namespace Jasper.Messaging.Transports
 
         protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
         {
-            if (_settings.ReplyUri == null) return incoming;
+            if (_options.ReplyUri == null) return incoming;
 
-            var replies = _settings.For(_settings.ReplyUri);
+            var replies = _options.For(_options.ReplyUri);
             if (replies != null)
             {
-                ReplyUri = _settings.ReplyUri.ToUri();
+                ReplyUri = _options.ReplyUri.ToUri();
                 return incoming.Concat(new Uri[] {ReplyUri}).Distinct().ToArray();
             }
 

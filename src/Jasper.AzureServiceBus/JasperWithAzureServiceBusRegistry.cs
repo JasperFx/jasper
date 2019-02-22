@@ -11,7 +11,7 @@ namespace Jasper.AzureServiceBus
     {
         public JasperWithAzureServiceBusRegistry()
         {
-            Settings.Alter<AzureServiceBusSettings>((context, settings) =>
+            Settings.Alter<AzureServiceBusOptions>((context, settings) =>
             {
                 Configure(context.HostingEnvironment, context.Configuration, settings);
             });
@@ -22,8 +22,8 @@ namespace Jasper.AzureServiceBus
         /// </summary>
         /// <param name="contextHostingEnvironment"></param>
         /// <param name="configuration"></param>
-        /// <param name="settings"></param>
+        /// <param name="options"></param>
         protected abstract void Configure(IHostingEnvironment contextHostingEnvironment, IConfiguration configuration,
-            AzureServiceBusSettings settings);
+            AzureServiceBusOptions options);
     }
 }

@@ -322,9 +322,9 @@ namespace Jasper.AzureServiceBus.Tests
         }
 
         protected override void Configure(IHostingEnvironment contextHostingEnvironment, IConfiguration configuration,
-            AzureServiceBusSettings settings)
+            AzureServiceBusOptions options)
         {
-            settings.Connections.Add("jasper", end_to_end.ConnectionString);
+            options.Connections.Add("jasper", end_to_end.ConnectionString);
         }
     }
 

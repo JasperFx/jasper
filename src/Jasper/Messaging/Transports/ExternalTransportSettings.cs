@@ -98,6 +98,11 @@ namespace Jasper.Messaging.Transports
 
             if (uri.Protocol != _protocol) throw new ArgumentOutOfRangeException($"Invalid uri protocol '{uri.Protocol}', expected '{_protocol}'");
 
+            if (uri.TopicName.IsEmpty() && uri.QueueName.IsEmpty())
+            {
+                throw new ArgumentOutOfRangeException($"Invalid Azure Service Bus uri '{uri.ToUri()}'. Either 'topic' or 'queue' must be assigned");
+            }
+
             var keys = uri.UriKeys();
 
             var invalids = keys.Where(x => !_validTransportUriKeys.Contains(x));

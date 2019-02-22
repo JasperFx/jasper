@@ -7,13 +7,13 @@ using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.AzureServiceBus.Internal
 {
-    public class AzureServiceBusTransport : ExternalTransportBase<AzureServiceBusSettings, AzureServiceBusEndpoint>
+    public class AzureServiceBusTransport : ExternalTransportBase<AzureServiceBusOptions, AzureServiceBusEndpoint>
     {
         public const string ProtocolName = "azureservicebus";
 
 
-        public AzureServiceBusTransport(AzureServiceBusSettings settings, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions)
-            : base(ProtocolName, settings, factory, logger, jasperOptions)
+        public AzureServiceBusTransport(AzureServiceBusOptions options, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions)
+            : base(ProtocolName, options, factory, logger, jasperOptions)
         {
         }
 

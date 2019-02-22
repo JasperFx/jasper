@@ -12,7 +12,7 @@ namespace IntegrationTests.RabbitMQ
         {
             Should.Throw<ArgumentOutOfRangeException>(() =>
             {
-                new RabbitMqSettings().For("rabbitmq://conn1/subscription/one");
+                new RabbitMqOptions().For("rabbitmq://conn1/subscription/one");
             });
         }
 
@@ -21,14 +21,14 @@ namespace IntegrationTests.RabbitMQ
         {
             Should.Throw<ArgumentOutOfRangeException>(() =>
             {
-                new RabbitMqSettings().For("wrong://conn1/subscription/one");
+                new RabbitMqOptions().For("wrong://conn1/subscription/one");
             });
         }
 
         [Fact]
         public void configure_all_endpoints_by_connection_name()
         {
-            var settings = new RabbitMqSettings();
+            var settings = new RabbitMqOptions();
 
             settings.Connections.Add("conn1", "host=localhost");
             settings.Connections.Add("conn2", "host=localhost");

@@ -12,7 +12,7 @@ namespace Jasper.RabbitMQ.Internal
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Settings.Require<RabbitMqSettings>();
+            registry.Settings.Require<RabbitMqOptions>();
             registry.Services.AddSingleton<ITransport, RabbitMqTransport>();
         }
     }

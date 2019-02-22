@@ -68,11 +68,6 @@ namespace Jasper.RabbitMQ
 
 
 
-            if (TransportUri.QueueName.IsEmpty())
-            {
-                throw new ArgumentOutOfRangeException(nameof(connectionString), "Queue is required, but not specified");
-            }
-
             if (Host.IsEmpty())
             {
                 throw new ArgumentOutOfRangeException(nameof(connectionString), "Host is required, but not specified");

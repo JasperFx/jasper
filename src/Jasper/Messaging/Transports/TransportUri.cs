@@ -14,10 +14,14 @@ namespace Jasper.Messaging.Transports
 
         public TransportUri(Uri uri)
         {
+            if (uri.Host.IsEmpty()) throw new ArgumentOutOfRangeException(nameof(uri), $"{nameof(uri.Scheme)} is required as the connection name");
+
             Protocol = uri.Scheme;
             ConnectionName = uri.Host;
 
             var segments = new Queue<string>(uri.Segments.Where(x => x != "/").Select(x => x.Trim('/')));
+
+            if (segments.Count == 0) throw new ArgumentOutOfRangeException($"Incomplete information in '{uri}'");
 
             if (segments.Peek() == TransportConstants.Durable)
             {

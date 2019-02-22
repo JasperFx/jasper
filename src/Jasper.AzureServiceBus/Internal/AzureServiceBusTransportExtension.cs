@@ -12,7 +12,7 @@ namespace Jasper.AzureServiceBus.Internal
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Settings.Require<AzureServiceBusSettings>();
+            registry.Settings.Require<AzureServiceBusOptions>();
             registry.Services.AddTransient<ITransport, AzureServiceBusTransport>();
         }
     }

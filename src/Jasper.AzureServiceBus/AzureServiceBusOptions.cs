@@ -8,9 +8,9 @@ using Microsoft.Azure.ServiceBus.Core;
 
 namespace Jasper.AzureServiceBus
 {
-    public class AzureServiceBusSettings : ExternalTransportSettings<AzureServiceBusEndpoint>
+    public class AzureServiceBusOptions : ExternalTransportSettings<AzureServiceBusEndpoint>
     {
-        public AzureServiceBusSettings() : base(AzureServiceBusTransport.ProtocolName,TransportConstants.Queue, TransportConstants.Subscription, TransportConstants.Topic)
+        public AzureServiceBusOptions() : base(AzureServiceBusTransport.ProtocolName,TransportConstants.Queue, TransportConstants.Subscription, TransportConstants.Topic)
         {
         }
 

@@ -10,9 +10,9 @@ using Jasper.Util;
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMqSettings : ExternalTransportSettings<RabbitMqEndpoint>
+    public class RabbitMqOptions : ExternalTransportSettings<RabbitMqEndpoint>
     {
-        public RabbitMqSettings() : base("rabbitmq",TransportConstants.Queue, TransportConstants.Topic, TransportConstants.Routing )
+        public RabbitMqOptions() : base("rabbitmq",TransportConstants.Queue, TransportConstants.Topic, TransportConstants.Routing )
         {
         }
 

@@ -3,7 +3,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
 {
-    // SAMPLE: RabbitMQ-IEnvelopeMapper
+    // SAMPLE: IRabbitMqProtocol
     /// <summary>
     /// Used to adapt Jasper to interact with non-Jasper applications through Rabbit MQ
     /// queues by mapping from Jasper's Envelope to the Rabbit MQ header structure

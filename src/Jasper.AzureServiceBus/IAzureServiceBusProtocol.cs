@@ -3,6 +3,7 @@ using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus
 {
+    // SAMPLE: IAzureServiceBusProtocol
     /// <summary>
     /// Used to "map" incoming Azure Service Bus Message objects to Jasper Envelopes. Can be implemented to
     /// connect Jasper to non-Jasper applications
@@ -23,4 +24,5 @@ namespace Jasper.AzureServiceBus
         /// <returns></returns>
         Envelope ReadEnvelope(Message message);
     }
+    // ENDSAMPLE
 }

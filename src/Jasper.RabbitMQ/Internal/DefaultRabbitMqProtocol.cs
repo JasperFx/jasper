@@ -4,6 +4,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
+    // SAMPLE: DefaultRabbitMqProtocol
     public class DefaultRabbitMqProtocol : IRabbitMqProtocol
     {
         public virtual Envelope ReadEnvelope(byte[] data, IBasicProperties props)
@@ -35,4 +36,5 @@ namespace Jasper.RabbitMQ.Internal
             envelope.WriteToDictionary(properties.Headers);
         }
     }
+    // ENDSAMPLE
 }
