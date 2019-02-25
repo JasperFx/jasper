@@ -18,8 +18,6 @@ namespace MessagingTests.Bootstrapping
 
         public BootstrappingContext()
         {
-            theRegistry.Services.AddSingleton<ITransport, StubTransport>();
-
             theRegistry.Services.Scan(_ =>
             {
                 _.TheCallingAssembly();

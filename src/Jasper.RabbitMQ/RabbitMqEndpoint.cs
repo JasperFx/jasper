@@ -72,7 +72,6 @@ namespace Jasper.RabbitMQ
             {
                 throw new ArgumentOutOfRangeException(nameof(connectionString), "Host is required, but not specified");
             }
-
         }
 
         private RabbitMqEndpoint(TransportUri uri, IRabbitMqProtocol protocol, ConnectionFactory factory, string exchangeName, ExchangeType exchangeType) : base(uri, protocol)

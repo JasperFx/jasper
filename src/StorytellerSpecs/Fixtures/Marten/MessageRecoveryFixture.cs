@@ -78,7 +78,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             _host = JasperHost.For(_ =>
             {
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
-                _.Services.AddSingleton<ITransport, StubTransport>();
 
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
                 _.Services.AddSingleton<ISchedulingAgent>(_schedulerAgent);
@@ -173,8 +172,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         private StubTransport getStubTransport()
         {
-            var stub = _host.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
-            return stub;
+            return _host.GetStubTransport();
         }
 
         public IGrammar TheEnvelopesSentShouldBe()

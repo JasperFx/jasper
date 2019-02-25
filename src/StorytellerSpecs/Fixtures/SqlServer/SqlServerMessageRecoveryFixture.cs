@@ -75,7 +75,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             _host = JasperHost.For(_ =>
             {
                 _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-                _.Services.AddSingleton<ITransport, StubTransport>();
 
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
                 _.Services.AddSingleton<ISchedulingAgent>(_schedulerAgent);
@@ -167,8 +166,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private StubTransport getStubTransport()
         {
-            var stub = _host.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
-            return stub;
+            return _host.GetStubTransport();
         }
 
         public IGrammar TheEnvelopesSentShouldBe()

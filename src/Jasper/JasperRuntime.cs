@@ -20,6 +20,7 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Jasper
 {
+
     public class JasperRuntime : IJasperHost
     {
         private readonly IDisposable _host;

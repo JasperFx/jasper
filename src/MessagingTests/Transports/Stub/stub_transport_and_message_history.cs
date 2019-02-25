@@ -19,7 +19,6 @@ namespace MessagingTests.Transports.Stub
             {
                 x.Handlers.DisableConventionalDiscovery().IncludeType<QuestionAndAnswer>();
                 x.Include<MessageTrackingExtension>();
-                x.Services.AddSingleton<ITransport, StubTransport>();
             });
 
             var tracker = runtime1.Get<MessageHistory>();

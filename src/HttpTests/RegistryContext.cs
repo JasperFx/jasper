@@ -20,9 +20,6 @@ namespace HttpTests
         {
             Handlers.DisableConventionalDiscovery();
 
-
-            Services.AddSingleton<ITransport, StubTransport>();
-
             Services.Scan(_ =>
             {
                 _.TheCallingAssembly();

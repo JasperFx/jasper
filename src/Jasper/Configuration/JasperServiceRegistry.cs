@@ -14,6 +14,7 @@ using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util.Lamar;
 using Lamar;
@@ -104,6 +105,8 @@ namespace Jasper.Configuration
             For<ITransport>()
                 .Use<TcpTransport>();
 
+            For<ITransport>()
+                .Use<StubTransport>().Singleton();
 
             ForSingletonOf<IMessagingRoot>().Use<MessagingRoot>();
 

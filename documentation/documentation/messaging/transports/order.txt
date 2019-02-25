@@ -1,3 +1,5 @@
 tcp
 loopback
 durable
+azureservicebus
+rabbitmq

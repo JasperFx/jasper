@@ -22,7 +22,6 @@ namespace StorytellerSpecs.Fixtures
         {
             _registry = new JasperRegistry();
 
-            _registry.Services.AddTransient<ITransport, StubTransport>();
             _registry.Services.AddSingleton(new MessageTracker());
             _registry.Services.AddSingleton(new MessageHistory());
 

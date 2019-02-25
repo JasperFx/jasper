@@ -108,14 +108,13 @@ namespace StorytellerSpecs.Fixtures
 
             var registry = new JasperRegistry();
             registry.Transports.ListenForMessagesFrom("stub://1".ToUri());
-            registry.Services.AddSingleton<ITransport, StubTransport>();
             registry.Services.AddSingleton(_tracker);
             registry.Publish.Message<ErrorCausingMessage>()
                 .To("stub://1".ToUri());
 
             _host = JasperHost.For(registry);
 
-            _transport = _host.Container.GetAllInstances<ITransport>().OfType<StubTransport>().Single();
+            _transport = _host.GetStubTransport();
 
             _graph = _host.Get<HandlerGraph>();
             _chain = _graph.ChainFor<ErrorCausingMessage>();

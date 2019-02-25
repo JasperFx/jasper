@@ -7,6 +7,8 @@ using Baseline;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Messaging.Transports.Stub
 {
@@ -36,9 +38,38 @@ namespace Jasper.Messaging.Transports.Stub
         /// </summary>
         /// <param name="runtime"></param>
         /// <returns></returns>
-        public static Envelope[] AllSentThroughTheStubTransport(this IJasperHost runtime)
+        public static Envelope[] GetAllEnvelopesSent(this IJasperHost runtime)
         {
             return runtime.GetStubTransport().Channels.SelectMany(x => x.Sent).ToArray();
+        }
+        
+        /// <summary>
+        ///     Retrieves the instance of the StubTransport within this application
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static StubTransport GetStubTransport(this IWebHost host)
+        {
+            return host.Services.GetRequiredService<IMessagingRoot>().Transports.OfType<StubTransport>().Single();
+        }
+
+        /// <summary>
+        ///     Clears all record of messages sent to the stub transport
+        /// </summary>
+        /// <param name="host"></param>
+        public static void ClearStubTransportSentList(this IWebHost host)
+        {
+            host.GetStubTransport().Channels.Each(x => x.Sent.Clear());
+        }
+
+        /// <summary>
+        ///     Retrieves an array of all the envelopes sent through the stub transport
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static Envelope[] GetAllEnvelopesSent(this IWebHost host)
+        {
+            return host.GetStubTransport().Channels.SelectMany(x => x.Sent).ToArray();
         }
     }
 

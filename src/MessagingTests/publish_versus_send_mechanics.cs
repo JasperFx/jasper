@@ -33,7 +33,6 @@ namespace MessagingTests
                 _.Publish.Message<Message2>().To("stub://one");
                 _.Publish.Message<Message2>().To("stub://two");
 
-                _.Services.AddSingleton<ITransport, StubTransport>();
             });
         }
 
@@ -43,7 +42,7 @@ namespace MessagingTests
             buildRuntime();
             theHost.Messaging.Publish(new Message3());
 
-            theHost.AllSentThroughTheStubTransport().Any().ShouldBeFalse();
+            theHost.GetAllEnvelopesSent().Any().ShouldBeFalse();
         }
 
         [Fact]
@@ -54,7 +53,7 @@ namespace MessagingTests
             await theHost.Messaging.Publish(new Message1());
             await theHost.Messaging.Publish(new Message2());
 
-            var sent = theHost.AllSentThroughTheStubTransport();
+            var sent = theHost.GetAllEnvelopesSent();
 
             sent.Single(x => x.MessageType == typeof(Message1).ToMessageTypeName()).Destination
                 .ShouldBe("stub://one".ToUri());
@@ -80,7 +79,7 @@ namespace MessagingTests
             await theHost.Messaging.Send(new Message1());
             await theHost.Messaging.Send(new Message2());
 
-            var sent = theHost.AllSentThroughTheStubTransport();
+            var sent = theHost.GetAllEnvelopesSent();
 
             sent.Length.ShouldBe(3);
         }

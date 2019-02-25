@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -21,6 +23,21 @@ namespace Jasper
 {
     public static class WebHostBuilderExtensions
     {
+        /// <summary>
+        /// Overrides a single configuration value. Useful for testing scenarios
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IWebHostBuilder OverrideConfigValue(this IWebHostBuilder builder, string key, string value)
+        {
+            return builder.ConfigureAppConfiguration((_, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string> {{key, value}});
+            });
+        }
+
         /// <summary>
         /// Add Jasper to an ASP.Net Core application using a custom JasperOptionsBuilder (or JasperRegistry) type
         /// </summary>
