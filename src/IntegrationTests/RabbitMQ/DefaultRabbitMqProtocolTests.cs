@@ -101,8 +101,8 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public void original_id()
         {
-            theOriginal.OriginalId = Guid.NewGuid();
-            theEnvelope.OriginalId.ShouldBe(theOriginal.OriginalId);
+            theOriginal.CorrelationId = Guid.NewGuid();
+            theEnvelope.CorrelationId.ShouldBe(theOriginal.CorrelationId);
         }
 
         [Fact]
@@ -118,8 +118,8 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public void parent_id()
         {
-            theOriginal.ParentId = Guid.NewGuid();
-            theEnvelope.ParentId.ShouldBe(theOriginal.ParentId);
+            theOriginal.CausationId = Guid.NewGuid();
+            theEnvelope.CausationId.ShouldBe(theOriginal.CausationId);
         }
 
         [Fact]
@@ -204,8 +204,8 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public void parent_id()
         {
-            theEnvelope.ParentId = Guid.NewGuid();
-            theProperties.Headers[Envelope.ParentIdKey].ShouldBe(theEnvelope.ParentId.ToString());
+            theEnvelope.CausationId = Guid.NewGuid();
+            theProperties.Headers[Envelope.ParentIdKey].ShouldBe(theEnvelope.CausationId.ToString());
         }
 
         [Fact]
@@ -246,8 +246,8 @@ namespace IntegrationTests.RabbitMQ
         [Fact]
         public void the_original_id()
         {
-            theEnvelope.OriginalId = Guid.NewGuid();
-            theProperties.Headers[Envelope.OriginalIdKey].ShouldBe(theEnvelope.OriginalId.ToString());
+            theEnvelope.CorrelationId = Guid.NewGuid();
+            theProperties.Headers[Envelope.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
         }
     }
 }

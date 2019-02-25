@@ -97,8 +97,8 @@ namespace Jasper.AzureServiceBus.Tests
         [Fact]
         public void original_id()
         {
-            theOriginal.OriginalId = Guid.NewGuid();
-            theEnvelope.OriginalId.ShouldBe(theOriginal.OriginalId);
+            theOriginal.CorrelationId = Guid.NewGuid();
+            theEnvelope.CorrelationId.ShouldBe(theOriginal.CorrelationId);
         }
 
         [Fact]
@@ -114,8 +114,8 @@ namespace Jasper.AzureServiceBus.Tests
         [Fact]
         public void parent_id()
         {
-            theOriginal.ParentId = Guid.NewGuid();
-            theEnvelope.ParentId.ShouldBe(theOriginal.ParentId);
+            theOriginal.CausationId = Guid.NewGuid();
+            theEnvelope.CausationId.ShouldBe(theOriginal.CausationId);
         }
 
         [Fact]
@@ -195,8 +195,8 @@ namespace Jasper.AzureServiceBus.Tests
         [Fact]
         public void parent_id()
         {
-            theEnvelope.ParentId = Guid.NewGuid();
-            theMessage.UserProperties[Envelope.ParentIdKey].ShouldBe(theEnvelope.ParentId.ToString());
+            theEnvelope.CausationId = Guid.NewGuid();
+            theMessage.UserProperties[Envelope.ParentIdKey].ShouldBe(theEnvelope.CausationId.ToString());
         }
 
         [Fact]
@@ -237,8 +237,8 @@ namespace Jasper.AzureServiceBus.Tests
         [Fact]
         public void the_original_id()
         {
-            theEnvelope.OriginalId = Guid.NewGuid();
-            theMessage.UserProperties[Envelope.OriginalIdKey].ShouldBe(theEnvelope.OriginalId.ToString());
+            theEnvelope.CorrelationId = Guid.NewGuid();
+            theMessage.UserProperties[Envelope.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
         }
 
         [Fact]

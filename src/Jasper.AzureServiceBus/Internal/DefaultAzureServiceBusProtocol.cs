@@ -17,7 +17,7 @@ namespace Jasper.AzureServiceBus.Internal
                 Body = envelope.Data,
                 ContentType = envelope.ContentType,
                 ReplyTo = envelope.ReplyUri?.ToString(),
-                ReplyToSessionId = envelope.ParentId.ToString(),
+                ReplyToSessionId = envelope.CausationId.ToString(),
 
             };
 
@@ -47,7 +47,7 @@ namespace Jasper.AzureServiceBus.Internal
                 Data = message.Body,
                 ContentType = message.ContentType,
                 ReplyUri = message.ReplyTo.IsNotEmpty() ? new Uri(message.ReplyTo) : null,
-                ParentId = message.ReplyToSessionId.IsNotEmpty() ? Guid.Parse(message.ReplyToSessionId) : Guid.Empty
+                CausationId = message.ReplyToSessionId.IsNotEmpty() ? Guid.Parse(message.ReplyToSessionId) : Guid.Empty
             };
 
 

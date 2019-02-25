@@ -135,7 +135,7 @@ namespace Jasper.Messaging
             {
                 var envelope = new Envelope
                 {
-                    ParentId = Envelope.Id,
+                    CausationId = Envelope.Id,
                     Destination = Envelope.ReplyUri,
                     Message = new FailureAcknowledgement
                     {
@@ -370,7 +370,7 @@ namespace Jasper.Messaging
         {
             var ack = new Envelope
             {
-                ParentId = Envelope.Id,
+                CausationId = Envelope.Id,
                 Destination = Envelope.ReplyUri,
                 SagaId = Envelope.SagaId,
                 Message = new Acknowledgement {CorrelationId = Envelope.Id},
@@ -406,8 +406,8 @@ namespace Jasper.Messaging
 
             foreach (var outbound in outgoing)
             {
-                outbound.OriginalId = Envelope.OriginalId;
-                outbound.ParentId = Envelope.Id;
+                outbound.CorrelationId = Envelope.CorrelationId;
+                outbound.CausationId = Envelope.Id;
             }
         }
 

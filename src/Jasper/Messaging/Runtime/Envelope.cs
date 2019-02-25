@@ -129,9 +129,9 @@ namespace Jasper.Messaging.Runtime
         public string ContentType { get; set; }
 
         /// <summary>
-        ///     Id of the originating envelope that started this envelope's workflow
+        /// Correlating identifier for the logical workflow or system action
         /// </summary>
-        public Guid OriginalId { get; set; }
+        public Guid CorrelationId { get; set; }
 
         /// <summary>
         ///     If this message is part of a stateful saga, this property identifies
@@ -140,12 +140,12 @@ namespace Jasper.Messaging.Runtime
         public string SagaId { get; set; }
 
         /// <summary>
-        ///     Id of the immediate parent of this envelope
+        /// Id of the immediate message or workflow that caused this envelope to be sent
         /// </summary>
-        public Guid ParentId { get; set; }
+        public Guid CausationId { get; set; }
 
         /// <summary>
-        ///     Location that this message should be sent
+        /// Location that this message should be sent
         /// </summary>
         public Uri Destination { get; set; }
 
@@ -155,17 +155,17 @@ namespace Jasper.Messaging.Runtime
         public string[] AcceptedContentTypes { get; set; } = new string[0];
 
         /// <summary>
-        ///     Correlation id for this envelope
+        /// Specific message id for this envelope
         /// </summary>
         public Guid Id { get; set; } = CombGuidIdGeneration.NewGuid();
 
         /// <summary>
-        ///     If specified, the message type alias for the reply message that is requested for this message
+        /// If specified, the message type alias for the reply message that is requested for this message
         /// </summary>
         public string ReplyRequested { get; set; }
 
         /// <summary>
-        ///     Is an acknowledgement requested
+        /// Is an acknowledgement requested
         /// </summary>
         public bool AckRequested { get; set; }
 
@@ -227,7 +227,7 @@ namespace Jasper.Messaging.Runtime
         public Envelope ForResponse(object message)
         {
             var child = ForSend(message);
-            child.ParentId = Id;
+            child.CausationId = Id;
 
             if (message.GetType().ToMessageTypeName() == ReplyRequested)
             {
@@ -243,8 +243,8 @@ namespace Jasper.Messaging.Runtime
             return new Envelope
             {
                 Message = message,
-                OriginalId = OriginalId.IsEmpty() ? Id : OriginalId,
-                ParentId = Id,
+                CorrelationId = CorrelationId.IsEmpty() ? Id : CorrelationId,
+                CausationId = Id,
                 SagaId = SagaId
             };
         }

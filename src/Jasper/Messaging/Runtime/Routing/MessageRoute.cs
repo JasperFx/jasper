@@ -51,7 +51,7 @@ namespace Jasper.Messaging.Runtime.Routing
 
             var sending = envelope.Clone();
             sending.Id = CombGuidIdGeneration.NewGuid();
-            sending.OriginalId = envelope.Id;
+            sending.CorrelationId = envelope.Id;
 
             sending.Data = envelope.Data;
 

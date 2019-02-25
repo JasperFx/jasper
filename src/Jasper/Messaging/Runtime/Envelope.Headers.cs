@@ -3,7 +3,7 @@
     public partial class Envelope
     {
         private const string SentAttemptsHeaderKey = "sent-attempts";
-        public const string OriginalIdKey = "original-id";
+        public const string CorrelationIdKey = "correlation-id";
         public const string SagaIdKey = "saga-id";
         private const string IdKey = "id";
         public const string ParentIdKey = "parent-id";

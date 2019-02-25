@@ -37,8 +37,8 @@ namespace Jasper.Messaging.Runtime
                         ContentType = value;
                         break;
 
-                    case OriginalIdKey:
-                        if (Guid.TryParse(value, out var originalId)) OriginalId = originalId;
+                    case CorrelationIdKey:
+                        if (Guid.TryParse(value, out var originalId)) CorrelationId = originalId;
                         break;
 
                     case SagaIdKey:
@@ -46,7 +46,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case ParentIdKey:
-                        if (Guid.TryParse(value, out var parentId)) ParentId = parentId;
+                        if (Guid.TryParse(value, out var parentId)) CausationId = parentId;
                         break;
 
                     case DestinationKey:

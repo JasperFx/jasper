@@ -154,15 +154,15 @@ namespace MessagingTests.Transports.Lightweight
         [Fact]
         public void original_id()
         {
-            outgoing.OriginalId = Guid.NewGuid();
-            incoming.OriginalId.ShouldBe(outgoing.OriginalId);
+            outgoing.CorrelationId = Guid.NewGuid();
+            incoming.CorrelationId.ShouldBe(outgoing.CorrelationId);
         }
 
         [Fact]
         public void parent_id()
         {
-            outgoing.ParentId = Guid.NewGuid();
-            incoming.ParentId.ShouldBe(outgoing.ParentId);
+            outgoing.CausationId = Guid.NewGuid();
+            incoming.CausationId.ShouldBe(outgoing.CausationId);
         }
 
         [Fact]

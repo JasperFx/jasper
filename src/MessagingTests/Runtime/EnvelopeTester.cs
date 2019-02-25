@@ -32,8 +32,8 @@ namespace MessagingTests.Runtime
         {
             var parent = new Envelope();
 
-            parent.OriginalId.ShouldBe(Guid.Empty);
-            parent.ParentId.ShouldBe(Guid.Empty);
+            parent.CorrelationId.ShouldBe(Guid.Empty);
+            parent.CausationId.ShouldBe(Guid.Empty);
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace MessagingTests.Runtime
         {
             var parent = new Envelope
             {
-                OriginalId = Guid.NewGuid(),
+                CorrelationId = Guid.NewGuid(),
                 ReplyUri = "foo://bar".ToUri(),
                 ReplyRequested = typeof(Message1).ToMessageTypeName()
             };
@@ -89,7 +89,7 @@ namespace MessagingTests.Runtime
 
             var child = parent.ForResponse(childMessage);
 
-            child.ParentId.ShouldBe(parent.Id);
+            child.CausationId.ShouldBe(parent.Id);
             child.Destination.ShouldBe(parent.ReplyUri);
         }
 
@@ -122,8 +122,8 @@ namespace MessagingTests.Runtime
 
             child.Message.ShouldBeSameAs(childMessage);
 
-            child.OriginalId.ShouldBe(parent.Id);
-            child.ParentId.ShouldBe(parent.Id);
+            child.CorrelationId.ShouldBe(parent.Id);
+            child.CausationId.ShouldBe(parent.Id);
         }
 
         [Fact]
@@ -131,7 +131,7 @@ namespace MessagingTests.Runtime
         {
             var parent = new Envelope
             {
-                OriginalId = Guid.NewGuid()
+                CorrelationId = Guid.NewGuid()
             };
 
             var childMessage = new Message1();
@@ -140,8 +140,8 @@ namespace MessagingTests.Runtime
 
             child.Message.ShouldBeSameAs(childMessage);
 
-            child.OriginalId.ShouldBe(parent.OriginalId);
-            child.ParentId.ShouldBe(parent.Id);
+            child.CorrelationId.ShouldBe(parent.CorrelationId);
+            child.CausationId.ShouldBe(parent.Id);
         }
 
         [Fact]

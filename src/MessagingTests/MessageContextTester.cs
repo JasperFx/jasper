@@ -20,7 +20,7 @@ namespace MessagingTests
         {
             var original = ObjectMother.Envelope();
             original.Id = Guid.NewGuid();
-            original.OriginalId = Guid.NewGuid();
+            original.CorrelationId = Guid.NewGuid();
 
             theBus = theMessagingRoot.ContextFor(original).As<MessageContext>();
         }
@@ -63,8 +63,8 @@ namespace MessagingTests
 
             var outgoing = theBus.Outstanding.Single();
 
-            outgoing.ParentId.ShouldBe(theBus.Envelope.Id);
-            outgoing.OriginalId.ShouldBe(theBus.Envelope.OriginalId);
+            outgoing.CausationId.ShouldBe(theBus.Envelope.Id);
+            outgoing.CorrelationId.ShouldBe(theBus.Envelope.CorrelationId);
         }
 
         [Fact]
@@ -79,8 +79,8 @@ namespace MessagingTests
 
             var outgoing = theBus.Outstanding.Single();
 
-            outgoing.ParentId.ShouldBe(theBus.Envelope.Id);
-            outgoing.OriginalId.ShouldBe(theBus.Envelope.OriginalId);
+            outgoing.CausationId.ShouldBe(theBus.Envelope.Id);
+            outgoing.CorrelationId.ShouldBe(theBus.Envelope.CorrelationId);
         }
     }
 
@@ -90,7 +90,7 @@ namespace MessagingTests
         {
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Id = Guid.NewGuid();
-            theEnvelope.OriginalId = Guid.NewGuid();
+            theEnvelope.CorrelationId = Guid.NewGuid();
             theEnvelope.ReplyUri = "tcp://server2:2000".ToUri();
 
             theEnvelope.AckRequested = true;
@@ -120,7 +120,7 @@ namespace MessagingTests
         [Fact]
         public void ack_parent_id()
         {
-            theAcknowledgement.ParentId.ShouldBe(theEnvelope.Id);
+            theAcknowledgement.CausationId.ShouldBe(theEnvelope.Id);
         }
 
         [Fact]
