@@ -32,6 +32,7 @@ namespace Jasper.Messaging
             Envelope = originalEnvelope;
             _sagaId = originalEnvelope.SagaId;
 
+            CorrelationId = originalEnvelope.CorrelationId;
 
             var persistor = new InMemoryEnvelopeTransaction();
             EnlistedInTransaction = true;
@@ -167,6 +168,7 @@ namespace Jasper.Messaging
             foreach (var outgoing in outgoingEnvelopes) await outgoing.Send();
         }
 
+        public Guid CorrelationId { get; } = CombGuidIdGeneration.NewGuid();
         public Envelope Envelope { get; }
 
         public bool EnlistedInTransaction { get; private set; }

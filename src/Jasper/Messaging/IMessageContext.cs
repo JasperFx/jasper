@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 
@@ -6,6 +7,13 @@ namespace Jasper.Messaging
 {
     public interface IMessageContext : IMessagePublisher, ICommandBus
     {
+        /// <summary>
+        /// Correlating identifier for the logical workflow. All envelopes sent or executed
+        /// through this context will be tracked with this identifier. If this context is the
+        /// result of a received message, this will be the original Envelope.CorrelationId
+        /// </summary>
+        Guid CorrelationId { get; }
+
         /// <summary>
         ///     The envelope being currently handled. This will only be non-null during
         ///     the handling of a message

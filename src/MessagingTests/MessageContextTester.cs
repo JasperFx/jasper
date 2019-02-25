@@ -22,11 +22,11 @@ namespace MessagingTests
             original.Id = Guid.NewGuid();
             original.CorrelationId = Guid.NewGuid();
 
-            theBus = theMessagingRoot.ContextFor(original).As<MessageContext>();
+            theContext = theMessagingRoot.ContextFor(original).As<MessageContext>();
         }
 
         private readonly MockMessagingRoot theMessagingRoot = new MockMessagingRoot();
-        private readonly MessageContext theBus;
+        private readonly MessageContext theContext;
 
         private void routedTo(Envelope envelope, params string[] destinations)
         {
@@ -54,17 +54,29 @@ namespace MessagingTests
                 theMessagingRoot.Router.Route(envelope).Returns(outgoing);
         }
 
+        [Fact]
+        public void correlation_id_should_be_same_as_original_envelope()
+        {
+           theContext.CorrelationId.ShouldBe(theContext.Envelope.CorrelationId);
+        }
+
+        [Fact]
+        public void new_context_gets_a_non_empty_correlation_id()
+        {
+            theMessagingRoot.NewContext().CorrelationId.ShouldNotBe(Guid.Empty);
+        }
+
 
         [Fact]
         public async Task publish_with_original_response()
         {
             routedTo(null, "tcp://server1:2222");
-            await theBus.Publish(new Message1());
+            await theContext.Publish(new Message1());
 
-            var outgoing = theBus.Outstanding.Single();
+            var outgoing = theContext.Outstanding.Single();
 
-            outgoing.CausationId.ShouldBe(theBus.Envelope.Id);
-            outgoing.CorrelationId.ShouldBe(theBus.Envelope.CorrelationId);
+            outgoing.CausationId.ShouldBe(theContext.Envelope.Id);
+            outgoing.CorrelationId.ShouldBe(theContext.Envelope.CorrelationId);
         }
 
         [Fact]
@@ -75,12 +87,12 @@ namespace MessagingTests
 
             routedTo(envelope, "tcp://server1:2222");
 
-            await theBus.SendEnvelope(envelope);
+            await theContext.SendEnvelope(envelope);
 
-            var outgoing = theBus.Outstanding.Single();
+            var outgoing = theContext.Outstanding.Single();
 
-            outgoing.CausationId.ShouldBe(theBus.Envelope.Id);
-            outgoing.CorrelationId.ShouldBe(theBus.Envelope.CorrelationId);
+            outgoing.CausationId.ShouldBe(theContext.Envelope.Id);
+            outgoing.CorrelationId.ShouldBe(theContext.Envelope.CorrelationId);
         }
     }
 
