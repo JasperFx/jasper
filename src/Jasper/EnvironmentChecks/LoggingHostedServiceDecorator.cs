@@ -33,5 +33,10 @@ namespace Jasper.EnvironmentChecks
         {
             return _inner.StopAsync(cancellationToken);
         }
+
+        public override string ToString()
+        {
+            return _inner.ToString();
+        }
     }
 }

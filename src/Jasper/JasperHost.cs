@@ -194,6 +194,8 @@ namespace Jasper
         {
             return AssemblyFinder
                 .FindAssemblies(txt => { }, false)
+                .Concat(AppDomain.CurrentDomain.GetAssemblies())
+                .Distinct()
                 .Where(a => a.HasAttribute<JasperModuleAttribute>())
                 .ToArray();
         }

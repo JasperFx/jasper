@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Jeremy D. Miller",
+    "classifications": [
+        "Jasper", "Messaging", "RabbitMQ"
+    ],
+    "identity": "Jasper.RabbitMQ",
+    "name": "Jasper with Rabbit MQ",
+    "shortName": "jasper.rabbitmq",
+    "sourceName": "JasperRabbitMq",
+    "preferNameDirectory" : true
+
+}
