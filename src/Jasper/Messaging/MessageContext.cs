@@ -401,14 +401,16 @@ namespace Jasper.Messaging
 
         private void trackEnvelopeCorrelation(Envelope[] outgoing)
         {
-            foreach (var envelope in outgoing)
-                envelope.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? envelope.SagaId;
+            foreach (var outbound in outgoing)
+            {
+                outbound.CorrelationId = CorrelationId;
+                outbound.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? outbound.SagaId;
+            }
 
             if (Envelope == null) return;
 
             foreach (var outbound in outgoing)
             {
-                outbound.CorrelationId = CorrelationId;
                 outbound.CausationId = Envelope.Id;
             }
         }
