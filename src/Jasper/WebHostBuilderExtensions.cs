@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Http;
@@ -205,40 +203,6 @@ namespace Jasper
                 }
             };
 
-        }
-    }
-
-    internal class JasperActivator : IHostedService
-    {
-        private readonly JasperRegistry _registry;
-        private readonly IMessagingRoot _root;
-        private readonly IContainer _container;
-
-        public JasperActivator(JasperRegistry registry, IMessagingRoot root, IContainer container)
-        {
-            _registry = registry;
-            _root = root;
-            _container = container;
-        }
-
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _registry.Messaging.Compiling;
-
-                _root.Activate(_registry.Messaging.LocalWorker, _registry.CodeGeneration, _container);
-            }
-            catch (Exception e)
-            {
-                _root.Logger.LogException(e);
-                throw;
-            }
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
         }
     }
 

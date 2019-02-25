@@ -51,6 +51,8 @@ namespace Jasper.Configuration
             Policies.Add(new LoggerPolicy());
             Policies.Add(new OptionsPolicy());
 
+            For<IHostedService>().DecorateAllWith<LoggingHostedServiceDecorator>();
+
             conneg(parent);
             messaging(parent);
 

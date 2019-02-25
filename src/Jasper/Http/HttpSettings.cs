@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
+using Jasper.EnvironmentChecks;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
 using Jasper.Http.Routing.Codegen;
@@ -111,20 +112,34 @@ namespace Jasper.Http
 
             return _findActions.ContinueWith(t =>
             {
-                foreach (var policy in _policies)
+                if (t.IsFaulted)
                 {
-                    policy.Apply(Routes, generation);
+                    container.GetInstance<IEnvironmentRecorder>().Failure("Failure while trying to discover HTTP route handlers", t.Exception);
+                    throw t.Exception;
                 }
 
+                try
+                {
+                    foreach (var policy in _policies)
+                    {
+                        policy.Apply(Routes, generation);
+                    }
 
 
-                Routes.AssertNoDuplicateRoutes();
 
-                var tree = new RouteTree(this, generation);
-                tree.CompileAll(container);
+                    Routes.AssertNoDuplicateRoutes();
+
+                    var tree = new RouteTree(this, generation);
+                    tree.CompileAll(container);
 
 
-                return tree;
+                    return tree;
+                }
+                catch (Exception e)
+                {
+                    container.GetInstance<IEnvironmentRecorder>().Failure("Failure while trying to compile the routing tree", e);
+                    throw;
+                }
             });
         }
 
