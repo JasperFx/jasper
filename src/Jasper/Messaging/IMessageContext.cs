@@ -5,7 +5,7 @@ using Jasper.Messaging.Runtime;
 
 namespace Jasper.Messaging
 {
-    public interface IMessageContext : IMessagePublisher, ICommandBus
+    public interface IMessageContext : IMessagePublisher
     {
         /// <summary>
         /// Correlating identifier for the logical workflow. All envelopes sent or executed

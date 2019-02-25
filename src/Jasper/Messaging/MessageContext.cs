@@ -272,7 +272,8 @@ namespace Jasper.Messaging
             return _root.Pipeline.InvokeNow(new Envelope(message)
             {
                 Callback = new InvocationCallback(),
-                ReplyUri = TransportConstants.RepliesUri
+                ReplyUri = TransportConstants.RepliesUri,
+                CorrelationId = CorrelationId
             });
         }
 
@@ -285,7 +286,8 @@ namespace Jasper.Messaging
                 Callback = new InvocationCallback(),
                 ReplyUri = TransportConstants.RepliesUri,
                 ReplyRequested = typeof(T).ToMessageTypeName(),
-                ResponseType = typeof(T)
+                ResponseType = typeof(T),
+                CorrelationId = CorrelationId
             };
 
             await _root.Pipeline.InvokeNow(envelope);
@@ -399,8 +401,6 @@ namespace Jasper.Messaging
 
         private void trackEnvelopeCorrelation(Envelope[] outgoing)
         {
-            var now = DateTimeOffset.UtcNow;
-
             foreach (var envelope in outgoing)
                 envelope.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? envelope.SagaId;
 
@@ -408,7 +408,7 @@ namespace Jasper.Messaging
 
             foreach (var outbound in outgoing)
             {
-                outbound.CorrelationId = Envelope.CorrelationId;
+                outbound.CorrelationId = CorrelationId;
                 outbound.CausationId = Envelope.Id;
             }
         }
