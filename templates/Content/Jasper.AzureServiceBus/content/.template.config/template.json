@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Jeremy D. Miller",
+    "classifications": [
+        "Jasper", "Messaging", "Azure Service Bus"
+    ],
+    "identity": "Jasper.AzureServiceBus",
+    "name": "Jasper with Azure Service Bus",
+    "shortName": "jasper.azureservicebus",
+    "sourceName": "JasperAzureServiceBus",
+    "preferNameDirectory" : true
+
+}
