@@ -232,6 +232,9 @@ namespace Jasper
 
         internal void ApplyExtensions(IJasperExtension[] extensions)
         {
+            // Apply idempotency
+            extensions = extensions.Where(x => !_extensionTypes.Contains(x.GetType())).ToArray();
+
             Settings.ApplyingExtensions = true;
             Services = ExtensionServices;
 
@@ -245,7 +248,11 @@ namespace Jasper
 
             Services = _applicationServices;
             Settings.ApplyingExtensions = false;
+
+            _extensionTypes.Fill(extensions.Select(x => x.GetType()));
         }
+
+        private readonly IList<Type> _extensionTypes = new List<Type>();
 
         /// <summary>
         ///     Applies the extension to this application

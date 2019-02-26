@@ -1,4 +1,5 @@
-﻿using Jasper;
+﻿using System.Linq;
+using Jasper;
 using Jasper.Configuration;
 using Shouldly;
 using TestingSupport;
@@ -41,6 +42,22 @@ namespace CoreTests.Bootstrapping
             }
 
 
+        }
+
+        [Fact]
+        public void will_only_apply_extension_once()
+        {
+            var registry = new JasperRegistry();
+            registry.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
+
+            using (var host = JasperHost.For(registry))
+            {
+                host.Container.Model.For<IColorService>().Instances
+                    .Count().ShouldBe(1);
+            }
         }
     }
 

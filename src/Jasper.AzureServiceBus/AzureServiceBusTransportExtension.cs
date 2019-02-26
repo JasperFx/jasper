@@ -1,4 +1,5 @@
 using Jasper;
+using Jasper.AzureServiceBus;
 using Jasper.AzureServiceBus.Internal;
 using Jasper.Configuration;
 using Jasper.Messaging.Transports;
@@ -6,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 [assembly: JasperModule(typeof(AzureServiceBusTransportExtension))]
 
-namespace Jasper.AzureServiceBus.Internal
+namespace Jasper.AzureServiceBus
 {
     public class AzureServiceBusTransportExtension : IJasperExtension
     {

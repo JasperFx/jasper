@@ -16,11 +16,11 @@ namespace Jasper.EnvironmentChecks
             _recorder = recorder;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             try
             {
-                return _inner.StartAsync(cancellationToken);
+                await _inner.StartAsync(cancellationToken);
             }
             catch (Exception e)
             {
