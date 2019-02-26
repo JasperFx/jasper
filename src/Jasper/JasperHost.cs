@@ -65,7 +65,7 @@ namespace Jasper
                 factory.RegisterCommands(typeof(RunCommand).GetTypeInfo().Assembly);
                 if (applicationAssembly != null) factory.RegisterCommands(applicationAssembly);
 
-                foreach (var assembly in FindExtensionAssemblies()) factory.RegisterCommands(assembly);
+                foreach (var assembly in FindExtensionAssemblies(applicationAssembly)) factory.RegisterCommands(assembly);
 
                 factory.ConfigureRun = cmd =>
                 {
@@ -179,9 +179,13 @@ namespace Jasper
 
         internal static void ApplyExtensions(JasperRegistry registry)
         {
-            var assemblies = FindExtensionAssemblies();
+            var assemblies = FindExtensionAssemblies(registry.ApplicationAssembly);
 
-            if (!assemblies.Any()) return;
+            if (!assemblies.Any())
+            {
+                Console.WriteLine("No Jasper extensions are detected");
+                return;
+            }
 
             var extensions = assemblies.Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
                 .Where(x => x != null)
@@ -205,10 +209,11 @@ namespace Jasper
             registry.ApplyExtensions(extensions);
         }
 
-        internal static Assembly[] FindExtensionAssemblies()
+        internal static Assembly[] FindExtensionAssemblies(Assembly applicationAssembly)
         {
             return AssemblyFinder
                 .FindAssemblies(txt => { }, false)
+                .Concat(applicationAssembly == null ? new Assembly[0] : applicationAssembly.Modules.Select(x => x.Assembly))
                 .Concat(AppDomain.CurrentDomain.GetAssemblies())
                 .Distinct()
                 .Where(a => a.HasAttribute<JasperModuleAttribute>())

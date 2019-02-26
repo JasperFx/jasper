@@ -24,6 +24,7 @@ namespace Jasper.EnvironmentChecks
             }
             catch (Exception e)
             {
+                Console.WriteLine($"Failure in {_inner}");
                 _recorder.Failure($"Failure while running {_inner}.{nameof(IHostedService.StartAsync)}()", e);
                 throw;
             }

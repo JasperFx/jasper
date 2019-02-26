@@ -25,6 +25,7 @@ namespace Jasper.EnvironmentChecks
         public void AssertAllSuccessful()
         {
             if (_exceptions.Any()) throw new AggregateException(_exceptions);
+            ConsoleWriter.Write(ConsoleColor.Green, "All environment checks are good!");
         }
     }
 }
