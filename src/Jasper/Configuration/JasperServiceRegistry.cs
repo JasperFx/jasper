@@ -127,7 +127,7 @@ namespace Jasper.Configuration
 
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
 
-            For<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
+            ForSingletonOf<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
         }
 
         public void MessagingRootService<T>(Expression<Func<IMessagingRoot, T>> expression) where T : class

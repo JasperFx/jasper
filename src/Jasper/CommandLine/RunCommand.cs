@@ -11,7 +11,7 @@ namespace Jasper.CommandLine
     {
         public override bool Execute(JasperInput input)
         {
-            var runtime = input.BuildHost(StartMode.Full);
+            var host = input.BuildHost(StartMode.Full);
 
             var done = new ManualResetEventSlim(false);
             var cts = new CancellationTokenSource();
@@ -23,7 +23,7 @@ namespace Jasper.CommandLine
                     if (!cts.IsCancellationRequested)
                     {
                         Console.WriteLine("Application is shutting down...");
-                        runtime.Dispose();
+                        host.Dispose();
                         cts.Cancel();
                     }
 
@@ -39,11 +39,12 @@ namespace Jasper.CommandLine
                     eventArgs.Cancel = true;
                 };
 
-                using (runtime)
+                using (host)
                 {
-                    runtime.Describe(Console.Out);
+                    host.Describe(Console.Out);
 
-                    runtime.ExecuteAllEnvironmentChecks();
+                    Console.WriteLine("Running all environment checks...");
+                    host.ExecuteAllEnvironmentChecks();
 
                     Console.WriteLine("Application started. Press Ctrl+C to shut down.");
                     done.Wait(cts.Token);

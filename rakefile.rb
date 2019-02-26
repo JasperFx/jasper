@@ -2,11 +2,11 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-BUILD_VERSION =  ENV['version'].nil? ? '0.9.8.1' : ENV['version']
+BUILD_VERSION =  ENV['version'].nil? ? '0.9.8.2' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 
-TEMPLATE_VERSION = '0.9.8.1'
+TEMPLATE_VERSION = '0.9.8.2'
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 
@@ -245,10 +245,14 @@ task :templates => [:clean] do
     sh "dotnet new --uninstall jasper.service"
     sh "dotnet new --uninstall jasper.http"
     sh "dotnet new --uninstall jasper.rabbitmq"
+    sh "dotnet new --uninstall jasper.azureservicebus"
 		sh "dotnet new -i ../templates/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
 		sh "dotnet new jasper.rabbitmq"
-		sh "dotnet restore"
-		sh "dotnet run -- run"
+    sh "dotnet restore"
+    
+
+    sh "dotnet run"
+		
 	end
 end
 

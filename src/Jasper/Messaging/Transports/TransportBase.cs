@@ -86,6 +86,7 @@ namespace Jasper.Messaging.Transports
 
         public void Describe(TextWriter writer)
         {
+            writer.WriteLine($"Transport '{Protocol}' is active");
             foreach (var listener in _listeners) writer.WriteLine($"Listening at {listener.Address}");
         }
 
