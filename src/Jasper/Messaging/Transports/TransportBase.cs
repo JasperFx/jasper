@@ -42,17 +42,24 @@ namespace Jasper.Messaging.Transports
 
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
-            var batchedSender = createSender(uri, cancellation);
+            try
+            {
+                var batchedSender = createSender(uri, cancellation);
 
 
-            var agent = uri.IsDurable()
-                ? _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation)
-                : new LightweightSendingAgent(uri, batchedSender, logger, JasperOptions);
+                var agent = uri.IsDurable()
+                    ? _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation)
+                    : new LightweightSendingAgent(uri, batchedSender, logger, JasperOptions);
 
-            agent.DefaultReplyUri = ReplyUri;
-            agent.Start();
+                agent.DefaultReplyUri = ReplyUri;
+                agent.Start();
 
-            return agent;
+                return agent;
+            }
+            catch (Exception e)
+            {
+                throw new TransportEndpointException(uri, "Could not build sending agent. See inner exception.", e);
+            }
         }
 
         public void StartListening(IMessagingRoot root)
@@ -69,16 +76,23 @@ namespace Jasper.Messaging.Transports
 
             foreach (var uri in incoming)
             {
-                var agent = buildListeningAgent(uri, settings, root.Handlers);
-                agent.Status = _status;
+                try
+                {
+                    var agent = buildListeningAgent(uri, settings, root.Handlers);
+                    agent.Status = _status;
 
-                var listener = uri.IsDurable()
-                    ? _durableMessagingFactory.BuildListener(agent, root)
-                    : new LightweightListener(WorkerQueue, logger, agent);
+                    var listener = uri.IsDurable()
+                        ? _durableMessagingFactory.BuildListener(agent, root)
+                        : new LightweightListener(WorkerQueue, logger, agent);
 
-                _listeners.Add(listener);
+                    _listeners.Add(listener);
 
-                listener.Start();
+                    listener.Start();
+                }
+                catch (Exception e)
+                {
+                    throw new TransportEndpointException(uri, "Could not build listening agent. See inner exception.", e);
+                }
             }
         }
 

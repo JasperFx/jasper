@@ -16,6 +16,9 @@ namespace JasperService
 
             // Register listeners
             Transports.ListenForMessagesFromUriValueInConfig("inbound");
+
+            // Helps out the auto-discovery of Jasper extensions
+            Include<Jasper.RabbitMQ.RabbitMqTransportExtension>();
         }
     }
 
