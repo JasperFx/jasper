@@ -7,7 +7,7 @@
     "identity": "Jasper.AzureServiceBus",
     "name": "Jasper with Azure Service Bus",
     "shortName": "jasper.azureservicebus",
-    "sourceName": "JasperAzureServiceBus",
+    "sourceName": "JasperService",
     "preferNameDirectory" : true
 
 }

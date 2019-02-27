@@ -9,6 +9,17 @@ using RabbitMQ.Client;
 
 namespace IntegrationTests.Samples
 {
+    // SAMPLE: AppWithRabbitMq
+    public class AppWithRabbitMq : JasperRegistry
+    {
+        public AppWithRabbitMq()
+        {
+            // This explicitly registers the Rabbit MQ transport
+            Include<Jasper.RabbitMQ.RabbitMqTransportExtension>();
+        }
+    }
+    // ENDSAMPLE
+
     public class Samples
     {
         public void hard_code_it()

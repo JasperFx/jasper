@@ -7,7 +7,14 @@ For the moment, Jasper requires all queues and subscriptions in Azure Service Bu
 ## Installing
 
 The only thing you need to do is to install the `Jasper.AzureServiceBus` Nuget to your Jasper application. This will add the client libraries for Azure Service Bus access
-and add the transport to your application automatically. In terms of configuration, there's a few things to worry about:
+and add the transport to your application automatically. 
+
+If Jasper is not auto-discovering the Azure Service Bus, you can also explicitly register the transport as shown below:
+
+<[sample:AppWithAzureServiceBus]>
+
+
+In terms of configuration, there's a few things to worry about:
 
 1. Azure Service Bus connection strings, described in the next section
 2. Configuring Jasper listeners and publishing rules through Uri values, also described in this document

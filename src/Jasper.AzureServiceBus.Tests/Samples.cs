@@ -10,6 +10,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.AzureServiceBus.Tests
 {
+    // SAMPLE: AppWithAzureServiceBus
+    public class AppWithAzureServiceBus : JasperRegistry
+    {
+        public AppWithAzureServiceBus()
+        {
+            Include<Jasper.AzureServiceBus.AzureServiceBusTransportExtension>();
+        }
+    }
+    // ENDSAMPLE
+
     public class Samples
     {
         public void hard_code_it()

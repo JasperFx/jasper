@@ -5,6 +5,10 @@
 
 To use [RabbitMQ](http://www.rabbitmq.com/) as a transport with Jasper, first install the `Jasper.RabbitMQ` library via nuget to your project. Behind the scenes, this package uses the [RabbitMQ C# Client](https://www.rabbitmq.com/dotnet.html) to both send and receive messages from RabbitMQ.
 
+If you are having any issues with Jasper not correctly auto-discovering the Rabbit MQ transport, you can explicitly register it as shown in this code:
+
+<[sample:AppWithRabbitMq]>
+
 In terms of configuration, there's a few things to worry about:
 
 1. Jasper's concept of Rabbit MQ connection strings, described in the next section

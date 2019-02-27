@@ -7,7 +7,7 @@
     "identity": "Jasper.RabbitMQ",
     "name": "Jasper with Rabbit MQ",
     "shortName": "jasper.rabbitmq",
-    "sourceName": "JasperRabbitMq",
+    "sourceName": "JasperService",
     "preferNameDirectory" : true
 
 }

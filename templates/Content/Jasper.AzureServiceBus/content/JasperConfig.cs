@@ -16,6 +16,9 @@ namespace JasperService
 
             // Register listeners
             Transports.ListenForMessagesFromUriValueInConfig("inbound");
+
+            // Explicitly registers the Azure Service Bus transport
+            Include<Jasper.AzureServiceBus.AzureServiceBusTransportExtension>();
         }
     }
 

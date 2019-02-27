@@ -2,11 +2,11 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-BUILD_VERSION =  ENV['version'].nil? ? '0.9.8.2' : ENV['version']
+BUILD_VERSION =  ENV['version'].nil? ? '0.9.8.6' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 
-TEMPLATE_VERSION = '0.9.8.2'
+TEMPLATE_VERSION = '0.9.8.6'
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 
