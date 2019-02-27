@@ -138,6 +138,7 @@ task :pack do
   pack_nuget 'Jasper.TestSupport.Storyteller'
   pack_nuget 'Jasper.TestSupport.Alba'
   pack_nuget 'Jasper.RabbitMQ'
+  pack_nuget 'Jasper.AzureServiceBus'
   pack_nuget 'Jasper.ApplicationInsights'
   pack_nuget 'Jasper.JsonCommands'
 end
@@ -247,7 +248,7 @@ task :templates => [:clean] do
     sh "dotnet new --uninstall jasper.rabbitmq"
     sh "dotnet new --uninstall jasper.azureservicebus"
 		sh "dotnet new -i ../templates/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
-		sh "dotnet new jasper.rabbitmq"
+		sh "dotnet new jasper.azureservicebus"
     sh "dotnet restore"
     
 
