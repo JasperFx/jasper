@@ -1,5 +1,22 @@
 <!--title:RabbitMQ Transport-->
 
+## Quick Start
+
+If you're starting a fresh project, you can quickly spin up a new Jasper project using Azure Service Bus with a `dotnet new` template. 
+
+First install the `JasperTemplates` nuget like so:
+
+```
+dotnet new --install JasperTemplates
+```
+
+Then build out the directory for your intended project, and use:
+
+```
+dotnet new jasper.rabbitmq
+```
+
+Then check the `README.md` file in the generated directory for an overview of what was generated for you.
 
 ## Installing
 

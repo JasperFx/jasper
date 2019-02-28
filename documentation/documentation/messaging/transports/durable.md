@@ -67,4 +67,4 @@ dotnet run -- storage clear
 
 ## Durable Messaging to External Systems
 
-To utilize Jasper's durable messaging support and associated outbox support with other external systems, just utilize a Jasper message handler to do the actual integration with the external system. For example, you can send messages to an external web service by making the `HttpClient` call inside of a Jasper message handler through a durable <[link:documentation/messaging/transports/loopback;title=loopback queue]>.
+To utilize Jasper's durable messaging support and associated outbox support with other external systems, just utilize a Jasper message handler to do the actual integration with the external system. For example, you can send messages to an external web service by making the `HttpClient` call inside of a Jasper message handler through a durable <[linkto:documentation/messaging/transports/loopback;title=loopback queue]>.

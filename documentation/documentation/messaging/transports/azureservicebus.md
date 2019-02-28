@@ -4,6 +4,24 @@
 For the moment, Jasper requires all queues and subscriptions in Azure Service Bus to be configured with [sessions enabled](https://docs.microsoft.com/en-us/azure/service-bus-messaging/message-sessions).
 <[/warning]>
 
+## Quick Start
+
+If you're starting a fresh project, you can quickly spin up a new Jasper project using Azure Service Bus with a `dotnet new` template. 
+
+First install the `JasperTemplates` nuget like so:
+
+```
+dotnet new --install JasperTemplates
+```
+
+Then build out the directory for your intended project, and use:
+
+```
+dotnet new jasper.azureservicebus
+```
+
+Then check the `README.md` file in the generated directory for an overview of what was generated for you.
+
 ## Installing
 
 The only thing you need to do is to install the `Jasper.AzureServiceBus` Nuget to your Jasper application. This will add the client libraries for Azure Service Bus access
