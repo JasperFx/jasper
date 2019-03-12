@@ -1,29 +1,50 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using IntegrationTests;
 using Jasper;
+using Jasper.Messaging.Durability;
+using Jasper.Persistence;
+using Jasper.Persistence.Marten;
+using Jasper.Persistence.Postgresql.Schema;
+using Jasper.TestSupport.Storyteller.Logging;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using StoryTeller;
 
-namespace StorytellerSpecs.Fixtures
+namespace StorytellerSpecs.Fixtures.Marten
 {
-    public class ScheduledJobFixture : Fixture
+    public class MartenScheduledJobFixture : Fixture
     {
         private ScheduledMessageReceiver theReceiver;
         private IJasperHost theHost;
 
-        public ScheduledJobFixture()
+        public MartenScheduledJobFixture()
         {
-            Title = "In Memory Scheduled Jobs";
+            Title = "Marten Scheduled Jobs";
         }
 
         public override void SetUp()
         {
+            var admin = new PostgresqlEnvelopeStorageAdmin(Servers.PostgresConnectionString);
+            admin.RecreateAll();
+
             var registry = new ScheduledMessageApp();
             theReceiver = registry.Receiver;
 
-            theHost = JasperHost.For(registry);
+            var logger = new StorytellerAspNetCoreLogger();
+            Context.Reporting.Log(logger);
+
+
+
+            theHost = JasperHost
+                .CreateDefaultBuilder()
+                .ConfigureLogging(x => x.AddProvider(logger))
+                .UseJasper(registry)
+                .StartJasper();
+
         }
 
         public override void TearDown()
@@ -60,6 +81,13 @@ namespace StorytellerSpecs.Fixtures
         {
             return theReceiver.ReceivedMessages.Single().Id;
         }
+
+        [FormatAs("The persisted count of scheduled jobs should be {count}")]
+        public async Task<int> PersistedScheduledCount()
+        {
+            var counts = await theHost.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+            return counts.Scheduled;
+        }
     }
 
     public class ScheduledMessageApp : JasperRegistry
@@ -71,15 +99,22 @@ namespace StorytellerSpecs.Fixtures
             Services.AddSingleton(Receiver);
 
             Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
-                .To("loopback://incoming");
+                .To("loopback://durable/incoming");
 
-            Transports.ListenForMessagesFrom("loopback://incoming");
+            Transports.ListenForMessagesFrom("loopback://durable/incoming");
 
             Handlers.Discovery(x =>
             {
                 x.DisableConventionalDiscovery();
                 x.IncludeType<ScheduledMessageCatcher>();
             });
+
+            Settings.ConfigureMarten(marten =>
+            {
+                marten.Connection(Servers.PostgresConnectionString);
+            });
+
+            Include<MartenBackedPersistence>();
         }
     }
 
@@ -110,7 +145,10 @@ namespace StorytellerSpecs.Fixtures
 
         public void Consume(ScheduledMessage message)
         {
-            _receiver.Source.SetResult(message);
+            if (!_receiver.Source.Task.IsCompleted)
+            {
+                _receiver.Source.SetResult(message);
+            }
 
             _receiver.ReceivedMessages.Add(message);
         }

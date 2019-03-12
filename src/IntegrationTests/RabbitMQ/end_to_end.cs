@@ -286,6 +286,8 @@ namespace IntegrationTests.RabbitMQ
                 });
 
                 _.Publish.AllMessagesTo(uri);
+
+                _.HttpRoutes.DisableConventionalDiscovery();
             });
 
             var receiver1 = JasperHost.For(_ =>
@@ -298,6 +300,8 @@ namespace IntegrationTests.RabbitMQ
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
+
+                _.HttpRoutes.DisableConventionalDiscovery();
             });
 
             var receiver2 = JasperHost.For(_ =>
@@ -310,6 +314,8 @@ namespace IntegrationTests.RabbitMQ
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
+
+                _.HttpRoutes.DisableConventionalDiscovery();
             });
 
             var receiver3 = JasperHost.For(_ =>
@@ -322,6 +328,8 @@ namespace IntegrationTests.RabbitMQ
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
+
+                _.HttpRoutes.DisableConventionalDiscovery();
             });
 
             var wait1 = receiver1.Get<MessageTracker>().WaitFor<ColorChosen>();

@@ -229,6 +229,8 @@ namespace Jasper.Messaging.Durability
 
         public void Dispose()
         {
+            if (_disabled) return;
+
             if (_storage.Session.IsConnected())
             {
                 _storage.Session.ReleaseNodeLock(_options.UniqueNodeId).GetAwaiter().GetResult();

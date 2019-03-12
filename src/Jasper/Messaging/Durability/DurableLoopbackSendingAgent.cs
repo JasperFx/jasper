@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Messaging.Durability
 {
@@ -52,18 +55,37 @@ namespace Jasper.Messaging.Durability
         {
             writeMessageData(envelope);
 
+            envelope.Status = envelope.IsDelayed(DateTime.UtcNow)
+                ? TransportConstants.Scheduled
+                : TransportConstants.Incoming;
+
             await _persistence.StoreIncoming(envelope);
 
-            await EnqueueOutgoing(envelope);
+            if (envelope.Status == TransportConstants.Incoming)
+            {
+                await EnqueueOutgoing(envelope);
+            }
         }
 
         public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
         {
-            foreach (var envelope in envelopes) writeMessageData(envelope);
+            var array = envelopes.ToArray();
+            foreach (var envelope in array)
+            {
+                envelope.Status = envelope.IsDelayed(DateTime.UtcNow)
+                    ? TransportConstants.Scheduled
+                    : TransportConstants.Incoming;
 
-            await _persistence.StoreIncoming((Envelope[]) envelopes);
 
-            foreach (var envelope in envelopes) await EnqueueOutgoing(envelope);
+                writeMessageData(envelope);
+            }
+
+            await _persistence.StoreIncoming(array);
+
+            foreach (var envelope in array.Where(x => x.Status == TransportConstants.Incoming))
+            {
+                await EnqueueOutgoing(envelope);
+            }
         }
 
         public void Start()
