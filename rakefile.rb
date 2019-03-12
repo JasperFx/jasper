@@ -135,12 +135,14 @@ task :pack do
   pack_nuget 'Jasper'
   pack_nuget 'Jasper.Persistence.Marten'
   pack_nuget 'Jasper.Persistence.SqlServer'
+  pack_nuget 'Jasper.Persistence.Postgresql'
   pack_nuget 'Jasper.TestSupport.Storyteller'
   pack_nuget 'Jasper.TestSupport.Alba'
   pack_nuget 'Jasper.RabbitMQ'
   pack_nuget 'Jasper.AzureServiceBus'
   pack_nuget 'Jasper.ApplicationInsights'
   pack_nuget 'Jasper.JsonCommands'
+  pack_nuget 'Jasper.MvcExtender'
 end
 
 def pack_nuget(project)
@@ -250,10 +252,10 @@ task :templates => [:clean] do
 		sh "dotnet new -i ../templates/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
 		sh "dotnet new jasper.azureservicebus"
     sh "dotnet restore"
-    
+
 
     sh "dotnet run"
-		
+
 	end
 end
 
