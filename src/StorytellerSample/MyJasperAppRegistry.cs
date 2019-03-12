@@ -1,5 +1,5 @@
 ﻿using Jasper;
-using Jasper.Storyteller;
+using Jasper.TestSupport.Storyteller;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;

@@ -47,9 +47,9 @@ namespace Jasper.Persistence.SqlServer
         }
 
 
-        public static Task GetGlobalLock(this SqlConnection conn, int lockId)
+        public static Task GetGlobalLock(this SqlConnection conn, int lockId, SqlTransaction transaction = null)
         {
-            return getLock(conn, lockId, "Session", null);
+            return getLock(conn, lockId, "Session", transaction);
         }
 
         public static async Task<bool> TryGetGlobalLock(this SqlConnection conn, int lockId)
@@ -57,9 +57,14 @@ namespace Jasper.Persistence.SqlServer
             return await tryGetLock(conn, lockId, "Session", null) >= 0;
         }
 
-        public static Task ReleaseGlobalLock(this SqlConnection conn, int lockId)
+        public static async Task<bool> TryGetGlobalLock(this SqlConnection conn, int lockId, SqlTransaction tx)
         {
-            var sqlCommand = new SqlCommand("sp_releaseapplock", conn)
+            return await tryGetLock(conn, lockId, "Session", tx) >= 0;
+        }
+
+        public static Task ReleaseGlobalLock(this SqlConnection conn, int lockId, SqlTransaction tx = null)
+        {
+            var sqlCommand = new SqlCommand("sp_releaseapplock", conn, tx)
             {
                 CommandType = CommandType.StoredProcedure
             };
@@ -83,5 +88,7 @@ namespace Jasper.Persistence.SqlServer
             public string Grant { get; }
             public DateTime? Start { get; }
         }
+
+
     }
 }

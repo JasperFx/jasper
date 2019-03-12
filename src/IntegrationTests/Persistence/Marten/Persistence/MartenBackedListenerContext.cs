@@ -11,10 +11,9 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
-using Jasper.Persistence.Marten;
-using Jasper.Persistence.Marten.Persistence;
-using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Jasper.Persistence.Marten.Persistence.Operations;
+using Jasper.Persistence.Postgresql;
+using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Util;
 using Marten;
 using NSubstitute;
@@ -32,7 +31,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
             persisted.Status.ShouldBe(TransportConstants.Incoming);
-            persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
+            persisted.OwnerId.ShouldBe(theOptions.UniqueNodeId);
             persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
@@ -45,7 +44,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
             persisted.Status.ShouldBe(TransportConstants.Incoming);
-            persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
+            persisted.OwnerId.ShouldBe(theOptions.UniqueNodeId);
             persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
@@ -71,8 +70,10 @@ namespace IntegrationTests.Persistence.Marten.Persistence
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected DurableListener theListener;
-        protected JasperOptions theSettings;
+        protected JasperOptions theOptions;
         protected IWorkerQueue theWorkerQueue;
+
+        protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin = new PostgresqlEnvelopeStorageAdmin(Servers.PostgresConnectionString);
 
 
         public MartenBackedListenerContext()
@@ -81,27 +82,21 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             {
                 _.Connection(Servers.PostgresConnectionString);
                 _.PLV8Enabled = false;
-                _.Storage.Add<PostgresqlEnvelopeStorage>();
             });
 
-            theStore.Advanced.Clean.CompletelyRemoveAll();
-
-            theStore.Schema.ApplyAllConfiguredChangesToDatabase();
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
-            theSettings = new JasperOptions();
+            theOptions = new JasperOptions();
 
-            var tables = new EnvelopeTables(theSettings, new StoreOptions());
 
-            var retries = new EnvelopeRetries(new MartenEnvelopePersistor(theStore, tables), TransportLogger.Empty(),
-                theSettings);
+            EnvelopeStorageAdmin.RebuildSchemaObjects();
 
 
             theListener = new DurableListener(
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
-                TransportLogger.Empty(), theSettings, retries, new MartenEnvelopePersistor(theStore, tables));
+                TransportLogger.Empty(), theOptions, new PostgresqlEnvelopePersistence(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString}, theOptions));
         }
 
         public void Dispose()
@@ -147,16 +142,13 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             return env;
         }
 
-        protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
+        protected async Task<Envelope[]> afterReceivingTheEnvelopes()
         {
             var status = await theListener.Received(theUri, theEnvelopes.ToArray());
 
             status.ShouldBe(ReceivedStatus.Successful);
 
-            using (var session = theStore.QuerySession())
-            {
-                return session.AllIncomingEnvelopes();
-            }
+            return await EnvelopeStorageAdmin.AllIncomingEnvelopes();
         }
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)

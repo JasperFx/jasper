@@ -7,7 +7,7 @@ using StoryTeller;
 using StoryTeller.Results;
 using Envelope = Jasper.Messaging.Runtime.Envelope;
 
-namespace Jasper.Storyteller.Logging
+namespace Jasper.TestSupport.Storyteller.Logging
 {
     public class StorytellerMessageLogger : MessageTrackingLogger
     {

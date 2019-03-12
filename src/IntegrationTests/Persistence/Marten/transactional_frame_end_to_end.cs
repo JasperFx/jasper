@@ -9,6 +9,7 @@ using Jasper.Messaging.Model;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten.Codegen;
 using Marten;
+using Shouldly;
 using Xunit;
 
 namespace IntegrationTests.Persistence.Marten

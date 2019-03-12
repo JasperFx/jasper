@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Reflection;
 using Jasper.Configuration;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -12,6 +13,8 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Receiving;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Lamar;
@@ -26,19 +29,20 @@ namespace Jasper.Messaging
 
         private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
+        private readonly Lazy<IEnvelopePersistence> _persistence;
+
         public MessagingRoot(MessagingSerializationGraph serialization,
-            JasperOptions settings,
+            JasperOptions options,
             HandlerGraph handlers,
-            IDurableMessagingFactory factory,
             ISubscriberGraph subscribers,
             IMessageLogger messageLogger,
             IContainer container,
-            ITransportLogger transportLogger)
+            ITransportLogger transportLogger
+            )
         {
-            Settings = settings;
+            Options = options;
             Handlers = handlers;
             _transportLogger = transportLogger;
-            Factory = factory;
             Subscribers = subscribers;
             Transports = container.QuickBuildAll<ITransport>().ToArray();
 
@@ -51,12 +55,11 @@ namespace Jasper.Messaging
                 container.QuickBuildAll<IMissingHandler>(),
                 this);
 
-            Workers = new WorkerQueue(Logger, Pipeline, settings);
+            Workers = new WorkerQueue(Logger, Pipeline, options);
 
             Router = new MessageRouter(this, handlers);
 
-            // TODO -- ZOMG this is horrible, and I admit it.
-            if (Factory is NulloDurableMessagingFactory f) f.ScheduledJobs = ScheduledJobs;
+            _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
         }
 
         public void Dispose()
@@ -81,7 +84,7 @@ namespace Jasper.Messaging
 
         public IScheduledJobProcessor ScheduledJobs => Workers.ScheduledJobs;
 
-        public JasperOptions Settings { get; }
+        public JasperOptions Options { get; }
 
         public ISubscriberGraph Subscribers { get; }
 
@@ -95,7 +98,7 @@ namespace Jasper.Messaging
 
         public MessagingSerializationGraph Serialization { get; }
 
-        public IDurableMessagingFactory Factory { get; }
+        public IEnvelopePersistence Persistence => _persistence.Value;
 
         public IMessageContext NewContext()
         {
@@ -107,7 +110,7 @@ namespace Jasper.Messaging
             return new MessageContext(this, envelope);
         }
 
-        public void Activate(LocalWorkerSender localWorker,
+        public void Activate(LoopbackWorkerSender localWorker,
             JasperGenerationRules generation, IContainer container)
         {
 
@@ -119,7 +122,7 @@ namespace Jasper.Messaging
 
             localWorker.Start(this);
 
-            if (!Settings.DisableAllTransports)
+            if (!Options.DisableAllTransports)
             {
                 ((SubscriberGraph) Subscribers).Start(this);
             }
@@ -145,6 +148,21 @@ namespace Jasper.Messaging
         public bool ShouldBeDurable(Type messageType)
         {
             return Handlers.Workers.ShouldBeDurable(messageType);
+        }
+
+        public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
+        {
+            return new DurableSendingAgent(destination, sender, _transportLogger, Options, Persistence);
+        }
+
+        public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
+        {
+            return new DurableLoopbackSendingAgent(destination, Workers, Persistence, Serialization, _transportLogger);
+        }
+
+        public IListener BuildDurableListener(IListeningAgent agent)
+        {
+            return new DurableListener(agent, Workers, _transportLogger, Options, Persistence);
         }
 
         private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)

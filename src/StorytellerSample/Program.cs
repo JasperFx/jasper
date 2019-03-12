@@ -1,4 +1,4 @@
-﻿using Jasper.Storyteller;
+﻿using Jasper.TestSupport.Storyteller;
 using StoryTeller;
 
 namespace StorytellerSample

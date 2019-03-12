@@ -20,6 +20,8 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             });
 
             Transports.LightweightListenerAt(2567);
+
+            HttpRoutes.DisableConventionalDiscovery();
         }
     }
 }

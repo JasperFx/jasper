@@ -12,7 +12,7 @@ namespace MessagingTests.Durability
         public void status_delegates_to_agent()
         {
             var agent = Substitute.For<IListeningAgent>();
-            var listener = new DurableListener(agent, null, null, null, null, null);
+            var listener = new DurableListener(agent, null, null, null, null);
 
             listener.Status = ListeningStatus.Accepting;
             agent.Received().Status = ListeningStatus.Accepting;
@@ -22,7 +22,7 @@ namespace MessagingTests.Durability
         public void status_delegates_to_agent_2()
         {
             var agent = Substitute.For<IListeningAgent>();
-            var listener = new DurableListener(agent, null, null, null, null, null);
+            var listener = new DurableListener(agent, null, null, null, null);
 
             listener.Status = ListeningStatus.TooBusy;
             agent.Received().Status = ListeningStatus.TooBusy;

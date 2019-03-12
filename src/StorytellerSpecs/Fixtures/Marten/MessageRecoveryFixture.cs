@@ -7,6 +7,7 @@ using Baseline;
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
+using Jasper.EnvironmentChecks;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -16,18 +17,19 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Marten;
-using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
-using Jasper.Persistence.Marten.Resiliency;
+using Jasper.Persistence.Postgresql;
+using Jasper.Persistence.Postgresql.Util;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
 namespace StorytellerSpecs.Fixtures.Marten
 {
-    public class MessageRecoveryFixture : Fixture, ISchedulingAgent
+    public class MessageRecoveryFixture : Fixture, IDurabilityAgent
     {
         private readonly IList<Envelope> _envelopes = new List<Envelope>();
 
@@ -35,13 +37,13 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
         private int _currentNodeId;
-        private EnvelopeTables _marker;
 
         private IJasperHost _host;
-        private RecordingSchedulingAgent _schedulerAgent;
+        private PostgresqlSettings _settings;
         private MessagingSerializationGraph _serializers;
         private RecordingWorkerQueue _workers;
         private IDocumentStore theStore;
+        private IEnvelopeStorageAdmin _admin;
 
         public MessageRecoveryFixture()
         {
@@ -59,11 +61,16 @@ namespace StorytellerSpecs.Fixtures.Marten
             Lists["owners"].AddValues("This Node", "Other Node", "Any Node", "Third Node");
         }
 
-        void ISchedulingAgent.RescheduleOutgoingRecovery()
+        void IDurabilityAgent.RescheduleOutgoingRecovery()
         {
         }
 
-        void ISchedulingAgent.RescheduleIncomingRecovery()
+        Task IDurabilityAgent.EnqueueLocally(Envelope envelope)
+        {
+            return Task.CompletedTask;
+        }
+
+        void IDurabilityAgent.RescheduleIncomingRecovery()
         {
         }
 
@@ -73,29 +80,35 @@ namespace StorytellerSpecs.Fixtures.Marten
             _nodeLockers.Clear();
 
             _workers = new RecordingWorkerQueue();
-            _schedulerAgent = new RecordingSchedulingAgent();
 
-            _host = JasperHost.For(_ =>
-            {
-                _.MartenConnectionStringIs(Servers.PostgresConnectionString);
-
-                _.Services.AddSingleton<IWorkerQueue>(_workers);
-                _.Services.AddSingleton<ISchedulingAgent>(_schedulerAgent);
-
-                _.Include<MartenBackedPersistence>();
-
-                _.Settings.Alter<JasperOptions>(x =>
+            _host = JasperHost.CreateDefaultBuilder()
+                .UseJasper(_ =>
                 {
-                    x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
-                    x.ScheduledJobs.FirstExecution = 30.Minutes();
-                    x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
-                    x.Retries.NodeReassignmentPollingTime = 30.Minutes();
-                });
-            });
+                    _.ServiceName = Guid.NewGuid().ToString();
 
-            _host.Get<MartenBackedDurableMessagingFactory>().ClearAllStoredMessages();
+                    _.MartenConnectionStringIs(Servers.PostgresConnectionString);
 
-            _marker = _host.Get<EnvelopeTables>();
+                    _.Services.AddSingleton<IWorkerQueue>(_workers);
+
+                    _.Include<MartenBackedPersistence>();
+
+                    _.Settings.Alter<JasperOptions>(x =>
+                    {
+                        x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
+                        x.ScheduledJobs.FirstExecution = 30.Minutes();
+                        x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
+                        x.Retries.NodeReassignmentPollingTime = 30.Minutes();
+
+
+                    });
+                })
+                .StartJasper();
+
+
+            _admin = _host.Get<IEnvelopePersistence>().Admin;
+            _admin.RebuildSchemaObjects();
+
+            _settings = _host.Get<PostgresqlSettings>();
             _serializers = _host.Get<MessagingSerializationGraph>();
 
             theStore = _host.Get<IDocumentStore>();
@@ -149,7 +162,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("Channel {channel} is unavailable and latched for sending")]
         public void ChannelIsLatched(Uri channel)
         {
-            getStubTransport().Channels[channel].Latched = true;
+            _host.GetStubTransport().Channels[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
             _host.Get<ISubscriberGraph>().GetOrBuild(channel);
@@ -183,12 +196,10 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
         {
-            using (var session = theStore.QuerySession())
-            {
-                return session.AllIncomingEnvelopes().Concat(session.AllOutgoingEnvelopes())
-                    .Where(x => x.OwnerId == ownerId)
-                    .ToList();
-            }
+            return _admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
+                .Concat(_admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
+                .Where(x => x.OwnerId == ownerId)
+                .ToList();
         }
 
         public IGrammar ThePersistedEnvelopesOwnedByTheCurrentNodeAre()
@@ -225,31 +236,25 @@ namespace StorytellerSpecs.Fixtures.Marten
             {
                 foreach (var envelope in _envelopes)
                     if (envelope.Status == TransportConstants.Outgoing)
-                        session.StoreOutgoing(_marker, envelope, envelope.OwnerId);
+                        session.StoreOutgoing(_settings, envelope, envelope.OwnerId);
                     else
-                        session.StoreIncoming(_marker, envelope);
+                        session.StoreIncoming(_settings, envelope);
 
                 await session.SaveChangesAsync();
             }
 
+            var agent = DurabilityAgent.ForHost(_host);
+
             var action = _host.Get<T>();
-            using (var session = theStore.LightweightSession())
-            {
-                try
-                {
-                    await action.Execute(session, this);
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.ToString());
-                }
-            }
+            await agent.Execute(action);
+
+
         }
 
         [FormatAs("After reassigning envelopes from dormant nodes")]
         public Task AfterReassigningFromDormantNodes()
         {
-            return runAction<ReassignFromDormantNodes>();
+            return runAction<NodeReassignment>();
         }
 
         [FormatAs("After recovering incoming messages")]
@@ -292,16 +297,6 @@ namespace StorytellerSpecs.Fixtures.Marten
         public Uri Destination { get; set; }
     }
 
-    public class RecordingSchedulingAgent : ISchedulingAgent
-    {
-        public void RescheduleOutgoingRecovery()
-        {
-        }
-
-        public void RescheduleIncomingRecovery()
-        {
-        }
-    }
 
     public class RecordingWorkerQueue : IWorkerQueue
     {

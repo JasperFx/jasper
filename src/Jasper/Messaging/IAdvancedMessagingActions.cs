@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -8,15 +9,13 @@ namespace Jasper.Messaging
 {
     public interface IAdvancedMessagingActions
     {
-        /// <summary>
-        ///     Current message persistence
-        /// </summary>
-        IDurableMessagingFactory Factory { get; }
 
         /// <summary>
         ///     Current message logger
         /// </summary>
         IMessageLogger Logger { get; }
+
+        IEnvelopePersistence Persistence { get; }
 
         /// <summary>
         ///     Send a failure acknowledgement back to the original

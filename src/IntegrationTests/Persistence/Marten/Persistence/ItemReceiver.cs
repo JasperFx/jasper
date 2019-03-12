@@ -24,6 +24,8 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             Services.AddSingleton<MessageTracker>();
 
             Transports.DurableListenerAt(2345);
+
+            HttpRoutes.DisableConventionalDiscovery();
         }
     }
 }

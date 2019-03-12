@@ -3,7 +3,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
 using StoryTeller;
 
-namespace Jasper.Storyteller
+namespace Jasper.TestSupport.Storyteller
 {
     public abstract class MessagingFixture : Fixture
     {

@@ -6,14 +6,12 @@ using Baseline;
 using Jasper.Messaging;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
-using Jasper.Storyteller.Logging;
-using Microsoft.AspNetCore.Hosting;
+using Jasper.TestSupport.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using StoryTeller;
 using StoryTeller.Engine;
 
-namespace Jasper.Storyteller
+namespace Jasper.TestSupport.Storyteller
 {
     public static class JasperStorytellerHost
     {

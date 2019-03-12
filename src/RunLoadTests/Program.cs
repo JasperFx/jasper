@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Marten;
 using Oakton;
 using TestMessages;
@@ -28,7 +27,6 @@ namespace RunLoadTests
                 x.AutoCreateSchemaObjects = AutoCreate.All;
                 x.DatabaseSchemaName = schemaName;
 
-                x.Storage.Add<PostgresqlEnvelopeStorage>();
                 x.Schema.For<SentTrack>();
                 x.Schema.For<ReceivedTrack>();
             });

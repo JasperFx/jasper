@@ -36,9 +36,9 @@ namespace SqlSender
             return writer.ToString();
         }
 
-        public static void post_clear(SqlServerEnvelopePersistor persistor)
+        public static void post_clear(SqlServerEnvelopePersistence persistence)
         {
-            persistor.ClearAllStoredMessages();
+            persistence.ClearAllStoredMessages();
         }
 
         [Transactional]

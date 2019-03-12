@@ -7,9 +7,9 @@ namespace Jasper.Testing.Samples
     public class DeadLetterQueue
     {
         // SAMPLE: FetchErrorReport
-        public async Task load_error_report(IEnvelopePersistor persistor, Guid envelopeId)
+        public async Task load_error_report(IEnvelopePersistence persistence, Guid envelopeId)
         {
-            var report = await persistor.LoadDeadLetterEnvelope(envelopeId);
+            var report = await persistence.Admin.LoadDeadLetterEnvelope(envelopeId);
 
             // The Id
             Console.WriteLine(report.Id);

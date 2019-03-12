@@ -2,31 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.Transports.Tcp;
+using Polly;
+using Polly.Retry;
 
 namespace Jasper.Messaging.Durability
 {
     public class DurableSendingAgent : SendingAgent
     {
         private readonly ITransportLogger _logger;
-        private readonly IRetries _persistenceRetries;
-        private readonly IEnvelopePersistor _persistor;
+        private readonly IEnvelopePersistence _persistence;
         private readonly JasperOptions _settings;
+        private readonly RetryPolicy _policy;
 
         public DurableSendingAgent(Uri destination, ISender sender,
-            ITransportLogger logger, JasperOptions settings, IRetries persistenceRetries,
-            IEnvelopePersistor persistor)
+            ITransportLogger logger, JasperOptions settings,
+            IEnvelopePersistence persistence)
             : base(destination, sender, logger, settings,
-                new DurableRetryAgent(sender, settings.Retries, logger, persistor))
+                new DurableRetryAgent(sender, settings.Retries, logger, persistence))
         {
             _logger = logger;
             _settings = settings;
-            _persistenceRetries = persistenceRetries;
 
-            _persistor = persistor;
+            _persistence = persistence;
+
+            _policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
+                , (e, timeSpan) => {
+                    _logger.LogException(e);
+                });
         }
 
         public override bool IsDurable => true;
@@ -49,7 +58,7 @@ namespace Jasper.Messaging.Durability
         {
             setDefaults(envelope);
 
-            await _persistor.StoreOutgoing(envelope, _settings.UniqueNodeId);
+            await _persistence.StoreOutgoing(envelope, _settings.UniqueNodeId);
 
             await EnqueueOutgoing(envelope);
         }
@@ -60,37 +69,19 @@ namespace Jasper.Messaging.Durability
 
             foreach (var envelope in outgoing) setDefaults(envelope);
 
-            await _persistor.StoreOutgoing(outgoing, _settings.UniqueNodeId);
+            await _persistence.StoreOutgoing(outgoing, _settings.UniqueNodeId);
 
             foreach (var envelope in outgoing) await _sender.Enqueue(envelope);
         }
 
-        public override async Task Successful(OutgoingMessageBatch outgoing)
+        public override Task Successful(OutgoingMessageBatch outgoing)
         {
-            try
-            {
-                await _persistor.DeleteOutgoingEnvelopes(outgoing.Messages.ToArray());
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e,
-                    message: "Error trying to delete outgoing envelopes after a successful batch send");
-                foreach (var envelope in outgoing.Messages) _persistenceRetries.DeleteOutgoing(envelope);
-            }
+            return _policy.ExecuteAsync(() => _persistence.DeleteOutgoing(outgoing.Messages.ToArray()));
         }
 
-        public override async Task Successful(Envelope outgoing)
+        public override Task Successful(Envelope outgoing)
         {
-            try
-            {
-                await _persistor.DeleteOutgoingEnvelope(outgoing);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e,
-                    message: "Error trying to delete outgoing envelopes after a successful batch send");
-                _persistenceRetries.DeleteOutgoing(outgoing);
-            }
+            return _policy.ExecuteAsync(() => _persistence.DeleteOutgoing(outgoing));
         }
     }
 }

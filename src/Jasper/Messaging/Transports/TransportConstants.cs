@@ -5,6 +5,11 @@ namespace Jasper.Messaging.Transports
 {
     public static class TransportConstants
     {
+        public static readonly int ScheduledJobLockId = "scheduled-jobs".GetDeterministicHashCode();
+        public static readonly int IncomingMessageLockId = "recover-incoming-messages".GetDeterministicHashCode();
+        public static readonly int OutgoingMessageLockId = "recover-outgoing-messages".GetDeterministicHashCode();
+        public static readonly int ReassignmentLockId = "jasper-reassign-envelopes".GetDeterministicHashCode();
+
         public const string Topic = "topic";
         public const string Queue = "queue";
         public const string Subscription = "subscription";

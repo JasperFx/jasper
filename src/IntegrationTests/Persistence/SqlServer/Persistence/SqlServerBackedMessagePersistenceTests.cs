@@ -2,6 +2,7 @@
 using System.Linq;
 using Baseline.Dates;
 using Jasper;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence;
@@ -35,9 +36,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
 
-            theHost.Get<SqlServerBackedDurableMessagingFactory>().ScheduleJob(theEnvelope).Wait(3.Seconds());
+            theHost.Get<IEnvelopePersistence>().ScheduleJob(theEnvelope).Wait(3.Seconds());
 
-            var persistor = theHost.Get<SqlServerEnvelopePersistor>();
+            var persistor = theHost.Get<SqlServerEnvelopePersistence>();
 
             persisted = persistor.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
         }

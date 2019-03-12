@@ -20,7 +20,7 @@ namespace MessagingTests
         [Fact]
         public void status_is_accepting_and_above_the_threshold()
         {
-            theRoot.Workers.QueuedCount.Returns(theRoot.Settings.MaximumLocalEnqueuedBackPressureThreshold + 5);
+            theRoot.Workers.QueuedCount.Returns(theRoot.Options.MaximumLocalEnqueuedBackPressureThreshold + 5);
             theRoot.ListeningStatus = ListeningStatus.Accepting;
 
             theAgent.ApplyBackPressure();
@@ -31,7 +31,7 @@ namespace MessagingTests
         [Fact]
         public void status_is_accepting_and_at_the_threshold()
         {
-            theRoot.Workers.QueuedCount.Returns(theRoot.Settings.MaximumLocalEnqueuedBackPressureThreshold);
+            theRoot.Workers.QueuedCount.Returns(theRoot.Options.MaximumLocalEnqueuedBackPressureThreshold);
             theRoot.ListeningStatus = ListeningStatus.Accepting;
 
             theAgent.ApplyBackPressure();
@@ -43,7 +43,7 @@ namespace MessagingTests
         [Fact]
         public void status_is_accepting_and_below_the_threshold()
         {
-            theRoot.Workers.QueuedCount.Returns(theRoot.Settings.MaximumLocalEnqueuedBackPressureThreshold - 5);
+            theRoot.Workers.QueuedCount.Returns(theRoot.Options.MaximumLocalEnqueuedBackPressureThreshold - 5);
             theRoot.ListeningStatus = ListeningStatus.Accepting;
 
             theAgent.ApplyBackPressure();
@@ -54,7 +54,7 @@ namespace MessagingTests
         [Fact]
         public void status_is_too_busy_and_above_the_threshold()
         {
-            theRoot.Workers.QueuedCount.Returns(theRoot.Settings.MaximumLocalEnqueuedBackPressureThreshold + 5);
+            theRoot.Workers.QueuedCount.Returns(theRoot.Options.MaximumLocalEnqueuedBackPressureThreshold + 5);
             theRoot.ListeningStatus = ListeningStatus.TooBusy;
 
             theAgent.ApplyBackPressure();
@@ -65,7 +65,7 @@ namespace MessagingTests
         [Fact]
         public void status_is_too_busy_and_below_10_percent_of_the_threshold()
         {
-            theRoot.Settings.MaximumLocalEnqueuedBackPressureThreshold = 2000;
+            theRoot.Options.MaximumLocalEnqueuedBackPressureThreshold = 2000;
             theRoot.Workers.QueuedCount.Returns(1599);
             theRoot.ListeningStatus = ListeningStatus.TooBusy;
 
@@ -77,7 +77,7 @@ namespace MessagingTests
         [Fact]
         public void status_is_too_busy_and_within_10_percent_of_the_threshold()
         {
-            theRoot.Settings.MaximumLocalEnqueuedBackPressureThreshold = 2000;
+            theRoot.Options.MaximumLocalEnqueuedBackPressureThreshold = 2000;
             theRoot.Workers.QueuedCount.Returns(1801);
             theRoot.ListeningStatus = ListeningStatus.TooBusy;
 

@@ -62,7 +62,7 @@ namespace Jasper.Messaging.Transports
 
         public void Start(IMessagingRoot root)
         {
-            var settings = root.Settings;
+            var settings = root.Options;
 
             _settings = settings;
             _logger = root.Logger;
@@ -85,7 +85,7 @@ namespace Jasper.Messaging.Transports
 
         private void buildInitialSendingAgents(IMessagingRoot root)
         {
-            var groups = root.Settings.Subscriptions.GroupBy(x => x.Uri);
+            var groups = root.Options.Subscriptions.GroupBy(x => x.Uri);
             foreach (var group in groups)
             {
                 var subscriber = new Subscriber(group.Key, group);

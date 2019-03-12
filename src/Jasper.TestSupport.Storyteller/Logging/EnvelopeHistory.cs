@@ -4,7 +4,7 @@ using System.Linq;
 using Baseline;
 using StoryTeller.Util;
 
-namespace Jasper.Storyteller.Logging
+namespace Jasper.TestSupport.Storyteller.Logging
 {
     public class EnvelopeHistory
     {

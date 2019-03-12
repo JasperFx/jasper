@@ -1,6 +1,6 @@
 ﻿using Jasper.Messaging.Runtime;
 
-namespace Jasper.Storyteller.Logging
+namespace Jasper.TestSupport.Storyteller.Logging
 {
     public class EnvelopeRecord
     {

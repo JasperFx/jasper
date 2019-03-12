@@ -24,7 +24,7 @@ namespace Jasper.Messaging
         {
             _root = root;
 
-            Factory = root.Factory;
+            Persistence = root.Persistence;
         }
 
         public MessageContext(IMessagingRoot root, Envelope originalEnvelope) : this(root)
@@ -47,11 +47,11 @@ namespace Jasper.Messaging
             }
         }
 
+        public IEnvelopePersistence Persistence { get; }
+
         public IEnumerable<Envelope> Outstanding => _outstanding;
 
         public IEnvelopeTransaction Transaction { get; private set; }
-
-        public IDurableMessagingFactory Factory { get; }
 
 
         public async Task<Guid> SendEnvelope(Envelope envelope)
@@ -238,9 +238,20 @@ namespace Jasper.Messaging
 
         internal Task ScheduleEnvelope(Envelope envelope)
         {
+            if (envelope.Message == null)
+                throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
+
+            if (!envelope.ExecutionTime.HasValue)
+                throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
+
+
+            envelope.OwnerId = TransportConstants.AnyNode;
+            envelope.Status = TransportConstants.Scheduled;
+
+
             return EnlistedInTransaction
                 ? Transaction.ScheduleJob(envelope)
-                : Factory.ScheduleJob(envelope);
+                : Persistence.ScheduleJob(envelope);
         }
 
         public Task<Guid> Schedule<T>(T message, TimeSpan delay)
@@ -339,7 +350,8 @@ namespace Jasper.Messaging
             return SendEnvelope(new Envelope
             {
                 Message = message,
-                ExecutionTime = time.ToUniversalTime()
+                ExecutionTime = time.ToUniversalTime(),
+                Status = TransportConstants.Scheduled
             });
         }
 

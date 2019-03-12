@@ -8,7 +8,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public static class SqlServerEnvelopeStorageExtensions
     {
-        public static async Task<List<Envelope>> ExecuteToEnvelopes(this SqlCommand command, SqlTransaction tx = null)
+        public static async Task<Envelope[]> ExecuteToEnvelopes(this SqlCommand command, SqlTransaction tx = null)
         {
             if (tx != null) command.Transaction = tx;
             using (var reader = await command.ExecuteReaderAsync())
@@ -20,14 +20,20 @@ namespace Jasper.Persistence.SqlServer.Persistence
                     var bytes = await reader.GetFieldValueAsync<byte[]>(0);
                     var envelope = Envelope.Deserialize(bytes);
 
+                    if (reader.FieldCount == 3)
+                    {
+                        envelope.Status = await reader.GetFieldValueAsync<string>(1);
+                        envelope.OwnerId = await reader.GetFieldValueAsync<int>(2);
+                    }
+
                     list.Add(envelope);
                 }
 
-                return list;
+                return list.ToArray();
             }
         }
 
-        public static List<Envelope> LoadEnvelopes(this SqlCommand command, SqlTransaction tx = null)
+        public static Envelope[] LoadEnvelopes(this SqlCommand command, SqlTransaction tx = null)
         {
             if (tx != null) command.Transaction = tx;
             using (var reader = command.ExecuteReader())
@@ -57,7 +63,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
                     list.Add(envelope);
                 }
 
-                return list;
+                return list.ToArray();
             }
         }
     }

@@ -47,6 +47,7 @@ namespace Jasper.Configuration
             this.AddSingleton(parent.CodeGeneration);
 
             For<IHostedService>().Use<BackPressureAgent>();
+            For<IHostedService>().Use<DurabilityAgent>();
 
             Policies.Add(new LoggerPolicy());
             Policies.Add(new OptionsPolicy());
@@ -92,14 +93,13 @@ namespace Jasper.Configuration
         {
             ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
 
-            For<IEnvelopePersistor>().Use<NulloEnvelopePersistor>();
+            For<IEnvelopePersistence>().Use<NulloEnvelopePersistence>();
             this.AddSingleton<InMemorySagaPersistor>();
 
             this.AddSingleton(parent.Messaging.Graph);
             this.AddSingleton<ISubscriberGraph>(parent.Messaging.Subscribers);
-            this.AddSingleton<ILocalWorkerSender>(parent.Messaging.LocalWorker);
+            this.AddSingleton<ILoopbackWorkerSender>(parent.Messaging.LocalWorker);
 
-            this.AddSingleton<IRetries, EnvelopeRetries>();
 
             For<ITransport>()
                 .Use<LoopbackTransport>();

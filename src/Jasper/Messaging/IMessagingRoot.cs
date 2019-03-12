@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Configuration;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -9,6 +11,8 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Receiving;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Lamar;
 using LamarCompiler.Util;
@@ -24,8 +28,9 @@ namespace Jasper.Messaging
         IMessageLogger Logger { get; }
         MessagingSerializationGraph Serialization { get; }
         ISubscriberGraph Subscribers { get; }
-        JasperOptions Settings { get; }
-        IDurableMessagingFactory Factory { get; }
+        JasperOptions Options { get; }
+
+
         ITransport[] Transports { get; }
         ListeningStatus ListeningStatus { get; set; }
         HandlerGraph Handlers { get; }
@@ -33,10 +38,17 @@ namespace Jasper.Messaging
         IMessageContext NewContext();
         IMessageContext ContextFor(Envelope envelope);
 
-        void Activate(LocalWorkerSender localWorker,
+        IEnvelopePersistence Persistence { get; }
+
+        void Activate(LoopbackWorkerSender localWorker,
             JasperGenerationRules generation, IContainer container);
 
         void ApplyMessageTypeSpecificRules(Envelope envelope);
         bool ShouldBeDurable(Type messageType);
+
+        ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender);
+        ISendingAgent BuildDurableLoopbackAgent(Uri destination);
+        IListener BuildDurableListener(IListeningAgent agent);
+
     }
 }

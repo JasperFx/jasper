@@ -19,7 +19,7 @@ namespace Jasper.Messaging
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(_root.Settings.BackPressurePollingInterval, stoppingToken);
+                await Task.Delay(_root.Options.BackPressurePollingInterval, stoppingToken);
                 try
                 {
                     ApplyBackPressure();
@@ -34,7 +34,7 @@ namespace Jasper.Messaging
 
         public void ApplyBackPressure()
         {
-            var ratio = _root.Workers.QueuedCount / (double) _root.Settings.MaximumLocalEnqueuedBackPressureThreshold;
+            var ratio = _root.Workers.QueuedCount / (double) _root.Options.MaximumLocalEnqueuedBackPressureThreshold;
 
             if (_root.ListeningStatus == ListeningStatus.Accepting && ratio > 1.0)
                 _root.ListeningStatus = ListeningStatus.TooBusy;

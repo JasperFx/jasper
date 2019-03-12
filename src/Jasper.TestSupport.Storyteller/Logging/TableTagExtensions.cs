@@ -6,7 +6,7 @@ using Baseline.Reflection;
 using Jasper.Messaging.Runtime;
 using StoryTeller.Util;
 
-namespace Jasper.Storyteller.Logging
+namespace Jasper.TestSupport.Storyteller.Logging
 {
     public static class TableTagExtensions
     {

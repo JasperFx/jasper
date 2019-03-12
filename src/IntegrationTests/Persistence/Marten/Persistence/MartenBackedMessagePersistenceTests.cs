@@ -2,13 +2,13 @@
 using System.Linq;
 using Baseline.Dates;
 using Jasper;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
-using Jasper.Persistence.Marten.Persistence;
-using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
+using Microsoft.CodeAnalysis.CSharp;
 using Shouldly;
 using Xunit;
 
@@ -21,26 +21,30 @@ namespace IntegrationTests.Persistence.Marten.Persistence
             theHost = JasperHost.For(_ =>
             {
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
-                _.ConfigureMarten(x =>
-                {
-                    x.Storage.Add<PostgresqlEnvelopeStorage>();
-                    x.PLV8Enabled = false;
-                });
+                _.Include<MartenBackedPersistence>();
+                _.ConfigureMarten(x => { x.PLV8Enabled = false; });
+                _.HttpRoutes.DisableConventionalDiscovery();
             });
 
-            theHost.Get<IDocumentStore>().Schema.ApplyAllConfiguredChangesToDatabase();
+
 
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
+            theEnvelope.Status = TransportConstants.Scheduled;
 
-            theHost.Get<MartenBackedDurableMessagingFactory>().ScheduleJob(theEnvelope).Wait(3.Seconds());
+            var persistence = theHost.Get<IEnvelopePersistence>();
 
+            persistence.Admin.RebuildSchemaObjects();
 
-            using (var session = theHost.Get<IDocumentStore>().LightweightSession())
-            {
-                persisted = session.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
-            }
+            persistence.ScheduleJob(theEnvelope).Wait(3.Seconds());
+
+            persisted = persistence.Admin
+                .AllIncomingEnvelopes()
+                .GetAwaiter()
+                .GetResult()
+                .FirstOrDefault(x => x.Id == theEnvelope.Id);
+
         }
 
         public void Dispose()

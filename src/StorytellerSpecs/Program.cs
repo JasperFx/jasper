@@ -1,4 +1,5 @@
 ﻿using StoryTeller;
+using StoryTeller.Engine;
 
 namespace StorytellerSpecs
 {
@@ -6,7 +7,9 @@ namespace StorytellerSpecs
     {
         public static int Main(string[] args)
         {
-            return StorytellerAgent.Run(args);
+            return StorytellerAgent.Run<SpecSystem>(args);
         }
     }
+
+    public class SpecSystem : SimpleSystem{}
 }

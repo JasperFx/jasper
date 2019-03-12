@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Jasper;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
-using Jasper.Persistence.SqlServer.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Shouldly;
@@ -31,8 +29,6 @@ namespace IntegrationTests.Persistence.SqlServer
 
             using (var runtime = JasperHost.For(registry))
             {
-                runtime.Container.Model.DefaultTypeFor<IDurableMessagingFactory>()
-                    .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
 
                 runtime.Get<SqlServerSettings>()
                     .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
@@ -46,8 +42,6 @@ namespace IntegrationTests.Persistence.SqlServer
             using (var runtime = JasperHost.For(x =>
                 x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
-                runtime.Container.Model.DefaultTypeFor<IDurableMessagingFactory>()
-                    .ShouldBe(typeof(SqlServerBackedDurableMessagingFactory));
 
                 runtime.Get<SqlServerSettings>()
                     .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Persistence.Marten.Resiliency;
+using Jasper.Persistence.Postgresql.Util;
 using Npgsql;
 using Shouldly;
 using Xunit;

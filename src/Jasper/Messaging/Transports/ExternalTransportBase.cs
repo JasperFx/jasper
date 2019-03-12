@@ -12,8 +12,9 @@ namespace Jasper.Messaging.Transports
     {
         private readonly TSettings _options;
 
-        public ExternalTransportBase(string protocol, TSettings options, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions)
-            : base(protocol, factory, logger, jasperOptions)
+        public ExternalTransportBase(string protocol, TSettings options, ITransportLogger logger,
+            JasperOptions jasperOptions)
+            : base(protocol, logger, jasperOptions)
         {
             _options = options;
         }

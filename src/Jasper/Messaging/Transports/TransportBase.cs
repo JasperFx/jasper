@@ -15,15 +15,13 @@ namespace Jasper.Messaging.Transports
 {
     public abstract class TransportBase : ITransport
     {
-        private readonly IDurableMessagingFactory _durableMessagingFactory;
         private readonly IList<IListener> _listeners = new List<IListener>();
 
         private ListeningStatus _status = ListeningStatus.Accepting;
 
-        public TransportBase(string protocol, IDurableMessagingFactory factory, ITransportLogger logger,
+        public TransportBase(string protocol, ITransportLogger logger,
             JasperOptions options)
         {
-            _durableMessagingFactory = factory;
             this.logger = logger;
             JasperOptions = options;
             Protocol = protocol;
@@ -48,7 +46,7 @@ namespace Jasper.Messaging.Transports
 
 
                 var agent = uri.IsDurable()
-                    ? _durableMessagingFactory.BuildSendingAgent(uri, batchedSender, cancellation)
+                    ? root.BuildDurableSendingAgent(uri, batchedSender)
                     : new LightweightSendingAgent(uri, batchedSender, logger, JasperOptions);
 
                 agent.DefaultReplyUri = ReplyUri;
@@ -64,7 +62,7 @@ namespace Jasper.Messaging.Transports
 
         public void StartListening(IMessagingRoot root)
         {
-            var settings = root.Settings;
+            var settings = root.Options;
 
             if (settings.StateFor(Protocol) == TransportState.Disabled) return;
 
@@ -82,7 +80,7 @@ namespace Jasper.Messaging.Transports
                     agent.Status = _status;
 
                     var listener = uri.IsDurable()
-                        ? _durableMessagingFactory.BuildListener(agent, root)
+                        ? root.BuildDurableListener(agent)
                         : new LightweightListener(WorkerQueue, logger, agent);
 
                     _listeners.Add(listener);

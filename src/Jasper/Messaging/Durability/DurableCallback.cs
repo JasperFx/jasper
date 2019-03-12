@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
+using Polly;
+using Polly.Retry;
 
 namespace Jasper.Messaging.Durability
 {
@@ -11,78 +14,55 @@ namespace Jasper.Messaging.Durability
     {
         private readonly Envelope _envelope;
         private readonly ITransportLogger _logger;
-        private readonly IEnvelopePersistor _persistor;
+        private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _queue;
-        private readonly IRetries _retries;
+        private readonly RetryPolicy _policy;
 
-        public DurableCallback(Envelope envelope, IWorkerQueue queue, IEnvelopePersistor persistor,
-            IRetries retries, ITransportLogger logger)
+        public DurableCallback(Envelope envelope, IWorkerQueue queue, IEnvelopePersistence persistence,
+            ITransportLogger logger)
         {
             _envelope = envelope;
             _queue = queue;
-            _persistor = persistor;
-            _retries = retries;
+            _persistence = persistence;
             _logger = logger;
+
+            _policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
+                    , (e, timeSpan) => {
+                        _logger.LogException(e);
+                    });
+
         }
 
-        public async Task MarkComplete()
+        public Task MarkComplete()
         {
-            try
-            {
-                await _persistor.DeleteIncomingEnvelope(_envelope);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                _retries.DeleteIncoming(_envelope);
-            }
+            return _policy.ExecuteAsync(() => _persistence.DeleteIncomingEnvelope(_envelope));
         }
 
-        public async Task MoveToErrors(Envelope envelope, Exception exception)
+        public Task MoveToErrors(Envelope envelope, Exception exception)
         {
             var errorReport = new ErrorReport(envelope, exception);
 
-            try
-            {
-                await _persistor.MoveToDeadLetterStorage(new[] {errorReport});
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                _retries.LogErrorReport(errorReport);
-            }
+            return _policy.ExecuteAsync(() => _persistence.MoveToDeadLetterStorage(new[] {errorReport}));
         }
 
         public async Task Requeue(Envelope envelope)
         {
-            try
-            {
-                envelope.Attempts++;
-                await _persistor.IncrementIncomingEnvelopeAttempts(envelope);
-            }
-            catch (Exception)
-            {
-                // Not going to worry about a failure here
-            }
+            envelope.Attempts++;
 
             await _queue.Enqueue(envelope);
+
+            await _policy.ExecuteAsync(() => _persistence.IncrementIncomingEnvelopeAttempts(envelope));
         }
 
-        public async Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
+        public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
         {
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.ExecutionTime = time;
             envelope.Status = TransportConstants.Scheduled;
 
-            try
-            {
-                await _persistor.ScheduleExecution(new[] {envelope});
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                _retries.ScheduleExecution(envelope);
-            }
+            return _policy.ExecuteAsync(() => _persistence.ScheduleExecution(new[] {envelope}));
         }
     }
 }

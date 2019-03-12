@@ -5,7 +5,6 @@ using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer.Persistence;
-using Jasper.Persistence.SqlServer.Resiliency;
 using Jasper.Persistence.SqlServer.Util;
 using Lamar.Scanning.Conventions;
 using LamarCompiler.Model;
@@ -23,10 +22,7 @@ namespace Jasper.Persistence.SqlServer
         {
             registry.Settings.Require<SqlServerSettings>();
 
-            registry.Services.AddSingleton<IDurableMessagingFactory, SqlServerBackedDurableMessagingFactory>();
-            registry.Services.AddTransient<IEnvelopePersistor, SqlServerEnvelopePersistor>();
-
-            registry.Services.AddSingleton<IHostedService, SchedulingAgent>();
+            registry.Services.AddTransient<IEnvelopePersistence, SqlServerEnvelopePersistence>();
 
             registry.CodeGeneration.Sources.Add(new SqlServerBackedPersistenceMarker());
 
@@ -57,7 +53,7 @@ namespace Jasper.Persistence.SqlServer
 
         public Variable Create(Type type)
         {
-            return Variable.For<SqlServerBackedDurableMessagingFactory>();
+            return Variable.For<SqlServerBackedPersistence>();
         }
     }
 }

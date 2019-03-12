@@ -14,20 +14,18 @@ namespace Jasper.Messaging.Durability
     {
         private readonly IListeningAgent _agent;
         private readonly ITransportLogger _logger;
-        private readonly IEnvelopePersistor _persistor;
+        private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _queues;
-        private readonly IRetries _retries;
         private readonly JasperOptions _settings;
 
         public DurableListener(IListeningAgent agent, IWorkerQueue queues, ITransportLogger logger,
-            JasperOptions settings, IRetries retries, IEnvelopePersistor persistor)
+            JasperOptions settings, IEnvelopePersistence persistence)
         {
             _agent = agent;
             _queues = queues;
             _logger = logger;
             _settings = settings;
-            _retries = retries;
-            _persistor = persistor;
+            _persistence = persistence;
         }
 
         public Uri Address => _agent.Address;
@@ -52,7 +50,7 @@ namespace Jasper.Messaging.Durability
 
         public Task NotAcknowledged(Envelope[] messages)
         {
-            return _persistor.DeleteIncomingEnvelopes(messages);
+            return _persistence.DeleteIncomingEnvelopes(messages);
         }
 
         public Task Failed(Exception exception, Envelope[] messages)
@@ -96,12 +94,12 @@ namespace Jasper.Messaging.Durability
                         : TransportConstants.Incoming;
                 }
 
-                await _persistor.StoreIncoming(messages);
+                await _persistence.StoreIncoming(messages);
 
 
                 foreach (var message in messages.Where(x => x.Status == TransportConstants.Incoming))
                 {
-                    message.Callback = new DurableCallback(message, _queues, _persistor, _retries, _logger);
+                    message.Callback = new DurableCallback(message, _queues, _persistence, _logger);
                     await _queues.Enqueue(message);
                 }
 

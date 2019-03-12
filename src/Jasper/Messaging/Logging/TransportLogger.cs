@@ -143,7 +143,8 @@ namespace Jasper.Messaging.Logging
             string message = "Exception detected:")
         {
             _metrics.LogException(ex);
-            _logger.LogError(correlationId == Guid.Empty ? message : message + correlationId, ex);
+            var exMessage = correlationId == Guid.Empty ? message : message + correlationId;
+            _logger.LogError(ex, exMessage);
         }
 
         public static ITransportLogger Empty()

@@ -19,14 +19,16 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
-using Jasper.Persistence.SqlServer.Resiliency;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
+using IMessagingAction = Jasper.Messaging.Durability.IMessagingAction;
+using RecoverIncomingMessages = Jasper.Messaging.Durability.RecoverIncomingMessages;
+using RecoverOutgoingMessages = Jasper.Messaging.Durability.RecoverOutgoingMessages;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {
-    public class SqlServerMessageRecoveryFixture : Fixture, ISchedulingAgent
+    public class SqlServerMessageRecoveryFixture : Fixture, IDurabilityAgent
     {
         private readonly IList<Envelope> _envelopes = new List<Envelope>();
 
@@ -56,11 +58,16 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             Lists["owners"].AddValues("This Node", "Other Node", "Any Node", "Third Node");
         }
 
-        void ISchedulingAgent.RescheduleOutgoingRecovery()
+        void IDurabilityAgent.RescheduleOutgoingRecovery()
         {
         }
 
-        void ISchedulingAgent.RescheduleIncomingRecovery()
+        Task IDurabilityAgent.EnqueueLocally(Envelope envelope)
+        {
+            return Task.CompletedTask;
+        }
+
+        void IDurabilityAgent.RescheduleIncomingRecovery()
         {
         }
 
@@ -77,7 +84,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
                 _.Services.AddSingleton<IWorkerQueue>(_workers);
-                _.Services.AddSingleton<ISchedulingAgent>(_schedulerAgent);
+                _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
 
 
                 _.Settings.Alter<JasperOptions>(x =>
@@ -89,7 +96,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 });
             });
 
-            _host.Get<SqlServerBackedDurableMessagingFactory>().ClearAllStoredMessages();
+            _host.Get<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
 
             _serializers = _host.Get<MessagingSerializationGraph>();
 
@@ -177,7 +184,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
         {
-            var persistor = _host.Get<SqlServerEnvelopePersistor>();
+            var persistor = _host.Get<SqlServerEnvelopePersistence>();
             return persistor.AllIncomingEnvelopes()
                 .Concat(persistor.AllOutgoingEnvelopes())
                 .Where(x => x.OwnerId == ownerId)
@@ -214,7 +221,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private async Task runAction<T>() where T : IMessagingAction
         {
-            var persistor = _host.Get<SqlServerEnvelopePersistor>();
+            var persistor = _host.Get<SqlServerEnvelopePersistence>();
 
             foreach (var envelope in _envelopes)
                 if (envelope.Status == TransportConstants.Outgoing)
@@ -222,27 +229,16 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 else
                     await persistor.StoreIncoming(envelope);
 
-            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
-            {
-                await conn.OpenAsync();
+            var agent = DurabilityAgent.ForHost(_host);
 
-                var action = _host.Get<T>();
-
-                try
-                {
-                    await action.Execute(conn, this);
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.ToString());
-                }
-            }
+            var action = _host.Get<T>();
+            await agent.Execute(action);
         }
 
         [FormatAs("After reassigning envelopes from dormant nodes")]
         public Task AfterReassigningFromDormantNodes()
         {
-            return runAction<ReassignFromDormantNodes>();
+            return runAction<NodeReassignment>();
         }
 
         [FormatAs("After recovering incoming messages")]
@@ -285,10 +281,15 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         public Uri Destination { get; set; }
     }
 
-    public class RecordingSchedulingAgent : ISchedulingAgent
+    public class RecordingSchedulingAgent : IDurabilityAgent
     {
         public void RescheduleOutgoingRecovery()
         {
+        }
+
+        public Task EnqueueLocally(Envelope envelope)
+        {
+            return Task.CompletedTask;
         }
 
         public void RescheduleIncomingRecovery()

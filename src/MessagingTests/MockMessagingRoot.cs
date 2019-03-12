@@ -2,6 +2,7 @@
 using Jasper;
 using Jasper.Configuration;
 using Jasper.Messaging;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -10,6 +11,8 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Receiving;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Lamar;
 using Microsoft.Extensions.Logging;
@@ -26,8 +29,7 @@ namespace MessagingTests
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger Logger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
-        public JasperOptions Settings { get; } = new JasperOptions();
-        public IDurableMessagingFactory Factory { get; } = Substitute.For<IDurableMessagingFactory>();
+        public JasperOptions Options { get; } = new JasperOptions();
 
         public ITransport[] Transports { get; } =
             {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
@@ -51,7 +53,7 @@ namespace MessagingTests
             return new MessageContext(this);
         }
 
-        public void Activate(LocalWorkerSender localWorker,
+        public void Activate(LoopbackWorkerSender localWorker,
             JasperGenerationRules generation, IContainer container)
         {
         }
@@ -65,10 +67,27 @@ namespace MessagingTests
             return false;
         }
 
+        public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IListener BuildDurableListener(IListeningAgent agent)
+        {
+            throw new NotImplementedException();
+        }
+
         public IMessageContext ContextFor(Envelope envelope)
         {
             return new MessageContext(this, envelope);
         }
+
+        public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
     }

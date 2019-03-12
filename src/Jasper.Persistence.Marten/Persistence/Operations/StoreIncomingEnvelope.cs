@@ -9,9 +9,9 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 {
     public class StoreIncomingEnvelope : IStorageOperation
     {
-        private readonly DbObjectName _incomingTable;
+        private readonly string _incomingTable;
 
-        public StoreIncomingEnvelope(DbObjectName incomingTable, Envelope envelope)
+        public StoreIncomingEnvelope(string incomingTable, Envelope envelope)
         {
             Envelope = envelope;
             _incomingTable = incomingTable;
@@ -30,7 +30,7 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
             var executionTime =
                 builder.AddParameter(
                     Envelope.ExecutionTime,
-                    NpgsqlDbType.TimestampTZ);
+                    NpgsqlDbType.TimestampTz);
 
             var body = builder.AddParameter(bytes, NpgsqlDbType.Bytea);
 

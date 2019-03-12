@@ -8,6 +8,7 @@ using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Messaging;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
@@ -34,7 +35,7 @@ namespace StorytellerSpecs.Fixtures
                     _host = c.State.Retrieve<IJasperHost>();
                     try
                     {
-                        _host.Get<IDurableMessagingFactory>().ClearAllStoredMessages();
+                        _host.Get<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
                     }
                     catch (Exception)
                     {

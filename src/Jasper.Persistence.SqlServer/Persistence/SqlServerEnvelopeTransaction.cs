@@ -11,12 +11,12 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerEnvelopeTransaction : IEnvelopeTransaction, IDisposable
     {
-        private readonly SqlServerBackedDurableMessagingFactory _persistence;
+        private readonly SqlServerEnvelopePersistence _persistence;
         private readonly SqlTransaction _tx;
 
         public SqlServerEnvelopeTransaction(IMessageContext context, SqlTransaction tx)
         {
-            _persistence = context.Advanced.Factory as SqlServerBackedDurableMessagingFactory ??
+            _persistence = context.Advanced.Persistence as SqlServerEnvelopePersistence ??
                            throw new InvalidOperationException(
                                "This message context is not using Sql Server-backed messaging persistence");
             _tx = tx;

@@ -7,37 +7,38 @@ namespace Jasper.EnvironmentChecks
 {
     public class LoggingHostedServiceDecorator : IHostedService
     {
-        private readonly IHostedService _inner;
         private readonly IEnvironmentRecorder _recorder;
 
         public LoggingHostedServiceDecorator(IHostedService inner, IEnvironmentRecorder recorder)
         {
-            _inner = inner;
+            Inner = inner;
             _recorder = recorder;
         }
+
+        public IHostedService Inner { get; }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             try
             {
-                await _inner.StartAsync(cancellationToken);
+                await Inner.StartAsync(cancellationToken);
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Failure in {_inner}");
-                _recorder.Failure($"Failure while running {_inner}.{nameof(IHostedService.StartAsync)}()", e);
+                Console.WriteLine($"Failure in {Inner}");
+                _recorder.Failure($"Failure while running {Inner}.{nameof(IHostedService.StartAsync)}()", e);
                 throw;
             }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            return _inner.StopAsync(cancellationToken);
+            return Inner.StopAsync(cancellationToken);
         }
 
         public override string ToString()
         {
-            return _inner.ToString();
+            return Inner.ToString();
         }
     }
 }

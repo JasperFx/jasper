@@ -11,7 +11,7 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqTransport : ExternalTransportBase<RabbitMqOptions, RabbitMqEndpoint>
     {
-        public RabbitMqTransport(RabbitMqOptions options, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions) : base("rabbitmq", options, factory, logger, jasperOptions)
+        public RabbitMqTransport(RabbitMqOptions options, ITransportLogger logger, JasperOptions jasperOptions) : base("rabbitmq", options, logger, jasperOptions)
         {
         }
 

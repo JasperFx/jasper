@@ -8,6 +8,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Framing;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace IntegrationTests.RabbitMQ

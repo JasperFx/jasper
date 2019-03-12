@@ -18,7 +18,7 @@ namespace Jasper.Messaging.Transports
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
             return uri.IsDurable()
-                ? root.Factory.BuildLocalAgent(uri, root)
+                ? root.BuildDurableLoopbackAgent(uri)
                 : new LoopbackSendingAgent(uri, root.Workers);
         }
 

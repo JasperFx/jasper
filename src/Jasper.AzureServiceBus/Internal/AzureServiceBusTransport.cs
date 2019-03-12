@@ -12,8 +12,9 @@ namespace Jasper.AzureServiceBus.Internal
         public const string ProtocolName = "azureservicebus";
 
 
-        public AzureServiceBusTransport(AzureServiceBusOptions options, IDurableMessagingFactory factory, ITransportLogger logger, JasperOptions jasperOptions)
-            : base(ProtocolName, options, factory, logger, jasperOptions)
+        public AzureServiceBusTransport(AzureServiceBusOptions options, ITransportLogger logger,
+            JasperOptions jasperOptions)
+            : base(ProtocolName, options, logger, jasperOptions)
         {
         }
 

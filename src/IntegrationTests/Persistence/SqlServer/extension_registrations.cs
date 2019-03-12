@@ -23,7 +23,7 @@ namespace IntegrationTests.Persistence.SqlServer
                 runtime.Container.Model.For<SqlConnection>().Default.Lifetime.ShouldBe(ServiceLifetime.Scoped);
 
 
-                runtime.Container.Model.HasRegistrationFor<IEnvelopePersistor>().ShouldBeTrue();
+                runtime.Container.Model.HasRegistrationFor<IEnvelopePersistence>().ShouldBeTrue();
 
 
                 runtime.Get<SqlConnection>().ConnectionString.ShouldBe(Servers.SqlServerConnectionString);

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper;
 using Jasper.Messaging;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Persistence;
@@ -78,10 +79,8 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         protected override Envelope[] loadAllOutgoingEnvelopes(IJasperHost sender)
         {
-            using (var session = sender.Get<IDocumentStore>().QuerySession())
-            {
-                return session.AllOutgoingEnvelopes().ToArray();
-            }
+            var admin = sender.Get<IEnvelopePersistence>().Admin;
+            return admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();
         }
     }
 

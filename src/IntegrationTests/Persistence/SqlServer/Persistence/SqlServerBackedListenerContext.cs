@@ -24,9 +24,8 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected SqlServerSettings mssqlSettings;
-        protected EnvelopeRetries retries;
         protected DurableListener theListener;
-        protected SqlServerEnvelopePersistor thePersistor;
+        protected SqlServerEnvelopePersistence ThePersistence;
         protected JasperOptions theSettings;
         protected IWorkerQueue theWorkerQueue;
 
@@ -44,15 +43,13 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 ConnectionString = Servers.SqlServerConnectionString
             };
 
-            thePersistor = new SqlServerEnvelopePersistor(mssqlSettings);
-
-            retries = new EnvelopeRetries(thePersistor, TransportLogger.Empty(), theSettings);
+            ThePersistence = new SqlServerEnvelopePersistence(mssqlSettings, new JasperOptions());
 
 
             theListener = new DurableListener(
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
-                TransportLogger.Empty(), theSettings, retries, thePersistor);
+                TransportLogger.Empty(), theSettings, ThePersistence);
         }
 
         protected Envelope notScheduledEnvelope()
@@ -99,7 +96,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
             status.ShouldBe(ReceivedStatus.Successful);
 
-            return thePersistor.AllIncomingEnvelopes();
+            return ThePersistence.AllIncomingEnvelopes();
         }
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using IntegrationTests;
@@ -106,7 +107,7 @@ create table receiver.item_created
 
         protected override Envelope[] loadAllOutgoingEnvelopes(IJasperHost sender)
         {
-            return sender.Get<IEnvelopePersistor>().As<SqlServerEnvelopePersistor>()
+            return sender.Get<IEnvelopePersistence>().As<SqlServerEnvelopePersistence>()
                 .AllOutgoingEnvelopes().ToArray();
         }
     }

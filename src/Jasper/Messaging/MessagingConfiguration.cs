@@ -24,7 +24,7 @@ namespace Jasper.Messaging
 
         public SubscriberGraph Subscribers { get; } = new SubscriberGraph();
 
-        public LocalWorkerSender LocalWorker { get; } = new LocalWorkerSender();
+        public LoopbackWorkerSender LocalWorker { get; } = new LoopbackWorkerSender();
 
 
         public HandlerGraph Graph { get; } = new HandlerGraph();

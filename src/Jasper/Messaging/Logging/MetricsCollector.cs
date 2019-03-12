@@ -11,15 +11,15 @@ namespace Jasper.Messaging.Logging
     {
         private readonly IMessageLogger _logger;
         private readonly IMetrics _metrics;
-        private readonly IEnvelopePersistor _persistor;
+        private readonly IEnvelopePersistence _persistence;
         private readonly JasperOptions _settings;
         private readonly IWorkerQueue _workers;
 
-        public MetricsCollector(IMetrics metrics, IEnvelopePersistor persistor, IMessageLogger logger,
+        public MetricsCollector(IMetrics metrics, IEnvelopePersistence persistence, IMessageLogger logger,
             JasperOptions settings, IWorkerQueue workers)
         {
             _metrics = metrics;
-            _persistor = persistor;
+            _persistence = persistence;
             _logger = logger;
             _settings = settings;
             _workers = workers;
@@ -35,7 +35,7 @@ namespace Jasper.Messaging.Logging
 
                 try
                 {
-                    var counts = await _persistor.GetPersistedCounts();
+                    var counts = await _persistence.Admin.GetPersistedCounts();
                     _metrics.LogPersistedCounts(counts);
                 }
                 catch (Exception e)

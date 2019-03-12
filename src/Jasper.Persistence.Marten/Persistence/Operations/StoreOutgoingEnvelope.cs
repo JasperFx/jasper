@@ -9,10 +9,10 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 {
     public class StoreOutgoingEnvelope : IStorageOperation
     {
-        private readonly DbObjectName _outgoingTable;
+        private readonly string _outgoingTable;
         private readonly int _ownerId;
 
-        public StoreOutgoingEnvelope(DbObjectName outgoingTable, Envelope envelope, int ownerId)
+        public StoreOutgoingEnvelope(string outgoingTable, Envelope envelope, int ownerId)
         {
             Envelope = envelope;
             _outgoingTable = outgoingTable;

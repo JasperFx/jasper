@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using Jasper;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace IntegrationTests.Persistence.SqlServer.Persistence
@@ -17,11 +19,11 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
     {
         public SqlServerEnveloperPersistorTests()
         {
-            thePersistor
-                = new SqlServerEnvelopePersistor(new SqlServerSettings
+            ThePersistence
+                = new SqlServerEnvelopePersistence(new SqlServerSettings
                 {
                     ConnectionString = Servers.SqlServerConnectionString
-                });
+                }, new JasperOptions());
         }
 
 
@@ -38,14 +40,14 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreOutgoing(list.ToArray(), 111);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 111);
 
             var toDelete = list[5];
 
-            await thePersistor.DeleteOutgoingEnvelope(toDelete);
+            await ThePersistence.DeleteOutgoing(toDelete);
 
-            var stored = thePersistor.AllOutgoingEnvelopes();
-            stored.Count.ShouldBe(9);
+            var stored = ThePersistence.AllOutgoingEnvelopes();
+            stored.Length.ShouldBe(9);
 
             stored.Any(x => x.Id == toDelete.Id).ShouldBeFalse();
         }
@@ -63,14 +65,14 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await ThePersistence.StoreIncoming(list.ToArray());
 
             var toDelete = new[] {list[2], list[3], list[7]};
 
-            await thePersistor.DeleteIncomingEnvelopes(toDelete);
+            await ThePersistence.DeleteIncomingEnvelopes(toDelete);
 
-            var stored = thePersistor.AllIncomingEnvelopes();
-            stored.Count.ShouldBe(7);
+            var stored = ThePersistence.AllIncomingEnvelopes();
+            stored.Length.ShouldBe(7);
 
             stored.Any(x => x.Id == list[2].Id).ShouldBeFalse();
             stored.Any(x => x.Id == list[3].Id).ShouldBeFalse();
@@ -90,14 +92,14 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreOutgoing(list.ToArray(), 111);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 111);
 
             var toDelete = new[] {list[2], list[3], list[7]};
 
-            await thePersistor.DeleteOutgoingEnvelopes(toDelete);
+            await ThePersistence.DeleteOutgoing(toDelete);
 
-            var stored = thePersistor.AllOutgoingEnvelopes();
-            stored.Count.ShouldBe(7);
+            var stored = ThePersistence.AllOutgoingEnvelopes();
+            stored.Length.ShouldBe(7);
 
             stored.Any(x => x.Id == list[2].Id).ShouldBeFalse();
             stored.Any(x => x.Id == list[3].Id).ShouldBeFalse();
@@ -117,15 +119,15 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreOutgoing(list.ToArray(), 111);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 111);
 
             var toDiscard = new[] {list[2], list[3], list[7]};
             var toReassign = new[] {list[1], list[4], list[6]};
 
-            await thePersistor.DiscardAndReassignOutgoing(toDiscard, toReassign, 444);
+            await ThePersistence.DiscardAndReassignOutgoing(toDiscard, toReassign, 444);
 
-            var stored = thePersistor.AllOutgoingEnvelopes();
-            stored.Count.ShouldBe(7);
+            var stored = ThePersistence.AllOutgoingEnvelopes();
+            stored.Length.ShouldBe(7);
 
             stored.Any(x => x.Id == list[2].Id).ShouldBeFalse();
             stored.Any(x => x.Id == list[3].Id).ShouldBeFalse();
@@ -150,7 +152,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await ThePersistence.StoreIncoming(list.ToArray());
 
 
             // 7 scheduled
@@ -163,7 +165,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await ThePersistence.StoreIncoming(list.ToArray());
 
 
             // 3 outgoing
@@ -176,9 +178,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreOutgoing(list.ToArray(), 0);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 0);
 
-            var counts = await thePersistor.GetPersistedCounts();
+            var counts = await ThePersistence.Admin.GetPersistedCounts();
 
             counts.Incoming.ShouldBe(10);
             counts.Scheduled.ShouldBe(7);
@@ -192,14 +194,14 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             var envelope = ObjectMother.Envelope();
             envelope.Status = TransportConstants.Incoming;
 
-            await thePersistor.StoreIncoming(envelope);
+            await ThePersistence.StoreIncoming(envelope);
 
             var prop = ReflectionHelper.GetProperty<Envelope>(x => x.Attempts);
             prop.SetValue(envelope, 3);
 
-            await thePersistor.IncrementIncomingEnvelopeAttempts(envelope);
+            await ThePersistence.IncrementIncomingEnvelopeAttempts(envelope);
 
-            var stored = thePersistor.AllIncomingEnvelopes().Single();
+            var stored = ThePersistence.AllIncomingEnvelopes().Single();
             stored.Attempts.ShouldBe(3);
         }
 
@@ -216,7 +218,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await ThePersistence.StoreIncoming(list.ToArray());
 
 
             var ex = new DivideByZeroException("Kaboom!");
@@ -225,10 +227,10 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             var report3 = new ErrorReport(list[3], ex);
             var report4 = new ErrorReport(list[4], ex);
 
-            await thePersistor.MoveToDeadLetterStorage(new[] {report2, report3, report4});
+            await ThePersistence.MoveToDeadLetterStorage(new[] {report2, report3, report4});
 
 
-            var stored = await thePersistor.LoadDeadLetterEnvelope(report2.Id);
+            var stored = await ThePersistence.Admin.LoadDeadLetterEnvelope(report2.Id);
 
             stored.ShouldNotBeNull();
 
@@ -255,7 +257,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await ThePersistence.StoreIncoming(list.ToArray());
 
 
             var ex = new DivideByZeroException("Kaboom!");
@@ -264,11 +266,11 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             var report3 = new ErrorReport(list[3], ex);
             var report4 = new ErrorReport(list[4], ex);
 
-            await thePersistor.MoveToDeadLetterStorage(new[] {report2, report3, report4});
+            await ThePersistence.MoveToDeadLetterStorage(new[] {report2, report3, report4});
 
-            var stored = thePersistor.AllIncomingEnvelopes();
+            var stored = ThePersistence.AllIncomingEnvelopes();
 
-            stored.Count.ShouldBe(7);
+            stored.Length.ShouldBe(7);
 
             stored.Any(x => x.Id == list[2].Id).ShouldBeFalse();
             stored.Any(x => x.Id == list[3].Id).ShouldBeFalse();
@@ -288,7 +290,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await ThePersistence.StoreIncoming(list.ToArray());
 
 
             list[5].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
@@ -296,9 +298,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             list[7].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
             list[9].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
 
-            await thePersistor.ScheduleExecution(new[] {list[5], list[7], list[9]});
+            await ThePersistence.ScheduleExecution(new[] {list[5], list[7], list[9]});
 
-            var stored = thePersistor.AllIncomingEnvelopes();
+            var stored = ThePersistence.AllIncomingEnvelopes();
             stored.Count(x => x.Status == TransportConstants.Incoming).ShouldBe(7);
             stored.Count(x => x.Status == TransportConstants.Scheduled).ShouldBe(3);
 
@@ -313,9 +315,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             var envelope = ObjectMother.Envelope();
             envelope.Status = TransportConstants.Incoming;
 
-            await thePersistor.StoreIncoming(envelope);
+            await ThePersistence.StoreIncoming(envelope);
 
-            var stored = thePersistor.AllIncomingEnvelopes().Single();
+            var stored = ThePersistence.AllIncomingEnvelopes().Single();
 
             stored.Id.ShouldBe(envelope.Id);
             stored.OwnerId.ShouldBe(envelope.OwnerId);
@@ -328,9 +330,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
             var envelope = ObjectMother.Envelope();
             envelope.Status = TransportConstants.Outgoing;
 
-            await thePersistor.StoreOutgoing(envelope, 5890);
+            await ThePersistence.StoreOutgoing(envelope, 5890);
 
-            var stored = thePersistor.AllOutgoingEnvelopes().Single();
+            var stored = ThePersistence.AllOutgoingEnvelopes().Single();
 
             stored.Id.ShouldBe(envelope.Id);
             stored.OwnerId.ShouldBe(5890);
@@ -350,9 +352,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await ThePersistence.StoreIncoming(list.ToArray());
 
-            var stored = thePersistor.AllIncomingEnvelopes();
+            var stored = ThePersistence.AllIncomingEnvelopes();
 
             list.Select(x => x.Id).OrderBy(x => x)
                 .ShouldHaveTheSameElementsAs(stored.Select(x => x.Id).OrderBy(x => x));
@@ -371,9 +373,9 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreOutgoing(list.ToArray(), 111);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 111);
 
-            var stored = thePersistor.AllOutgoingEnvelopes();
+            var stored = ThePersistence.AllOutgoingEnvelopes();
 
             list.Select(x => x.Id).OrderBy(x => x)
                 .ShouldHaveTheSameElementsAs(stored.Select(x => x.Id).OrderBy(x => x));

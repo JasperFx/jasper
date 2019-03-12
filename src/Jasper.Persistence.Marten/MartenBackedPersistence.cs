@@ -2,15 +2,11 @@
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
-using Jasper.Persistence.Marten.Persistence;
-using Jasper.Persistence.Marten.Persistence.DbObjects;
 using Jasper.Persistence.Marten.Persistence.Sagas;
-using Jasper.Persistence.Marten.Resiliency;
+using Jasper.Persistence.Postgresql;
 using LamarCompiler.Model;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.Marten
 {
@@ -21,15 +17,13 @@ namespace Jasper.Persistence.Marten
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Services.AddTransient<IEnvelopePersistor, MartenEnvelopePersistor>();
-            registry.Services.AddSingleton<IDurableMessagingFactory, MartenBackedDurableMessagingFactory>();
+
+
+            registry.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
             registry.Settings.Alter<StoreOptions>(options =>
             {
-                options.Storage.Add<PostgresqlEnvelopeStorage>();
                 options.Schema.For<ErrorReport>().Duplicate(x => x.MessageType).Duplicate(x => x.ExceptionType);
             });
-
-            registry.Services.AddSingleton<IHostedService, SchedulingAgent>();
 
             registry.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
 
@@ -56,7 +50,7 @@ namespace Jasper.Persistence.Marten
 
         public Variable Create(Type type)
         {
-            return Variable.For<MartenBackedDurableMessagingFactory>();
+            return Variable.For<PostgresqlEnvelopePersistence>();
         }
     }
 }

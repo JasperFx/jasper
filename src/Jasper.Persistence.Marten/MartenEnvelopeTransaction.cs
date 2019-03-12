@@ -7,6 +7,7 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
+using Jasper.Persistence.Postgresql;
 using Marten;
 using Marten.Services;
 
@@ -16,37 +17,41 @@ namespace Jasper.Persistence.Marten
     {
         private readonly int _nodeId;
         private readonly IDocumentSession _session;
-        private readonly EnvelopeTables _tables;
+        private readonly PostgresqlSettings _settings;
 
         public MartenEnvelopeTransaction(IDocumentSession session, IMessageContext bus)
         {
-            if (!(bus.Advanced.Factory is MartenBackedDurableMessagingFactory))
+            if (bus.Advanced.Persistence is PostgresqlEnvelopePersistence persistence)
+            {
+                _settings = persistence.Settings;
+                _nodeId = persistence.Options.UniqueNodeId;
+            }
+            else
+            {
                 throw new InvalidOperationException(
-                    "This Jasper application is not using Marten as the backing message persistence");
-
-            var martenPersistence = bus.Advanced.Factory.As<MartenBackedDurableMessagingFactory>();
-
-            _nodeId = martenPersistence.Settings.UniqueNodeId;
-            _tables = martenPersistence.Tables;
+                    "This Jasper application is not using Postgresql + Marten as the backing message persistence");
+            }
+            
             _session = session;
+
         }
 
         public Task Persist(Envelope envelope)
         {
-            _session.StoreOutgoing(_tables, envelope, _nodeId);
+            _session.StoreOutgoing(_settings, envelope, _nodeId);
             return Task.CompletedTask;
         }
 
         public Task Persist(Envelope[] envelopes)
         {
-            foreach (var envelope in envelopes) _session.StoreOutgoing(_tables, envelope, _nodeId);
+            foreach (var envelope in envelopes) _session.StoreOutgoing(_settings, envelope, _nodeId);
 
             return Task.CompletedTask;
         }
 
         public Task ScheduleJob(Envelope envelope)
         {
-            _session.StoreIncoming(_tables, envelope);
+            _session.StoreIncoming(_settings, envelope);
             return Task.CompletedTask;
         }
 

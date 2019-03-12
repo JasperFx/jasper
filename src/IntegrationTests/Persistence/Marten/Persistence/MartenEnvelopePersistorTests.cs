@@ -6,6 +6,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten.Persistence;
+using Jasper.Persistence.Postgresql;
 using Marten;
 using Shouldly;
 using Xunit;
@@ -31,7 +32,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
         [Fact]
         public async Task get_counts()
         {
-            var thePersistor = theHost.Get<MartenEnvelopePersistor>();
+            var thePersistor = theHost.Get<PostgresqlEnvelopePersistence>();
 
             var list = new List<Envelope>();
 
@@ -72,7 +73,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
             await thePersistor.StoreOutgoing(list.ToArray(), 0);
 
-            var counts = await thePersistor.GetPersistedCounts();
+            var counts = await thePersistor.Admin.GetPersistedCounts();
 
             counts.Incoming.ShouldBe(10);
             counts.Scheduled.ShouldBe(7);

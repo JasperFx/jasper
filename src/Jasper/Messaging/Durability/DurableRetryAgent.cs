@@ -13,14 +13,14 @@ namespace Jasper.Messaging.Durability
     public class DurableRetryAgent : RetryAgent
     {
         private readonly ITransportLogger _logger;
-        private readonly IEnvelopePersistor _persistor;
+        private readonly IEnvelopePersistence _persistence;
 
         public DurableRetryAgent(ISender sender, RetrySettings settings, ITransportLogger logger,
-            IEnvelopePersistor persistor) : base(sender, settings)
+            IEnvelopePersistence persistence) : base(sender, settings)
         {
             _logger = logger;
 
-            _persistor = persistor;
+            _persistence = persistence;
         }
 
         public IList<Envelope> Queued { get; private set; } = new List<Envelope>();
@@ -42,7 +42,7 @@ namespace Jasper.Messaging.Durability
 
             try
             {
-                await _persistor.DiscardAndReassignOutgoing(expired, reassigned, TransportConstants.AnyNode);
+                await _persistence.DiscardAndReassignOutgoing(expired, reassigned, TransportConstants.AnyNode);
                 _logger.DiscardedExpired(expired);
 
                 Queued = all.Take(_settings.MaximumEnvelopeRetryStorage).ToList();
@@ -61,7 +61,7 @@ namespace Jasper.Messaging.Durability
         protected override async Task afterRestarting(ISender sender)
         {
             var expired = Queued.Where(x => x.IsExpired()).ToArray();
-            if (expired.Any()) await _persistor.DeleteIncomingEnvelopes(expired);
+            if (expired.Any()) await _persistence.DeleteIncomingEnvelopes(expired);
 
             var toRetry = Queued.Where(x => !x.IsExpired()).ToArray();
             Queued = new List<Envelope>();

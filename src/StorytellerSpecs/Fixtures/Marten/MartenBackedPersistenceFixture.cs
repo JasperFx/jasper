@@ -6,8 +6,9 @@ using IntegrationTests;
 using Jasper;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
-using Jasper.Persistence.Marten.Persistence.DbObjects;
-using Jasper.Storyteller.Logging;
+using Jasper.Persistence.Postgresql;
+using Jasper.Persistence.Postgresql.Schema;
+using Jasper.TestSupport.Storyteller.Logging;
 using Marten;
 using Marten.Util;
 using Microsoft.AspNetCore.Hosting;
@@ -49,7 +50,6 @@ namespace StorytellerSpecs.Fixtures.Marten
                 _.PLV8Enabled = false;
                 _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "receiver";
-                _.Storage.Add<PostgresqlEnvelopeStorage>();
 
 
                 _.Schema.For<TraceDoc>();
@@ -65,8 +65,10 @@ namespace StorytellerSpecs.Fixtures.Marten
                 _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "sender";
 
-                _.Storage.Add<PostgresqlEnvelopeStorage>();
             });
+
+            new PostgresqlEnvelopeStorageAdmin(Servers.PostgresConnectionString, "receiver").RecreateAll();
+            new PostgresqlEnvelopeStorageAdmin(Servers.PostgresConnectionString, "sender").RecreateAll();
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
             _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
@@ -76,17 +78,58 @@ namespace StorytellerSpecs.Fixtures.Marten
                 var registry = new ReceiverApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
-                return JasperHost.For(registry);
+                var logger = new StorytellerAspNetCoreLogger(key);
+
+                // Tell Storyteller about the new logger so that it'll be
+                // rendered as part of Storyteller's results
+                Context.Reporting.Log(logger);
+
+                // This is bootstrapping a Jasper application through the
+                // normal ASP.Net Core IWebHostBuilder
+                return JasperHost
+                    .CreateDefaultBuilder()
+                    .ConfigureLogging(x =>
+                    {
+                        x.SetMinimumLevel(LogLevel.Debug);
+                        x.AddDebug();
+                        x.AddConsole();
+
+                        // Add the logger to the new Jasper app
+                        // being built up
+                        x.AddProvider(logger);
+                    })
+
+                    .UseJasper(registry)
+                    .StartJasper();
             });
 
             _senders = new LightweightCache<string, IJasperHost>(key =>
             {
+                var logger = new StorytellerAspNetCoreLogger(key);
+
+                // Tell Storyteller about the new logger so that it'll be
+                // rendered as part of Storyteller's results
+                Context.Reporting.Log(logger);
+
                 var registry = new SenderApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
                 registry.Services.For<ITransportLogger>().Use(_senderWatcher);
 
-                return JasperHost.For(registry);
+
+                return JasperHost.CreateDefaultBuilder()
+                    .ConfigureLogging(x =>
+                    {
+                        x.SetMinimumLevel(LogLevel.Debug);
+                        x.AddDebug();
+                        x.AddConsole();
+
+                        // Add the logger to the new Jasper app
+                        // being built up
+                        x.AddProvider(logger);
+                    })
+                    .UseJasper(registry)
+                    .StartJasper();
             });
         }
 
@@ -176,7 +219,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 conn.Open();
 
                 return (long) conn.CreateCommand(
-                        $"select count(*) from receiver.{PostgresqlEnvelopeStorage.IncomingTableName}")
+                        $"select count(*) from receiver.{PostgresqlAccess.IncomingTable}")
                     .ExecuteScalar();
             }
         }
@@ -189,7 +232,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 conn.Open();
 
                 return (long) conn.CreateCommand(
-                        $"select count(*) from sender.{PostgresqlEnvelopeStorage.OutgoingTableName}")
+                        $"select count(*) from sender.{PostgresqlAccess.OutgoingTable}")
                     .ExecuteScalar();
             }
         }

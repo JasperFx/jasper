@@ -10,7 +10,7 @@ namespace Jasper.Persistence
         /// <param name="host"></param>
         public static void RebuildMessageStorage(this IJasperHost host)
         {
-            host.Get<IEnvelopePersistor>().Admin.RebuildSchemaObjects();
+            host.Get<IEnvelopePersistence>().Admin.RebuildSchemaObjects();
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Jasper.Persistence
         /// <param name="host"></param>
         public static void ClearAllPersistedMessages(this IJasperHost host)
         {
-            host.Get<IEnvelopePersistor>().Admin.ClearAllPersistedEnvelopes();
+            host.Get<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
         }
 
 

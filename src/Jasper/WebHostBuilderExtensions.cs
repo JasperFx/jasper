@@ -165,6 +165,16 @@ namespace Jasper
             return new JasperRuntime(host);
         }
 
+        /// <summary>
+        /// Builds the application -- but does not start the application -- and return an IJasperHost for the application
+        /// </summary>
+        /// <param name="hostBuilder"></param>
+        /// <returns></returns>
+        public static IJasperHost BuildJasper(this IWebHostBuilder hostBuilder)
+        {
+            var host = hostBuilder.Build();
+            return new JasperRuntime(host);
+        }
     }
 
     internal class RegisterJasperStartupFilter : IStartupFilter

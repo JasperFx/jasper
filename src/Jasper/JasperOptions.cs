@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using Baseline;
 using Baseline.Dates;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
@@ -45,7 +46,7 @@ namespace Jasper
             _machineName = Environment.MachineName;
             ServiceName = "Jasper";
 
-            UniqueNodeId = Guid.NewGuid().ToString().GetHashCode();
+            UniqueNodeId = Guid.NewGuid().ToString().GetDeterministicHashCode();
         }
 
         /// <summary>
@@ -181,6 +182,8 @@ namespace Jasper
                 if (value != null) _subscriptions.AddRange(value);
             }
         }
+
+        internal DurabilityAgent DurabilityAgent { get; set; }
 
         /// <summary>
         ///     Disable an attached transport

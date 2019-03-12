@@ -28,7 +28,7 @@ namespace Jasper.Messaging.Runtime.Routing
             _subscribers = root.Subscribers;
             _handlers = handlers;
             _logger = root.Logger;
-            _settings = root.Settings;
+            _settings = root.Options;
             _workers = _handlers.Workers;
         }
 

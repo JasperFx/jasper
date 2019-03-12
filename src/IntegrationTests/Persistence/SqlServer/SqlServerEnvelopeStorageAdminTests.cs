@@ -1,6 +1,7 @@
 ﻿using Baseline;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.SqlServer.Schema;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 

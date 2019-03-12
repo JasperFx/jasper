@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Storyteller;
+using Jasper.TestSupport.Storyteller;
 using StorytellerSample.Application;
 using StoryTeller;
 

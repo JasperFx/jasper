@@ -11,7 +11,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
-using Jasper.Storyteller.Logging;
+using Jasper.TestSupport.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StorytellerSpecs.Fixtures.SqlServer.App;
@@ -175,7 +175,7 @@ create table receiver.trace_doc
                 conn.Open();
 
                 return (int) conn.CreateCommand(
-                        $"select count(*) from receiver.{SqlServerEnvelopePersistor.IncomingTable}")
+                        $"select count(*) from receiver.{SqlServerEnvelopePersistence.IncomingTable}")
                     .ExecuteScalar();
             }
         }
@@ -188,7 +188,7 @@ create table receiver.trace_doc
                 conn.Open();
 
                 return (int) conn.CreateCommand(
-                        $"select count(*) from sender.{SqlServerEnvelopePersistor.OutgoingTable}")
+                        $"select count(*) from sender.{SqlServerEnvelopePersistence.OutgoingTable}")
                     .ExecuteScalar();
             }
         }

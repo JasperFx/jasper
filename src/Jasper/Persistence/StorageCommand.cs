@@ -38,7 +38,7 @@ namespace Jasper.Persistence
         {
             using (var host = input.BuildHost(StartMode.Lightweight))
             {
-                var persistor = host.Get<IEnvelopePersistor>();
+                var persistor = host.Get<IEnvelopePersistence>();
 
                 persistor.Describe(Console.Out);
 
@@ -46,7 +46,7 @@ namespace Jasper.Persistence
                 {
                     case (StorageAction.counts):
 
-                        var counts = persistor.GetPersistedCounts().GetAwaiter().GetResult();
+                        var counts = persistor.Admin.GetPersistedCounts().GetAwaiter().GetResult();
                         Console.WriteLine("Persisted Enveloper Counts");
                         Console.WriteLine($"Incoming    {counts.Incoming.ToString().PadLeft(5)}");
                         Console.WriteLine($"Outgoing    {counts.Outgoing.ToString().PadLeft(5)}");

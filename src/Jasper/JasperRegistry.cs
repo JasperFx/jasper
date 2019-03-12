@@ -283,8 +283,6 @@ namespace Jasper
             var combined = new ServiceRegistry();
             combined.AddRange(all);
 
-            combined.For<IDurableMessagingFactory>().UseIfNone<NulloDurableMessagingFactory>();
-
             return combined;
         }
     }

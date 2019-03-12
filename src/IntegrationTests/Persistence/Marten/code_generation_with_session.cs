@@ -3,6 +3,7 @@ using Jasper.Messaging.Model;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Marten;
+using Shouldly;
 using TestingSupport;
 using Xunit;
 

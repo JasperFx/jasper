@@ -46,7 +46,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
         [Fact]
         public void can_get_storage_sql()
         {
-            var sql = theSender.Get<IEnvelopePersistor>().Admin.CreateSql();
+            var sql = theSender.Get<IEnvelopePersistence>().Admin.CreateSql();
 
             sql.ShouldNotBeNull();
 
@@ -65,15 +65,15 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
             await theSender.Messaging.Schedule(item, 1.Days());
 
-            var persistor = theSender.Get<IEnvelopePersistor>();
+            var persistor = theSender.Get<IEnvelopePersistence>();
 
-            var counts = await persistor.GetPersistedCounts();
+            var counts = await persistor.Admin.GetPersistedCounts();
 
             counts.Scheduled.ShouldBe(1);
 
             persistor.Admin.ClearAllPersistedEnvelopes();
 
-            (await persistor.GetPersistedCounts()).Scheduled.ShouldBe(0);
+            (await persistor.Admin.GetPersistedCounts()).Scheduled.ShouldBe(0);
         }
 
         [Fact]
@@ -105,9 +105,10 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
 
                 item2.Name.ShouldBe("Shoe");
-
-                session.AllIncomingEnvelopes().Any().ShouldBeFalse();
             }
+
+            var incoming = await theReceiver.Get<IEnvelopePersistence>().Admin.AllIncomingEnvelopes();
+            incoming.Any().ShouldBeFalse();
         }
 
         [Fact]
@@ -139,12 +140,16 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
                 item2.Name.ShouldBe("Shoe");
 
-                var deleted = session.AllIncomingEnvelopes().Any();
-                if (!deleted)
-                {
-                    Thread.Sleep(500);
-                    session.AllIncomingEnvelopes().Any().ShouldBeFalse();
-                }
+
+            }
+
+            var admin = theReceiver.Get<IEnvelopePersistence>().Admin;
+
+            var deleted = (await admin.AllIncomingEnvelopes()).Any();
+            if (!deleted)
+            {
+                Thread.Sleep(500);
+                (await admin.AllIncomingEnvelopes()).Any().ShouldBeFalse();
             }
         }
 
@@ -177,8 +182,10 @@ namespace IntegrationTests.Persistence.Marten.Persistence
 
                 item2.Name.ShouldBe("Hat");
 
-                session.AllIncomingEnvelopes().Any().ShouldBeFalse();
             }
+
+            var admin = theReceiver.Get<IEnvelopePersistence>().Admin;
+            (await admin.AllIncomingEnvelopes()).Any().ShouldBeFalse();
         }
     }
 }

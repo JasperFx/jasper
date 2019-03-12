@@ -167,11 +167,11 @@ namespace StorytellerSpecs.Fixtures.Durability
 
         private async Task<PersistedCounts> assertNoPersistedOutgoingEnvelopes()
         {
-            var senderCounts = await theSender.Get<IEnvelopePersistor>().GetPersistedCounts();
+            var senderCounts = await theSender.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
             if (senderCounts.Outgoing > 0)
             {
                 await Task.Delay(500.Milliseconds());
-                senderCounts = await theSender.Get<IEnvelopePersistor>().GetPersistedCounts();
+                senderCounts = await theSender.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
             }
 
             return senderCounts;
@@ -188,11 +188,11 @@ namespace StorytellerSpecs.Fixtures.Durability
 
         private async Task assertIncomingEnvelopesIsZero()
         {
-            var receiverCounts = await theReceiver.Get<IEnvelopePersistor>().GetPersistedCounts();
+            var receiverCounts = await theReceiver.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
             if (receiverCounts.Incoming > 0)
             {
                 await Task.Delay(500.Milliseconds());
-                receiverCounts = await theReceiver.Get<IEnvelopePersistor>().GetPersistedCounts();
+                receiverCounts = await theReceiver.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
             }
 
             StoryTellerAssert.Fail(receiverCounts.Incoming > 0, "There are still persisted, incoming messages");
@@ -211,8 +211,8 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             await send(async c => { await c.Schedule(item, 1.Hours()); });
 
-            var persistor = theSender.Get<IEnvelopePersistor>();
-            var counts = await persistor.GetPersistedCounts();
+            var persistor = theSender.Get<IEnvelopePersistence>();
+            var counts = await persistor.Admin.GetPersistedCounts();
             StoryTellerAssert.Fail(counts.Scheduled != 1, $"counts.Scheduled = {counts.Scheduled}, should be 0");
 
 

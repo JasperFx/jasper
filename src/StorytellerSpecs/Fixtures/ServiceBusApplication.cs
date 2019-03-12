@@ -6,7 +6,7 @@ using Jasper.Messaging.Model;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
-using Jasper.Storyteller.Logging;
+using Jasper.TestSupport.Storyteller.Logging;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;

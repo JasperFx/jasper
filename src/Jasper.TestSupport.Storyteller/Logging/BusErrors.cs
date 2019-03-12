@@ -4,7 +4,7 @@ using System.Linq;
 using StoryTeller.Results;
 using StoryTeller.Util;
 
-namespace Jasper.Storyteller.Logging
+namespace Jasper.TestSupport.Storyteller.Logging
 {
     public class BusErrors : Report
     {
