@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Npgsql;
 using NpgsqlTypes;
@@ -60,34 +61,36 @@ select pg_locks.granted,
             return list;
         }
 
-        public static Task GetGlobalLock(this NpgsqlConnection conn, int lockId)
+        public static Task GetGlobalLock(this NpgsqlConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken))
         {
             return conn.CreateCommand("SELECT pg_advisory_lock(:id);").With("id", lockId, NpgsqlDbType.Integer)
-                .ExecuteNonQueryAsync();
+                .ExecuteNonQueryAsync(cancellation);
         }
 
-        public static async Task<bool> TryGetGlobalLock(this NpgsqlConnection conn, int lockId)
+        public static async Task<bool> TryGetGlobalLock(this NpgsqlConnection conn, int lockId,
+            CancellationToken cancellation = default(CancellationToken))
         {
             var c = await conn.CreateCommand("SELECT pg_try_advisory_lock(:id);")
                 .With("id", lockId, NpgsqlDbType.Integer)
-                .ExecuteScalarAsync();
+                .ExecuteScalarAsync(cancellation);
 
             return (bool) c;
         }
 
-        public static async Task<bool> TryGetGlobalTxLock(this NpgsqlTransaction tx, int lockId)
+        public static async Task<bool> TryGetGlobalTxLock(this NpgsqlTransaction tx, int lockId,
+            CancellationToken cancellation = default(CancellationToken))
         {
             var c = await tx.CreateCommand("SELECT pg_try_advisory_xact_lock(:id);")
                 .With("id", lockId, NpgsqlDbType.Integer)
-                .ExecuteScalarAsync();
+                .ExecuteScalarAsync(cancellation);
 
             return (bool) c;
         }
 
-        public static Task ReleaseGlobalLock(this NpgsqlConnection conn, int lockId)
+        public static Task ReleaseGlobalLock(this NpgsqlConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken))
         {
             return conn.CreateCommand("SELECT pg_advisory_unlock(:id);").With("id", lockId, NpgsqlDbType.Integer)
-                .ExecuteNonQueryAsync();
+                .ExecuteNonQueryAsync(cancellation);
         }
 
         public static NpgsqlCommand CreateCommand(this NpgsqlTransaction tx, string sql)

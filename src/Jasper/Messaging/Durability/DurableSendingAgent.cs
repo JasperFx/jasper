@@ -16,17 +16,17 @@ namespace Jasper.Messaging.Durability
     {
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
-        private readonly JasperOptions _settings;
+        private readonly JasperOptions _options;
         private readonly RetryPolicy _policy;
 
         public DurableSendingAgent(Uri destination, ISender sender,
-            ITransportLogger logger, JasperOptions settings,
+            ITransportLogger logger, JasperOptions options,
             IEnvelopePersistence persistence)
-            : base(destination, sender, logger, settings,
-                new DurableRetryAgent(sender, settings.Retries, logger, persistence))
+            : base(destination, sender, logger, options,
+                new DurableRetryAgent(sender, options, logger, persistence))
         {
             _logger = logger;
-            _settings = settings;
+            _options = options;
 
             _persistence = persistence;
 
@@ -50,7 +50,7 @@ namespace Jasper.Messaging.Durability
         private void setDefaults(Envelope envelope)
         {
             envelope.EnsureData();
-            envelope.OwnerId = _settings.UniqueNodeId;
+            envelope.OwnerId = _options.UniqueNodeId;
             envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
         }
 
@@ -58,7 +58,7 @@ namespace Jasper.Messaging.Durability
         {
             setDefaults(envelope);
 
-            await _persistence.StoreOutgoing(envelope, _settings.UniqueNodeId);
+            await _persistence.StoreOutgoing(envelope, _options.UniqueNodeId);
 
             await EnqueueOutgoing(envelope);
         }
@@ -69,19 +69,19 @@ namespace Jasper.Messaging.Durability
 
             foreach (var envelope in outgoing) setDefaults(envelope);
 
-            await _persistence.StoreOutgoing(outgoing, _settings.UniqueNodeId);
+            await _persistence.StoreOutgoing(outgoing, _options.UniqueNodeId);
 
             foreach (var envelope in outgoing) await _sender.Enqueue(envelope);
         }
 
         public override Task Successful(OutgoingMessageBatch outgoing)
         {
-            return _policy.ExecuteAsync(() => _persistence.DeleteOutgoing(outgoing.Messages.ToArray()));
+            return _policy.ExecuteAsync(c => _persistence.DeleteOutgoing(outgoing.Messages.ToArray()), _options.Cancellation);
         }
 
         public override Task Successful(Envelope outgoing)
         {
-            return _policy.ExecuteAsync(() => _persistence.DeleteOutgoing(outgoing));
+            return _policy.ExecuteAsync(c => _persistence.DeleteOutgoing(outgoing), _options.Cancellation);
         }
     }
 }

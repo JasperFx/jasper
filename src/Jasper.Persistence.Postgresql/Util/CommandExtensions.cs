@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Runtime;
@@ -13,21 +14,22 @@ namespace Jasper.Persistence.Postgresql.Util
 {
     public static class CommandExtensions
     {
-        public static async Task<Envelope[]> ExecuteToEnvelopes(this NpgsqlCommand command)
+        public static async Task<Envelope[]> ExecuteToEnvelopes(this NpgsqlCommand command,
+            CancellationToken cancellation = default(CancellationToken))
         {
-            using (var reader = await command.ExecuteReaderAsync())
+            using (var reader = await command.ExecuteReaderAsync(cancellation))
             {
                 var list = new List<Envelope>();
 
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(cancellation))
                 {
-                    var bytes = await reader.GetFieldValueAsync<byte[]>(0);
+                    var bytes = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
                     var envelope = Envelope.Deserialize(bytes);
 
                     if (reader.FieldCount == 3)
                     {
-                        envelope.Status = await reader.GetFieldValueAsync<string>(1);
-                        envelope.OwnerId = await reader.GetFieldValueAsync<int>(2);
+                        envelope.Status = await reader.GetFieldValueAsync<string>(1, cancellation);
+                        envelope.OwnerId = await reader.GetFieldValueAsync<int>(2, cancellation);
                     }
 
                     list.Add(envelope);

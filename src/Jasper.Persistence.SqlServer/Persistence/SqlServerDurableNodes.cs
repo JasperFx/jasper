@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.SqlServer.Util;
@@ -10,12 +11,15 @@ namespace Jasper.Persistence.SqlServer.Persistence
     public class SqlServerDurableNodes : SqlServerAccess,IDurableNodes
     {
         private readonly SqlServerDurableStorageSession _session;
+        private readonly CancellationToken _cancellation;
         private readonly string _fetchOwnersSql;
         private readonly string _reassignDormantNodeSql;
 
-        public SqlServerDurableNodes(SqlServerDurableStorageSession session, SqlServerSettings settings)
+        public SqlServerDurableNodes(SqlServerDurableStorageSession session, SqlServerSettings settings,
+            CancellationToken cancellation)
         {
             _session = session;
+            _cancellation = cancellation;
             _fetchOwnersSql = $@"
 select distinct owner_id from {settings.SchemaName}.{IncomingTable} where owner_id != 0 and owner_id != @owner
 union
@@ -38,18 +42,18 @@ where
         {
             return _session.CreateCommand(_reassignDormantNodeSql)
                 .With("owner", nodeId, SqlDbType.Int)
-                .ExecuteNonQueryAsync();
+                .ExecuteNonQueryAsync(_cancellation);
         }
 
         public async Task<int[]> FindUniqueOwners(int currentNodeId)
         {
             var list = new List<int>();
             using (var reader = await _session.CreateCommand(_fetchOwnersSql)
-                .With("owner", currentNodeId).ExecuteReaderAsync())
+                .With("owner", currentNodeId).ExecuteReaderAsync(_cancellation))
             {
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(_cancellation))
                 {
-                    var id = await reader.GetFieldValueAsync<int>(0);
+                    var id = await reader.GetFieldValueAsync<int>(0, _cancellation);
                     list.Add(id);
                 }
             }

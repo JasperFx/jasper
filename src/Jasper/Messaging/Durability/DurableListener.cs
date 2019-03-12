@@ -16,15 +16,15 @@ namespace Jasper.Messaging.Durability
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _queues;
-        private readonly JasperOptions _settings;
+        private readonly JasperOptions _options;
 
         public DurableListener(IListeningAgent agent, IWorkerQueue queues, ITransportLogger logger,
-            JasperOptions settings, IEnvelopePersistence persistence)
+            JasperOptions options, IEnvelopePersistence persistence)
         {
             _agent = agent;
             _queues = queues;
             _logger = logger;
-            _settings = settings;
+            _options = options;
             _persistence = persistence;
         }
 
@@ -72,6 +72,8 @@ namespace Jasper.Messaging.Durability
         // Separated for testing here.
         public async Task<ReceivedStatus> ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] messages)
         {
+            if (_options.Cancellation.IsCancellationRequested) return ReceivedStatus.ProcessFailure;
+            
             try
             {
                 foreach (var message in messages)
@@ -85,15 +87,12 @@ namespace Jasper.Messaging.Durability
                     }
                     else
                     {
-                        message.Status = TransportConstants.Scheduled;
-                        message.OwnerId = _settings.UniqueNodeId;
+                        message.Status = TransportConstants.Incoming;
+                        message.OwnerId = _options.UniqueNodeId;
                     }
-
-                    message.Status = message.IsDelayed(now)
-                        ? TransportConstants.Scheduled
-                        : TransportConstants.Incoming;
                 }
 
+                // TODO -- think this is gonna change to a distinctly different Incoming v Scheduled
                 await _persistence.StoreIncoming(messages);
 
 

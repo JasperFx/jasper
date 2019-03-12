@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -10,10 +11,12 @@ namespace Jasper.Persistence.SqlServer.Persistence
     public class SqlServerDurableStorageSession : IDurableStorageSession
     {
         private readonly SqlServerSettings _settings;
+        private readonly CancellationToken _cancellation;
 
-        public SqlServerDurableStorageSession(SqlServerSettings settings)
+        public SqlServerDurableStorageSession(SqlServerSettings settings, CancellationToken cancellation)
         {
             _settings = settings;
+            _cancellation = cancellation;
         }
 
         internal SqlTransaction Transaction { get; private set; }
@@ -27,12 +30,12 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public Task ReleaseNodeLock(int lockId)
         {
-            return Connection.ReleaseGlobalLock(lockId);
+            return Connection.ReleaseGlobalLock(lockId, _cancellation);
         }
 
         public Task GetNodeLock(int lockId)
         {
-            return Connection.GetGlobalLock(lockId);
+            return Connection.GetGlobalLock(lockId, _cancellation);
         }
 
         public Task Begin()
@@ -56,17 +59,17 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public Task<bool> TryGetGlobalTxLock(int lockId)
         {
-            return Connection.TryGetGlobalTxLock(Transaction, lockId);
+            return Connection.TryGetGlobalTxLock(Transaction, lockId, _cancellation);
         }
 
         public Task<bool> TryGetGlobalLock(int lockId)
         {
-            return Connection.TryGetGlobalLock(lockId, Transaction);
+            return Connection.TryGetGlobalLock(lockId, Transaction, _cancellation);
         }
 
         public Task ReleaseGlobalLock(int lockId)
         {
-            return Connection.ReleaseGlobalLock(lockId, Transaction);
+            return Connection.ReleaseGlobalLock(lockId, _cancellation, Transaction);
         }
 
         public bool IsConnected()
@@ -95,9 +98,9 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 Connection = new SqlConnection(_settings.ConnectionString);
 
                 // TODO -- use the CancellationToken from JasperSettings
-                await Connection.OpenAsync();
+                await Connection.OpenAsync(_cancellation);
 
-                await Connection.GetGlobalLock(nodeId, Transaction);
+                await Connection.GetGlobalLock(nodeId, _cancellation, Transaction);
             }
             catch (Exception e)
             {

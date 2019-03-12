@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -13,6 +14,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         private readonly SqlServerDurableStorageSession _session;
         private readonly SqlServerSettings _settings;
         private readonly string _findAtLargeEnvelopesSql;
+        private readonly CancellationToken _cancellation;
 
         public SqlServerDurableIncoming(SqlServerDurableStorageSession session, SqlServerSettings settings, JasperOptions options)
         {
@@ -20,12 +22,14 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _settings = settings;
             _findAtLargeEnvelopesSql =
                 $"select top {options.Retries.RecoveryBatchSize} body from {settings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
+
+            _cancellation = options.Cancellation;
         }
 
         public Task<Envelope[]> LoadPageOfLocallyOwned()
         {
             return _session.CreateCommand(_findAtLargeEnvelopesSql)
-                .ExecuteToEnvelopes();
+                .ExecuteToEnvelopes(_cancellation);
         }
 
         public Task Reassign(int ownerId, Envelope[] incoming)
@@ -37,7 +41,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
             cmd.Parameters.AddWithValue("owner", ownerId).SqlDbType = SqlDbType.Int;
 
-            return cmd.ExecuteNonQueryAsync();
+            return cmd.ExecuteNonQueryAsync(_cancellation);
         }
     }
 }

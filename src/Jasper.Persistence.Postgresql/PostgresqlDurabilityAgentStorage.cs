@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -12,10 +13,11 @@ namespace Jasper.Persistence.Postgresql
     {
         private readonly PostgresqlDurableStorageSession _session;
         private readonly string _findReadyToExecuteJobs;
+        private readonly CancellationToken _cancellation;
 
         public PostgresqlDurabilityAgentStorage(PostgresqlSettings settings, JasperOptions options)
         {
-            _session = new PostgresqlDurableStorageSession(settings);
+            _session = new PostgresqlDurableStorageSession(settings, options.Cancellation);
             Session = _session;
 
             Nodes = new PostgresqlDurableNodes(_session, settings, options);
@@ -24,6 +26,8 @@ namespace Jasper.Persistence.Postgresql
 
             _findReadyToExecuteJobs =
                 $"select body from {settings.SchemaName}.{IncomingTable} where status = '{TransportConstants.Scheduled}' and execution_time <= :time";
+
+            _cancellation = options.Cancellation;
         }
 
         public void Dispose()
@@ -40,7 +44,7 @@ namespace Jasper.Persistence.Postgresql
             return _session.Connection
                 .CreateCommand(_findReadyToExecuteJobs)
                 .With("time", utcNow, NpgsqlDbType.TimestampTz)
-                .ExecuteToEnvelopes();
+                .ExecuteToEnvelopes(_cancellation);
         }
     }
 }

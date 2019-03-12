@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -19,6 +20,7 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _deleteOutgoingByDestinationSql;
         private readonly string _deleteOutgoingSql;
         private readonly string _reassignSql;
+        private CancellationToken _cancellation;
 
         public PostgresqlDurableOutgoing(PostgresqlDurableStorageSession session, PostgresqlSettings settings, JasperOptions options)
         {
@@ -34,13 +36,15 @@ namespace Jasper.Persistence.Postgresql
                 $"delete from {settings.SchemaName}.{OutgoingTable} where id = ANY(:ids)";
 
             _reassignSql = $"update {settings.SchemaName}.{OutgoingTable} set owner_id = :owner where id = ANY(:ids)";
+
+            _cancellation = options.Cancellation;
         }
 
         public Task<Envelope[]> Load(Uri destination)
         {
             return _session.CreateCommand(_findOutgoingEnvelopesSql)
                 .With("destination", destination.ToString(), NpgsqlDbType.Varchar)
-                .ExecuteToEnvelopes();
+                .ExecuteToEnvelopes(_cancellation);
 
         }
 
@@ -49,21 +53,21 @@ namespace Jasper.Persistence.Postgresql
             return _session.CreateCommand(_reassignSql)
                 .With("owner", ownerId, NpgsqlDbType.Integer)
                 .With("ids", outgoing.Select(x => x.Id).ToArray(), NpgsqlDbType.Array | NpgsqlDbType.Uuid)
-                .ExecuteNonQueryAsync();
+                .ExecuteNonQueryAsync(_cancellation);
         }
 
         public Task DeleteByDestination(Uri destination)
         {
             return _session.CreateCommand(_deleteOutgoingByDestinationSql)
                 .With("destination", destination.ToString(), NpgsqlDbType.Varchar)
-                .ExecuteNonQueryAsync();
+                .ExecuteNonQueryAsync(_cancellation);
         }
 
         public Task Delete(Envelope[] outgoing)
         {
             return _session.CreateCommand(_deleteOutgoingSql)
                 .With("ids", outgoing.Select(x => x.Id).ToArray(), NpgsqlDbType.Array | NpgsqlDbType.Uuid)
-                .ExecuteNonQueryAsync();
+                .ExecuteNonQueryAsync(_cancellation);
         }
 
         public async Task<Uri[]> FindAllDestinations()
@@ -71,11 +75,11 @@ namespace Jasper.Persistence.Postgresql
             var list = new List<Uri>();
 
             var cmd = _session.CreateCommand(_findUniqueDestinations);
-            using (var reader = await cmd.ExecuteReaderAsync())
+            using (var reader = await cmd.ExecuteReaderAsync(_cancellation))
             {
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(_cancellation))
                 {
-                    var text = await reader.GetFieldValueAsync<string>(0);
+                    var text = await reader.GetFieldValueAsync<string>(0, _cancellation);
                     list.Add(text.ToUri());
                 }
             }

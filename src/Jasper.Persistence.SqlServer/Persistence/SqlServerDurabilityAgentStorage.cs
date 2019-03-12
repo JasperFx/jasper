@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -10,22 +11,25 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerDurabilityAgentStorage : SqlServerAccess,IDurabilityAgentStorage
     {
-        private SqlServerDurableStorageSession _session;
+        private readonly SqlServerDurableStorageSession _session;
         private readonly string _findReadyToExecuteJobs;
+        private readonly CancellationToken _cancellation;
 
         public SqlServerDurabilityAgentStorage(SqlServerSettings settings, JasperOptions options)
         {
-            var transaction = new SqlServerDurableStorageSession(settings);
+            var transaction = new SqlServerDurableStorageSession(settings, options.Cancellation);
 
             _session = transaction;
             Session = transaction;
 
-            Nodes = new SqlServerDurableNodes(transaction, settings);
+            Nodes = new SqlServerDurableNodes(transaction, settings, options.Cancellation);
             Incoming = new SqlServerDurableIncoming(transaction, settings, options);
             Outgoing = new SqlServerDurableOutgoing(transaction, settings, options);
 
             _findReadyToExecuteJobs =
                 $"select body from {settings.SchemaName}.{IncomingTable} where status = '{TransportConstants.Scheduled}' and execution_time <= @time";
+
+            _cancellation = options.Cancellation;
         }
 
         public IDurableStorageSession Session { get; }
@@ -38,7 +42,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             return _session
                 .CreateCommand(_findReadyToExecuteJobs)
                 .With("time", utcNow, SqlDbType.DateTimeOffset)
-                .ExecuteToEnvelopes(_session.Transaction);
+                .ExecuteToEnvelopes(_cancellation, _session.Transaction);
         }
 
         public void Dispose()

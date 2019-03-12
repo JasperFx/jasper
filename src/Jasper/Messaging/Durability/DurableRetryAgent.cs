@@ -1,32 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.Transports.Tcp;
+using Polly;
+using Polly.Retry;
 
 namespace Jasper.Messaging.Durability
 {
     public class DurableRetryAgent : RetryAgent
     {
+        private readonly JasperOptions _options;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
+        private RetryPolicy _policy;
 
-        public DurableRetryAgent(ISender sender, RetrySettings settings, ITransportLogger logger,
-            IEnvelopePersistence persistence) : base(sender, settings)
+        public DurableRetryAgent(ISender sender, JasperOptions options, ITransportLogger logger,
+            IEnvelopePersistence persistence) : base(sender,options.Retries)
         {
+            _options = options;
             _logger = logger;
 
             _persistence = persistence;
+            
+            _policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
+                    , (e, timeSpan) => {
+                        _logger.LogException(e, message:"Failed while trying to enqueue a message batch for retries");
+                    });
         }
 
         public IList<Envelope> Queued { get; private set; } = new List<Envelope>();
 
-        public override async Task EnqueueForRetry(OutgoingMessageBatch batch)
+        public override Task EnqueueForRetry(OutgoingMessageBatch batch)
         {
+            Task execute(CancellationToken c) => enqueueForRetry(batch);
+            
+            return _policy.ExecuteAsync(execute, _options.Cancellation);
+        }
+
+        private async Task enqueueForRetry(OutgoingMessageBatch batch)
+        {
+            if (_options.Cancellation.IsCancellationRequested) return;
+
             var expiredInQueue = Queued.Where(x => x.IsExpired()).ToArray();
             var expiredInBatch = batch.Messages.Where(x => x.IsExpired()).ToArray();
 
@@ -39,23 +62,10 @@ namespace Jasper.Messaging.Durability
             if (all.Count > _settings.MaximumEnvelopeRetryStorage)
                 reassigned = all.Skip(_settings.MaximumEnvelopeRetryStorage).ToArray();
 
+            await _persistence.DiscardAndReassignOutgoing(expired, reassigned, TransportConstants.AnyNode);
+            _logger.DiscardedExpired(expired);
 
-            try
-            {
-                await _persistence.DiscardAndReassignOutgoing(expired, reassigned, TransportConstants.AnyNode);
-                _logger.DiscardedExpired(expired);
-
-                Queued = all.Take(_settings.MaximumEnvelopeRetryStorage).ToList();
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e, message: "Failed while trying to enqueue a message batch for retries");
-
-
-#pragma warning disable 4014
-                Task.Delay(100).ContinueWith(async _ => await EnqueueForRetry(batch));
-#pragma warning restore 4014
-            }
+            Queued = all.Take(_settings.MaximumEnvelopeRetryStorage).ToList();
         }
 
         protected override async Task afterRestarting(ISender sender)

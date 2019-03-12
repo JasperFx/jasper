@@ -16,7 +16,7 @@ namespace Jasper.Messaging.Transports.Sending
         protected readonly RetryAgent _retries;
         protected readonly ISender _sender;
 
-        protected SendingAgent(Uri destination, ISender sender, ITransportLogger logger, JasperOptions settings,
+        protected SendingAgent(Uri destination, ISender sender, ITransportLogger logger, JasperOptions options,
             RetryAgent retries)
         {
             _sender = sender;

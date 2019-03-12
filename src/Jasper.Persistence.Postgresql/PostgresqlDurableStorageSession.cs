@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -10,10 +11,12 @@ namespace Jasper.Persistence.Postgresql
 {
     public class PostgresqlDurableStorageSession : IDurableStorageSession
     {
+        private readonly CancellationToken _cancellation;
         private readonly string _connectionString;
 
-        public PostgresqlDurableStorageSession(PostgresqlSettings settings)
+        public PostgresqlDurableStorageSession(PostgresqlSettings settings, CancellationToken cancellation)
         {
+            _cancellation = cancellation;
             _connectionString = settings.ConnectionString;
         }
 
@@ -24,12 +27,12 @@ namespace Jasper.Persistence.Postgresql
 
         public Task ReleaseNodeLock(int lockId)
         {
-            return Connection.ReleaseGlobalLock(lockId);
+            return Connection.ReleaseGlobalLock(lockId, _cancellation);
         }
 
         public Task GetNodeLock(int lockId)
         {
-            return Connection.GetGlobalLock(lockId);
+            return Connection.GetGlobalLock(lockId, _cancellation);
         }
 
         public Task Begin()
@@ -53,17 +56,17 @@ namespace Jasper.Persistence.Postgresql
 
         public Task<bool> TryGetGlobalTxLock(int lockId)
         {
-            return Transaction.TryGetGlobalTxLock(lockId);
+            return Transaction.TryGetGlobalTxLock(lockId, _cancellation);
         }
 
         public Task<bool> TryGetGlobalLock(int lockId)
         {
-            return Connection.TryGetGlobalLock(lockId);
+            return Connection.TryGetGlobalLock(lockId, _cancellation);
         }
 
         public Task ReleaseGlobalLock(int lockId)
         {
-            return Connection.ReleaseGlobalLock(lockId);
+            return Connection.ReleaseGlobalLock(lockId, _cancellation);
         }
 
         public bool IsConnected()
@@ -91,10 +94,9 @@ namespace Jasper.Persistence.Postgresql
             {
                 Connection = new NpgsqlConnection(_connectionString);
 
-                // TODO -- use the CancellationToken from JasperSettings
-                await Connection.OpenAsync();
+                await Connection.OpenAsync(_cancellation);
 
-                await Connection.GetGlobalLock(nodeId);
+                await Connection.GetGlobalLock(nodeId, _cancellation);
             }
             catch (Exception)
             {

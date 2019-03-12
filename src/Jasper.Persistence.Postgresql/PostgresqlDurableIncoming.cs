@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -11,9 +12,10 @@ namespace Jasper.Persistence.Postgresql
     public class PostgresqlDurableIncoming : PostgresqlAccess,IDurableIncoming
     {
         private readonly PostgresqlDurableStorageSession _session;
-        private PostgresqlSettings _settings;
+        private readonly PostgresqlSettings _settings;
         private readonly string _findAtLargeEnvelopesSql;
         private readonly string _reassignSql;
+        private CancellationToken _cancellation;
 
         public PostgresqlDurableIncoming(PostgresqlDurableStorageSession session, PostgresqlSettings settings, JasperOptions options)
         {
@@ -24,13 +26,15 @@ namespace Jasper.Persistence.Postgresql
 
             _reassignSql =
                 $"UPDATE {_settings.SchemaName}.{IncomingTable} SET owner_id = :owner, status = '{TransportConstants.Incoming}' WHERE id = ANY(:ids)";
+
+            _cancellation = options.Cancellation;
         }
 
         public Task<Envelope[]> LoadPageOfLocallyOwned()
         {
             return _session
                 .CreateCommand(_findAtLargeEnvelopesSql)
-                .ExecuteToEnvelopes();
+                .ExecuteToEnvelopes(_cancellation);
         }
 
         public Task Reassign(int ownerId, Envelope[] incoming)
@@ -38,7 +42,7 @@ namespace Jasper.Persistence.Postgresql
             return _session.CreateCommand(_reassignSql)
                 .With("owner", ownerId, NpgsqlDbType.Integer)
                 .With("ids", incoming.Select(x => x.Id).ToArray(), NpgsqlDbType.Array | NpgsqlDbType.Uuid)
-                .ExecuteNonQueryAsync();
+                .ExecuteNonQueryAsync(_cancellation);
 
         }
     }

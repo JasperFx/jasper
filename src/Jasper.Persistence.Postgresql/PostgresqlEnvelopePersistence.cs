@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -18,6 +19,7 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _deleteOutgoingEnvelopesSql;
         private readonly string _deleteIncomingEnvelopeSql;
         private readonly string _deleteOutgoingEnvelopeSql;
+        private CancellationToken _cancellation;
 
         public PostgresqlEnvelopePersistence(PostgresqlSettings settings, JasperOptions options)
         {
@@ -32,6 +34,8 @@ namespace Jasper.Persistence.Postgresql
             _deleteOutgoingEnvelopeSql = $"delete from {Settings.SchemaName}.{OutgoingTable} WHERE id = :id;";
 
             AgentStorage = new PostgresqlDurabilityAgentStorage(settings, options);
+
+            _cancellation = options.Cancellation;
         }
 
         public PostgresqlSettings Settings { get; }
@@ -44,11 +48,11 @@ namespace Jasper.Persistence.Postgresql
         {
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand(_deleteIncomingEnvelopesSql)
                     .With("ids", envelopes.Select(x => x.Id).ToArray(), NpgsqlDbType.Array | NpgsqlDbType.Uuid)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -56,11 +60,11 @@ namespace Jasper.Persistence.Postgresql
         {
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand(_deleteIncomingEnvelopeSql)
                     .With("id", envelope.Id, NpgsqlDbType.Uuid)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -68,11 +72,11 @@ namespace Jasper.Persistence.Postgresql
         {
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand(_deleteOutgoingEnvelopesSql)
                     .With("ids", envelopes.Select(x => x.Id).ToArray(), NpgsqlDbType.Array | NpgsqlDbType.Uuid)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -80,11 +84,11 @@ namespace Jasper.Persistence.Postgresql
         {
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand(_deleteOutgoingEnvelopeSql)
                     .With("id", envelope.Id, NpgsqlDbType.Uuid)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -92,7 +96,7 @@ namespace Jasper.Persistence.Postgresql
         {
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 var tx = conn.BeginTransaction();
 
@@ -119,7 +123,7 @@ namespace Jasper.Persistence.Postgresql
 
                 builder.Apply();
 
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
 
 
@@ -145,10 +149,10 @@ namespace Jasper.Persistence.Postgresql
 
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 cmd.Connection = conn;
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -163,7 +167,7 @@ namespace Jasper.Persistence.Postgresql
                         $"update {Settings.SchemaName}.{IncomingTable} set attempts = :attempts where id = :id")
                     .With("attempts", envelope.Attempts, NpgsqlDbType.Integer)
                     .With("id", envelope.Id, NpgsqlDbType.Uuid)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -173,7 +177,7 @@ namespace Jasper.Persistence.Postgresql
 
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 var cmd = conn.CreateCommand($@"
 insert into {Settings.SchemaName}.{IncomingTable}
@@ -189,7 +193,7 @@ values
                     .With("attempts", envelope.Attempts, NpgsqlDbType.Integer)
                     .With("time", envelope.ExecutionTime, NpgsqlDbType.TimestampTz)
                     .With("body", envelope.Serialize(), NpgsqlDbType.Bytea)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -199,11 +203,11 @@ values
 
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 cmd.Connection = conn;
 
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -244,11 +248,11 @@ values
 
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 cmd.Connection = conn;
 
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -258,7 +262,7 @@ values
 
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand(
                         $"insert into {Settings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (:id, :owner, :destination, :deliverBy, :body)")
@@ -267,7 +271,7 @@ values
                     .With("destination", envelope.Destination.ToString(), NpgsqlDbType.Varchar)
                     .With("deliverBy", envelope.DeliverBy, NpgsqlDbType.TimestampTz)
                     .With("body", envelope.Serialize(), NpgsqlDbType.Bytea)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -277,11 +281,11 @@ values
 
             using (var conn = new NpgsqlConnection(Settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 cmd.Connection = conn;
 
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 

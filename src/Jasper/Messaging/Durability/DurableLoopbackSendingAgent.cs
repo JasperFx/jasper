@@ -55,6 +55,7 @@ namespace Jasper.Messaging.Durability
         {
             writeMessageData(envelope);
 
+            // TODO -- have to watch this one
             envelope.Status = envelope.IsDelayed(DateTime.UtcNow)
                 ? TransportConstants.Scheduled
                 : TransportConstants.Incoming;

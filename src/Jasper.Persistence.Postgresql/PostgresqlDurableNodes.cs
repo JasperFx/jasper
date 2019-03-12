@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.Postgresql.Util;
@@ -11,6 +12,7 @@ namespace Jasper.Persistence.Postgresql
         private readonly PostgresqlDurableStorageSession _session;
         private readonly string _fetchOwnersSql;
         private readonly string _reassignDormantNodeSql;
+        private CancellationToken _cancellation;
 
         public PostgresqlDurableNodes(PostgresqlDurableStorageSession session, PostgresqlSettings settings, JasperOptions options)
         {
@@ -32,24 +34,26 @@ update {settings.SchemaName}.{OutgoingTable}
 where
   owner_id = :owner;
 ";
+
+            _cancellation = options.Cancellation;
         }
 
         public Task ReassignDormantNodeToAnyNode(int nodeId)
         {
             return _session.CreateCommand(_reassignDormantNodeSql)
                 .With("owner", nodeId, NpgsqlDbType.Integer)
-                .ExecuteNonQueryAsync();
+                .ExecuteNonQueryAsync(_cancellation);
         }
 
         public async Task<int[]> FindUniqueOwners(int currentNodeId)
         {
             var list = new List<int>();
             using (var reader = await _session.CreateCommand(_fetchOwnersSql)
-                .With("owner", currentNodeId).ExecuteReaderAsync())
+                .With("owner", currentNodeId).ExecuteReaderAsync(_cancellation))
             {
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(_cancellation))
                 {
-                    var id = await reader.GetFieldValueAsync<int>(0);
+                    var id = await reader.GetFieldValueAsync<int>(0, _cancellation);
                     list.Add(id);
                 }
             }

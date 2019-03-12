@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -17,6 +18,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         private readonly string _findUniqueDestinations;
         private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
+        private CancellationToken _cancellation;
 
         public SqlServerDurableOutgoing(SqlServerDurableStorageSession session, SqlServerSettings settings, JasperOptions options)
         {
@@ -28,13 +30,15 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 $"select top {options.Retries.RecoveryBatchSize} body from {settings.SchemaName}.{OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
             _deleteOutgoingSql =
                 $"delete from {settings.SchemaName}.{OutgoingTable} where owner_id = :owner and destination = @destination";
+
+            _cancellation = options.Cancellation;
         }
 
         public Task<Envelope[]> Load(Uri destination)
         {
             return _session.CreateCommand(_findOutgoingEnvelopesSql)
                 .With("destination", destination.ToString(), SqlDbType.VarChar)
-                .ExecuteToEnvelopes();
+                .ExecuteToEnvelopes(_cancellation);
         }
 
         public Task Reassign(int ownerId, Envelope[] outgoing)
@@ -46,7 +50,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
             cmd.Parameters.AddWithValue("owner", ownerId).SqlDbType = SqlDbType.Int;
 
-            return cmd.ExecuteNonQueryAsync();
+            return cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
         public Task DeleteByDestination(Uri destination)
@@ -64,7 +68,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             list.SqlDbType = SqlDbType.Structured;
             list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
 
-            return cmd.ExecuteNonQueryAsync();
+            return cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
         public async Task<Uri[]> FindAllDestinations()
@@ -72,11 +76,11 @@ namespace Jasper.Persistence.SqlServer.Persistence
             var list = new List<Uri>();
 
             var cmd = _session.CreateCommand(_findUniqueDestinations);
-            using (var reader = await cmd.ExecuteReaderAsync())
+            using (var reader = await cmd.ExecuteReaderAsync(_cancellation))
             {
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(_cancellation))
                 {
-                    var text = await reader.GetFieldValueAsync<string>(0);
+                    var text = await reader.GetFieldValueAsync<string>(0, _cancellation);
                     list.Add(text.ToUri());
                 }
             }

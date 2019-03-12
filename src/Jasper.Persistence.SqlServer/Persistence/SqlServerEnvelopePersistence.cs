@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -19,6 +20,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         private readonly SqlServerSettings _settings;
         private readonly JasperOptions _options;
+        private CancellationToken _cancellation;
 
         public SqlServerEnvelopePersistence(SqlServerSettings settings, JasperOptions options)
         {
@@ -28,6 +30,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             AgentStorage = new SqlServerDurabilityAgentStorage(settings, options);
 
             _options = options;
+            _cancellation = options.Cancellation;
         }
 
         public IEnvelopeStorageAdmin Admin { get; }
@@ -47,7 +50,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 list.SqlDbType = SqlDbType.Structured;
                 list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
 
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -55,11 +58,11 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand($"delete from {_settings.SchemaName}.{IncomingTable} where id = @id")
                     .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -69,7 +72,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 var cmd = conn.CreateCommand($"{_settings.SchemaName}.uspDeleteOutgoingEnvelopes");
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -78,7 +81,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 list.SqlDbType = SqlDbType.Structured;
                 list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
 
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -86,11 +89,11 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand($"delete from {_settings.SchemaName}.{OutgoingTable} where id = @id")
                     .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -128,9 +131,9 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
                 cmd.Connection = conn;
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -154,10 +157,10 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 cmd.Connection = conn;
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -166,13 +169,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand(
                         $"update {_settings.SchemaName}.{IncomingTable} set attempts = @attempts where id = @id")
                     .With("attempts", envelope.Attempts, SqlDbType.Int)
                     .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -180,7 +183,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 var cmd = conn.CreateCommand($@"
 insert into {_settings.SchemaName}.{IncomingTable}
@@ -196,7 +199,7 @@ values
                     .With("attempts", envelope.Attempts, SqlDbType.Int)
                     .With("time", envelope.ExecutionTime, SqlDbType.DateTimeOffset)
                     .With("body", envelope.Serialize(), SqlDbType.VarBinary)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -206,7 +209,7 @@ values
             cmd.Transaction = tx;
             cmd.Connection = tx.Connection;
 
-            return cmd.ExecuteNonQueryAsync();
+            return cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
         public async Task StoreIncoming(Envelope[] envelopes)
@@ -215,11 +218,11 @@ values
 
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 cmd.Connection = conn;
 
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -230,13 +233,13 @@ values
 
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand(
                         $"EXEC {_settings.SchemaName}.uspDiscardAndReassignOutgoing @discards, @reassigned, @owner")
                     .With("discards", discardTable, SqlDbType.Structured, $"{_settings.SchemaName}.EnvelopeIdList")
                     .With("reassigned", reassignedTable, SqlDbType.Structured, $"{_settings.SchemaName}.EnvelopeIdList")
-                    .With("owner", nodeId, SqlDbType.Int).ExecuteNonQueryAsync();
+                    .With("owner", nodeId, SqlDbType.Int).ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -248,7 +251,7 @@ values
 
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 await conn.CreateCommand(
                         $"insert into {_settings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)")
@@ -257,7 +260,7 @@ values
                     .With("destination", envelope.Destination.ToString(), SqlDbType.VarChar)
                     .With("deliverBy", envelope.DeliverBy, SqlDbType.DateTimeOffset)
                     .With("body", envelope.Serialize(), SqlDbType.VarBinary)
-                    .ExecuteNonQueryAsync();
+                    .ExecuteNonQueryAsync(_cancellation);
             }
         }
 
@@ -267,7 +270,7 @@ values
             cmd.Connection = tx.Connection;
             cmd.Transaction = tx;
 
-            return cmd.ExecuteNonQueryAsync();
+            return cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
         public async Task StoreOutgoing(Envelope[] envelopes, int ownerId)
@@ -276,11 +279,11 @@ values
 
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
-                await conn.OpenAsync();
+                await conn.OpenAsync(_cancellation);
 
                 cmd.Connection = conn;
 
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(_cancellation);
             }
         }
 

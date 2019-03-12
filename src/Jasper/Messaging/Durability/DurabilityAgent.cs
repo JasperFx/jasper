@@ -73,7 +73,8 @@ namespace Jasper.Messaging.Durability
 
             _worker = new ActionBlock<IMessagingAction>(processAction, new ExecutionDataflowBlockOptions
             {
-                MaxDegreeOfParallelism = 1
+                MaxDegreeOfParallelism = 1,
+                CancellationToken = _options.Cancellation
             });
 
             NodeId = _options.UniqueNodeId;
@@ -107,7 +108,7 @@ namespace Jasper.Messaging.Durability
         public class MessageActionWrapper : IMessagingAction
         {
             private readonly IMessagingAction _inner;
-            private TaskCompletionSource<bool> _completion;
+            private readonly TaskCompletionSource<bool> _completion;
 
             public MessageActionWrapper(IMessagingAction inner)
             {
@@ -173,6 +174,8 @@ namespace Jasper.Messaging.Durability
 
         private async Task processAction(IMessagingAction action)
         {
+            if (_options.Cancellation.IsCancellationRequested) return;
+
             await tryRestartConnection();
 
             // Something is wrong, but we'll keep trying in a bit
