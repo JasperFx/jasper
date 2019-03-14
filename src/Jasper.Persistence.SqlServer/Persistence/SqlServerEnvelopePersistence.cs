@@ -191,21 +191,14 @@ values
             }
         }
 
-        public async Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
+        public Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
-            var discardTable = discards.BuildIdTable();
-            var reassignedTable = reassigned.BuildIdTable();
+            var cmd = _settings.CallFunction("uspDiscardAndReassignOutgoing")
+                .WithIdList(_settings, discards, "discards")
+                .WithIdList(_settings, reassigned, "reassigned")
+                .With("ownerId", nodeId, SqlDbType.Int);
 
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
-
-                await conn.CreateCommand(
-                        $"EXEC {_settings.SchemaName}.uspDiscardAndReassignOutgoing @discards, @reassigned, @owner")
-                    .With("discards", discardTable, SqlDbType.Structured, $"{_settings.SchemaName}.EnvelopeIdList")
-                    .With("reassigned", reassignedTable, SqlDbType.Structured, $"{_settings.SchemaName}.EnvelopeIdList")
-                    .With("owner", nodeId, SqlDbType.Int).ExecuteNonQueryAsync(_cancellation);
-            }
+            return cmd.ExecuteOnce(_cancellation);
         }
 
 

@@ -171,15 +171,18 @@ namespace Jasper.Persistence.SqlServer.Util
             return table;
         }
 
-        public static SqlCommand WithIdList(this SqlCommand cmd, SqlServerSettings settings, Envelope[] envelopes)
+        public static SqlCommand WithIdList(this SqlCommand cmd, SqlServerSettings settings, Envelope[] envelopes,
+            string parameterName = "IDLIST")
         {
             var table = envelopes.BuildIdTable();
-            var list = cmd.Parameters.AddWithValue("IDLIST", table);
+
+            var list = cmd.Parameters.AddWithValue(parameterName, table);
             list.SqlDbType = SqlDbType.Structured;
             list.TypeName = $"{settings.SchemaName}.EnvelopeIdList";
 
             return cmd;
         }
+
 
         public static async Task ExecuteOnce(this SqlCommand command, CancellationToken cancellation)
         {
