@@ -28,6 +28,16 @@ namespace Jasper.Persistence.SqlServer.Persistence
             return new SqlCommand(sql, Connection, Transaction);
         }
 
+        internal SqlCommand CallFunction(string functionName)
+        {
+            var cmd = new SqlCommand(_settings.SchemaName + "." + functionName, Connection, Transaction)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            return cmd;
+        }
+
         public Task ReleaseNodeLock(int lockId)
         {
             return Connection.ReleaseGlobalLock(lockId, _cancellation);

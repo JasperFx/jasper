@@ -36,9 +36,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             var cmd = _session.CreateCommand($"{_settings.SchemaName}.uspMarkIncomingOwnership");
             cmd.CommandType = CommandType.StoredProcedure;
-            var list = cmd.Parameters.AddWithValue("IDLIST", SqlServerEnvelopePersistence.BuildIdTable(incoming));
-            list.SqlDbType = SqlDbType.Structured;
-            list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
+            cmd.WithIdList(_settings, incoming);
             cmd.Parameters.AddWithValue("owner", ownerId).SqlDbType = SqlDbType.Int;
 
             return cmd.ExecuteNonQueryAsync(_cancellation);

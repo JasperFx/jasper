@@ -20,7 +20,8 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         private readonly SqlServerSettings _settings;
         private readonly JasperOptions _options;
-        private CancellationToken _cancellation;
+        private readonly CancellationToken _cancellation;
+        private readonly string _incrementIncomingAttempts;
 
         public SqlServerEnvelopePersistence(SqlServerSettings settings, JasperOptions options)
         {
@@ -31,70 +32,40 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             _options = options;
             _cancellation = options.Cancellation;
+
+            _incrementIncomingAttempts = $"update {_settings.SchemaName}.{IncomingTable} set attempts = @attempts where id = @id";
         }
 
         public IEnvelopeStorageAdmin Admin { get; }
         public IDurabilityAgentStorage AgentStorage { get; }
 
-        public async Task DeleteIncomingEnvelopes(Envelope[] envelopes)
+        public Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
-            var table = BuildIdTable(envelopes);
-
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync();
-
-                var cmd = conn.CreateCommand($"{_settings.SchemaName}.uspDeleteIncomingEnvelopes");
-                cmd.CommandType = CommandType.StoredProcedure;
-                var list = cmd.Parameters.AddWithValue("IDLIST", table);
-                list.SqlDbType = SqlDbType.Structured;
-                list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
-
-                await cmd.ExecuteNonQueryAsync(_cancellation);
-            }
+            return _settings.CallFunction("uspDeleteIncomingEnvelopes")
+                .WithIdList(_settings, envelopes)
+                .ExecuteOnce(_cancellation);
         }
 
-        public async Task DeleteIncomingEnvelope(Envelope envelope)
+        public Task DeleteIncomingEnvelope(Envelope envelope)
         {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
-
-                await conn.CreateCommand($"delete from {_settings.SchemaName}.{IncomingTable} where id = @id")
-                    .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
-                    .ExecuteNonQueryAsync(_cancellation);
-            }
+            return _settings.CreateCommand($"delete from {_settings.SchemaName}.{IncomingTable} where id = @id")
+                .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
+                .ExecuteOnce(_cancellation);
         }
 
-        public async Task DeleteOutgoing(Envelope[] envelopes)
+        public Task DeleteOutgoing(Envelope[] envelopes)
         {
-            var table = BuildIdTable(envelopes);
-
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
-
-                var cmd = conn.CreateCommand($"{_settings.SchemaName}.uspDeleteOutgoingEnvelopes");
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                var list = cmd.Parameters.AddWithValue("IDLIST", table);
-                list.SqlDbType = SqlDbType.Structured;
-                list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
-
-                await cmd.ExecuteNonQueryAsync(_cancellation);
-            }
+            return _settings.CallFunction("uspDeleteOutgoingEnvelopes")
+                .WithIdList(_settings, envelopes)
+                .ExecuteOnce(_cancellation);
         }
 
-        public async Task DeleteOutgoing(Envelope envelope)
+        public Task DeleteOutgoing(Envelope envelope)
         {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
+            return _settings.CreateCommand($"delete from {_settings.SchemaName}.{OutgoingTable} where id = @id")
+                .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
+                .ExecuteOnce(_cancellation);
 
-                await conn.CreateCommand($"delete from {_settings.SchemaName}.{OutgoingTable} where id = @id")
-                    .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
-                    .ExecuteNonQueryAsync(_cancellation);
-            }
         }
 
         public async Task MoveToDeadLetterStorage(ErrorReport[] errors)
@@ -165,18 +136,12 @@ namespace Jasper.Persistence.SqlServer.Persistence
         }
 
 
-        public async Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
+        public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
         {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
-
-                await conn.CreateCommand(
-                        $"update {_settings.SchemaName}.{IncomingTable} set attempts = @attempts where id = @id")
-                    .With("attempts", envelope.Attempts, SqlDbType.Int)
-                    .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
-                    .ExecuteNonQueryAsync(_cancellation);
-            }
+            return _settings.CreateCommand(_incrementIncomingAttempts)
+                .With("attempts", envelope.Attempts, SqlDbType.Int)
+                .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
+                .ExecuteOnce(_cancellation);
         }
 
         public async Task StoreIncoming(Envelope envelope)
@@ -228,8 +193,8 @@ values
 
         public async Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
-            var discardTable = BuildIdTable(discards);
-            var reassignedTable = BuildIdTable(reassigned);
+            var discardTable = discards.BuildIdTable();
+            var reassignedTable = reassigned.BuildIdTable();
 
             using (var conn = new SqlConnection(_settings.ConnectionString))
             {
@@ -328,14 +293,7 @@ values
             }
         }
 
-        public static DataTable BuildIdTable(IEnumerable<Envelope> envelopes)
-        {
-            var table = new DataTable();
-            table.Columns.Add(new DataColumn("ID", typeof(Guid)));
-            foreach (var envelope in envelopes) table.Rows.Add(envelope.Id);
 
-            return table;
-        }
 
         public static SqlCommand BuildIncomingStorageCommand(IEnumerable<Envelope> envelopes,
             SqlServerSettings settings)

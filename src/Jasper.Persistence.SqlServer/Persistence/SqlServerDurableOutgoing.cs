@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
@@ -18,7 +19,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         private readonly string _findUniqueDestinations;
         private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
-        private CancellationToken _cancellation;
+        private readonly CancellationToken _cancellation;
 
         public SqlServerDurableOutgoing(SqlServerDurableStorageSession session, SqlServerSettings settings, JasperOptions options)
         {
@@ -43,12 +44,9 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public Task Reassign(int ownerId, Envelope[] outgoing)
         {
-            var cmd = _session.CreateCommand($"{_settings.SchemaName}.uspMarkOutgoingOwnership");
-            cmd.CommandType = CommandType.StoredProcedure;
-            var list = cmd.Parameters.AddWithValue("IDLIST", SqlServerEnvelopePersistence.BuildIdTable(outgoing));
-            list.SqlDbType = SqlDbType.Structured;
-            list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
-            cmd.Parameters.AddWithValue("owner", ownerId).SqlDbType = SqlDbType.Int;
+            var cmd = _session.CallFunction("uspMarkOutgoingOwnership")
+                .WithIdList(_settings, outgoing)
+                .With("owner", ownerId, SqlDbType.Int);
 
             return cmd.ExecuteNonQueryAsync(_cancellation);
         }
@@ -57,18 +55,15 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             return _session.CreateCommand(_deleteOutgoingSql)
                 .With("destination", destination.ToString(), SqlDbType.VarChar)
-                .With("owner", TransportConstants.AnyNode, SqlDbType.Int).ExecuteNonQueryAsync();
+                .With("owner", TransportConstants.AnyNode, SqlDbType.Int)
+                .ExecuteNonQueryAsync(_cancellation);
         }
 
         public Task Delete(Envelope[] outgoing)
         {
-            var cmd = _session.CreateCommand($"{_settings.SchemaName}.uspDeleteOutgoingEnvelopes");
-            cmd.CommandType = CommandType.StoredProcedure;
-            var list = cmd.Parameters.AddWithValue("IDLIST", SqlServerEnvelopePersistence.BuildIdTable(outgoing));
-            list.SqlDbType = SqlDbType.Structured;
-            list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
-
-            return cmd.ExecuteNonQueryAsync(_cancellation);
+            return _session
+                .CallFunction("uspDeleteOutgoingEnvelopes")
+                .WithIdList(_settings, outgoing).ExecuteNonQueryAsync(_cancellation);
         }
 
         public async Task<Uri[]> FindAllDestinations()

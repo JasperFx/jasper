@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Baseline;
+using Jasper.Messaging.Runtime;
 
 namespace Jasper.Persistence.SqlServer.Util
 {
@@ -147,6 +151,49 @@ namespace Jasper.Persistence.SqlServer.Util
             cmd.CommandText = command;
 
             return cmd;
+        }
+
+        public static SqlCommand CallFunction(this SqlConnection conn, string functionName)
+        {
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = functionName;
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            return cmd;
+        }
+
+        public static DataTable BuildIdTable(this IEnumerable<Envelope> envelopes)
+        {
+            var table = new DataTable();
+            table.Columns.Add(new DataColumn("ID", typeof(Guid)));
+            foreach (var envelope in envelopes) table.Rows.Add(envelope.Id);
+
+            return table;
+        }
+
+        public static SqlCommand WithIdList(this SqlCommand cmd, SqlServerSettings settings, Envelope[] envelopes)
+        {
+            var table = envelopes.BuildIdTable();
+            var list = cmd.Parameters.AddWithValue("IDLIST", table);
+            list.SqlDbType = SqlDbType.Structured;
+            list.TypeName = $"{settings.SchemaName}.EnvelopeIdList";
+
+            return cmd;
+        }
+
+        public static async Task ExecuteOnce(this SqlCommand command, CancellationToken cancellation)
+        {
+            var conn = command.Connection;
+            try
+            {
+                await conn.OpenAsync(cancellation);
+
+                await command.ExecuteNonQueryAsync(cancellation);
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 }

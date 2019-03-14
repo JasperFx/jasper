@@ -8,7 +8,7 @@ namespace Jasper.Persistence.SqlServer.Util
         ///     Create a DbObjectName with Schema = "public"
         /// </summary>
         /// <param name="name"></param>
-        public DbObjectName(string name) : this("public", name)
+        public DbObjectName(string name) : this("dbo", name)
         {
         }
 
