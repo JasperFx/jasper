@@ -15,7 +15,7 @@ namespace Jasper.Persistence.SqlServer
             return getLock(conn, lockId, "Transaction", tx, cancellation);
         }
 
-        private static async Task getLock(DbConnection conn, int lockId, string owner, SqlTransaction tx,
+        private static async Task getLock(DbConnection conn, int lockId, string owner, DbTransaction tx,
             CancellationToken cancellation)
         {
             var returnValue = await tryGetLock(conn, lockId, owner, tx, cancellation);
@@ -24,7 +24,7 @@ namespace Jasper.Persistence.SqlServer
                 throw new Exception($"sp_getapplock failed with errorCode '{returnValue}'");
         }
 
-        private static async Task<int> tryGetLock(DbConnection conn, int lockId, string owner, SqlTransaction tx,
+        private static async Task<int> tryGetLock(DbConnection conn, int lockId, string owner, DbTransaction tx,
             CancellationToken cancellation)
         {
             var cmd = conn.CreateCommand("sp_getapplock");
@@ -48,7 +48,7 @@ namespace Jasper.Persistence.SqlServer
             return (int) returnValue.Value;
         }
 
-        public static async Task<bool> TryGetGlobalTxLock(this DbConnection conn, SqlTransaction tx, int lockId,
+        public static async Task<bool> TryGetGlobalTxLock(this DbConnection conn, DbTransaction tx, int lockId,
             CancellationToken cancellation = default(CancellationToken))
         {
             return await tryGetLock(conn, lockId, "Transaction", tx, cancellation) >= 0;
@@ -56,7 +56,7 @@ namespace Jasper.Persistence.SqlServer
 
 
         public static Task GetGlobalLock(this DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
-            SqlTransaction transaction = null)
+            DbTransaction transaction = null)
         {
             return getLock(conn, lockId, "Session", transaction, cancellation);
         }
@@ -66,7 +66,7 @@ namespace Jasper.Persistence.SqlServer
             return await tryGetLock(conn, lockId, "Session", null, cancellation) >= 0;
         }
 
-        public static async Task<bool> TryGetGlobalLock(this DbConnection conn, int lockId, SqlTransaction tx,
+        public static async Task<bool> TryGetGlobalLock(this DbConnection conn, int lockId, DbTransaction tx,
             CancellationToken cancellation = default(CancellationToken))
         {
             return await tryGetLock(conn, lockId, "Session", tx, cancellation) >= 0;

@@ -11,7 +11,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
     public static class SqlServerEnvelopeStorageExtensions
     {
         public static async Task<Envelope[]> ExecuteToEnvelopes(this DbCommand command, CancellationToken cancellation = default(CancellationToken),
-            SqlTransaction tx = null)
+            DbTransaction tx = null)
         {
             if (tx != null) command.Transaction = tx;
             using (var reader = await command.ExecuteReaderAsync(cancellation))

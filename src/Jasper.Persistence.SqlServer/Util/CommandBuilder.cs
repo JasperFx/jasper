@@ -3,6 +3,8 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jasper.Persistence.SqlServer.Util
 {
@@ -75,6 +77,12 @@ namespace Jasper.Persistence.SqlServer.Util
         public DbParameter AddNamedParameter(string name, object value)
         {
             return _command.AddNamedParameter(name, value);
+        }
+
+        public Task ApplyAndExecuteOnce(CancellationToken cancellation)
+        {
+            Apply();
+            return _command.ExecuteOnce(cancellation);
         }
     }
 }

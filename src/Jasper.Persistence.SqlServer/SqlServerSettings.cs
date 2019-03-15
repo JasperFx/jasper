@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
+using Jasper.Persistence.SqlServer.Util;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.SqlServer
@@ -21,6 +22,18 @@ namespace Jasper.Persistence.SqlServer
         public override DbConnection CreateConnection()
         {
             return new SqlConnection(ConnectionString);
+        }
+
+        public override DbCommand CreateEmptyCommand()
+        {
+            return new SqlCommand();
+        }
+
+
+        public CommandBuilder ToCommandBuilder()
+        {
+            var cmd = CreateConnection().CreateCommand("");
+            return new CommandBuilder(cmd);
         }
 
 

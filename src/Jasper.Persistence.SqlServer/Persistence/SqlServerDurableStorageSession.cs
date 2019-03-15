@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,21 +20,23 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _cancellation = cancellation;
         }
 
-        internal SqlTransaction Transaction { get; private set; }
+        internal DbTransaction Transaction { get; private set; }
 
-        internal SqlConnection Connection { get; private set; }
+        internal DbConnection Connection { get; private set; }
 
-        internal SqlCommand CreateCommand(string sql)
+        internal DbCommand CreateCommand(string sql)
         {
-            return new SqlCommand(sql, Connection, Transaction);
+            var cmd = Connection.CreateCommand();
+            cmd.CommandText = sql;
+            cmd.Transaction = Transaction;
+
+            return cmd;
         }
 
-        internal SqlCommand CallFunction(string functionName)
+        internal DbCommand CallFunction(string functionName)
         {
-            var cmd = new SqlCommand(_settings.SchemaName + "." + functionName, Connection, Transaction)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
+            var cmd = CreateCommand(_settings.SchemaName + "." + functionName);
+            cmd.CommandType = CommandType.StoredProcedure;
 
             return cmd;
         }

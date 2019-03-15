@@ -23,6 +23,8 @@ namespace Jasper.Persistence.SqlServer
             return cmd;
         }
 
+        public abstract DbCommand CreateEmptyCommand();
+
         public DbCommand CallFunction(string functionName)
         {
             var cmd = CreateConnection().CreateCommand();

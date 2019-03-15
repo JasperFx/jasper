@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
 using System.Threading;
@@ -118,10 +119,9 @@ values
             }
         }
 
-        public async Task ScheduleExecution(Envelope[] envelopes)
+        public Task ScheduleExecution(Envelope[] envelopes)
         {
-            var cmd = new SqlCommand();
-            var builder = new CommandBuilder(cmd);
+            var builder = _settings.ToCommandBuilder();
 
             foreach (var envelope in envelopes)
             {
@@ -133,16 +133,7 @@ values
                     $"update {_settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
             }
 
-            builder.Apply();
-
-
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
-
-                cmd.Connection = conn;
-                await cmd.ExecuteNonQueryAsync(_cancellation);
-            }
+            return builder.ApplyAndExecuteOnce(_cancellation);
         }
 
 
@@ -180,7 +171,7 @@ values
         {
             var cmd = BuildIncomingStorageCommand(envelopes, _settings);
 
-            using (var conn = new SqlConnection(_settings.ConnectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 await conn.OpenAsync(_cancellation);
 
@@ -228,7 +219,7 @@ values
         {
             var cmd = BuildOutgoingStorageCommand(envelopes, ownerId, _settings);
 
-            using (var conn = new SqlConnection(_settings.ConnectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 await conn.OpenAsync(_cancellation);
 
@@ -255,7 +246,7 @@ values
 
         public Envelope[] AllIncomingEnvelopes()
         {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 conn.Open();
 
@@ -268,7 +259,7 @@ values
 
         public Envelope[] AllOutgoingEnvelopes()
         {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 conn.Open();
 
@@ -281,10 +272,9 @@ values
 
 
 
-        public static SqlCommand BuildIncomingStorageCommand(IEnumerable<Envelope> envelopes,
-            SqlServerSettings settings)
+        internal static DbCommand BuildIncomingStorageCommand(IEnumerable<Envelope> envelopes, DatabaseSettings settings)
         {
-            var cmd = new SqlCommand();
+            var cmd = settings.CreateEmptyCommand();
             var builder = new CommandBuilder(cmd);
 
             foreach (var envelope in envelopes)
@@ -308,10 +298,10 @@ values
             return cmd;
         }
 
-        public static SqlCommand BuildOutgoingStorageCommand(Envelope[] envelopes, int ownerId,
-            SqlServerSettings settings)
+        public static DbCommand BuildOutgoingStorageCommand(Envelope[] envelopes, int ownerId,
+            DatabaseSettings settings)
         {
-            var cmd = new SqlCommand();
+            var cmd = settings.CreateEmptyCommand();
             var builder = new CommandBuilder(cmd);
 
             builder.AddNamedParameter("owner", ownerId).DbType = DbType.Int32;
