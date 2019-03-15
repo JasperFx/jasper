@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public static class SqlServerEnvelopeStorageExtensions
     {
-        public static async Task<Envelope[]> ExecuteToEnvelopes(this SqlCommand command, CancellationToken cancellation = default(CancellationToken),
+        public static async Task<Envelope[]> ExecuteToEnvelopes(this DbCommand command, CancellationToken cancellation = default(CancellationToken),
             SqlTransaction tx = null)
         {
             if (tx != null) command.Transaction = tx;
@@ -35,7 +36,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             }
         }
 
-        public static Envelope[] LoadEnvelopes(this SqlCommand command, SqlTransaction tx = null)
+        public static Envelope[] LoadEnvelopes(this DbCommand command, DbTransaction tx = null)
         {
             if (tx != null) command.Transaction = tx;
             using (var reader = command.ExecuteReader())
