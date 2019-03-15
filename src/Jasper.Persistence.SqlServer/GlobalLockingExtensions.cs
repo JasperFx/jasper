@@ -21,8 +21,7 @@ namespace Jasper.Persistence.SqlServer
             var returnValue = await tryGetLock(conn, lockId, owner, tx, cancellation);
 
             if (returnValue < 0)
-                throw new Exception(string.Format("sp_getapplock failed with errorCode '{0}'",
-                    returnValue));
+                throw new Exception($"sp_getapplock failed with errorCode '{returnValue}'");
         }
 
         private static async Task<int> tryGetLock(DbConnection conn, int lockId, string owner, SqlTransaction tx,

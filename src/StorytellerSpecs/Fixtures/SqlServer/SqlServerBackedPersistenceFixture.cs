@@ -8,6 +8,7 @@ using IntegrationTests;
 using Jasper;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
+using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
@@ -43,8 +44,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             _senderWatcher = new SenderLatchDetected(new LoggerFactory());
 
-            new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString, "receiver").RecreateAll();
-            new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString, "sender").RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}).RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}).RecreateAll();
 
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {

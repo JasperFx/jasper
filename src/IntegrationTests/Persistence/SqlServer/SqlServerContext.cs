@@ -1,4 +1,5 @@
-﻿using Jasper.Persistence.SqlServer.Schema;
+﻿using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Schema;
 using Xunit;
 
 namespace IntegrationTests.Persistence.SqlServer
@@ -8,7 +9,7 @@ namespace IntegrationTests.Persistence.SqlServer
     {
         protected SqlServerContext()
         {
-            var loader = new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString);
+            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
             loader.RecreateAll();
         }
     }

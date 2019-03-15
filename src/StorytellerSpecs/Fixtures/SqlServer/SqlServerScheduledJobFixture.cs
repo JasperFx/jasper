@@ -28,7 +28,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public override void SetUp()
         {
-            var admin = new SqlServerEnvelopeStorageAdmin(Servers.SqlServerConnectionString);
+            var admin = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
             admin.RecreateAll();
 
             var registry = new ScheduledMessageApp();

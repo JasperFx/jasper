@@ -29,7 +29,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public SqlServerEnvelopePersistence(SqlServerSettings settings, JasperOptions options)
         {
             _settings = settings;
-            Admin = new SqlServerEnvelopeStorageAdmin(settings.ConnectionString, settings.SchemaName);
+            Admin = new SqlServerEnvelopeStorageAdmin(settings);
 
             AgentStorage = new SqlServerDurabilityAgentStorage(settings, options);
 

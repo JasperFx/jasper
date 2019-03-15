@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
@@ -16,7 +17,7 @@ namespace Jasper.Persistence.SqlServer.Schema
 {
     public class SqlServerEnvelopeStorageAdmin : SqlServerAccess,IEnvelopeStorageAdmin
     {
-        private readonly string _connectionString;
+        private readonly DatabaseSettings _settings;
 
         private readonly string[] _creationOrder =
         {
@@ -28,18 +29,10 @@ namespace Jasper.Persistence.SqlServer.Schema
             "uspMarkOutgoingOwnership.sql"
         };
 
-        public SqlServerEnvelopeStorageAdmin(string connectionString)
+        public SqlServerEnvelopeStorageAdmin(DatabaseSettings settings)
         {
-            _connectionString = connectionString;
+            _settings = settings;
         }
-
-        public SqlServerEnvelopeStorageAdmin(string connectionString, string schemaName)
-        {
-            _connectionString = connectionString;
-            SchemaName = schemaName;
-        }
-
-        public string SchemaName { get; set; } = "dbo";
 
         public static string ToCreationScript(string schema)
         {
@@ -62,17 +55,41 @@ namespace Jasper.Persistence.SqlServer.Schema
 
         public void DropAll()
         {
-            using (var conn = new SqlConnection(_connectionString))
+            execute("Drop.sql");
+        }
+
+        private void execute(params string[] filenames)
+        {
+            using (var conn = _settings.CreateConnection())
             {
                 conn.Open();
 
-                execute(conn, "Drop.sql");
+                foreach (var filename in filenames)
+                {
+                    execute(filename, conn);
+                }
+
+
+            }
+        }
+
+        private void execute(string filename, DbConnection conn)
+        {
+            var sql = toScript(filename, _settings.SchemaName);
+
+            try
+            {
+                conn.RunSql(sql);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("Failure trying to execute:\n\n" + sql, e);
             }
         }
 
         private void execute(SqlConnection conn, string filename)
         {
-            var sql = toScript(filename, SchemaName);
+            var sql = toScript(filename, _settings.SchemaName);
 
             try
             {
@@ -86,54 +103,48 @@ namespace Jasper.Persistence.SqlServer.Schema
 
         public void CreateAll()
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 conn.Open();
 
                 buildSchemaIfNotExists(conn);
 
-                foreach (var file in _creationOrder) execute(conn, file);
+                foreach (var file in _creationOrder)
+                {
+                    execute(file, conn);
+                }
             }
         }
 
         public void RecreateAll()
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 conn.Open();
 
-                execute(conn, "Drop.sql");
+                execute("Drop.sql", conn);
 
                 buildSchemaIfNotExists(conn);
 
-                foreach (var file in _creationOrder) execute(conn, file);
+                foreach (var file in _creationOrder)
+                {
+                    execute(file, conn);
+                }
             }
         }
 
-        private void buildSchemaIfNotExists(SqlConnection conn)
+        private void buildSchemaIfNotExists(DbConnection conn)
         {
             var count = conn.CreateCommand("select count(*) from sys.schemas where name = @name")
-                .With("name", SchemaName).ExecuteScalar().As<int>();
+                .With("name", _settings.SchemaName).ExecuteScalar().As<int>();
 
-            if (count == 0) conn.CreateCommand($"CREATE SCHEMA [{SchemaName}] AUTHORIZATION [dbo]").ExecuteNonQuery();
+            if (count == 0) conn.CreateCommand($"CREATE SCHEMA [{_settings.SchemaName}] AUTHORIZATION [dbo]").ExecuteNonQuery();
         }
 
         void IEnvelopeStorageAdmin.ClearAllPersistedEnvelopes()
         {
-            using (var conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-
-                try
-                {
-                    conn.CreateCommand($"truncate table {SchemaName}.jasper_outgoing_envelopes;truncate table {SchemaName}.jasper_incoming_envelopes;truncate table {SchemaName}.jasper_dead_letters;").ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    throw new InvalidOperationException("Failure trying to execute the truncate table statements for the envelope storage", e);
-                }
-
-            }
+            var sql = $"truncate table {_settings.SchemaName}.jasper_outgoing_envelopes;truncate table {_settings.SchemaName}.jasper_incoming_envelopes;truncate table {_settings.SchemaName}.jasper_dead_letters;";
+            _settings.ExecuteSql(sql);
         }
 
         void IEnvelopeStorageAdmin.RebuildSchemaObjects()
@@ -145,24 +156,26 @@ namespace Jasper.Persistence.SqlServer.Schema
         string IEnvelopeStorageAdmin.CreateSql()
         {
             var writer = new StringWriter();
+
+            // TODO -- move this to an embedded file ot make it easier
             writer.WriteLine(
                 $@"
-IF EXISTS (SELECT name FROM sys.schemas WHERE name = N'{SchemaName}')
+IF EXISTS (SELECT name FROM sys.schemas WHERE name = N'{_settings.SchemaName}')
    BEGIN
-      PRINT 'Dropping the {SchemaName} schema'
-      DROP SCHEMA [{SchemaName}]
+      PRINT 'Dropping the {_settings.SchemaName} schema'
+      DROP SCHEMA [{_settings.SchemaName}]
 END
 GO
-PRINT '    Creating the {SchemaName} schema'
+PRINT '    Creating the {_settings.SchemaName} schema'
 GO
-CREATE SCHEMA [{SchemaName}] AUTHORIZATION [dbo]
+CREATE SCHEMA [{_settings.SchemaName}] AUTHORIZATION [dbo]
 GO
 
 ");
 
             foreach (var file in _creationOrder)
             {
-                var sql = toScript(file, SchemaName);
+                var sql = toScript(file, _settings.SchemaName);
                 writer.WriteLine(sql);
                 writer.WriteLine("GO");
                 writer.WriteLine();
@@ -178,14 +191,14 @@ GO
         {
             var counts = new PersistedCounts();
 
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 await conn.OpenAsync();
 
 
                 using (var reader = await conn
                     .CreateCommand(
-                        $"select status, count(*) from {SchemaName}.{IncomingTable} group by status")
+                        $"select status, count(*) from {_settings.SchemaName}.{IncomingTable} group by status")
                     .ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -200,7 +213,7 @@ GO
                 }
 
                 counts.Outgoing = (int) await conn
-                    .CreateCommand($"select count(*) from {SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
+                    .CreateCommand($"select count(*) from {_settings.SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
             }
 
 
@@ -209,12 +222,12 @@ GO
 
         public async Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 await conn.OpenAsync();
 
                 var cmd = conn.CreateCommand(
-                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {SchemaName}.{DeadLetterTable} where id = @id");
+                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {_settings.SchemaName}.{DeadLetterTable} where id = @id");
                 cmd.AddNamedParameter("id", id);
 
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -241,21 +254,21 @@ GO
 
         public async Task<Envelope[]> AllIncomingEnvelopes()
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, status, owner_id from {SchemaName}.{IncomingTable}").ExecuteToEnvelopes();
+                return await conn.CreateCommand($"select body, status, owner_id from {_settings.SchemaName}.{IncomingTable}").ExecuteToEnvelopes();
             }
         }
 
         public async Task<Envelope[]> AllOutgoingEnvelopes()
         {
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = _settings.CreateConnection())
             {
                 await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, status, owner_id from {SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
+                return await conn.CreateCommand($"select body, status, owner_id from {_settings.SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
             }
         }
     }
