@@ -89,12 +89,32 @@ namespace Jasper.Persistence.SqlServer.Util
             return command;
         }
 
-        public static SqlCommand AsSproc(this SqlCommand command)
+        public static SqlCommand With(this SqlCommand command, string name, string value)
         {
-            command.CommandType = CommandType.StoredProcedure;
-
-            return command;
+            return command.With(name, value, SqlDbType.VarChar);
         }
+
+        public static SqlCommand With(this SqlCommand command, string name, int value)
+        {
+            return command.With(name, value, SqlDbType.Int);
+        }
+
+        public static SqlCommand With(this SqlCommand command, string name, Guid value)
+        {
+            return command.With(name, value, SqlDbType.UniqueIdentifier);
+        }
+
+        public static SqlCommand With(this SqlCommand command, string name, byte[] value)
+        {
+            return command.With(name, value, SqlDbType.VarBinary);
+        }
+
+        public static SqlCommand With(this SqlCommand command, string name, DateTimeOffset? value)
+        {
+            return command.With(name, value, SqlDbType.DateTimeOffset);
+        }
+
+
 
         public static SqlCommand Sql(this SqlCommand cmd, string sql)
         {
@@ -102,43 +122,10 @@ namespace Jasper.Persistence.SqlServer.Util
             return cmd;
         }
 
-        public static SqlCommand CallsSproc(this SqlCommand cmd, DbObjectName function)
-        {
-            if (cmd == null) throw new ArgumentNullException(nameof(cmd));
-            if (function == null) throw new ArgumentNullException(nameof(function));
-
-            cmd.CommandText = function.QualifiedName;
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            return cmd;
-        }
-
-        public static SqlCommand Returns(this SqlCommand command, string name, SqlDbType type)
-        {
-            var parameter = command.AddParameter(name);
-            parameter.SqlDbType = type;
-            parameter.Direction = ParameterDirection.ReturnValue;
-            return command;
-        }
-
-        public static SqlCommand WithText(this SqlCommand command, string sql)
-        {
-            command.CommandText = sql;
-            return command;
-        }
 
         public static SqlCommand CreateCommand(this SqlConnection conn, SqlTransaction tx, string command)
         {
             var cmd = conn.CreateCommand();
-            cmd.Transaction = tx;
-            cmd.CommandText = command;
-
-            return cmd;
-        }
-
-        public static SqlCommand CreateCommand(this SqlTransaction tx, string command)
-        {
-            var cmd = tx.Connection.CreateCommand();
             cmd.Transaction = tx;
             cmd.CommandText = command;
 

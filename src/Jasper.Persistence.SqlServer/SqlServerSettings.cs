@@ -1,5 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
+using Jasper.Persistence.SqlServer.Util;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.SqlServer
 {
@@ -31,6 +33,16 @@ namespace Jasper.Persistence.SqlServer
             cmd.CommandType = CommandType.StoredProcedure;
 
             return cmd;
+        }
+
+        public void ExecuteSql(string sql)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+
+                conn.RunSql(sql);
+            }
         }
     }
 }

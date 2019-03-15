@@ -66,9 +66,39 @@ namespace Jasper.Persistence.SqlServer.Util
             _command.AddParameters(parameters);
         }
 
-        public SqlParameter AddParameter(object value, SqlDbType? dbType = null)
+        public SqlParameter AddParameter(object value, SqlDbType dbType)
         {
             return _command.AddParameter(value, dbType);
+        }
+
+        public SqlParameter AddParameter(Guid value)
+        {
+            return _command.AddParameter(value, SqlDbType.UniqueIdentifier);
+        }
+
+        public SqlParameter AddParameter(int value)
+        {
+            return _command.AddParameter(value, SqlDbType.Int);
+        }
+
+        public SqlParameter AddParameter(string value)
+        {
+            return _command.AddParameter(value, SqlDbType.VarChar);
+        }
+
+        public SqlParameter AddParameter(byte[] value)
+        {
+            return _command.AddParameter(value, SqlDbType.VarBinary);
+        }
+
+        public SqlParameter AddParameter(DateTimeOffset value)
+        {
+            return _command.AddParameter(value, SqlDbType.DateTimeOffset);
+        }
+
+        public SqlParameter AddParameter(DateTimeOffset? value)
+        {
+            return _command.AddParameter(value, SqlDbType.DateTimeOffset);
         }
 
         public SqlParameter AddNamedParameter(string name, object value)

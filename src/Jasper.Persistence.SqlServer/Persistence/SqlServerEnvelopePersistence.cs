@@ -22,6 +22,8 @@ namespace Jasper.Persistence.SqlServer.Persistence
         private readonly JasperOptions _options;
         private readonly CancellationToken _cancellation;
         private readonly string _incrementIncomingAttempts;
+        private readonly string _storeIncoming;
+        private readonly string _insertOutgoingSql;
 
         public SqlServerEnvelopePersistence(SqlServerSettings settings, JasperOptions options)
         {
@@ -34,6 +36,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _cancellation = options.Cancellation;
 
             _incrementIncomingAttempts = $"update {_settings.SchemaName}.{IncomingTable} set attempts = @attempts where id = @id";
+            _storeIncoming = $@"
+insert into {_settings.SchemaName}.{IncomingTable}
+  (id, status, owner_id, execution_time, attempts, body)
+values
+  (@id, @status, @owner, @time, @attempts, @body);
+";
+            _insertOutgoingSql = $"insert into {_settings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)";
         }
 
         public IEnvelopeStorageAdmin Admin { get; }
@@ -49,7 +58,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
             return _settings.CreateCommand($"delete from {_settings.SchemaName}.{IncomingTable} where id = @id")
-                .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
+                .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
         }
 
@@ -63,7 +72,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public Task DeleteOutgoing(Envelope envelope)
         {
             return _settings.CreateCommand($"delete from {_settings.SchemaName}.{OutgoingTable} where id = @id")
-                .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
+                .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
 
         }
@@ -85,14 +94,14 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             foreach (var error in errors)
             {
-                var id = builder.AddParameter(error.Id, SqlDbType.UniqueIdentifier);
-                var source = builder.AddParameter(error.Source, SqlDbType.VarChar);
-                var messageType = builder.AddParameter(error.MessageType, SqlDbType.VarChar);
-                var explanation = builder.AddParameter(error.Explanation, SqlDbType.VarChar);
-                var exText = builder.AddParameter(error.ExceptionText, SqlDbType.VarChar);
-                var exType = builder.AddParameter(error.ExceptionType, SqlDbType.VarChar);
-                var exMessage = builder.AddParameter(error.ExceptionMessage, SqlDbType.VarChar);
-                var body = builder.AddParameter(error.RawData, SqlDbType.VarBinary);
+                var id = builder.AddParameter(error.Id);
+                var source = builder.AddParameter(error.Source);
+                var messageType = builder.AddParameter(error.MessageType);
+                var explanation = builder.AddParameter(error.Explanation);
+                var exText = builder.AddParameter(error.ExceptionText);
+                var exType = builder.AddParameter(error.ExceptionType);
+                var exMessage = builder.AddParameter(error.ExceptionMessage);
+                var body = builder.AddParameter(error.RawData);
 
                 builder.Append(
                     $"insert into {_settings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
@@ -115,9 +124,9 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             foreach (var envelope in envelopes)
             {
-                var id = builder.AddParameter(envelope.Id, SqlDbType.UniqueIdentifier);
-                var time = builder.AddParameter(envelope.ExecutionTime.Value, SqlDbType.DateTimeOffset);
-                var attempts = builder.AddParameter(envelope.Attempts, SqlDbType.Int);
+                var id = builder.AddParameter(envelope.Id);
+                var time = builder.AddParameter(envelope.ExecutionTime.Value);
+                var attempts = builder.AddParameter(envelope.Attempts);
 
                 builder.Append(
                     $"update {_settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
@@ -139,38 +148,27 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
         {
             return _settings.CreateCommand(_incrementIncomingAttempts)
-                .With("attempts", envelope.Attempts, SqlDbType.Int)
-                .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
+                .With("attempts", envelope.Attempts)
+                .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
         }
 
-        public async Task StoreIncoming(Envelope envelope)
+        public Task StoreIncoming(Envelope envelope)
         {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
-
-                var cmd = conn.CreateCommand($@"
-insert into {_settings.SchemaName}.{IncomingTable}
-  (id, status, owner_id, execution_time, attempts, body)
-values
-  (@id, @status, @owner, @time, @attempts, @body);
-");
-
-                await cmd
-                    .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
-                    .With("status", envelope.Status, SqlDbType.VarChar)
-                    .With("owner", envelope.OwnerId, SqlDbType.Int)
-                    .With("attempts", envelope.Attempts, SqlDbType.Int)
-                    .With("time", envelope.ExecutionTime, SqlDbType.DateTimeOffset)
-                    .With("body", envelope.Serialize(), SqlDbType.VarBinary)
-                    .ExecuteNonQueryAsync(_cancellation);
-            }
+            return _settings.CreateCommand(_storeIncoming)
+                .With("id", envelope.Id)
+                .With("status", envelope.Status)
+                .With("owner", envelope.OwnerId)
+                .With("attempts", envelope.Attempts)
+                .With("time", envelope.ExecutionTime)
+                .With("body", envelope.Serialize())
+                .ExecuteOnce(_cancellation);
         }
 
         public Task StoreIncoming(SqlTransaction tx, Envelope[] envelopes)
         {
             var cmd = BuildIncomingStorageCommand(envelopes, _settings);
+
             cmd.Transaction = tx;
             cmd.Connection = tx.Connection;
 
@@ -203,23 +201,17 @@ values
 
 
 
-        public async Task StoreOutgoing(Envelope envelope, int ownerId)
+        public Task StoreOutgoing(Envelope envelope, int ownerId)
         {
             envelope.EnsureData();
 
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
-
-                await conn.CreateCommand(
-                        $"insert into {_settings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)")
-                    .With("id", envelope.Id, SqlDbType.UniqueIdentifier)
-                    .With("owner", ownerId, SqlDbType.Int)
-                    .With("destination", envelope.Destination.ToString(), SqlDbType.VarChar)
-                    .With("deliverBy", envelope.DeliverBy, SqlDbType.DateTimeOffset)
-                    .With("body", envelope.Serialize(), SqlDbType.VarBinary)
-                    .ExecuteNonQueryAsync(_cancellation);
-            }
+            return _settings.CreateCommand(_insertOutgoingSql)
+                .With("id", envelope.Id)
+                .With("owner", ownerId)
+                .With("destination", envelope.Destination.ToString())
+                .With("deliverBy", envelope.DeliverBy)
+                .With("body", envelope.Serialize())
+                .ExecuteOnce(_cancellation);
         }
 
         public Task StoreOutgoing(SqlTransaction tx, Envelope[] envelopes)
@@ -298,12 +290,12 @@ values
             {
                 envelope.EnsureData();
 
-                var id = builder.AddParameter(envelope.Id, SqlDbType.UniqueIdentifier);
-                var status = builder.AddParameter(envelope.Status, SqlDbType.VarChar);
-                var owner = builder.AddParameter(envelope.OwnerId, SqlDbType.Int);
-                var attempts = builder.AddParameter(envelope.Attempts, SqlDbType.Int);
-                var time = builder.AddParameter(envelope.ExecutionTime, SqlDbType.DateTimeOffset);
-                var body = builder.AddParameter(envelope.Serialize(), SqlDbType.VarBinary);
+                var id = builder.AddParameter(envelope.Id);
+                var status = builder.AddParameter(envelope.Status);
+                var owner = builder.AddParameter(envelope.OwnerId);
+                var attempts = builder.AddParameter(envelope.Attempts);
+                var time = builder.AddParameter(envelope.ExecutionTime);
+                var body = builder.AddParameter(envelope.Serialize());
 
 
                 builder.Append(
@@ -327,10 +319,10 @@ values
             {
                 envelope.EnsureData();
 
-                var id = builder.AddParameter(envelope.Id, SqlDbType.UniqueIdentifier);
-                var destination = builder.AddParameter(envelope.Destination.ToString(), SqlDbType.VarChar);
-                var deliverBy = builder.AddParameter(envelope.DeliverBy, SqlDbType.DateTimeOffset);
-                var body = builder.AddParameter(envelope.Serialize(), SqlDbType.VarBinary);
+                var id = builder.AddParameter(envelope.Id);
+                var destination = builder.AddParameter(envelope.Destination.ToString());
+                var deliverBy = builder.AddParameter(envelope.DeliverBy);
+                var body = builder.AddParameter(envelope.Serialize());
 
                 builder.Append(
                     $"insert into {settings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@{id.ParameterName}, @owner, @{destination.ParameterName}, @{deliverBy.ParameterName}, @{body.ParameterName});");
@@ -342,13 +334,10 @@ values
 
         public void ClearAllStoredMessages()
         {
-            using (var conn = new SqlConnection(_settings.ConnectionString))
-            {
-                conn.Open();
-
-                conn.CreateCommand(
+            _settings
+                .ExecuteSql(
                     $"delete from {_settings.SchemaName}.{IncomingTable};delete from {_settings.SchemaName}.{OutgoingTable};delete from {_settings.SchemaName}.{DeadLetterTable}");
-            }
+
         }
 
 
