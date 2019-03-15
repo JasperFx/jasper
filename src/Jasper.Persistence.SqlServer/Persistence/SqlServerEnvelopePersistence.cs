@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -86,7 +87,7 @@ values
             var cmd = new SqlCommand();
             var builder = new CommandBuilder(cmd);
 
-            var list = builder.AddNamedParameter("IDLIST", table);
+            var list = builder.AddNamedParameter("IDLIST", table).As<SqlParameter>();
             list.SqlDbType = SqlDbType.Structured;
             list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
 
@@ -194,7 +195,7 @@ values
             var cmd = _settings.CallFunction("uspDiscardAndReassignOutgoing")
                 .WithIdList(_settings, discards, "discards")
                 .WithIdList(_settings, reassigned, "reassigned")
-                .With("ownerId", nodeId, SqlDbType.Int);
+                .With("ownerId", nodeId);
 
             return cmd.ExecuteOnce(_cancellation);
         }
@@ -313,7 +314,7 @@ values
             var cmd = new SqlCommand();
             var builder = new CommandBuilder(cmd);
 
-            builder.AddNamedParameter("owner", ownerId).SqlDbType = SqlDbType.Int;
+            builder.AddNamedParameter("owner", ownerId).DbType = DbType.Int32;
 
             foreach (var envelope in envelopes)
             {

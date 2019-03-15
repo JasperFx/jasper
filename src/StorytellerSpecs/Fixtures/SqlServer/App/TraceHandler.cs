@@ -13,7 +13,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
         {
             var traceDoc = new TraceDoc {Name = message.Name};
 
-            tx.Connection.CreateCommand(tx, "insert into receiver.trace_doc (id, name) values (@id, @name)")
+            tx.CreateCommand("insert into receiver.trace_doc (id, name) values (@id, @name)")
                 .With("id", traceDoc.Id)
                 .With("name", traceDoc.Name)
                 .ExecuteNonQuery();

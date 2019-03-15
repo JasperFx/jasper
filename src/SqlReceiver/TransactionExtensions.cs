@@ -9,8 +9,8 @@ namespace SqlReceiver
     {
         public static Task StoreSent(this SqlTransaction tx, Guid id, string messageType)
         {
-            return tx.Connection
-                .CreateCommand(tx, "insert into receiver.sent_track (id, message_type) values (@id, @type)")
+            return tx
+                .CreateCommand("insert into receiver.sent_track (id, message_type) values (@id, @type)")
                 .With("id", id)
                 .With("type", messageType)
                 .ExecuteNonQueryAsync();
@@ -18,8 +18,7 @@ namespace SqlReceiver
 
         public static Task StoreReceived(this SqlTransaction tx, Guid id, string messageType)
         {
-            return tx.Connection.CreateCommand(tx,
-                    "insert into receiver.received_track (id, message_type) values (@id, @type)")
+            return tx.CreateCommand("insert into receiver.received_track (id, message_type) values (@id, @type)")
                 .With("id", id)
                 .With("type", messageType)
                 .ExecuteNonQueryAsync();

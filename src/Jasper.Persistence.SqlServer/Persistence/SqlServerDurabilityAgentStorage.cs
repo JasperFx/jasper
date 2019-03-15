@@ -41,7 +41,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             return _session
                 .CreateCommand(_findReadyToExecuteJobs)
-                .With("time", utcNow, SqlDbType.DateTimeOffset)
+                .With("time", utcNow)
                 .ExecuteToEnvelopes(_cancellation, _session.Transaction);
         }
 

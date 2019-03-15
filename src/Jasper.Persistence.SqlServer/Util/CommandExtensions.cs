@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
@@ -12,14 +13,14 @@ namespace Jasper.Persistence.SqlServer.Util
 {
     public static class CommandExtensions
     {
-        public static int RunSql(this SqlConnection conn, params string[] sqls)
+        public static int RunSql(this DbConnection conn, params string[] sqls)
         {
             var sql = sqls.Join(";");
             return conn.CreateCommand().Sql(sql).ExecuteNonQuery();
         }
 
 
-        public static void AddParameters(this SqlCommand command, object parameters)
+        public static void AddParameters(this DbCommand command, object parameters)
         {
             if (parameters == null) return;
 
@@ -36,7 +37,7 @@ namespace Jasper.Persistence.SqlServer.Util
             }
         }
 
-        public static SqlParameter AddParameter(this SqlCommand command, object value, SqlDbType? dbType = null)
+        public static DbParameter AddParameter(this DbCommand command, object value, DbType? dbType = null)
         {
             var name = "arg" + command.Parameters.Count;
 
@@ -44,28 +45,28 @@ namespace Jasper.Persistence.SqlServer.Util
             parameter.ParameterName = name;
             parameter.Value = value ?? DBNull.Value;
 
-            if (dbType.HasValue) parameter.SqlDbType = dbType.Value;
+            if (dbType.HasValue) parameter.DbType = dbType.Value;
 
             command.Parameters.Add(parameter);
 
             return parameter;
         }
 
-        public static SqlParameter AddNamedParameter(this SqlCommand command, string name, object value,
-            SqlDbType? type = null)
+        public static DbParameter AddNamedParameter(this DbCommand command, string name, object value,
+            DbType? type = null)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
             parameter.Value = value ?? DBNull.Value;
 
-            if (type.HasValue) parameter.SqlDbType = type.Value;
+            if (type.HasValue) parameter.DbType = type.Value;
 
             command.Parameters.Add(parameter);
 
             return parameter;
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, object value)
+        public static DbCommand With(this DbCommand command, string name, object value)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
@@ -75,64 +76,61 @@ namespace Jasper.Persistence.SqlServer.Util
             return command;
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, object value, SqlDbType dbType,
-            string parameterTypeName = null)
+        public static DbCommand With(this DbCommand command, string name, object value, DbType dbType)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
             parameter.Value = value ?? DBNull.Value;
-            parameter.SqlDbType = dbType;
+            parameter.DbType = dbType;
             command.Parameters.Add(parameter);
-
-            if (parameterTypeName.IsNotEmpty()) parameter.TypeName = parameterTypeName;
 
             return command;
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, string value)
+        public static DbCommand With(this DbCommand command, string name, string value)
         {
-            return command.With(name, value, SqlDbType.VarChar);
+            return command.With(name, value, DbType.String);
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, int value)
+        public static DbCommand With(this DbCommand command, string name, int value)
         {
-            return command.With(name, value, SqlDbType.Int);
+            return command.With(name, value, DbType.Int32);
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, Guid value)
+        public static DbCommand With(this DbCommand command, string name, Guid value)
         {
-            return command.With(name, value, SqlDbType.UniqueIdentifier);
+            return command.With(name, value, DbType.Guid);
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, byte[] value)
+        public static DbCommand With(this DbCommand command, string name, byte[] value)
         {
-            return command.With(name, value, SqlDbType.VarBinary);
+            return command.With(name, value, DbType.Binary);
         }
 
-        public static SqlCommand With(this SqlCommand command, string name, DateTimeOffset? value)
+        public static DbCommand With(this DbCommand command, string name, DateTimeOffset? value)
         {
-            return command.With(name, value, SqlDbType.DateTimeOffset);
+            return command.With(name, value, DbType.DateTimeOffset);
         }
 
 
 
-        public static SqlCommand Sql(this SqlCommand cmd, string sql)
+        public static DbCommand Sql(this DbCommand cmd, string sql)
         {
             cmd.CommandText = sql;
             return cmd;
         }
 
 
-        public static SqlCommand CreateCommand(this SqlConnection conn, SqlTransaction tx, string command)
+        public static DbCommand CreateCommand(this DbTransaction tx, string command)
         {
-            var cmd = conn.CreateCommand();
+            var cmd = tx.Connection.CreateCommand();
             cmd.Transaction = tx;
             cmd.CommandText = command;
 
             return cmd;
         }
 
-        public static SqlCommand CreateCommand(this SqlConnection conn, string command)
+        public static DbCommand CreateCommand(this DbConnection conn, string command)
         {
             var cmd = conn.CreateCommand();
             cmd.CommandText = command;
@@ -140,7 +138,7 @@ namespace Jasper.Persistence.SqlServer.Util
             return cmd;
         }
 
-        public static SqlCommand CallFunction(this SqlConnection conn, string functionName)
+        public static DbCommand CallFunction(this DbConnection conn, string functionName)
         {
             var cmd = conn.CreateCommand();
             cmd.CommandText = functionName;
@@ -158,20 +156,25 @@ namespace Jasper.Persistence.SqlServer.Util
             return table;
         }
 
-        public static SqlCommand WithIdList(this SqlCommand cmd, SqlServerSettings settings, Envelope[] envelopes,
+        public static DbCommand WithIdList(this DbCommand cmd, SqlServerSettings settings, Envelope[] envelopes,
             string parameterName = "IDLIST")
         {
             var table = envelopes.BuildIdTable();
 
-            var list = cmd.Parameters.AddWithValue(parameterName, table);
-            list.SqlDbType = SqlDbType.Structured;
-            list.TypeName = $"{settings.SchemaName}.EnvelopeIdList";
+            var parameter = cmd.CreateParameter().As<SqlParameter>();
+            parameter.ParameterName = parameterName;
+            parameter.Value = table;
+
+            parameter.SqlDbType = SqlDbType.Structured;
+            parameter.TypeName = $"{settings.SchemaName}.EnvelopeIdList";
+
+            cmd.Parameters.Add(parameter);
 
             return cmd;
         }
 
 
-        public static async Task ExecuteOnce(this SqlCommand command, CancellationToken cancellation)
+        public static async Task ExecuteOnce(this DbCommand command, CancellationToken cancellation)
         {
             var conn = command.Connection;
             try

@@ -1,33 +1,33 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using Jasper.Persistence.SqlServer.Util;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.SqlServer
 {
-
-
-    public class SqlServerSettings
+    public abstract class DatabaseSettings
     {
-        public string ConnectionString { get; set; }
-        public string SchemaName { get; set; } = "dbo";
-
-        /// <summary>
-        ///     The value of the 'database_principal' parameter in calls to APPLOCK_TEST
-        /// </summary>
-        public string DatabasePrincipal { get; set; } = "dbo";
-
-        public SqlCommand CreateCommand(string command)
+        protected DatabaseSettings(string defaultSchema)
         {
-            var cmd = new SqlConnection(ConnectionString).CreateCommand();
+            SchemaName = defaultSchema;
+        }
+
+        public string SchemaName { get; set; }
+
+        public abstract DbConnection CreateConnection();
+
+        public DbCommand CreateCommand(string command)
+        {
+            var cmd = CreateConnection().CreateCommand();
             cmd.CommandText = command;
 
             return cmd;
         }
 
-        public SqlCommand CallFunction(string functionName)
+        public DbCommand CallFunction(string functionName)
         {
-            var cmd = new SqlConnection(ConnectionString).CreateCommand();
+            var cmd = CreateConnection().CreateCommand();
             cmd.CommandText = SchemaName + "." + functionName;
 
             cmd.CommandType = CommandType.StoredProcedure;
@@ -37,12 +37,35 @@ namespace Jasper.Persistence.SqlServer
 
         public void ExecuteSql(string sql)
         {
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var conn = CreateConnection())
             {
                 conn.Open();
 
                 conn.RunSql(sql);
             }
         }
+    }
+
+
+    public class SqlServerSettings : DatabaseSettings
+    {
+        public SqlServerSettings() : base("dbo")
+        {
+        }
+
+        public string ConnectionString { get; set; }
+
+
+        /// <summary>
+        ///     The value of the 'database_principal' parameter in calls to APPLOCK_TEST
+        /// </summary>
+        public string DatabasePrincipal { get; set; } = "dbo";
+
+        public override DbConnection CreateConnection()
+        {
+            return new SqlConnection(ConnectionString);
+        }
+
+
     }
 }

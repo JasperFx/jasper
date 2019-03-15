@@ -215,7 +215,7 @@ GO
 
                 var cmd = conn.CreateCommand(
                     $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {SchemaName}.{DeadLetterTable} where id = @id");
-                cmd.AddNamedParameter("id", id, SqlDbType.UniqueIdentifier);
+                cmd.AddNamedParameter("id", id);
 
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {

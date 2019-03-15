@@ -1,38 +1,24 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Text;
 
 namespace Jasper.Persistence.SqlServer.Util
 {
-    public class CommandBuilder : IDisposable
+    public class CommandBuilder
     {
-        private readonly SqlCommand _command;
+        private readonly DbCommand _command;
 
 
         private readonly StringBuilder _sql = new StringBuilder();
 
-        public CommandBuilder(SqlCommand command)
+        public CommandBuilder(DbCommand command)
         {
             _command = command;
         }
 
-        public void Dispose()
-        {
-        }
 
-        public static SqlCommand BuildCommand(Action<CommandBuilder> configure)
-        {
-            var cmd = new SqlCommand();
-            using (var builder = new CommandBuilder(cmd))
-            {
-                configure(builder);
-
-                cmd.CommandText = builder.ToString();
-            }
-
-            return cmd;
-        }
 
         public void Apply()
         {
@@ -42,11 +28,6 @@ namespace Jasper.Persistence.SqlServer.Util
         public void Append(string text)
         {
             _sql.Append(text);
-        }
-
-        public void Append(object o)
-        {
-            _sql.Append(o);
         }
 
 
@@ -61,47 +42,37 @@ namespace Jasper.Persistence.SqlServer.Util
         }
 
 
-        public void AddParameters(object parameters)
+        public DbParameter AddParameter(Guid value)
         {
-            _command.AddParameters(parameters);
+            return _command.AddParameter(value, DbType.Guid);
         }
 
-        public SqlParameter AddParameter(object value, SqlDbType dbType)
+        public DbParameter AddParameter(int value)
         {
-            return _command.AddParameter(value, dbType);
+            return _command.AddParameter(value, DbType.Int32);
         }
 
-        public SqlParameter AddParameter(Guid value)
+        public DbParameter AddParameter(string value)
         {
-            return _command.AddParameter(value, SqlDbType.UniqueIdentifier);
+            return _command.AddParameter(value, DbType.String);
         }
 
-        public SqlParameter AddParameter(int value)
+        public DbParameter AddParameter(byte[] value)
         {
-            return _command.AddParameter(value, SqlDbType.Int);
+            return _command.AddParameter(value, DbType.Binary);
         }
 
-        public SqlParameter AddParameter(string value)
+        public DbParameter AddParameter(DateTimeOffset value)
         {
-            return _command.AddParameter(value, SqlDbType.VarChar);
+            return _command.AddParameter(value, DbType.DateTimeOffset);
         }
 
-        public SqlParameter AddParameter(byte[] value)
+        public DbParameter AddParameter(DateTimeOffset? value)
         {
-            return _command.AddParameter(value, SqlDbType.VarBinary);
+            return _command.AddParameter(value, DbType.DateTimeOffset);
         }
 
-        public SqlParameter AddParameter(DateTimeOffset value)
-        {
-            return _command.AddParameter(value, SqlDbType.DateTimeOffset);
-        }
-
-        public SqlParameter AddParameter(DateTimeOffset? value)
-        {
-            return _command.AddParameter(value, SqlDbType.DateTimeOffset);
-        }
-
-        public SqlParameter AddNamedParameter(string name, object value)
+        public DbParameter AddNamedParameter(string name, object value)
         {
             return _command.AddNamedParameter(name, value);
         }
