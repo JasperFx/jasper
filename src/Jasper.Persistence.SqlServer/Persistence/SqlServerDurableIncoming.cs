@@ -34,12 +34,10 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public Task Reassign(int ownerId, Envelope[] incoming)
         {
-            var cmd = _session.CreateCommand($"{_settings.SchemaName}.uspMarkIncomingOwnership");
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.WithIdList(_settings, incoming);
-            cmd.Parameters.AddWithValue("owner", ownerId).SqlDbType = SqlDbType.Int;
-
-            return cmd.ExecuteNonQueryAsync(_cancellation);
+            return _session.CallFunction("uspMarkIncomingOwnership")
+                .WithIdList(_settings, incoming)
+                .With("owner", ownerId)
+                .ExecuteNonQueryAsync(_cancellation);
         }
     }
 }

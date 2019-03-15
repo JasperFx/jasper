@@ -41,7 +41,7 @@ where
         public Task ReassignDormantNodeToAnyNode(int nodeId)
         {
             return _session.CreateCommand(_reassignDormantNodeSql)
-                .With("owner", nodeId, SqlDbType.Int)
+                .With("owner", nodeId)
                 .ExecuteNonQueryAsync(_cancellation);
         }
 
@@ -49,7 +49,8 @@ where
         {
             var list = new List<int>();
             using (var reader = await _session.CreateCommand(_fetchOwnersSql)
-                .With("owner", currentNodeId).ExecuteReaderAsync(_cancellation))
+                .With("owner", currentNodeId)
+                .ExecuteReaderAsync(_cancellation))
             {
                 while (await reader.ReadAsync(_cancellation))
                 {

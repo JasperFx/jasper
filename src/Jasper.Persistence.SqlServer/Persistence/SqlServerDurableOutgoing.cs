@@ -38,7 +38,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public Task<Envelope[]> Load(Uri destination)
         {
             return _session.CreateCommand(_findOutgoingEnvelopesSql)
-                .With("destination", destination.ToString(), SqlDbType.VarChar)
+                .With("destination", destination.ToString())
                 .ExecuteToEnvelopes(_cancellation);
         }
 
@@ -46,7 +46,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             var cmd = _session.CallFunction("uspMarkOutgoingOwnership")
                 .WithIdList(_settings, outgoing)
-                .With("owner", ownerId, SqlDbType.Int);
+                .With("owner", ownerId);
 
             return cmd.ExecuteNonQueryAsync(_cancellation);
         }
@@ -54,8 +54,8 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public Task DeleteByDestination(Uri destination)
         {
             return _session.CreateCommand(_deleteOutgoingSql)
-                .With("destination", destination.ToString(), SqlDbType.VarChar)
-                .With("owner", TransportConstants.AnyNode, SqlDbType.Int)
+                .With("destination", destination.ToString())
+                .With("owner", TransportConstants.AnyNode)
                 .ExecuteNonQueryAsync(_cancellation);
         }
 
