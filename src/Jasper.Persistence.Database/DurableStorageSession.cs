@@ -1,21 +1,19 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
-using Jasper.Persistence.Database;
 
-namespace Jasper.Persistence.SqlServer.Persistence
+namespace Jasper.Persistence.Database
 {
-    public class SqlServerDurableStorageSession : IDatabaseSession, IDurableStorageSession
+    public class DurableStorageSession : IDatabaseSession, IDurableStorageSession
     {
         private readonly DatabaseSettings _settings;
         private readonly CancellationToken _cancellation;
 
-        public SqlServerDurableStorageSession(DatabaseSettings settings, CancellationToken cancellation)
+        public DurableStorageSession(DatabaseSettings settings, CancellationToken cancellation)
         {
             _settings = settings;
             _cancellation = cancellation;
@@ -42,15 +40,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             return cmd;
         }
 
-        public Task ReleaseNodeLock(int lockId)
-        {
-            return Connection.ReleaseGlobalLock(lockId, _cancellation);
-        }
 
-        public Task GetNodeLock(int lockId)
-        {
-            return Connection.GetGlobalLock(lockId, _cancellation);
-        }
 
         public Task Begin()
         {
@@ -71,19 +61,29 @@ namespace Jasper.Persistence.SqlServer.Persistence
             return Task.CompletedTask;
         }
 
+        public Task ReleaseNodeLock(int lockId)
+        {
+            return _settings.ReleaseGlobalLock(Connection, lockId, _cancellation);
+        }
+
+        public Task GetNodeLock(int lockId)
+        {
+            return _settings.GetGlobalLock(Connection, lockId, _cancellation);
+        }
+
         public Task<bool> TryGetGlobalTxLock(int lockId)
         {
-            return Connection.TryGetGlobalTxLock(Transaction, lockId, _cancellation);
+            return _settings.TryGetGlobalTxLock(Connection, Transaction, lockId, _cancellation);
         }
 
         public Task<bool> TryGetGlobalLock(int lockId)
         {
-            return Connection.TryGetGlobalLock(lockId, Transaction, _cancellation);
+            return _settings.TryGetGlobalLock(Connection, lockId, Transaction, _cancellation);
         }
 
         public Task ReleaseGlobalLock(int lockId)
         {
-            return Connection.ReleaseGlobalLock(lockId, _cancellation, Transaction);
+            return _settings.ReleaseGlobalLock(Connection, lockId, _cancellation, Transaction);
         }
 
         public bool IsConnected()
@@ -109,12 +109,11 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             try
             {
-                Connection = new SqlConnection(_settings.ConnectionString);
+                Connection = _settings.CreateConnection();
 
-                // TODO -- use the CancellationToken from JasperSettings
                 await Connection.OpenAsync(_cancellation);
 
-                await Connection.GetGlobalLock(nodeId, _cancellation, Transaction);
+                await _settings.GetGlobalLock(Connection, nodeId, _cancellation, Transaction);
             }
             catch (Exception e)
             {

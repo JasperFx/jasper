@@ -5,13 +5,34 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Persistence.Database;
-using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer
 {
-    public static class GlobalLockingExtensions
+    public class SqlServerSettings : DatabaseSettings
     {
-        public static Task GetGlobalTxLock(this DbConnection conn, SqlTransaction tx, int lockId, CancellationToken cancellation = default(CancellationToken))
+        public SqlServerSettings() : base("dbo")
+        {
+        }
+
+        public string ConnectionString { get; set; }
+
+
+        /// <summary>
+        ///     The value of the 'database_principal' parameter in calls to APPLOCK_TEST
+        /// </summary>
+        public string DatabasePrincipal { get; set; } = "dbo";
+
+        public override DbConnection CreateConnection()
+        {
+            return new SqlConnection(ConnectionString);
+        }
+
+        public override DbCommand CreateEmptyCommand()
+        {
+            return new SqlCommand();
+        }
+
+        public override Task GetGlobalTxLock(DbConnection conn, DbTransaction tx, int lockId, CancellationToken cancellation = default(CancellationToken))
         {
             return getLock(conn, lockId, "Transaction", tx, cancellation);
         }
@@ -49,31 +70,31 @@ namespace Jasper.Persistence.SqlServer
             return (int) returnValue.Value;
         }
 
-        public static async Task<bool> TryGetGlobalTxLock(this DbConnection conn, DbTransaction tx, int lockId,
+        public override async Task<bool> TryGetGlobalTxLock(DbConnection conn, DbTransaction tx, int lockId,
             CancellationToken cancellation = default(CancellationToken))
         {
             return await tryGetLock(conn, lockId, "Transaction", tx, cancellation) >= 0;
         }
 
 
-        public static Task GetGlobalLock(this DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
+        public override Task GetGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
             DbTransaction transaction = null)
         {
             return getLock(conn, lockId, "Session", transaction, cancellation);
         }
 
-        public static async Task<bool> TryGetGlobalLock(this DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken))
+        public override async Task<bool> TryGetGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken))
         {
             return await tryGetLock(conn, lockId, "Session", null, cancellation) >= 0;
         }
 
-        public static async Task<bool> TryGetGlobalLock(this DbConnection conn, int lockId, DbTransaction tx,
+        public override async Task<bool> TryGetGlobalLock(DbConnection conn, int lockId, DbTransaction tx,
             CancellationToken cancellation = default(CancellationToken))
         {
             return await tryGetLock(conn, lockId, "Session", tx, cancellation) >= 0;
         }
 
-        public static Task ReleaseGlobalLock(this DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
+        public override Task ReleaseGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
             DbTransaction tx = null)
         {
             var sqlCommand = conn.CreateCommand("sp_releaseapplock");
@@ -85,21 +106,5 @@ namespace Jasper.Persistence.SqlServer
 
             return sqlCommand.ExecuteNonQueryAsync(cancellation);
         }
-
-        public class AdvisoryLock
-        {
-            public AdvisoryLock(bool granted, string grant, DateTime? start)
-            {
-                Granted = granted;
-                Grant = grant;
-                Start = start;
-            }
-
-            public bool Granted { get; }
-            public string Grant { get; }
-            public DateTime? Start { get; }
-        }
-
-
     }
 }

@@ -19,7 +19,6 @@ using Microsoft.Extensions.Logging;
 using StorytellerSpecs.Fixtures.SqlServer.App;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
-using DatabaseSettings = Jasper.Persistence.SqlServer.DatabaseSettings;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {
@@ -46,8 +45,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             _senderWatcher = new SenderLatchDetected(new LoggerFactory());
 
-            new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}).RecreateAll();
-            new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}).RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}).RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}).RecreateAll();
 
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {

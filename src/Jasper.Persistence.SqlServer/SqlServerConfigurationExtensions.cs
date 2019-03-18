@@ -21,7 +21,7 @@ namespace Jasper.Persistence.SqlServer
             if (!parent.AppliedExtensions.OfType<SqlServerBackedPersistence>().Any())
                 parent.Include<SqlServerBackedPersistence>();
 
-            settings.Alter<DatabaseSettings>(x =>
+            settings.Alter<SqlServerSettings>(x =>
             {
                 x.ConnectionString = connectionString;
                 if (schema.IsNotEmpty()) x.SchemaName = schema;
@@ -35,7 +35,7 @@ namespace Jasper.Persistence.SqlServer
         /// <param name="settings"></param>
         /// <param name="configure"></param>
         public static void PersistMessagesWithSqlServer(this JasperSettings settings,
-            Action<WebHostBuilderContext, DatabaseSettings> configure)
+            Action<WebHostBuilderContext, SqlServerSettings> configure)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<SqlServerBackedPersistence>().Any())

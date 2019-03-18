@@ -20,7 +20,7 @@ namespace Jasper.Persistence.SqlServer
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Settings.Require<DatabaseSettings>();
+            registry.Settings.Require<SqlServerSettings>();
 
             registry.Services.AddTransient<IEnvelopePersistence, SqlServerEnvelopePersistence>();
 

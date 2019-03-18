@@ -1,5 +1,8 @@
+using System;
 using System.Data;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jasper.Persistence.Database
 {
@@ -49,5 +52,22 @@ namespace Jasper.Persistence.Database
             var cmd = CreateConnection().CreateCommand("");
             return new CommandBuilder(cmd);
         }
+
+
+        public abstract Task GetGlobalTxLock(DbConnection conn, DbTransaction tx, int lockId, CancellationToken cancellation = default(CancellationToken));
+
+        public abstract Task<bool> TryGetGlobalTxLock(DbConnection conn, DbTransaction tx, int lockId,
+            CancellationToken cancellation = default(CancellationToken));
+
+        public abstract Task GetGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
+            DbTransaction transaction = null);
+
+        public abstract Task<bool> TryGetGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken));
+
+        public abstract Task<bool> TryGetGlobalLock(DbConnection conn, int lockId, DbTransaction tx,
+            CancellationToken cancellation = default(CancellationToken));
+
+        public abstract Task ReleaseGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
+            DbTransaction tx = null);
     }
 }

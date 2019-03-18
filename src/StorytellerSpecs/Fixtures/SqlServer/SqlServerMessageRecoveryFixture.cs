@@ -265,7 +265,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             _conn.Open();
             _tx = _conn.BeginTransaction();
 
-            _conn.TryGetGlobalTxLock(_tx, nodeId).Wait(3.Seconds());
+            new SqlServerSettings().TryGetGlobalTxLock(_conn, _tx, nodeId).Wait(3.Seconds());
         }
 
         public void Dispose()
