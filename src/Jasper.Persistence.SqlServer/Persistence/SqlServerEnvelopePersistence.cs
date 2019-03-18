@@ -11,12 +11,13 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlServerEnvelopePersistence : SqlServerAccess, IEnvelopePersistence
+    public class SqlServerEnvelopePersistence : DataAccessor, IEnvelopePersistence
     {
 
 

@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
 using Microsoft.Extensions.Hosting;
 

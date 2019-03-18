@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace SqlSender

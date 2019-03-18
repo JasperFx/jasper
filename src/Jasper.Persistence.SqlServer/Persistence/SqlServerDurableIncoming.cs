@@ -1,15 +1,14 @@
-using System;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-    using Jasper.Persistence.SqlServer.Util;
+using Jasper.Persistence.Database;
+using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlServerDurableIncoming : SqlServerAccess, IDurableIncoming
+    public class SqlServerDurableIncoming : DataAccessor, IDurableIncoming
     {
         private readonly SqlServerDurableStorageSession _session;
         private readonly SqlServerSettings _settings;

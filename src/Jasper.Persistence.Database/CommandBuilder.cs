@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Jasper.Persistence.SqlServer.Util
+namespace Jasper.Persistence.Database
 {
     public class CommandBuilder
     {

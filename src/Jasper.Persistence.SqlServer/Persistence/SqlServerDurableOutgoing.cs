@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
 using Jasper.Util;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlServerDurableOutgoing : SqlServerAccess, IDurableOutgoing
+    public class SqlServerDurableOutgoing : DataAccessor, IDurableOutgoing
     {
         private readonly SqlServerDurableStorageSession _session;
         private readonly SqlServerSettings _settings;
@@ -63,7 +64,8 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             return _session
                 .CallFunction("uspDeleteOutgoingEnvelopes")
-                .WithIdList(_settings, outgoing).ExecuteNonQueryAsync(_cancellation);
+                .WithIdList(_settings, outgoing)
+                .ExecuteNonQueryAsync(_cancellation);
         }
 
         public async Task<Uri[]> FindAllDestinations()

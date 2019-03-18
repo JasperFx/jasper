@@ -1,6 +1,6 @@
-namespace Jasper.Persistence.SqlServer.Persistence
+namespace Jasper.Persistence.Database
 {
-    public abstract class SqlServerAccess
+    public abstract class DataAccessor
     {
         public const string IncomingTable = "jasper_incoming_envelopes";
         public const string OutgoingTable = "jasper_outgoing_envelopes";

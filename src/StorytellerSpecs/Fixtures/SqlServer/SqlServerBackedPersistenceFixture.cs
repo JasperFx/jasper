@@ -8,6 +8,7 @@ using IntegrationTests;
 using Jasper;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;

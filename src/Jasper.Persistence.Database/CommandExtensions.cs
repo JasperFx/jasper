@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Runtime;
 
-namespace Jasper.Persistence.SqlServer.Util
+namespace Jasper.Persistence.Database
 {
     public static class CommandExtensions
     {
@@ -156,22 +155,7 @@ namespace Jasper.Persistence.SqlServer.Util
             return table;
         }
 
-        public static DbCommand WithIdList(this DbCommand cmd, SqlServerSettings settings, Envelope[] envelopes,
-            string parameterName = "IDLIST")
-        {
-            var table = envelopes.BuildIdTable();
 
-            var parameter = cmd.CreateParameter().As<SqlParameter>();
-            parameter.ParameterName = parameterName;
-            parameter.Value = table;
-
-            parameter.SqlDbType = SqlDbType.Structured;
-            parameter.TypeName = $"{settings.SchemaName}.EnvelopeIdList";
-
-            cmd.Parameters.Add(parameter);
-
-            return cmd;
-        }
 
 
         public static async Task ExecuteOnce(this DbCommand command, CancellationToken cancellation)

@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlServerDurabilityAgentStorage : SqlServerAccess,IDurabilityAgentStorage
+    public class SqlServerDurabilityAgentStorage : DataAccessor,IDurabilityAgentStorage
     {
         private readonly SqlServerDurableStorageSession _session;
         private readonly string _findReadyToExecuteJobs;

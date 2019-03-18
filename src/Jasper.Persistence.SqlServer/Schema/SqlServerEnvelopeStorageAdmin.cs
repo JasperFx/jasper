@@ -10,12 +10,13 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Schema
 {
-    public class SqlServerEnvelopeStorageAdmin : SqlServerAccess,IEnvelopeStorageAdmin
+    public class SqlServerEnvelopeStorageAdmin : DataAccessor,IEnvelopeStorageAdmin
     {
         private readonly DatabaseSettings _settings;
 

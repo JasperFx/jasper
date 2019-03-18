@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.Common;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer

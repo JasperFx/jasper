@@ -4,18 +4,19 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlServerDurableNodes : SqlServerAccess,IDurableNodes
+    public class SqlServerDurableNodes : DataAccessor,IDurableNodes
     {
         private readonly SqlServerDurableStorageSession _session;
         private readonly CancellationToken _cancellation;
         private readonly string _fetchOwnersSql;
         private readonly string _reassignDormantNodeSql;
 
-        public SqlServerDurableNodes(SqlServerDurableStorageSession session, SqlServerSettings settings,
+        public SqlServerDurableNodes(SqlServerDurableStorageSession session, DatabaseSettings settings,
             CancellationToken cancellation)
         {
             _session = session;
