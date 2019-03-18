@@ -20,7 +20,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
         public SqlServerEnveloperPersistorTests()
         {
             ThePersistence
-                = new SqlServerEnvelopePersistence(new SqlServerSettings
+                = new SqlServerEnvelopePersistence(new DatabaseSettings
                 {
                     ConnectionString = Servers.SqlServerConnectionString
                 }, new JasperOptions());

@@ -23,7 +23,7 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
     {
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
-        protected SqlServerSettings mssqlSettings;
+        protected DatabaseSettings mssqlSettings;
         protected DurableListener theListener;
         protected SqlServerEnvelopePersistence ThePersistence;
         protected JasperOptions theSettings;
@@ -32,13 +32,13 @@ namespace IntegrationTests.Persistence.SqlServer.Persistence
 
         public SqlServerBackedListenerContext()
         {
-            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString}).RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString}).RecreateAll();
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
             theSettings = new JasperOptions();
 
-            mssqlSettings = new SqlServerSettings
+            mssqlSettings = new DatabaseSettings
             {
                 ConnectionString = Servers.SqlServerConnectionString
             };

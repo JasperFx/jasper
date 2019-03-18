@@ -26,12 +26,12 @@ namespace Jasper.Persistence.SqlServer.Util
 
         public override Func<Scope, object> ToResolver(Scope topScope)
         {
-            return s => new SqlConnection(topScope.GetInstance<SqlServerSettings>().ConnectionString);
+            return s => new SqlConnection(topScope.GetInstance<DatabaseSettings>().ConnectionString);
         }
 
         public override object Resolve(Scope scope)
         {
-            return new SqlConnection(scope.GetInstance<SqlServerSettings>().ConnectionString);
+            return new SqlConnection(scope.GetInstance<DatabaseSettings>().ConnectionString);
         }
 
         public override Variable CreateVariable(BuildMode mode, ResolverVariables variables, bool isRoot)
@@ -42,7 +42,7 @@ namespace Jasper.Persistence.SqlServer.Util
 
         protected override IEnumerable<Instance> createPlan(ServiceGraph services)
         {
-            _settings = services.FindDefault(typeof(SqlServerSettings));
+            _settings = services.FindDefault(typeof(DatabaseSettings));
             yield return _settings;
         }
     }
@@ -69,7 +69,7 @@ namespace Jasper.Persistence.SqlServer.Util
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write(
-                $"BLOCK:using ({_instance.ServiceType.FullNameInCode()} {Connection.Usage} = new {typeof(SqlConnection).FullName}({_settings.Usage}.{nameof(SqlServerSettings.ConnectionString)}))");
+                $"BLOCK:using ({_instance.ServiceType.FullNameInCode()} {Connection.Usage} = new {typeof(SqlConnection).FullName}({_settings.Usage}.{nameof(DatabaseSettings.ConnectionString)}))");
             Next?.GenerateCode(method, writer);
             writer.FinishBlock();
         }

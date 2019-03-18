@@ -19,11 +19,11 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerEnvelopePersistence : DatabaseBackedEnvelopePersistence
     {
-        private readonly SqlServerSettings _settings;
+        private readonly DatabaseSettings _settings;
         private readonly CancellationToken _cancellation;
 
 
-        public SqlServerEnvelopePersistence(SqlServerSettings settings, JasperOptions options)
+        public SqlServerEnvelopePersistence(DatabaseSettings settings, JasperOptions options)
             : base(settings, options, new SqlServerEnvelopeStorageAdmin(settings), new SqlServerDurabilityAgentStorage(settings, options))
         {
             _settings = settings;

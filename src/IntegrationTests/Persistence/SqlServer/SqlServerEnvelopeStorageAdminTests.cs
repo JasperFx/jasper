@@ -20,7 +20,7 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public void drop_then_create()
         {
-            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
+            var loader = new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString});
             loader.DropAll();
 
             loader.CreateAll();
@@ -29,14 +29,14 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public void generate_sql()
         {
-            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
+            var loader = new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString});
             _output.WriteLine(loader.As<IEnvelopeStorageAdmin>().CreateSql());
         }
 
         [Fact]
         public void drop_then_create_different_schema()
         {
-            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"});
+            var loader = new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"});
             loader.DropAll();
 
             loader.CreateAll();
@@ -45,21 +45,21 @@ namespace IntegrationTests.Persistence.SqlServer
         [Fact]
         public void recreate_all_tables()
         {
-            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
+            var loader = new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString});
             loader.RecreateAll();
         }
 
         [Fact]
         public void recreate_all_tables_in_a_different_schema()
         {
-            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"});
+            var loader = new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"});
             loader.RecreateAll();
         }
 
         [Fact]
         public void smoke_test_clear_all()
         {
-            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
+            var loader = new SqlServerEnvelopeStorageAdmin(new DatabaseSettings{ConnectionString = Servers.SqlServerConnectionString});
 
             loader.As<IEnvelopeStorageAdmin>().ClearAllPersistedEnvelopes();
 

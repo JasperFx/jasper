@@ -18,7 +18,7 @@ namespace Jasper.Persistence.SqlServer.Schema
 {
     public class SqlServerEnvelopeStorageAdmin : DataAccessor,IEnvelopeStorageAdmin
     {
-        private readonly DatabaseSettings _settings;
+        private readonly Database.DatabaseSettings _settings;
 
         private readonly string[] _creationOrder =
         {
@@ -30,7 +30,7 @@ namespace Jasper.Persistence.SqlServer.Schema
             "uspMarkOutgoingOwnership.sql"
         };
 
-        public SqlServerEnvelopeStorageAdmin(DatabaseSettings settings)
+        public SqlServerEnvelopeStorageAdmin(Database.DatabaseSettings settings)
         {
             _settings = settings;
         }

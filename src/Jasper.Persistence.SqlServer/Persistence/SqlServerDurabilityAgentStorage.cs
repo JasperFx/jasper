@@ -16,7 +16,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         private readonly string _findReadyToExecuteJobs;
         private readonly CancellationToken _cancellation;
 
-        public SqlServerDurabilityAgentStorage(SqlServerSettings settings, JasperOptions options)
+        public SqlServerDurabilityAgentStorage(DatabaseSettings settings, JasperOptions options)
         {
             var transaction = new SqlServerDurableStorageSession(settings, options.Cancellation);
 

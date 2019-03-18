@@ -30,7 +30,7 @@ namespace IntegrationTests.Persistence.SqlServer
             using (var runtime = JasperHost.For(registry))
             {
 
-                runtime.Get<SqlServerSettings>()
+                runtime.Get<DatabaseSettings>()
                     .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
             }
         }
@@ -43,7 +43,7 @@ namespace IntegrationTests.Persistence.SqlServer
                 x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
 
-                runtime.Get<SqlServerSettings>()
+                runtime.Get<DatabaseSettings>()
                     .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
             }
         }

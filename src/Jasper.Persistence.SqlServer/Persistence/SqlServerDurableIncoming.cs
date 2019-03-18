@@ -11,11 +11,11 @@ namespace Jasper.Persistence.SqlServer.Persistence
     public class SqlServerDurableIncoming : DataAccessor, IDurableIncoming
     {
         private readonly IDatabaseSession _session;
-        private readonly SqlServerSettings _settings;
+        private readonly DatabaseSettings _settings;
         private readonly string _findAtLargeEnvelopesSql;
         private readonly CancellationToken _cancellation;
 
-        public SqlServerDurableIncoming(IDatabaseSession session, SqlServerSettings settings, JasperOptions options)
+        public SqlServerDurableIncoming(IDatabaseSession session, DatabaseSettings settings, JasperOptions options)
         {
             _session = session;
             _settings = settings;

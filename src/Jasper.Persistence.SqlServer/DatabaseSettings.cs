@@ -6,9 +6,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.SqlServer
 {
-    public class SqlServerSettings : DatabaseSettings
+    public class DatabaseSettings : Database.DatabaseSettings
     {
-        public SqlServerSettings() : base("dbo")
+        public DatabaseSettings() : base("dbo")
         {
         }
 

@@ -12,10 +12,10 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerDurableStorageSession : IDatabaseSession, IDurableStorageSession
     {
-        private readonly SqlServerSettings _settings;
+        private readonly DatabaseSettings _settings;
         private readonly CancellationToken _cancellation;
 
-        public SqlServerDurableStorageSession(SqlServerSettings settings, CancellationToken cancellation)
+        public SqlServerDurableStorageSession(DatabaseSettings settings, CancellationToken cancellation)
         {
             _settings = settings;
             _cancellation = cancellation;
