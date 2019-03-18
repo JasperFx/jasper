@@ -23,7 +23,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _session = transaction;
             Session = transaction;
 
-            Nodes = new SqlServerDurableNodes(transaction, settings, options.Cancellation);
+            Nodes = new DurableNodes(transaction, settings, options.Cancellation);
             Incoming = new SqlServerDurableIncoming(transaction, settings, options);
             Outgoing = new SqlServerDurableOutgoing(transaction, settings, options);
 

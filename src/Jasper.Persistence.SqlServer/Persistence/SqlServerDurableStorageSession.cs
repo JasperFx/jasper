@@ -6,10 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
+using Jasper.Persistence.Database;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlServerDurableStorageSession : IDurableStorageSession
+    public class SqlServerDurableStorageSession : IDatabaseSession, IDurableStorageSession
     {
         private readonly SqlServerSettings _settings;
         private readonly CancellationToken _cancellation;
@@ -20,11 +21,11 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _cancellation = cancellation;
         }
 
-        internal DbTransaction Transaction { get; private set; }
+        public DbTransaction Transaction { get; private set; }
 
-        internal DbConnection Connection { get; private set; }
+        public DbConnection Connection { get; private set; }
 
-        internal DbCommand CreateCommand(string sql)
+        public DbCommand CreateCommand(string sql)
         {
             var cmd = Connection.CreateCommand();
             cmd.CommandText = sql;
@@ -33,7 +34,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             return cmd;
         }
 
-        internal DbCommand CallFunction(string functionName)
+        public DbCommand CallFunction(string functionName)
         {
             var cmd = CreateCommand(_settings.SchemaName + "." + functionName);
             cmd.CommandType = CommandType.StoredProcedure;

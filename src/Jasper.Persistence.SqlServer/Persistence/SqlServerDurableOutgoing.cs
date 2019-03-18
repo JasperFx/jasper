@@ -15,14 +15,14 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerDurableOutgoing : DataAccessor, IDurableOutgoing
     {
-        private readonly SqlServerDurableStorageSession _session;
+        private readonly IDatabaseSession _session;
         private readonly SqlServerSettings _settings;
         private readonly string _findUniqueDestinations;
         private readonly string _findOutgoingEnvelopesSql;
         private readonly string _deleteOutgoingSql;
         private readonly CancellationToken _cancellation;
 
-        public SqlServerDurableOutgoing(SqlServerDurableStorageSession session, SqlServerSettings settings, JasperOptions options)
+        public SqlServerDurableOutgoing(IDatabaseSession session, SqlServerSettings settings, JasperOptions options)
         {
             _session = session;
             _settings = settings;

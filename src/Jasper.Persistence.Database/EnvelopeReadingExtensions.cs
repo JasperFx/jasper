@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
 
-namespace Jasper.Persistence.SqlServer.Persistence
+namespace Jasper.Persistence.Database
 {
-    public static class SqlServerEnvelopeStorageExtensions
+    public static class EnvelopeReadingExtensions
     {
         public static async Task<Envelope[]> ExecuteToEnvelopes(this DbCommand command, CancellationToken cancellation = default(CancellationToken),
             DbTransaction tx = null)

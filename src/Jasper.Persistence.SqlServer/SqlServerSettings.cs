@@ -29,14 +29,5 @@ namespace Jasper.Persistence.SqlServer
         {
             return new SqlCommand();
         }
-
-
-        public CommandBuilder ToCommandBuilder()
-        {
-            var cmd = CreateConnection().CreateCommand("");
-            return new CommandBuilder(cmd);
-        }
-
-
     }
 }

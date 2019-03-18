@@ -1,9 +1,7 @@
 using System.Data;
 using System.Data.Common;
-using Jasper.Persistence.Database;
-using Jasper.Persistence.SqlServer.Util;
 
-namespace Jasper.Persistence.SqlServer
+namespace Jasper.Persistence.Database
 {
     public abstract class DatabaseSettings
     {
@@ -44,6 +42,12 @@ namespace Jasper.Persistence.SqlServer
 
                 conn.RunSql(sql);
             }
+        }
+
+        public CommandBuilder ToCommandBuilder()
+        {
+            var cmd = CreateConnection().CreateCommand("");
+            return new CommandBuilder(cmd);
         }
     }
 }
