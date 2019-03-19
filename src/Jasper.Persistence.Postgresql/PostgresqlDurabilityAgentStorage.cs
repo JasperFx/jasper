@@ -10,42 +10,23 @@ using NpgsqlTypes;
 
 namespace Jasper.Persistence.Postgresql
 {
-    public class PostgresqlDurabilityAgentStorage : DataAccessor,IDurabilityAgentStorage
+    public class PostgresqlDurabilityAgentStorage : DurabilityAgentStorage
     {
-        private readonly PostgresqlDurableStorageSession _session;
-        private readonly string _findReadyToExecuteJobs;
-        private readonly CancellationToken _cancellation;
-
-        public PostgresqlDurabilityAgentStorage(PostgresqlSettings settings, JasperOptions options)
+        public PostgresqlDurabilityAgentStorage(PostgresqlSettings settings, JasperOptions options) : base(settings, options)
         {
-            _session = new PostgresqlDurableStorageSession(settings, options.Cancellation);
-            Session = _session;
 
-            Nodes = new PostgresqlDurableNodes(_session, settings, options);
-            Incoming = new PostgresqlDurableIncoming(_session, settings, options);
-            Outgoing = new PostgresqlDurableOutgoing(_session, settings, options);
-
-            _findReadyToExecuteJobs =
-                $"select body from {settings.SchemaName}.{IncomingTable} where status = '{TransportConstants.Scheduled}' and execution_time <= :time";
-
-            _cancellation = options.Cancellation;
         }
 
-        public void Dispose()
+        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession, DatabaseSettings settings,
+            JasperOptions options)
         {
-            Session.Dispose();
+            return  new PostgresqlDurableOutgoing(durableStorageSession, settings, options);
         }
 
-        public IDurableStorageSession Session { get; }
-        public IDurableNodes Nodes { get; }
-        public IDurableIncoming Incoming { get; }
-        public IDurableOutgoing Outgoing { get; }
-        public Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow)
+        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession, DatabaseSettings settings,
+            JasperOptions options)
         {
-            return _session.Connection
-                .CreateCommand(_findReadyToExecuteJobs)
-                .With("time", utcNow, NpgsqlDbType.TimestampTz)
-                .ExecuteToEnvelopes(_cancellation);
+            return new PostgresqlDurableIncoming(durableStorageSession, settings, options);
         }
     }
 }
