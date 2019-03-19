@@ -1,40 +1,63 @@
+using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
+using Jasper.Persistence.Database;
+using Npgsql;
+
 namespace Jasper.Persistence.Postgresql
 {
-    public class PostgresqlSettings : PostgresqlAccess
+    public class PostgresqlSettings : DatabaseSettings
     {
-        private string _schemaName;
 
-        public PostgresqlSettings()
+        public PostgresqlSettings() : base("public")
         {
-            SchemaName = "public";
         }
 
-        public string ConnectionString { get; set; }
-
-        public string SchemaName
+        public override DbConnection CreateConnection()
         {
-            get => _schemaName;
-            set
-            {
-                _schemaName = value;
-
-                IncomingFullName = $"{value}.{IncomingTable}";
-                OutgoingFullName = $"{value}.{OutgoingTable}";
-                DeadLetterFullName = $"{value}.{DeadLetterTable}";
-            }
+            return new NpgsqlConnection(ConnectionString);
         }
 
-        public string DeadLetterFullName { get; private set; }
+        public override DbCommand CreateEmptyCommand()
+        {
+            return new NpgsqlCommand();
+        }
 
-        public string OutgoingFullName { get; private set; }
+        public override Task GetGlobalTxLock(DbConnection conn, DbTransaction tx, int lockId,
+            CancellationToken cancellation = default(CancellationToken))
+        {
+            throw new System.NotImplementedException();
+        }
 
-        public string IncomingFullName { get; private set; }
+        public override Task<bool> TryGetGlobalTxLock(DbConnection conn, DbTransaction tx, int lockId,
+            CancellationToken cancellation = default(CancellationToken))
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task GetGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
+            DbTransaction transaction = null)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<bool> TryGetGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken))
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<bool> TryGetGlobalLock(DbConnection conn, int lockId, DbTransaction tx,
+            CancellationToken cancellation = default(CancellationToken))
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task ReleaseGlobalLock(DbConnection conn, int lockId, CancellationToken cancellation = default(CancellationToken),
+            DbTransaction tx = null)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
-    public abstract class PostgresqlAccess
-    {
-        public const string IncomingTable = "jasper_incoming_envelopes";
-        public const string OutgoingTable = "jasper_outgoing_envelopes";
-        public const string DeadLetterTable = "jasper_dead_letters";
-    }
+
 }

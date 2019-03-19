@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Persistence.Postgresql.Util;
 using Npgsql;
 using NpgsqlTypes;
+using CommandBuilder = Jasper.Persistence.Postgresql.Util.CommandBuilder;
 
 namespace Jasper.Persistence.Postgresql
 {
-    public class PostgresqlEnvelopePersistence : PostgresqlAccess,IEnvelopePersistence
+    public class PostgresqlEnvelopePersistence : DataAccessor,IEnvelopePersistence
     {
         private readonly string _deleteIncomingEnvelopesSql;
         private readonly string _deleteOutgoingEnvelopesSql;

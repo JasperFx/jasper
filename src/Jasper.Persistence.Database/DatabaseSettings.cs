@@ -6,14 +6,35 @@ using System.Threading.Tasks;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DatabaseSettings
+    public abstract class DatabaseSettings : DataAccessor
     {
+        private string _schemaName;
+
         protected DatabaseSettings(string defaultSchema)
         {
             SchemaName = defaultSchema;
         }
 
-        public string SchemaName { get; set; }
+        public string ConnectionString { get; set; }
+
+        public string SchemaName
+        {
+            get => _schemaName;
+            set
+            {
+                _schemaName = value;
+
+                IncomingFullName = $"{value}.{IncomingTable}";
+                OutgoingFullName = $"{value}.{OutgoingTable}";
+                DeadLetterFullName = $"{value}.{DeadLetterTable}";
+            }
+        }
+
+        public string DeadLetterFullName { get; private set; }
+
+        public string OutgoingFullName { get; private set; }
+
+        public string IncomingFullName { get; private set; }
 
         public abstract DbConnection CreateConnection();
 

@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql.Util;
 using NpgsqlTypes;
+using CommandExtensions = Jasper.Persistence.Postgresql.Util.CommandExtensions;
 
 namespace Jasper.Persistence.Postgresql
 {
-    public class PostgresqlDurableNodes : PostgresqlAccess,IDurableNodes
+    public class PostgresqlDurableNodes : DataAccessor,IDurableNodes
     {
         private readonly PostgresqlDurableStorageSession _session;
         private readonly string _fetchOwnersSql;
@@ -48,8 +50,7 @@ where
         public async Task<int[]> FindUniqueOwners(int currentNodeId)
         {
             var list = new List<int>();
-            using (var reader = await _session.CreateCommand(_fetchOwnersSql)
-                .With("owner", currentNodeId).ExecuteReaderAsync(_cancellation))
+            using (var reader = await CommandExtensions.With(_session.CreateCommand(_fetchOwnersSql), "owner", currentNodeId).ExecuteReaderAsync(_cancellation))
             {
                 while (await reader.ReadAsync(_cancellation))
                 {

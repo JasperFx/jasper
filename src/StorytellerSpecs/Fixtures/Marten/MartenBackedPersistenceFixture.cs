@@ -6,6 +6,7 @@ using IntegrationTests;
 using Jasper;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.TestSupport.Storyteller.Logging;
@@ -219,7 +220,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 conn.Open();
 
                 return (long) conn.CreateCommand(
-                        $"select count(*) from receiver.{PostgresqlAccess.IncomingTable}")
+                        $"select count(*) from receiver.{DataAccessor.IncomingTable}")
                     .ExecuteScalar();
             }
         }
@@ -232,7 +233,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 conn.Open();
 
                 return (long) conn.CreateCommand(
-                        $"select count(*) from sender.{PostgresqlAccess.OutgoingTable}")
+                        $"select count(*) from sender.{DataAccessor.OutgoingTable}")
                     .ExecuteScalar();
             }
         }

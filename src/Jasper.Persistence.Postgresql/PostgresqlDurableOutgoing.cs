@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql.Util;
 using Jasper.Util;
 using NpgsqlTypes;
 
 namespace Jasper.Persistence.Postgresql
 {
-    public class PostgresqlDurableOutgoing : PostgresqlAccess,IDurableOutgoing
+    public class PostgresqlDurableOutgoing : DataAccessor,IDurableOutgoing
     {
         private readonly PostgresqlDurableStorageSession _session;
         private readonly string _findUniqueDestinations;

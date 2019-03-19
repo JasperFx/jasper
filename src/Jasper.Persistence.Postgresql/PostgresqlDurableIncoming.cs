@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql.Util;
 using NpgsqlTypes;
 
 namespace Jasper.Persistence.Postgresql
 {
-    public class PostgresqlDurableIncoming : PostgresqlAccess,IDurableIncoming
+    public class PostgresqlDurableIncoming : DataAccessor,IDurableIncoming
     {
         private readonly PostgresqlDurableStorageSession _session;
         private readonly PostgresqlSettings _settings;

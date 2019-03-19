@@ -8,13 +8,14 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql.Util;
 using Npgsql;
 using NpgsqlTypes;
 
 namespace Jasper.Persistence.Postgresql.Schema
 {
-    public class PostgresqlEnvelopeStorageAdmin : PostgresqlAccess, IEnvelopeStorageAdmin
+    public class PostgresqlEnvelopeStorageAdmin : DataAccessor, IEnvelopeStorageAdmin
     {
         private readonly string _connectionString;
 

@@ -19,6 +19,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Jasper.Persistence.Database\Jasper.Persistence.Database.csproj" />
       <ProjectReference Include="..\Jasper\Jasper.csproj" />
     </ItemGroup>
 

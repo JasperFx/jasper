@@ -14,7 +14,7 @@ namespace Jasper.Persistence.SqlServer
         {
         }
 
-        public string ConnectionString { get; set; }
+
 
 
         /// <summary>
