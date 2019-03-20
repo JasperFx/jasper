@@ -73,7 +73,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence
         protected JasperOptions theOptions;
         protected IWorkerQueue theWorkerQueue;
 
-        protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin = new PostgresqlEnvelopeStorageAdmin(Servers.PostgresConnectionString);
+        protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin = new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString});
 
 
         public MartenBackedListenerContext()

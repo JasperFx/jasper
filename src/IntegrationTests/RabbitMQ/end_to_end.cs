@@ -231,6 +231,7 @@ namespace IntegrationTests.RabbitMQ
 
                 _.Settings.ConfigureMarten(x =>
                 {
+                    x.DatabaseSchemaName = "rabbit_sender";
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                 });
@@ -250,7 +251,12 @@ namespace IntegrationTests.RabbitMQ
 
                 _.Include<MartenBackedPersistence>();
 
-                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
+                _.Settings.ConfigureMarten(x =>
+                {
+                    x.DatabaseSchemaName = "rabbit_receiver";
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                });
             });
 
             receiver.RebuildMessageStorage();

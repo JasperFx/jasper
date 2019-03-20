@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Util;
 using Npgsql;
 using Shouldly;
@@ -9,84 +10,11 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
 {
     public class advisory_lock_usage : MartenContext
     {
-        //[Fact] -- too slow
-        public async Task tx_session_locks()
-        {
-            using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
-            using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
-            using (var conn3 = new NpgsqlConnection(Servers.PostgresConnectionString))
-            {
-                await conn1.OpenAsync();
-                await conn2.OpenAsync();
-                await conn3.OpenAsync();
-
-                var tx1 = conn1.BeginTransaction();
-                await conn1.GetGlobalTxLock(1);
-
-                var locks = await conn1.GetOpenLocks();
-
-                try
-                {
-                    // Cannot get the lock here
-                    var tx2 = conn2.BeginTransaction();
-                    (await conn2.TryGetGlobalTxLock(1)).ShouldBeFalse();
-
-                    // Can get the new lock
-                    var tx3 = conn3.BeginTransaction();
-                    (await conn3.TryGetGlobalTxLock(2)).ShouldBeTrue();
-
-                    // Cannot get the lock here
-                    (await conn2.TryGetGlobalTxLock(2)).ShouldBeFalse();
-
-                    await tx1.RollbackAsync();
-                    await tx2.RollbackAsync();
-                    await tx3.RollbackAsync();
-                }
-                finally
-                {
-                    await conn1.ReleaseGlobalLock(1);
-                }
-            }
-        }
-
-        //[Fact] - too slow
-        public async Task global_session_locks()
-        {
-            using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
-            using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
-            using (var conn3 = new NpgsqlConnection(Servers.PostgresConnectionString))
-            {
-                await conn1.OpenAsync();
-                await conn2.OpenAsync();
-                await conn3.OpenAsync();
-
-                await conn1.GetGlobalLock(1);
-
-                var locks = await conn1.GetOpenLocks();
-
-                try
-                {
-                    // Cannot get the lock here
-                    (await conn2.TryGetGlobalLock(1)).ShouldBeFalse();
-
-                    // Can get the new lock
-                    (await conn3.TryGetGlobalLock(2)).ShouldBeTrue();
-
-                    // Cannot get the lock here
-                    (await conn2.TryGetGlobalLock(2)).ShouldBeFalse();
-                }
-                finally
-                {
-                    await conn1.ReleaseGlobalLock(1);
-                }
-            }
-        }
-
 
         [Fact]
         public async Task explicitly_release_global_session_locks()
         {
-            var lockNumber = new Random().Next();
+            var settings = new PostgresqlSettings();
 
             using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
             using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
@@ -97,19 +25,19 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
                 await conn3.OpenAsync();
 
 
-                await conn1.GetGlobalLock(lockNumber);
+                await settings.GetGlobalLock(conn1,1);
 
 
                 // Cannot get the lock here
-                (await conn2.TryGetGlobalLock(lockNumber)).ShouldBeFalse();
+                (await settings.TryGetGlobalLock(conn2, 1)).ShouldBeFalse();
 
 
-                await conn1.ReleaseGlobalLock(lockNumber);
+                await settings.ReleaseGlobalLock(conn1, 1);
 
 
                 for (var j = 0; j < 5; j++)
                 {
-                    if (await conn2.TryGetGlobalLock(lockNumber)) return;
+                    if (await settings.TryGetGlobalLock(conn2, 1)) return;
 
                     await Task.Delay(250);
                 }
@@ -121,7 +49,7 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
         [Fact]
         public async Task explicitly_release_global_tx_session_locks()
         {
-            var lockNumber = new Random().Next();
+            var settings = new PostgresqlSettings();
 
             using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
             using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
@@ -132,22 +60,22 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
                 await conn3.OpenAsync();
 
                 var tx1 = conn1.BeginTransaction();
-                await conn1.GetGlobalTxLock(lockNumber);
+                await settings.GetGlobalTxLock(conn1, tx1, 2);
 
 
                 // Cannot get the lock here
                 var tx2 = conn2.BeginTransaction();
-                (await conn2.TryGetGlobalTxLock(lockNumber)).ShouldBeFalse();
+                (await settings.TryGetGlobalTxLock(conn2, tx2, 2)).ShouldBeFalse();
 
 
-                await tx1.RollbackAsync();
+                tx1.Rollback();
 
 
                 for (var j = 0; j < 5; j++)
                 {
-                    if (await conn2.TryGetGlobalTxLock(lockNumber))
+                    if (await settings.TryGetGlobalTxLock(conn2, tx2, 2))
                     {
-                        await tx2.RollbackAsync();
+                        tx2.Rollback();
                         return;
                     }
 
@@ -155,6 +83,75 @@ namespace IntegrationTests.Persistence.Marten.Persistence.Resiliency
                 }
 
                 throw new Exception("Advisory lock was not released");
+            }
+        }
+
+        [Fact] // - too slow
+        public async Task global_session_locks()
+        {
+            var settings = new PostgresqlSettings();
+
+            using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn3 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            {
+                await conn1.OpenAsync();
+                await conn2.OpenAsync();
+                await conn3.OpenAsync();
+
+                await settings.GetGlobalLock(conn1,24);
+
+
+                try
+                {
+                    // Cannot get the lock here
+                    (await settings.TryGetGlobalLock(conn2, 24)).ShouldBeFalse();
+
+                    // Can get the new lock
+                    (await settings.TryGetGlobalLock(conn3, 25)).ShouldBeTrue();
+
+                    // Cannot get the lock here
+                    (await settings.TryGetGlobalLock(conn2, 25)).ShouldBeFalse();
+                }
+                finally
+                {
+                    await settings.ReleaseGlobalLock(conn1,24);
+                    await settings.ReleaseGlobalLock(conn3,25);
+                }
+            }
+        }
+
+        [Fact] // -- too slow
+        public async Task tx_session_locks()
+        {
+            var settings = new PostgresqlSettings();
+
+            using (var conn1 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn2 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn3 = new NpgsqlConnection(Servers.PostgresConnectionString))
+            {
+                await conn1.OpenAsync();
+                await conn2.OpenAsync();
+                await conn3.OpenAsync();
+
+                var tx1 = conn1.BeginTransaction();
+                await settings.GetGlobalTxLock(conn1, tx1, 4);
+
+
+                // Cannot get the lock here
+                var tx2 = conn2.BeginTransaction();
+                (await settings.TryGetGlobalTxLock(conn2, tx2, 4)).ShouldBeFalse();
+
+                // Can get the new lock
+                var tx3 = conn3.BeginTransaction();
+                (await settings.TryGetGlobalTxLock(conn3, tx3, 5)).ShouldBeTrue();
+
+                // Cannot get the lock here
+                (await settings.TryGetGlobalTxLock(conn2, tx2, 5)).ShouldBeFalse();
+
+                tx1.Rollback();
+                tx2.Rollback();
+                tx3.Rollback();
             }
         }
     }

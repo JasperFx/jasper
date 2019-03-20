@@ -7,6 +7,7 @@ using Jasper;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten;
+using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.TestSupport.Storyteller.Logging;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +29,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public override void SetUp()
         {
-            var admin = new PostgresqlEnvelopeStorageAdmin(Servers.PostgresConnectionString);
+            var admin = new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString});
             admin.RecreateAll();
 
             var registry = new ScheduledMessageApp();

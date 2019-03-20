@@ -31,8 +31,6 @@ namespace Jasper.Messaging.Durability
 
             await storage.Session.Begin();
 
-
-
             try
             {
                 Envelope[] readyToExecute = null;

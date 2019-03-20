@@ -281,7 +281,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             _conn.Open();
             _tx = _conn.BeginTransaction();
 
-            _conn.TryGetGlobalTxLock(nodeId).Wait(3.Seconds());
+            new PostgresqlSettings().TryGetGlobalTxLock(_conn, _tx, nodeId).Wait(3.Seconds());
         }
 
         public void Dispose()

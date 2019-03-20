@@ -24,15 +24,10 @@ namespace Jasper.Persistence.Postgresql.Schema
             "Creation.sql"
         };
 
-        public PostgresqlEnvelopeStorageAdmin(string connectionString)
+        public PostgresqlEnvelopeStorageAdmin(PostgresqlSettings settings)
         {
-            _connectionString = connectionString;
-        }
-
-        public PostgresqlEnvelopeStorageAdmin(string connectionString, string schemaName)
-        {
-            _connectionString = connectionString;
-            SchemaName = schemaName;
+            _connectionString = settings.ConnectionString;
+            SchemaName = settings.SchemaName;
         }
 
         public string SchemaName { get; set; } = "public";

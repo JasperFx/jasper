@@ -13,7 +13,7 @@ namespace Jasper.Persistence.Database
     public abstract class DatabaseBackedEnvelopePersistence : DataAccessor, IEnvelopePersistence
     {
         private readonly JasperOptions _options;
-        private readonly CancellationToken _cancellation;
+        protected readonly CancellationToken _cancellation;
         private readonly string _incrementIncomingAttempts;
         private readonly string _storeIncoming;
         private readonly string _insertOutgoingSql;
@@ -87,6 +87,8 @@ values
 
         public Task StoreIncoming(Envelope envelope)
         {
+            envelope.EnsureData();
+
             return settings.CreateCommand(_storeIncoming)
                 .With("id", envelope.Id)
                 .With("status", envelope.Status)

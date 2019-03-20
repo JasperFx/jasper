@@ -68,8 +68,8 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             });
 
-            new PostgresqlEnvelopeStorageAdmin(Servers.PostgresConnectionString, "receiver").RecreateAll();
-            new PostgresqlEnvelopeStorageAdmin(Servers.PostgresConnectionString, "sender").RecreateAll();
+            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}).RecreateAll();
+            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RecreateAll();
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
             _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
