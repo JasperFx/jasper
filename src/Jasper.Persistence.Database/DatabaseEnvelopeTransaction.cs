@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.SqlClient;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging;
@@ -7,16 +7,16 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 
-namespace Jasper.Persistence.SqlServer.Persistence
+namespace Jasper.Persistence.Database
 {
-    public class SqlServerEnvelopeTransaction : IEnvelopeTransaction, IDisposable
+    public class DatabaseEnvelopeTransaction : IEnvelopeTransaction, IDisposable
     {
-        private readonly SqlServerEnvelopePersistence _persistence;
-        private readonly SqlTransaction _tx;
+        private readonly DatabaseBackedEnvelopePersistence _persistence;
+        private readonly DbTransaction _tx;
 
-        public SqlServerEnvelopeTransaction(IMessageContext context, SqlTransaction tx)
+        public DatabaseEnvelopeTransaction(IMessageContext context, DbTransaction tx)
         {
-            _persistence = context.Advanced.Persistence as SqlServerEnvelopePersistence ??
+            _persistence = context.Advanced.Persistence as DatabaseBackedEnvelopePersistence ??
                            throw new InvalidOperationException(
                                "This message context is not using Sql Server-backed messaging persistence");
             _tx = tx;

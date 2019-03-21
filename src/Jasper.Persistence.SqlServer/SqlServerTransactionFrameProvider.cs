@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System.Data.SqlClient;
+using System.Linq;
 using Baseline;
-using Jasper.Configuration;
 using Jasper.Http.Model;
 using Jasper.Messaging;
 using Jasper.Persistence.SqlServer.Persistence;
@@ -17,7 +17,7 @@ namespace Jasper.Persistence.SqlServer
                     .Any(x => x.ParameterType == typeof(IMessageContext));
 
 
-            var frame = new SqlTransactionFrame {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};
+            var frame = new DbTransactionFrame<SqlTransaction, SqlConnection> {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};
 
             chain.Middleware.Add(frame);
         }

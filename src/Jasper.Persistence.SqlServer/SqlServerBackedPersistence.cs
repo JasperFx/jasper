@@ -1,13 +1,12 @@
-﻿using System;
-using System.Data.Common;
+﻿using System.Data.Common;
 using System.Data.SqlClient;
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
 using Lamar.Scanning.Conventions;
-using LamarCompiler.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -24,7 +23,7 @@ namespace Jasper.Persistence.SqlServer
 
             registry.Services.AddTransient<IEnvelopePersistence, SqlServerEnvelopePersistence>();
 
-            registry.CodeGeneration.Sources.Add(new SqlServerBackedPersistenceMarker());
+            registry.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
 
 
             registry.Services.For<SqlConnection>().Use<SqlConnection>();
@@ -33,27 +32,6 @@ namespace Jasper.Persistence.SqlServer
             registry.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
 
             registry.CodeGeneration.Transactions = new SqlServerTransactionFrameProvider();
-        }
-    }
-
-    internal static class MethodVariablesExtensions
-    {
-        internal static bool IsUsingSqlServerPersistence(this IMethodVariables method)
-        {
-            return method.TryFindVariable(typeof(SqlServerBackedPersistenceMarker), VariableSource.NotServices) != null;
-        }
-    }
-
-    internal class SqlServerBackedPersistenceMarker : IVariableSource
-    {
-        public bool Matches(Type type)
-        {
-            return type == GetType();
-        }
-
-        public Variable Create(Type type)
-        {
-            return Variable.For<SqlServerBackedPersistence>();
         }
     }
 }

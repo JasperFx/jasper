@@ -1,21 +1,25 @@
-﻿using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using Baseline;
 using Jasper.Messaging;
+using Jasper.Persistence.Database;
 using LamarCompiler;
 using LamarCompiler.Frames;
 using LamarCompiler.Model;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlTransactionFrame : AsyncFrame
+    public class DbTransactionFrame<TTransaction, TConnection> : AsyncFrame
     {
         private Variable _connection;
         private Variable _context;
         private bool _isUsingPersistence;
 
-        public SqlTransactionFrame()
+        public DbTransactionFrame()
         {
-            Transaction = new Variable(typeof(SqlTransaction), this);
+
+            Transaction = new Variable(typeof(TTransaction), this);
         }
 
         public bool ShouldFlushOutgoingMessages { get; set; }
@@ -24,30 +28,30 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"await {_connection.Usage}.{nameof(SqlConnection.OpenAsync)}();");
-            writer.Write($"var {Transaction.Usage} = {_connection.Usage}.{nameof(SqlConnection.BeginTransaction)}();");
+            writer.Write($"await {_connection.Usage}.{nameof(DbConnection.OpenAsync)}();");
+            writer.Write($"var {Transaction.Usage} = {_connection.Usage}.{nameof(DbConnection.BeginTransaction)}();");
 
 
             if (_context != null && _isUsingPersistence)
                 writer.Write(
-                    $"await {typeof(SqlServerOutboxExtensions).FullName}.{nameof(SqlServerOutboxExtensions.EnlistInTransaction)}({_context.Usage}, {Transaction.Usage});");
+                    $"await {typeof(DbOutboxExtensions).FullName}.{nameof(DbOutboxExtensions.EnlistInTransaction)}({_context.Usage}, {Transaction.Usage});");
 
 
             Next?.GenerateCode(method, writer);
-            writer.Write($"{Transaction.Usage}.{nameof(SqlTransaction.Commit)}();");
+            writer.Write($"{Transaction.Usage}.{nameof(DbTransaction.Commit)}();");
 
 
             if (ShouldFlushOutgoingMessages)
                 writer.Write($"await {_context.Usage}.{nameof(IMessageContext.SendAllQueuedOutgoingMessages)}();");
 
-            writer.Write($"{_connection.Usage}.{nameof(SqlConnection.Close)}();");
+            writer.Write($"{_connection.Usage}.{nameof(DbConnection.Close)}();");
         }
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
             _isUsingPersistence = chain.IsUsingSqlServerPersistence();
 
-            _connection = chain.FindVariable(typeof(SqlConnection));
+            _connection = chain.FindVariable(typeof(TConnection));
             yield return _connection;
 
 
@@ -57,6 +61,15 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
 
             if (_context != null) yield return _context;
+        }
+    }
+
+
+    internal static class MethodVariablesExtensions
+    {
+        internal static bool IsUsingSqlServerPersistence(this IMethodVariables method)
+        {
+            return method.TryFindVariable(typeof(DatabaseBackedPersistenceMarker), VariableSource.NotServices) != null;
         }
     }
 }
