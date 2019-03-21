@@ -7,7 +7,8 @@ namespace Jasper.Persistence
 {
     public interface ISagaPersistenceFrameProvider
     {
-        Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
+        Frame DeterminePersistenceFrame(MethodCall sagaHandler, SagaStateExistence existence, ref Variable sagaId,
+            Type sagaStateType,
             Variable existingState, out Variable loadedState);
 
         Type DetermineSagaIdType(Type sagaStateType);

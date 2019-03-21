@@ -13,7 +13,8 @@ namespace Jasper.Persistence.Marten.Persistence.Sagas
 {
     public class MartenSagaPersistenceFrameProvider : ISagaPersistenceFrameProvider, ITransactionFrameProvider
     {
-        public Frame DeterminePersistenceFrame(SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
+        public Frame DeterminePersistenceFrame(MethodCall sagaHandler, SagaStateExistence existence,
+            ref Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState)
         {
             var frame = new TransactionalFrame();

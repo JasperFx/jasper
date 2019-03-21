@@ -61,7 +61,7 @@ namespace Jasper.Messaging.Sagas
             // Tells the handler chain codegen to not use this as a cascading message
             existingState?.Properties.Add(HandlerChain.NotCascading, true);
 
-            var persistenceFrame = sagaPersistenceFrameProvider.DeterminePersistenceFrame(existence, ref sagaIdVariable,
+            var persistenceFrame = sagaPersistenceFrameProvider.DeterminePersistenceFrame(sagaHandler, existence, ref sagaIdVariable,
                 sagaStateType, existingState, out existingState);
             if (persistenceFrame != null) chain.Middleware.Add(persistenceFrame);
 
