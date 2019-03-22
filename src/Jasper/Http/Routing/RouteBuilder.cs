@@ -15,10 +15,9 @@ namespace Jasper.Http.Routing
     public static class RouteBuilder
     {
         public const string Index = "Index";
-        public static readonly string[] SpecialClassNames = {"HomeEndpoint", "ServiceEndpoint"};
         public static readonly IList<string> InputTypeNames = new List<string> {"input", "query", "message", "body"};
 
-        public static IList<IPatternRule> PatternRules = new List<IPatternRule>{new HomeEndpointRule(), new DefaultRoutingRule()};
+        public static IList<IPatternRule> PatternRules = new List<IPatternRule>{new HomeEndpointRule(), new HttpRouteAttributeRule(), new DefaultRoutingRule()};
 
         public static Route Build<T>(Expression<Action<T>> expression)
         {

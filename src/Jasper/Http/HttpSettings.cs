@@ -49,6 +49,7 @@ namespace Jasper.Http
             MethodFilters.Excludes += m => m.DeclaringType.HasAttribute<JasperIgnoreAttribute>();
 
             MethodFilters.Includes += m => m.Name.EqualsIgnoreCase("Index");
+            MethodFilters.Includes += m => m.HasAttribute<HttpRouteAttribute>();
 
             MethodFilters.Includes += m =>
             {
