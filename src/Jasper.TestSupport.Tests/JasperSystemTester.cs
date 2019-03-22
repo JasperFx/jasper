@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper;
 using Jasper.TestSupport.Storyteller;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,7 +10,7 @@ using Shouldly;
 using StoryTeller;
 using Xunit;
 
-namespace IntegrationTests.Storyteller
+namespace Jasper.TestSupport.Tests
 {
     [Collection("integration")]
     public class JasperSystemTester
