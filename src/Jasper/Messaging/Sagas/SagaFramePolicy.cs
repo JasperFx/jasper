@@ -74,7 +74,7 @@ namespace Jasper.Messaging.Sagas
 
 
             var storeOrDeleteFrame =
-                sagaPersistenceFrameProvider.DetermineStoreOrDeleteFrame(existingState, sagaHandler.HandlerType);
+                sagaPersistenceFrameProvider.DetermineStoreOrDeleteFrame(sagaHandler, existingState, sagaHandler.HandlerType);
             chain.Postprocessors.Add(storeOrDeleteFrame);
         }
 

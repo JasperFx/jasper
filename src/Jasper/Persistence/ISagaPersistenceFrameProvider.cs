@@ -13,6 +13,6 @@ namespace Jasper.Persistence
 
         Type DetermineSagaIdType(Type sagaStateType);
 
-        Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType);
+        Frame DetermineStoreOrDeleteFrame(MethodCall sagaHandler, Variable document, Type sagaHandlerType);
     }
 }

@@ -8,7 +8,8 @@ namespace Jasper.Persistence
 {
     public class InMemorySagaPersistenceFrameProvider : BaseSagaPersistenceFrameProvider
     {
-        public override Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType)
+        public override Frame DetermineStoreOrDeleteFrame(MethodCall sagaHandler, Variable document,
+            Type sagaHandlerType)
         {
             return new StoreOrDeleteSagaStateFrame(document, sagaHandlerType);
         }

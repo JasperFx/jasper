@@ -43,7 +43,7 @@ namespace Jasper.Persistence.Marten.Persistence.Sagas
             return mapping.IdMember.GetMemberType();
         }
 
-        public Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType)
+        public Frame DetermineStoreOrDeleteFrame(MethodCall sagaHandler, Variable document, Type sagaHandlerType)
         {
             return new StoreOrDeleteSagaStateFrame(document, sagaHandlerType);
         }

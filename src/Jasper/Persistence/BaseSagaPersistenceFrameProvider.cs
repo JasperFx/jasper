@@ -10,7 +10,8 @@ namespace Jasper.Persistence
 {
     public abstract class BaseSagaPersistenceFrameProvider : ISagaPersistenceFrameProvider
     {
-        public abstract Frame DetermineStoreOrDeleteFrame(Variable document, Type sagaHandlerType);
+        public abstract Frame DetermineStoreOrDeleteFrame(MethodCall sagaHandler, Variable document,
+            Type sagaHandlerType);
 
         public Type DetermineSagaIdType(Type sagaStateType)
         {
