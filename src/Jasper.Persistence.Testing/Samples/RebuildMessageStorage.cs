@@ -1,10 +1,8 @@
 using System;
-using Jasper;
-using Jasper.Persistence;
 using Jasper.Persistence.SqlServer;
 using Xunit;
 
-namespace IntegrationTests.Samples
+namespace Jasper.Persistence.Testing.Samples
 {
     // SAMPLE: SqlServerPersistedMessageApp
     public class MyJasperApp : JasperRegistry

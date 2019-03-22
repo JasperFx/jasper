@@ -1,3 +1,0 @@
-﻿
-
-//[assembly: CollectionBehavior(CollectionBehavior.CollectionPerAssembly)]

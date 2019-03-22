@@ -21,7 +21,4 @@
     <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
     <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Storyteller" />
-  </ItemGroup>
 </Project>
