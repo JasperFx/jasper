@@ -1,5 +1,9 @@
 <!--title:Jasper.Persistence.Marten-->
 
+<[info]>
+The Jasper.Persistence.Marten has a dependency on the lower level Jasper.Persistence.Postgresql Nuget library.
+<[/info]>
+
 The Jasper.Persistence.Marten library provides some easy to use recipes for integrating  [Marten](https://jasperfx.github.io/marten) and Postgresql into a Jasper application. All you need to do to get
 started with Marten + Jasper is to add the *Jasper.Persistence.Marten* nuget to your project and at minimum,
 at least set the connection string to the underlying Postgresql database by configuring

@@ -138,4 +138,45 @@ create table if not exists receiver.item_created
         }
     }
     // ENDSAMPLE
+
+    public class CreateItemHandler
+    {
+        // SAMPLE: PostgresqlOutboxWithNpgsqlTransaction
+        [Transactional]
+        public async Task<ItemCreatedEvent> Handle(CreateItemCommand command, NpgsqlTransaction tx)
+        {
+            var item = new Item {Name = command.Name};
+
+            // persist the new Item with the
+            // current transaction
+            await persist(tx, item);
+
+            return new ItemCreatedEvent {Item = item};
+        }
+        // ENDSAMPLE
+
+        private Task persist(NpgsqlTransaction tx, Item item)
+        {
+            // whatever you do to write the new item
+            // to your sql server application database
+            return Task.CompletedTask;
+        }
+
+
+        public class CreateItemCommand
+        {
+            public string Name { get; set; }
+        }
+
+        public class ItemCreatedEvent
+        {
+            public Item Item { get; set; }
+        }
+
+        public class Item
+        {
+            public Guid Id;
+            public string Name;
+        }
+    }
 }
