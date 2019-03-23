@@ -28,15 +28,23 @@ To run the rake script, you'll need to have Ruby installed and [Docker]() runnin
 
 This script will build the client side Javascript assets, restore .Net dependencies, execute the xUnit tests, and run the [Storyteller](http://storyteller.github.io) specifications.
 
+## Unit Test Organization
+
+The unit tests for the main Jasper library are actually broken up into three separate projects:
+
+1. `CoreTests` for any common functionality, mostly related to bootstrapping and IoC registrations
+1. `HttpTests` for any functionality related to the HTTP API support
+1. `MessagingTests` for any functionality specific to the asynchronous messaging or using Jasper as an in-memory service bus
+
 ## Working with the Integration Tests
 
-If you use the Rake script, you can execute the `IntegrationTests` library directly by using:
+If you use the Rake script, you can execute the tests for all the persistence extensions and Rabbit MQ directly by using:
 
 ```
 rake integrationtests
 ```
 
-If you don't want to use Rake, from a command line you need to run this at least once before executing any of the `IntegrationTests`:
+If you don't want to use Rake, from a command line you need to run this at least once before executing any of the testing libraries that depend on Postgresql, Sql Server, or Rabbit MQ:
 
 ```
 docker-compose up -d
@@ -45,7 +53,7 @@ docker-compose up -d
 
 ## Working with the Storyteller Specifications
 
-See the section on `IntegrationTests` above for directions on using Docker.
+See the section on *Integration Tests* above for directions on using Docker.
 
 If you're okay using the rake script, just use the `rake open_st` task to start and launch the Storyteller specification editor. `rake storyteller` will run the specifications from a command line if you only need to see results. The command `rake storyteller` will likewise run the specification suite from the command line.
 
