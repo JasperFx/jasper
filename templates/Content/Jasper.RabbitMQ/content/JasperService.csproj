@@ -6,7 +6,7 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Jasper.RabbitMQ" Version="0.9.8.6" />
+    <PackageReference Include="Jasper.RabbitMQ" Version="0.9.9" />
   </ItemGroup>
     <ItemGroup>
     <None Update="appsettings.json">
