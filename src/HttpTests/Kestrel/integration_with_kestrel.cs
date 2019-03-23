@@ -31,7 +31,7 @@ namespace HttpTests.Kestrel
                 {
                     x.HttpRoutes.DisableConventionalDiscovery()
                         .IncludeType<HomeEndpointGuy>()
-                        .IncludeType<UserEndpointsGuy>();
+                        .IncludeType<UserController>();
                     x.Services.AddSingleton(new UserRepository());
                 }).Start();
 
@@ -169,7 +169,7 @@ namespace HttpTests.Kestrel
         }
     }
 
-    public class UserEndpointsGuy
+    public class UserController
     {
         public static User get_user_name(string name, UserRepository users)
         {

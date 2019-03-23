@@ -108,7 +108,7 @@ namespace HttpTests.Routing
 
     }
 
-    // SAMPLE: AttributeUsingEndpoint
+
     public class AttributeUsingEndpointClass
     {
         public string get_stuff()
@@ -116,6 +116,7 @@ namespace HttpTests.Routing
             return "stuff";
         }
 
+        // SAMPLE: AttributeUsingEndpoint
         [JasperPost("one")]
         public int Post1()
         {
@@ -133,8 +134,9 @@ namespace HttpTests.Routing
         {
             return $"the dog is {name}";
         }
+        // ENDSAMPLE
     }
-    // ENDSAMPLE
+
 
     // SAMPLE: ControllerUsingJasperRouting
     public class IdiomaticJasperRouteEndpoint

@@ -14,7 +14,7 @@ arguments.
 Jasper uses a naming convention to scan through your application assembly (the assembly that holds either your ASP.Net Core `Startup` class or a `JasperRegistry` type) to find public methods that handle HTTP requests. Out of the box, the naming convention is:
 
 * Public types that are named with the suffix "Endpoint" or "Endpoints" and public method names that start with an HTTP verb and an underscore, like
-  "get_something" or "post_something"
+  "get_something" or "post_something" or public methods decorated with one of Jasper's routing attributes like `[JasperGet]` or `[JasperPost]`
 * Public classes named either `HomeEndpoint` or `ServiceEndpoint`, and methods named after HTTP verbs like `Get()` or `Delete()` or `Head()`
 
 Endpoint classes can be static classes if you want to only lean on method injection, and that's a minor performance optimization because it reduces
@@ -44,6 +44,14 @@ Jasper's naming convention (inherited from FubuMVC) is to look for methods that 
 1. Look for any segments that exactly match the name of an argument parameter to the action method. If so, this segment is assumed to be a route argument
 
 Do see the section on "Spread" routes below for a discussion about these special kinds of routes.
+
+## Using Attributes
+
+As a late addition just prior to v1.0, Jasper also supports using attributes on methods to explicitly denote the Url pattern as shown below:
+
+<[sample:AttributeUsingEndpoint]>
+
+In addition, if you can also pull in the <[linkto:documentation/http/mvcextender]> to use MVC Core's built in routing attributes as another alternative.
 
 
 ## Using Underscores and Dashes in Route Patterns
