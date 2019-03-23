@@ -92,6 +92,7 @@ task :test => [:compile] do
 	sh "dotnet test src/HttpTests/HttpTests.csproj --no-restore"
 	sh "dotnet test src/MessagingTests/MessagingTests.csproj --no-restore"
 	sh "dotnet test src/Jasper.MvcExtender.Tests/Jasper.MvcExtender.Tests.csproj --no-restore"
+	sh "dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore"
 
 end
 
@@ -103,7 +104,9 @@ task :integrationtests => [:compile] do
 
   sh "docker-compose up -d"
 
-  sh "dotnet test src/IntegrationTests/IntegrationTests.csproj --no-restore"
+  sh "dotnet test src/Jasper.RabbitMQ.Tests/Jasper.RabbitMQ.Tests.csproj --no-restore"
+  sh "dotnet test src/Jasper.Persistence.Testing/Jasper.Persistence.Testing.csproj --no-restore"
+
 
 
 end

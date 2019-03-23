@@ -20,18 +20,6 @@ namespace Jasper.Http.Routing
 
         public Route Root { get; set; }
 
-        public void WriteSelectCode(ISourceWriter writer)
-        {
-            if (Root != null)
-            {
-                writer.Write($"BLOCK:if (segments.Length == 0)");
-                writer.Return(Root);
-                writer.FinishBlock();
-            }
-
-            base.WriteSelectCode(writer);
-        }
-
         public void AssemblySelector(GeneratedAssembly assembly, RouteGraph routes)
         {
             _generatedType = assembly.AddType(HttpMethod + "Router", typeof(RouteSelector));

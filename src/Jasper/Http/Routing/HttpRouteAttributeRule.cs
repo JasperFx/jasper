@@ -10,7 +10,7 @@ namespace Jasper.Http.Routing
         {
             var att = method.GetAttribute<HttpRouteAttribute>();
             if (att == null) return null;
-            
+
             return new RoutePattern(att.Method, att.RoutePattern);
         }
     }

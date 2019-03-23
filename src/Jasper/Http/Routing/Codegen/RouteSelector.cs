@@ -1,11 +1,35 @@
 using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Jasper.Http.Model;
+using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing.Codegen
 {
     public abstract class RouteSelector
     {
+
+
+        public RouteHandler Root { get; set; }
+
+        public RouteHandler Select(HttpContext context, out string[] segments)
+        {
+            if (context.Request.Path == "/")
+            {
+                segments = RouteTree.Empty;
+                return Root;
+            }
+
+            segments = ToSegments(context.Request.Path);
+            return Select(segments);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string[] ToSegments(string route)
+        {
+            return route.Split('/').Skip(1).ToArray();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public abstract RouteHandler Select(string[] segments);
 

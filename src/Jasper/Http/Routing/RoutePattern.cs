@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Baseline;
 
 namespace Jasper.Http.Routing
 {
@@ -9,7 +10,7 @@ namespace Jasper.Http.Routing
             Method = method;
             Pattern = pattern;
 
-            if (pattern == "/")
+            if (pattern == "/" || pattern.IsEmpty())
             {
                 Segments = new Segment[0];
             }

@@ -20,14 +20,6 @@ namespace Jasper.Http.Routing
     {
         public static string[] Empty = new string[0];
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string[] ToSegments(string route)
-        {
-            if (route == "/") return Empty;
-            return route.Split('/').Skip(1).ToArray();
-        }
-
-
         private readonly LightweightCache<string, MethodRoutes> _methods
             = new LightweightCache<string, MethodRoutes>(method => new MethodRoutes(method));
 
@@ -57,12 +49,14 @@ namespace Jasper.Http.Routing
 
         public RouteHandler SelectRoute(HttpContext context, out string[] segments)
         {
-            segments = ToSegments(context.Request.Path);
+            if (_selectors.TryFind(context.Request.Method.ToUpper(), out var selector))
+            {
+                return selector.Select(context, out segments);
+            }
 
+            segments = Empty;
 
-            return _selectors.TryFind(context.Request.Method.ToUpper(), out var selector)
-                ? selector.Select(segments)
-                : null;
+            return null;
         }
 
         public void CompileAll(IContainer container)
@@ -84,6 +78,7 @@ namespace Jasper.Http.Routing
             foreach (var methodRoutes in _methods)
             {
                 var selector = methodRoutes.BuildSelector(container, _settings.Routes);
+                selector.Root = methodRoutes.Root?.Handler;
                 _selectors = _selectors.AddOrUpdate(methodRoutes.HttpMethod, selector);
             }
         }

@@ -158,6 +158,7 @@ namespace Jasper.Http.Model
         {
             var handler = container.QuickBuild(_generatedType.CompiledType).As<RouteHandler>();
             handler.Chain = this;
+            Route.Handler = handler;
 
             handler.Reader = Reader;
             handler.Writer = Writer;

@@ -35,8 +35,6 @@ namespace Jasper.Http.Routing
 
         public static Route Build(RoutePattern pattern, Type handlerType, MethodInfo method)
         {
-
-
             var inputType = DetermineInputType(method);
 
             var hasPrimitives = method.GetParameters().Any(x =>

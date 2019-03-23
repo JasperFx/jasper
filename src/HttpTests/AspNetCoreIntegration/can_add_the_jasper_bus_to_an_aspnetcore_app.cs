@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Jasper;
+using Jasper.Http;
 using Jasper.Messaging;
 using Lamar;
 using Microsoft.AspNetCore;
@@ -97,6 +98,8 @@ namespace HttpTests.AspNetCoreIntegration
         public async Task still_works()
         {
             var builder = WebHost.CreateDefaultBuilder()
+                .UseUrls("http://localhost:5024")
+                .UseKestrel(x => x.ListenLocalhost(5024))
                 .UseStartup<EmptyStartup>()
                 .UseJasper<SimpleJasperBusApp>();
 
@@ -106,7 +109,7 @@ namespace HttpTests.AspNetCoreIntegration
 
                 using (var client = new HttpClient())
                 {
-                    var text = await client.GetStringAsync("http://localhost:5000/hello");
+                    var text = await client.GetStringAsync("http://localhost:5024/hello");
 
                     // See "get_hello" method
                     text.ShouldContain("hello");
@@ -130,7 +133,7 @@ namespace HttpTests.AspNetCoreIntegration
             // SAMPLE: ordering-middleware-with-jasper
             var builder = new WebHostBuilder();
             builder
-                .UseKestrel()
+                .UseKestrel(x => x.ListenLocalhost(3003))
                 .UseUrls("http://localhost:3003")
                 .ConfigureServices(s => s.AddMvc())
                 .Configure(app =>
@@ -175,7 +178,7 @@ namespace HttpTests.AspNetCoreIntegration
         [Fact]
         public void has_the_bus()
         {
-            ShouldBeNullExtensions.ShouldNotBeNull(theHost.Services.GetService(typeof(IMessageContext)));
+            theHost.Services.GetService(typeof(IMessageContext)).ShouldNotBeNull();
         }
 
         [Fact]

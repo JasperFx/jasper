@@ -18,7 +18,12 @@ namespace HttpTests.Routing
     {
         public SampleAppWithRoutedAttributes()
         {
-            System = SystemUnderTest.For(x => x.UseStartup<Startup>().UseJasper());
+            System = SystemUnderTest.For(x => x.UseStartup<Startup>().UseJasper(_ =>
+            {
+                _.HttpRoutes.DisableConventionalDiscovery()
+                    .IncludeType<AttributeUsingEndpointClass>()
+                    .IncludeType<IdiomaticJasperRouteEndpoint>();
+            }));
 
 
 
@@ -55,7 +60,7 @@ namespace HttpTests.Routing
         [Fact]
         public void will_find_jasper_actions_on_controller_base()
         {
-            var chain = _app.Routes.ChainForAction<AttributeUsingEndpoint>(x => x.get_stuff());
+            var chain = _app.Routes.ChainForAction<AttributeUsingEndpointClass>(x => x.get_stuff());
             chain.ShouldNotBeNull();
             chain.Route.HttpMethod.ShouldBe("GET");
             chain.Route.Pattern.ShouldBe("stuff");
@@ -73,7 +78,7 @@ namespace HttpTests.Routing
         [Fact]
         public void can_find_and_determine_route_from_JasperGet_marked_method_with_no_arguments()
         {
-            var chain = _app.Routes.ChainForAction<AttributeUsingEndpoint>(x => x.Get1());
+            var chain = _app.Routes.ChainForAction<AttributeUsingEndpointClass>(x => x.Get1());
             chain.ShouldNotBeNull();
             chain.Route.HttpMethod.ShouldBe("GET");
             chain.Route.Pattern.ShouldBe("one");
@@ -82,7 +87,7 @@ namespace HttpTests.Routing
         [Fact]
         public void can_find_and_determine_route_from_HttpPost_marked_method_with_no_arguments()
         {
-            var chain = _app.Routes.ChainForAction<AttributeUsingEndpoint>(x => x.Post1());
+            var chain = _app.Routes.ChainForAction<AttributeUsingEndpointClass>(x => x.Post1());
 
             chain.ShouldNotBeNull();
             chain.Route.HttpMethod.ShouldBe("POST");
@@ -92,7 +97,7 @@ namespace HttpTests.Routing
         [Fact]
         public void can_find_and_determine_route_from_JasperGet_marked_method_with_one_argument()
         {
-            var chain = _app.Routes.ChainForAction<AttributeUsingEndpoint>(x => x.GetDog("Shiner"));
+            var chain = _app.Routes.ChainForAction<AttributeUsingEndpointClass>(x => x.GetDog("Shiner"));
             chain.ShouldNotBeNull();
             chain.Route.Pattern.ShouldBe("dog/:name");
             chain.Route.HttpMethod.ShouldBe("GET");
@@ -104,7 +109,7 @@ namespace HttpTests.Routing
     }
 
     // SAMPLE: AttributeUsingEndpoint
-    public class AttributeUsingEndpoint
+    public class AttributeUsingEndpointClass
     {
         public string get_stuff()
         {

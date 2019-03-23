@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Jasper;
+using Jasper.Http;
 using Jasper.Http.Model;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -13,21 +14,24 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shouldly;
-using TestingSupport;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace IntegrationTests.Kestrel
+namespace HttpTests.Kestrel
 {
     public class DefaultApp : IDisposable
     {
         public DefaultApp()
         {
-            Host = WebHost.CreateDefaultBuilder().UseStartup<Startup>().UseJasper(x =>
+            Host = WebHost.CreateDefaultBuilder()
+                .UseKestrel(o => o.ListenLocalhost(5025))
+                .UseUrls("http://localhost:5025")
+                .UseStartup<Startup>()
+                .UseJasper(x =>
                 {
                     x.HttpRoutes.DisableConventionalDiscovery()
-                        .IncludeType<HomeEndpoint>()
-                        .IncludeType<UserEndpoints>();
+                        .IncludeType<HomeEndpointGuy>()
+                        .IncludeType<UserEndpointsGuy>();
                     x.Services.AddSingleton(new UserRepository());
                 }).Start();
 
@@ -70,7 +74,7 @@ namespace IntegrationTests.Kestrel
         public async Task get_home_endpoint_get()
         {
             var client = new HttpClient();
-            var text = await client.GetStringAsync("http://localhost:5000");
+            var text = await client.GetStringAsync("http://localhost:5025");
 
             text.ShouldBe("Hello, world!");
         }
@@ -79,7 +83,7 @@ namespace IntegrationTests.Kestrel
         public async Task get_json_resource()
         {
             var client = new HttpClient();
-            var json = await client.GetStringAsync("http://localhost:5000/user/Luke");
+            var json = await client.GetStringAsync("http://localhost:5025/user/Luke");
 
             var user = JsonConvert.DeserializeObject<User>(json);
 
@@ -90,7 +94,7 @@ namespace IntegrationTests.Kestrel
         public async Task get_404_when_resource_is_null()
         {
             var client = new HttpClient();
-            var response = await client.GetAsync("http://localhost:5000/user/Rey");
+            var response = await client.GetAsync("http://localhost:5025/user/Rey");
 
             response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
@@ -106,7 +110,7 @@ namespace IntegrationTests.Kestrel
             {
                 Method = new HttpMethod("POST"),
                 Content = new StringContent(json, Encoding.Default),
-                RequestUri = new Uri("http://localhost:5000/user")
+                RequestUri = new Uri("http://localhost:5025/user")
 
             };
 
@@ -122,8 +126,9 @@ namespace IntegrationTests.Kestrel
     }
 
 
-    public class HomeEndpoint
+    public class HomeEndpointGuy
     {
+        [JasperGet("")]
         public string Get()
         {
             return "Hello, world!";
@@ -164,7 +169,7 @@ namespace IntegrationTests.Kestrel
         }
     }
 
-    public class UserEndpoints
+    public class UserEndpointsGuy
     {
         public static User get_user_name(string name, UserRepository users)
         {
