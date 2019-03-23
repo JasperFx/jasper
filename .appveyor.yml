@@ -38,7 +38,7 @@ dotnet_csproj:
 
 build_script:
 - cmd: >-
-    rake ci version=0.9.8.6
+    rake ci version=0.9.9
 test: off
 
 deploy:
