@@ -1,7 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+      <Description>Core ADO.Net related functionality for using database backed persistence with Jasper</Description>
+      <Authors>Jeremy D. Miller</Authors>
+      <TargetFramework>netstandard2.0</TargetFramework>
+      <DebugType>portable</DebugType>
+      <AssemblyName>Jasper.Database</AssemblyName>
+      <PackageId>Jasper.Database</PackageId>
+      <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
+      <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
+      <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>
+      <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+      <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+      <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+      <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+      <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+      <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     </PropertyGroup>
 
     <ItemGroup>
