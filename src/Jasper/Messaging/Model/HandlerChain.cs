@@ -10,11 +10,10 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
 using Lamar;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 using GenericEnumerableExtensions = Baseline.GenericEnumerableExtensions;
-using TypeExtensions = Baseline.TypeExtensions;
 
 namespace Jasper.Messaging.Model
 {

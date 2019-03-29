@@ -1,4 +1,4 @@
-﻿using LamarCompiler.Model;
+﻿using LamarCodeGeneration.Model;
 using TestingSupport;
 using TestMessages;
 using Xunit;

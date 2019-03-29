@@ -2,8 +2,8 @@
 using Jasper;
 using Jasper.Configuration;
 using Jasper.Messaging.Model;
-using LamarCompiler;
-using LamarCompiler.Frames;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
 using Shouldly;
 using TestMessages;
 using Xunit;

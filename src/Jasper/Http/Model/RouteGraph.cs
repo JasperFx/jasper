@@ -3,14 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Configuration;
-using Jasper.Http.ContentHandling;
-using Jasper.Http.Routing;
-using Lamar;
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 
 namespace Jasper.Http.Model
 {

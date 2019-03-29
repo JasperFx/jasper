@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Messaging.Runtime.Invocation;
-using LamarCompiler.Frames;
 using Polly;
 
 namespace Jasper.Messaging.ErrorHandling

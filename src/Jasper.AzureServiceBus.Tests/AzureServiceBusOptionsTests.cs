@@ -1,5 +1,4 @@
 using System;
-using Jasper.RabbitMQ;
 using Shouldly;
 using Xunit;
 

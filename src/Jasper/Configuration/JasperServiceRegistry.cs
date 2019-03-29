@@ -16,9 +16,9 @@ using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.Transports.Tcp;
-using Jasper.Util.Lamar;
 using Lamar;
 using Lamar.IoC.Instances;
+using LamarCodeGeneration.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,9 +48,6 @@ namespace Jasper.Configuration
 
             For<IHostedService>().Use<BackPressureAgent>();
             For<IHostedService>().Use<DurabilityAgent>();
-
-            Policies.Add(new LoggerPolicy());
-            Policies.Add(new OptionsPolicy());
 
             For<IHostedService>().DecorateAllWith<LoggingHostedServiceDecorator>();
 
@@ -114,25 +111,28 @@ namespace Jasper.Configuration
 
             ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());
 
-
             MessagingRootService(x => x.Workers);
             MessagingRootService(x => x.Pipeline);
 
             MessagingRootService(x => x.Router);
             MessagingRootService(x => x.ScheduledJobs);
 
-            For<IMessageContext>().Use(new MessageContextInstance(typeof(IMessageContext)));
-            For<IMessageContext>().Use(new MessageContextInstance(typeof(ICommandBus)));
-            For<IMessageContext>().Use(new MessageContextInstance(typeof(IMessagePublisher)));
+            For<IMessageContext>().Use<MessageContext>();
+
+
+
+            For<IMessageContext>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
+            For<ICommandBus>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
+            For<IMessagePublisher>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
 
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
 
             ForSingletonOf<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
         }
 
-        public void MessagingRootService<T>(Expression<Func<IMessagingRoot, T>> expression) where T : class
+        public void MessagingRootService<T>(Func<IMessagingRoot, T> expression) where T : class
         {
-            For<T>().Use(new MessagingRootInstance<T>(expression));
+            For<T>().Use(c => expression(c.GetInstance<IMessagingRoot>())).Singleton();
         }
     }
 
@@ -160,7 +160,7 @@ namespace Jasper.Configuration
 
         public ServiceFamily Build(Type type, ServiceGraph serviceGraph)
         {
-            if (matches(type))
+            if (type.IsConcrete() && matches(type))
             {
                 var instance = new ConstructorInstance(type, type, ServiceLifetime.Scoped);
                 return new ServiceFamily(type, new IDecoratorPolicy[0], instance);

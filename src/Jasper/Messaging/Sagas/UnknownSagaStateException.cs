@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Messaging.Runtime;
+using LamarCodeGeneration;
 using LamarCompiler;
 
 namespace Jasper.Messaging.Sagas

@@ -1,4 +1,4 @@
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jasper.MvcExtender

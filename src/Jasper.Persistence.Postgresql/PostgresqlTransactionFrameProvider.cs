@@ -2,7 +2,7 @@
 using Baseline;
 using Jasper.Http.Model;
 using Jasper.Messaging;
-using Jasper.Persistence.SqlServer.Persistence;
+using Jasper.Persistence.Database;
 using Npgsql;
 
 namespace Jasper.Persistence.Postgresql

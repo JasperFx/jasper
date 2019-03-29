@@ -2,6 +2,7 @@
 using System.Linq;
 using Baseline;
 using Jasper.Util;
+using LamarCodeGeneration;
 using LamarCompiler;
 
 namespace Jasper.JsonCommands

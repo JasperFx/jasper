@@ -6,6 +6,7 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
+using LamarCodeGeneration;
 using LamarCompiler;
 
 namespace Jasper.Messaging

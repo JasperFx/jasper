@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Lamar;
+using LamarCodeGeneration;
 using LamarCompiler;
-using LamarCompiler.Util;
-using Polly;
 
 namespace Jasper.Messaging.Model
 {
@@ -100,7 +97,8 @@ namespace Jasper.Messaging.Model
                         {
                             var generatedAssembly = new GeneratedAssembly(_generation);
                             chain.AssembleType(generatedAssembly, _generation);
-                            _container.CompileWithInlineServices(generatedAssembly);
+
+                            new AssemblyGenerator().Compile(generatedAssembly, _container.CreateServiceVariableSource());
 
                             handler = chain.CreateHandler(_container);
                         }

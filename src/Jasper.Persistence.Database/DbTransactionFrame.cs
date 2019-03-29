@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Common;
-using Baseline;
 using Jasper.Messaging;
-using Jasper.Persistence.Database;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 
-namespace Jasper.Persistence.SqlServer.Persistence
+namespace Jasper.Persistence.Database
 {
     public class DbTransactionFrame<TTransaction, TConnection> : AsyncFrame
     {

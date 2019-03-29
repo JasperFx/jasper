@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 
 namespace Jasper.Messaging.Sagas
 {

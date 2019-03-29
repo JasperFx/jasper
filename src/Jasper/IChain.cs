@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 
 namespace Jasper
 {

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
-using Microsoft.AspNetCore.Http;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jasper.MvcExtender

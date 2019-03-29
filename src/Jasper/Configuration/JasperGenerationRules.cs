@@ -1,4 +1,5 @@
 ﻿using Jasper.Persistence;
+using LamarCodeGeneration;
 using LamarCompiler;
 
 namespace Jasper.Configuration

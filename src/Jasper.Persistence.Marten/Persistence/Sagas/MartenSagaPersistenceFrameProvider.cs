@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Jasper.Configuration;
 using Jasper.Messaging.Sagas;
 using Jasper.Persistence.Marten.Codegen;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 using Marten;
 using Marten.Schema;
 using Marten.Util;

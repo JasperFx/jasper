@@ -1,4 +1,5 @@
 ﻿using Jasper.Http.Model;
+using LamarCodeGeneration;
 using LamarCompiler;
 
 namespace Jasper.Http.Routing.Codegen
@@ -15,5 +16,6 @@ namespace Jasper.Http.Routing.Codegen
                 $"var {Variable.Usage} = {nameof(RouteHandler.ToRelativePath)}({Segments.Usage}, {Position});");
             Next?.GenerateCode(method, writer);
         }
+
     }
 }

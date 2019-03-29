@@ -2,10 +2,9 @@
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using LamarCompiler;
-using LamarCompiler.Frames;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
 using Shouldly;
-using TestingSupport;
 using Xunit;
 
 namespace MessagingTests.Bootstrapping

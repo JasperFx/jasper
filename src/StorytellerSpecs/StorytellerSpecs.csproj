@@ -17,12 +17,19 @@
     <DotNetCliToolReference Include="dotnet-storyteller" Version="5.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IntegrationTests\IntegrationTests.csproj" />
+    <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
+    <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
+    <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Storyteller\Jasper.TestSupport.Storyteller.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Alba\Jasper.TestSupport.Alba.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="Shouldly" Version="3.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\IntegrationTests\Servers.cs">
+      <Link>Servers.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

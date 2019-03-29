@@ -4,19 +4,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
-using Baseline.Reflection;
-using Jasper.Http.Routing;
 using Jasper.Util;
 using Lamar.Scanning;
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 
 namespace Jasper.Http
 {
     public partial class HttpSettings
     {
-        // TODO -- add a composite filter for MethodInfo that's exposed
-
-        private readonly List<Assembly> _assemblies = new List<Assembly>();
         private readonly CompositeFilter<MethodCall> _callFilters = new CompositeFilter<MethodCall>();
         private readonly IList<Type> _explicitTypes = new List<Type>();
 

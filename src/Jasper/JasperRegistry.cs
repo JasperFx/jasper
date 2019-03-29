@@ -6,16 +6,13 @@ using System.Reflection;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Http;
-using Jasper.Http.Routing;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
-using Jasper.Messaging.Transports;
 using Jasper.Settings;
 using Jasper.Util;
 using Lamar;
-using Lamar.Scanning.Conventions;
-using LamarCompiler;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,18 +23,19 @@ namespace Jasper
     /// </summary>
     public class JasperRegistry : IFullTransportsExpression
     {
-        static JasperRegistry()
-        {
-            Container.Warmup();
-        }
+        protected static Assembly _rememberedCallingAssembly;
+
+        protected readonly ServiceRegistry _applicationServices = new ServiceRegistry();
+
+        private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();
+        protected readonly ServiceRegistry _baseServices;
 
         private readonly IList<Action<IWebHostBuilder>> _builderAlterations
             = new List<Action<IWebHostBuilder>>();
 
-        protected static Assembly _rememberedCallingAssembly;
+        private readonly IList<Type> _extensionTypes = new List<Type>();
 
-        protected readonly ServiceRegistry _applicationServices = new ServiceRegistry();
-        protected readonly ServiceRegistry _baseServices;
+        private string _serviceName;
 
         public JasperRegistry() : this(null)
         {
@@ -67,41 +65,10 @@ namespace Jasper
             Settings.BindToConfigSection<JasperOptions>("Jasper");
 
 
-
             Publish = new PublishingExpression(Settings, Messaging);
             Settings.Replace(HttpRoutes);
 
             deriveServiceName();
-
-        }
-
-        /// <summary>
-        /// Apply configuration and alterations directly to the underlying
-        /// IWebHostBuilder of the running application when this JasperRegistry
-        /// is executed
-        /// </summary>
-        /// <param name="configure"></param>
-        public void Hosting(Action<IWebHostBuilder> configure)
-        {
-            _builderAlterations.Add(configure);
-        }
-
-        internal void ConfigureWebHostBuilder(IWebHostBuilder builder)
-        {
-            foreach (var alteration in _builderAlterations)
-            {
-                alteration(builder);
-            }
-        }
-
-
-
-        private void deriveServiceName()
-        {
-            if (GetType() == typeof(JasperRegistry))
-                ServiceName = ApplicationAssembly?.GetName().Name ?? "JasperService";
-            else
-                ServiceName = GetType().Name.Replace("JasperRegistry", "").Replace("Registry", "");
         }
 
         /// <summary>
@@ -130,37 +97,6 @@ namespace Jasper
         /// </summary>
         public Assembly ApplicationAssembly { get; private set; }
 
-        private void establishApplicationAssembly(string assemblyName)
-        {
-            if (assemblyName.IsNotEmpty())
-            {
-                ApplicationAssembly = Assembly.Load(assemblyName);
-            }
-            else if ((GetType() == typeof(JasperRegistry) || GetType() == typeof(JasperRegistry)))
-            {
-                if (_rememberedCallingAssembly == null)
-                {
-                    _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
-                }
-
-                ApplicationAssembly = _rememberedCallingAssembly;
-            }
-            else
-            {
-                ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
-            }
-
-            if (ApplicationAssembly == null)
-                throw new InvalidOperationException("Unable to determine an application assembly");
-        }
-
-        protected internal void Describe(IJasperHost runtime, TextWriter writer)
-        {
-            Messaging.Describe(runtime, writer);
-            HttpRoutes.Describe(runtime, writer);
-        }
-
-        private string _serviceName;
         internal MessagingConfiguration Messaging { get; } = new MessagingConfiguration();
 
         /// <summary>
@@ -194,6 +130,14 @@ namespace Jasper
             }
         }
 
+        internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();
+
+        /// <summary>
+        ///     Read only view of the extensions that have been applied to this
+        ///     JasperRegistry
+        /// </summary>
+        public IReadOnlyList<IJasperExtension> AppliedExtensions => _appliedExtensions;
+
 
         void ITransportsExpression.ListenForMessagesFrom(Uri uri)
         {
@@ -220,15 +164,58 @@ namespace Jasper
             Settings.Messaging((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey)));
         }
 
-        private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();
-
-        internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();
-
         /// <summary>
-        ///     Read only view of the extensions that have been applied to this
-        ///     JasperRegistry
+        ///     Apply configuration and alterations directly to the underlying
+        ///     IWebHostBuilder of the running application when this JasperRegistry
+        ///     is executed
         /// </summary>
-        public IReadOnlyList<IJasperExtension> AppliedExtensions => _appliedExtensions;
+        /// <param name="configure"></param>
+        public void Hosting(Action<IWebHostBuilder> configure)
+        {
+            _builderAlterations.Add(configure);
+        }
+
+        internal void ConfigureWebHostBuilder(IWebHostBuilder builder)
+        {
+            foreach (var alteration in _builderAlterations) alteration(builder);
+        }
+
+
+        private void deriveServiceName()
+        {
+            if (GetType() == typeof(JasperRegistry))
+                ServiceName = ApplicationAssembly?.GetName().Name ?? "JasperService";
+            else
+                ServiceName = GetType().Name.Replace("JasperRegistry", "").Replace("Registry", "");
+        }
+
+        private void establishApplicationAssembly(string assemblyName)
+        {
+            if (assemblyName.IsNotEmpty())
+            {
+                ApplicationAssembly = Assembly.Load(assemblyName);
+            }
+            else if (GetType() == typeof(JasperRegistry) || GetType() == typeof(JasperRegistry))
+            {
+                if (_rememberedCallingAssembly == null)
+                    _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+
+                ApplicationAssembly = _rememberedCallingAssembly;
+            }
+            else
+            {
+                ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+            }
+
+            if (ApplicationAssembly == null)
+                throw new InvalidOperationException("Unable to determine an application assembly");
+        }
+
+        protected internal void Describe(IJasperHost runtime, TextWriter writer)
+        {
+            Messaging.Describe(runtime, writer);
+            HttpRoutes.Describe(runtime, writer);
+        }
 
         internal void ApplyExtensions(IJasperExtension[] extensions)
         {
@@ -251,8 +238,6 @@ namespace Jasper
 
             _extensionTypes.Fill(extensions.Select(x => x.GetType()));
         }
-
-        private readonly IList<Type> _extensionTypes = new List<Type>();
 
         /// <summary>
         ///     Applies the extension to this application

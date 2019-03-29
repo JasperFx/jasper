@@ -1,5 +1,5 @@
 using System;
-using LamarCompiler.Model;
+using LamarCodeGeneration.Model;
 
 namespace Jasper.Persistence.Database
 {

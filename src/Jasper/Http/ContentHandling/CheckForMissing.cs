@@ -1,5 +1,6 @@
-﻿using LamarCompiler.Frames;
-using LamarCompiler.Model;
+﻿
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 
 namespace Jasper.Http.ContentHandling
 {

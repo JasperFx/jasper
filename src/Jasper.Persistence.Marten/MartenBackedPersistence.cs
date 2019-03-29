@@ -4,7 +4,7 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Persistence.Marten.Persistence.Sagas;
 using Jasper.Persistence.Postgresql;
-using LamarCompiler.Model;
+using LamarCodeGeneration.Model;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 

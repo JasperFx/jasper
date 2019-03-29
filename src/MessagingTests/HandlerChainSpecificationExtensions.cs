@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Baseline.Reflection;
 using Jasper.Messaging.Model;
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 using Shouldly;
 
 namespace MessagingTests
@@ -39,7 +39,7 @@ namespace MessagingTests
 
         public static void ShouldBeWrappedWith<T>(this HandlerChain chain) where T : Frame
         {
-            ShouldBeNullExtensions.ShouldNotBeNull(chain);
+            chain.ShouldNotBeNull();
             chain.Middleware.OfType<T>().Any().ShouldBeTrue();
         }
 

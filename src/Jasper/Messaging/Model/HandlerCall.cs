@@ -5,7 +5,7 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Util;
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 
 namespace Jasper.Messaging.Model
 {

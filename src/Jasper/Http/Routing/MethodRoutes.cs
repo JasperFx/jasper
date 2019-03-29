@@ -3,6 +3,7 @@ using System.Linq;
 using Jasper.Http.Model;
 using Jasper.Http.Routing.Codegen;
 using Lamar;
+using LamarCodeGeneration;
 using LamarCompiler;
 
 namespace Jasper.Http.Routing

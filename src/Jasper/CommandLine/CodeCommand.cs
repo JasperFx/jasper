@@ -4,6 +4,7 @@ using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Messaging.Model;
+using LamarCodeGeneration;
 using LamarCompiler;
 using Oakton;
 
@@ -43,7 +44,7 @@ namespace Jasper.CommandLine
                 foreach (var route in routes) route.AssemblyType(generatedAssembly, connegRules, rules);
             }
 
-            var text = runtime.Container.GenerateCodeWithInlineServices(generatedAssembly);
+            var text = generatedAssembly.GenerateCode(runtime.Container.CreateServiceVariableSource());
 
             Console.WriteLine(text);
 

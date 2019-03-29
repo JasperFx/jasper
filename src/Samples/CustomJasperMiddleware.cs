@@ -1,21 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Jasper;
 using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Http.Model;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 using Microsoft.Extensions.Logging;
 using TestingSupport;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     // SAMPLE: StopwatchFrame
     public class StopwatchFrame : SyncFrame

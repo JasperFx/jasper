@@ -4,6 +4,7 @@ using Jasper.Configuration;
 using Jasper.Http;
 using Jasper.Messaging.Model;
 using Lamar;
+using LamarCodeGeneration;
 using LamarCompiler;
 using Oakton;
 

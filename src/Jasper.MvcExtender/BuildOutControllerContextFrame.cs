@@ -1,6 +1,5 @@
 using System;
-using System.Net.Http;
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jasper.MvcExtender

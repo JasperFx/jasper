@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Http.Routing.Codegen;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 
 namespace Jasper.Http.Routing
 {

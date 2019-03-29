@@ -62,12 +62,6 @@ namespace HttpTests.Kestrel
             _app = app;
             _output = output;
 
-            var routes = _app.Host.Services.GetRequiredService<RouteGraph>();
-            foreach (var route in routes)
-            {
-                output.WriteLine(route.SourceCode);
-                output.WriteLine("");
-            }
         }
 
         [Fact]

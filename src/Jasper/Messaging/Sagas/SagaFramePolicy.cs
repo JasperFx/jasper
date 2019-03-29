@@ -7,8 +7,8 @@ using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Persistence;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 
 namespace Jasper.Messaging.Sagas
 {

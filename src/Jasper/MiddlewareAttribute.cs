@@ -2,7 +2,7 @@
 using System.Linq;
 using Baseline;
 using Jasper.Configuration;
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 
 namespace Jasper
 {

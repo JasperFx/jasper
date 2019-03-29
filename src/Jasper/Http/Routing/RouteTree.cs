@@ -1,7 +1,4 @@
-using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
@@ -9,9 +6,10 @@ using Jasper.Http.Model;
 using Jasper.Http.Routing.Codegen;
 using Jasper.Util;
 using Lamar;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Routing
@@ -73,7 +71,7 @@ namespace Jasper.Http.Routing
                 methodRoutes.AssemblySelector(_assembly, _settings.Routes);
             }
 
-            container.CompileWithInlineServices(_assembly);
+            new AssemblyGenerator().Compile(_assembly, container.CreateServiceVariableSource());
 
             foreach (var methodRoutes in _methods)
             {

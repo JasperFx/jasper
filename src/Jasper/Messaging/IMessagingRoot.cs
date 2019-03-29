@@ -15,7 +15,6 @@ using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Lamar;
-using LamarCompiler.Util;
 
 namespace Jasper.Messaging
 {

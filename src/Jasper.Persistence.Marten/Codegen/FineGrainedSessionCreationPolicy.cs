@@ -1,7 +1,7 @@
 ﻿using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using LamarCompiler.Frames;
+using LamarCodeGeneration.Frames;
 using Marten;
 
 namespace Jasper.Persistence.Marten.Codegen

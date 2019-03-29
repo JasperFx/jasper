@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using LamarCodeGeneration;
 using LamarCompiler;
 using NJsonSchema;
 using NJsonSchema.CodeGeneration.CSharp;

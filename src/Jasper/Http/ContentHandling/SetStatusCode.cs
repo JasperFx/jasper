@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Jasper.Http.Model;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.ContentHandling

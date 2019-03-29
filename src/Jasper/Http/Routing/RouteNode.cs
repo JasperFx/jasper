@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Http.Routing.Codegen;
+using LamarCodeGeneration;
 using LamarCompiler;
 
 namespace Jasper.Http.Routing

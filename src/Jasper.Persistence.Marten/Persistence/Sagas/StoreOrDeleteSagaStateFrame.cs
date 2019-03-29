@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Messaging.Sagas;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 using Marten;
 
 namespace Jasper.Persistence.Marten.Persistence.Sagas

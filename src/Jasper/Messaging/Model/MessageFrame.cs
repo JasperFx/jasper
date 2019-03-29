@@ -1,7 +1,7 @@
 ﻿using Jasper.Messaging.Runtime;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 
 namespace Jasper.Messaging.Model
 {

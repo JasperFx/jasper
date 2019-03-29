@@ -3,6 +3,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Http.Model;
 using Jasper.Messaging;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Persistence;
 
 namespace Jasper.Persistence.SqlServer

@@ -10,9 +10,9 @@ using Jasper.Conneg;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Routing;
 using Lamar;
-using LamarCompiler;
-using LamarCompiler.Frames;
-using LamarCompiler.Model;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Http.Model
