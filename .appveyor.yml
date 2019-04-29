@@ -27,9 +27,9 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '0.9.9'
-  package_version: '0.9.9'
-  assembly_version: '0.9.9'
+  version: '0.9.9.1'
+  package_version: '0.9.9.1'
+  assembly_version: '0.9.9.1'
   file_version: '{version}'
   informational_version: '{version}'
 
@@ -38,7 +38,7 @@ dotnet_csproj:
 
 build_script:
 - cmd: >-
-    rake ci version=0.9.9
+    rake ci version=0.9.9.1
 test: off
 
 deploy:
