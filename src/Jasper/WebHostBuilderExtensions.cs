@@ -183,6 +183,13 @@ namespace Jasper
         {
             return app =>
             {
+                var httpSettings = app.ApplicationServices.GetRequiredService<HttpSettings>();
+                if(!httpSettings.Enabled)
+                {
+                    next(app);
+                    return;
+                }
+
                 var logger = app.ApplicationServices.GetRequiredService<ILogger<HttpSettings>>();
 
                 app.Use(inner =>
