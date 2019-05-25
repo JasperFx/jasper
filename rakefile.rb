@@ -2,11 +2,11 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-BUILD_VERSION =  ENV['version'].nil? ? '0.9.9.1' : ENV['version']
+BUILD_VERSION =  ENV['version'].nil? ? '0.9.11' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 
-TEMPLATE_VERSION = '0.9.9.1'
+TEMPLATE_VERSION = '0.9.11'
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 
@@ -51,7 +51,7 @@ task :version do
   options = {
 	:description => '',
 	:product_name => 'JasperFx Applications',
-	:copyright => 'Copyright 2018 Jeremy D. Miller, et al. All rights reserved.',
+	:copyright => 'Copyright 2019 Jeremy D. Miller, et al. All rights reserved.',
 	:trademark => commit,
 	:version => asm_version,
 	:file_version => build_number,
