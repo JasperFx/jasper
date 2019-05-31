@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +15,7 @@ namespace Jasper.Messaging.Configuration
     public class HandlerSource
     {
         private readonly IList<Type> _explicitTypes = new List<Type>();
+        private readonly IList<Assembly> _assemblies = new List<Assembly>();
 
         private readonly ActionMethodFilter _methodFilters;
         private readonly CompositeFilter<Type> _typeFilters = new CompositeFilter<Type>();
@@ -54,10 +55,11 @@ namespace Jasper.Messaging.Configuration
 
             if (registry.ApplicationAssembly == null) return new HandlerCall[0];
 
+            _assemblies.Add(registry.ApplicationAssembly);
 
             // TODO -- need to expose the module assemblies off of this
 
-            var types = await TypeRepository.FindTypes(registry.ApplicationAssembly,
+            var types = await TypeRepository.FindTypes(_assemblies,
                     TypeClassification.Concretes | TypeClassification.Closed, type => _typeFilters.Matches(type))
                 .ConfigureAwait(false);
 
@@ -82,6 +84,11 @@ namespace Jasper.Messaging.Configuration
         protected virtual HandlerCall buildHandler(Type type, MethodInfo method)
         {
             return new HandlerCall(type, method);
+        }
+
+        public void IncludeAssembly(Assembly assembly)
+        {
+            _assemblies.Add(assembly);
         }
 
         /// <summary>
