@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-If you're starting a fresh project, you can quickly spin up a new Jasper project using Azure Service Bus with a `dotnet new` template. 
+If you're starting a fresh project, you can quickly spin up a new Jasper project using Rabbit MQ with a `dotnet new` template. 
 
 First install the `JasperTemplates` nuget like so:
 
