@@ -10,12 +10,15 @@ namespace Jasper.Messaging.Durability
 {
     public class RecoverIncomingMessages : IMessagingAction
     {
+        private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _workers;
         private readonly JasperOptions _options;
         private readonly ITransportLogger _logger;
 
-        public RecoverIncomingMessages(IWorkerQueue workers, JasperOptions options, ITransportLogger logger)
+        public RecoverIncomingMessages(IEnvelopePersistence persistence, IWorkerQueue workers, JasperOptions options,
+            ITransportLogger logger)
         {
+            _persistence = persistence;
             _workers = workers;
             _options = options;
             _logger = logger;
@@ -66,6 +69,7 @@ namespace Jasper.Messaging.Durability
             foreach (var envelope in incoming)
             {
                 envelope.OwnerId = _options.UniqueNodeId;
+                envelope.Callback = new DurableCallback(envelope, _workers, _persistence,_logger);
                 await _workers.Enqueue(envelope);
             }
 

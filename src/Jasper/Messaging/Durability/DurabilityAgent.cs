@@ -79,7 +79,7 @@ namespace Jasper.Messaging.Durability
 
             NodeId = _options.UniqueNodeId;
 
-            IncomingMessages = new RecoverIncomingMessages(workers, options, logger);
+            IncomingMessages = new RecoverIncomingMessages(persistence, workers, options, logger);
             OutgoingMessages = new RecoverOutgoingMessages(subscribers, options, logger);
             NodeReassignment = new NodeReassignment(options, logger);
             ScheduledJobs = new RunScheduledJobs(options, logger);
