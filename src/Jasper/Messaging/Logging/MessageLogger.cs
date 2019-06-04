@@ -36,7 +36,7 @@ namespace Jasper.Messaging.Logging
             _logger = factory.CreateLogger("Jasper.Messages");
 
             _sent = LoggerMessage.Define<string, Guid, Uri>(LogLevel.Debug, SentEventId,
-                "Sent {Name}#{Id} to {Destination}");
+                "Enqueued for sending {Name}#{Id} to {Destination}");
 
             _received = LoggerMessage.Define<string, Guid, Uri, Uri>(LogLevel.Debug, ReceivedEventId,
                 "Received {Name}#{Id} at {Destination} from {ReplyUri}");
