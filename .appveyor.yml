@@ -1,4 +1,4 @@
-version: 0.9.11.{build}
+version: 0.9.12.{build}
 image: Visual Studio 2017
 
 
@@ -27,9 +27,9 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '0.9.11'
-  package_version: '0.9.11'
-  assembly_version: '0.9.11'
+  version: '0.9.12'
+  package_version: '0.9.12'
+  assembly_version: '0.9.12'
   file_version: '{version}'
   informational_version: '{version}'
 
@@ -38,7 +38,7 @@ dotnet_csproj:
 
 build_script:
 - cmd: >-
-    rake ci version=0.9.11
+    rake ci version=0.9.12
 test: off
 
 deploy:
