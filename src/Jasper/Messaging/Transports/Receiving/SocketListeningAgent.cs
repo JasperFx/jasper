@@ -40,7 +40,7 @@ namespace Jasper.Messaging.Transports.Receiving
                 {
                     await HandleStream(callback, stream);
                 }
-            });
+            }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 
             _receivingLoop = Task.Run(async () =>
             {

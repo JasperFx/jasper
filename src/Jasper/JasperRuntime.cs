@@ -152,6 +152,9 @@ namespace Jasper
 
             _isDisposing = true;
 
+            // THis is important to stop every async agent kind of thing
+            _container.GetInstance<JasperOptions>().StopAll();
+
             _host.SafeDispose();
 
             Container.As<Container>().DisposalLock = DisposalLock.Unlocked;

@@ -37,7 +37,7 @@ namespace Jasper.Messaging.Transports.Receiving
                 {
                     await WireProtocol.Receive(stream, _callback, _uri);
                 }
-            });
+            }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 
             _uri = $"{protocol}://{ipaddr}:{port}/".ToUri();
         }

@@ -82,7 +82,7 @@ namespace Jasper.Messaging.Transports.Sending
                     return batch;
                 },
                 new ExecutionDataflowBlockOptions
-                    {BoundedCapacity = DataflowBlockOptions.Unbounded, MaxDegreeOfParallelism = 10});
+                    {BoundedCapacity = DataflowBlockOptions.Unbounded, MaxDegreeOfParallelism = 10, CancellationToken = _cancellation});
 
             _batchWriting.Completion.ContinueWith(x =>
             {
