@@ -68,7 +68,7 @@ namespace Jasper.AzureServiceBus.Internal
                 {
                     _logger.LogException(exception, e.Id, "Serialization Failure!");
                 }
-            });
+            }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellation});
 
             // The variance here should be in constructing the sending & buffer blocks
             if (_endpoint.Uri.TopicName.IsEmpty())

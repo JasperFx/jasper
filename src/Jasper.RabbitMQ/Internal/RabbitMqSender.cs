@@ -54,7 +54,7 @@ namespace Jasper.RabbitMQ.Internal
                 {
                     _logger.LogException(exception, e.Id, "Serialization Failure!");
                 }
-            });
+            }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellation});
 
             _sending = new ActionBlock<Envelope>(send, new ExecutionDataflowBlockOptions
             {
