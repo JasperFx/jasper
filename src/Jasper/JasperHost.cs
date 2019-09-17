@@ -62,7 +62,7 @@ namespace Jasper
             {
 
 
-                factory.RegisterCommands(typeof(RunCommand).GetTypeInfo().Assembly);
+                factory.RegisterCommands(typeof(JasperRegistry).GetTypeInfo().Assembly);
                 if (applicationAssembly != null) factory.RegisterCommands(applicationAssembly);
 
                 foreach (var assembly in FindExtensionAssemblies(applicationAssembly)) factory.RegisterCommands(assembly);

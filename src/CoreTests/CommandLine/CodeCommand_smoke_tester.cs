@@ -46,8 +46,7 @@ namespace CoreTests.CommandLine
         [InlineData(SourceType.JasperRegistry, new string[]{"services"})]
         [InlineData(SourceType.WebHostBuilder, new string[]{"services"})]
 
-        [InlineData(SourceType.JasperRegistry, new string[]{"validate"})]
-        [InlineData(SourceType.WebHostBuilder, new string[]{"validate"})]
+
 
         [InlineData(SourceType.JasperRegistry, new string[]{"describe"})]
         [InlineData(SourceType.WebHostBuilder, new string[]{"describe"})]

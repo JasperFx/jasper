@@ -7,37 +7,32 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
-using Jasper.EnvironmentChecks;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
-using Jasper.Http.Routing.Codegen;
 using Lamar;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Polly;
 
 namespace Jasper.Http
 {
-    public enum ComplianceMode{
+    public enum ComplianceMode
+    {
         /// <summary>
-        /// Use this mode to retain ASP.Net Core's built in scoped container behavior. This is only necessary if you are using middleware
-        /// or ActionFilters that use the HttpContext.RequestServices
+        ///     Use this mode to retain ASP.Net Core's built in scoped container behavior. This is only necessary if you are using
+        ///     middleware
+        ///     or ActionFilters that use the HttpContext.RequestServices
         /// </summary>
         FullyCompliant,
 
         /// <summary>
-        /// Faster performance by removing the built in ASP.Net Core scoped container per HTTP request behavior. May
-        /// break some ASP.Net Core middleware and ActionFilter usages
+        ///     Faster performance by removing the built in ASP.Net Core scoped container per HTTP request behavior. May
+        ///     break some ASP.Net Core middleware and ActionFilter usages
         /// </summary>
         GoFaster
     }
 
     public partial class HttpSettings
     {
-        internal readonly RouteGraph Routes = new RouteGraph();
-        private Task _findActions;
-
         private readonly IList<IRoutePolicy> _policies = new List<IRoutePolicy>();
+        internal readonly RouteGraph Routes = new RouteGraph();
 
         public HttpSettings()
         {
@@ -62,9 +57,21 @@ namespace Jasper.Http
         }
 
         /// <summary>
-        /// Make your Jasper app faster in handling HTTP routes, or more compliant with ASP.Net Core
+        ///     Make your Jasper app faster in handling HTTP routes, or more compliant with ASP.Net Core
         /// </summary>
         public ComplianceMode AspNetCoreCompliance { get; set; } = ComplianceMode.FullyCompliant;
+
+        /// <summary>
+        ///     Completely enable or disable all Jasper HTTP features
+        /// </summary>
+        public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        ///     After bootstrapping, this would be the compiled router for the HTTP support
+        /// </summary>
+        public Router Router { get; internal set; }
+
+        public Task IsReady { get; private set; }
 
         /// <summary>
         ///     Applies a handler policy to all known message handlers
@@ -84,22 +91,12 @@ namespace Jasper.Http
             _policies.Add(policy);
         }
 
-        /// <summary>
-        ///     Completely enable or disable all Jasper HTTP features
-        /// </summary>
-        public bool Enabled { get; set; } = true;
-
-        /// <summary>
-        /// After bootstrapping, this would be the compiled router for the HTTP support
-        /// </summary>
-        public Router Router { get; internal set; }
-
         // Call this in UseJasper()
         internal void StartFindingRoutes(Assembly assembly)
         {
             if (!Enabled) return;
 
-            _findActions = FindActions(assembly).ContinueWith(t =>
+            IsReady = FindActions(assembly).ContinueWith(t =>
             {
                 var actions = t.Result;
                 foreach (var methodCall in actions) Routes.AddRoute(methodCall);
@@ -111,40 +108,24 @@ namespace Jasper.Http
         {
             if (!Enabled) return null;
 
-            return _findActions.ContinueWith(t =>
+            return IsReady.ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {
-                    container.GetInstance<IEnvironmentRecorder>().Failure("Failure while trying to discover HTTP route handlers", t.Exception);
                     throw t.Exception;
                 }
 
-                try
-                {
-                    foreach (var policy in _policies)
-                    {
-                        policy.Apply(Routes, generation);
-                    }
+                foreach (var policy in _policies) policy.Apply(Routes, generation);
+
+                Routes.AssertNoDuplicateRoutes();
+
+                var tree = new RouteTree(this, generation);
+                tree.CompileAll(container);
 
 
-
-                    Routes.AssertNoDuplicateRoutes();
-
-                    var tree = new RouteTree(this, generation);
-                    tree.CompileAll(container);
-
-
-                    return tree;
-                }
-                catch (Exception e)
-                {
-                    container.GetInstance<IEnvironmentRecorder>().Failure("Failure while trying to compile the routing tree", e);
-                    throw;
-                }
+                return tree;
             });
         }
-
-        public Task IsReady => _findActions;
 
 
         internal void Describe(IJasperHost runtime, TextWriter writer)
@@ -157,6 +138,5 @@ namespace Jasper.Http
     public interface IRoutePatternStrategy
     {
         bool Matches(MethodInfo method);
-
     }
 }

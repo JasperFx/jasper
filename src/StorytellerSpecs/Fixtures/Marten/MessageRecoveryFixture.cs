@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
-using Jasper.EnvironmentChecks;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -19,10 +17,8 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Persistence.Postgresql;
-using Jasper.Persistence.Postgresql.Util;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -36,14 +32,14 @@ namespace StorytellerSpecs.Fixtures.Marten
         private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
 
         private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
+        private IEnvelopeStorageAdmin _admin;
         private int _currentNodeId;
 
         private IJasperHost _host;
-        private PostgresqlSettings _settings;
         private MessagingSerializationGraph _serializers;
+        private PostgresqlSettings _settings;
         private RecordingWorkerQueue _workers;
         private IDocumentStore theStore;
-        private IEnvelopeStorageAdmin _admin;
 
         public MessageRecoveryFixture()
         {
@@ -98,8 +94,6 @@ namespace StorytellerSpecs.Fixtures.Marten
                         x.ScheduledJobs.FirstExecution = 30.Minutes();
                         x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
                         x.Retries.NodeReassignmentPollingTime = 30.Minutes();
-
-
                     });
                 })
                 .StartJasper();
@@ -247,8 +241,6 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             var action = _host.Get<T>();
             await agent.Execute(action);
-
-
         }
 
         [FormatAs("After reassigning envelopes from dormant nodes")]

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
 using Jasper.Conneg;
-using Jasper.EnvironmentChecks;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
 using Jasper.Http.Routing;
@@ -48,8 +46,6 @@ namespace Jasper.Configuration
 
             For<IHostedService>().Use<BackPressureAgent>();
             For<IHostedService>().Use<DurabilityAgent>();
-
-            For<IHostedService>().DecorateAllWith<LoggingHostedServiceDecorator>();
 
             conneg(parent);
             messaging(parent);
@@ -127,7 +123,6 @@ namespace Jasper.Configuration
 
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
 
-            ForSingletonOf<IEnvironmentRecorder>().Use<EnvironmentRecorder>();
         }
 
         public void MessagingRootService<T>(Func<IMessagingRoot, T> expression) where T : class

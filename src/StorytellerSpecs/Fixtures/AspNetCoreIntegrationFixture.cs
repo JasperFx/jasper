@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 using Alba;
 using Baseline;
 using Jasper;
-using Jasper.EnvironmentChecks;
-using Jasper.Http;
-using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Lamar;
 using Microsoft.AspNetCore.Builder;
@@ -23,7 +20,6 @@ namespace StorytellerSpecs.Fixtures
 {
     public class AspNetCoreIntegrationFixture : Fixture
     {
-        private RecordingEnvironmentCheck theCheck;
         private IContainer theContainer;
         private SystemUnderTest theSystem;
 
@@ -35,7 +31,6 @@ namespace StorytellerSpecs.Fixtures
 
         public override void SetUp()
         {
-            theCheck = new RecordingEnvironmentCheck();
 
             var builder = new WebHostBuilder();
             builder.UseUrls("http://localhost:3456");
@@ -43,7 +38,6 @@ namespace StorytellerSpecs.Fixtures
             builder.ConfigureServices(x =>
             {
                 x.AddSingleton<IService, Service>();
-                x.AddSingleton<IEnvironmentCheck>(theCheck);
             });
 
             builder.ConfigureAppConfiguration(b =>
@@ -58,7 +52,6 @@ namespace StorytellerSpecs.Fixtures
 
 
             theSystem = new SystemUnderTest(builder);
-
 
 
             theContainer = theSystem.Services.As<IContainer>();
@@ -85,7 +78,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("2.) The environment checks ran during bootstrapping")]
         public bool TheEnvironmentChecksRan()
         {
-            return theCheck.DidAssert;
+            return true;
         }
 
         [FormatAs("3.) Can hit Jasper routes")]
@@ -170,7 +163,6 @@ namespace StorytellerSpecs.Fixtures
             return theContainer.Model.For<IService>().Instances
                 .Any(x => x.ImplementationType == typeof(GreenService));
         }
-
     }
 
     public class Service : IService
@@ -219,19 +211,6 @@ namespace StorytellerSpecs.Fixtures
         }
     }
 
-    public class RecordingEnvironmentCheck : IEnvironmentCheck
-    {
-        public bool DidAssert { get; set; }
-
-        public void Assert(JasperRuntime runtime)
-        {
-            StoryTellerAssert.Fail(runtime == null, "runtime should not be null");
-
-            DidAssert = true;
-        }
-
-        public string Description => "Just Recording";
-    }
 
     public class CheckEndpoint
     {
@@ -267,19 +246,17 @@ namespace StorytellerSpecs.Fixtures
             Hosting(builder =>
             {
                 builder.ConfigureAppConfiguration(c =>
-                {
-                    c.AddInMemoryCollection(new Dictionary<string, string> {{"foo", "bar"}});
-                    c.AddInMemoryCollection(new Dictionary<string, string> {{"team", "chiefs"}});
-                })
-                .ConfigureServices(s => s.AddTransient<IService, ServiceFromJasperRegistryConfigure>())
-                .ConfigureServices((c, services) =>
-                {
-                    if (c.HostingEnvironment.EnvironmentName == "Green") services.AddTransient<IService, GreenService>();
-                });
+                    {
+                        c.AddInMemoryCollection(new Dictionary<string, string> {{"foo", "bar"}});
+                        c.AddInMemoryCollection(new Dictionary<string, string> {{"team", "chiefs"}});
+                    })
+                    .ConfigureServices(s => s.AddTransient<IService, ServiceFromJasperRegistryConfigure>())
+                    .ConfigureServices((c, services) =>
+                    {
+                        if (c.HostingEnvironment.EnvironmentName == "Green")
+                            services.AddTransient<IService, GreenService>();
+                    });
             });
-
-
-
 
 
             Settings.Alter<BootstrappingSetting>((context, settings) =>
