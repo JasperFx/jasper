@@ -14,7 +14,7 @@ namespace Pinger
 {
     internal class Program
     {
-        private static int Main(string[] args)
+        private static Task<int> Main(string[] args)
         {
             return JasperHost.Run(args, _ =>
             {

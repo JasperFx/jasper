@@ -7,6 +7,7 @@ using Jasper.Messaging.Model;
 using LamarCodeGeneration;
 using LamarCompiler;
 using Oakton;
+using Oakton.AspNetCore;
 
 namespace Jasper.CommandLine
 {
@@ -25,35 +26,36 @@ namespace Jasper.CommandLine
             Console.WriteLine();
             Console.WriteLine();
 
-            var runtime = input.BuildHost(StartMode.Lightweight);
-
-            var rules = runtime.Get<JasperGenerationRules>();
-            var generatedAssembly = new GeneratedAssembly(rules);
-
-            if (input.Match == CodeMatch.all || input.Match == CodeMatch.messages)
+            using (var runtime = new JasperRuntime(input.BuildHost()))
             {
-                var handlers = runtime.Get<HandlerGraph>();
-                foreach (var handler in handlers.Chains) handler.AssembleType(generatedAssembly, rules);
-            }
+                var rules = runtime.Get<JasperGenerationRules>();
+                var generatedAssembly = new GeneratedAssembly(rules);
 
-            if (input.Match == CodeMatch.all || input.Match == CodeMatch.routes)
-            {
-                var connegRules = runtime.Get<ConnegRules>();
-                var routes = runtime.Get<RouteGraph>();
+                if (input.Match == CodeMatch.all || input.Match == CodeMatch.messages)
+                {
+                    var handlers = runtime.Get<HandlerGraph>();
+                    foreach (var handler in handlers.Chains) handler.AssembleType(generatedAssembly, rules);
+                }
 
-                foreach (var route in routes) route.AssemblyType(generatedAssembly, connegRules, rules);
-            }
+                if (input.Match == CodeMatch.all || input.Match == CodeMatch.routes)
+                {
+                    var connegRules = runtime.Get<ConnegRules>();
+                    var routes = runtime.Get<RouteGraph>();
 
-            var text = generatedAssembly.GenerateCode(runtime.Container.CreateServiceVariableSource());
+                    foreach (var route in routes) route.AssemblyType(generatedAssembly, connegRules, rules);
+                }
 
-            Console.WriteLine(text);
+                var text = generatedAssembly.GenerateCode(runtime.Container.CreateServiceVariableSource());
 
-            if (input.FileFlag.IsNotEmpty())
-            {
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine($"Writing file {input.FileFlag.ToFullPath()}");
-                new FileSystem().WriteStringToFile(input.FileFlag, text);
+                Console.WriteLine(text);
+
+                if (input.FileFlag.IsNotEmpty())
+                {
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine($"Writing file {input.FileFlag.ToFullPath()}");
+                    new FileSystem().WriteStringToFile(input.FileFlag, text);
+                }
             }
 
             return true;
@@ -67,7 +69,7 @@ namespace Jasper.CommandLine
         routes
     }
 
-    public class CodeInput : JasperInput
+    public class CodeInput : AspNetCoreInput
     {
         public CodeMatch Match { get; set; } = CodeMatch.all;
 

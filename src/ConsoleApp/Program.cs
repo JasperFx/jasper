@@ -1,5 +1,6 @@
 ﻿// SAMPLE: QuickStartConsoleMain
 
+using System.Threading.Tasks;
 using Jasper;
 using Jasper.CommandLine;
 
@@ -7,7 +8,8 @@ namespace MyApp
 {
     internal class Program
     {
-        private static int Main(string[] args)
+        // You may need to enable C# 7.1 or higher for your project
+        private static Task<int> Main(string[] args)
         {
             // This bootstraps and runs the Jasper
             // application as defined by MyAppRegistry

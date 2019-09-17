@@ -1,6 +1,7 @@
 ﻿using System;
 using Baseline;
 using Jasper.Configuration;
+using Oakton;
 
 namespace Jasper
 {
@@ -9,7 +10,7 @@ namespace Jasper
     ///     module
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly)]
-    public class JasperModuleAttribute : Attribute
+    public class JasperModuleAttribute : OaktonCommandAssemblyAttribute
     {
         /// <summary>
         ///     Specify the IJasperExtension type that should be automatically loaded

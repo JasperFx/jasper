@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Http;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Oakton.AspNetCore;
 
 namespace Jasper
 {
@@ -148,9 +150,9 @@ namespace Jasper
         /// <param name="hostBuilder"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static int RunJasper(this IWebHostBuilder hostBuilder, string[] args)
+        public static Task<int> RunJasper(this IWebHostBuilder hostBuilder, string[] args)
         {
-            return JasperHost.Run(hostBuilder, args);
+            return hostBuilder.RunOaktonCommands(args);
         }
 
 

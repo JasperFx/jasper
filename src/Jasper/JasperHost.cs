@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.CommandLine;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Oakton;
+using Oakton.AspNetCore;
 
 namespace Jasper
 {
@@ -22,112 +24,6 @@ namespace Jasper
     /// </summary>
     public static class JasperHost
     {
-        /// <summary>
-        /// Bootstrap and run the given JasperRegistry
-        /// </summary>
-        /// <param name="registry"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static int Run(JasperRegistry registry, string[] args = null)
-        {
-            if (registry == null) throw new ArgumentNullException(nameof(registry));
-
-            var runtimeSource = CreateDefaultBuilder().UseJasper(registry);
-
-            return Execute(runtimeSource, registry.ApplicationAssembly, args);
-        }
-
-        internal static int Execute(IWebHostBuilder runtimeSource, Assembly applicationAssembly, string[] args)
-        {
-            if (args == null || args.Length == 0 || args[0].StartsWith("-"))
-                args = new[] {"run"}.Concat(args ?? new string[0]).ToArray();
-
-            if (applicationAssembly == null)
-            {
-                var name = runtimeSource.GetSetting(WebHostDefaults.ApplicationKey);
-                if (name.IsNotEmpty())
-                {
-                    applicationAssembly = Assembly.Load(name);
-                }
-            }
-
-            return buildExecutor(runtimeSource, applicationAssembly).Execute(args);
-        }
-
-
-        private static CommandExecutor buildExecutor(IWebHostBuilder source, Assembly applicationAssembly)
-        {
-            return CommandExecutor.For(factory =>
-            {
-
-
-                factory.RegisterCommands(typeof(JasperRegistry).GetTypeInfo().Assembly);
-                if (applicationAssembly != null) factory.RegisterCommands(applicationAssembly);
-
-                foreach (var assembly in FindExtensionAssemblies(applicationAssembly)) factory.RegisterCommands(assembly);
-
-                factory.ConfigureRun = cmd =>
-                {
-                    if (cmd.Input is JasperInput) cmd.Input.As<JasperInput>().WebHostBuilder = source;
-                };
-            });
-        }
-
-
-        /// <summary>
-        /// Bootstrap and run a Jasper application with customizations
-        /// </summary>
-        /// <param name="args"></param>
-        /// <param name="configure"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static int Run<T>(string[] args, Action<T> configure = null) where T : JasperRegistry, new()
-        {
-            var registry = new T();
-            configure?.Invoke(registry);
-
-            return Run(registry, args);
-        }
-
-        /// <summary>
-        /// Bootstrap and run a Jasper application with customizations
-        /// </summary>
-        /// <param name="args"></param>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        public static int Run(string[] args, Action<JasperRegistry> configure)
-        {
-            var registry = new JasperRegistry();
-            configure(registry);
-            return Run(registry, args);
-        }
-
-        /// <summary>
-        /// Bootstrap and run a basic Jasper application for this assemblhy
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static int RunBasic(string[] args)
-        {
-            return Run(new JasperRegistry(), args);
-        }
-
-
-        /// <summary>
-        /// Bootstrap and run a Jasper application for the configured IWebHostBuilder
-        /// </summary>
-        /// <param name="hostBuilder"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static int Run(IWebHostBuilder hostBuilder, string[] args)
-        {
-            if (hostBuilder == null) throw new ArgumentNullException(nameof(hostBuilder));
-            return Execute(hostBuilder, null, args);
-        }
-
-
 
 
         /// <summary>
@@ -277,6 +173,33 @@ namespace Jasper
                     s.AddSingleton<IStartupFilter>(new RegisterJasperStartupFilter());
                 });
             // ENDSAMPLE
+        }
+
+        /// <summary>
+        /// Shortcut to create a new empty WebHostBuilder with Jasper's default
+        /// settings, add the JasperRegistry, and bootstrap the application
+        /// from the command line
+        /// </summary>
+        /// <param name="args"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static Task<int> Run<T>(string[] args) where T : JasperRegistry, new()
+        {
+            return CreateDefaultBuilder().UseJasper<T>().RunOaktonCommands(args);
+        }
+
+        /// <summary>
+        /// Shortcut to create a new empty WebHostBuilder with Jasper's default
+        /// settings, add Jasper with the supplied configuration, and bootstrap the application
+        /// from the command line
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static Task<int> Run(string[] args, Action<JasperRegistry> configure)
+        {
+            return CreateDefaultBuilder().UseJasper(configure).RunOaktonCommands(args);
         }
     }
 }
