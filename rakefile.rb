@@ -122,8 +122,6 @@ desc 'Try out commands'
 task :commands do
   Dir.chdir("src/Subscriber") do
     sh "dotnet run -- ?"
-    sh "dotnet run -- services"
-    sh "dotnet run -- validate"
     sh "dotnet run -- export-json-schema obj/schema"
   end
 end

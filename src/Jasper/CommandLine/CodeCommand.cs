@@ -14,11 +14,6 @@ namespace Jasper.CommandLine
     [Description("Display or export the runtime, generated code in this application")]
     public class CodeCommand : OaktonCommand<CodeInput>
     {
-        public CodeCommand()
-        {
-            Usage("Show everything in the console").Arguments();
-            Usage("Show selected code in the console").Arguments(x => x.Match);
-        }
 
         public override bool Execute(CodeInput input)
         {
@@ -31,13 +26,13 @@ namespace Jasper.CommandLine
                 var rules = runtime.Get<JasperGenerationRules>();
                 var generatedAssembly = new GeneratedAssembly(rules);
 
-                if (input.Match == CodeMatch.all || input.Match == CodeMatch.messages)
+                if (input.MatchFlag == CodeMatch.all || input.MatchFlag == CodeMatch.messages)
                 {
                     var handlers = runtime.Get<HandlerGraph>();
                     foreach (var handler in handlers.Chains) handler.AssembleType(generatedAssembly, rules);
                 }
 
-                if (input.Match == CodeMatch.all || input.Match == CodeMatch.routes)
+                if (input.MatchFlag == CodeMatch.all || input.MatchFlag == CodeMatch.routes)
                 {
                     var connegRules = runtime.Get<ConnegRules>();
                     var routes = runtime.Get<RouteGraph>();
@@ -71,7 +66,7 @@ namespace Jasper.CommandLine
 
     public class CodeInput : AspNetCoreInput
     {
-        public CodeMatch Match { get; set; } = CodeMatch.all;
+        public CodeMatch MatchFlag { get; set; } = CodeMatch.all;
 
         [System.ComponentModel.Description("Optional file name to export the contents")]
         public string FileFlag { get; set; }

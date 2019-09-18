@@ -22,11 +22,6 @@ namespace Jasper.Messaging.Durability
             return host.Get<JasperOptions>().DurabilityAgent;
         }
 
-        public static DurabilityAgent ForHost(IWebHost host)
-        {
-            return host.Services.GetRequiredService<JasperOptions>().DurabilityAgent;
-        }
-
         private readonly IMessagingAction IncomingMessages;
         private readonly IMessagingAction OutgoingMessages;
         private readonly IMessagingAction ScheduledJobs;

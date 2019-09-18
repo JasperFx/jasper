@@ -11,16 +11,6 @@ namespace CoreTests.Bootstrapping
         }
 
         [Fact]
-        public void endpoint_classes_are_scoped()
-        {
-            // forcing the container to resolve the family
-            var endpoint = Host.Get<SomeEndpoint>();
-
-            Host.Container.Model.For<SomeEndpoint>().Default
-                .Lifetime.ShouldBe(ServiceLifetime.Scoped);
-        }
-
-        [Fact]
         public void handler_classes_are_scoped()
         {
             // forcing the container to resolve the family
