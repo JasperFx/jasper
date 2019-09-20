@@ -17,7 +17,9 @@ namespace Jasper.Messaging.Runtime
     {
         private DateTimeOffset? _deliverBy;
 
+        [Obsolete]
         private bool _enqueued;
+
         private DateTimeOffset? _executionTime;
 
 
@@ -189,6 +191,7 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public int OwnerId { get; set; } = 0;
 
+        [Obsolete]
         internal ISubscriber Subscriber { get; set; }
 
         /// <summary>
@@ -354,35 +357,13 @@ namespace Jasper.Messaging.Runtime
             return DeliverBy.HasValue && DeliverBy <= DateTime.UtcNow;
         }
 
-        internal Task Send()
-        {
-            if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
-
-            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
-
-            _enqueued = true;
-
-
-            return Subscriber.Send(this);
-        }
-
-        internal Task QuickSend()
-        {
-            if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
-
-            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
-
-            _enqueued = true;
-
-            return Subscriber.QuickSend(this);
-        }
-
 
         internal string GetMessageTypeName()
         {
             return Message?.GetType().Name ?? MessageType;
         }
 
+        [Obsolete("Make this for destination")]
         public Envelope ForScheduledSend(ISubscriber scheduleSendSubscriber)
         {
             EnsureData();
