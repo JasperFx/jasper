@@ -65,9 +65,11 @@ namespace Jasper.Messaging
                 {
                     _root.ApplyMessageTypeSpecificRules(outgoing[i]);
 
-                    if (!outgoing[i].Subscriber.SupportsNativeScheduledSend)
+                    var subscriber = _root.Subscribers.GetOrBuild(outgoing[i].Destination);
+
+                    if (!subscriber.SupportsNativeScheduledSend)
                     {
-                        outgoing[i] = outgoing[i].ForScheduledSend(new ScheduleSendSubscriber(this));
+                        outgoing[i] = outgoing[i].ForScheduledSend();
                     }
                 }
             }
@@ -399,7 +401,6 @@ namespace Jasper.Messaging
                 Destination = Envelope.ReplyUri,
                 SagaId = Envelope.SagaId,
                 Message = new Acknowledgement {CorrelationId = Envelope.Id},
-                Subscriber = _root.Subscribers.GetOrBuild(Envelope.ReplyUri),
                 Writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement))
             };
 
@@ -438,7 +439,7 @@ namespace Jasper.Messaging
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(x => x.Subscriber.IsDurable).ToArray());
+                await Transaction.Persist(outgoing.Where(x => _root.Subscribers.GetOrBuild(x.Destination).IsDurable).ToArray());
 
                 _outstanding.AddRange(outgoing);
             }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
-using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
@@ -16,9 +14,6 @@ namespace Jasper.Messaging.Runtime
     public partial class Envelope
     {
         private DateTimeOffset? _deliverBy;
-
-        [Obsolete]
-        private bool _enqueued;
 
         private DateTimeOffset? _executionTime;
 
@@ -131,7 +126,7 @@ namespace Jasper.Messaging.Runtime
         public string ContentType { get; set; }
 
         /// <summary>
-        /// Correlating identifier for the logical workflow or system action
+        ///     Correlating identifier for the logical workflow or system action
         /// </summary>
         public Guid CorrelationId { get; set; }
 
@@ -142,12 +137,12 @@ namespace Jasper.Messaging.Runtime
         public string SagaId { get; set; }
 
         /// <summary>
-        /// Id of the immediate message or workflow that caused this envelope to be sent
+        ///     Id of the immediate message or workflow that caused this envelope to be sent
         /// </summary>
         public Guid CausationId { get; set; }
 
         /// <summary>
-        /// Location that this message should be sent
+        ///     Location that this message should be sent
         /// </summary>
         public Uri Destination { get; set; }
 
@@ -157,17 +152,17 @@ namespace Jasper.Messaging.Runtime
         public string[] AcceptedContentTypes { get; set; } = new string[0];
 
         /// <summary>
-        /// Specific message id for this envelope
+        ///     Specific message id for this envelope
         /// </summary>
         public Guid Id { get; set; } = CombGuidIdGeneration.NewGuid();
 
         /// <summary>
-        /// If specified, the message type alias for the reply message that is requested for this message
+        ///     If specified, the message type alias for the reply message that is requested for this message
         /// </summary>
         public string ReplyRequested { get; set; }
 
         /// <summary>
-        /// Is an acknowledgement requested
+        ///     Is an acknowledgement requested
         /// </summary>
         public bool AckRequested { get; set; }
 
@@ -189,10 +184,7 @@ namespace Jasper.Messaging.Runtime
         /// <summary>
         ///     Node owner of this message. 0 denotes that no node owns this message
         /// </summary>
-        public int OwnerId { get; set; } = 0;
-
-        [Obsolete]
-        internal ISubscriber Subscriber { get; set; }
+        public int OwnerId { get; set; }
 
         /// <summary>
         ///     Used by IMessageContext.Invoke<T> to denote the response type
@@ -363,8 +355,7 @@ namespace Jasper.Messaging.Runtime
             return Message?.GetType().Name ?? MessageType;
         }
 
-        [Obsolete("Make this for destination")]
-        public Envelope ForScheduledSend(ISubscriber scheduleSendSubscriber)
+        public Envelope ForScheduledSend()
         {
             EnsureData();
 
@@ -377,7 +368,6 @@ namespace Jasper.Messaging.Runtime
                 Destination = TransportConstants.DurableLoopbackUri,
                 Status = TransportConstants.Scheduled,
                 OwnerId = TransportConstants.AnyNode,
-                Subscriber = scheduleSendSubscriber,
                 Writer = EnvelopeReaderWriter.Instance
             };
         }

@@ -61,7 +61,6 @@ namespace Jasper.Messaging.Runtime.Routing
 
             sending.Writer = Writer;
             sending.Destination = Destination;
-            sending.Subscriber = Subscriber;
 
             return sending;
         }

@@ -23,7 +23,7 @@ namespace MessagingTests
 
             theSubscriber = Substitute.For<ISubscriber>();
 
-            theScheduledEnvelope = theOriginal.ForScheduledSend(theSubscriber);
+            theScheduledEnvelope = theOriginal.ForScheduledSend();
         }
 
         [Fact]

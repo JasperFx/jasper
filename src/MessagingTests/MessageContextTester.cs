@@ -36,16 +36,13 @@ namespace MessagingTests
                 Message = envelope?.Message ?? new Message1()
             }).ToArray();
 
-            var props = typeof(Envelope).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
-            var prop = props
-                .FirstOrDefault(x => x.PropertyType == typeof(ISubscriber));
 
             foreach (var env in outgoing)
             {
                 var subscriber = Substitute.For<ISubscriber>();
                 subscriber.IsDurable.Returns(true);
+                theMessagingRoot.Subscribers.GetOrBuild(env.Destination).Returns(subscriber);
 
-                prop.SetValue(env, subscriber);
             }
 
             if (envelope == null)
