@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using Baseline;
 using Jasper.Conneg;
-using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
 using Newtonsoft.Json;
 
@@ -346,21 +344,6 @@ namespace Jasper.Messaging.Runtime
             return Message?.GetType().Name ?? MessageType;
         }
 
-        public Envelope ForScheduledSend()
-        {
-            EnsureData();
 
-            return new Envelope
-            {
-                Message = this,
-                MessageType = TransportConstants.ScheduledEnvelope,
-                ExecutionTime = ExecutionTime,
-                ContentType = TransportConstants.SerializedEnvelope,
-                Destination = TransportConstants.DurableLoopbackUri,
-                Status = TransportConstants.Scheduled,
-                OwnerId = TransportConstants.AnyNode,
-                Writer = EnvelopeReaderWriter.Instance
-            };
-        }
     }
 }

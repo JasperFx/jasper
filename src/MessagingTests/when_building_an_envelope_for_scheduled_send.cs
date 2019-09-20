@@ -1,6 +1,7 @@
 using System;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
 using NSubstitute;

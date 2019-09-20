@@ -1,0 +1,25 @@
+using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
+
+namespace Jasper.Messaging.Scheduled
+{
+    public static class EnvelopeScheduleExtensions
+    {
+        public static Envelope ForScheduledSend(this Envelope envelope)
+        {
+            envelope.EnsureData();
+
+            return new Envelope
+            {
+                Message = envelope,
+                MessageType = TransportConstants.ScheduledEnvelope,
+                ExecutionTime = envelope.ExecutionTime,
+                ContentType = TransportConstants.SerializedEnvelope,
+                Destination = TransportConstants.DurableLoopbackUri,
+                Status = TransportConstants.Scheduled,
+                OwnerId = TransportConstants.AnyNode,
+                Writer = EnvelopeReaderWriter.Instance
+            };
+        }
+    }
+}
