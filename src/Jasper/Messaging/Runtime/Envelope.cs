@@ -23,9 +23,16 @@ namespace Jasper.Messaging.Runtime
         }
 
 
+
         public Envelope(object message)
         {
             Message = message;
+        }
+
+        public Envelope(object message, IMessageSerializer writer)
+        {
+            Message = message;
+            this.writer = writer;
         }
 
         public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
@@ -88,7 +95,7 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public Uri ReceivedAt { get; set; }
 
-        internal IMessageSerializer Writer { get; set; }
+        private IMessageSerializer writer { get; set; }
 
         /// <summary>
         ///     The name of the service that sent this envelope
@@ -243,9 +250,12 @@ namespace Jasper.Messaging.Runtime
             return text;
         }
 
-        internal Envelope Clone()
+        public Envelope Clone(IMessageSerializer writer)
         {
-            return MemberwiseClone().As<Envelope>();
+            var envelope = MemberwiseClone().As<Envelope>();
+            envelope.writer = writer;
+
+            return envelope;
         }
 
         /// <summary>
@@ -305,9 +315,9 @@ namespace Jasper.Messaging.Runtime
             if (_message == null)
                 throw new InvalidOperationException("Cannot ensure data is present when there is no message");
 
-            if (Writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
+            if (writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
 
-            Data = Writer.Write(_message);
+            Data = writer.Write(_message);
         }
 
         internal bool IsPing()

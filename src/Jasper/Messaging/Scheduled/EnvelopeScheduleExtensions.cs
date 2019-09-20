@@ -9,7 +9,7 @@ namespace Jasper.Messaging.Scheduled
         {
             envelope.EnsureData();
 
-            return new Envelope
+            return new Envelope(envelope, EnvelopeReaderWriter.Instance)
             {
                 Message = envelope,
                 MessageType = TransportConstants.ScheduledEnvelope,
@@ -17,8 +17,7 @@ namespace Jasper.Messaging.Scheduled
                 ContentType = TransportConstants.SerializedEnvelope,
                 Destination = TransportConstants.DurableLoopbackUri,
                 Status = TransportConstants.Scheduled,
-                OwnerId = TransportConstants.AnyNode,
-                Writer = EnvelopeReaderWriter.Instance
+                OwnerId = TransportConstants.AnyNode
             };
         }
     }

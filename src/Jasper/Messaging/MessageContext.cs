@@ -395,13 +395,12 @@ namespace Jasper.Messaging
 
         private Envelope buildAcknowledgement()
         {
-            var ack = new Envelope
+            var writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement));
+            var ack = new Envelope(new Acknowledgement {CorrelationId = Envelope.Id}, writer)
             {
                 CausationId = Envelope.Id,
                 Destination = Envelope.ReplyUri,
                 SagaId = Envelope.SagaId,
-                Message = new Acknowledgement {CorrelationId = Envelope.Id},
-                Writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement))
             };
 
             return ack;
