@@ -4,7 +4,6 @@ using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
-using Newtonsoft.Json;
 
 namespace Jasper.Messaging.Runtime
 {
@@ -58,9 +57,7 @@ namespace Jasper.Messaging.Runtime
         /// <summary>
         ///     Used internally to track the completion of an Envelope.
         /// </summary>
-        [JsonIgnore]
         public IMessageCallback Callback { get; set; }
-
 
         // This is mostly for backwards compatibility in wire format
         internal string Queue
@@ -72,7 +69,7 @@ namespace Jasper.Messaging.Runtime
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
         // This is purely for backwards compatibility in wire format
-        private string SubQueue { get; set; } = string.Empty;
+        private string SubQueue { get; set; } = String.Empty;
 
         /// <summary>
         ///     Instruct Jasper to throw away this message if it is not successfully sent and processed
@@ -315,14 +312,14 @@ namespace Jasper.Messaging.Runtime
 
         internal bool IsPing()
         {
-            return MessageType == TransportConstants.PingMessageType;
+            return MessageType == PingMessageType;
         }
 
         public static Envelope ForPing(Uri destination)
         {
             return new Envelope
             {
-                MessageType = TransportConstants.PingMessageType,
+                MessageType = PingMessageType,
                 Data = new byte[] {1, 2, 3, 4},
                 ContentType = "jasper/ping",
                 Destination = destination

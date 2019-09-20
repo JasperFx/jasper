@@ -40,7 +40,7 @@ namespace MessagingTests.Runtime
         public void envelope_for_ping()
         {
             var envelope = Envelope.ForPing(TransportConstants.LoopbackUri);
-            envelope.MessageType.ShouldBe(TransportConstants.PingMessageType);
+            envelope.MessageType.ShouldBe(Envelope.PingMessageType);
             envelope.Data.ShouldNotBeNull();
         }
 

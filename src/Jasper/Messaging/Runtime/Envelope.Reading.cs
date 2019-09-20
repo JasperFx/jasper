@@ -74,7 +74,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case AttemptsKey:
-                        Attempts = int.Parse(value);
+                        Attempts = Int32.Parse(value);
                         break;
 
                     case DeliverByHeader:
@@ -83,7 +83,7 @@ namespace Jasper.Messaging.Runtime
 
 
                     case SentAttemptsHeaderKey:
-                        SentAttempts = int.Parse(value);
+                        SentAttempts = Int32.Parse(value);
                         break;
 
                     case ReceivedAtKey:

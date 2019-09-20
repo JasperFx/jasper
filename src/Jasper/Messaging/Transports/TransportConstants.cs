@@ -32,8 +32,6 @@ namespace Jasper.Messaging.Transports
         public static readonly Uri DurableLoopbackUri = "loopback://durable".ToUri();
         public static readonly Uri LoopbackUri = "loopback://".ToUri();
 
-        public static readonly string PingMessageType = "jasper-ping";
-
         public static readonly string Scheduled = "Scheduled";
         public static readonly string Incoming = "Incoming";
         public static readonly string Outgoing = "Outgoing";
