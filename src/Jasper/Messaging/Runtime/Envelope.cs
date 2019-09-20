@@ -16,7 +16,6 @@ namespace Jasper.Messaging.Runtime
 
 
         private object _message;
-        private string _queue;
 
         public Envelope()
         {
@@ -66,17 +65,8 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public IMessageCallback Callback { get; set; }
 
-        // This is mostly for backwards compatibility in wire format
-        internal string Queue
-        {
-            get => _queue ?? Destination.QueueName();
-            set => _queue = value;
-        }
 
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
-
-        // This is purely for backwards compatibility in wire format
-        private string SubQueue { get; set; } = String.Empty;
 
         /// <summary>
         ///     Instruct Jasper to throw away this message if it is not successfully sent and processed

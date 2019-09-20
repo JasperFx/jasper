@@ -18,6 +18,31 @@ namespace MessagingTests
         }
 
         [Fact]
+        public void queue_at_extension()
+        {
+            var uri = TransportConstants.LoopbackUri.AtQueue("one");
+
+            uri.QueueName().ShouldBe("one");
+        }
+
+        [Fact]
+        public void queue_at_extension_durable()
+        {
+            var uri = TransportConstants.DurableLoopbackUri.AtQueue("one");
+
+            uri.QueueName().ShouldBe("one");
+        }
+
+
+        [Fact]
+        public void queue_at_other_queue()
+        {
+            var uri = "tcp://localhost:2222".ToUri().AtQueue("one");
+
+            uri.QueueName().ShouldBe("one");
+        }
+
+        [Fact]
         public void fall_back_to_the_default_queue_if_no_segments()
         {
             "tcp://localhost:2222".ToUri().QueueName().ShouldBe(TransportConstants.Default);

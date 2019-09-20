@@ -325,8 +325,7 @@ namespace Jasper.Messaging
             var envelope = new Envelope
             {
                 Message = message,
-                Destination = destination,
-                Queue = workerQueue
+                Destination = destination.AtQueue(workerQueue),
             };
 
             return SendEnvelope(envelope);
@@ -337,8 +336,7 @@ namespace Jasper.Messaging
             var envelope = new Envelope
             {
                 Message = message,
-                Destination = TransportConstants.LoopbackUri,
-                Queue = workerQueue
+                Destination = TransportConstants.LoopbackUri.AtQueue(workerQueue),
             };
 
             return SendEnvelope(envelope);
@@ -349,8 +347,7 @@ namespace Jasper.Messaging
             var envelope = new Envelope
             {
                 Message = message,
-                Destination = TransportConstants.DurableLoopbackUri,
-                Queue = workerQueue
+                Destination = TransportConstants.DurableLoopbackUri.AtQueue(workerQueue),
             };
 
             return SendEnvelope(envelope);

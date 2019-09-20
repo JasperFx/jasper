@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using Jasper.Messaging.Transports;
 using Microsoft.Extensions.Configuration;
 
@@ -22,6 +23,18 @@ namespace Jasper.Util
 
         private static readonly HashSet<string> _locals =
             new HashSet<string>(new[] {"localhost", "127.0.0.1"}, StringComparer.OrdinalIgnoreCase);
+
+        public static Uri AtQueue(this Uri uri, string queueName)
+        {
+            if (queueName.IsEmpty()) return uri;
+
+            if (uri.Scheme == TransportConstants.Loopback && uri.Host != TransportConstants.Durable)
+            {
+                return new Uri("loopback://" + queueName);
+            }
+
+            return new Uri(uri, queueName);
+        }
 
         public static string QueueName(this Uri uri)
         {

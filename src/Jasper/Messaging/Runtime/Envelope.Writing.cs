@@ -36,8 +36,6 @@ namespace Jasper.Messaging.Runtime
         {
             var msg = new Envelope
             {
-                Queue = br.ReadString(),
-                SubQueue = br.ReadString(),
                 SentAt = DateTime.FromBinary(br.ReadInt64())
             };
             var headerCount = br.ReadInt32();
@@ -76,8 +74,6 @@ namespace Jasper.Messaging.Runtime
         // TODO -- should we be using some kind of memory pooling here?
         private void writeSingle(BinaryWriter writer)
         {
-            writer.Write(Destination?.QueueName() ?? "");
-            writer.Write(SubQueue ?? "");
             writer.Write(SentAt.ToBinary());
 
             writer.Flush();
