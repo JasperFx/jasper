@@ -82,8 +82,8 @@ namespace MessagingTests.Lightweight.Protocol
         protected void allTheMessagesWereReceived()
         {
             theReceiver.MessagesReceived.Length.ShouldBe(theMessageBatch.Messages.Count);
-            theReceiver.MessagesReceived.Select(x => x.EnvelopeVersionId)
-                .ShouldHaveTheSameElementsAs(theMessageBatch.Messages.Select(x => x.EnvelopeVersionId));
+            theReceiver.MessagesReceived.Select(x => x.Id)
+                .ShouldHaveTheSameElementsAs(theMessageBatch.Messages.Select(x => x.Id));
         }
     }
 

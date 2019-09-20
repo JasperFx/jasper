@@ -84,13 +84,6 @@ namespace MessagingTests.Transports.Lightweight
         }
 
         [Fact]
-        public void brings_over_the_id()
-        {
-            incoming.EnvelopeVersionId.ShouldBe(outgoing.EnvelopeVersionId);
-        }
-
-
-        [Fact]
         public void brings_over_the_saga_id()
         {
             incoming.SagaId.ShouldBe(outgoing.SagaId);

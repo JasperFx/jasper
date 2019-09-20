@@ -18,7 +18,6 @@ namespace Jasper.Messaging.Runtime
         private DateTimeOffset? _executionTime;
 
 
-        private PersistedMessageId _id;
         private object _message;
         private string _queue;
 
@@ -64,14 +63,6 @@ namespace Jasper.Messaging.Runtime
         [JsonIgnore]
         public IMessageCallback Callback { get; set; }
 
-        /// <summary>
-        ///     Unique id of an Envelope used strictly for backward wire protocol compatibility with FubuMVC and RhinoServiceBus
-        /// </summary>
-        public PersistedMessageId EnvelopeVersionId
-        {
-            get => _id ?? (_id = PersistedMessageId.GenerateRandom());
-            internal set => _id = value;
-        }
 
         // This is mostly for backwards compatibility in wire format
         internal string Queue
