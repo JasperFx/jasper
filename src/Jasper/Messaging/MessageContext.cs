@@ -69,7 +69,7 @@ namespace Jasper.Messaging
 
                     if (!subscriber.SupportsNativeScheduledSend)
                     {
-                        outgoing[i] = outgoing[i].ForScheduledSend();
+                        outgoing[i] = outgoing[i].ForScheduledSend(subscriber);
                     }
                 }
             }
@@ -151,7 +151,7 @@ namespace Jasper.Messaging
 
                 foreach (var outgoing in outgoingEnvelopes)
                 {
-                    await send(outgoing);
+                    await outgoing.Send();
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace Jasper.Messaging
 
             foreach (var outgoing in outgoingEnvelopes)
             {
-                await send(outgoing);
+                await outgoing.Send();
             }
         }
 
@@ -194,7 +194,7 @@ namespace Jasper.Messaging
         {
             foreach (var envelope in Outstanding)
             {
-                await quickSend(envelope);
+                await envelope.QuickSend();
             }
 
             _outstanding.Clear();
@@ -403,33 +403,6 @@ namespace Jasper.Messaging
             return ack;
         }
 
-        private readonly IList<Envelope> _enqueued = new List<Envelope>();
-
-        private Task send(Envelope envelope)
-        {
-            if (_enqueued.Contains(envelope)) throw new InvalidOperationException("This envelope has already been enqueued");
-
-            var subscriber = _root.Subscribers.GetOrBuild(envelope.Destination);
-            if (subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
-
-            _enqueued.Add(envelope);
-
-
-            return subscriber.Send(envelope);
-        }
-
-        internal Task quickSend(Envelope envelope)
-        {
-            if (_enqueued.Contains(envelope)) throw new InvalidOperationException("This envelope has already been enqueued");
-
-            var subscriber = _root.Subscribers.GetOrBuild(envelope.Destination);
-            if (subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
-
-            _enqueued.Add(envelope);
-
-
-            return subscriber.QuickSend(envelope);
-        }
 
         private async Task persistOrSend(Envelope[] outgoing)
         {
@@ -443,7 +416,7 @@ namespace Jasper.Messaging
             {
                 foreach (var outgoingEnvelope in outgoing)
                 {
-                    await send(outgoingEnvelope);
+                    await outgoingEnvelope.Send();
                 }
             }
         }

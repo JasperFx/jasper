@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging.Transports;
@@ -341,6 +342,32 @@ namespace Jasper.Messaging.Runtime
             return Message?.GetType().Name ?? MessageType;
         }
 
+        private bool _enqueued;
+
+        internal ISubscriber Subscriber { get; set; }
+
+        internal Task Send()
+        {
+            if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
+
+            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
+
+            _enqueued = true;
+
+
+            return Subscriber.Send(this);
+        }
+
+        internal Task QuickSend()
+        {
+            if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
+
+            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
+
+            _enqueued = true;
+
+            return Subscriber.QuickSend(this);
+        }
 
     }
 }
