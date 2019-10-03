@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Alba HTTP Contract Testing Support for JasperFx Applications</Description>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.TestSupport.Alba</AssemblyName>
     <PackageId>Jasper.TestSupport.Alba</PackageId>
@@ -16,7 +16,7 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Alba" Version="3.0.0" />
+    <PackageReference Include="Alba" Version="3.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
