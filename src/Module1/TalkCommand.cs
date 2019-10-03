@@ -5,9 +5,9 @@ using Oakton.AspNetCore;
 
 namespace Module1
 {
-    public class TalkCommand : OaktonCommand<AspNetCoreInput>
+    public class TalkCommand : OaktonCommand<NetCoreInput>
     {
-        public override bool Execute(AspNetCoreInput input)
+        public override bool Execute(NetCoreInput input)
         {
             ConsoleWriter.Write(ConsoleColor.Magenta, "Hello!");
             return true;

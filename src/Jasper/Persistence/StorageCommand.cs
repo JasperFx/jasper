@@ -19,7 +19,7 @@ namespace Jasper.Persistence
 
     }
 
-    public class StorageInput : AspNetCoreInput
+    public class StorageInput : NetCoreInput
     {
         [Description("Choose the action")] public StorageAction Action { get; set; } = StorageAction.counts;
 

@@ -57,7 +57,7 @@ namespace Jasper.JsonCommands
         }
     }
 
-    public class ExportJsonSchemaInput : AspNetCoreInput
+    public class ExportJsonSchemaInput : NetCoreInput
     {
         [Description("Target directory to write the json schema documents")]
         public string Directory { get; set; }

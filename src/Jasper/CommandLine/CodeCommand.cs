@@ -64,7 +64,7 @@ namespace Jasper.CommandLine
         routes
     }
 
-    public class CodeInput : AspNetCoreInput
+    public class CodeInput : NetCoreInput
     {
         public CodeMatch MatchFlag { get; set; } = CodeMatch.all;
 

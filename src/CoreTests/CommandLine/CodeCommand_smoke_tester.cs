@@ -19,7 +19,7 @@ namespace CoreTests.CommandLine
             registry.Handlers.DisableConventionalDiscovery();
             registry.Handlers.IncludeType<MessageConsumer>();
 
-            input.WebHostBuilder = JasperHost.CreateDefaultBuilder().UseJasper(registry);
+            input.HostBuilder = JasperHost.CreateDefaultBuilder().UseJasper(registry);
 
 
 
