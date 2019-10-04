@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.CommandLine;
 using Jasper.Configuration;
 using Jasper.Http;
 using Lamar.Scanning.Conventions;
@@ -14,18 +12,15 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Oakton;
 using Oakton.AspNetCore;
 
 namespace Jasper
 {
     /// <summary>
-    /// Used to bootstrap a Jasper application
+    ///     Used to bootstrap a Jasper application
     /// </summary>
     public static class JasperHost
     {
-
-
         /// <summary>
         ///     Creates a Jasper application for the current executing assembly
         ///     using all the default Jasper configurations
@@ -92,10 +87,7 @@ namespace Jasper
             if (extensions.Any())
             {
                 Console.WriteLine($"Found and applying {extensions.Length} Jasper extension(s)");
-                foreach (var extension in extensions)
-                {
-                    Console.WriteLine($"Applying {extension}");
-                }
+                foreach (var extension in extensions) Console.WriteLine($"Applying {extension}");
             }
             else
             {
@@ -126,9 +118,9 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Builds a default, "headless" WebHostBuilder with minimal configuration including
-        /// the usage of appsettings.json binding, Debug/Console logging, but without Kestrel
-        /// or any other middleware configured
+        ///     Builds a default, "headless" WebHostBuilder with minimal configuration including
+        ///     the usage of appsettings.json binding, Debug/Console logging, but without Kestrel
+        ///     or any other middleware configured
         /// </summary>
         /// <returns></returns>
         public static IWebHostBuilder CreateDefaultBuilder()
@@ -140,33 +132,25 @@ namespace Jasper
                     var env = hostingContext.HostingEnvironment;
 
                     config
-                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                        .AddJsonFile("appsettings.json", true, true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
 
                     config.AddEnvironmentVariables();
-
                 })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddConsole();
                     logging.AddDebug();
-
                 })
                 .ConfigureServices(s =>
                 {
                     // Registers an empty startup if there is none in the application
-                    if (s.All(x => x.ServiceType != typeof(IStartup)))
-                    {
-                        s.AddSingleton<IStartup>(new NulloStartup());
-                    }
+                    if (s.All(x => x.ServiceType != typeof(IStartup))) s.AddSingleton<IStartup>(new NulloStartup());
 
                     // Registers a "nullo" server if there is none in the application
                     // i.e., Kestrel isn't applied
-                    if (s.All(x => x.ServiceType != typeof(IServer)))
-                    {
-                        s.AddSingleton<IServer>(new NulloServer());
-                    }
+                    if (s.All(x => x.ServiceType != typeof(IServer))) s.AddSingleton<IServer>(new NulloServer());
 
                     // This guarantees that the Jasper middleware is part of the RequestDelegate
                     // at the end if it has not been explicitly added
@@ -176,9 +160,9 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Shortcut to create a new empty WebHostBuilder with Jasper's default
-        /// settings, add the JasperRegistry, and bootstrap the application
-        /// from the command line
+        ///     Shortcut to create a new empty WebHostBuilder with Jasper's default
+        ///     settings, add the JasperRegistry, and bootstrap the application
+        ///     from the command line
         /// </summary>
         /// <param name="args"></param>
         /// <typeparam name="T"></typeparam>
@@ -190,9 +174,9 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Shortcut to create a new empty WebHostBuilder with Jasper's default
-        /// settings, add Jasper with the supplied configuration, and bootstrap the application
-        /// from the command line
+        ///     Shortcut to create a new empty WebHostBuilder with Jasper's default
+        ///     settings, add Jasper with the supplied configuration, and bootstrap the application
+        ///     from the command line
         /// </summary>
         /// <param name="args"></param>
         /// <param name="configure"></param>

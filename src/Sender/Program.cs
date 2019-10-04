@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Jasper;
-using Jasper.CommandLine;
 
 namespace Sender
 {

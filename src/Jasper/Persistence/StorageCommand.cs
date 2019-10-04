@@ -1,8 +1,6 @@
 using System;
 using System.IO;
-using System.Net;
 using Baseline;
-using Jasper.CommandLine;
 using Jasper.Messaging.Durability;
 using Oakton;
 using Oakton.AspNetCore;

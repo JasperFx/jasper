@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Jasper;
-using Jasper.CommandLine;
 using Microsoft.AspNetCore.Hosting;
 using TestMessages;
 

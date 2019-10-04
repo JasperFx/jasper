@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
-using Jasper.CommandLine;
 using Jasper.Messaging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;

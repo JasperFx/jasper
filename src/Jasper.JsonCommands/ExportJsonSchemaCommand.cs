@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
-using Jasper.CommandLine;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Util;
