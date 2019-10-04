@@ -120,7 +120,7 @@ namespace Samples
             // Apply a handler policy
             Handlers.GlobalPolicy<PutStopwatchOnHandlers>();
 
-            HttpRoutes.GlobalPolicy<PutStopwatchOnRoutes>();
+            JasperHttpRoutes.GlobalPolicy<PutStopwatchOnRoutes>();
         }
     }
     // ENDSAMPLE
@@ -157,8 +157,8 @@ namespace Samples
         {
             var registry = new JasperRegistry();
             registry.Handlers.DisableConventionalDiscovery();
-            registry.HttpRoutes.DisableConventionalDiscovery();
-            registry.HttpRoutes.IncludeType<ClockedEndpoint>();
+            registry.JasperHttpRoutes.DisableConventionalDiscovery();
+            registry.JasperHttpRoutes.IncludeType<ClockedEndpoint>();
 
             using (var runtime = JasperHost.For(registry))
             {

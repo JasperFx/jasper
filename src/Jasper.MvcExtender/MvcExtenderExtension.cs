@@ -18,11 +18,11 @@ namespace Jasper.MvcExtender
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.HttpRoutes.IncludeTypes(x => x.CanBeCastTo<ControllerBase>());
-            registry.HttpRoutes.IncludeMethods(x => x.HasAttribute<HttpMethodAttribute>());
+            registry.JasperHttpRoutes.IncludeTypes(x => x.CanBeCastTo<ControllerBase>());
+            registry.JasperHttpRoutes.IncludeMethods(x => x.HasAttribute<HttpMethodAttribute>());
 
             // SAMPLE: applying-route-policy
-            registry.HttpRoutes.GlobalPolicy<ControllerUsagePolicy>();
+            registry.JasperHttpRoutes.GlobalPolicy<ControllerUsagePolicy>();
             // ENDSAMPLE
 
             registry.Services.AddSingleton<IWriterRule, ActionResultWriterRule>();

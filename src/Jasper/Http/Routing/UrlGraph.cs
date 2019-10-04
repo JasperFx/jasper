@@ -26,9 +26,9 @@ namespace Jasper.Http.Routing
         {
         }
 
-        public UrlGraph(RouteGraph routes, HttpSettings settings)
+        public UrlGraph(RouteGraph routes, JasperHttpOptions options)
         {
-            settings.IsReady.GetAwaiter().GetResult();
+            options.IsReady.GetAwaiter().GetResult();
 
             foreach (var chain in routes)
             {

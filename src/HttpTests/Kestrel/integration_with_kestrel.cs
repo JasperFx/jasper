@@ -29,7 +29,7 @@ namespace HttpTests.Kestrel
                 .UseStartup<Startup>()
                 .UseJasper(x =>
                 {
-                    x.HttpRoutes.DisableConventionalDiscovery()
+                    x.JasperHttpRoutes.DisableConventionalDiscovery()
                         .IncludeType<HomeEndpointGuy>()
                         .IncludeType<UserController>();
                     x.Services.AddSingleton(new UserRepository());

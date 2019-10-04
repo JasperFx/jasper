@@ -87,7 +87,7 @@ namespace Jasper
 
             JasperHost.ApplyExtensions(registry);
 
-            registry.HttpRoutes.StartFindingRoutes(registry.ApplicationAssembly);
+            registry.JasperHttpRoutes.StartFindingRoutes(registry.ApplicationAssembly);
             registry.Messaging.StartCompiling(registry);
 
             registry.Settings.Apply(registry.Services);
@@ -95,7 +95,7 @@ namespace Jasper
             builder.ConfigureServices(s =>
             {
 
-                if (registry.HttpRoutes.AspNetCoreCompliance == ComplianceMode.GoFaster)
+                if (registry.JasperHttpRoutes.AspNetCoreCompliance == ComplianceMode.GoFaster)
                 {
                     s.RemoveAll(x => x.ServiceType == typeof(IStartupFilter) && x.ImplementationType == typeof(AutoRequestServicesStartupFilter));
                 }
@@ -185,14 +185,14 @@ namespace Jasper
         {
             return app =>
             {
-                var httpSettings = app.ApplicationServices.GetRequiredService<HttpSettings>();
+                var httpSettings = app.ApplicationServices.GetRequiredService<JasperHttpOptions>();
                 if(!httpSettings.Enabled)
                 {
                     next(app);
                     return;
                 }
 
-                var logger = app.ApplicationServices.GetRequiredService<ILogger<HttpSettings>>();
+                var logger = app.ApplicationServices.GetRequiredService<ILogger<JasperHttpOptions>>();
 
                 app.Use(inner =>
                 {

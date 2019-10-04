@@ -19,7 +19,7 @@ namespace HttpTests
                 {
                     app.Run(c => c.Response.WriteAsync("Hello"));
                 })
-                .UseJasper(_ => _.HttpRoutes.DisableConventionalDiscovery())
+                .UseJasper(_ => _.JasperHttpRoutes.DisableConventionalDiscovery())
                 .ToAlbaSystem();
 
 

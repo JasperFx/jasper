@@ -20,7 +20,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
                 _.Include<MartenBackedPersistence>();
                 _.ConfigureMarten(x => { x.PLV8Enabled = false; });
-                _.HttpRoutes.DisableConventionalDiscovery();
+                _.JasperHttpRoutes.DisableConventionalDiscovery();
             });
 
 

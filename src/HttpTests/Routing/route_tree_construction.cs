@@ -9,7 +9,7 @@ namespace HttpTests.Routing
 {
     public class route_tree_construction
     {
-        private readonly RouteTree theTree = new RouteTree(new HttpSettings(), new JasperGenerationRules("JasperGenerated"));
+        private readonly RouteTree theTree = new RouteTree(new JasperHttpOptions(), new JasperGenerationRules("JasperGenerated"));
 
         [Fact]
         public void place_root_by_method()

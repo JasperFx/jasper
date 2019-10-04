@@ -17,7 +17,7 @@ namespace HttpTests.Routing
         [Fact]
         public void methods_are_candidate_actions()
         {
-            var httpSettings = new HttpSettings();
+            var httpSettings = new JasperHttpOptions();
 
             httpSettings.MethodFilters.Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue)))
                 .ShouldBeTrue();

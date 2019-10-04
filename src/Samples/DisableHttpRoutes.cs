@@ -11,7 +11,7 @@ namespace Jasper.Testing.Samples
             // SAMPLE: NoHttpRoutesInWebHoster
             var host = WebHost.CreateDefaultBuilder()
                 .UseStartup<Startup>()
-                .UseJasper(x => x.HttpRoutes.Enabled = false)
+                .UseJasper(x => x.JasperHttpRoutes.Enabled = false)
                 .Start();
 
             // ENDSAMPLE
@@ -23,7 +23,7 @@ namespace Jasper.Testing.Samples
     {
         public NoHttpRoutesApp()
         {
-            HttpRoutes.Enabled = false;
+            JasperHttpRoutes.Enabled = false;
         }
     }
     // ENDSAMPLE

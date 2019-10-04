@@ -11,10 +11,10 @@ namespace Jasper.Http.Routing
 {
     public class Router
     {
-        private readonly ILogger<HttpSettings> _logger;
+        private readonly ILogger<JasperHttpOptions> _logger;
         private readonly Lazy<RouteTree> _finder;
 
-        public Router(Task<RouteTree> source, ILogger<HttpSettings> logger)
+        public Router(Task<RouteTree> source, ILogger<JasperHttpOptions> logger)
         {
             _logger = logger;
             _finder = new Lazy<RouteTree>(() => source.GetAwaiter().GetResult());
@@ -40,10 +40,10 @@ namespace Jasper.Http.Routing
             var container = (IContainer) app.ApplicationServices;
             var rules = container.GetInstance<JasperGenerationRules>();
 
-            var finderSource = container.GetInstance<HttpSettings>()
+            var finderSource = container.GetInstance<JasperHttpOptions>()
                 .BuildRouting(container, rules);
 
-            var router = new Router(finderSource, container.GetInstance<ILogger<HttpSettings>>());
+            var router = new Router(finderSource, container.GetInstance<ILogger<JasperHttpOptions>>());
 
             app.MarkJasperHasBeenApplied();
 

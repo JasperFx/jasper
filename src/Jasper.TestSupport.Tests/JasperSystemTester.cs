@@ -18,7 +18,7 @@ namespace Jasper.TestSupport.Tests
         [Fact]
         public async Task adds_console_and_debug_logging()
         {
-            using (var system = JasperStorytellerHost.Basic(x => { x.HttpRoutes.DisableConventionalDiscovery(); }))
+            using (var system = JasperStorytellerHost.Basic(x => { x.JasperHttpRoutes.DisableConventionalDiscovery(); }))
             {
                 await system.Warmup();
 
@@ -99,7 +99,7 @@ namespace Jasper.TestSupport.Tests
         [Fact]
         public async Task bootstraps_the_host()
         {
-            using (var system = JasperStorytellerHost.Basic(x => { x.HttpRoutes.DisableConventionalDiscovery(); }))
+            using (var system = JasperStorytellerHost.Basic(x => { x.JasperHttpRoutes.DisableConventionalDiscovery(); }))
             {
                 await system.Warmup();
 
@@ -141,7 +141,7 @@ namespace Jasper.TestSupport.Tests
         public FakeStorytellerSystem()
         {
             Registry.Services.AddSingleton(DisposableGuy);
-            Registry.HttpRoutes.DisableConventionalDiscovery();
+            Registry.JasperHttpRoutes.DisableConventionalDiscovery();
         }
 
         public bool BeforeAllWasCalled { get; set; }

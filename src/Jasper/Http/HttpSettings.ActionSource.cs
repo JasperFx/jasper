@@ -10,7 +10,7 @@ using LamarCodeGeneration.Frames;
 
 namespace Jasper.Http
 {
-    public partial class HttpSettings
+    public partial class JasperHttpOptions
     {
         private readonly CompositeFilter<MethodCall> _callFilters = new CompositeFilter<MethodCall>();
         private readonly IList<Type> _explicitTypes = new List<Type>();
@@ -58,7 +58,7 @@ namespace Jasper.Http
         /// <summary>
         ///     Find Actions on classes whose name ends on 'Controller'
         /// </summary>
-        public HttpSettings IncludeClassesSuffixedWithController()
+        public JasperHttpOptions IncludeClassesSuffixedWithController()
         {
             return IncludeTypesNamed(x => x.EndsWith("Controller"));
         }
@@ -74,7 +74,7 @@ namespace Jasper.Http
                     x.EndsWith("Endpoints", StringComparison.OrdinalIgnoreCase));
         }
 
-        public HttpSettings IncludeTypesNamed(Func<string, bool> filter)
+        public JasperHttpOptions IncludeTypesNamed(Func<string, bool> filter)
         {
             return IncludeTypes(type => filter(type.Name));
         }
@@ -82,7 +82,7 @@ namespace Jasper.Http
         /// <summary>
         ///     Find Actions on types that match on the provided filter
         /// </summary>
-        public HttpSettings IncludeTypes(Func<Type, bool> filter)
+        public JasperHttpOptions IncludeTypes(Func<Type, bool> filter)
         {
             _typeFilters.Includes += filter;
             return this;
@@ -91,7 +91,7 @@ namespace Jasper.Http
         /// <summary>
         ///     Find Actions on concrete types assignable to T
         /// </summary>
-        public HttpSettings IncludeTypesImplementing<T>()
+        public JasperHttpOptions IncludeTypesImplementing<T>()
         {
             return IncludeTypes(type => !type.IsOpenGeneric() && type.IsConcreteTypeOf<T>());
         }
@@ -99,7 +99,7 @@ namespace Jasper.Http
         /// <summary>
         ///     Actions that match on the provided filter will be added to the runtime.
         /// </summary>
-        public HttpSettings IncludeMethods(Func<MethodInfo, bool> filter)
+        public JasperHttpOptions IncludeMethods(Func<MethodInfo, bool> filter)
         {
             _methodFilters.Includes += filter;
             return this;
@@ -108,7 +108,7 @@ namespace Jasper.Http
         /// <summary>
         ///     Exclude types that match on the provided filter for finding Actions
         /// </summary>
-        public HttpSettings ExcludeTypes(Func<Type, bool> filter)
+        public JasperHttpOptions ExcludeTypes(Func<Type, bool> filter)
         {
             _typeFilters.Excludes += filter;
             return this;
@@ -117,7 +117,7 @@ namespace Jasper.Http
         /// <summary>
         ///     Actions that match on the provided filter will NOT be added to the runtime.
         /// </summary>
-        public HttpSettings ExcludeMethods(Func<MethodInfo, bool> filter)
+        public JasperHttpOptions ExcludeMethods(Func<MethodInfo, bool> filter)
         {
             _methodFilters.Excludes += filter;
             return this;
@@ -127,7 +127,7 @@ namespace Jasper.Http
         ///     Ignore any methods that are declared by a super type or interface T
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public HttpSettings IgnoreMethodsDeclaredBy<T>()
+        public JasperHttpOptions IgnoreMethodsDeclaredBy<T>()
         {
             _methodFilters.IgnoreMethodsDeclaredBy<T>();
             return this;
@@ -136,7 +136,7 @@ namespace Jasper.Http
         /// <summary>
         ///     Exclude any types that are not concrete
         /// </summary>
-        public HttpSettings ExcludeNonConcreteTypes()
+        public JasperHttpOptions ExcludeNonConcreteTypes()
         {
             _typeFilters.Excludes += type => !type.IsConcrete();
             return this;
@@ -146,7 +146,7 @@ namespace Jasper.Http
         ///     Explicitly add this type as a candidate for HTTP endpoints
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public HttpSettings IncludeType<T>()
+        public JasperHttpOptions IncludeType<T>()
         {
             return IncludeType(typeof(T));
         }
@@ -156,7 +156,7 @@ namespace Jasper.Http
         /// </summary>
         /// <param name="type"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public HttpSettings IncludeType(Type type)
+        public JasperHttpOptions IncludeType(Type type)
         {
             _explicitTypes.Fill(type);
             return this;
@@ -166,7 +166,7 @@ namespace Jasper.Http
         ///     Disables explicit discovery of HTTP endpoints
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        public HttpSettings DisableConventionalDiscovery()
+        public JasperHttpOptions DisableConventionalDiscovery()
         {
             _disableConventionalDiscovery = true;
             return this;

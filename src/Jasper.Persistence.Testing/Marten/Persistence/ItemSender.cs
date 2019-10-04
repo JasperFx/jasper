@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             Transports.LightweightListenerAt(2567);
 
-            HttpRoutes.DisableConventionalDiscovery();
+            JasperHttpRoutes.DisableConventionalDiscovery();
         }
     }
 }

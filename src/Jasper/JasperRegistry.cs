@@ -43,7 +43,7 @@ namespace Jasper
 
         public JasperRegistry(string assemblyName)
         {
-            HttpRoutes = new HttpSettings();
+            JasperHttpRoutes = new JasperHttpOptions();
 
             Services = _applicationServices;
 
@@ -66,7 +66,7 @@ namespace Jasper
 
 
             Publish = new PublishingExpression(Settings, Messaging);
-            Settings.Replace(HttpRoutes);
+            Settings.Replace(JasperHttpRoutes);
 
             deriveServiceName();
         }
@@ -74,7 +74,7 @@ namespace Jasper
         /// <summary>
         ///     Configure how HTTP routes are discovered and handled
         /// </summary>
-        public HttpSettings HttpRoutes { get; }
+        public JasperHttpOptions JasperHttpRoutes { get; }
 
         /// <summary>
         ///     Configure or extend the Lamar code generation
@@ -214,7 +214,7 @@ namespace Jasper
         protected internal void Describe(IJasperHost runtime, TextWriter writer)
         {
             Messaging.Describe(runtime, writer);
-            HttpRoutes.Describe(runtime, writer);
+            JasperHttpRoutes.Describe(runtime, writer);
         }
 
         internal void ApplyExtensions(IJasperExtension[] extensions)

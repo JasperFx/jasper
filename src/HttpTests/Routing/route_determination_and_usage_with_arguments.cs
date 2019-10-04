@@ -25,7 +25,7 @@ namespace HttpTests.Routing
         public async Task find_what_is_wrong()
         {
             var registry = new JasperRegistry();
-            registry.HttpRoutes.DisableConventionalDiscovery().IncludeType<FakeThing>();
+            registry.JasperHttpRoutes.DisableConventionalDiscovery().IncludeType<FakeThing>();
 
             using (var system = JasperAlba.For(registry))
             {

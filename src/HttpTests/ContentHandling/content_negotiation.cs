@@ -19,7 +19,7 @@ namespace HttpTests.ContentHandling
         public ConnegRegistry()
         {
             Handlers.DisableConventionalDiscovery();
-            HttpRoutes.IncludeType<CustomReaderWriterEndpoint>();
+            JasperHttpRoutes.IncludeType<CustomReaderWriterEndpoint>();
             Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
             Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
 

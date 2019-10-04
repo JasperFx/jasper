@@ -21,20 +21,20 @@ namespace Jasper.Http.Routing
         private readonly LightweightCache<string, MethodRoutes> _methods
             = new LightweightCache<string, MethodRoutes>(method => new MethodRoutes(method));
 
-        private readonly HttpSettings _settings;
+        private readonly JasperHttpOptions _options;
         private readonly JasperGenerationRules _rules;
         private readonly GeneratedAssembly _assembly;
 
         private ImHashMap<string, RouteSelector> _selectors = ImHashMap<string, RouteSelector>.Empty;
 
-        public RouteTree(HttpSettings settings, JasperGenerationRules rules)
+        public RouteTree(JasperHttpOptions options, JasperGenerationRules rules)
         {
-            foreach (var chain in settings.Routes)
+            foreach (var chain in options.Routes)
             {
                 chain.Route.Place(this);
             }
 
-            _settings = settings;
+            _options = options;
             _rules = rules;
             _assembly = new GeneratedAssembly(rules);
         }
@@ -61,21 +61,21 @@ namespace Jasper.Http.Routing
         {
             var connegRules = container.GetInstance<ConnegRules>();
 
-            foreach (var route in _settings.Routes)
+            foreach (var route in _options.Routes)
             {
                 route.AssemblyType(_assembly, connegRules, _rules);
             }
 
             foreach (var methodRoutes in _methods)
             {
-                methodRoutes.AssemblySelector(_assembly, _settings.Routes);
+                methodRoutes.AssemblySelector(_assembly, _options.Routes);
             }
 
             new AssemblyGenerator().Compile(_assembly, container.CreateServiceVariableSource());
 
             foreach (var methodRoutes in _methods)
             {
-                var selector = methodRoutes.BuildSelector(container, _settings.Routes);
+                var selector = methodRoutes.BuildSelector(container, _options.Routes);
                 selector.Root = methodRoutes.Root?.Handler;
                 _selectors = _selectors.AddOrUpdate(methodRoutes.HttpMethod, selector);
             }

@@ -21,7 +21,7 @@ namespace HttpTests
     {
         public HttpBootstrappedApp()
         {
-            HttpRoutes.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
+            JasperHttpRoutes.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
 
             Include<EndpointExtension>();
 
@@ -135,7 +135,7 @@ namespace HttpTests
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.HttpRoutes.IncludeType<ExtensionThing>();
+            registry.JasperHttpRoutes.IncludeType<ExtensionThing>();
         }
     }
 

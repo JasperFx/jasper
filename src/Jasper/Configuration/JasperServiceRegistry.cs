@@ -31,7 +31,7 @@ namespace Jasper.Configuration
             For<IMetrics>().Use<NulloMetrics>();
             For<IHostedService>().Use<MetricsCollector>();
 
-            Policies.Add(new HandlerAndRoutePolicy(parent.HttpRoutes.Routes, parent.Messaging.Graph));
+            Policies.Add(new HandlerAndRoutePolicy(parent.JasperHttpRoutes.Routes, parent.Messaging.Graph));
 
             this.AddLogging();
 
@@ -58,7 +58,7 @@ namespace Jasper.Configuration
             this.AddSingleton<ConnegRules>();
 
             this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
-            this.AddSingleton(parent.HttpRoutes.Routes);
+            this.AddSingleton(parent.JasperHttpRoutes.Routes);
             ForSingletonOf<IUrlRegistry>().Use<UrlGraph>();
 
             this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());

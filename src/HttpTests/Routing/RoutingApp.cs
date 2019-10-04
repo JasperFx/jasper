@@ -8,7 +8,7 @@ namespace HttpTests.Routing
         public RoutingApp()
         {
             Handlers.DisableConventionalDiscovery();
-            HttpRoutes
+            JasperHttpRoutes
                 .DisableConventionalDiscovery()
                 .IncludeType<SpreadHttpActions>()
                 .IncludeType<RouteEndpoints>();

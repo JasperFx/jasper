@@ -20,7 +20,7 @@ namespace HttpTests.Routing
         {
             System = SystemUnderTest.For(x => x.UseStartup<Startup>().UseJasper(_ =>
             {
-                _.HttpRoutes.DisableConventionalDiscovery()
+                _.JasperHttpRoutes.DisableConventionalDiscovery()
                     .IncludeType<AttributeUsingEndpointClass>()
                     .IncludeType<IdiomaticJasperRouteEndpoint>();
             }));

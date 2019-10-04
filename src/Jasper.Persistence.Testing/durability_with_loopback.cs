@@ -51,7 +51,7 @@ namespace IntegrationTests
     {
         public DurableSender(bool latched)
         {
-            HttpRoutes.Enabled = false;
+            JasperHttpRoutes.Enabled = false;
 
             Publish.AllMessagesTo("loopback://durable/one");
 

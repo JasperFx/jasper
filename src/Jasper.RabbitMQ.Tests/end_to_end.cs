@@ -74,7 +74,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             using (var runtime = JasperHost.For(x =>
             {
-                x.HttpRoutes.DisableConventionalDiscovery();
+                x.JasperHttpRoutes.DisableConventionalDiscovery();
 
                 x.Settings.Alter<RabbitMqOptions>(settings =>
                 {
@@ -215,7 +215,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 _.Settings.AddRabbitMqHost("localhost");
 
-                _.HttpRoutes.DisableConventionalDiscovery();
+                _.JasperHttpRoutes.DisableConventionalDiscovery();
 
                 _.Publish.AllMessagesTo(uri);
 
@@ -235,7 +235,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 _.Settings.AddRabbitMqHost("localhost");
 
-                _.HttpRoutes.DisableConventionalDiscovery();
+                _.JasperHttpRoutes.DisableConventionalDiscovery();
 
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
@@ -285,7 +285,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 _.Publish.AllMessagesTo(uri);
 
-                _.HttpRoutes.DisableConventionalDiscovery();
+                _.JasperHttpRoutes.DisableConventionalDiscovery();
             });
 
             var receiver1 = JasperHost.For(_ =>
@@ -299,7 +299,7 @@ namespace Jasper.RabbitMQ.Tests
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
 
-                _.HttpRoutes.DisableConventionalDiscovery();
+                _.JasperHttpRoutes.DisableConventionalDiscovery();
             });
 
             var receiver2 = JasperHost.For(_ =>
@@ -313,7 +313,7 @@ namespace Jasper.RabbitMQ.Tests
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
 
-                _.HttpRoutes.DisableConventionalDiscovery();
+                _.JasperHttpRoutes.DisableConventionalDiscovery();
             });
 
             var receiver3 = JasperHost.For(_ =>
@@ -327,7 +327,7 @@ namespace Jasper.RabbitMQ.Tests
                 _.Services.AddSingleton<ColorHistory>();
                 _.Services.AddSingleton<MessageTracker>();
 
-                _.HttpRoutes.DisableConventionalDiscovery();
+                _.JasperHttpRoutes.DisableConventionalDiscovery();
             });
 
             var wait1 = receiver1.Get<MessageTracker>().WaitFor<ColorChosen>();
@@ -484,7 +484,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             Settings.AddRabbitMqHost("localhost");
 
-            HttpRoutes.DisableConventionalDiscovery();
+            JasperHttpRoutes.DisableConventionalDiscovery();
 
             Transports.ListenForMessagesFrom("rabbitmq://localhost/queue/messages3");
 

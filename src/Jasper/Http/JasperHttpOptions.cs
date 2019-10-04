@@ -29,12 +29,12 @@ namespace Jasper.Http
         GoFaster
     }
 
-    public partial class HttpSettings
+    public partial class JasperHttpOptions
     {
         private readonly IList<IRoutePolicy> _policies = new List<IRoutePolicy>();
         internal readonly RouteGraph Routes = new RouteGraph();
 
-        public HttpSettings()
+        public JasperHttpOptions()
         {
             _methodFilters = new ActionMethodFilter();
             _methodFilters.Excludes += m => m.Name == "Configure";
