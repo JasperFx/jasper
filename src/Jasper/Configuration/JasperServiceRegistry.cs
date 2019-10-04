@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Jasper.Conneg;
-using Jasper.Http.ContentHandling;
-using Jasper.Http.Model;
-using Jasper.Http.Routing;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -17,7 +14,6 @@ using Jasper.Messaging.Transports.Tcp;
 using Lamar;
 using Lamar.IoC.Instances;
 using LamarCodeGeneration.Util;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
@@ -31,7 +27,7 @@ namespace Jasper.Configuration
             For<IMetrics>().Use<NulloMetrics>();
             For<IHostedService>().Use<MetricsCollector>();
 
-            Policies.Add(new HandlerAndRoutePolicy(parent.JasperHttpRoutes.Routes, parent.Messaging.Graph));
+            this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());
 
             this.AddLogging();
 
@@ -55,14 +51,6 @@ namespace Jasper.Configuration
 
         private void aspnetcore(JasperRegistry parent)
         {
-            this.AddSingleton<ConnegRules>();
-
-            this.AddScoped<IHttpContextAccessor>(x => new HttpContextAccessor());
-            this.AddSingleton(parent.JasperHttpRoutes.Routes);
-            ForSingletonOf<IUrlRegistry>().Use<UrlGraph>();
-
-            this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());
-
 
         }
 
@@ -84,6 +72,8 @@ namespace Jasper.Configuration
 
         private void messaging(JasperRegistry parent)
         {
+            Policies.Add(new HandlerScopingPolicy(parent.Messaging.Graph));
+
             ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
 
             For<IEnvelopePersistence>().Use<NulloEnvelopePersistence>();
@@ -131,22 +121,17 @@ namespace Jasper.Configuration
         }
     }
 
-    internal class HandlerAndRoutePolicy : IFamilyPolicy
+    internal class HandlerScopingPolicy : IFamilyPolicy
     {
-        private readonly RouteGraph _routes;
         private readonly HandlerGraph _handlers;
 
-        public HandlerAndRoutePolicy(RouteGraph routes, HandlerGraph handlers)
+        public HandlerScopingPolicy(HandlerGraph handlers)
         {
-            _routes = routes;
             _handlers = handlers;
         }
 
         private bool matches(Type type)
         {
-            if (_routes.Any(x => x.Action.HandlerType == type)) return true;
-
-
             var handlerTypes = _handlers.Chains.SelectMany(x => x.Handlers)
                 .Select(x => x.HandlerType);
 

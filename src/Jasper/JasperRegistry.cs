@@ -59,6 +59,9 @@ namespace Jasper
 
             _baseServices = new JasperServiceRegistry(this);
 
+            // TEMP!!!!
+            _baseServices.AddRange(new JasperHttpServiceRegistry(this.JasperHttpRoutes));
+
             _baseServices.AddSingleton<GenerationRules>(CodeGeneration);
 
             Settings = new JasperSettings(this);
