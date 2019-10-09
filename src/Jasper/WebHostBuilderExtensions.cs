@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Configuration;
 using Jasper.Http;
-using Jasper.Http.Model;
 using Jasper.Http.Routing;
-using Jasper.Http.Routing.Codegen;
 using Jasper.Messaging;
 using Lamar;
 using Microsoft.AspNetCore.Builder;
@@ -23,8 +20,10 @@ namespace Jasper
 {
     public static class WebHostBuilderExtensions
     {
+        public static readonly string JasperHasBeenApplied = "JasperHasBeenApplied";
+
         /// <summary>
-        /// Overrides a single configuration value. Useful for testing scenarios
+        ///     Overrides a single configuration value. Useful for testing scenarios
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="key"></param>
@@ -39,13 +38,14 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Add Jasper to an ASP.Net Core application using a custom JasperOptionsBuilder (or JasperRegistry) type
+        ///     Add Jasper to an ASP.Net Core application using a custom JasperOptionsBuilder (or JasperRegistry) type
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="overrides"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder, Action<T> overrides = null) where T : JasperRegistry, new ()
+        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder, Action<T> overrides = null)
+            where T : JasperRegistry, new()
         {
             var registry = new T();
             overrides?.Invoke(registry);
@@ -53,27 +53,28 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Add Jasper to an ASP.Net Core application with optional configuration to Jasper
+        ///     Add Jasper to an ASP.Net Core application with optional configuration to Jasper
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="overrides">Programmatically configure Jasper options</param>
-        /// <param name="configure">Programmatically configure Jasper options using the application's IConfiguration and IHostingEnvironment</param>
+        /// <param name="configure">
+        ///     Programmatically configure Jasper options using the application's IConfiguration and
+        ///     IHostingEnvironment
+        /// </param>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperRegistry> overrides = null, Action<WebHostBuilderContext, JasperOptions> configure = null)
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperRegistry> overrides = null,
+            Action<WebHostBuilderContext, JasperOptions> configure = null)
         {
             var registry = new JasperRegistry(builder.GetSetting(WebHostDefaults.ApplicationKey));
             overrides?.Invoke(registry);
 
-            if (configure != null)
-            {
-                registry.Settings.Messaging(configure);
-            }
+            if (configure != null) registry.Settings.Messaging(configure);
 
             return builder.UseJasper(registry);
         }
 
         /// <summary>
-        /// Add Jasper to an ASP.Net Core application with a pre-built JasperOptionsBuilder
+        ///     Add Jasper to an ASP.Net Core application with a pre-built JasperOptionsBuilder
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="registry"></param>
@@ -94,11 +95,10 @@ namespace Jasper
 
             builder.ConfigureServices(s =>
             {
-
                 if (registry.JasperHttpRoutes.AspNetCoreCompliance == ComplianceMode.GoFaster)
-                {
-                    s.RemoveAll(x => x.ServiceType == typeof(IStartupFilter) && x.ImplementationType == typeof(AutoRequestServicesStartupFilter));
-                }
+                    s.RemoveAll(x =>
+                        x.ServiceType == typeof(IStartupFilter) &&
+                        x.ImplementationType == typeof(AutoRequestServicesStartupFilter));
 
                 s.AddSingleton<IHostedService, JasperActivator>();
 
@@ -114,11 +114,9 @@ namespace Jasper
             return builder;
         }
 
-        public static readonly string JasperHasBeenApplied = "JasperHasBeenApplied";
-
 
         /// <summary>
-        /// Add Jasper's middleware to the application's RequestDelegate pipeline
+        ///     Add Jasper's middleware to the application's RequestDelegate pipeline
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
@@ -129,8 +127,6 @@ namespace Jasper
                 throw new InvalidOperationException("Jasper has already been applied to this web application");
 
             return Router.BuildOut(app);
-
-
         }
 
         internal static void MarkJasperHasBeenApplied(this IApplicationBuilder builder)
@@ -145,7 +141,7 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Syntactical sugar to execute the Jasper command line for a configured WebHostBuilder
+        ///     Syntactical sugar to execute the Jasper command line for a configured WebHostBuilder
         /// </summary>
         /// <param name="hostBuilder"></param>
         /// <param name="args"></param>
@@ -157,7 +153,7 @@ namespace Jasper
 
 
         /// <summary>
-        /// Start the application and return an IJasperHost for the application
+        ///     Start the application and return an IJasperHost for the application
         /// </summary>
         /// <param name="hostBuilder"></param>
         /// <returns></returns>
@@ -168,7 +164,7 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Builds the application -- but does not start the application -- and return an IJasperHost for the application
+        ///     Builds the application -- but does not start the application -- and return an IJasperHost for the application
         /// </summary>
         /// <param name="hostBuilder"></param>
         /// <returns></returns>
@@ -186,7 +182,7 @@ namespace Jasper
             return app =>
             {
                 var httpSettings = app.ApplicationServices.GetRequiredService<JasperHttpOptions>();
-                if(!httpSettings.Enabled)
+                if (!httpSettings.Enabled)
                 {
                     next(app);
                     return;
@@ -204,7 +200,8 @@ namespace Jasper
                         }
                         catch (Exception e)
                         {
-                            logger.LogError(e, $"Failed during an HTTP request for {c.Request.Method}: {c.Request.Path}");
+                            logger.LogError(e,
+                                $"Failed during an HTTP request for {c.Request.Method}: {c.Request.Path}");
                             c.Response.StatusCode = 500;
                             return c.Response.WriteAsync(e.ToString());
                         }
@@ -212,16 +209,13 @@ namespace Jasper
                 });
                 next(app);
                 if (!app.HasJasperBeenApplied())
-                {
                     Router.BuildOut(app).Run(c =>
                     {
                         c.Response.StatusCode = 404;
                         c.Response.Headers["status-description"] = "Resource Not Found";
                         return c.Response.WriteAsync("Resource Not Found");
                     });
-                }
             };
-
         }
     }
 

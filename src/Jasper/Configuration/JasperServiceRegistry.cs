@@ -45,14 +45,8 @@ namespace Jasper.Configuration
 
             conneg(parent);
             messaging(parent);
-
-            aspnetcore(parent);
         }
 
-        private void aspnetcore(JasperRegistry parent)
-        {
-
-        }
 
         private void conneg(JasperRegistry parent)
         {
@@ -75,6 +69,8 @@ namespace Jasper.Configuration
             Policies.Add(new HandlerScopingPolicy(parent.Messaging.Graph));
 
             ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
+
+
 
             For<IEnvelopePersistence>().Use<NulloEnvelopePersistence>();
             this.AddSingleton<InMemorySagaPersistor>();
@@ -120,6 +116,8 @@ namespace Jasper.Configuration
             For<T>().Use(c => expression(c.GetInstance<IMessagingRoot>())).Singleton();
         }
     }
+
+
 
     internal class HandlerScopingPolicy : IFamilyPolicy
     {
