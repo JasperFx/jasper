@@ -111,9 +111,6 @@ namespace CoreTests.Settings
         // ENDSAMPLE
 
 
-
-        // ENDSAMPLE
-
         // SAMPLE: can_customize_based_on_only_configuration
         [Fact]
         public void can_customize_based_on_only_configuration()
@@ -125,21 +122,5 @@ namespace CoreTests.Settings
 
         }
 
-
-        [Fact]
-        public void can_replace_settings()
-        {
-            theRegistry.Settings.Replace(new MyFakeSettings
-            {
-                OtherSetting = "tacos",
-                SomeSetting = 1000
-            });
-
-            with<MyFakeSettings>(settings =>
-            {
-                settings.SomeSetting.ShouldBe(1000);
-                settings.OtherSetting.ShouldBe("tacos");
-            });
-        }
     }
 }

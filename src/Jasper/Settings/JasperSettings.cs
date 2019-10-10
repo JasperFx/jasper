@@ -92,14 +92,6 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        ///     Replace a settings object after it is loaded
-        /// </summary>
-        public void Replace<T>(T settings) where T : class
-        {
-            forType<T>().Replace(settings);
-        }
-
-        /// <summary>
         ///     Apply additional changes to this JasperRegistry object based on
         ///     the loaded IConfiguration and IHostedEnvironment for the application
         /// </summary>

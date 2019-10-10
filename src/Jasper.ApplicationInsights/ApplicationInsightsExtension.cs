@@ -17,6 +17,7 @@ namespace Jasper.ApplicationInsights
             registry.Services.AddOptionsWithForwarding<ApplicationInsightsSettings>();
 
             registry.Services.AddSingleton<IMetrics, ApplicationInsightsMetrics>();
+
             registry.Services.AddSingleton(s =>
             {
                 var config = s.GetService<ApplicationInsightsSettings>();

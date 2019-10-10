@@ -20,13 +20,6 @@ namespace CoreTests.Samples
 
             // ENDSAMPLE
 
-            // SAMPLE: replace-settings
-            Settings.Replace(new MyFakeSettings
-            {
-                SomeSetting = 3,
-                OtherSetting = "blue"
-            });
-            // ENDSAMPLE
 
             // SAMPLE: build-configuration
             Hosting(x => x.ConfigureAppConfiguration((context, config) =>

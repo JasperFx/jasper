@@ -69,7 +69,8 @@ namespace Jasper
 
 
             Publish = new PublishingExpression(Settings, Messaging);
-            Settings.Replace(JasperHttpRoutes);
+
+            Services.AddSingleton(JasperHttpRoutes);
 
             deriveServiceName();
         }
