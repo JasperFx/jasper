@@ -57,18 +57,11 @@ namespace Jasper
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="overrides">Programmatically configure Jasper options</param>
-        /// <param name="configure">
-        ///     Programmatically configure Jasper options using the application's IConfiguration and
-        ///     IHostingEnvironment
-        /// </param>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperRegistry> overrides = null,
-            Action<WebHostBuilderContext, JasperOptions> configure = null)
+        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperRegistry> overrides = null)
         {
             var registry = new JasperRegistry(builder.GetSetting(WebHostDefaults.ApplicationKey));
             overrides?.Invoke(registry);
-
-            if (configure != null) registry.Settings.Messaging(configure);
 
             return builder.UseJasper(registry);
         }

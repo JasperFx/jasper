@@ -19,7 +19,7 @@ namespace Jasper.Http
 
         private bool matches(Type type)
         {
-            return _routes.Any(x => x.Action.HandlerType == type);
+            return _routes.ToArray().Any(x => x.Action.HandlerType == type);
         }
 
         public ServiceFamily Build(Type type, ServiceGraph serviceGraph)

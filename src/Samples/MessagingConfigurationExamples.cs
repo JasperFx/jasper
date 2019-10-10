@@ -112,25 +112,7 @@ namespace Jasper.Testing.Samples
             // SAMPLE: using-configuration-with-jasperoptions
             var host = WebHost.CreateDefaultBuilder()
                 .UseStartup<Startup>()
-                .UseJasper(configure: (context, options) =>
-                {
-                    // I'm not using it here, but you have access to
-                    // the ASP.Net Core HostingEnvironment
-                    var hosting = context.HostingEnvironment;
-
-                    // And the IConfiguration for your system
-                    var config = context.Configuration;
-
-                    // Add a transport listener at the Uri in
-                    // your configuration
-                    options.ListenForMessagesFrom(config["listener"]);
-
-                    // Add a subscription for a specific message type
-                    options.AddSubscription(Subscription.ForType<Message1>(config["outgoing"]));
-
-                    // Or add a subscription for all messages
-                    options.AddSubscription(Subscription.All(config["outgoing"]));
-                })
+                .UseJasper()
                 .Start();
 
             // ENDSAMPLE
