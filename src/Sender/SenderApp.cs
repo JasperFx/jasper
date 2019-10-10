@@ -42,11 +42,8 @@ namespace Sender
 
             Include<MartenBackedPersistence>();
 
-            Settings.Configure(c =>
-            {
-                Transports.ListenForMessagesFrom(c.Configuration["listener"]);
-                Publish.AllMessagesTo(c.Configuration["receiver"]);
-            });
+            Transports.ListenForMessagesFromUriValueInConfig("listener");
+            Publish.AllMessagesToUriValueInConfig("receiver");
         }
     }
 }

@@ -15,10 +15,6 @@ namespace Jasper.Settings
     [Obsolete("Trying to replace with teh IOptions model")]
     public class JasperSettings : IHasRegistryParent
     {
-
-        private readonly IList<Action<WebHostBuilderContext>>
-            _configActions = new List<Action<WebHostBuilderContext>>();
-
         private readonly JasperRegistry _parent;
 
         private readonly Dictionary<Type, ISettingsBuilder> _settings
@@ -89,16 +85,6 @@ namespace Jasper.Settings
         public void Messaging(Action<JasperOptions> alteration)
         {
             Alter(alteration);
-        }
-
-        /// <summary>
-        ///     Apply additional changes to this JasperRegistry object based on
-        ///     the loaded IConfiguration and IHostedEnvironment for the application
-        /// </summary>
-        /// <param name="configuration"></param>
-        public void Configure(Action<WebHostBuilderContext> configuration)
-        {
-            _configActions.Add(configuration);
         }
 
         internal void Apply(ServiceRegistry services)
