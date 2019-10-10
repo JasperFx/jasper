@@ -14,7 +14,7 @@ namespace Jasper.RabbitMQ
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Services.AddOptionsWithForwarding<RabbitMqOptions>();
+            registry.Settings.Require<RabbitMqOptions>();
             registry.Services.AddSingleton<ITransport, RabbitMqTransport>();
         }
     }

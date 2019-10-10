@@ -94,5 +94,10 @@ namespace Jasper.Settings
                 setting.Value.Apply(services);
             }
         }
+
+        public void Require<T>() where T : class
+        {
+            forType<T>();
+        }
     }
 }

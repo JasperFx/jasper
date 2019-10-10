@@ -14,7 +14,7 @@ namespace Jasper.AzureServiceBus
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Services.AddOptionsWithForwarding<AzureServiceBusOptions>();
+            registry.Settings.Require<AzureServiceBusOptions>();
             registry.Services.AddTransient<ITransport, AzureServiceBusTransport>();
         }
     }

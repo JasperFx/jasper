@@ -16,7 +16,7 @@ namespace Jasper.Persistence.Postgresql
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Services.AddOptionsWithForwarding<PostgresqlSettings>();
+            registry.Settings.Require<PostgresqlSettings>();
 
             registry.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
 
