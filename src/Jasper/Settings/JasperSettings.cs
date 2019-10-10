@@ -92,16 +92,6 @@ namespace Jasper.Settings
         }
 
         /// <summary>
-        ///     Alter advanced features of the messaging support with access to the
-        ///     IConfiguration and IHostingEnvironment for the application
-        /// </summary>
-        /// <param name="alteration"></param>
-        public void Messaging(Action<WebHostBuilderContext, JasperOptions> alteration)
-        {
-            Alter(alteration);
-        }
-
-        /// <summary>
         ///     Replace a settings object after it is loaded
         /// </summary>
         public void Replace<T>(T settings) where T : class

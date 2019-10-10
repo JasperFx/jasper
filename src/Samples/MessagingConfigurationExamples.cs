@@ -123,25 +123,13 @@ namespace Jasper.Testing.Samples
         {
             public ConfigUsingApp()
             {
-                Settings.Messaging((context, options) =>
-                {
-                    // I'm not using it here, but you have access to
-                    // the ASP.Net Core HostingEnvironment
-                    var hosting = context.HostingEnvironment;
+                Publish.Message<Message1>().ToUriValueInConfig("outgoing");
 
-                    // And the IConfiguration for your system
-                    var config = context.Configuration;
+                // or
 
-                    // Add a transport listener at the Uri in
-                    // your configuration
-                    options.ListenForMessagesFrom(config["listener"]);
+                Publish.AllMessagesToUriValueInConfig("outgoing");
 
-                    // Add a subscription for a specific message type
-                    options.AddSubscription(Subscription.ForType<Message1>(config["outgoing"]));
-
-                    // Or add a subscription for all messages
-                    options.AddSubscription(Subscription.All(config["outgoing"]));
-                });
+                Transports.ListenForMessagesFromUriValueInConfig("listener");
             }
         }
         // ENDSAMPLE

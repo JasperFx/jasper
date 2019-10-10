@@ -74,6 +74,14 @@ namespace Jasper
         /// <returns></returns>
         public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
         {
+            var appliedKey = "JASPER_HAS_BEEN_APPLIED";
+            if (builder.GetSetting(appliedKey).IsNotEmpty())
+            {
+                throw new InvalidOperationException($"{nameof(UseJasper)} can only be called once per builder");
+            }
+
+            builder.UseSetting(appliedKey, "true");
+
             registry.ConfigureWebHostBuilder(builder);
 
             // ASP.Net Core will freak out if this isn't there

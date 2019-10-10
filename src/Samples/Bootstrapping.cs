@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Testing.Samples
@@ -185,6 +186,9 @@ namespace Bootstrapping.Configuration2
 
     public class Startup
     {
+        public void Configure(JasperOptions options, IConfiguration configuration)
+        {
 
+        }
     }
 }

@@ -164,7 +164,7 @@ namespace Jasper
 
         void IFullTransportsExpression.ListenForMessagesFromUriValueInConfig(string configKey)
         {
-            Settings.Messaging((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey)));
+            Settings.Alter((Action<WebHostBuilderContext, JasperOptions>) ((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey))));
         }
 
         /// <summary>
