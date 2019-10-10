@@ -41,13 +41,7 @@ namespace CoreTests.Samples
 
             // ENDSAMPLE
 
-            // SAMPLE: configure-settings
-            Settings.Require<Colors>();
-            // ENDSAMPLE
 
-            // SAMPLE: configure-settings2
-            Settings.Configure<MySettings>(_ => _.GetSection("subsection"));
-            // ENDSAMPLE
         }
 
         public bool MyBoolean { get; set; }

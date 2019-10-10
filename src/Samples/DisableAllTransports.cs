@@ -1,4 +1,6 @@
-﻿namespace Jasper.Testing.Samples
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace Jasper.Testing.Samples
 {
     // SAMPLE: TransportsAreDisabled
     public class TransportsAreDisabled : JasperRegistry

@@ -80,14 +80,7 @@ namespace CoreTests.Settings
         }
         // ENDSAMPLE
 
-        [Theory]
-        [InlineData(typeof(JasperOptions), "Jasper")]
-        [InlineData(typeof(FakeSettings), "Fake")]
-        [InlineData(typeof(JasperSettingsTests), "JasperSettingsTests")]
-        public void get_section_name(Type type, string sectionName)
-        {
-            JasperSettings.ConfigSectionNameFor(type).ShouldBe(sectionName);
-        }
+
 
         [Fact]
         public void can_alter_settings()
@@ -114,59 +107,11 @@ namespace CoreTests.Settings
             with<FakeSettings>(x => x.SomeSetting.ShouldBe(1));
         }
 
-        [Fact]
-        public void can_configure_builder()
-        {
-            theRegistry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
-            {
-                config
-                    .AddJsonFile("appsettings.json")
-                    .AddJsonFile("colors.json");
-            }));
 
-
-            theRegistry.Settings.Require<Colors>();
-            theRegistry.Settings.Require<MyFakeSettings>();
-
-            using (var runtime = JasperHost.For(theRegistry))
-            {
-                var colors = runtime.Get<Colors>();
-                var settings = runtime.Get<MyFakeSettings>();
-
-                colors.Red.ShouldBe("#ff0000");
-                settings.SomeSetting.ShouldBe(1);
-            }
-
-        }
         // ENDSAMPLE
 
-        [Fact]
-        public void can_configure_settings()
-        {
-            theRegistry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
-            {
-                config.AddJsonFile("nested.json");
-            }));
-
-            theRegistry.Settings.Configure<Colors>(_ => _.GetSection("NestedSettings"));
 
 
-            with<Colors>(colors => colors.Red.ShouldBe("#ff0000"));
-        }
-
-        [Fact]
-        public void can_configure_settings_with_the_syntactical_sugure()
-        {
-            theRegistry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
-            {
-                config.AddJsonFile("nested.json");
-            }));
-
-            theRegistry.Settings.BindToConfigSection<Colors>("NestedSettings");
-
-
-            with<Colors>(colors => colors.Red.ShouldBe("#ff0000"));
-        }
         // ENDSAMPLE
 
         // SAMPLE: can_customize_based_on_only_configuration
@@ -180,18 +125,6 @@ namespace CoreTests.Settings
 
         }
 
-        [Fact]
-        public void can_read_settings()
-        {
-            theRegistry.Hosting( x=> x.ConfigureAppConfiguration((_, config) =>
-            {
-                config.AddJsonFile("appsettings.json");
-            }));
-
-            theRegistry.Settings.Require<MyFakeSettings>();
-
-            with<MyFakeSettings>(settings => settings.SomeSetting.ShouldBe(1));
-        }
 
         [Fact]
         public void can_replace_settings()

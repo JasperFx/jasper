@@ -12,15 +12,9 @@ namespace Jasper.Settings
         JasperRegistry Parent { get; }
     }
 
+    [Obsolete("Trying to replace with teh IOptions model")]
     public class JasperSettings : IHasRegistryParent
     {
-        public static string ConfigSectionNameFor(Type type)
-        {
-            if (type.Name.EndsWith("Settings")) return type.Name.Substring(0, type.Name.Length - 8);
-            if (type.Name.EndsWith("Options"))return type.Name.Substring(0, type.Name.Length - 7);
-
-            return type.Name;
-        }
 
         private readonly IList<Action<WebHostBuilderContext>>
             _configActions = new List<Action<WebHostBuilderContext>>();
@@ -60,24 +54,6 @@ namespace Jasper.Settings
         }
 
 
-        /// <summary>
-        ///     Just directs Jasper to try to read data for T from the IConfiguration
-        ///     and inject this type into the application container
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void Require<T>() where T : class, new()
-        {
-            // Just to register it
-            forType<T>();
-        }
-
-        /// <summary>
-        ///     Configure where a class can find its data, such as a subsection in a file
-        /// </summary>
-        public void Configure<T>(Func<IConfiguration, IConfiguration> config) where T : class, new()
-        {
-            forType(root => config(root.Configuration).Get<T>());
-        }
 
         /// <summary>
         ///     Alter a settings object after it is loaded
@@ -141,17 +117,6 @@ namespace Jasper.Settings
         public void Configure(Action<WebHostBuilderContext> configuration)
         {
             _configActions.Add(configuration);
-        }
-
-
-        /// <summary>
-        ///     Load a settings object "T" from the named configuration section
-        /// </summary>
-        /// <param name="sectionName"></param>
-        /// <typeparam name="T"></typeparam>
-        public void BindToConfigSection<T>(string sectionName) where T : class, new()
-        {
-            Configure<T>(c => c.GetSection(sectionName));
         }
 
         internal void Apply(ServiceRegistry services)

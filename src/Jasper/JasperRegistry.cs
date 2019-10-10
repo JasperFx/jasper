@@ -65,7 +65,7 @@ namespace Jasper
             _baseServices.AddSingleton<GenerationRules>(CodeGeneration);
 
             Settings = new JasperSettings(this);
-            Settings.BindToConfigSection<JasperOptions>("Jasper");
+            Services.AddOptionsWithForwarding<JasperOptions>("Jasper");
 
 
             Publish = new PublishingExpression(Settings, Messaging);

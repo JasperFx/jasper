@@ -25,7 +25,7 @@ namespace Jasper.Settings
             if (source == null)
                 _source = r =>
                 {
-                    var sectionName = JasperSettings.ConfigSectionNameFor(typeof(T));
+                    var sectionName = typeof(T).ConfigSectionName();
                     return r.Configuration.GetSection(sectionName).Get<T>();
                 };
             else

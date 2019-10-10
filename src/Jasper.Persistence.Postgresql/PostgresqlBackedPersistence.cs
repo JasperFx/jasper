@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.Database;
+using Jasper.Settings;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -15,7 +16,7 @@ namespace Jasper.Persistence.Postgresql
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.Settings.Require<PostgresqlSettings>();
+            registry.Services.AddOptionsWithForwarding<PostgresqlSettings>();
 
             registry.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
 
