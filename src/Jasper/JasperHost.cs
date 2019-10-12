@@ -6,11 +6,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
 using Lamar.Scanning.Conventions;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Oakton.AspNetCore;
 
 namespace Jasper
@@ -108,7 +104,7 @@ namespace Jasper
 
         private static JasperRuntime bootstrap(JasperRegistry registry)
         {
-            var host = CreateDefaultBuilder()
+            var host = Host.CreateDefaultBuilder()
                 .UseJasper(registry)
                 .Start();
 
@@ -116,28 +112,6 @@ namespace Jasper
             return new JasperRuntime(host);
         }
 
-        /// <summary>
-        ///     Builds a default, "headless" WebHostBuilder with minimal configuration including
-        ///     the usage of appsettings.json binding, Debug/Console logging, but without Kestrel
-        ///     or any other middleware configured
-        /// </summary>
-        /// <returns></returns>
-        public static IWebHostBuilder CreateDefaultBuilder()
-        {
-            // SAMPLE: default-configuration-options
-            return new WebHostBuilder()
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    var env = hostingContext.HostingEnvironment;
-
-                    config
-                        .AddJsonFile("appsettings.json", true, true)
-                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
-
-                    config.AddEnvironmentVariables();
-                });
-            // ENDSAMPLE
-        }
 
         /// <summary>
         ///     Shortcut to create a new empty WebHostBuilder with Jasper's default
@@ -150,7 +124,7 @@ namespace Jasper
         /// <exception cref="NotImplementedException"></exception>
         public static Task<int> Run<T>(string[] args) where T : JasperRegistry, new()
         {
-            return CreateDefaultBuilder().UseJasper<T>().RunOaktonCommands(args);
+            return Host.CreateDefaultBuilder().UseJasper<T>().RunOaktonCommands(args);
         }
 
         /// <summary>
@@ -163,7 +137,7 @@ namespace Jasper
         /// <returns></returns>
         public static Task<int> Run(string[] args, Action<JasperRegistry> configure)
         {
-            return CreateDefaultBuilder().UseJasper(configure).RunOaktonCommands(args);
+            return Host.CreateDefaultBuilder().UseJasper(configure).RunOaktonCommands(args);
         }
     }
 }

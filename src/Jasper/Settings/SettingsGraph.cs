@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using Baseline;
 using Lamar;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Settings
 {
@@ -28,7 +27,7 @@ namespace Jasper.Settings
 
         JasperRegistry IHasRegistryParent.Parent => _parent;
 
-        private SettingsBuilder<T> forType<T>(Func<WebHostBuilderContext, T> source = null) where T : class
+        private SettingsBuilder<T> forType<T>(Func<HostBuilderContext, T> source = null) where T : class
         {
             if (_settings.ContainsKey(typeof(T)))
             {
@@ -68,7 +67,7 @@ namespace Jasper.Settings
         /// </summary>
         /// <param name="alteration"></param>
         /// <typeparam name="T"></typeparam>
-        public void Alter<T>(Action<WebHostBuilderContext, T> alteration) where T : class, new()
+        public void Alter<T>(Action<HostBuilderContext, T> alteration) where T : class, new()
         {
             var builder = forType<T>();
             if (ApplyingExtensions)

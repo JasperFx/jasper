@@ -6,8 +6,6 @@ using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Lamar;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,7 +24,7 @@ namespace Jasper
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static IWebHostBuilder OverrideConfigValue(this IWebHostBuilder builder, string key, string value)
+        public static IHostBuilder OverrideConfigValue(this IHostBuilder builder, string key, string value)
         {
             return builder.ConfigureAppConfiguration((_, config) =>
             {
@@ -41,7 +39,7 @@ namespace Jasper
         /// <param name="overrides"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper<T>(this IWebHostBuilder builder, Action<T> overrides = null)
+        public static IHostBuilder UseJasper<T>(this IHostBuilder builder, Action<T> overrides = null)
             where T : JasperRegistry, new()
         {
             var registry = new T();
@@ -55,7 +53,7 @@ namespace Jasper
         /// <param name="builder"></param>
         /// <param name="overrides">Programmatically configure Jasper options</param>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, Action<JasperRegistry> overrides = null)
+        public static IHostBuilder UseJasper(this IHostBuilder builder, Action<JasperRegistry> overrides = null)
         {
             var registry = new JasperRegistry(builder.GetSetting(WebHostDefaults.ApplicationKey));
             overrides?.Invoke(registry);
@@ -69,7 +67,7 @@ namespace Jasper
         /// <param name="builder"></param>
         /// <param name="registry"></param>
         /// <returns></returns>
-        public static IWebHostBuilder UseJasper(this IWebHostBuilder builder, JasperRegistry registry)
+        public static IHostBuilder UseJasper(this IHostBuilder builder, JasperRegistry registry)
         {
             var appliedKey = "JASPER_HAS_BEEN_APPLIED";
             if (builder.GetSetting(appliedKey).IsNotEmpty())
@@ -100,7 +98,7 @@ namespace Jasper
 
                 s.AddSingleton<IServiceProviderFactory<ServiceRegistry>, LamarServiceProviderFactory>();
                 s.AddSingleton<IServiceProviderFactory<IServiceCollection>, LamarServiceProviderFactory>();
-                
+
                 // Registers an empty startup if there is none in the application
                 if (s.All(x => x.ServiceType != typeof(IStartup))) s.AddSingleton<IStartup>(new NulloStartup());
 
@@ -123,7 +121,7 @@ namespace Jasper
         /// <param name="hostBuilder"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static Task<int> RunJasper(this IWebHostBuilder hostBuilder, string[] args)
+        public static Task<int> RunJasper(this IHostBuilder hostBuilder, string[] args)
         {
             return hostBuilder.RunOaktonCommands(args);
         }
@@ -134,7 +132,7 @@ namespace Jasper
         /// </summary>
         /// <param name="hostBuilder"></param>
         /// <returns></returns>
-        public static IJasperHost StartJasper(this IWebHostBuilder hostBuilder)
+        public static IJasperHost StartJasper(this IHostBuilder hostBuilder)
         {
             var host = hostBuilder.Start();
             return new JasperRuntime(host);
@@ -145,7 +143,7 @@ namespace Jasper
         /// </summary>
         /// <param name="hostBuilder"></param>
         /// <returns></returns>
-        public static IJasperHost BuildJasper(this IWebHostBuilder hostBuilder)
+        public static IJasperHost BuildJasper(this IHostBuilder hostBuilder)
         {
             var host = hostBuilder.Build();
             return new JasperRuntime(host);

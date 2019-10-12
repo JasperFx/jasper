@@ -12,8 +12,8 @@ using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Model;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper
 {
@@ -29,8 +29,8 @@ namespace Jasper
         private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();
         protected readonly ServiceRegistry _baseServices;
 
-        private readonly IList<Action<IWebHostBuilder>> _builderAlterations
-            = new List<Action<IWebHostBuilder>>();
+        private readonly IList<Action<IHostBuilder>> _builderAlterations
+            = new List<Action<IHostBuilder>>();
 
         private readonly IList<Type> _extensionTypes = new List<Type>();
 
@@ -154,23 +154,7 @@ namespace Jasper
 
         void IFullTransportsExpression.ListenForMessagesFromUriValueInConfig(string configKey)
         {
-            Settings.Alter((Action<WebHostBuilderContext, JasperOptions>) ((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey))));
-        }
-
-        /// <summary>
-        ///     Apply configuration and alterations directly to the underlying
-        ///     IWebHostBuilder of the running application when this JasperRegistry
-        ///     is executed
-        /// </summary>
-        /// <param name="configure"></param>
-        public void Hosting(Action<IWebHostBuilder> configure)
-        {
-            _builderAlterations.Add(configure);
-        }
-
-        internal void ConfigureWebHostBuilder(IWebHostBuilder builder)
-        {
-            foreach (var alteration in _builderAlterations) alteration(builder);
+            Settings.Alter((Action<HostBuilderContext, JasperOptions>) ((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey))));
         }
 
 

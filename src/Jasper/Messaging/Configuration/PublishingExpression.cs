@@ -4,7 +4,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Settings;
 using Jasper.Util;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -131,7 +131,7 @@ namespace Jasper.Messaging.Configuration
             /// <param name="configKey">The configuration key that holds the designated Uri</param>
             public void ToUriValueInConfig(string configKey)
             {
-                _settings.Alter((Action<WebHostBuilderContext, JasperOptions>) ((c, options) =>
+                _settings.Alter((Action<HostBuilderContext, JasperOptions>) ((c, options) =>
                 {
                     var subscription = new Subscription
                     {

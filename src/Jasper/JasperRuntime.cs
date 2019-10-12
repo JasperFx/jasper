@@ -4,10 +4,8 @@ using System.Reflection;
 using Baseline;
 using Jasper.Messaging;
 using Lamar;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Jasper
 {
@@ -20,7 +18,7 @@ namespace Jasper
         private bool _isDisposing;
 
 
-        internal JasperRuntime(IWebHost host)
+        internal JasperRuntime(IHost host)
         {
             _host = host;
             _registry = host.Services.GetRequiredService<JasperRegistry>();
