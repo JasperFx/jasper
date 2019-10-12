@@ -13,7 +13,7 @@ namespace Jasper.AzureServiceBus
         /// <param name="settings"></param>
         /// <param name="name"></param>
         /// <param name="connectionString"></param>
-        public static void AddAzureServiceBusConnection(this JasperSettings settings, string name,
+        public static void AddAzureServiceBusConnection(this SettingsGraph settings, string name,
             string connectionString)
         {
             settings.Alter<AzureServiceBusOptions>(s => s.Connections.Add(name, connectionString));
@@ -24,7 +24,7 @@ namespace Jasper.AzureServiceBus
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="alteration"></param>
-        public static void ConfigureAzureServiceBus(this JasperSettings settings, Action<AzureServiceBusOptions> alteration)
+        public static void ConfigureAzureServiceBus(this SettingsGraph settings, Action<AzureServiceBusOptions> alteration)
         {
             settings.Alter(alteration);
         }
@@ -34,7 +34,7 @@ namespace Jasper.AzureServiceBus
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="alteration"></param>
-        public static void ConfigureAzureServiceBus(this JasperSettings settings, Action<AzureServiceBusOptions, IHostingEnvironment, IConfiguration> alteration)
+        public static void ConfigureAzureServiceBus(this SettingsGraph settings, Action<AzureServiceBusOptions, IHostingEnvironment, IConfiguration> alteration)
         {
             settings.Alter<AzureServiceBusOptions>((context, x) => alteration(x, context.HostingEnvironment, context.Configuration));
         }

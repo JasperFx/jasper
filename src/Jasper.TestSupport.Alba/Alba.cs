@@ -2,7 +2,8 @@
 using System;
 using Alba;
 using Baseline;
-using Jasper.Http.Routing;
+using Jasper.Configuration;
+using JasperHttp.Routing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 

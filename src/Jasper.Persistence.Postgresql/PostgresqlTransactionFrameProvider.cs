@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using Baseline;
-using Jasper.Http.Model;
-using Jasper.Messaging;
+﻿using Jasper.Configuration;
 using Jasper.Persistence.Database;
 using Npgsql;
 
@@ -11,13 +8,11 @@ namespace Jasper.Persistence.Postgresql
     {
         public void ApplyTransactionSupport(IChain chain)
         {
-            var shouldFlushOutgoingMessages = false;
-            if (chain is RouteChain)
-                shouldFlushOutgoingMessages = chain.As<RouteChain>().Action.Method.GetParameters()
-                    .Any(x => x.ParameterType == typeof(IMessageContext));
+            var shouldFlushOutgoingMessages = chain.ShouldFlushOutgoingMessages();
 
 
-            var frame = new DbTransactionFrame<NpgsqlTransaction, NpgsqlConnection> {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};
+            var frame = new DbTransactionFrame<NpgsqlTransaction, NpgsqlConnection>
+                {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};
 
             chain.Middleware.Add(frame);
         }

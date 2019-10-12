@@ -91,7 +91,6 @@ task :test => [:compile] do
 	sh "dotnet test src/CoreTests/CoreTests.csproj --no-restore"
 	sh "dotnet test src/HttpTests/HttpTests.csproj --no-restore"
 	sh "dotnet test src/MessagingTests/MessagingTests.csproj --no-restore"
-	sh "dotnet test src/Jasper.MvcExtender.Tests/Jasper.MvcExtender.Tests.csproj --no-restore"
 	sh "dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore"
 
 end
@@ -134,6 +133,7 @@ task :pack do
 	end
 
   pack_nuget 'Jasper'
+  pack_nuget 'JasperHttp'
   pack_nuget 'Jasper.Persistence.Marten'
   pack_nuget 'Jasper.Persistence.SqlServer'
   pack_nuget 'Jasper.Persistence.Database'
@@ -144,7 +144,6 @@ task :pack do
   pack_nuget 'Jasper.AzureServiceBus'
   pack_nuget 'Jasper.ApplicationInsights'
   pack_nuget 'Jasper.JsonCommands'
-  pack_nuget 'Jasper.MvcExtender'
 end
 
 def pack_nuget(project)

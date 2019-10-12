@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Jasper.Configuration;
 
 namespace Jasper.Util
 {

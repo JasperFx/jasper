@@ -16,6 +16,7 @@
     <ItemGroup>
       <ProjectReference Include="..\AspNetCoreHosted\AspNetCoreHosted.csproj" />
       <ProjectReference Include="..\Jasper.TestSupport.Alba\Jasper.TestSupport.Alba.csproj" />
+      <ProjectReference Include="..\JasperHttp\JasperHttp.csproj" />
       <ProjectReference Include="..\Jasper\Jasper.csproj" />
       <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
     </ItemGroup>

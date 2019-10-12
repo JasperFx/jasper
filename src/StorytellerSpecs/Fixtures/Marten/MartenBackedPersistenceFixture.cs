@@ -92,8 +92,6 @@ namespace StorytellerSpecs.Fixtures.Marten
                     .ConfigureLogging(x =>
                     {
                         x.SetMinimumLevel(LogLevel.Debug);
-                        x.AddDebug();
-                        x.AddConsole();
 
                         // Add the logger to the new Jasper app
                         // being built up
@@ -122,8 +120,6 @@ namespace StorytellerSpecs.Fixtures.Marten
                     .ConfigureLogging(x =>
                     {
                         x.SetMinimumLevel(LogLevel.Debug);
-                        x.AddDebug();
-                        x.AddConsole();
 
                         // Add the logger to the new Jasper app
                         // being built up

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jasper;
+using Jasper.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using TestingSupport;

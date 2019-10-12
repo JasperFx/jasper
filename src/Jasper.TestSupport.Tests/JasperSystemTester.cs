@@ -1,11 +1,8 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Jasper.TestSupport.Storyteller;
+using JasperHttp;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Logging.Debug;
 using Shouldly;
 using StoryTeller;
 using Xunit;
@@ -15,26 +12,6 @@ namespace Jasper.TestSupport.Tests
     [Collection("integration")]
     public class JasperSystemTester
     {
-        [Fact]
-        public async Task adds_console_and_debug_logging()
-        {
-            using (var system = JasperStorytellerHost.Basic(x => { x.JasperHttpRoutes.DisableConventionalDiscovery(); }))
-            {
-                await system.Warmup();
-
-                var providerTypes = system
-                    .Runtime
-                    .Container
-                    .Model
-                    .For<ILoggerProvider>()
-                    .Instances
-                    .Select(x => x.ImplementationType)
-                    .ToArray();
-
-                providerTypes.ShouldContain(typeof(ConsoleLoggerProvider));
-                providerTypes.ShouldContain(typeof(DebugLoggerProvider));
-            }
-        }
 
         [Fact]
         public async Task after_all_is_called_in_dispose()
@@ -99,7 +76,7 @@ namespace Jasper.TestSupport.Tests
         [Fact]
         public async Task bootstraps_the_host()
         {
-            using (var system = JasperStorytellerHost.Basic(x => { x.JasperHttpRoutes.DisableConventionalDiscovery(); }))
+            using (var system = JasperStorytellerHost.Basic(x => { x.Http(opts => opts.DisableConventionalDiscovery());; }))
             {
                 await system.Warmup();
 
@@ -141,7 +118,7 @@ namespace Jasper.TestSupport.Tests
         public FakeStorytellerSystem()
         {
             Registry.Services.AddSingleton(DisposableGuy);
-            Registry.JasperHttpRoutes.DisableConventionalDiscovery();
+            Registry.Http(opts => opts.DisableConventionalDiscovery());;
         }
 
         public bool BeforeAllWasCalled { get; set; }

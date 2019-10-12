@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Invocation;
 using Oakton;
 using TestMessages;

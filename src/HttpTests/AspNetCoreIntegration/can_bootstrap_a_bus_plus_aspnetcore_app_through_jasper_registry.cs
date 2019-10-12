@@ -2,6 +2,7 @@
 using Alba;
 using Jasper;
 using Jasper.TestSupport.Alba;
+using JasperHttp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

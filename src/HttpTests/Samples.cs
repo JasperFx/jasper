@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Conneg;
 using Marten;
 using Microsoft.AspNetCore.Http;

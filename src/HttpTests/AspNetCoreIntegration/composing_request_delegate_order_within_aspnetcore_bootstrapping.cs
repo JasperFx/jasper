@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using Alba;
 using Jasper;
-using Jasper.Http;
+using Jasper.Configuration;
+using JasperHttp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

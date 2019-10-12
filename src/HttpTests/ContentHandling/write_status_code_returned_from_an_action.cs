@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
 using Baseline.Reflection;
-using Jasper.Http;
+using JasperHttp;
 using Shouldly;
 using Xunit;
 

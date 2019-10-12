@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Baseline;
 using Jasper.Configuration;
-using Jasper.Http;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Settings;
@@ -43,8 +42,6 @@ namespace Jasper
 
         public JasperRegistry(string assemblyName)
         {
-            JasperHttpRoutes = new JasperHttpOptions();
-
             Services = _applicationServices;
 
             establishApplicationAssembly(assemblyName);
@@ -60,25 +57,17 @@ namespace Jasper
             _baseServices = new JasperServiceRegistry(this);
 
             // TEMP!!!!
-            _baseServices.AddRange(new JasperHttpServiceRegistry(this.JasperHttpRoutes));
-
             _baseServices.AddSingleton<GenerationRules>(CodeGeneration);
 
-            Settings = new JasperSettings(this);
+            Settings = new SettingsGraph(this);
             Settings.Require<JasperOptions>();
 
 
             Publish = new PublishingExpression(Settings, Messaging);
 
-            Services.AddSingleton(JasperHttpRoutes);
-
             deriveServiceName();
         }
 
-        /// <summary>
-        ///     Configure how HTTP routes are discovered and handled
-        /// </summary>
-        public JasperHttpOptions JasperHttpRoutes { get; }
 
         /// <summary>
         ///     Configure or extend the Lamar code generation
@@ -94,7 +83,7 @@ namespace Jasper
         ///     Access to the strong typed configuration settings and alterations within
         ///     a Jasper application
         /// </summary>
-        public JasperSettings Settings { get; }
+        public SettingsGraph Settings { get; }
 
         /// <summary>
         ///     The main application assembly for this Jasper system
@@ -218,7 +207,6 @@ namespace Jasper
         protected internal void Describe(IJasperHost runtime, TextWriter writer)
         {
             Messaging.Describe(runtime, writer);
-            JasperHttpRoutes.Describe(runtime, writer);
         }
 
         internal void ApplyExtensions(IJasperExtension[] extensions)

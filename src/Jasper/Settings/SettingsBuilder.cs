@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Jasper.Configuration;
 using Lamar;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -62,17 +63,16 @@ namespace Jasper.Settings
 
         public void Replace(Func<WebHostBuilderContext, T> source)
         {
-            _alterations.Clear();
-            _withs.Clear();
-
-            // clear everything, then:
             _source = source;
         }
 
         public void Replace(T settings)
         {
+            Value = settings;
             Replace(_ => settings);
         }
+
+        public object Value { get; private set; }
 
         public void PackageAlter(Action<WebHostBuilderContext, T> alteration)
         {

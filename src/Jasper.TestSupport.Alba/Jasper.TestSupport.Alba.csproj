@@ -19,6 +19,6 @@
     <PackageReference Include="Alba" Version="3.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper\Jasper.csproj" />
+    <ProjectReference Include="..\JasperHttp\JasperHttp.csproj" />
   </ItemGroup>
 </Project>

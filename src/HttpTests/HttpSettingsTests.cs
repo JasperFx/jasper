@@ -1,4 +1,4 @@
-using Jasper.Http;
+using JasperHttp;
 using Shouldly;
 using Xunit;
 

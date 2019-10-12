@@ -14,7 +14,7 @@ namespace Jasper.Persistence.SqlServer
         /// <param name="settings"></param>
         /// <param name="connectionString"></param>
         /// <param name="schema"></param>
-        public static void PersistMessagesWithSqlServer(this JasperSettings settings, string connectionString,
+        public static void PersistMessagesWithSqlServer(this SettingsGraph settings, string connectionString,
             string schema = null)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
@@ -34,7 +34,7 @@ namespace Jasper.Persistence.SqlServer
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
-        public static void PersistMessagesWithSqlServer(this JasperSettings settings,
+        public static void PersistMessagesWithSqlServer(this SettingsGraph settings,
             Action<WebHostBuilderContext, SqlServerSettings> configure)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;

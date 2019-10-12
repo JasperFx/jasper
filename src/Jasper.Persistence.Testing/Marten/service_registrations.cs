@@ -48,7 +48,6 @@ namespace Jasper.Persistence.Testing.Marten
 
             Include<MartenBackedPersistence>();
 
-            JasperHttpRoutes.DisableConventionalDiscovery();
         }
     }
 }

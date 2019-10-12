@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jasper;
+using Jasper.Configuration;
 using TestMessages;
 
 namespace Publisher

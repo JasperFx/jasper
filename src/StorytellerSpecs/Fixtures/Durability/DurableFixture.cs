@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;

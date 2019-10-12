@@ -2,7 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Alba;
 using Jasper;
-using Jasper.Http;
+using JasperHttp;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,27 +16,6 @@ namespace HttpTests
 {
     public class bootstrapping_in_fast_mode
     {
-        [Fact]
-        public void should_be_auto_request_filter_present_in_fully_compliant_mode()
-        {
-            using (var runtime = JasperHost.For(x => x.JasperHttpRoutes.AspNetCoreCompliance = ComplianceMode.FullyCompliant))
-            {
-                runtime.Container.Model.For<IStartupFilter>().Instances
-                    .Any(x => x.ImplementationType == typeof(AutoRequestServicesStartupFilter))
-                    .ShouldBeTrue();
-            }
-        }
-
-        [Fact]
-        public void should_not_be_any_auto_request_filter()
-        {
-            using (var runtime = JasperHost.For(x => x.JasperHttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster))
-            {
-                runtime.Container.Model.For<IStartupFilter>().Instances
-                    .Any(x => x.ImplementationType == typeof(AutoRequestServicesStartupFilter))
-                    .ShouldBeFalse();
-            }
-        }
 
         [Fact]
         public async Task run_end_to_end()
@@ -46,7 +25,7 @@ namespace HttpTests
                 x.UseStartup<Startup>()
                 .UseJasper(o =>
                 {
-                    o.JasperHttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster;
+                    o.Settings.Http(opts => opts.AspNetCoreCompliance = ComplianceMode.GoFaster);
                 });
             }))
             {
@@ -84,13 +63,13 @@ namespace HttpTests
                 // Idiomatic Jasper bootstrapping
                 var runtime = JasperHost.For(x =>
                 {
-                    x.JasperHttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster;
+                    x.Settings.Http(opts => opts.AspNetCoreCompliance = ComplianceMode.GoFaster);
                 });
 
                 // Or the ASP.Net Core way
                 var host = WebHost.CreateDefaultBuilder()
                     .UseStartup<Startup>()
-                    .UseJasper(x => x.JasperHttpRoutes.AspNetCoreCompliance = ComplianceMode.GoFaster)
+                    .UseJasper(x => x.Settings.Http(opts => opts.AspNetCoreCompliance = ComplianceMode.GoFaster))
                     .Start();
                 // ENDSAMPLE
             }

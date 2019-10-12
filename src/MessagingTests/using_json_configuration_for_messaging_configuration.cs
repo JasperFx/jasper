@@ -1,6 +1,7 @@
 using System.Linq;
 using Baseline.Dates;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;

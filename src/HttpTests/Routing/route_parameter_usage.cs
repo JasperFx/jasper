@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Alba;
 using Baseline.Reflection;
-using Jasper.Http;
+using JasperHttp;
 using Shouldly;
 using Xunit;
 

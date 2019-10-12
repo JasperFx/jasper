@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Jasper;
-using Jasper.Http;
 using Jasper.Messaging;
+using JasperHttp;
 using Lamar;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;

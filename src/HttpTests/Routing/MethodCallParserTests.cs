@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Jasper.Http.Routing;
+using JasperHttp.Routing;
 using Xunit;
 
 namespace HttpTests.Routing

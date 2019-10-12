@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Shouldly;

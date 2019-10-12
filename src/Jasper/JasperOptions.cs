@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Baseline;
 using Baseline.Dates;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports;
 using Jasper.Util;

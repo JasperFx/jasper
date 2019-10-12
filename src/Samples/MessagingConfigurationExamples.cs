@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using Baseline.Dates;
 using Bootstrapping.Configuration2;
+using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Shouldly;

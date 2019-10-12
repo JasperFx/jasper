@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Jasper.Configuration;
 using Jasper.Messaging.Sagas;
 using Jasper.Persistence.Marten.Codegen;
 using LamarCodeGeneration.Frames;

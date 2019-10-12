@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Http.ContentHandling;
-using Jasper.Http.Model;
-using Jasper.Http.Routing;
+using JasperHttp;
+using JasperHttp.ContentHandling;
+using JasperHttp.Model;
+using JasperHttp.Routing;
 using Lamar;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +22,6 @@ namespace HttpTests
     {
         public HttpBootstrappedApp()
         {
-            JasperHttpRoutes.ExcludeTypes(_ => _.IsInNamespace("Jasper.Bus"));
-
             Include<EndpointExtension>();
 
             Handlers.DisableConventionalDiscovery();
@@ -43,13 +42,14 @@ namespace HttpTests
         {
             var rules = Runtime.Services.As<Container>().QuickBuild<ConnegRules>();
             rules.Readers.First().ShouldBeOfType<CustomReaderRule>();
-            rules.Writers.First().ShouldBeOfType<CustomWriterRule>();
+            rules.Writers.ElementAt(1).ShouldBeOfType<CustomWriterRule>();
         }
 
         [Fact]
         public void can_discover_endpoints_from_static_types()
         {
-            Runtime.Services.GetRequiredService<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(StaticEndpoint))
+            var routes = Runtime.Services.GetRequiredService<RouteGraph>();
+            routes.Gets.Any(x => x.Route.HandlerType == typeof(StaticEndpoint))
                 .ShouldBeTrue();
         }
 
@@ -135,7 +135,7 @@ namespace HttpTests
     {
         public void Configure(JasperRegistry registry)
         {
-            registry.JasperHttpRoutes.IncludeType<ExtensionThing>();
+            registry.Http(x => x.IncludeType<ExtensionThing>());
         }
     }
 

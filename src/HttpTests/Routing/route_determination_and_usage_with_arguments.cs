@@ -3,8 +3,8 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Alba;
 using Jasper;
-using Jasper.Http.Routing;
 using Jasper.TestSupport.Alba;
+using JasperHttp.Routing;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
@@ -19,20 +19,6 @@ namespace HttpTests.Routing
         }
     }
 
-    public class troubleshooter
-    {
-        [Fact]
-        public async Task find_what_is_wrong()
-        {
-            var registry = new JasperRegistry();
-            registry.JasperHttpRoutes.DisableConventionalDiscovery().IncludeType<FakeThing>();
-
-            using (var system = JasperAlba.For(registry))
-            {
-                await system.Scenario(x => x.Get.Url("/chars/a/to/c"));
-            }
-        }
-    }
 
     public class route_determination_and_usage_with_arguments : RegistryContext<RoutingApp>
     {

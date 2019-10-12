@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.Linq;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Http;
-using Jasper.Http.Model;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
+using JasperHttp;
+using JasperHttp.Model;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
@@ -120,7 +120,7 @@ namespace Samples
             // Apply a handler policy
             Handlers.GlobalPolicy<PutStopwatchOnHandlers>();
 
-            JasperHttpRoutes.GlobalPolicy<PutStopwatchOnRoutes>();
+            Settings.Http(x => x.GlobalPolicy<PutStopwatchOnRoutes>());
         }
     }
     // ENDSAMPLE
@@ -152,22 +152,6 @@ namespace Samples
             // ENDSAMPLE
         }
 
-        // [Fact] not messing with this right now
-        public void generate_code()
-        {
-            var registry = new JasperRegistry();
-            registry.Handlers.DisableConventionalDiscovery();
-            registry.JasperHttpRoutes.DisableConventionalDiscovery();
-            registry.JasperHttpRoutes.IncludeType<ClockedEndpoint>();
 
-            using (var runtime = JasperHost.For(registry))
-            {
-                var route = runtime.Get<RouteGraph>().Single();
-                var code = route.SourceCode;
-
-                _output.WriteLine(code);
-
-            }
-        }
     }
 }

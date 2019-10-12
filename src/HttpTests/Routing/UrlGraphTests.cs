@@ -1,4 +1,4 @@
-﻿using Jasper.Http.Routing;
+﻿using JasperHttp.Routing;
 
 namespace HttpTests.Routing
 {

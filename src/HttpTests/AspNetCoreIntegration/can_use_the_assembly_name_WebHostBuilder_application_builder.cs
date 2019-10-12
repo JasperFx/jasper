@@ -1,6 +1,7 @@
 using AspNetCoreHosted;
 using Jasper;
-using Jasper.Http;
+using Jasper.Configuration;
+using JasperHttp;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline.Reflection;
-using Jasper.Http.Routing;
-using Jasper.Http.Routing.Codegen;
+using JasperHttp.Routing;
+using JasperHttp.Routing.Codegen;
 using Shouldly;
 using Xunit;
 

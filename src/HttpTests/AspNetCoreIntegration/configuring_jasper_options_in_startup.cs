@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper;
-using Jasper.Http;
+using Jasper.Configuration;
 using Jasper.Util;
+using JasperHttp;
 using Lamar;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

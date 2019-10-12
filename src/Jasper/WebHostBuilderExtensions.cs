@@ -1,26 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Http;
-using Jasper.Http.Routing;
+using Jasper.Configuration;
 using Jasper.Messaging;
 using Lamar;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Oakton.AspNetCore;
 
 namespace Jasper
 {
     public static class WebHostBuilderExtensions
     {
-        public static readonly string JasperHasBeenApplied = "JasperHasBeenApplied";
+
 
         /// <summary>
         ///     Overrides a single configuration value. Useful for testing scenarios
@@ -89,17 +86,12 @@ namespace Jasper
 
             JasperHost.ApplyExtensions(registry);
 
-            registry.JasperHttpRoutes.StartFindingRoutes(registry.ApplicationAssembly);
             registry.Messaging.StartCompiling(registry);
 
             registry.Settings.Apply(registry.Services);
 
             builder.ConfigureServices(s =>
             {
-                if (registry.JasperHttpRoutes.AspNetCoreCompliance == ComplianceMode.GoFaster)
-                    s.RemoveAll(x =>
-                        x.ServiceType == typeof(IStartupFilter) &&
-                        x.ImplementationType == typeof(AutoRequestServicesStartupFilter));
 
                 s.AddSingleton<IHostedService, JasperActivator>();
 
@@ -108,38 +100,22 @@ namespace Jasper
 
                 s.AddSingleton<IServiceProviderFactory<ServiceRegistry>, LamarServiceProviderFactory>();
                 s.AddSingleton<IServiceProviderFactory<IServiceCollection>, LamarServiceProviderFactory>();
+                
+                // Registers an empty startup if there is none in the application
+                if (s.All(x => x.ServiceType != typeof(IStartup))) s.AddSingleton<IStartup>(new NulloStartup());
 
-                s.AddSingleton<IStartupFilter>(new RegisterJasperStartupFilter());
+                // Registers a "nullo" server if there is none in the application
+                // i.e., Kestrel isn't applied
+                if (s.All(x => x.ServiceType != typeof(IServer))) s.AddSingleton<IServer>(new NulloServer());
+
             });
 
             return builder;
         }
 
 
-        /// <summary>
-        ///     Add Jasper's middleware to the application's RequestDelegate pipeline
-        /// </summary>
-        /// <param name="app"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public static IApplicationBuilder UseJasper(this IApplicationBuilder app)
-        {
-            if (app.HasJasperBeenApplied())
-                throw new InvalidOperationException("Jasper has already been applied to this web application");
 
-            return Router.BuildOut(app);
-        }
 
-        internal static void MarkJasperHasBeenApplied(this IApplicationBuilder builder)
-        {
-            if (!builder.Properties.ContainsKey(JasperHasBeenApplied))
-                builder.Properties.Add(JasperHasBeenApplied, true);
-        }
-
-        internal static bool HasJasperBeenApplied(this IApplicationBuilder builder)
-        {
-            return builder.Properties.ContainsKey(JasperHasBeenApplied);
-        }
 
         /// <summary>
         ///     Syntactical sugar to execute the Jasper command line for a configured WebHostBuilder
@@ -173,63 +149,6 @@ namespace Jasper
         {
             var host = hostBuilder.Build();
             return new JasperRuntime(host);
-        }
-    }
-
-    internal class RegisterJasperStartupFilter : IStartupFilter
-    {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-        {
-            return app =>
-            {
-                var httpSettings = app.ApplicationServices.GetRequiredService<JasperHttpOptions>();
-                if (!httpSettings.Enabled)
-                {
-                    next(app);
-                    return;
-                }
-
-                var logger = app.ApplicationServices.GetRequiredService<ILogger<JasperHttpOptions>>();
-
-                app.Use(inner =>
-                {
-                    return c =>
-                    {
-                        try
-                        {
-                            return inner(c);
-                        }
-                        catch (Exception e)
-                        {
-                            logger.LogError(e,
-                                $"Failed during an HTTP request for {c.Request.Method}: {c.Request.Path}");
-                            c.Response.StatusCode = 500;
-                            return c.Response.WriteAsync(e.ToString());
-                        }
-                    };
-                });
-                next(app);
-                if (!app.HasJasperBeenApplied())
-                    Router.BuildOut(app).Run(c =>
-                    {
-                        c.Response.StatusCode = 404;
-                        c.Response.Headers["status-description"] = "Resource Not Found";
-                        return c.Response.WriteAsync("Resource Not Found");
-                    });
-            };
-        }
-    }
-
-    internal class NulloStartup : IStartup
-    {
-        public IServiceProvider ConfigureServices(IServiceCollection services)
-        {
-            return new Container(services);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            Console.WriteLine("Jasper 'Nullo' startup is being used to start the ASP.Net Core application");
         }
     }
 }

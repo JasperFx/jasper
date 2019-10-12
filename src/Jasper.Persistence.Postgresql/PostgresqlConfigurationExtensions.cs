@@ -14,7 +14,7 @@ namespace Jasper.Persistence.Postgresql
         /// <param name="settings"></param>
         /// <param name="connectionString"></param>
         /// <param name="schema"></param>
-        public static void PersistMessagesWithPostgresql(this JasperSettings settings, string connectionString,
+        public static void PersistMessagesWithPostgresql(this SettingsGraph settings, string connectionString,
             string schema = null)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
@@ -34,7 +34,7 @@ namespace Jasper.Persistence.Postgresql
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
-        public static void PersistMessagesWithPostgresql(this JasperSettings settings,
+        public static void PersistMessagesWithPostgresql(this SettingsGraph settings,
             Action<WebHostBuilderContext, PostgresqlSettings> configure)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;

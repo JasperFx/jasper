@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
-using Jasper.Http;
 using Lamar.Scanning.Conventions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -136,25 +135,6 @@ namespace Jasper
                         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
 
                     config.AddEnvironmentVariables();
-                })
-                .ConfigureLogging((hostingContext, logging) =>
-                {
-                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    logging.AddConsole();
-                    logging.AddDebug();
-                })
-                .ConfigureServices(s =>
-                {
-                    // Registers an empty startup if there is none in the application
-                    if (s.All(x => x.ServiceType != typeof(IStartup))) s.AddSingleton<IStartup>(new NulloStartup());
-
-                    // Registers a "nullo" server if there is none in the application
-                    // i.e., Kestrel isn't applied
-                    if (s.All(x => x.ServiceType != typeof(IServer))) s.AddSingleton<IServer>(new NulloServer());
-
-                    // This guarantees that the Jasper middleware is part of the RequestDelegate
-                    // at the end if it has not been explicitly added
-                    s.AddSingleton<IStartupFilter>(new RegisterJasperStartupFilter());
                 });
             // ENDSAMPLE
         }

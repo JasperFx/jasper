@@ -130,7 +130,6 @@ namespace Jasper.AzureServiceBus.Tests
             {
                 _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
 
-                _.JasperHttpRoutes.DisableConventionalDiscovery();
 
                 _.Publish.AllMessagesTo(uri);
 
@@ -149,7 +148,6 @@ namespace Jasper.AzureServiceBus.Tests
             {
                 _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
 
-                _.JasperHttpRoutes.DisableConventionalDiscovery();
 
                 _.Transports.ListenForMessagesFrom(uri);
                 _.Services.AddSingleton<ColorHistory>();
@@ -307,7 +305,6 @@ namespace Jasper.AzureServiceBus.Tests
         public ASBUsingApp()
         {
 
-            JasperHttpRoutes.DisableConventionalDiscovery();
 
             Transports.ListenForMessagesFrom("azureservicebus://jasper/queue/messages");
 

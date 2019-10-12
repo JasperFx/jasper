@@ -1,7 +1,7 @@
 using System.Linq;
 using Jasper.Configuration;
-using Jasper.Http;
-using Jasper.Http.Routing;
+using JasperHttp;
+using JasperHttp.Routing;
 using Shouldly;
 using Xunit;
 

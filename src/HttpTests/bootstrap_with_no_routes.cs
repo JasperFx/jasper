@@ -2,6 +2,7 @@
 using Alba;
 using Jasper;
 using Jasper.TestSupport.Alba;
+using JasperHttp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,7 @@ namespace HttpTests
                 {
                     app.Run(c => c.Response.WriteAsync("Hello"));
                 })
-                .UseJasper(_ => _.JasperHttpRoutes.DisableConventionalDiscovery())
+                .UseJasper(_ => _.Http(opts => opts.DisableConventionalDiscovery()))
                 .ToAlbaSystem();
 
 

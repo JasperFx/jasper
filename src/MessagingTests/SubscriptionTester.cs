@@ -1,5 +1,6 @@
 using Green;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Routing;
 using Red;
 using Shouldly;

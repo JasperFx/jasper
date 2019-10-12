@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading;
-using Jasper.Http.Model;
+using JasperHttp.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Shouldly;

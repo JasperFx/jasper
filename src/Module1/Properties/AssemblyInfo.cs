@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using Jasper;
+using Jasper.Configuration;
 using Module1;
 
 // General Information about an assembly is controlled through the following

@@ -6,11 +6,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Jasper;
-using Jasper.Http;
-using Jasper.Http.Model;
+using JasperHttp;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shouldly;
@@ -29,9 +29,12 @@ namespace HttpTests.Kestrel
                 .UseStartup<Startup>()
                 .UseJasper(x =>
                 {
-                    x.JasperHttpRoutes.DisableConventionalDiscovery()
+
+                    x.Http(opts => opts
+                        .DisableConventionalDiscovery()
                         .IncludeType<HomeEndpointGuy>()
-                        .IncludeType<UserController>();
+                        .IncludeType<UserController>());
+
                     x.Services.AddSingleton(new UserRepository());
                 }).Start();
 
@@ -122,7 +125,7 @@ namespace HttpTests.Kestrel
 
     public class HomeEndpointGuy
     {
-        [JasperGet("")]
+        [HttpGet("")]
         public string Get()
         {
             return "Hello, world!";

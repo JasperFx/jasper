@@ -6,6 +6,7 @@ using Baseline;
 using Jasper;
 using Jasper.Conneg;
 using Jasper.Util;
+using JasperHttp;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -19,7 +20,9 @@ namespace HttpTests.ContentHandling
         public ConnegRegistry()
         {
             Handlers.DisableConventionalDiscovery();
-            JasperHttpRoutes.IncludeType<CustomReaderWriterEndpoint>();
+
+            Settings.Http(x => x.IncludeType<CustomReaderWriterEndpoint>());
+
             Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
             Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
 

@@ -2,8 +2,8 @@
 using System.Linq;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Http.ContentHandling;
-using Jasper.Http.Model;
+using JasperHttp.ContentHandling;
+using JasperHttp.Model;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;

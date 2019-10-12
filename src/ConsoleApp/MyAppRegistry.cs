@@ -1,4 +1,5 @@
 ﻿using Jasper;
+using Jasper.Configuration;
 using StorytellerSpecs.Fixtures;
 
 namespace MyApp

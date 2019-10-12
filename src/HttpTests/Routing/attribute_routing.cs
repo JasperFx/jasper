@@ -2,9 +2,9 @@ using System;
 using System.Linq;
 using Alba;
 using Jasper;
-using Jasper.Http;
-using Jasper.Http.Model;
-using Jasper.Http.Routing;
+using JasperHttp;
+using JasperHttp.Model;
+using JasperHttp.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +20,12 @@ namespace HttpTests.Routing
         {
             System = SystemUnderTest.For(x => x.UseStartup<Startup>().UseJasper(_ =>
             {
-                _.JasperHttpRoutes.DisableConventionalDiscovery()
-                    .IncludeType<AttributeUsingEndpointClass>()
-                    .IncludeType<IdiomaticJasperRouteEndpoint>();
+                _.Http(opts =>
+                {
+                    opts.DisableConventionalDiscovery()
+                        .IncludeType<AttributeUsingEndpointClass>()
+                        .IncludeType<IdiomaticJasperRouteEndpoint>();
+                });
             }));
 
 
@@ -117,19 +120,19 @@ namespace HttpTests.Routing
         }
 
         // SAMPLE: AttributeUsingEndpoint
-        [JasperPost("one")]
+        [HttpPost("one")]
         public int Post1()
         {
             return 200;
         }
 
-        [JasperGet("/one")]
+        [HttpGet("/one")]
         public string Get1()
         {
             return "one";
         }
 
-        [JasperGet("/dog/{name}")]
+        [HttpGet("/dog/{name}")]
         public string GetDog(string name)
         {
             return $"the dog is {name}";

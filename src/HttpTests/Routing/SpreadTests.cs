@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Alba.Stubs;
-using Jasper.Http.Routing;
+using JasperHttp.Routing;
 using Shouldly;
 using Xunit;
 

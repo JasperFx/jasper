@@ -1,4 +1,5 @@
 ﻿using IntegrationTests;
+using Jasper.Configuration;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Testing.Marten.Persistence.Resiliency;
 using Marten;
@@ -21,7 +22,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             Transports.LightweightListenerAt(2567);
 
-            JasperHttpRoutes.DisableConventionalDiscovery();
         }
     }
 }

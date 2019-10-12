@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using Alba;
-using Jasper.Http.Routing;
+using JasperHttp.Routing;
 
 namespace Jasper.TestSupport.Alba
 {

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;

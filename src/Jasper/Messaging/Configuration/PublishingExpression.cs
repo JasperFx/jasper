@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Settings;
 using Jasper.Util;
@@ -10,9 +11,9 @@ namespace Jasper.Messaging.Configuration
     public class PublishingExpression
     {
         private readonly MessagingConfiguration _bus;
-        private readonly JasperSettings _settings;
+        private readonly SettingsGraph _settings;
 
-        internal PublishingExpression(JasperSettings settings, MessagingConfiguration bus)
+        internal PublishingExpression(SettingsGraph settings, MessagingConfiguration bus)
         {
             _settings = settings;
             _bus = bus;
@@ -80,9 +81,9 @@ namespace Jasper.Messaging.Configuration
             private readonly MessagingConfiguration _bus;
             private readonly string _match;
             private readonly RoutingScope _routingScope;
-            private readonly JasperSettings _settings;
+            private readonly SettingsGraph _settings;
 
-            internal MessageTrackExpression(JasperSettings settings, MessagingConfiguration bus,
+            internal MessageTrackExpression(SettingsGraph settings, MessagingConfiguration bus,
                 RoutingScope routingScope, string match)
             {
                 _settings = settings;

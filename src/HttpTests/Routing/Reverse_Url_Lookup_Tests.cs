@@ -3,7 +3,7 @@ using System.Linq;
 using AspNetCoreHosted;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Http.Routing;
+using JasperHttp.Routing;
 using Shouldly;
 using Xunit;
 

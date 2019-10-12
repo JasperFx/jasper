@@ -9,7 +9,7 @@ namespace Jasper.Persistence.Marten
 {
     public static class JasperRegistryExtensions
     {
-        public static void MartenConnectionStringIs(this JasperSettings settings, string connectionString)
+        public static void MartenConnectionStringIs(this SettingsGraph settings, string connectionString)
         {
             settings.Alter<StoreOptions>(x => x.Connection(connectionString));
         }
@@ -24,12 +24,12 @@ namespace Jasper.Persistence.Marten
             registry.Settings.ConfigureMarten(configuration);
         }
 
-        public static void ConfigureMarten(this JasperSettings settings, Action<StoreOptions> configuration)
+        public static void ConfigureMarten(this SettingsGraph settings, Action<StoreOptions> configuration)
         {
             settings.Alter(configuration);
         }
 
-        public static void ConfigureMarten(this JasperSettings settings,
+        public static void ConfigureMarten(this SettingsGraph settings,
             Action<WebHostBuilderContext, StoreOptions> configuration)
         {
             settings.Alter(configuration);
@@ -41,7 +41,7 @@ namespace Jasper.Persistence.Marten
         /// <param name="settings"></param>
         /// <param name="connectionString"></param>
         /// <param name="schema"></param>
-        public static void PersistMessagesWithMarten(this JasperSettings settings, string connectionString,
+        public static void PersistMessagesWithMarten(this SettingsGraph settings, string connectionString,
             string schema = null)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
@@ -57,7 +57,7 @@ namespace Jasper.Persistence.Marten
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
-        public static void PersistMessagesWithMarten(this JasperSettings settings,
+        public static void PersistMessagesWithMarten(this SettingsGraph settings,
             Action<WebHostBuilderContext, StoreOptions> configure)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
