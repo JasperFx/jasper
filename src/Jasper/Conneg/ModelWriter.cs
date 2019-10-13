@@ -39,28 +39,6 @@ namespace Jasper.Conneg
         }
 
 
-        public bool TryWrite(string accepted, object model, out string contentType, out byte[] data)
-        {
-            if (_writers.Count == 0)
-            {
-                contentType = null;
-                data = null;
-                return false;
-            }
-
-            var writer = ChooseWriter(accepted);
-            if (writer == null)
-            {
-                contentType = null;
-                data = null;
-                return false;
-            }
-
-            contentType = writer.ContentType;
-            data = writer.Write(model);
-
-            return true;
-        }
 
         public IMessageSerializer ChooseWriter(string accepted)
         {

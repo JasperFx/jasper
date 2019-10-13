@@ -49,9 +49,6 @@ namespace JasperHttp.ContentHandling
             }
             else
             {
-                var reader = _serializers.ReaderFor(chain.InputType);
-
-
                 chain.Reader = _serializers.JsonReaderFor(chain.InputType);
                 chain.Middleware.Add(new UseReader(chain, true));
             }
