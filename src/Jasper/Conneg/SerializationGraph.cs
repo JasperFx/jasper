@@ -18,7 +18,7 @@ namespace Jasper.Conneg
 
         private readonly IList<IMessageDeserializer> _readers = new List<IMessageDeserializer>();
 
-        private readonly Dictionary<string, ISerializerFactory> _serializers =
+        protected readonly Dictionary<string, ISerializerFactory> _serializers =
             new Dictionary<string, ISerializerFactory>();
 
         private readonly IList<IMessageSerializer> _writers = new List<IMessageSerializer>();
@@ -44,42 +44,6 @@ namespace Jasper.Conneg
         }
 
         public IEnumerable<ISerializerFactory> Serializers => _serializers.Values;
-
-        public object Deserialize(Envelope envelope)
-        {
-            var contentType = envelope.ContentType ?? "application/json";
-
-            if (contentType.IsEmpty())
-                throw new EnvelopeDeserializationException($"No content type can be determined for {envelope}");
-
-            if (envelope.Data == null || envelope.Data.Length == 0)
-                throw new EnvelopeDeserializationException("No data on the Envelope");
-
-            if (envelope.MessageType.IsNotEmpty())
-            {
-                var reader = ReaderFor(envelope.MessageType);
-                if (reader.HasAnyReaders)
-                    try
-                    {
-                        if (reader.TryRead(envelope.ContentType, envelope.Data, out var model)) return model;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw EnvelopeDeserializationException.ForReadFailure(envelope, ex);
-                    }
-            }
-
-            var messageType = envelope.MessageType ?? "application/json";
-            if (_serializers.ContainsKey(messageType))
-                using (var stream = new MemoryStream(envelope.Data))
-                {
-                    stream.Position = 0;
-                    return _serializers[messageType].Deserialize(stream);
-                }
-
-            throw new EnvelopeDeserializationException(
-                $"Unknown content-type '{contentType}' and message-type '{envelope.MessageType}'");
-        }
 
         public ModelWriter WriterFor(Type messageType)
         {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging.Model;
 using Jasper.Util;
@@ -34,6 +36,42 @@ namespace Jasper.Messaging.Runtime.Serializers
         {
             return _handlers.Chains.Where(x => x.MessageType.ToMessageTypeName() == messageType)
                 .Select(x => x.MessageType);
+        }
+
+        public object Deserialize(Envelope envelope)
+        {
+            var contentType = envelope.ContentType ?? "application/json";
+
+            if (contentType.IsEmpty())
+                throw new EnvelopeDeserializationException($"No content type can be determined for {envelope}");
+
+            if (envelope.Data == null || envelope.Data.Length == 0)
+                throw new EnvelopeDeserializationException("No data on the Envelope");
+
+            if (envelope.MessageType.IsNotEmpty())
+            {
+                var reader = ReaderFor(envelope.MessageType);
+                if (reader.HasAnyReaders)
+                    try
+                    {
+                        if (reader.TryRead(envelope.ContentType, envelope.Data, out var model)) return model;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw EnvelopeDeserializationException.ForReadFailure(envelope, ex);
+                    }
+            }
+
+            var messageType = envelope.MessageType ?? "application/json";
+            if (_serializers.ContainsKey(messageType))
+                using (var stream = new MemoryStream(envelope.Data))
+                {
+                    stream.Position = 0;
+                    return _serializers[messageType].Deserialize(stream);
+                }
+
+            throw new EnvelopeDeserializationException(
+                $"Unknown content-type '{contentType}' and message-type '{envelope.MessageType}'");
         }
     }
 }
