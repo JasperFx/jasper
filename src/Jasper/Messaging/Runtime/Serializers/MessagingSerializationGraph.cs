@@ -54,7 +54,11 @@ namespace Jasper.Messaging.Runtime.Serializers
                 if (reader.HasAnyReaders)
                     try
                     {
-                        if (reader.TryRead(envelope.ContentType, envelope.Data, out var model)) return model;
+                        var deserializer = reader[envelope.ContentType];
+                        if (deserializer != null)
+                        {
+                            return deserializer.ReadFromData(envelope.Data);
+                        }
                     }
                     catch (Exception ex)
                     {
