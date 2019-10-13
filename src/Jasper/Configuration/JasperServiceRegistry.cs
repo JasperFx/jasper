@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Jasper.Conneg;
+using Jasper.Conneg.Json;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -89,6 +90,8 @@ namespace Jasper.Configuration
             For<ITransport>()
                 .Use<StubTransport>().Singleton();
 
+
+            For<ISerializerFactory>().Use<NewtonsoftSerializerFactory>().Singleton();
             ForSingletonOf<IMessagingRoot>().Use<MessagingRoot>();
 
             ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());

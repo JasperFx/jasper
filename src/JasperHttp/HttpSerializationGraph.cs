@@ -10,7 +10,7 @@ namespace JasperHttp
         public HttpSerializationGraph(JsonSerializerSettings settings, ObjectPoolProvider pooling, Forwarders forwarders,
             IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers,
             IEnumerable<IMessageSerializer> writers)
-            : base(pooling, settings, serializers, readers, writers)
+            : base(serializers, readers, writers)
         {
         }
     }

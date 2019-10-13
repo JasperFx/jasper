@@ -27,23 +27,25 @@ namespace Jasper.Conneg
         private ImHashMap<string, ModelReader> _modelReaders = ImHashMap<string, ModelReader>.Empty;
         private ImHashMap<Type, ModelWriter> _modelWriters = ImHashMap<Type, ModelWriter>.Empty;
 
-        protected SerializationGraph(ObjectPoolProvider pooling, JsonSerializerSettings jsonSettings,
-            IEnumerable<ISerializerFactory> serializers,
+        protected SerializationGraph(IEnumerable<ISerializerFactory> serializers,
             IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
         {
-            foreach (var serializer in serializers) _serializers.SmartAdd(serializer.ContentType, serializer);
-
-            if (!_serializers.ContainsKey("application/json"))
+            foreach (var serializer in serializers)
             {
-                var factory = new NewtonsoftSerializerFactory(jsonSettings, pooling);
-                _serializers.SmartAdd("application/json", factory);
+                if (_serializers.ContainsKey(serializer.ContentType))
+                {
+                    _serializers[serializer.ContentType] = serializer;
+                }
+                else
+                {
+                    _serializers.Add(serializer.ContentType, serializer);
+                }
             }
 
             _readers.AddRange(readers);
             _writers.AddRange(writers);
         }
 
-        public IEnumerable<ISerializerFactory> Serializers => _serializers.Values;
 
         public ModelWriter WriterFor(Type messageType)
         {

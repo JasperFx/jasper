@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using Baseline;
 using Jasper.Conneg;
+using Jasper.Conneg.Json;
 using Jasper.Messaging.Model;
 using Jasper.Util;
 using Microsoft.Extensions.ObjectPool;
+using Newtonsoft.Json;
 
 namespace Jasper.Messaging.Runtime.Serializers
 {
@@ -14,10 +16,9 @@ namespace Jasper.Messaging.Runtime.Serializers
     {
         private readonly HandlerGraph _handlers;
 
-        public MessagingSerializationGraph(ObjectPoolProvider pooling, JasperOptions jasperOptions,
-            HandlerGraph handlers, Forwarders forwarders, IEnumerable<ISerializerFactory> serializers,
+        public MessagingSerializationGraph(HandlerGraph handlers, IEnumerable<ISerializerFactory> serializers,
             IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
-            : base(pooling, jasperOptions.JsonSerialization, serializers, readers, writers)
+            : base(serializers, readers, writers)
         {
             _handlers = handlers;
 
@@ -27,8 +28,10 @@ namespace Jasper.Messaging.Runtime.Serializers
 
         public static MessagingSerializationGraph Basic()
         {
-            return new MessagingSerializationGraph(new DefaultObjectPoolProvider(), new JasperOptions(),
-                new HandlerGraph(), new Forwarders(), new List<ISerializerFactory>(), new List<IMessageDeserializer>(),
+            return new MessagingSerializationGraph(new HandlerGraph(), new List<ISerializerFactory>{new NewtonsoftSerializerFactory(new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                }, new DefaultObjectPoolProvider())}, new List<IMessageDeserializer>(),
                 new List<IMessageSerializer>());
         }
 
