@@ -5,12 +5,17 @@ using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
-    // SAMPLE: IMediaWriter
-    public interface IMessageSerializer
+    public interface IWriterStrategy
     {
         Type DotNetType { get; }
 
         string ContentType { get; }
+    }
+
+    // SAMPLE: IMediaWriter
+    public interface IMessageSerializer : IWriterStrategy
+    {
+
         byte[] Write(object model);
 
         /// <summary>

@@ -7,13 +7,17 @@ using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
-    // SAMPLE: IMediaReader
-    public interface IMessageDeserializer
+    public interface IReaderStrategy
     {
         string MessageType { get; }
         Type DotNetType { get; }
 
         string ContentType { get; }
+    }
+
+    // SAMPLE: IMediaReader
+    public interface IMessageDeserializer : IReaderStrategy
+    {
         object ReadFromData(byte[] data);
         Task<T> ReadFromRequest<T>(HttpRequest request);
     }

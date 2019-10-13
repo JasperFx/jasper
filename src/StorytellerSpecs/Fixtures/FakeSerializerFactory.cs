@@ -15,7 +15,7 @@ namespace StorytellerSpecs.Fixtures
 
         public string MessageType { get; }
 
-        Type IMessageDeserializer.DotNetType => throw new NotImplementedException();
+        Type IReaderStrategy.DotNetType => throw new NotImplementedException();
 
         public object ReadFromData(byte[] data)
         {
@@ -27,7 +27,7 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        Type IMessageSerializer.DotNetType => throw new NotImplementedException();
+        Type IWriterStrategy.DotNetType => throw new NotImplementedException();
 
         public byte[] Write(object model)
         {
