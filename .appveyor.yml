@@ -18,6 +18,7 @@ nuget:
   disable_publish_on_pr: true
 
 install:
+  - cmd: choco install dotnetcore-sdk -y
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
   - ruby --version
   - bundle config --local path vendor/bundle
