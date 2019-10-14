@@ -4,6 +4,7 @@ using Jasper;
 using Jasper.Configuration;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Shouldly;
 using TestMessages;
@@ -24,7 +25,7 @@ namespace MessagingTests
         [Fact]
         public void read_settings_from_json()
         {
-            var builder = JasperHost.CreateDefaultBuilder()
+            var builder = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration((context, config) => config.AddJsonFile("messaging.json"))
                 .UseJasper();
 

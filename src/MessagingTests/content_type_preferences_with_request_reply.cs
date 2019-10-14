@@ -5,9 +5,7 @@ using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging;
 using Jasper.Util;
-using Microsoft.AspNetCore.Http;
 using Shouldly;
-using TestingSupport;
 using TestMessages;
 using Xunit;
 
@@ -42,10 +40,6 @@ namespace MessagingTests
             throw new NotSupportedException();
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
-        {
-            throw new NotSupportedException();
-        }
     }
 
     public class Message1OddballReader : IMessageDeserializer
@@ -59,9 +53,5 @@ namespace MessagingTests
             throw new NotSupportedException();
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
-        {
-            throw new NotSupportedException();
-        }
     }
 }

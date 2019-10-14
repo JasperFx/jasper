@@ -6,6 +6,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TestMessages;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace MessagingTests.Samples
         {
             // Bootstrap your application with a few overrides to
             // configuration, and slightly modify the Jasper configuration
-            Host = JasperHost.CreateDefaultBuilder()
+            JasperHost = Host.CreateDefaultBuilder()
                 .OverrideConfigValue("outgoing", "stub://outgoing")
                 .OverrideConfigValue("incoming", "stub://incoming")
                 .UseJasper<MyJasperApp>()
@@ -29,11 +30,11 @@ namespace MessagingTests.Samples
                 .StartJasper();
         }
 
-        public IJasperHost Host { get; }
+        public IJasperHost JasperHost { get; }
 
         public void Dispose()
         {
-            Host?.Dispose();
+            JasperHost?.Dispose();
         }
     }
     // ENDSAMPLE
@@ -43,7 +44,7 @@ namespace MessagingTests.Samples
     {
         public IntegrationContext(IntegrationFixture fixture)
         {
-            Host = fixture.Host;
+            Host = fixture.JasperHost;
 
             // Clean out any previously received messages
             // You'll likely want to use this before any test

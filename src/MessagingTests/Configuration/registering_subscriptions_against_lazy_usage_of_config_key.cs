@@ -5,6 +5,7 @@ using Jasper;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace MessagingTests.Configuration
             {
                 if (_host == null)
                 {
-                    _host = JasperHost.CreateDefaultBuilder()
+                    _host = Host.CreateDefaultBuilder()
                         .ConfigureAppConfiguration((c, builder) => builder.AddInMemoryCollection(theConfigKeys))
                         .UseJasper(theRegistry)
                         .StartJasper();
