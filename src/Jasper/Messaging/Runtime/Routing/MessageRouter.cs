@@ -136,14 +136,14 @@ namespace Jasper.Messaging.Runtime.Routing
         }
 
         private void applyStaticPublishingRules(Type messageType, string[] supported, List<MessageRoute> list,
-            ModelWriter modelWriter)
+            WriterCollection writerCollection)
         {
             foreach (var channel in _subscribers.AllKnown().Where(x => x.ShouldSendMessage(messageType)))
             {
                 var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
 
                 if (contentType.IsNotEmpty())
-                    list.Add(new MessageRoute(messageType, modelWriter, channel, contentType));
+                    list.Add(new MessageRoute(messageType, writerCollection, channel, contentType));
             }
         }
 

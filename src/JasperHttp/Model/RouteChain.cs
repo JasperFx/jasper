@@ -49,9 +49,9 @@ namespace JasperHttp.Model
 
         public string SourceCode => _generatedType.SourceCode;
 
-        public ModelWriter ConnegWriter { get; set; }
+        public WriterCollection ConnegWriter { get; set; }
 
-        public ModelReader ConnegReader { get; set; }
+        public ReaderCollection ConnegReader { get; set; }
 
         public IMessageDeserializer Reader { get; set; }
         public IMessageSerializer Writer { get; set; }

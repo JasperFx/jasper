@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Jasper.Conneg
 {
-    public class ModelWriter : IEnumerable<IMessageSerializer>
+    public class WriterCollection : IEnumerable<IMessageSerializer>
     {
         private readonly string _defaultMimeType;
 
@@ -15,7 +15,7 @@ namespace Jasper.Conneg
         private readonly Dictionary<string, IMessageSerializer> _writers
             = new Dictionary<string, IMessageSerializer>();
 
-        public ModelWriter(IMessageSerializer[] writers)
+        public WriterCollection(IMessageSerializer[] writers)
         {
             _defaultMimeType = writers.FirstOrDefault()?.ContentType;
 
