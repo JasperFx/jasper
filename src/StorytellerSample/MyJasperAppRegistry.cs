@@ -1,7 +1,6 @@
 ﻿using Jasper;
 using Jasper.Configuration;
 using Jasper.TestSupport.Storyteller;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 
@@ -24,7 +23,7 @@ namespace StorytellerSample
             // Customize the application by adding testing concerns,
             // extra logging, or maybe override service registrations
             // with stubs
-            Registry.Hosting(x => x.UseEnvironment("Testing"));
+            Registry.Services.AddSingleton<ISomeService, ISomeService>();
         }
 
         protected override void beforeAll()

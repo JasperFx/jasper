@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Configuration;
 using Jasper.Messaging;
 using Lamar;
 using Microsoft.Extensions.Configuration;
@@ -13,10 +12,8 @@ using Oakton.AspNetCore;
 
 namespace Jasper
 {
-    public static class WebHostBuilderExtensions
+    public static class HostBuilderExtensions
     {
-
-
         /// <summary>
         ///     Overrides a single configuration value. Useful for testing scenarios
         /// </summary>
@@ -55,7 +52,8 @@ namespace Jasper
         /// <returns></returns>
         public static IHostBuilder UseJasper(this IHostBuilder builder, Action<JasperRegistry> overrides = null)
         {
-            var registry = new JasperRegistry(builder.GetSetting(WebHostDefaults.ApplicationKey));
+
+            var registry = new JasperRegistry();
             overrides?.Invoke(registry);
 
             return builder.UseJasper(registry);
@@ -70,17 +68,10 @@ namespace Jasper
         public static IHostBuilder UseJasper(this IHostBuilder builder, JasperRegistry registry)
         {
             var appliedKey = "JASPER_HAS_BEEN_APPLIED";
-            if (builder.GetSetting(appliedKey).IsNotEmpty())
-            {
+            if (builder.Properties.ContainsKey(appliedKey))
                 throw new InvalidOperationException($"{nameof(UseJasper)} can only be called once per builder");
-            }
 
-            builder.UseSetting(appliedKey, "true");
-
-            registry.ConfigureWebHostBuilder(builder);
-
-            // ASP.Net Core will freak out if this isn't there
-            builder.UseSetting(WebHostDefaults.ApplicationKey, registry.ApplicationAssembly.FullName);
+            builder.Properties.Add(appliedKey, "true");
 
             JasperHost.ApplyExtensions(registry);
 
@@ -90,7 +81,6 @@ namespace Jasper
 
             builder.ConfigureServices(s =>
             {
-
                 s.AddSingleton<IHostedService, JasperActivator>();
 
                 s.AddRange(registry.CombineServices());
@@ -98,21 +88,10 @@ namespace Jasper
 
                 s.AddSingleton<IServiceProviderFactory<ServiceRegistry>, LamarServiceProviderFactory>();
                 s.AddSingleton<IServiceProviderFactory<IServiceCollection>, LamarServiceProviderFactory>();
-
-                // Registers an empty startup if there is none in the application
-                if (s.All(x => x.ServiceType != typeof(IStartup))) s.AddSingleton<IStartup>(new NulloStartup());
-
-                // Registers a "nullo" server if there is none in the application
-                // i.e., Kestrel isn't applied
-                if (s.All(x => x.ServiceType != typeof(IServer))) s.AddSingleton<IServer>(new NulloServer());
-
             });
 
             return builder;
         }
-
-
-
 
 
         /// <summary>
