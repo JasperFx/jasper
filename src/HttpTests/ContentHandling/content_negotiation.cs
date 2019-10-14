@@ -7,6 +7,7 @@ using Jasper;
 using Jasper.Conneg;
 using Jasper.Util;
 using JasperHttp;
+using JasperHttp.ContentHandling;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -139,7 +140,7 @@ namespace HttpTests.ContentHandling
     }
 
 
-    public class XmlWriter<T> : IMessageSerializer
+    public class XmlWriter<T> : IResponseWriter
     {
         public string MessageType { get; } = typeof(T).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(T);
@@ -160,7 +161,7 @@ namespace HttpTests.ContentHandling
         }
     }
 
-    public class XmlReader<T> : IMessageDeserializer
+    public class XmlReader<T> : IRequestReader
     {
         public string MessageType { get; } = typeof(T).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(T);

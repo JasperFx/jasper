@@ -5,6 +5,7 @@ using Alba;
 using Baseline;
 using Jasper.Conneg;
 using Jasper.Util;
+using JasperHttp.ContentHandling;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 

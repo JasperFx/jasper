@@ -12,19 +12,9 @@ namespace Jasper.Conneg
         string ContentType { get; }
     }
 
-    public interface IResponseWriter : IWriterStrategy
-    {
-        /// <summary>
-        /// Called during HTTP requests
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="response"></param>
-        /// <returns></returns>
-        Task WriteToStream(object model, HttpResponse response);
-    }
 
     // SAMPLE: IMediaWriter
-    public interface IMessageSerializer : IWriterStrategy, IResponseWriter
+    public interface IMessageSerializer : IWriterStrategy
     {
 
         byte[] Write(object model);
@@ -46,11 +36,6 @@ namespace Jasper.Conneg
         public byte[] Write(object model)
         {
             return Write(model.As<T>());
-        }
-
-        public Task WriteToStream(object model, HttpResponse response)
-        {
-            return WriteToStream(model.As<T>(), response);
         }
 
         public abstract byte[] Write(T model);

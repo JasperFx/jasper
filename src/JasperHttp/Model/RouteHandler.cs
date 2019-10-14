@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
+using JasperHttp.ContentHandling;
 using Microsoft.AspNetCore.Http;
 
 namespace JasperHttp.Model
