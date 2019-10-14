@@ -43,6 +43,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
 
             var store = _host.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
+
+            _host.RebuildMessageStorage();
         }
 
         public void Dispose()
