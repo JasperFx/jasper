@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
-using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
@@ -40,6 +39,5 @@ namespace Jasper.Conneg
 
         public abstract byte[] Write(T model);
 
-        public abstract Task WriteToStream(T model, HttpResponse response);
     }
 }
