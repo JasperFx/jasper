@@ -12,6 +12,7 @@ using Jasper.Persistence.Postgresql.Schema;
 using Jasper.TestSupport.Storyteller.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StoryTeller;
 
@@ -40,7 +41,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
 
 
-            theHost = JasperHost
+            theHost = Host
                 .CreateDefaultBuilder()
                 .ConfigureLogging(x => x.AddProvider(logger))
                 .UseJasper(registry)

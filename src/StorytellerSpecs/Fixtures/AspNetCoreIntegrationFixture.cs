@@ -32,9 +32,21 @@ namespace StorytellerSpecs.Fixtures
         public override void SetUp()
         {
 
-            var builder = new WebHostBuilder();
-            builder.UseUrls("http://localhost:3456");
-            //builder.UseKestrel();
+            var builder = new HostBuilder();
+            builder.ConfigureAppConfiguration(c =>
+            {
+                c.AddInMemoryCollection(new Dictionary<string, string> {{"foo", "bar"}});
+                c.AddInMemoryCollection(new Dictionary<string, string> {{"team", "chiefs"}});
+            });
+
+            builder
+                .ConfigureServices(s => s.AddTransient<IService, ServiceFromJasperRegistryConfigure>())
+                .ConfigureServices((c, services) =>
+                {
+                    if (c.HostingEnvironment.EnvironmentName == "Green")
+                        services.AddTransient<IService, GreenService>();
+                });
+
             builder.ConfigureServices(x =>
             {
                 x.AddSingleton<IService, Service>();
@@ -46,7 +58,6 @@ namespace StorytellerSpecs.Fixtures
             });
 
 
-            builder.UseStartup<AppStartUp>();
             builder.UseEnvironment("Green");
             builder.UseJasper<BootstrappingApp>();
 
@@ -243,20 +254,7 @@ namespace StorytellerSpecs.Fixtures
         {
             Services.For<BootstrappingToken>().Use(new BootstrappingToken(Id));
 
-            Hosting(builder =>
-            {
-                builder.ConfigureAppConfiguration(c =>
-                    {
-                        c.AddInMemoryCollection(new Dictionary<string, string> {{"foo", "bar"}});
-                        c.AddInMemoryCollection(new Dictionary<string, string> {{"team", "chiefs"}});
-                    })
-                    .ConfigureServices(s => s.AddTransient<IService, ServiceFromJasperRegistryConfigure>())
-                    .ConfigureServices((c, services) =>
-                    {
-                        if (c.HostingEnvironment.EnvironmentName == "Green")
-                            services.AddTransient<IService, GreenService>();
-                    });
-            });
+
 
 
             Settings.Alter<BootstrappingSetting>((context, settings) =>

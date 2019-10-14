@@ -19,6 +19,7 @@ using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Persistence.Postgresql;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -77,7 +78,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             _workers = new RecordingWorkerQueue();
 
-            _host = JasperHost.CreateDefaultBuilder()
+            _host = Host.CreateDefaultBuilder()
                 .UseJasper(_ =>
                 {
                     _.ServiceName = Guid.NewGuid().ToString();

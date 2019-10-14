@@ -14,6 +14,7 @@ using Marten;
 using Marten.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StorytellerSpecs.Fixtures.Marten.App;
 using StoryTeller;
@@ -87,7 +88,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
                 // This is bootstrapping a Jasper application through the
                 // normal ASP.Net Core IWebHostBuilder
-                return JasperHost
+                return Host
                     .CreateDefaultBuilder()
                     .ConfigureLogging(x =>
                     {
@@ -116,7 +117,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 registry.Services.For<ITransportLogger>().Use(_senderWatcher);
 
 
-                return JasperHost.CreateDefaultBuilder()
+                return Host.CreateDefaultBuilder()
                     .ConfigureLogging(x =>
                     {
                         x.SetMinimumLevel(LogLevel.Debug);
