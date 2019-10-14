@@ -9,6 +9,6 @@
     <ProjectReference Include="..\StorytellerSpecs\StorytellerSpecs.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>
