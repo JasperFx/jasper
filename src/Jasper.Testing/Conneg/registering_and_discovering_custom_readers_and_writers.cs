@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Conneg.Json;
 using Jasper.Messaging.Runtime.Serializers;
@@ -9,7 +8,7 @@ using TestingSupport;
 using TestMessages;
 using Xunit;
 
-namespace CoreTests.Conneg
+namespace Jasper.Testing.Conneg
 {
     public class registering_and_discovering_custom_readers_and_writers : IntegrationContext
     {

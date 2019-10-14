@@ -1,10 +1,9 @@
-using Jasper;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace CoreTests.Samples
+namespace Jasper.Testing.Samples
 {
     public class override_message_logging
     {

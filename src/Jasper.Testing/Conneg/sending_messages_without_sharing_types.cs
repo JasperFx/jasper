@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
@@ -12,7 +11,7 @@ using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace CoreTests.Conneg
+namespace Jasper.Testing.Conneg
 {
     public class sending_messages_without_sharing_types : IDisposable
     {

@@ -1,9 +1,8 @@
-﻿using Jasper;
-using Jasper.Configuration;
+﻿using Jasper.Configuration;
 using Shouldly;
 using Xunit;
 
-namespace CoreTests
+namespace Jasper.Testing
 {
     public class JasperOptionsTests
     {

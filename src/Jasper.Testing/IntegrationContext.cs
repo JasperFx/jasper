@@ -1,10 +1,9 @@
 ﻿using System;
-using Jasper;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Xunit;
 
-namespace CoreTests
+namespace Jasper.Testing
 {
     public class DefaultApp : IDisposable
     {

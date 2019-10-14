@@ -4,7 +4,7 @@ using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace CoreTests.Conneg
+namespace Jasper.Testing.Conneg
 {
     public class MimeTypeListTester
     {

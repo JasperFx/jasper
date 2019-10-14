@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace CoreTests.Bootstrapping
+namespace Jasper.Testing.Bootstrapping
 {
     public class endpoints_and_handlers_are_scoped : IntegrationContext
     {

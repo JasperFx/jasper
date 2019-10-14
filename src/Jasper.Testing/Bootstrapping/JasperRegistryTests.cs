@@ -1,11 +1,10 @@
-﻿using Jasper;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using TestingSupport;
 using TestingSupport.Fakes;
 using Xunit;
 
-namespace CoreTests.Bootstrapping
+namespace Jasper.Testing.Bootstrapping
 {
     public class JasperRegistryTests
     {

@@ -1,8 +1,7 @@
-﻿using Jasper;
-using Shouldly;
+﻿using Shouldly;
 using Xunit;
 
-namespace CoreTests.Bootstrapping
+namespace Jasper.Testing.Bootstrapping
 {
     public class service_name_determination
     {
@@ -23,7 +22,7 @@ namespace CoreTests.Bootstrapping
         [Fact]
         public void use_the_calling_assembly_name_if_it_is_a_basic_registry()
         {
-            new JasperRegistry().ServiceName.ShouldBe("CoreTests");
+            new JasperRegistry().ServiceName.ShouldBe("Jasper.Testing");
         }
     }
 

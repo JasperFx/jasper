@@ -1,4 +1,4 @@
-﻿namespace CoreTests.Settings
+﻿namespace Jasper.Testing.Settings
 {
     public class Colors
     {

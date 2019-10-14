@@ -1,4 +1,4 @@
-﻿namespace CoreTests.Conneg
+﻿namespace Jasper.Testing.Conneg
 {
     public class ConnegMessage
     {

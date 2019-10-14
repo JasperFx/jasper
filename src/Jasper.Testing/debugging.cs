@@ -1,8 +1,7 @@
-using Jasper;
 using Jasper.Messaging;
 using Xunit;
 
-namespace CoreTests
+namespace Jasper.Testing
 {
     public class debugging
     {

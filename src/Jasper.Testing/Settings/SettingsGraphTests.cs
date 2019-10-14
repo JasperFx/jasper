@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using Jasper;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace CoreTests.Settings
+namespace Jasper.Testing.Settings
 {
     public class SettingsGraphTests
     {

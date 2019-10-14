@@ -1,10 +1,9 @@
-﻿using Jasper;
-using Module1;
+﻿using Module1;
 using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace CoreTests.Bootstrapping
+namespace Jasper.Testing.Bootstrapping
 {
     public class discovering_and_using_extensions
     {

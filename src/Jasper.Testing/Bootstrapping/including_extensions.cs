@@ -1,11 +1,10 @@
 ﻿using System.Linq;
-using Jasper;
 using Jasper.Configuration;
 using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace CoreTests.Bootstrapping
+namespace Jasper.Testing.Bootstrapping
 {
     public class including_extensions
     {

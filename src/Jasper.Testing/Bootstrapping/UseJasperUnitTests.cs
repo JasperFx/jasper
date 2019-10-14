@@ -1,10 +1,9 @@
 using System;
-using Jasper;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;
 using Xunit;
 
-namespace CoreTests.Bootstrapping
+namespace Jasper.Testing.Bootstrapping
 {
     public class UseJasperUnitTests
     {
