@@ -6,6 +6,7 @@ using Jasper.Configuration;
 using JasperHttp.Routing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 [assembly:JasperFeature]
 
@@ -36,7 +37,7 @@ namespace Jasper.TestSupport.Alba
         /// <returns></returns>
         public static SystemUnderTest For(JasperRegistry registry)
         {
-            var builder = JasperHost.CreateDefaultBuilder().UseJasper(registry);
+            var builder = Host.CreateDefaultBuilder().UseJasper(registry);
             var system = new SystemUnderTest(builder, registry.ApplicationAssembly);
             system.As<ISystemUnderTest>().Urls = new JasperUrlLookup(system.Services.GetRequiredService<IUrlRegistry>());
 
