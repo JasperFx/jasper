@@ -4,7 +4,6 @@ using Jasper;
 using Jasper.TestSupport.Alba;
 using JasperHttp;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +25,6 @@ namespace HttpTests.AspNetCoreIntegration
                 });
             }
         }
-
     }
 
     public class SomeHandler
@@ -40,20 +38,6 @@ namespace HttpTests.AspNetCoreIntegration
     {
     }
 
-    // SAMPLE: ConfiguringAspNetCoreWithinJasperRegistry
-    public class JasperServerApp : JasperRegistry
-    {
-        public JasperServerApp()
-        {
-            Handlers.Discovery(x => x.DisableConventionalDiscovery());
-
-            Hosting(x =>
-                x.UseKestrel()
-                .UseUrls("http://localhost:5200")
-                .UseStartup<Startup>());
-        }
-    }
-    // ENDSAMPLE
 
     public class Startup
     {

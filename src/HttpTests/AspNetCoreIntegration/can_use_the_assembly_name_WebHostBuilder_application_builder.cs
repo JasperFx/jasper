@@ -1,10 +1,4 @@
-using AspNetCoreHosted;
 using Jasper;
-using Jasper.Configuration;
-using JasperHttp;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
 using Xunit;
 
 namespace HttpTests.AspNetCoreIntegration
@@ -21,9 +15,7 @@ namespace HttpTests.AspNetCoreIntegration
             }
 
 
-
             //var assemblyName = builder.GetSetting(WebHostDefaults.ApplicationKey);
-
         }
     }
 }

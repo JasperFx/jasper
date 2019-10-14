@@ -22,6 +22,7 @@ namespace HttpTests.ContentHandling
                 _.Header("content-length").SingleValueShouldEqual("11");
             });
         }
+
         // ENDSAMPLE
     }
 
@@ -33,5 +34,6 @@ namespace HttpTests.ContentHandling
             return "some string";
         }
     }
+
     // ENDSAMPLE
 }

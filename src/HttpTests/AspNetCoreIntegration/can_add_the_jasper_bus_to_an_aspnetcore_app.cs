@@ -48,7 +48,7 @@ namespace HttpTests.AspNetCoreIntegration
             var host = WebHost.CreateDefaultBuilder()
                 .UseStartup<Startup>()
                 .UseJasper() // Use Jasper with all its
-                             // defaults
+                // defaults
                 .Start();
             // ENDSAMPLE
         }
@@ -80,7 +80,6 @@ namespace HttpTests.AspNetCoreIntegration
         */
 
 
-
         /*
         // SAMPLE: simplest-idiomatic-command-line
         public static int Main(params string[] args)
@@ -93,7 +92,6 @@ namespace HttpTests.AspNetCoreIntegration
 
     public class can_add_jasper_to_default_web_host_builder
     {
-
         [Fact]
         public async Task still_works()
         {
@@ -156,7 +154,6 @@ namespace HttpTests.AspNetCoreIntegration
             host.Start();
             // ENDSAMPLE
         }
-
 
 
         [Fact]

@@ -26,7 +26,7 @@ namespace HttpTests.MVCExtensions
         public Task run_controller_action_that_uses_http_context_object()
         {
             var container = _app.System.Services.GetRequiredService<IContainer>();
-            var what = container.WhatDoIHave(serviceType:typeof(IStartupFilter));
+            var what = container.WhatDoIHave(typeof(IStartupFilter));
 
             _output.WriteLine(what);
 
@@ -48,6 +48,13 @@ namespace HttpTests.MVCExtensions
         }
 
         [Fact]
+        public async Task use_json_writer()
+        {
+            var response = await _app.System.GetAsJson<Hero>("/json");
+            response.Name.ShouldBe("Wolverine");
+        }
+
+        [Fact]
         public Task use_simplistic_action_result()
         {
             return _app.System.Scenario(x =>
@@ -55,13 +62,6 @@ namespace HttpTests.MVCExtensions
                 x.Get.Url("/result");
                 x.StatusCodeShouldBe(202);
             });
-        }
-
-        [Fact]
-        public async Task use_json_writer()
-        {
-            var response = await _app.System.GetAsJson<Hero>("/json");
-            response.Name.ShouldBe("Wolverine");
         }
     }
 
@@ -103,6 +103,7 @@ namespace HttpTests.MVCExtensions
                 Affiliation = "Xmen"
             });
         }
+
         // ENDSAMPLE
     }
 }

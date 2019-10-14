@@ -19,11 +19,13 @@ namespace HttpTests.Routing
         {
             var httpSettings = new JasperHttpOptions();
 
-            httpSettings.MethodFilters.Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue)))
+            httpSettings.MethodFilters
+                .Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_date_time(DateTime.MinValue)))
                 .ShouldBeTrue();
             httpSettings.MethodFilters.Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x =>
-                    x.get_with_dateoffset_time(DateTimeOffset.MaxValue))).ShouldBeTrue();
-            httpSettings.MethodFilters.Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_number_value(55)))
+                x.get_with_dateoffset_time(DateTimeOffset.MaxValue))).ShouldBeTrue();
+            httpSettings.MethodFilters
+                .Matches(ReflectionHelper.GetMethod<RoutedEndpoint>(x => x.get_with_number_value(55)))
                 .ShouldBeTrue();
         }
 

@@ -66,5 +66,6 @@ namespace HttpTests.ContentHandling
             return Task.FromResult(203);
         }
     }
+
     // ENDSAMPLE
 }

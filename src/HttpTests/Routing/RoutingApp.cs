@@ -16,7 +16,6 @@ namespace HttpTests.Routing
                     .IncludeType<SpreadHttpActions>()
                     .IncludeType<RouteEndpoints>();
             });
-
         }
     }
 }

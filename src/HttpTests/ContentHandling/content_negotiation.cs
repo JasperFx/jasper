@@ -4,11 +4,9 @@ using System.Xml.Serialization;
 using Alba;
 using Baseline;
 using Jasper;
-using Jasper.Conneg;
 using Jasper.Util;
 using JasperHttp;
 using JasperHttp.ContentHandling;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using TestingSupport;
@@ -146,18 +144,18 @@ namespace HttpTests.ContentHandling
         public Type DotNetType { get; } = typeof(T);
         public string ContentType { get; } = "text/xml";
 
-
-        public byte[] Write(object model)
-        {
-            throw new NotSupportedException();
-        }
-
         public Task WriteToStream(object model, HttpResponse response)
         {
             var serializer = new XmlSerializer(typeof(T));
             serializer.Serialize(response.Body, model);
 
             return Task.CompletedTask;
+        }
+
+
+        public byte[] Write(object model)
+        {
+            throw new NotSupportedException();
         }
     }
 
@@ -167,17 +165,17 @@ namespace HttpTests.ContentHandling
         public Type DotNetType { get; } = typeof(T);
         public string ContentType { get; } = "text/xml";
 
-        public object ReadFromData(byte[] data)
-        {
-            throw new NotSupportedException();
-        }
-
         public Task<T1> ReadFromRequest<T1>(HttpRequest request)
         {
             var serializer = new XmlSerializer(typeof(T1));
             var model = serializer.Deserialize(request.Body).As<T1>();
 
             return Task.FromResult(model);
+        }
+
+        public object ReadFromData(byte[] data)
+        {
+            throw new NotSupportedException();
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Alba;
 using Jasper;
@@ -6,45 +5,23 @@ using JasperHttp;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using TestingSupport;
 using Xunit;
 
 namespace HttpTests
 {
     public class bootstrapping_in_fast_mode
     {
-
-        [Fact]
-        public async Task run_end_to_end()
-        {
-            using (var system = SystemUnderTest.For(x =>
-            {
-                x.UseStartup<Startup>()
-                .UseJasper(o =>
-                {
-                    o.Settings.Http(opts => opts.AspNetCoreCompliance = ComplianceMode.GoFaster);
-                });
-            }))
-            {
-                await system.Scenario(x =>
-                {
-                    x.Get.Url("/fast/text");
-                    x.ContentShouldBe("some fast text");
-                });
-            }
-
-        }
-
         public class Startup
         {
-            public void ConfigureServices(IServiceCollection services){}
+            public void ConfigureServices(IServiceCollection services)
+            {
+            }
 
-            public void Configure(IApplicationBuilder app){}
+            public void Configure(IApplicationBuilder app)
+            {
+            }
         }
-
 
 
         public class GetFastTextEndpoint
@@ -72,6 +49,23 @@ namespace HttpTests
                     .UseJasper(x => x.Settings.Http(opts => opts.AspNetCoreCompliance = ComplianceMode.GoFaster))
                     .Start();
                 // ENDSAMPLE
+            }
+        }
+
+        [Fact]
+        public async Task run_end_to_end()
+        {
+            using (var system = SystemUnderTest.For(x =>
+            {
+                x.UseStartup<Startup>()
+                    .UseJasper(o => { o.Settings.Http(opts => opts.AspNetCoreCompliance = ComplianceMode.GoFaster); });
+            }))
+            {
+                await system.Scenario(x =>
+                {
+                    x.Get.Url("/fast/text");
+                    x.ContentShouldBe("some fast text");
+                });
             }
         }
     }

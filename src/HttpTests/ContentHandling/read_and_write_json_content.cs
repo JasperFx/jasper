@@ -51,8 +51,6 @@ namespace HttpTests.ContentHandling
             return new SumValue {Sum = input.X + input.Y};
         }
     }
+
     // ENDSAMPLE
-
-
-
 }

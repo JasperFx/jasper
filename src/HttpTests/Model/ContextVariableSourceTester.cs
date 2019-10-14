@@ -2,7 +2,6 @@
 using System.Threading;
 using JasperHttp.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 using Shouldly;
 using Xunit;
 
@@ -47,6 +46,5 @@ namespace HttpTests.Model
         {
             matchesAndCanCreate<HttpResponse>();
         }
-
     }
 }

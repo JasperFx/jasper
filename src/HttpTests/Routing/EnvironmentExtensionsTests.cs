@@ -30,7 +30,7 @@ namespace HttpTests.Routing
         [Fact]
         public void get_route_data_from_null_state()
         {
-            ShouldBeNullExtensions.ShouldBeNull(theContext.GetRouteData("foo"));
+            theContext.GetRouteData("foo").ShouldBeNull();
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace HttpTests.Routing
         {
             theContext.Items.Add(HttpContextRoutingExtensions.RouteData, new Dictionary<string, object>());
 
-            ShouldBeNullExtensions.ShouldBeNull(theContext.GetRouteData("foo"));
+            theContext.GetRouteData("foo").ShouldBeNull();
         }
 
         [Fact]

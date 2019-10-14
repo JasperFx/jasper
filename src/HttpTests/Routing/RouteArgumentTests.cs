@@ -59,7 +59,7 @@ namespace HttpTests.Routing
             arg.ArgType = typeof(string);
 
             var frame = arg.ToParsingFrame(null).ShouldBeOfType<StringRouteArgumentFrame>();
-            ShouldBeNullExtensions.ShouldNotBeNull(frame);
+            frame.ShouldNotBeNull();
             frame.Position.ShouldBe(1);
             frame.Name.ShouldBe("name");
         }
@@ -70,7 +70,7 @@ namespace HttpTests.Routing
             var arg = new RouteArgument("age", 3) {ArgType = typeof(int)};
 
             var frame = arg.ToParsingFrame(null).ShouldBeOfType<ParsedRouteArgumentFrame>();
-            ShouldBeNullExtensions.ShouldNotBeNull(frame);
+            frame.ShouldNotBeNull();
             frame.Position.ShouldBe(3);
             frame.Variable.Usage.ShouldBe("age");
 
@@ -211,6 +211,5 @@ namespace HttpTests.Routing
 
             model.Color.ShouldBe(Color.Yellow);
         }
-
     }
 }

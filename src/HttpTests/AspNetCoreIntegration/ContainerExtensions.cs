@@ -59,7 +59,6 @@ namespace HttpTests.AspNetCoreIntegration
                 .ShouldBeFalse();
 
             return runtime;
-
         }
     }
 }

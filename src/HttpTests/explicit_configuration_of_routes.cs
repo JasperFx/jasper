@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Jasper;
 using Jasper.Configuration;
 using JasperHttp.ContentHandling;
 using JasperHttp.Model;
@@ -145,6 +144,4 @@ namespace HttpTests
             writer.FinishBlock();
         }
     }
-
-
 }

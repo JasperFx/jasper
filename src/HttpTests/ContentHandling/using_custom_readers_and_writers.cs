@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Alba;
 using Baseline;
-using Jasper.Conneg;
 using Jasper.Util;
 using JasperHttp.ContentHandling;
 using Microsoft.AspNetCore.Http;
@@ -73,16 +72,6 @@ namespace HttpTests.ContentHandling
         public Type DotNetType { get; } = typeof(SpecialInput);
         public string ContentType { get; } = "text/special";
 
-        public object ReadFromData(byte[] data)
-        {
-            var text = Encoding.UTF8.GetString(data);
-
-            return new SpecialInput
-            {
-                Name = text
-            };
-        }
-
         public async Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             var text = await request.Body.ReadAllTextAsync();
@@ -92,6 +81,16 @@ namespace HttpTests.ContentHandling
                 Name = text
             }.As<T>();
         }
+
+        public object ReadFromData(byte[] data)
+        {
+            var text = Encoding.UTF8.GetString(data);
+
+            return new SpecialInput
+            {
+                Name = text
+            };
+        }
     }
 
     public class SpecialWriter : IResponseWriter
@@ -99,15 +98,15 @@ namespace HttpTests.ContentHandling
         public Type DotNetType { get; } = typeof(SpecialOutput);
         public string ContentType { get; } = "text/special";
 
-        public byte[] Write(object model)
-        {
-            throw new NotSupportedException();
-        }
-
         public Task WriteToStream(object model, HttpResponse response)
         {
             response.Headers["content-type"] = ContentType;
             return response.WriteAsync(model.As<SpecialOutput>().Value);
+        }
+
+        public byte[] Write(object model)
+        {
+            throw new NotSupportedException();
         }
     }
 }

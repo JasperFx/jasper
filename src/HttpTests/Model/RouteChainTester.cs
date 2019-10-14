@@ -3,7 +3,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Baseline.Reflection;
-using Jasper;
 using Jasper.Configuration;
 using JasperHttp.ContentHandling;
 using JasperHttp.Model;

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AspNetCoreHosted;
 using Baseline;
 using Baseline.Reflection;
 using JasperHttp.Routing;
@@ -28,125 +27,6 @@ namespace HttpTests.Routing
                 var route = RouteBuilder.Build(typeof(T), method);
                 graph.Register(route);
             });
-        }
-
-
-        [Fact]
-        public void find_by_handler_type_if_only_one_method()
-        {
-            urls.UrlForType<OnlyOneActionController>()
-                .ShouldBe("/go");
-        }
-
-        [Fact]
-        public void find_route_by_name_positive()
-        {
-            urls.UrlFor("A").ShouldBe("/one/a");
-        }
-
-        [Fact]
-        public void retrieve_a_url_by_action()
-        {
-            urls.UrlFor<OneController>(x => x.delete_one_m2()).ShouldBe("/one/m2");
-        }
-
-        [Fact]
-        public void retrieve_a_url_by_action_negative_case()
-        {
-            Exception<UrlResolutionException>.ShouldBeThrownBy(() =>
-            {
-                urls.UrlFor<RandomClass>(x => x.Ignored());
-            });
-        }
-
-        [Fact]
-        public void retrieve_a_url_for_a_inferred_model_simple_case()
-        {
-            urls.UrlForType<Model1>(null).ShouldBe("/one/m1");
-        }
-
-
-        [Fact]
-        public void retrieve_a_url_for_a_model_and_http_method()
-        {
-            urls.UrlFor(new UrlModel(), "GET").ShouldBe("/urlmodel");
-            urls.UrlFor(new UrlModel(), "POST").ShouldBe("/urlmodel");
-        }
-
-        [Fact]
-        public void retrieve_a_url_for_a_model_simple_case()
-        {
-            urls.UrlFor(new Model1()).ShouldBe("/one/m1");
-        }
-
-        [Fact]
-        public void retrieve_a_url_for_a_model_that_does_not_exist()
-        {
-            Exception<UrlResolutionException>.ShouldBeThrownBy(() => { urls.UrlFor(new ModelWithNoChain()); });
-        }
-
-
-
-        [Fact]
-        public void retrieve_by_controller_action_even_if_it_has_an_input_model()
-        {
-            urls.UrlFor<OneController>(x => x.get_one_M1(null)).ShouldBe("/one/m1");
-        }
-
-        [Fact]
-        public void retrieve_by_model_with_multiples()
-        {
-            Exception<UrlResolutionException>.ShouldBeThrownBy(() => { urls.UrlFor(new UrlModel()); });
-        }
-
-        [Fact]
-        public void url_for_by_type_respects_the_absolute_path()
-        {
-            urls.UrlForType<Model6>()
-                .ShouldBe("/one/a");
-        }
-
-        [Fact]
-        public void url_for_handler_type_and_method_negative_case_should_throw_204()
-        {
-            Exception<UrlResolutionException>.ShouldBeThrownBy(() =>
-            {
-                var method = ReflectionHelper.GetMethod<RandomClass>(x => x.Ignored());
-                urls.UrlFor(typeof(OneController), method, null);
-            });
-        }
-
-        [Fact]
-        public void url_for_handler_type_and_method_positive()
-        {
-            var method = ReflectionHelper.GetMethod<OneController>(x => x.head_one_m3());
-
-            urls.UrlFor(typeof(OneController), method).ShouldBe("/one/m3");
-        }
-
-        [Fact]
-        public void url_for_handler_type_and_method_positive_by_method_name()
-        {
-            urls.UrlFor(typeof(OneController), nameof(OneController.head_one_m3)).ShouldBe("/one/m3");
-        }
-
-        // SAMPLE: doing-url-lookup-with-route-arguments
-        [Fact]
-        public void url_for_arguments()
-        {
-            // The route pattern for this action is "GET: /range/:from/:to"
-            urls.UrlFor<OneController>(x => x.get_range_from_to(1, 5))
-                .ShouldBe("/range/1/5");
-        }
-        // ENDSAMPLE
-
-        // SAMPLE: url_for_named_route_with_arguments
-        [Fact]
-        public void url_for_named_route_with_arguments()
-        {
-            var url = urls.UrlFor("GetRange", new Dictionary<string, object> {{"from", 2}, {"to", "6"}});
-
-            url.ShouldBe("/range/2/6");
         }
         // ENDSAMPLE
 
@@ -185,7 +65,128 @@ namespace HttpTests.Routing
             // Or by expression
             var url3 = urls.UrlFor<UserEndpoints>(x => x.post_user(null));
         }
+
+
+        [Fact]
+        public void find_by_handler_type_if_only_one_method()
+        {
+            urls.UrlForType<OnlyOneActionController>()
+                .ShouldBe("/go");
+        }
+
+        [Fact]
+        public void find_route_by_name_positive()
+        {
+            urls.UrlFor("A").ShouldBe("/one/a");
+        }
+
+        [Fact]
+        public void retrieve_a_url_by_action()
+        {
+            urls.UrlFor<OneController>(x => x.delete_one_m2()).ShouldBe("/one/m2");
+        }
+
+        [Fact]
+        public void retrieve_a_url_by_action_negative_case()
+        {
+            Exception<UrlResolutionException>.ShouldBeThrownBy(() => { urls.UrlFor<RandomClass>(x => x.Ignored()); });
+        }
+
+        [Fact]
+        public void retrieve_a_url_for_a_inferred_model_simple_case()
+        {
+            urls.UrlForType<Model1>().ShouldBe("/one/m1");
+        }
+
+
+        [Fact]
+        public void retrieve_a_url_for_a_model_and_http_method()
+        {
+            urls.UrlFor(new UrlModel(), "GET").ShouldBe("/urlmodel");
+            urls.UrlFor(new UrlModel(), "POST").ShouldBe("/urlmodel");
+        }
+
+        [Fact]
+        public void retrieve_a_url_for_a_model_simple_case()
+        {
+            urls.UrlFor(new Model1()).ShouldBe("/one/m1");
+        }
+
+        [Fact]
+        public void retrieve_a_url_for_a_model_that_does_not_exist()
+        {
+            Exception<UrlResolutionException>.ShouldBeThrownBy(() => { urls.UrlFor(new ModelWithNoChain()); });
+        }
+
+
+        [Fact]
+        public void retrieve_by_controller_action_even_if_it_has_an_input_model()
+        {
+            urls.UrlFor<OneController>(x => x.get_one_M1(null)).ShouldBe("/one/m1");
+        }
+
+        [Fact]
+        public void retrieve_by_model_with_multiples()
+        {
+            Exception<UrlResolutionException>.ShouldBeThrownBy(() => { urls.UrlFor(new UrlModel()); });
+        }
+
+        // SAMPLE: doing-url-lookup-with-route-arguments
+        [Fact]
+        public void url_for_arguments()
+        {
+            // The route pattern for this action is "GET: /range/:from/:to"
+            urls.UrlFor<OneController>(x => x.get_range_from_to(1, 5))
+                .ShouldBe("/range/1/5");
+        }
+
+        [Fact]
+        public void url_for_by_type_respects_the_absolute_path()
+        {
+            urls.UrlForType<Model6>()
+                .ShouldBe("/one/a");
+        }
+
+        [Fact]
+        public void url_for_handler_type_and_method_negative_case_should_throw_204()
+        {
+            Exception<UrlResolutionException>.ShouldBeThrownBy(() =>
+            {
+                var method = ReflectionHelper.GetMethod<RandomClass>(x => x.Ignored());
+                urls.UrlFor(typeof(OneController), method);
+            });
+        }
+
+        [Fact]
+        public void url_for_handler_type_and_method_positive()
+        {
+            var method = ReflectionHelper.GetMethod<OneController>(x => x.head_one_m3());
+
+            urls.UrlFor(typeof(OneController), method).ShouldBe("/one/m3");
+        }
+
+        [Fact]
+        public void url_for_handler_type_and_method_positive_by_method_name()
+        {
+            urls.UrlFor(typeof(OneController), nameof(OneController.head_one_m3)).ShouldBe("/one/m3");
+        }
         // ENDSAMPLE
+
+        // SAMPLE: url_for_named_route_with_arguments
+        [Fact]
+        public void url_for_named_route_with_arguments()
+        {
+            var url = urls.UrlFor("GetRange", new Dictionary<string, object> {{"from", 2}, {"to", "6"}});
+
+            url.ShouldBe("/range/2/6");
+        }
+
+        // ENDSAMPLE
+    }
+
+    public class CreateUser
+    {
+
     }
 
     public class UserEndpoints
@@ -250,6 +251,7 @@ namespace HttpTests.Routing
         {
             return $"From {from} to {to}";
         }
+
         // ENDSAMPLE
     }
 
@@ -342,5 +344,4 @@ namespace HttpTests.Routing
     public class SubclassUrlModel : UrlModel
     {
     }
-
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using Jasper;
 using Jasper.Configuration;
 using JasperHttp.Routing;
 using Shouldly;
@@ -29,7 +28,7 @@ namespace HttpTests.Routing
         public void no_input_type_if_none()
         {
             var route = RouteBuilder.Build<SomeEndpoint>(x => x.delete_something(null));
-            ShouldBeNullExtensions.ShouldBeNull(route.InputType);
+            route.InputType.ShouldBeNull();
         }
 
         [Fact]
@@ -45,8 +44,6 @@ namespace HttpTests.Routing
             var route = RouteBuilder.Build<SomeEndpoint>(x => x.put_message1(null));
             route.InputType.ShouldBe(typeof(Message1));
         }
-
-
     }
 
     [JasperIgnore]

@@ -1,11 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Alba;
 using Jasper;
-using Jasper.TestSupport.Alba;
-using JasperHttp;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace HttpTests
@@ -16,10 +10,7 @@ namespace HttpTests
         public async Task will_still_apply_middleware()
         {
             var runtime = JasperHost.CreateDefaultBuilder()
-                .Configure(app =>
-                {
-                    app.Run(c => c.Response.WriteAsync("Hello"));
-                })
+                .Configure(app => { app.Run(c => c.Response.WriteAsync("Hello")); })
                 .UseJasper(_ => _.Http(opts => opts.DisableConventionalDiscovery()))
                 .ToAlbaSystem();
 

@@ -4,8 +4,6 @@ using Alba;
 using Baseline;
 using Jasper;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Stub;
 using Jasper.TestSupport.Alba;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +29,7 @@ namespace HttpTests
 
     public class RegistryFixture<T> : IDisposable where T : JasperRegistry, new()
     {
-        private Lazy<SystemUnderTest> _sut = new Lazy<SystemUnderTest>(() =>
+        private readonly Lazy<SystemUnderTest> _sut = new Lazy<SystemUnderTest>(() =>
         {
             var system = JasperAlba.For<T>();
             system.Services.As<Container>().DisposalLock = DisposalLock.ThrowOnDispose;

@@ -65,7 +65,8 @@ namespace HttpTests
         [Fact]
         public void can_import_endpoints_from_extension_includes()
         {
-            Runtime.Services.GetRequiredService<RouteGraph>().Gets.Any(x => x.Route.HandlerType == typeof(ExtensionThing))
+            Runtime.Services.GetRequiredService<RouteGraph>().Gets
+                .Any(x => x.Route.HandlerType == typeof(ExtensionThing))
                 .ShouldBeTrue();
         }
 

@@ -32,7 +32,6 @@ namespace HttpTests.AspNetCoreIntegration
                 // This is important for the MVC and ASP.Net Core integration to work correctly
                 runtime.Get<IHostingEnvironment>().ApplicationName.ShouldBe(Assembly.GetExecutingAssembly().FullName);
             }
-
         }
 
         [Fact]
@@ -47,7 +46,6 @@ namespace HttpTests.AspNetCoreIntegration
                 runtime.Get<IHostingEnvironment>()
                     .EnvironmentName.ShouldBe("Fake");
             }
-
         }
 
         [Fact]
@@ -62,7 +60,6 @@ namespace HttpTests.AspNetCoreIntegration
                 runtime.Get<IHostingEnvironment>()
                     .EnvironmentName.ShouldBe("Fake2");
             }
-
         }
     }
 }

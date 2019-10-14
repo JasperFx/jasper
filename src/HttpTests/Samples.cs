@@ -15,7 +15,6 @@ namespace HttpTests
 {
     public class Samples
     {
-
     }
 
     /*
@@ -42,12 +41,14 @@ namespace HttpTests
         // Responds to the route "GET: /add/:one/:two"
         public static Sum get_add_one_two(int one, int two)
         {
-            return new Sum{Total = one + two};
+            return new Sum {Total = one + two};
         }
     }
     // ENDSAMPLE
 
-    public class Invoice{}
+    public class Invoice
+    {
+    }
 
     public interface IInvoiceService
     {
@@ -87,9 +88,9 @@ namespace HttpTests
 
             return response.WriteAsync("here's some stuff");
         }
+
         // ENDSAMPLE
     }
-
 
 
     [JasperIgnore]
@@ -105,11 +106,17 @@ namespace HttpTests
         {
             return session.LoadAsync<Invoice>(invoiceId);
         }
+
         // ENDSAMPLE
     }
 
-    public class Command{}
-    public class ResourceModel{}
+    public class Command
+    {
+    }
+
+    public class ResourceModel
+    {
+    }
 
     [JasperIgnore]
     public class ResourceEndpoints
@@ -153,7 +160,7 @@ namespace HttpTests
 
         private ResourceModel lookupById(string id)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         // SAMPLE: input-type-without-any-resource-type
@@ -177,6 +184,7 @@ namespace HttpTests
             // 201: Created
             return 201;
         }
+
         // ENDSAMPLE
     }
 
@@ -222,14 +230,6 @@ namespace HttpTests
         {
             throw new NotSupportedException();
         }
-
-        public override Task WriteToStream(Invoice model, HttpResponse response)
-        {
-            var serializer = new XmlSerializer(typeof(Invoice));
-            serializer.Serialize(response.Body, model);
-
-            return Task.CompletedTask;
-        }
     }
     // ENDSAMPLE
 
@@ -248,7 +248,7 @@ namespace HttpTests
         protected override Task<Invoice> ReadData(Stream stream)
         {
             var serializer = new XmlSerializer(typeof(Invoice));
-            var model = (Invoice)serializer.Deserialize(stream);
+            var model = (Invoice) serializer.Deserialize(stream);
 
             return Task.FromResult(model);
         }
@@ -267,6 +267,6 @@ namespace HttpTests
             Services.AddSingleton<IMessageDeserializer, InvoiceXmlReader>();
         }
     }
-    // ENDSAMPLE
 
+    // ENDSAMPLE
 }

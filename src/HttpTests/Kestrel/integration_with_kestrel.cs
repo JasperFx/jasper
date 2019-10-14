@@ -5,8 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Jasper;
-using JasperHttp;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,7 +27,6 @@ namespace HttpTests.Kestrel
                 .UseStartup<Startup>()
                 .UseJasper(x =>
                 {
-
                     x.Http(opts => opts
                         .DisableConventionalDiscovery()
                         .IncludeType<HomeEndpointGuy>()
@@ -37,7 +34,6 @@ namespace HttpTests.Kestrel
 
                     x.Services.AddSingleton(new UserRepository());
                 }).Start();
-
         }
 
         public IWebHost Host { get; }
@@ -50,21 +46,33 @@ namespace HttpTests.Kestrel
 
     public class Startup
     {
-        public void ConfigureServices(IServiceCollection services){}
+        public void ConfigureServices(IServiceCollection services)
+        {
+        }
 
-        public void Configure(IApplicationBuilder app){}
+        public void Configure(IApplicationBuilder app)
+        {
+        }
     }
 
     public class integration_with_kestrel : IClassFixture<DefaultApp>
     {
-        private readonly DefaultApp _app;
-        private readonly ITestOutputHelper _output;
-
         public integration_with_kestrel(DefaultApp app, ITestOutputHelper output)
         {
             _app = app;
             _output = output;
+        }
 
+        private readonly DefaultApp _app;
+        private readonly ITestOutputHelper _output;
+
+        [Fact]
+        public async Task get_404_when_resource_is_null()
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync("http://localhost:5025/user/Rey");
+
+            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         }
 
         [Fact]
@@ -88,15 +96,6 @@ namespace HttpTests.Kestrel
         }
 
         [Fact]
-        public async Task get_404_when_resource_is_null()
-        {
-            var client = new HttpClient();
-            var response = await client.GetAsync("http://localhost:5025/user/Rey");
-
-            response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-        }
-
-        [Fact]
         public async Task post_json()
         {
             var user = new User {Name = "Yoda"};
@@ -108,7 +107,6 @@ namespace HttpTests.Kestrel
                 Method = new HttpMethod("POST"),
                 Content = new StringContent(json, Encoding.Default),
                 RequestUri = new Uri("http://localhost:5025/user")
-
             };
 
             var client = new HttpClient();
@@ -116,10 +114,7 @@ namespace HttpTests.Kestrel
 
 
             response.StatusCode.ShouldBe(HttpStatusCode.Created);
-
-
         }
-
     }
 
 
@@ -145,13 +140,13 @@ namespace HttpTests.Kestrel
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((User) obj);
         }
 
         public override int GetHashCode()
         {
-            return (Name != null ? Name.GetHashCode() : 0);
+            return Name != null ? Name.GetHashCode() : 0;
         }
     }
 
@@ -161,8 +156,8 @@ namespace HttpTests.Kestrel
 
         public UserRepository()
         {
-            Users.Add(new User{Name = "Luke"});
-            Users.Add(new User{Name = "Leia"});
+            Users.Add(new User {Name = "Luke"});
+            Users.Add(new User {Name = "Leia"});
         }
     }
 

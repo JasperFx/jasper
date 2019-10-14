@@ -2,8 +2,6 @@
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Alba;
-using Jasper;
-using Jasper.TestSupport.Alba;
 using JasperHttp.Routing;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -146,7 +144,7 @@ namespace HttpTests.Routing
         {
             return $"{first}-{end}";
         }
-        // ENDSAMPLE
 
+        // ENDSAMPLE
     }
 }

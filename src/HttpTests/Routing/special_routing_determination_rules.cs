@@ -1,5 +1,4 @@
-﻿using Jasper;
-using Jasper.Configuration;
+﻿using Jasper.Configuration;
 using JasperHttp.Routing;
 using Shouldly;
 using Xunit;
@@ -91,5 +90,6 @@ namespace HttpTests.Routing
             return "Hello, world";
         }
     }
+
     // ENDSAMPLE
 }

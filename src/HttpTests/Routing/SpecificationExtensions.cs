@@ -15,8 +15,8 @@ namespace HttpTests.Routing
         {
             try
             {
-                ShouldBeNullExtensions.ShouldNotBeNull(actual);
-                ShouldBeNullExtensions.ShouldNotBeNull(expected);
+                actual.ShouldNotBeNull();
+                expected.ShouldNotBeNull();
 
                 actual.Count.ShouldBe(expected.Count);
 
@@ -47,8 +47,8 @@ namespace HttpTests.Routing
             IEnumerable expected,
             Func<ELEMENT, KEY> keySelector)
         {
-            ShouldBeNullExtensions.ShouldNotBeNull(actual);
-            ShouldBeNullExtensions.ShouldNotBeNull(expected);
+            actual.ShouldNotBeNull();
+            expected.ShouldNotBeNull();
 
             var actualArray = actual.ToArray();
             var expectedArray = expected.Cast<object>().ToArray();
