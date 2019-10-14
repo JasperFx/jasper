@@ -2,7 +2,7 @@
 using System.Linq;
 using Baseline;
 using Jasper.Settings;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.SqlServer
 {
@@ -35,7 +35,7 @@ namespace Jasper.Persistence.SqlServer
         /// <param name="settings"></param>
         /// <param name="configure"></param>
         public static void PersistMessagesWithSqlServer(this SettingsGraph settings,
-            Action<WebHostBuilderContext, SqlServerSettings> configure)
+            Action<HostBuilderContext, SqlServerSettings> configure)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<SqlServerBackedPersistence>().Any())

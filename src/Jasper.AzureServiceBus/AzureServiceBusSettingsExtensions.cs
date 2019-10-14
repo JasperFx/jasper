@@ -1,7 +1,7 @@
 using System;
 using Jasper.Settings;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.AzureServiceBus
 {
@@ -34,7 +34,7 @@ namespace Jasper.AzureServiceBus
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="alteration"></param>
-        public static void ConfigureAzureServiceBus(this SettingsGraph settings, Action<AzureServiceBusOptions, IHostingEnvironment, IConfiguration> alteration)
+        public static void ConfigureAzureServiceBus(this SettingsGraph settings, Action<AzureServiceBusOptions, IHostEnvironment, IConfiguration> alteration)
         {
             settings.Alter<AzureServiceBusOptions>((context, x) => alteration(x, context.HostingEnvironment, context.Configuration));
         }

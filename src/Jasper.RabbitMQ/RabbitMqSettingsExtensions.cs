@@ -1,7 +1,7 @@
 using System;
 using Jasper.Settings;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.RabbitMQ
 {
@@ -34,7 +34,7 @@ namespace Jasper.RabbitMQ
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
-        public static void ConfigureRabbitMq(this SettingsGraph settings, Action<RabbitMqOptions, IHostingEnvironment, IConfiguration> configure)
+        public static void ConfigureRabbitMq(this SettingsGraph settings, Action<RabbitMqOptions, IHostEnvironment, IConfiguration> configure)
         {
             settings.Alter<RabbitMqOptions>((context, x) => configure(x, context.HostingEnvironment, context.Configuration));
         }

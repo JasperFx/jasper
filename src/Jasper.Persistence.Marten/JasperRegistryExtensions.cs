@@ -3,7 +3,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Settings;
 using Marten;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.Marten
 {
@@ -30,7 +30,7 @@ namespace Jasper.Persistence.Marten
         }
 
         public static void ConfigureMarten(this SettingsGraph settings,
-            Action<WebHostBuilderContext, StoreOptions> configuration)
+            Action<HostBuilderContext, StoreOptions> configuration)
         {
             settings.Alter(configuration);
         }
@@ -58,7 +58,7 @@ namespace Jasper.Persistence.Marten
         /// <param name="settings"></param>
         /// <param name="configure"></param>
         public static void PersistMessagesWithMarten(this SettingsGraph settings,
-            Action<WebHostBuilderContext, StoreOptions> configure)
+            Action<HostBuilderContext, StoreOptions> configure)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<MartenBackedPersistence>().Any())
