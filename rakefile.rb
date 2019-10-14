@@ -2,11 +2,11 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-BUILD_VERSION =  ENV['version'].nil? ? '0.9.14' : ENV['version']
+BUILD_VERSION =  ENV['version'].nil? ? '0.9.15' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 
-TEMPLATE_VERSION = '0.9.14'
+TEMPLATE_VERSION = '0.9.15'
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 
@@ -147,7 +147,7 @@ end
 
 def pack_nuget(project)
   file = "src/#{project}/#{project}.csproj"
-  sh "dotnet pack #{file} -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack #{file} -o ./artifacts --configuration Release --no-restore"
 end
 
 desc "Pushes the Nuget's to AppVeyor"
