@@ -9,6 +9,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -16,15 +17,18 @@ namespace HttpTests.AspNetCoreIntegration
 {
     public class AspNetCombinedFixture : IDisposable
     {
-        public IWebHost theHost;
+        public IHost theHost;
 
         public AspNetCombinedFixture()
         {
             // SAMPLE: adding-jasper-to-aspnetcore-app
-            var builder = WebHost.CreateDefaultBuilder();
+            var builder = Host.CreateDefaultBuilder();
             builder
-                .UseUrls("http://localhost:3003")
-                .UseStartup<Startup>() //;
+                .ConfigureWebHostDefaults(x =>
+                {
+                    x.UseUrls("http://localhost:3003")
+                    .UseStartup<Startup>();
+                })
                 .UseJasper<SimpleJasperBusApp>();
 
 
@@ -45,8 +49,8 @@ namespace HttpTests.AspNetCoreIntegration
         public void bootstrap()
         {
             // SAMPLE: simplest-aspnetcore-bootstrapping
-            var host = WebHost.CreateDefaultBuilder()
-                .UseStartup<Startup>()
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(x => x.UseStartup<Startup>())
                 .UseJasper() // Use Jasper with all its
                 // defaults
                 .Start();
@@ -95,10 +99,14 @@ namespace HttpTests.AspNetCoreIntegration
         [Fact]
         public async Task still_works()
         {
-            var builder = WebHost.CreateDefaultBuilder()
-                .UseUrls("http://localhost:5024")
-                .UseKestrel(x => x.ListenLocalhost(5024))
-                .UseStartup<EmptyStartup>()
+            var builder = Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(x =>
+                {
+                    x.UseUrls("http://localhost:5024")
+                    .UseKestrel(x => x.ListenLocalhost(5024))
+                    .UseStartup<EmptyStartup>();
+                })
+
                 .UseJasper<SimpleJasperBusApp>();
 
             using (var theHost = builder.Build())
@@ -123,29 +131,33 @@ namespace HttpTests.AspNetCoreIntegration
             theHost = fixture.theHost;
         }
 
-        private readonly IWebHost theHost;
+        private readonly IHost theHost;
 
         // ReSharper disable once UnusedMember.Global
         protected void sample()
         {
             // SAMPLE: ordering-middleware-with-jasper
-            var builder = new WebHostBuilder();
+            var builder = Host.CreateDefaultBuilder();
             builder
-                .UseKestrel(x => x.ListenLocalhost(3003))
-                .UseUrls("http://localhost:3003")
-                .ConfigureServices(s => s.AddMvc())
-                .Configure(app =>
+                .ConfigureWebHostDefaults(web =>
                 {
-                    app.UseMiddleware<CustomMiddleware>();
+                    web.UseKestrel(x => x.ListenLocalhost(3003))
+                    .UseUrls("http://localhost:3003")
+                    .ConfigureServices(s => s.AddMvc())
+                    .Configure(app =>
+                    {
+                        app.UseMiddleware<CustomMiddleware>();
 
-                    // Add the Jasper middleware
-                    app.UseJasper();
+                        // Add the Jasper middleware
+                        app.UseJasper();
 
-                    // Nothing stopping you from using Jasper *and*
-                    // MVC, NancyFx, or any other ASP.Net Core
-                    // compatible framework
-                    app.UseMvc();
+                        // Nothing stopping you from using Jasper *and*
+                        // MVC, NancyFx, or any other ASP.Net Core
+                        // compatible framework
+                        app.UseMvc();
+                    });
                 })
+
                 .UseJasper<SimpleJasperBusApp>();
 
 
