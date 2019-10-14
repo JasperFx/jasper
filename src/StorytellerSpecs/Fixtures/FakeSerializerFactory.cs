@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Jasper.Conneg;
-using Microsoft.AspNetCore.Http;
 
 namespace StorytellerSpecs.Fixtures
 {
@@ -22,19 +21,9 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
         Type IWriterStrategy.DotNetType => throw new NotImplementedException();
 
         public byte[] Write(object model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task WriteToStream(object model, HttpResponse response)
         {
             throw new NotImplementedException();
         }

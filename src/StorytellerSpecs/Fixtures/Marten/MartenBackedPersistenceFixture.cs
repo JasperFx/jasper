@@ -12,7 +12,6 @@ using Jasper.Persistence.Postgresql.Schema;
 using Jasper.TestSupport.Storyteller.Logging;
 using Marten;
 using Marten.Util;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

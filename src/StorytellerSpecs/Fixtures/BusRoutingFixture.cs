@@ -5,7 +5,6 @@ using Baseline;
 using Jasper;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime.Routing;
-using Microsoft.AspNetCore.Http;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -147,9 +146,5 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        public Task WriteToStream(object model, HttpResponse response)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

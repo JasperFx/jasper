@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.TestSupport.Storyteller;
-using JasperHttp;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using StoryTeller;
@@ -76,7 +75,7 @@ namespace Jasper.TestSupport.Tests
         [Fact]
         public async Task bootstraps_the_host()
         {
-            using (var system = JasperStorytellerHost.Basic(x => { x.Http(opts => opts.DisableConventionalDiscovery());; }))
+            using (var system = JasperStorytellerHost.Basic())
             {
                 await system.Warmup();
 
@@ -118,7 +117,6 @@ namespace Jasper.TestSupport.Tests
         public FakeStorytellerSystem()
         {
             Registry.Services.AddSingleton(DisposableGuy);
-            Registry.Http(opts => opts.DisableConventionalDiscovery());;
         }
 
         public bool BeforeAllWasCalled { get; set; }
