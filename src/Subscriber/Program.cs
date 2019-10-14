@@ -9,6 +9,7 @@ namespace Subscriber
     {
         private static Task<int> Main(string[] args)
         {
+
             return JasperHost.Run<SubscriberApp>(args);
         }
     }
@@ -17,8 +18,6 @@ namespace Subscriber
     {
         public SubscriberApp()
         {
-            Hosting(x => x.UseUrls("http://localhost:5004"));
-
             Transports.LightweightListenerAt(22222);
         }
     }
