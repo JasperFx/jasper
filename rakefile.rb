@@ -126,7 +126,6 @@ task :pack do
 	end
 
   pack_nuget 'Jasper'
-  pack_nuget 'JasperHttp'
   pack_nuget 'Jasper.Persistence.Marten'
   pack_nuget 'Jasper.Persistence.SqlServer'
   pack_nuget 'Jasper.Persistence.Database'
