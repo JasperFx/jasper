@@ -4,6 +4,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Testing.Samples
 {
@@ -19,7 +20,7 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
 
             // SAMPLE: Bootstrapping-Basic2
-            using (var host = JasperHost.CreateDefaultBuilder()
+            using (var host = Host.CreateDefaultBuilder()
                 .UseJasper()
                 .StartJasper())
             {
@@ -149,27 +150,13 @@ namespace Bootstrapping.Configuration2
     }
     // ENDSAMPLE
 
-    // SAMPLE: EnvironmentNameRegistry
-    public class EnvironmentNameRegistry : JasperRegistry
-    {
-        public EnvironmentNameRegistry()
-        {
-            // which is just a shortcut for:
-            Hosting(x => x.UseEnvironment("Production"));
-        }
-    }
-
-    // ENDSAMPLE
-
 
     public class Samples
     {
         public void using_web_host_builder()
         {
             // SAMPLE: aspnetcore-idiomatic-option-configuration
-            var builder = WebHost.CreateDefaultBuilder()
-                .UseStartup<Startup>()
-
+            var builder = Host.CreateDefaultBuilder()
                 // Overwrite the environment name
                 .UseEnvironment("Development")
 

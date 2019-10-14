@@ -7,6 +7,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using TestMessages;
 
 namespace Jasper.Testing.Samples
@@ -111,8 +112,8 @@ namespace Jasper.Testing.Samples
         {
 
             // SAMPLE: using-configuration-with-jasperoptions
-            var host = WebHost.CreateDefaultBuilder()
-                .UseStartup<Startup>()
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(x => x.UseStartup<Startup>())
                 .UseJasper()
                 .Start();
 
