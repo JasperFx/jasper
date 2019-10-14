@@ -73,6 +73,9 @@ namespace Jasper
 
             builder.Properties.Add(appliedKey, "true");
 
+            builder.UseServiceProviderFactory<IServiceCollection>(new LamarServiceProviderFactory());
+            builder.UseServiceProviderFactory<ServiceRegistry>(new LamarServiceProviderFactory());
+
             JasperHost.ApplyExtensions(registry);
 
             registry.Messaging.StartCompiling(registry);
@@ -85,9 +88,6 @@ namespace Jasper
 
                 s.AddRange(registry.CombineServices());
                 s.AddSingleton(registry);
-
-                s.AddSingleton<IServiceProviderFactory<ServiceRegistry>, LamarServiceProviderFactory>();
-                s.AddSingleton<IServiceProviderFactory<IServiceCollection>, LamarServiceProviderFactory>();
             });
 
             return builder;

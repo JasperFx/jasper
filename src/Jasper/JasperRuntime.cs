@@ -12,7 +12,7 @@ namespace Jasper
     public class JasperRuntime : IJasperHost
     {
         private readonly Lazy<IMessageContext> _bus;
-        private readonly IDisposable _host;
+        private readonly IHost _host;
         private readonly JasperRegistry _registry;
         private IContainer _container;
         private bool _isDisposing;
@@ -119,7 +119,7 @@ namespace Jasper
             // THis is important to stop every async agent kind of thing
             var jasperOptions = _container.GetInstance<JasperOptions>();
 
-
+            _host.StopAsync().GetAwaiter().GetResult();
             _host.SafeDispose();
 
             Container.As<Container>().DisposalLock = DisposalLock.Unlocked;

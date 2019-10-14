@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,11 @@ namespace CoreTests.Bootstrapping
 
     public class MyHostedService : IHostedService
     {
+        public MyHostedService()
+        {
+            Console.WriteLine("I'm being started at least'");
+        }
+
         public bool WasStarted { get; set; }
 
         public bool WasStopped { get; set; }
