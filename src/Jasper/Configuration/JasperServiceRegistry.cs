@@ -92,13 +92,6 @@ namespace Jasper.Configuration
 
             Scan(x =>
             {
-                var extensionAssemblies = parent.AppliedExtensions.Select(ext => ext.GetType().Assembly).Distinct();
-
-                foreach (var assembly in extensionAssemblies)
-                {
-                    x.Assembly(assembly);
-                }
-
                 x.AssemblyContainingType<JasperServiceRegistry>();
                 x.ConnectImplementationsToTypesClosing(typeof(ISerializerFactory<,>));
             });

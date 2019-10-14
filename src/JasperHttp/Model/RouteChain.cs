@@ -49,12 +49,12 @@ namespace JasperHttp.Model
 
         public string SourceCode => _generatedType.SourceCode;
 
-        public WriterCollection<IMessageSerializer> ConnegWriter { get; set; }
+        public WriterCollection<IResponseWriter> ConnegWriter { get; set; }
 
-        public ReaderCollection<IMessageDeserializer> ConnegReader { get; set; }
+        public ReaderCollection<IRequestReader> ConnegReader { get; set; }
 
-        public IMessageDeserializer Reader { get; set; }
-        public IMessageSerializer Writer { get; set; }
+        public IRequestReader Reader { get; set; }
+        public IResponseWriter Writer { get; set; }
 
         public string TypeName { get; }
 

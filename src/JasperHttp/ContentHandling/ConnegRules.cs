@@ -115,7 +115,7 @@ namespace JasperHttp.ContentHandling
         public static ConnegRules Empty()
         {
             var graph = new HttpSerializationGraph(
-                new ISerializerFactory<IMessageDeserializer, IMessageSerializer>[0], new IMessageDeserializer[0], new IMessageSerializer[0]);
+                new ISerializerFactory<IRequestReader, IResponseWriter>[0], new IRequestReader[0], new IResponseWriter[0]);
             return new ConnegRules(graph, new IReaderRule[0], new IWriterRule[0]);
         }
     }

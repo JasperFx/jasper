@@ -11,7 +11,7 @@ namespace JasperHttp.ContentHandling
         private static readonly MethodInfo _method =
             ReflectionHelper.GetMethod<RouteHandler>(x => x.UseWriter(null, null));
 
-        public UseWriter(RouteChain chain) : base(typeof(IMessageSerializer), _method)
+        public UseWriter(RouteChain chain) : base(typeof(IResponseWriter), _method)
         {
             Arguments[0] = chain.Action.ReturnVariable;
 
@@ -24,7 +24,7 @@ namespace JasperHttp.ContentHandling
         private static readonly MethodInfo _method = typeof(RouteHandler).GetMethod(nameof(RouteHandler.UseWriter),
             BindingFlags.Public | BindingFlags.Static);
 
-        public UseChosenWriter(RouteChain chain) : base(typeof(IMessageSerializer), _method)
+        public UseChosenWriter(RouteChain chain) : base(typeof(IResponseWriter), _method)
         {
             Arguments[0] = chain.Action.ReturnVariable;
 

@@ -2,6 +2,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper;
 using Jasper.Configuration;
+using Jasper.Conneg;
 using JasperHttp.ContentHandling;
 using JasperHttp.MVCExtensions;
 using JasperHttp.Routing;
@@ -44,6 +45,20 @@ namespace JasperHttp
 
             options.IncludeTypes(x => x.CanBeCastTo<ControllerBase>());
             options.IncludeMethods(x => x.HasAttribute<HttpMethodAttribute>());
+
+            registry.Services.Scan(x =>
+            {
+                x.AssemblyContainingType<JasperHttpExtension>();
+                x.ConnectImplementationsToTypesClosing(typeof(ISerializerFactory<,>));
+
+            });
+
+            registry.Services.Scan(x =>
+            {
+                x.Assembly(registry.ApplicationAssembly);
+                x.AddAllTypesOf<IRequestReader>();
+                x.AddAllTypesOf<IResponseWriter>();
+            });
             // ENDSAMPLE
 
 

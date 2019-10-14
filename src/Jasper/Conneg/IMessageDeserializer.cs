@@ -15,11 +15,16 @@ namespace Jasper.Conneg
         string ContentType { get; }
     }
 
+    public interface IRequestReader : IReaderStrategy
+    {
+        Task<T> ReadFromRequest<T>(HttpRequest request);
+    }
+
     // SAMPLE: IMediaReader
-    public interface IMessageDeserializer : IReaderStrategy
+    public interface IMessageDeserializer : IReaderStrategy, IRequestReader
     {
         object ReadFromData(byte[] data);
-        Task<T> ReadFromRequest<T>(HttpRequest request);
+
     }
     // ENDSAMPLE
 

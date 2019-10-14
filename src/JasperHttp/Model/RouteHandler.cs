@@ -30,7 +30,7 @@ namespace JasperHttp.Model
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Task UseWriter(object model, HttpResponse response, IMessageSerializer writer)
+        public static Task UseWriter(object model, HttpResponse response, IResponseWriter writer)
         {
             if (model == null)
             {
@@ -50,10 +50,10 @@ namespace JasperHttp.Model
 
         public RouteChain Chain { get; set; }
 
-        public IMessageDeserializer Reader { get; set; }
-        public IMessageSerializer Writer { get; set; }
-        public ReaderCollection<IMessageDeserializer> ConnegReader { get; set; }
-        public WriterCollection<IMessageSerializer> ConnegWriter { get; set; }
+        public IRequestReader Reader { get; set; }
+        public IResponseWriter Writer { get; set; }
+        public ReaderCollection<IRequestReader> ConnegReader { get; set; }
+        public WriterCollection<IResponseWriter> ConnegWriter { get; set; }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -65,12 +65,12 @@ namespace JasperHttp.Model
             return response.Body.WriteAsync(bytes, 0, bytes.Length);
         }
 
-        public IMessageDeserializer SelectReader(HttpRequest request)
+        public IRequestReader SelectReader(HttpRequest request)
         {
             return ConnegReader[request.ContentType];
         }
 
-        public IMessageSerializer SelectWriter(HttpRequest request)
+        public IResponseWriter SelectWriter(HttpRequest request)
         {
             return ConnegWriter.ChooseWriter(request.Headers["accept"]);
         }

@@ -66,7 +66,7 @@ namespace HttpTests.ContentHandling
         public string Value { get; set; }
     }
 
-    public class SpecialReader : IMessageDeserializer
+    public class SpecialReader : IRequestReader
     {
         public string MessageType { get; } = typeof(SpecialInput).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(SpecialInput);
@@ -93,7 +93,7 @@ namespace HttpTests.ContentHandling
         }
     }
 
-    public class SpecialWriter : IMessageSerializer
+    public class SpecialWriter : IResponseWriter
     {
         public Type DotNetType { get; } = typeof(SpecialOutput);
         public string ContentType { get; } = "text/special";

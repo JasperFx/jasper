@@ -12,12 +12,8 @@ namespace Jasper.Conneg
         string ContentType { get; }
     }
 
-    // SAMPLE: IMediaWriter
-    public interface IMessageSerializer : IWriterStrategy
+    public interface IResponseWriter : IWriterStrategy
     {
-
-        byte[] Write(object model);
-
         /// <summary>
         /// Called during HTTP requests
         /// </summary>
@@ -25,6 +21,15 @@ namespace Jasper.Conneg
         /// <param name="response"></param>
         /// <returns></returns>
         Task WriteToStream(object model, HttpResponse response);
+    }
+
+    // SAMPLE: IMediaWriter
+    public interface IMessageSerializer : IWriterStrategy, IResponseWriter
+    {
+
+        byte[] Write(object model);
+
+
     }
     // ENDSAMPLE
 

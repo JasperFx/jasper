@@ -23,8 +23,8 @@ namespace HttpTests.ContentHandling
 
             Settings.Http(x => x.IncludeType<CustomReaderWriterEndpoint>());
 
-            Services.For<IMessageDeserializer>().Add<XmlReader<SpecialInput>>();
-            Services.For<IMessageSerializer>().Add<XmlWriter<SpecialOutput>>();
+            Services.For<IRequestReader>().Add<XmlReader<SpecialInput>>();
+            Services.For<IResponseWriter>().Add<XmlWriter<SpecialOutput>>();
 
             Hosting(x => x.Configure(app => app.UseJasper()));
         }
