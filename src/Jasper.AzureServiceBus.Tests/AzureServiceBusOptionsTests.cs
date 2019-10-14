@@ -11,10 +11,7 @@ namespace Jasper.AzureServiceBus.Tests
         [InlineData("azureservicebus://conn1")]
         public void throw_with_invalid_uri_value(string uriString)
         {
-            Should.Throw<ArgumentOutOfRangeException>(() =>
-            {
-                new AzureServiceBusOptions().For(uriString);
-            });
+            Should.Throw<ArgumentOutOfRangeException>(() => { new AzureServiceBusOptions().For(uriString); });
         }
     }
 }

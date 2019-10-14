@@ -10,9 +10,9 @@ using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
 using Marten;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -22,7 +22,8 @@ namespace Jasper.AzureServiceBus.Tests
     public class end_to_end
     {
         // TODO -- make this puppy be pulled from an environment variable? Something ignored?
-        public const string ConnectionString = "Endpoint=sb://jaspertest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tYfuj6uX/L2kolyKi+dc7Jztu45vHVp4wf3W+YBoXHc=";
+        public const string ConnectionString =
+            "Endpoint=sb://jaspertest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tYfuj6uX/L2kolyKi+dc7Jztu45vHVp4wf3W+YBoXHc=";
 
 
         [Fact]
@@ -46,78 +47,6 @@ namespace Jasper.AzureServiceBus.Tests
                 var colors = runtime.Get<ColorHistory>();
 
                 colors.Name.ShouldBe("Red");
-            }
-
-        }
-
-        [Fact]
-        public async Task send_message_to_and_receive_through_asb()
-        {
-            using (var runtime = JasperHost.For<ASBUsingApp>())
-            {
-                var tracker = runtime.Get<MessageTracker>();
-
-                var watch = tracker.WaitFor<ColorChosen>();
-
-                await runtime.Messaging.Send(new ColorChosen {Name = "Red"});
-
-                await watch;
-
-                var colors = runtime.Get<ColorHistory>();
-
-                colors.Name.ShouldBe("Red");
-            }
-        }
-
-
-
-
-        [Fact]
-        public async Task send_message_to_and_receive_through_asb_with_durable_transport_option()
-        {
-            var uri = "azureservicebus://jasper/durable/queue/messages";
-
-            var publisher = JasperHost.For(_ =>
-            {
-                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
-                _.Publish.AllMessagesTo(uri);
-
-                _.Include<MartenBackedPersistence>();
-
-                _.Settings.ConfigureMarten(x =>
-                {
-                    x.Connection(Servers.PostgresConnectionString);
-                    x.AutoCreateSchemaObjects = AutoCreate.All;
-                });
-            });
-
-            var receiver = JasperHost.For(_ =>
-            {
-                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
-
-                _.Transports.ListenForMessagesFrom(uri);
-                _.Services.AddSingleton<ColorHistory>();
-                _.Services.AddSingleton<MessageTracker>();
-
-                _.Include<MartenBackedPersistence>();
-
-                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
-            });
-
-            var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
-
-            try
-            {
-                await publisher.Messaging.Send(new ColorChosen {Name = "Orange"});
-
-                await wait;
-
-                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
-            }
-            finally
-            {
-                publisher.Dispose();
-                receiver.Dispose();
             }
         }
 
@@ -177,9 +106,74 @@ namespace Jasper.AzureServiceBus.Tests
             }
         }
 
+        [Fact]
+        public async Task send_message_to_and_receive_through_asb()
+        {
+            using (var runtime = JasperHost.For<ASBUsingApp>())
+            {
+                var tracker = runtime.Get<MessageTracker>();
+
+                var watch = tracker.WaitFor<ColorChosen>();
+
+                await runtime.Messaging.Send(new ColorChosen {Name = "Red"});
+
+                await watch;
+
+                var colors = runtime.Get<ColorHistory>();
+
+                colors.Name.ShouldBe("Red");
+            }
+        }
 
 
+        [Fact]
+        public async Task send_message_to_and_receive_through_asb_with_durable_transport_option()
+        {
+            var uri = "azureservicebus://jasper/durable/queue/messages";
 
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
+                _.Publish.AllMessagesTo(uri);
+
+                _.Include<MartenBackedPersistence>();
+
+                _.Settings.ConfigureMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                });
+            });
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
+
+                _.Transports.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+                _.Services.AddSingleton<MessageTracker>();
+
+                _.Include<MartenBackedPersistence>();
+
+                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
+            });
+
+            var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
+
+            try
+            {
+                await publisher.Messaging.Send(new ColorChosen {Name = "Orange"});
+
+                await wait;
+
+                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
+        }
 
 
         [Fact]
@@ -192,7 +186,6 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
                 _.Publish.AllMessagesTo(uri);
                 _.Handlers.DisableConventionalDiscovery();
-
             });
 
             var receiver = JasperHost.For(_ =>
@@ -203,7 +196,6 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Services.AddSingleton<MessageTracker>();
 
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TracksMessage<SpecialTopic>>();
-
             });
 
             var wait = receiver.Get<MessageTracker>().WaitFor<SpecialTopic>();
@@ -216,8 +208,6 @@ namespace Jasper.AzureServiceBus.Tests
                 var received = await wait;
                 received.Message.ShouldBeOfType<SpecialTopic>()
                     .Id.ShouldBe(message.Id);
-
-
             }
             finally
             {
@@ -225,10 +215,6 @@ namespace Jasper.AzureServiceBus.Tests
                 receiver.Dispose();
             }
         }
-
-
-
-
 
 
         [Fact]
@@ -239,7 +225,6 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Settings.AddAzureServiceBusConnection("jasper", ConnectionString);
                 _.Publish.AllMessagesTo("azureservicebus://jasper/topic/*");
                 _.Handlers.DisableConventionalDiscovery();
-
             });
 
             var receiver1 = JasperHost.For(_ =>
@@ -252,7 +237,6 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Handlers.DisableConventionalDiscovery()
                     .IncludeType<TracksMessage<TopicA>>()
                     .IncludeType<TracksMessage<TopicB>>();
-
             });
 
             var receiver2 = JasperHost.For(_ =>
@@ -264,7 +248,6 @@ namespace Jasper.AzureServiceBus.Tests
 
                 _.Handlers.DisableConventionalDiscovery()
                     .IncludeType<TracksMessage<TopicC>>();
-
             });
 
             var waitForA = receiver1.Get<MessageTracker>().WaitFor<TopicA>();
@@ -284,7 +267,6 @@ namespace Jasper.AzureServiceBus.Tests
                 var receivedA = (await waitForA).Message.ShouldBeOfType<TopicA>();
                 var receivedB = (await waitForB).Message.ShouldBeOfType<TopicB>();
                 var receivedC = (await waitForC).Message.ShouldBeOfType<TopicC>();
-
             }
             finally
             {
@@ -293,10 +275,6 @@ namespace Jasper.AzureServiceBus.Tests
                 receiver2.Dispose();
             }
         }
-
-
-
-
     }
 
 
@@ -304,8 +282,6 @@ namespace Jasper.AzureServiceBus.Tests
     {
         public ASBUsingApp()
         {
-
-
             Transports.ListenForMessagesFrom("azureservicebus://jasper/queue/messages");
 
             Services.AddSingleton<ColorHistory>();
@@ -316,7 +292,7 @@ namespace Jasper.AzureServiceBus.Tests
             Include<MessageTrackingExtension>();
         }
 
-        protected override void Configure(IHostingEnvironment contextHostingEnvironment, IConfiguration configuration,
+        protected override void Configure(IHostEnvironment contextHostingEnvironment, IConfiguration configuration,
             AzureServiceBusOptions options)
         {
             options.Connections.Add("jasper", end_to_end.ConnectionString);
@@ -353,7 +329,6 @@ namespace Jasper.AzureServiceBus.Tests
     }
 
     [MessageIdentity("A")]
-
     public class TopicA
     {
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -375,5 +350,4 @@ namespace Jasper.AzureServiceBus.Tests
     {
         public Guid Id { get; set; } = Guid.NewGuid();
     }
-
 }
