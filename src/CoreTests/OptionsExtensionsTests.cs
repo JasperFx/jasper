@@ -1,8 +1,6 @@
 using System;
-using CoreTests.Settings;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Settings;
 using Shouldly;
 using Xunit;
 
@@ -23,6 +21,5 @@ namespace CoreTests
         {
             public int SomeSetting { get; set; }
         }
-
     }
 }

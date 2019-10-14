@@ -8,7 +8,6 @@ namespace CoreTests.Samples
 {
     public class override_message_logging
     {
-
     }
 
     // SAMPLE: AppWithCustomLogging
@@ -26,7 +25,8 @@ namespace CoreTests.Samples
     {
         private readonly ILogger<CustomMessageLogger> _logger;
 
-        public CustomMessageLogger(ILoggerFactory factory, IMetrics metrics, ILogger<CustomMessageLogger> logger) : base(factory, metrics)
+        public CustomMessageLogger(ILoggerFactory factory, IMetrics metrics, ILogger<CustomMessageLogger> logger) :
+            base(factory, metrics)
         {
             _logger = logger;
         }
@@ -34,10 +34,12 @@ namespace CoreTests.Samples
         public override void ExecutionStarted(Envelope envelope)
         {
             base.ExecutionStarted(envelope);
-            _logger.LogInformation($"Executing envelope {envelope.Id}, caused by {envelope.CausationId}, correlated by {envelope.CorrelationId}");
+            _logger.LogInformation(
+                $"Executing envelope {envelope.Id}, caused by {envelope.CausationId}, correlated by {envelope.CorrelationId}");
         }
 
         // And any other events you might care about
     }
+
     // ENDSAMPLE
 }

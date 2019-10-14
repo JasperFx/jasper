@@ -1,8 +1,8 @@
 using System.IO;
 using Jasper;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shouldly;
@@ -12,12 +12,12 @@ namespace CoreTests.Util
 {
     public class Thing
     {
-        public ILogger<Thing> Logger { get; }
-
         public Thing(ILogger<Thing> logger)
         {
             Logger = logger;
         }
+
+        public ILogger<Thing> Logger { get; }
     }
 
     public class can_resolve_loggers_and_options
@@ -25,8 +25,7 @@ namespace CoreTests.Util
         [Fact]
         public void with_aspnet_core()
         {
-            var builder = JasperHost.CreateDefaultBuilder()
-
+            var builder = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration(config =>
                 {
                     config.SetBasePath(Directory.GetCurrentDirectory());
@@ -41,15 +40,10 @@ namespace CoreTests.Util
             var logging = options.Value;
 
 
-
             var logger = services.GetRequiredService<ILogger<Thing>>();
 
 
             logger.ShouldNotBeNull();
-
-
         }
-
-
     }
 }

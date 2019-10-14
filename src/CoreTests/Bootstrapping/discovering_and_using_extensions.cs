@@ -24,7 +24,6 @@ namespace CoreTests.Bootstrapping
                 moduleSettings
                     .Count.ShouldBe(100);
             }
-
         }
     }
 

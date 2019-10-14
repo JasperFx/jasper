@@ -39,7 +39,6 @@ namespace CoreTests.Bootstrapping
             {
                 runtime.Container.DefaultRegistrationIs<IFoo, Foo>();
             }
-
         }
     }
 }

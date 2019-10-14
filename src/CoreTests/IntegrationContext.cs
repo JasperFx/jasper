@@ -4,7 +4,6 @@ using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Xunit;
 
-
 namespace CoreTests
 {
     public class DefaultApp : IDisposable
@@ -23,17 +22,14 @@ namespace CoreTests
 
         public void RecycleIfNecessary()
         {
-            if (Host.IsDisposed)
-            {
-                Host = JasperHost.Basic();
-            }
+            if (Host.IsDisposed) Host = JasperHost.Basic();
         }
     }
 
 
     public class IntegrationContext : IDisposable, IClassFixture<DefaultApp>
     {
-        private DefaultApp _default;
+        private readonly DefaultApp _default;
 
         public IntegrationContext(DefaultApp @default)
         {
@@ -41,8 +37,6 @@ namespace CoreTests
             _default.RecycleIfNecessary();
 
             Host = _default.Host;
-
-
         }
 
         public IJasperHost Host { get; private set; }

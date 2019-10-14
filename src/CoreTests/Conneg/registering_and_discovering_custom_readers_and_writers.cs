@@ -4,8 +4,6 @@ using Jasper.Conneg;
 using Jasper.Conneg.Json;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Util;
-using Microsoft.AspNetCore.Http;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Shouldly;
 using TestingSupport;
 using TestMessages;
@@ -21,10 +19,16 @@ namespace CoreTests.Conneg
 
         public MessagingSerializationGraph theSerialization => Host.Get<MessagingSerializationGraph>();
 
+        public class ConnegHandler
+        {
+            public void Handle(Message4 message)
+            {
+            }
+        }
+
         [Fact]
         public void can_override_json_serialization_for_a_mesage()
         {
-
             // Not overridden, so it should be the default
             theSerialization.WriterFor(typeof(Message1))["application/json"]
                 .ShouldBeOfType<NewtonsoftJsonWriter>();
@@ -34,18 +38,9 @@ namespace CoreTests.Conneg
                 .ShouldBeOfType<OverrideJsonWriter>();
         }
 
-        public class ConnegHandler
-        {
-            public void Handle(Message4 message)
-            {
-
-            }
-        }
-
         [Fact]
         public void can_override_json_serialization_reader_for_a_message_type()
         {
-
             // Not overridden, so it should be the default
             theSerialization.ReaderFor(typeof(Message4).ToMessageTypeName())["application/json"]
                 .ShouldBeOfType<NewtonsoftJsonReader>();
@@ -74,7 +69,6 @@ namespace CoreTests.Conneg
     {
         public void Handle(Message1 message)
         {
-
         }
     }
 
@@ -92,10 +86,6 @@ namespace CoreTests.Conneg
             throw new NotSupportedException();
         }
 
-        public Task WriteToStream(object model, HttpResponse response)
-        {
-            throw new NotSupportedException();
-        }
     }
 
     public class OverrideJsonReader : IMessageDeserializer
@@ -109,10 +99,6 @@ namespace CoreTests.Conneg
             throw new NotSupportedException();
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
-        {
-            throw new NotSupportedException();
-        }
     }
 
     public class GreenMessage1Reader : IMessageDeserializer
@@ -126,10 +112,6 @@ namespace CoreTests.Conneg
             throw new NotSupportedException();
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
-        {
-            throw new NotSupportedException();
-        }
     }
 
 
@@ -143,10 +125,6 @@ namespace CoreTests.Conneg
             throw new NotSupportedException();
         }
 
-        public Task WriteToStream(object model, HttpResponse response)
-        {
-            throw new NotSupportedException();
-        }
     }
 
     public class BlueMessage1Writer : IMessageSerializer
@@ -159,9 +137,5 @@ namespace CoreTests.Conneg
             throw new NotSupportedException();
         }
 
-        public Task WriteToStream(object model, HttpResponse response)
-        {
-            throw new NotSupportedException();
-        }
     }
 }

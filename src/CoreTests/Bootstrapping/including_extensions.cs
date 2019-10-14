@@ -22,7 +22,6 @@ namespace CoreTests.Bootstrapping
                 runtime.Get<IColorService>()
                     .ShouldBeOfType<BlueService>();
             }
-
         }
 
         [Fact]
@@ -40,8 +39,6 @@ namespace CoreTests.Bootstrapping
                 runtime.Get<IColorService>()
                     .ShouldBeOfType<RedService>();
             }
-
-
         }
 
         [Fact]

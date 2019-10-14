@@ -1,6 +1,6 @@
 using System;
 using Jasper;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using TestingSupport;
 using Xunit;
 
@@ -11,7 +11,7 @@ namespace CoreTests.Bootstrapping
         [Fact]
         public void cannot_call_use_jasper_twice()
         {
-            var builder = JasperHost.CreateDefaultBuilder();
+            var builder = Host.CreateDefaultBuilder();
 
             builder.UseJasper();
 

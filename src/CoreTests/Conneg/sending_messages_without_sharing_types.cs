@@ -8,7 +8,6 @@ using Jasper.Conneg;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Util;
-using Microsoft.AspNetCore.Http;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -83,11 +82,6 @@ namespace CoreTests.Conneg
         public override byte[] Write(GreenMessage model)
         {
             return Encoding.UTF8.GetBytes(model.Name);
-        }
-
-        public override Task WriteToStream(GreenMessage model, HttpResponse response)
-        {
-            return response.WriteAsync(model.Name);
         }
     }
     // ENDSAMPLE

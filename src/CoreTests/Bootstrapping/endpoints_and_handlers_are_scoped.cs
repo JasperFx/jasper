@@ -29,10 +29,14 @@ namespace CoreTests.Bootstrapping
         }
     }
 
-    public class SomeMessage{}
+    public class SomeMessage
+    {
+    }
 
     public class SomeHandler
     {
-        public void Handle(SomeMessage message){}
+        public void Handle(SomeMessage message)
+        {
+        }
     }
 }
