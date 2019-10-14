@@ -77,19 +77,13 @@ end
 desc 'Compile the code'
 task :compile => [:clean] do
 	sh "dotnet restore Jasper.sln"
-
-  #Dir.chdir("src/Jasper.Diagnostics") do
-  #  sh "yarn build:prod"
-  #end
-  #sh "dotnet build src/Jasper.Diagnostics/Jasper.Diagnostics.csproj"
 end
 
 desc 'Run the unit tests'
 task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
-	sh "dotnet test src/CoreTests/CoreTests.csproj --no-restore"
-	sh "dotnet test src/MessagingTests/MessagingTests.csproj --no-restore"
+	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
 	sh "dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore"
 
 end
