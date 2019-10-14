@@ -3,6 +3,8 @@ using IntegrationTests;
 using Jasper.Persistence.SqlServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -13,24 +15,26 @@ namespace Jasper.Persistence.Testing.SqlServer
         [Fact]
         public void bootstrap_with_configuration()
         {
-            var registry = new JasperRegistry();
+            var builder = Host.CreateDefaultBuilder()
+                .ConfigureAppConfiguration((_, config) =>
+                {
+                    config.AddInMemoryCollection(new Dictionary<string, string>
+                        {{"connection", Servers.SqlServerConnectionString}});
+                })
+                .UseJasper(registry =>
+                {
+                    registry.Settings.PersistMessagesWithSqlServer((c, s) =>
+                    {
+                        s.ConnectionString = c.Configuration["connection"];
+                    });
+                });
 
-            registry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
+
+
+            using (var host = builder.Build())
             {
-                config.AddInMemoryCollection(new Dictionary<string, string>
-                    {{"connection", Servers.SqlServerConnectionString}});
-            }));
 
-
-            registry.Settings.PersistMessagesWithSqlServer((c, s) =>
-            {
-                s.ConnectionString = c.Configuration["connection"];
-            });
-
-            using (var runtime = JasperHost.For(registry))
-            {
-
-                runtime.Get<SqlServerSettings>()
+                host.Services.GetRequiredService<SqlServerSettings>()
                     .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
             }
         }
