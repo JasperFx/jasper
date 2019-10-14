@@ -89,7 +89,6 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/CoreTests/CoreTests.csproj --no-restore"
-	sh "dotnet test src/HttpTests/HttpTests.csproj --no-restore"
 	sh "dotnet test src/MessagingTests/MessagingTests.csproj --no-restore"
 	sh "dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore"
 
