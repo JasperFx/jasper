@@ -52,8 +52,8 @@ namespace JasperHttp.Model
 
         public IMessageDeserializer Reader { get; set; }
         public IMessageSerializer Writer { get; set; }
-        public ReaderCollection ConnegReader { get; set; }
-        public WriterCollection ConnegWriter { get; set; }
+        public ReaderCollection<IMessageDeserializer> ConnegReader { get; set; }
+        public WriterCollection<IMessageSerializer> ConnegWriter { get; set; }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

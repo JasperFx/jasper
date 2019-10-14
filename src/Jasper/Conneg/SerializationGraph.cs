@@ -1,53 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Baseline;
-using Jasper.Conneg.Json;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Util;
-using Microsoft.Extensions.ObjectPool;
-using Newtonsoft.Json;
 
 namespace Jasper.Conneg
 {
-    public abstract class SerializationGraph
+    public abstract class SerializationGraph<TReader, TWriter>
+        where TReader : class, IReaderStrategy
+        where TWriter : class, IWriterStrategy
     {
         private readonly IList<Type> _otherTypes = new List<Type>();
 
-        private readonly IList<IMessageDeserializer> _readers = new List<IMessageDeserializer>();
+        private readonly IList<TReader> _readers = new List<TReader>();
 
-        protected readonly Dictionary<string, ISerializerFactory> _serializers =
-            new Dictionary<string, ISerializerFactory>();
+        protected readonly Dictionary<string, ISerializerFactory<TReader, TWriter>> _serializers =
+            new Dictionary<string, ISerializerFactory<TReader, TWriter>>();
 
-        private readonly IList<IMessageSerializer> _writers = new List<IMessageSerializer>();
+        private readonly IList<TWriter> _writers = new List<TWriter>();
 
 
-        private ImHashMap<string, ReaderCollection> _modelReaders = ImHashMap<string, ReaderCollection>.Empty;
-        private ImHashMap<Type, WriterCollection> _modelWriters = ImHashMap<Type, WriterCollection>.Empty;
+        private ImHashMap<string, ReaderCollection<TReader>> _modelReaders =
+            ImHashMap<string, ReaderCollection<TReader>>.Empty;
 
-        protected SerializationGraph(IEnumerable<ISerializerFactory> serializers,
-            IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
+        private ImHashMap<Type, WriterCollection<TWriter>> _modelWriters =
+            ImHashMap<Type, WriterCollection<TWriter>>.Empty;
+
+        protected SerializationGraph(IEnumerable<ISerializerFactory<TReader, TWriter>> serializers,
+            IEnumerable<TReader> readers, IEnumerable<TWriter> writers)
         {
             foreach (var serializer in serializers)
-            {
                 if (_serializers.ContainsKey(serializer.ContentType))
-                {
                     _serializers[serializer.ContentType] = serializer;
-                }
                 else
-                {
                     _serializers.Add(serializer.ContentType, serializer);
-                }
-            }
 
             _readers.AddRange(readers);
             _writers.AddRange(writers);
         }
 
 
-        public WriterCollection WriterFor(Type messageType)
+        public WriterCollection<TWriter> WriterFor(Type messageType)
         {
             if (_modelWriters.TryFind(messageType, out var writer)) return writer;
 
@@ -57,15 +50,15 @@ namespace Jasper.Conneg
             return modelWriter;
         }
 
-        private WriterCollection compileWriter(Type messageType)
+        private WriterCollection<TWriter> compileWriter(Type messageType)
         {
             var fromSerializers = _serializers.Values.Select(x => x.WriterFor(messageType));
             var writers = _writers.Where(x => x.DotNetType == messageType);
 
-            return new WriterCollection(fromSerializers.Concat(writers).ToArray());
+            return new WriterCollection<TWriter>(fromSerializers.Concat(writers).ToArray());
         }
 
-        public ReaderCollection ReaderFor(string messageType)
+        public ReaderCollection<TReader> ReaderFor(string messageType)
         {
             if (_modelReaders.TryFind(messageType, out var reader)) return reader;
 
@@ -76,15 +69,15 @@ namespace Jasper.Conneg
             return modelReader;
         }
 
-        public ReaderCollection ReaderFor(Type inputType)
+        public ReaderCollection<TReader> ReaderFor(Type inputType)
         {
             var readers = _readers.Where(x => x.DotNetType == inputType);
             var serialized = _serializers.Values.Select(x => x.ReaderFor(inputType));
 
-            return new ReaderCollection(readers.Concat(serialized).ToArray());
+            return new ReaderCollection<TReader>(readers.Concat(serialized).ToArray());
         }
 
-        private ReaderCollection compileReader(string messageType)
+        private ReaderCollection<TReader> compileReader(string messageType)
         {
             var readers = _readers.Where(x => x.MessageType == messageType).ToArray();
             var chainCandidates = determineChainCandidates(messageType);
@@ -97,7 +90,7 @@ namespace Jasper.Conneg
             var fromHandlers = candidateTypes.SelectMany(x => ReaderFor(x).Where(r => r.MessageType == messageType));
 
 
-            return new ReaderCollection(fromHandlers.Concat(readers).Distinct().ToArray());
+            return new ReaderCollection<TReader>(fromHandlers.Concat(readers).Distinct().ToArray());
         }
 
         protected virtual IEnumerable<Type> determineChainCandidates(string messageType)
@@ -105,24 +98,24 @@ namespace Jasper.Conneg
             yield break;
         }
 
-        public IMessageDeserializer JsonReaderFor(Type inputType)
+        public TReader JsonReaderFor(Type inputType)
         {
             return _serializers["application/json"]
                 .ReaderFor(inputType);
         }
 
-        public IMessageSerializer JsonWriterFor(Type resourceType)
+        public TWriter JsonWriterFor(Type resourceType)
         {
             return _serializers["application/json"]
                 .WriterFor(resourceType);
         }
 
-        public IMessageSerializer[] CustomWritersFor(Type resourceType)
+        public TWriter[] CustomWritersFor(Type resourceType)
         {
             return _writers.Where(x => x.DotNetType == resourceType).ToArray();
         }
 
-        public IMessageDeserializer[] CustomReadersFor(Type inputType)
+        public TReader[] CustomReadersFor(Type inputType)
         {
             return _readers.Where(x => x.DotNetType == inputType).ToArray();
         }

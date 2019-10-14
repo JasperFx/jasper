@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace Jasper.Conneg
 {
-    public class ReaderCollection : IEnumerable<IMessageDeserializer>
+    public class ReaderCollection<T> : IEnumerable<T> where T : class, IReaderStrategy
     {
-        private readonly Dictionary<string, IMessageDeserializer> _readers =
-            new Dictionary<string, IMessageDeserializer>();
+        private readonly Dictionary<string, T> _readers =
+            new Dictionary<string, T>();
 
-        public ReaderCollection(IMessageDeserializer[] readers)
+        public ReaderCollection(T[] readers)
         {
             foreach (var reader in readers) _readers[reader.ContentType] = reader;
 
@@ -29,12 +29,12 @@ namespace Jasper.Conneg
 
         public string[] ContentTypes { get; }
 
-        public IMessageDeserializer this[string contentType] =>
+        public T this[string contentType] =>
             _readers.ContainsKey(contentType) ? _readers[contentType] : null;
 
         public bool HasAnyReaders { get; }
 
-        public IEnumerator<IMessageDeserializer> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return _readers.Values.GetEnumerator();
         }

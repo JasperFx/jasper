@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Jasper.Conneg.Json
 {
     // SAMPLE: NewtonsoftSerializer
-    public class NewtonsoftSerializerFactory : ISerializerFactory
+    public class NewtonsoftSerializerFactory : ISerializerFactory<IMessageDeserializer, IMessageSerializer>
     {
         private readonly ArrayPool<byte> _bytePool;
         private readonly ArrayPool<char> _charPool;

@@ -5,17 +5,17 @@ using System.Linq;
 
 namespace Jasper.Conneg
 {
-    public class WriterCollection : IEnumerable<IMessageSerializer>
+    public class WriterCollection<T> : IEnumerable<T> where T : class, IWriterStrategy
     {
         private readonly string _defaultMimeType;
 
-        private readonly ConcurrentDictionary<string, IMessageSerializer> _selections
-            = new ConcurrentDictionary<string, IMessageSerializer>();
+        private readonly ConcurrentDictionary<string, T> _selections
+            = new ConcurrentDictionary<string, T>();
 
-        private readonly Dictionary<string, IMessageSerializer> _writers
-            = new Dictionary<string, IMessageSerializer>();
+        private readonly Dictionary<string, T> _writers
+            = new Dictionary<string, T>();
 
-        public WriterCollection(IMessageSerializer[] writers)
+        public WriterCollection(T[] writers)
         {
             _defaultMimeType = writers.FirstOrDefault()?.ContentType;
 
@@ -26,9 +26,9 @@ namespace Jasper.Conneg
 
         public string[] ContentTypes { get; }
 
-        public IMessageSerializer this[string contentType] => _writers[contentType];
+        public T this[string contentType] => _writers[contentType];
 
-        public IEnumerator<IMessageSerializer> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return _writers.Values.GetEnumerator();
         }
@@ -40,12 +40,12 @@ namespace Jasper.Conneg
 
 
 
-        public IMessageSerializer ChooseWriter(string accepted)
+        public T ChooseWriter(string accepted)
         {
             return _selections.GetOrAdd(accepted ?? _defaultMimeType, select);
         }
 
-        private IMessageSerializer select(string contentType)
+        private T select(string contentType)
         {
             if (!_writers.Any()) return null;
 

@@ -12,7 +12,7 @@ namespace JasperHttp.ContentHandling
     public class ConnegRules : IWriterRule, IReaderRule
     {
         private readonly IList<IReaderRule> _readers = new List<IReaderRule>();
-        private readonly SerializationGraph _serializers;
+        private readonly HttpSerializationGraph _serializers;
         private readonly IList<IWriterRule> _writers = new List<IWriterRule>();
 
         public ConnegRules(HttpSerializationGraph serializers, IEnumerable<IReaderRule> readerRules,
@@ -114,10 +114,8 @@ namespace JasperHttp.ContentHandling
 
         public static ConnegRules Empty()
         {
-            var provider = new DefaultObjectPoolProvider();
-
-            var graph = new HttpSerializationGraph(new JsonSerializerSettings(), provider, new Forwarders(),
-                new ISerializerFactory[0], new IMessageDeserializer[0], new IMessageSerializer[0]);
+            var graph = new HttpSerializationGraph(
+                new ISerializerFactory<IMessageDeserializer, IMessageSerializer>[0], new IMessageDeserializer[0], new IMessageSerializer[0]);
             return new ConnegRules(graph, new IReaderRule[0], new IWriterRule[0]);
         }
     }

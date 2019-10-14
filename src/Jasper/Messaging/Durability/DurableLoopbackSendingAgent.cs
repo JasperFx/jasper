@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
@@ -17,10 +18,10 @@ namespace Jasper.Messaging.Durability
         private readonly JasperOptions _options;
         private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _queues;
-        private readonly SerializationGraph _serializers;
+        private readonly MessagingSerializationGraph _serializers;
 
         public DurableLoopbackSendingAgent(Uri destination, IWorkerQueue queues, IEnvelopePersistence persistence,
-            SerializationGraph serializers, ITransportLogger logger, JasperOptions options)
+            MessagingSerializationGraph serializers, ITransportLogger logger, JasperOptions options)
         {
             _queues = queues;
             _serializers = serializers;

@@ -12,11 +12,11 @@ using Newtonsoft.Json;
 
 namespace Jasper.Messaging.Runtime.Serializers
 {
-    public class MessagingSerializationGraph : SerializationGraph
+    public class MessagingSerializationGraph : SerializationGraph<IMessageDeserializer, IMessageSerializer>
     {
         private readonly HandlerGraph _handlers;
 
-        public MessagingSerializationGraph(HandlerGraph handlers, IEnumerable<ISerializerFactory> serializers,
+        public MessagingSerializationGraph(HandlerGraph handlers, IEnumerable<ISerializerFactory<IMessageDeserializer, IMessageSerializer>> serializers,
             IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers)
             : base(serializers, readers, writers)
         {
@@ -28,7 +28,7 @@ namespace Jasper.Messaging.Runtime.Serializers
 
         public static MessagingSerializationGraph Basic()
         {
-            return new MessagingSerializationGraph(new HandlerGraph(), new List<ISerializerFactory>{new NewtonsoftSerializerFactory(new JsonSerializerSettings
+            return new MessagingSerializationGraph(new HandlerGraph(), new List<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>{new NewtonsoftSerializerFactory(new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.All
                 }, new DefaultObjectPoolProvider())}, new List<IMessageDeserializer>(),

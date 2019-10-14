@@ -90,8 +90,20 @@ namespace Jasper.Configuration
             For<ITransport>()
                 .Use<StubTransport>().Singleton();
 
+            Scan(x =>
+            {
+                var extensionAssemblies = parent.AppliedExtensions.Select(ext => ext.GetType().Assembly).Distinct();
 
-            For<ISerializerFactory>().Use<NewtonsoftSerializerFactory>().Singleton();
+                foreach (var assembly in extensionAssemblies)
+                {
+                    x.Assembly(assembly);
+                }
+
+                x.AssemblyContainingType<JasperServiceRegistry>();
+                x.ConnectImplementationsToTypesClosing(typeof(ISerializerFactory<,>));
+            });
+
+
             ForSingletonOf<IMessagingRoot>().Use<MessagingRoot>();
 
             ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());

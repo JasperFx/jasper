@@ -76,7 +76,7 @@ namespace StorytellerSpecs.Fixtures
             contentTypes.Each(contentType =>
             {
                 var serializer = new FakeSerializerFactory(contentType);
-                _registry.Services.For<ISerializerFactory>().Add(serializer);
+                _registry.Services.For<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>().Add(serializer);
             });
         }
 

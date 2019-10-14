@@ -5,12 +5,9 @@ using Newtonsoft.Json;
 
 namespace JasperHttp
 {
-    public class HttpSerializationGraph : SerializationGraph
+    public class HttpSerializationGraph : SerializationGraph<IMessageDeserializer, IMessageSerializer>
     {
-        public HttpSerializationGraph(JsonSerializerSettings settings, ObjectPoolProvider pooling, Forwarders forwarders,
-            IEnumerable<ISerializerFactory> serializers, IEnumerable<IMessageDeserializer> readers,
-            IEnumerable<IMessageSerializer> writers)
-            : base(serializers, readers, writers)
+        public HttpSerializationGraph(IEnumerable<ISerializerFactory<IMessageDeserializer, IMessageSerializer>> serializers, IEnumerable<IMessageDeserializer> readers, IEnumerable<IMessageSerializer> writers) : base(serializers, readers, writers)
         {
         }
     }

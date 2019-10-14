@@ -18,7 +18,7 @@ namespace Jasper.Messaging.Runtime.Routing
             ContentType = contentType;
         }
 
-        public MessageRoute(Type messageType, WriterCollection writerCollection, ISubscriber subscriber, string contentType)
+        public MessageRoute(Type messageType, WriterCollection<IMessageSerializer> writerCollection, ISubscriber subscriber, string contentType)
             : this(messageType, subscriber.Uri, contentType)
         {
             Writer = writerCollection[contentType];
