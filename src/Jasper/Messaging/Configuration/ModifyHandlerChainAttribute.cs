@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Configuration;
 using Jasper.Messaging.Model;
+using LamarCodeGeneration;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -16,6 +17,6 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         /// <param name="chain"></param>
         /// <param name="rules"></param>
-        public abstract void Modify(HandlerChain chain, JasperGenerationRules rules);
+        public abstract void Modify(HandlerChain chain, GenerationRules rules);
     }
 }

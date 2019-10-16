@@ -12,7 +12,7 @@ namespace TestingSupport.Fakes
 {
     public class GenericFakeTransactionAttribute : ModifyChainAttribute
     {
-        public override void Modify(IChain chain, JasperGenerationRules rules)
+        public override void Modify(IChain chain, GenerationRules rules)
         {
             chain.Middleware.Add(new FakeTransaction());
         }
@@ -20,7 +20,7 @@ namespace TestingSupport.Fakes
     
         public class FakeTransactionAttribute : ModifyHandlerChainAttribute
     {
-        public override void Modify(HandlerChain chain, JasperGenerationRules rules)
+        public override void Modify(HandlerChain chain, GenerationRules rules)
         {
             chain.Middleware.Add(new FakeTransaction());
         }

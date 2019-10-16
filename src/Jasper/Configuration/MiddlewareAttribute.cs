@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Baseline;
+using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 
 namespace Jasper.Configuration
@@ -23,7 +24,7 @@ namespace Jasper.Configuration
             _frameTypes = frameTypes;
         }
 
-        public override void Modify(IChain chain, JasperGenerationRules rules)
+        public override void Modify(IChain chain, GenerationRules rules)
         {
             chain.Middleware.AddRange(_frameTypes.Select(x => Activator.CreateInstance(x).As<Frame>()));
         }

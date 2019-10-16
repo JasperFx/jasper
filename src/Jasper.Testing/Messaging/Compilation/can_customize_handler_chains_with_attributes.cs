@@ -81,7 +81,7 @@ namespace Jasper.Testing.Messaging.Compilation
 
     public class FakeFrameAttribute : ModifyHandlerChainAttribute
     {
-        public override void Modify(HandlerChain chain, JasperGenerationRules rules)
+        public override void Modify(HandlerChain chain, GenerationRules rules)
         {
             chain.Middleware.Add(new CustomFrame());
         }

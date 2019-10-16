@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Baseline;
+using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 
 namespace Jasper.Configuration
 {
     public interface IModifyChain<T> where T : IChain
     {
-        void Modify(T chain, JasperGenerationRules rules);
+        void Modify(T chain, GenerationRules rules);
     }
 
 
@@ -37,7 +38,7 @@ namespace Jasper.Configuration
         }
 
 
-        protected void applyAttributesAndConfigureMethods(JasperGenerationRules rules)
+        protected void applyAttributesAndConfigureMethods(GenerationRules rules)
         {
             var handlers = handlerCalls();
             var configureMethods = handlers.Select(x => x.HandlerType).Distinct()

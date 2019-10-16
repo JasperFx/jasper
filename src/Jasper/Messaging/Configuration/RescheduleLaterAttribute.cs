@@ -4,6 +4,7 @@ using Baseline.Dates;
 using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
+using LamarCodeGeneration;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -22,7 +23,7 @@ namespace Jasper.Messaging.Configuration
             _seconds = seconds;
         }
 
-        public override void Modify(HandlerChain chain, JasperGenerationRules rules)
+        public override void Modify(HandlerChain chain, GenerationRules rules)
         {
             chain.Retries += _exceptionType.HandledBy().Reschedule(_seconds.Select(x => x.Seconds()).ToArray());
         }

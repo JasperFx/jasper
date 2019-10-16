@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
+using LamarCodeGeneration;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -17,7 +18,7 @@ namespace Jasper.Messaging.Configuration
             _exceptionType = exceptionType;
         }
 
-        public override void Modify(HandlerChain chain, JasperGenerationRules rules)
+        public override void Modify(HandlerChain chain, GenerationRules rules)
         {
             chain.Retries += _exceptionType.HandledBy()
                 .MoveToErrorQueue();

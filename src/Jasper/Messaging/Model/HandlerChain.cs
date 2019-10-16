@@ -95,7 +95,7 @@ namespace Jasper.Messaging.Model
             return new HandlerChain(call);
         }
 
-        internal void AssembleType(GeneratedAssembly generatedAssembly, JasperGenerationRules rules)
+        internal void AssembleType(GeneratedAssembly generatedAssembly, GenerationRules rules)
         {
             _generatedType = generatedAssembly.AddType(TypeName, typeof(MessageHandler));
             var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
@@ -124,7 +124,7 @@ namespace Jasper.Messaging.Model
         /// <param name="rules"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public List<Frame> DetermineFrames(JasperGenerationRules rules)
+        public List<Frame> DetermineFrames(GenerationRules rules)
         {
             if (!Handlers.Any())
                 throw new InvalidOperationException("No method handlers configured for message type " +
