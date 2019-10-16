@@ -43,12 +43,6 @@ namespace Jasper
         void Describe(TextWriter writer);
 
         /// <summary>
-        /// Executes all the registered environment checks and throws exceptions for all
-        /// detected failures
-        /// </summary>
-        void ExecuteAllEnvironmentChecks();
-
-        /// <summary>
         ///     Shorthand to fetch a service from the application container by type
         /// </summary>
         /// <typeparam name="T"></typeparam>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>ApplicationInsights metrics integration for Jasper messaging applications</Description>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.ApplicationInsights</AssemblyName>
     <PackageId>Jasper.ApplicationInsights</PackageId>

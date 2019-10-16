@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Baseline;
 using Jasper.Configuration;
-using Jasper.Http;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Settings;
@@ -13,8 +12,8 @@ using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Model;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper
 {
@@ -30,8 +29,8 @@ namespace Jasper
         private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();
         protected readonly ServiceRegistry _baseServices;
 
-        private readonly IList<Action<IWebHostBuilder>> _builderAlterations
-            = new List<Action<IWebHostBuilder>>();
+        private readonly IList<Action<IHostBuilder>> _builderAlterations
+            = new List<Action<IHostBuilder>>();
 
         private readonly IList<Type> _extensionTypes = new List<Type>();
 
@@ -43,8 +42,6 @@ namespace Jasper
 
         public JasperRegistry(string assemblyName)
         {
-            HttpRoutes = new HttpSettings();
-
             Services = _applicationServices;
 
             establishApplicationAssembly(assemblyName);
@@ -59,22 +56,18 @@ namespace Jasper
 
             _baseServices = new JasperServiceRegistry(this);
 
+            // TEMP!!!!
             _baseServices.AddSingleton<GenerationRules>(CodeGeneration);
 
-            Settings = new JasperSettings(this);
-            Settings.BindToConfigSection<JasperOptions>("Jasper");
+            Settings = new SettingsGraph(this);
+            Settings.Require<JasperOptions>();
 
 
             Publish = new PublishingExpression(Settings, Messaging);
-            Settings.Replace(HttpRoutes);
 
             deriveServiceName();
         }
 
-        /// <summary>
-        ///     Configure how HTTP routes are discovered and handled
-        /// </summary>
-        public HttpSettings HttpRoutes { get; }
 
         /// <summary>
         ///     Configure or extend the Lamar code generation
@@ -90,7 +83,7 @@ namespace Jasper
         ///     Access to the strong typed configuration settings and alterations within
         ///     a Jasper application
         /// </summary>
-        public JasperSettings Settings { get; }
+        public SettingsGraph Settings { get; }
 
         /// <summary>
         ///     The main application assembly for this Jasper system
@@ -161,23 +154,7 @@ namespace Jasper
 
         void IFullTransportsExpression.ListenForMessagesFromUriValueInConfig(string configKey)
         {
-            Settings.Messaging((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey)));
-        }
-
-        /// <summary>
-        ///     Apply configuration and alterations directly to the underlying
-        ///     IWebHostBuilder of the running application when this JasperRegistry
-        ///     is executed
-        /// </summary>
-        /// <param name="configure"></param>
-        public void Hosting(Action<IWebHostBuilder> configure)
-        {
-            _builderAlterations.Add(configure);
-        }
-
-        internal void ConfigureWebHostBuilder(IWebHostBuilder builder)
-        {
-            foreach (var alteration in _builderAlterations) alteration(builder);
+            Settings.Alter((Action<HostBuilderContext, JasperOptions>) ((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey))));
         }
 
 
@@ -214,7 +191,6 @@ namespace Jasper
         protected internal void Describe(IJasperHost runtime, TextWriter writer)
         {
             Messaging.Describe(runtime, writer);
-            HttpRoutes.Describe(runtime, writer);
         }
 
         internal void ApplyExtensions(IJasperExtension[] extensions)

@@ -1,3 +1,4 @@
+using System;
 using System.Data.SqlClient;
 using Baseline.Dates;
 using Jasper.Messaging.ErrorHandling;
@@ -24,4 +25,7 @@ namespace Jasper.Testing.Samples
         }
     }
     // ENDSAMPLE
+
+
+    public class SqlException : Exception{}
 }

@@ -1,18 +1,17 @@
 using System;
 using System.Threading.Tasks;
-using Jasper;
+using IntegrationTests;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
-using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
-namespace IntegrationTests
+namespace Jasper.Persistence.Testing
 {
     public class durability_with_loopback
     {
@@ -51,8 +50,6 @@ namespace IntegrationTests
     {
         public DurableSender(bool latched)
         {
-            HttpRoutes.Enabled = false;
-
             Publish.AllMessagesTo("loopback://durable/one");
 
             Settings.PersistMessagesWithMarten(Servers.PostgresConnectionString);

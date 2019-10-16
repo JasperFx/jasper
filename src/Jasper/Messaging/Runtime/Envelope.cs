@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
-using Jasper.Messaging.Runtime.Routing;
-using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
-using Newtonsoft.Json;
 
 namespace Jasper.Messaging.Runtime
 {
@@ -17,22 +13,26 @@ namespace Jasper.Messaging.Runtime
     {
         private DateTimeOffset? _deliverBy;
 
-        private bool _enqueued;
         private DateTimeOffset? _executionTime;
 
 
-        private PersistedMessageId _id;
         private object _message;
-        private string _queue;
 
         public Envelope()
         {
         }
 
 
+
         public Envelope(object message)
         {
             Message = message;
+        }
+
+        public Envelope(object message, IMessageSerializer writer)
+        {
+            Message = message;
+            this.writer = writer;
         }
 
         public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
@@ -64,29 +64,10 @@ namespace Jasper.Messaging.Runtime
         /// <summary>
         ///     Used internally to track the completion of an Envelope.
         /// </summary>
-        [JsonIgnore]
         public IMessageCallback Callback { get; set; }
 
-        /// <summary>
-        ///     Unique id of an Envelope used strictly for backward wire protocol compatibility with FubuMVC and RhinoServiceBus
-        /// </summary>
-        public PersistedMessageId EnvelopeVersionId
-        {
-            get => _id ?? (_id = PersistedMessageId.GenerateRandom());
-            internal set => _id = value;
-        }
-
-        // This is mostly for backwards compatibility in wire format
-        internal string Queue
-        {
-            get => _queue ?? Destination.QueueName();
-            set => _queue = value;
-        }
 
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
-
-        // This is purely for backwards compatibility in wire format
-        private string SubQueue { get; set; } = string.Empty;
 
         /// <summary>
         ///     Instruct Jasper to throw away this message if it is not successfully sent and processed
@@ -105,7 +86,7 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public Uri ReceivedAt { get; set; }
 
-        internal IMessageSerializer Writer { get; set; }
+        private IMessageSerializer writer { get; set; }
 
         /// <summary>
         ///     The name of the service that sent this envelope
@@ -129,7 +110,7 @@ namespace Jasper.Messaging.Runtime
         public string ContentType { get; set; }
 
         /// <summary>
-        /// Correlating identifier for the logical workflow or system action
+        ///     Correlating identifier for the logical workflow or system action
         /// </summary>
         public Guid CorrelationId { get; set; }
 
@@ -140,12 +121,12 @@ namespace Jasper.Messaging.Runtime
         public string SagaId { get; set; }
 
         /// <summary>
-        /// Id of the immediate message or workflow that caused this envelope to be sent
+        ///     Id of the immediate message or workflow that caused this envelope to be sent
         /// </summary>
         public Guid CausationId { get; set; }
 
         /// <summary>
-        /// Location that this message should be sent
+        ///     Location that this message should be sent
         /// </summary>
         public Uri Destination { get; set; }
 
@@ -155,17 +136,17 @@ namespace Jasper.Messaging.Runtime
         public string[] AcceptedContentTypes { get; set; } = new string[0];
 
         /// <summary>
-        /// Specific message id for this envelope
+        ///     Specific message id for this envelope
         /// </summary>
         public Guid Id { get; set; } = CombGuidIdGeneration.NewGuid();
 
         /// <summary>
-        /// If specified, the message type alias for the reply message that is requested for this message
+        ///     If specified, the message type alias for the reply message that is requested for this message
         /// </summary>
         public string ReplyRequested { get; set; }
 
         /// <summary>
-        /// Is an acknowledgement requested
+        ///     Is an acknowledgement requested
         /// </summary>
         public bool AckRequested { get; set; }
 
@@ -187,9 +168,7 @@ namespace Jasper.Messaging.Runtime
         /// <summary>
         ///     Node owner of this message. 0 denotes that no node owns this message
         /// </summary>
-        public int OwnerId { get; set; } = 0;
-
-        internal ISubscriber Subscriber { get; set; }
+        public int OwnerId { get; set; }
 
         /// <summary>
         ///     Used by IMessageContext.Invoke<T> to denote the response type
@@ -262,9 +241,12 @@ namespace Jasper.Messaging.Runtime
             return text;
         }
 
-        internal Envelope Clone()
+        public Envelope Clone(IMessageSerializer writer)
         {
-            return MemberwiseClone().As<Envelope>();
+            var envelope = MemberwiseClone().As<Envelope>();
+            envelope.writer = writer;
+
+            return envelope;
         }
 
         /// <summary>
@@ -324,21 +306,21 @@ namespace Jasper.Messaging.Runtime
             if (_message == null)
                 throw new InvalidOperationException("Cannot ensure data is present when there is no message");
 
-            if (Writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
+            if (writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
 
-            Data = Writer.Write(_message);
+            Data = writer.Write(_message);
         }
 
         internal bool IsPing()
         {
-            return MessageType == TransportConstants.PingMessageType;
+            return MessageType == PingMessageType;
         }
 
         public static Envelope ForPing(Uri destination)
         {
             return new Envelope
             {
-                MessageType = TransportConstants.PingMessageType,
+                MessageType = PingMessageType,
                 Data = new byte[] {1, 2, 3, 4},
                 ContentType = "jasper/ping",
                 Destination = destination
@@ -353,6 +335,16 @@ namespace Jasper.Messaging.Runtime
         {
             return DeliverBy.HasValue && DeliverBy <= DateTime.UtcNow;
         }
+
+
+        internal string GetMessageTypeName()
+        {
+            return Message?.GetType().Name ?? MessageType;
+        }
+
+        private bool _enqueued;
+
+        internal ISubscriber Subscriber { get; set; }
 
         internal Task Send()
         {
@@ -377,28 +369,5 @@ namespace Jasper.Messaging.Runtime
             return Subscriber.QuickSend(this);
         }
 
-
-        internal string GetMessageTypeName()
-        {
-            return Message?.GetType().Name ?? MessageType;
-        }
-
-        public Envelope ForScheduledSend(ISubscriber scheduleSendSubscriber)
-        {
-            EnsureData();
-
-            return new Envelope
-            {
-                Message = this,
-                MessageType = TransportConstants.ScheduledEnvelope,
-                ExecutionTime = ExecutionTime,
-                ContentType = TransportConstants.SerializedEnvelope,
-                Destination = TransportConstants.DurableLoopbackUri,
-                Status = TransportConstants.Scheduled,
-                OwnerId = TransportConstants.AnyNode,
-                Subscriber = scheduleSendSubscriber,
-                Writer = EnvelopeReaderWriter.Instance
-            };
-        }
     }
 }

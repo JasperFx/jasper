@@ -1,37 +1,24 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Baseline;
-using Baseline.Reflection;
-using Jasper.Configuration;
-using Jasper.EnvironmentChecks;
-using Jasper.Http;
 using Jasper.Messaging;
 using Lamar;
-using Lamar.Scanning.Conventions;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Jasper
 {
-
     public class JasperRuntime : IJasperHost
     {
-        private readonly IDisposable _host;
         private readonly Lazy<IMessageContext> _bus;
+        private readonly IHost _host;
+        private readonly JasperRegistry _registry;
         private IContainer _container;
         private bool _isDisposing;
-        private readonly JasperRegistry _registry;
 
 
-
-        internal JasperRuntime(IWebHost host)
+        internal JasperRuntime(IHost host)
         {
             _host = host;
             _registry = host.Services.GetRequiredService<JasperRegistry>();
@@ -64,7 +51,7 @@ namespace Jasper
 
         public bool IsDisposed { get; private set; }
 
-        public string[] HttpAddresses { get; private set; } = new string[0];
+        public string[] HttpAddresses { get; } = new string[0];
 
         /// <summary>
         ///     Shortcut to retrieve an instance of the IServiceBus interface for the application
@@ -121,29 +108,6 @@ namespace Jasper
             _registry.Describe(this, writer);
         }
 
-        /// <summary>
-        /// Execute all the environment checks for this application
-        /// </summary>
-        public void ExecuteAllEnvironmentChecks()
-        {
-            var checks = Container.Model.GetAllPossible<IEnvironmentCheck>();
-
-            var recorder = Container.GetInstance<IEnvironmentRecorder>();
-
-            foreach (var check in checks)
-                try
-                {
-                    check.Assert(this);
-                    recorder.Success(check.Description);
-                }
-                catch (Exception e)
-                {
-                    recorder.Failure(check.Description, e);
-                }
-
-            if (Get<JasperOptions>().ThrowOnValidationErrors) recorder.AssertAllSuccessful();
-        }
-
 
         public void Dispose()
         {
@@ -153,15 +117,17 @@ namespace Jasper
             _isDisposing = true;
 
             // THis is important to stop every async agent kind of thing
-            _container.GetInstance<JasperOptions>().StopAll();
+            var jasperOptions = _container.GetInstance<JasperOptions>();
 
+            _host.StopAsync().GetAwaiter().GetResult();
             _host.SafeDispose();
 
             Container.As<Container>().DisposalLock = DisposalLock.Unlocked;
             Container.Dispose();
 
+            jasperOptions.StopAll();
+
             IsDisposed = true;
         }
-
     }
 }

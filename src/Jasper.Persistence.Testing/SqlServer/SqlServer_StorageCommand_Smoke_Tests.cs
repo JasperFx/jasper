@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.SqlServer;
 using Shouldly;
@@ -12,13 +13,13 @@ namespace Jasper.Persistence.Testing.SqlServer
         [InlineData("storage counts")]
         [InlineData("storage script")]
         [InlineData("storage clear")]
-        public void smoke_test_calls(string commandLine)
+        public async Task smoke_test_calls(string commandLine)
         {
-            var registry = new JasperRegistry();
-            registry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-
             var args = commandLine.Split(' ');
-            JasperHost.Run(registry, args).ShouldBe(0);
+            (await JasperHost.Run(args, registry =>
+            {
+                registry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+            })).ShouldBe(0);
         }
 
     }

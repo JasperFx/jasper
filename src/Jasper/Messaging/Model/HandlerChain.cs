@@ -36,6 +36,7 @@ namespace Jasper.Messaging.Model
         }
 
 
+
         private HandlerChain(MethodCall call) : this(call.Method.MessageType())
         {
             Handlers.Add(call);
@@ -188,6 +189,11 @@ namespace Jasper.Messaging.Model
         {
             return
                 $"{MessageType.NameInCode()} handled by {GenericEnumerableExtensions.Join(Handlers.Select(x => $"{x.HandlerType.NameInCode()}.{x.Method.Name}()"), ", ")}";
+        }
+
+        public override bool ShouldFlushOutgoingMessages()
+        {
+            return false;
         }
     }
 }

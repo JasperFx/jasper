@@ -2,12 +2,8 @@
 using System.Buffers;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Util;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 
@@ -15,11 +11,11 @@ namespace Jasper.Conneg.Json
 {
     public class NewtonsoftJsonReader : IMessageDeserializer
     {
+        private readonly int _bufferSize = 1024;
         private readonly ArrayPool<byte> _bytePool;
         private readonly ArrayPool<char> _charPool;
         private readonly JsonArrayPool<char> _jsonCharPool;
         private readonly ObjectPool<JsonSerializer> _serializerPool;
-        private readonly int _bufferSize = 1024;
 
         internal NewtonsoftJsonReader(
             Type messageType,
@@ -65,21 +61,10 @@ namespace Jasper.Conneg.Json
             }
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
-        {
-            var stream = request.Body;
-
-
-
-            // TODO -- the encoding should vary here
-            var user = (T) read(stream, Encoding.UTF8, typeof(T));
-
-            return Task.FromResult(user);
-        }
 
         private object read(Stream stream, Encoding encoding, Type targetType)
         {
-            using (var streamReader = new HttpRequestStreamReader(stream, encoding, _bufferSize, _bytePool, _charPool))
+            using (var streamReader = new StreamReader(stream, encoding, true,_bufferSize, true))
             {
                 using (var jsonReader = new JsonTextReader(streamReader))
                 {

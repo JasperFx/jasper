@@ -2,11 +2,11 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-BUILD_VERSION =  ENV['version'].nil? ? '0.9.13' : ENV['version']
+BUILD_VERSION =  ENV['version'].nil? ? '0.9.15' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 
-TEMPLATE_VERSION = '0.9.13'
+TEMPLATE_VERSION = '0.9.15'
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 
@@ -18,7 +18,7 @@ BUILD_NUMBER = build_number
 
 CI = ENV["CI"].nil? ? false : true
 
-task :ci => [:compile, :commands, :pack, :appVeyorPush]
+task :ci => [:commands, :pack, :appVeyorPush]
 #task :ci => [:default, :commands, :pack, :appVeyorPush]
 
 
@@ -77,21 +77,13 @@ end
 desc 'Compile the code'
 task :compile => [:clean] do
 	sh "dotnet restore Jasper.sln"
-
-  #Dir.chdir("src/Jasper.Diagnostics") do
-  #  sh "yarn build:prod"
-  #end
-  #sh "dotnet build src/Jasper.Diagnostics/Jasper.Diagnostics.csproj"
 end
 
 desc 'Run the unit tests'
 task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
-	sh "dotnet test src/CoreTests/CoreTests.csproj --no-restore"
-	sh "dotnet test src/HttpTests/HttpTests.csproj --no-restore"
-	sh "dotnet test src/MessagingTests/MessagingTests.csproj --no-restore"
-	sh "dotnet test src/Jasper.MvcExtender.Tests/Jasper.MvcExtender.Tests.csproj --no-restore"
+	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
 	sh "dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore"
 
 end
@@ -122,8 +114,6 @@ desc 'Try out commands'
 task :commands do
   Dir.chdir("src/Subscriber") do
     sh "dotnet run -- ?"
-    sh "dotnet run -- services"
-    sh "dotnet run -- validate"
     sh "dotnet run -- export-json-schema obj/schema"
   end
 end
@@ -146,12 +136,11 @@ task :pack do
   pack_nuget 'Jasper.AzureServiceBus'
   pack_nuget 'Jasper.ApplicationInsights'
   pack_nuget 'Jasper.JsonCommands'
-  pack_nuget 'Jasper.MvcExtender'
 end
 
 def pack_nuget(project)
   file = "src/#{project}/#{project}.csproj"
-  sh "dotnet pack #{file} -o ./../../artifacts --configuration Release --no-restore"
+  sh "dotnet pack #{file} -o ./artifacts --configuration Release --no-restore"
 end
 
 desc "Pushes the Nuget's to AppVeyor"

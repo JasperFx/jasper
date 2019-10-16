@@ -21,7 +21,7 @@ namespace SqlReceiver
             });
 
 
-            Settings.Configure(c => { Transports.ListenForMessagesFrom(c.Configuration["listener"]); });
+            Transports.ListenForMessagesFromUriValueInConfig("listener");
         }
     }
 }

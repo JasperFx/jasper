@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.Database;
+using Jasper.Settings;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;

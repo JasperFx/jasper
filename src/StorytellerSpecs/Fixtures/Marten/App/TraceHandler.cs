@@ -1,4 +1,5 @@
 ﻿using Jasper;
+using Jasper.Configuration;
 using Jasper.Persistence;
 using Marten;
 

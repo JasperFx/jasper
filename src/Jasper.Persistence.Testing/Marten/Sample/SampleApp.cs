@@ -99,13 +99,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
     {
         public AppUsingMessageTracking()
         {
-            // TODO -- need to change this when GH-346 is done
-            Hosting(x => x.ConfigureAppConfiguration((context, config) =>
-            {
-                var environment = context.HostingEnvironment.EnvironmentName;
-
-                if (environment == "Development" || environment == "Testing") Include<MessageTrackingExtension>();
-            }));
+            Include<MessageTrackingExtension>();
         }
     }
     // ENDSAMPLE

@@ -4,6 +4,8 @@ using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Testing.Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -14,24 +16,25 @@ namespace Jasper.Persistence.Testing.Postgresql
         [Fact]
         public void bootstrap_with_configuration()
         {
-            var registry = new JasperRegistry();
+            var builder = Host.CreateDefaultBuilder()
+                .UseJasper(x =>
+                {
+                    x.Settings.PersistMessagesWithPostgresql((c, s) =>
+                    {
+                        s.ConnectionString = c.Configuration["connection"];
+                    });
+                })
+                .ConfigureAppConfiguration((_, config) =>
+                {
+                    config.AddInMemoryCollection(new Dictionary<string, string>
+                        {{"connection", Servers.PostgresConnectionString}});
+                });
 
-            registry.Hosting(x => x.ConfigureAppConfiguration((_, config) =>
+
+            using (var host = builder.Build())
             {
-                config.AddInMemoryCollection(new Dictionary<string, string>
-                    {{"connection", Servers.PostgresConnectionString}});
-            }));
 
-
-            registry.Settings.PersistMessagesWithPostgresql((c, s) =>
-            {
-                s.ConnectionString = c.Configuration["connection"];
-            });
-
-            using (var runtime = JasperHost.For(registry))
-            {
-
-                runtime.Get<PostgresqlSettings>()
+                host.Services.GetRequiredService<PostgresqlSettings>()
                     .ConnectionString.ShouldBe(Servers.PostgresConnectionString);
             }
         }

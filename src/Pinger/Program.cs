@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
-using Jasper.CommandLine;
+using Jasper.Configuration;
 using Jasper.Messaging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +14,7 @@ namespace Pinger
 {
     internal class Program
     {
-        private static int Main(string[] args)
+        private static Task<int> Main(string[] args)
         {
             return JasperHost.Run(args, _ =>
             {

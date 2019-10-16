@@ -6,8 +6,6 @@ using Baseline;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.WorkerQueues;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -20,11 +18,6 @@ namespace Jasper.Messaging.Durability
         public static DurabilityAgent ForHost(IJasperHost host)
         {
             return host.Get<JasperOptions>().DurabilityAgent;
-        }
-
-        public static DurabilityAgent ForHost(IWebHost host)
-        {
-            return host.Services.GetRequiredService<JasperOptions>().DurabilityAgent;
         }
 
         private readonly IMessagingAction IncomingMessages;

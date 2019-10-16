@@ -1,12 +1,13 @@
-﻿using Jasper;
-using Jasper.CommandLine;
+﻿using System.Threading.Tasks;
+using Jasper;
+using Jasper.Configuration;
 using TestMessages;
 
 namespace Publisher
 {
     internal class Program
     {
-        public static int Main(string[] args)
+        public static Task<int> Main(string[] args)
         {
             return JasperHost.Run<PublisherApp>(args);
         }

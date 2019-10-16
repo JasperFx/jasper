@@ -5,6 +5,7 @@ using Baseline;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
+using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
@@ -15,7 +16,7 @@ namespace Jasper.Messaging.Runtime.Routing
     {
         private readonly HandlerGraph _handlers;
         private readonly IMessageLogger _logger;
-        private readonly SerializationGraph _serializers;
+        private readonly MessagingSerializationGraph _serializers;
         private readonly JasperOptions _settings;
         private readonly ISubscriberGraph _subscribers;
         private readonly WorkersGraph _workers;
@@ -136,14 +137,14 @@ namespace Jasper.Messaging.Runtime.Routing
         }
 
         private void applyStaticPublishingRules(Type messageType, string[] supported, List<MessageRoute> list,
-            ModelWriter modelWriter)
+            WriterCollection<IMessageSerializer> writerCollection)
         {
             foreach (var channel in _subscribers.AllKnown().Where(x => x.ShouldSendMessage(messageType)))
             {
                 var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
 
                 if (contentType.IsNotEmpty())
-                    list.Add(new MessageRoute(messageType, modelWriter, channel, contentType));
+                    list.Add(new MessageRoute(messageType, writerCollection, channel, contentType));
             }
         }
 

@@ -1,10 +1,9 @@
 using System;
 using System.IO;
-using System.Net;
 using Baseline;
-using Jasper.CommandLine;
 using Jasper.Messaging.Durability;
 using Oakton;
+using Oakton.AspNetCore;
 
 namespace Jasper.Persistence
 {
@@ -18,7 +17,7 @@ namespace Jasper.Persistence
 
     }
 
-    public class StorageInput : JasperInput
+    public class StorageInput : NetCoreInput
     {
         [Description("Choose the action")] public StorageAction Action { get; set; } = StorageAction.counts;
 
@@ -36,7 +35,7 @@ namespace Jasper.Persistence
 
         public override bool Execute(StorageInput input)
         {
-            using (var host = input.BuildHost(StartMode.Lightweight))
+            using (var host = new JasperRuntime(input.BuildHost()))
             {
                 var persistor = host.Get<IEnvelopePersistence>();
 

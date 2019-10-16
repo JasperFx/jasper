@@ -2,6 +2,7 @@
 using Bootstrapping.Configuration2;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Testing.Samples
 {
@@ -23,8 +24,8 @@ namespace Jasper.Testing.Samples
         public static void EntryPoint()
         {
             // SAMPLE: QuickStart-Add-To-AspNetCore
-            var host = WebHost.CreateDefaultBuilder()
-                .UseStartup<Startup>()
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(x => x.UseStartup<Startup>())
 
                 // Adds Jasper to your ASP.Net Core application
                 // with default configuration
@@ -57,10 +58,7 @@ namespace Jasper.Testing.Samples2
     // SAMPLE: MyAppRegistry2
     public class MyAppRegistry : JasperRegistry
     {
-        public MyAppRegistry()
-        {
-            Hosting(x => x.UseKestrel());
-        }
+
     }
 
     // ENDSAMPLE

@@ -22,6 +22,7 @@ namespace Jasper.Configuration
 
         public IList<Frame> Postprocessors { get; } = new List<Frame>();
         public abstract string Description { get; }
+        public abstract bool ShouldFlushOutgoingMessages();
 
         protected abstract MethodCall[] handlerCalls();
 

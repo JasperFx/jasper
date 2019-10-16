@@ -6,6 +6,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
+using Jasper.Settings;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

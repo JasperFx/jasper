@@ -18,10 +18,10 @@ namespace Jasper.Messaging.Runtime.Routing
             ContentType = contentType;
         }
 
-        public MessageRoute(Type messageType, ModelWriter writer, ISubscriber subscriber, string contentType)
+        public MessageRoute(Type messageType, WriterCollection<IMessageSerializer> writerCollection, ISubscriber subscriber, string contentType)
             : this(messageType, subscriber.Uri, contentType)
         {
-            Writer = writer[contentType];
+            Writer = writerCollection[contentType];
             Subscriber = subscriber;
         }
 
@@ -49,7 +49,7 @@ namespace Jasper.Messaging.Runtime.Routing
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message), "Envelope.Message cannot be null");
 
-            var sending = envelope.Clone();
+            var sending = envelope.Clone(Writer);
             sending.Id = CombGuidIdGeneration.NewGuid();
             sending.CorrelationId = envelope.Id;
 
@@ -59,8 +59,8 @@ namespace Jasper.Messaging.Runtime.Routing
 
             sending.ContentType = envelope.ContentType ?? ContentType;
 
-            sending.Writer = Writer;
             sending.Destination = Destination;
+
             sending.Subscriber = Subscriber;
 
             return sending;

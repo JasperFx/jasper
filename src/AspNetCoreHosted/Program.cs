@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Http;
 using Jasper.Messaging;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

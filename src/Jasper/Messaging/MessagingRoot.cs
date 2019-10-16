@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -156,7 +156,7 @@ namespace Jasper.Messaging
 
         public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
         {
-            return new DurableLoopbackSendingAgent(destination, Workers, Persistence, Serialization, _transportLogger);
+            return new DurableLoopbackSendingAgent(destination, Workers, Persistence, Serialization, _transportLogger, Options);
         }
 
         public IListener BuildDurableListener(IListeningAgent agent)

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.Marten;
 using Shouldly;
@@ -12,14 +13,17 @@ namespace Jasper.Persistence.Testing.Marten
         [InlineData("storage counts")]
         [InlineData("storage script")]
         [InlineData("storage clear")]
-        public void smoke_test_calls(string commandLine)
+        public async Task smoke_test_calls(string commandLine)
         {
-            var registry = new JasperRegistry();
-            registry.MartenConnectionStringIs(Servers.PostgresConnectionString);
-            registry.Include<MartenBackedPersistence>();
-
             var args = commandLine.Split(' ');
-            JasperHost.Run(registry, args).ShouldBe(0);
+
+            var exitCode = await JasperHost.Run(args, registry =>
+            {
+                registry.MartenConnectionStringIs(Servers.PostgresConnectionString);
+                registry.Include<MartenBackedPersistence>();
+            });
+
+            exitCode.ShouldBe(0);
         }
 
 

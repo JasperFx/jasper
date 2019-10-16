@@ -1,21 +1,23 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Baseline;
 using Jasper.Util;
-using Microsoft.AspNetCore.Http;
 
 namespace Jasper.Conneg
 {
-    // SAMPLE: IMediaReader
-    public interface IMessageDeserializer
+    public interface IReaderStrategy
     {
         string MessageType { get; }
         Type DotNetType { get; }
 
         string ContentType { get; }
+    }
+
+
+    // SAMPLE: IMediaReader
+    public interface IMessageDeserializer : IReaderStrategy
+    {
         object ReadFromData(byte[] data);
-        Task<T> ReadFromRequest<T>(HttpRequest request);
     }
     // ENDSAMPLE
 
@@ -36,10 +38,6 @@ namespace Jasper.Conneg
             return ReadData(data);
         }
 
-        public async Task<T1> ReadFromRequest<T1>(HttpRequest request)
-        {
-            return (await ReadData(request.Body)).As<T1>();
-        }
 
         public abstract T ReadData(byte[] data);
 

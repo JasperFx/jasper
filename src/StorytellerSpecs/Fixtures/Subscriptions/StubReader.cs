@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Util;
-using Microsoft.AspNetCore.Http;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions
 {
@@ -24,9 +23,5 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             throw new NotImplementedException();
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

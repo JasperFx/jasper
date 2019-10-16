@@ -1,10 +1,6 @@
 ﻿using System.Data.SqlClient;
-using System.Linq;
-using Baseline;
-using Jasper.Http.Model;
-using Jasper.Messaging;
+using Jasper.Configuration;
 using Jasper.Persistence.Database;
-using Jasper.Persistence.SqlServer.Persistence;
 
 namespace Jasper.Persistence.SqlServer
 {
@@ -12,13 +8,11 @@ namespace Jasper.Persistence.SqlServer
     {
         public void ApplyTransactionSupport(IChain chain)
         {
-            var shouldFlushOutgoingMessages = false;
-            if (chain is RouteChain)
-                shouldFlushOutgoingMessages = chain.As<RouteChain>().Action.Method.GetParameters()
-                    .Any(x => x.ParameterType == typeof(IMessageContext));
+            var shouldFlushOutgoingMessages = chain.ShouldFlushOutgoingMessages();
 
 
-            var frame = new DbTransactionFrame<SqlTransaction, SqlConnection> {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};
+            var frame = new DbTransactionFrame<SqlTransaction, SqlConnection>
+                {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};
 
             chain.Middleware.Add(frame);
         }

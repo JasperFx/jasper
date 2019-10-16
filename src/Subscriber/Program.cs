@@ -1,14 +1,15 @@
+using System.Threading.Tasks;
 using Jasper;
-using Jasper.CommandLine;
-using Microsoft.AspNetCore.Hosting;
+using Jasper.Configuration;
 using TestMessages;
 
 namespace Subscriber
 {
     internal class Program
     {
-        private static int Main(string[] args)
+        private static Task<int> Main(string[] args)
         {
+
             return JasperHost.Run<SubscriberApp>(args);
         }
     }
@@ -17,8 +18,6 @@ namespace Subscriber
     {
         public SubscriberApp()
         {
-            Hosting(x => x.UseUrls("http://localhost:5004"));
-
             Transports.LightweightListenerAt(22222);
         }
     }

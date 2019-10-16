@@ -65,9 +65,11 @@ namespace Jasper.Messaging
                 {
                     _root.ApplyMessageTypeSpecificRules(outgoing[i]);
 
-                    if (!outgoing[i].Subscriber.SupportsNativeScheduledSend)
+                    var subscriber = _root.Subscribers.GetOrBuild(outgoing[i].Destination);
+
+                    if (!subscriber.SupportsNativeScheduledSend)
                     {
-                        outgoing[i] = outgoing[i].ForScheduledSend(new ScheduleSendSubscriber(this));
+                        outgoing[i] = outgoing[i].ForScheduledSend(subscriber);
                     }
                 }
             }
@@ -147,7 +149,10 @@ namespace Jasper.Messaging
 
                 var outgoingEnvelopes = _root.Router.Route(envelope);
 
-                foreach (var outgoing in outgoingEnvelopes) await outgoing.Send();
+                foreach (var outgoing in outgoingEnvelopes)
+                {
+                    await outgoing.Send();
+                }
             }
         }
 
@@ -165,7 +170,10 @@ namespace Jasper.Messaging
             var ack = buildAcknowledgement();
             var outgoingEnvelopes = _root.Router.Route(ack);
 
-            foreach (var outgoing in outgoingEnvelopes) await outgoing.Send();
+            foreach (var outgoing in outgoingEnvelopes)
+            {
+                await outgoing.Send();
+            }
         }
 
         public Guid CorrelationId { get; } = CombGuidIdGeneration.NewGuid();
@@ -184,7 +192,10 @@ namespace Jasper.Messaging
 
         public async Task SendAllQueuedOutgoingMessages()
         {
-            foreach (var envelope in Outstanding) await envelope.QuickSend();
+            foreach (var envelope in Outstanding)
+            {
+                await envelope.QuickSend();
+            }
 
             _outstanding.Clear();
         }
@@ -314,8 +325,7 @@ namespace Jasper.Messaging
             var envelope = new Envelope
             {
                 Message = message,
-                Destination = destination,
-                Queue = workerQueue
+                Destination = destination.AtQueue(workerQueue),
             };
 
             return SendEnvelope(envelope);
@@ -326,8 +336,7 @@ namespace Jasper.Messaging
             var envelope = new Envelope
             {
                 Message = message,
-                Destination = TransportConstants.LoopbackUri,
-                Queue = workerQueue
+                Destination = TransportConstants.LoopbackUri.AtQueue(workerQueue),
             };
 
             return SendEnvelope(envelope);
@@ -338,8 +347,7 @@ namespace Jasper.Messaging
             var envelope = new Envelope
             {
                 Message = message,
-                Destination = TransportConstants.DurableLoopbackUri,
-                Queue = workerQueue
+                Destination = TransportConstants.DurableLoopbackUri.AtQueue(workerQueue),
             };
 
             return SendEnvelope(envelope);
@@ -384,30 +392,32 @@ namespace Jasper.Messaging
 
         private Envelope buildAcknowledgement()
         {
-            var ack = new Envelope
+            var writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement));
+            var ack = new Envelope(new Acknowledgement {CorrelationId = Envelope.Id}, writer)
             {
                 CausationId = Envelope.Id,
                 Destination = Envelope.ReplyUri,
                 SagaId = Envelope.SagaId,
-                Message = new Acknowledgement {CorrelationId = Envelope.Id},
-                Subscriber = _root.Subscribers.GetOrBuild(Envelope.ReplyUri),
-                Writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement))
             };
 
             return ack;
         }
 
+
         private async Task persistOrSend(Envelope[] outgoing)
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(x => x.Subscriber.IsDurable).ToArray());
+                await Transaction.Persist(outgoing.Where(x => _root.Subscribers.GetOrBuild(x.Destination).IsDurable).ToArray());
 
                 _outstanding.AddRange(outgoing);
             }
             else
             {
-                foreach (var outgoingEnvelope in outgoing) await outgoingEnvelope.Send();
+                foreach (var outgoingEnvelope in outgoing)
+                {
+                    await outgoingEnvelope.Send();
+                }
             }
         }
 

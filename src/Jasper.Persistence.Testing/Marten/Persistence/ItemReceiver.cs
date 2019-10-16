@@ -1,4 +1,5 @@
 ﻿using IntegrationTests;
+using Jasper.Configuration;
 using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten;
 using Marten;
@@ -25,7 +26,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             Transports.DurableListenerAt(2345);
 
-            HttpRoutes.DisableConventionalDiscovery();
         }
     }
 }

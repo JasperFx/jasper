@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Baseline.Dates;
 using Jasper.AzureServiceBus.Internal;
 using Jasper.Messaging.Runtime;
 using Jasper.Util;
@@ -27,7 +25,7 @@ namespace Jasper.AzureServiceBus.Tests
         private readonly Envelope theOriginal = new Envelope
         {
             Id = Guid.NewGuid(),
-            Data = new byte[]{2,3,4,5,6}
+            Data = new byte[] {2, 3, 4, 5, 6}
         };
 
         private readonly Lazy<Envelope> _mapped;
@@ -155,7 +153,6 @@ namespace Jasper.AzureServiceBus.Tests
             _properties = new Lazy<Message>(() =>
             {
                 return new DefaultAzureServiceBusProtocol().WriteFromEnvelope(theEnvelope);
-
             });
         }
 
@@ -183,6 +180,18 @@ namespace Jasper.AzureServiceBus.Tests
         {
             theEnvelope.ContentType = "application/json";
             theMessage.ContentType.ShouldBe(theEnvelope.ContentType);
+        }
+
+        [Fact]
+        public void deliver_by()
+        {
+            var deliveryBy = DateTimeOffset.UtcNow.Date.AddDays(5);
+            theEnvelope.DeliverBy = deliveryBy;
+
+            var expected = deliveryBy.ToUniversalTime().Subtract(DateTime.UtcNow);
+            var difference = theMessage.TimeToLive.Subtract(expected);
+
+            difference.TotalSeconds.ShouldBeLessThan(1);
         }
 
         [Fact]
@@ -240,18 +249,5 @@ namespace Jasper.AzureServiceBus.Tests
             theEnvelope.CorrelationId = Guid.NewGuid();
             theMessage.UserProperties[Envelope.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
         }
-
-        [Fact]
-        public void deliver_by()
-        {
-            var deliveryBy = DateTimeOffset.UtcNow.Date.AddDays(5);
-            theEnvelope.DeliverBy = deliveryBy;
-
-            var expected = deliveryBy.ToUniversalTime().Subtract(DateTime.UtcNow);
-            var difference = theMessage.TimeToLive.Subtract(expected);
-
-            difference.TotalSeconds.ShouldBeLessThan(1);
-        }
     }
-
 }

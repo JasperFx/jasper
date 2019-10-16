@@ -2,10 +2,6 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 
@@ -84,35 +80,6 @@ namespace Jasper.Conneg.Json
                 _bytePool.Return(bytes);
                 _serializerPool.Return(serializer);
             }
-        }
-
-        public async Task WriteToStream(object model, HttpResponse response)
-        {
-            response.Headers["content-type"] = ContentType;
-
-            using (var textWriter =
-                new HttpResponseStreamWriter(response.Body, Encoding.UTF8, 1024, _bytePool, _charPool))
-            using (var jsonWriter = new JsonTextWriter(textWriter)
-            {
-                ArrayPool = _jsonCharPool,
-                CloseOutput = false,
-                AutoCompleteOnClose = false
-            })
-            {
-                var serializer = _serializerPool.Get();
-
-                try
-                {
-                    serializer.Serialize(jsonWriter, model);
-                    await textWriter.FlushAsync();
-                }
-                finally
-                {
-                    _serializerPool.Return(serializer);
-                }
-            }
-
-
         }
 
         public Type DotNetType { get; }

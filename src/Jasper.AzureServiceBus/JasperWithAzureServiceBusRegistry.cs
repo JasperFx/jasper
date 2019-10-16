@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.AzureServiceBus
 {
@@ -23,7 +23,7 @@ namespace Jasper.AzureServiceBus
         /// <param name="contextHostingEnvironment"></param>
         /// <param name="configuration"></param>
         /// <param name="options"></param>
-        protected abstract void Configure(IHostingEnvironment contextHostingEnvironment, IConfiguration configuration,
+        protected abstract void Configure(IHostEnvironment contextHostingEnvironment, IConfiguration configuration,
             AzureServiceBusOptions options);
     }
 }

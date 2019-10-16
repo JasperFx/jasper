@@ -2,6 +2,7 @@
 using Jasper.ApplicationInsights;
 using Jasper.Configuration;
 using Jasper.Messaging.Logging;
+using Jasper.Settings;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,7 @@ namespace Jasper.ApplicationInsights
             registry.Settings.Require<ApplicationInsightsSettings>();
 
             registry.Services.AddSingleton<IMetrics, ApplicationInsightsMetrics>();
+
             registry.Services.AddSingleton(s =>
             {
                 var config = s.GetService<ApplicationInsightsSettings>();

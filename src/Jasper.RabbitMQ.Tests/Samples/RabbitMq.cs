@@ -2,7 +2,6 @@ using System.Net;
 using Jasper;
 using Jasper.Messaging.Runtime;
 using Jasper.RabbitMQ;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
@@ -88,7 +87,7 @@ namespace IntegrationTests.Samples
     {
         // Both RabbitMqOptions and JasperOptions are registered services in your
         // Jasper application's IoC container, so are available to be injected into Startup.Configure()
-        public void Configure(IApplicationBuilder app, IConfiguration config, RabbitMqOptions rabbit, JasperOptions jasper)
+        public void Configure(IConfiguration config, RabbitMqOptions rabbit, JasperOptions jasper)
         {
             // This code will add a new Rabbit MQ connection named "rabbit"
             rabbit.Connections.Add("rabbit", config["RabbitMqConnectionString"]);
@@ -154,7 +153,7 @@ namespace IntegrationTests.Samples
 
     public class CustomizedStartup
     {
-        public void Configure(IApplicationBuilder app, RabbitMqOptions options, IConfiguration config)
+        public void Configure(RabbitMqOptions options, IConfiguration config)
         {
             // Configure a single endpoint
             options.ConfigureEndpoint("rabbitmq://rabbit/queue/incoming", endpoint =>

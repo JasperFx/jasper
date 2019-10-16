@@ -2,7 +2,7 @@
 using System.Linq;
 using Baseline;
 using Jasper.Settings;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.Postgresql
 {
@@ -14,7 +14,7 @@ namespace Jasper.Persistence.Postgresql
         /// <param name="settings"></param>
         /// <param name="connectionString"></param>
         /// <param name="schema"></param>
-        public static void PersistMessagesWithPostgresql(this JasperSettings settings, string connectionString,
+        public static void PersistMessagesWithPostgresql(this SettingsGraph settings, string connectionString,
             string schema = null)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
@@ -34,8 +34,8 @@ namespace Jasper.Persistence.Postgresql
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="configure"></param>
-        public static void PersistMessagesWithPostgresql(this JasperSettings settings,
-            Action<WebHostBuilderContext, PostgresqlSettings> configure)
+        public static void PersistMessagesWithPostgresql(this SettingsGraph settings,
+            Action<HostBuilderContext, PostgresqlSettings> configure)
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<PostgresqlBackedPersistence>().Any())

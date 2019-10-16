@@ -4,13 +4,15 @@ using System.IO;
 namespace Jasper.Conneg
 {
     // SAMPLE: ISerializer
-    public interface ISerializerFactory
+    public interface ISerializerFactory<TReader, TWriter>
+        where TReader : IReaderStrategy
+        where TWriter : IWriterStrategy
     {
         string ContentType { get; }
         object Deserialize(Stream message);
 
-        IMessageDeserializer ReaderFor(Type messageType);
-        IMessageSerializer WriterFor(Type messageType);
+        TReader ReaderFor(Type messageType);
+        TWriter WriterFor(Type messageType);
     }
 
     // ENDSAMPLE

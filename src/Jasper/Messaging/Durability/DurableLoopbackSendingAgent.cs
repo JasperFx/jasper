@@ -1,30 +1,32 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
-using Microsoft.Extensions.Logging;
 
 namespace Jasper.Messaging.Durability
 {
     public class DurableLoopbackSendingAgent : ISendingAgent
     {
         private readonly ITransportLogger _logger;
+        private readonly JasperOptions _options;
         private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _queues;
-        private readonly SerializationGraph _serializers;
+        private readonly MessagingSerializationGraph _serializers;
 
         public DurableLoopbackSendingAgent(Uri destination, IWorkerQueue queues, IEnvelopePersistence persistence,
-            SerializationGraph serializers, ITransportLogger logger)
+            MessagingSerializationGraph serializers, ITransportLogger logger, JasperOptions options)
         {
             _queues = queues;
             _serializers = serializers;
             _logger = logger;
+            _options = options;
 
             _persistence = persistence;
 
@@ -60,6 +62,10 @@ namespace Jasper.Messaging.Durability
                 ? TransportConstants.Scheduled
                 : TransportConstants.Incoming;
 
+            envelope.OwnerId = envelope.Status == TransportConstants.Incoming
+                ? _options.UniqueNodeId
+                : TransportConstants.AnyNode;
+
             await _persistence.StoreIncoming(envelope);
 
             if (envelope.Status == TransportConstants.Incoming)
@@ -79,6 +85,12 @@ namespace Jasper.Messaging.Durability
 
 
                 writeMessageData(envelope);
+
+                if(envelope.Status == TransportConstants.Incoming)
+                {
+                    // This envelop will immediately be queued to run on this node
+                    envelope.OwnerId = _options.UniqueNodeId;
+                }
             }
 
             await _persistence.StoreIncoming(array);

@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper;
-using Jasper.CommandLine;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Invocation;
 using Oakton;
 using TestMessages;
@@ -9,7 +10,7 @@ namespace Ponger
 {
     internal class Program
     {
-        private static int Main(string[] args)
+        private static Task<int> Main(string[] args)
         {
             return JasperHost.Run(args, _ => { _.Transports.LightweightListenerAt(2601); });
         }

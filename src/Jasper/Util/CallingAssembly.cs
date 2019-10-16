@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Jasper.Configuration;
 
 namespace Jasper.Util
 {
+    [Obsolete("Replace with Lamar equivalent")]
     internal class CallingAssembly
     {
         private static readonly IList<string> _misses = new List<string>();

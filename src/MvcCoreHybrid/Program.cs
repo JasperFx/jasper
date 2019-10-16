@@ -15,7 +15,7 @@ namespace MvcCoreHybrid
     public class Program
     {
         // Return an int for a status code
-        public static int Main(string[] args)
+        public static Task<int> Main(string[] args)
         {
             // Calling RunJasper() opts into Jasper's expansive
             // command line skeleton with diagnostics you probably

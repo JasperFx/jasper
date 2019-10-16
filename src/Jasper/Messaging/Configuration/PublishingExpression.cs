@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Reflection;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Settings;
 using Jasper.Util;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Configuration
 {
     public class PublishingExpression
     {
         private readonly MessagingConfiguration _bus;
-        private readonly JasperSettings _settings;
+        private readonly SettingsGraph _settings;
 
-        internal PublishingExpression(JasperSettings settings, MessagingConfiguration bus)
+        internal PublishingExpression(SettingsGraph settings, MessagingConfiguration bus)
         {
             _settings = settings;
             _bus = bus;
@@ -79,9 +81,9 @@ namespace Jasper.Messaging.Configuration
             private readonly MessagingConfiguration _bus;
             private readonly string _match;
             private readonly RoutingScope _routingScope;
-            private readonly JasperSettings _settings;
+            private readonly SettingsGraph _settings;
 
-            internal MessageTrackExpression(JasperSettings settings, MessagingConfiguration bus,
+            internal MessageTrackExpression(SettingsGraph settings, MessagingConfiguration bus,
                 RoutingScope routingScope, string match)
             {
                 _settings = settings;
@@ -129,7 +131,7 @@ namespace Jasper.Messaging.Configuration
             /// <param name="configKey">The configuration key that holds the designated Uri</param>
             public void ToUriValueInConfig(string configKey)
             {
-                _settings.Messaging((c, options) =>
+                _settings.Alter((Action<HostBuilderContext, JasperOptions>) ((c, options) =>
                 {
                     var subscription = new Subscription
                     {
@@ -139,7 +141,7 @@ namespace Jasper.Messaging.Configuration
                     };
 
                     options.AddSubscription(subscription);
-                });
+                }));
             }
         }
 

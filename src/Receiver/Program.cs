@@ -1,11 +1,11 @@
-﻿using Jasper;
-using Jasper.CommandLine;
+﻿using System.Threading.Tasks;
+using Jasper;
 
 namespace Receiver
 {
     internal class Program
     {
-        private static int Main(string[] args)
+        private static Task<int> Main(string[] args)
         {
             return JasperHost.Run<ReceiverApp>(args);
         }

@@ -1,8 +1,5 @@
+using System;
 using Jasper.Messaging.Runtime;
-using Lamar;
-using Marten.Linq;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Primitives;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +12,7 @@ namespace Jasper.AzureServiceBus.Tests
     {
         public AppWithAzureServiceBus()
         {
-            Include<Jasper.AzureServiceBus.AzureServiceBusTransportExtension>();
+            Include<AzureServiceBusTransportExtension>();
         }
     }
     // ENDSAMPLE
@@ -24,9 +21,7 @@ namespace Jasper.AzureServiceBus.Tests
     {
         public void hard_code_it()
         {
-
         }
-
 
 
         /*
@@ -40,12 +35,7 @@ namespace Jasper.AzureServiceBus.Tests
         }
         // ENDSAMPLE
         */
-
-
-
-
     }
-
 
 
     // SAMPLE: asb-MessageSpecificTopicRoutingApp
@@ -87,7 +77,8 @@ namespace Jasper.AzureServiceBus.Tests
     {
         // Both AzureServiceBusOptions and JasperOptions are registered services in your
         // Jasper application's IoC container, so are available to be injected into Startup.Configure()
-        public void Configure(IApplicationBuilder app, IConfiguration config, AzureServiceBusOptions asb, JasperOptions jasper)
+        public void Configure(IConfiguration config, AzureServiceBusOptions asb,
+            JasperOptions jasper)
         {
             // This code will add a new Azure Service Bus connection named "azure"
             asb.Connections.Add("azure", config["AzureServiceBusConnectionString"]);
@@ -108,12 +99,12 @@ namespace Jasper.AzureServiceBus.Tests
     {
         public Message WriteFromEnvelope(Envelope envelope)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public Envelope ReadEnvelope(Message message)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 
@@ -154,7 +145,7 @@ namespace Jasper.AzureServiceBus.Tests
 
     public class CustomizedStartup
     {
-        public void Configure(IApplicationBuilder app, AzureServiceBusOptions options)
+        public void Configure(AzureServiceBusOptions options)
         {
             // Configure a single endpoint
             options.ConfigureEndpoint("azureservicebus://azure/queue/incoming", endpoint =>
@@ -172,5 +163,6 @@ namespace Jasper.AzureServiceBus.Tests
             });
         }
     }
+
     // ENDSAMPLE
 }

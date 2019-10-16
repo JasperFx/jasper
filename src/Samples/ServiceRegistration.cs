@@ -24,28 +24,6 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
 
-    // SAMPLE: UsingEnvironmentName
-    public class UsingEnvironmentName : JasperRegistry
-    {
-        public UsingEnvironmentName()
-        {
-            // Idiomatic Jasper way
-            Settings.Configure(context =>
-            {
-                if (context.HostingEnvironment.IsDevelopment())
-                    Services.AddSingleton<IThirdPartyService, StubThirdPartyService>();
-            });
-
-            // ASP.Net Core idiomatic way
-            Hosting(x => x.ConfigureServices((context, services) =>
-            {
-                if (context.HostingEnvironment.IsDevelopment())
-                    services.AddSingleton<IThirdPartyService, StubThirdPartyService>();
-            }));
-        }
-    }
-    // ENDSAMPLE
-
     public interface IThirdPartyService
     {
     }

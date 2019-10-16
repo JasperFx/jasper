@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
-using Jasper.CommandLine;
+using Jasper.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Util;
+using Microsoft.Extensions.DependencyInjection;
 using NJsonSchema;
 using Oakton;
+using Oakton.AspNetCore;
 
 [assembly: JasperModule]
 
@@ -35,9 +37,9 @@ namespace Jasper.JsonCommands
                 system.CreateDirectory(directory);
             }
 
-            using (var runtime = input.BuildHost(StartMode.Lightweight))
+            using (var host = input.BuildHost())
             {
-                var handlers = runtime.Get<HandlerGraph>();
+                var handlers = host.Services.GetRequiredService<HandlerGraph>();
                 var messageTypes = handlers.Chains.Select(x => x.MessageType)
                     .Where(x => x.Assembly != typeof(MessageRoute).Assembly);
                 foreach (var messageType in messageTypes)
@@ -55,7 +57,7 @@ namespace Jasper.JsonCommands
         }
     }
 
-    public class ExportJsonSchemaInput : JasperInput
+    public class ExportJsonSchemaInput : NetCoreInput
     {
         [Description("Target directory to write the json schema documents")]
         public string Directory { get; set; }

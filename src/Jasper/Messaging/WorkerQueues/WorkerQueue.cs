@@ -9,6 +9,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
+using Jasper.Util;
 
 namespace Jasper.Messaging.WorkerQueues
 {
@@ -88,7 +89,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         private ActionBlock<Envelope> determineReceiver(Envelope envelope)
         {
-            var queueName = envelope.Queue ?? Pipeline.Workers.WorkerFor(envelope.MessageType);
+            var queueName = envelope.Destination.QueueName() ?? Pipeline.Workers.WorkerFor(envelope.MessageType);
 
 
             var receiver = _receivers.ContainsKey(queueName)

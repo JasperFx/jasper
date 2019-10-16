@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Util;
