@@ -17,7 +17,7 @@ namespace Jasper.Testing.Messaging.Sagas
             _fixture = @default;
         }
 
-        private HandlerChain chainFor<T>()
+        private new HandlerChain chainFor<T>()
         {
             return _fixture.ChainFor<T>();
         }

@@ -28,8 +28,8 @@ namespace Jasper.Persistence.Marten
             registry.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
 
             var frameProvider = new MartenSagaPersistenceFrameProvider();
-            registry.CodeGeneration.SagaPersistence = frameProvider;
-            registry.CodeGeneration.Transactions = frameProvider;
+            registry.CodeGeneration.SetSagaPersistence(frameProvider);
+            registry.CodeGeneration.SetTransactions(frameProvider);
         }
     }
 

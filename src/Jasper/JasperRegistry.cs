@@ -48,7 +48,7 @@ namespace Jasper
             establishApplicationAssembly(assemblyName);
 
             var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
-            CodeGeneration = new JasperGenerationRules($"{name.Replace(".", "_")}_Generated");
+            CodeGeneration = new GenerationRules($"{name.Replace(".", "_")}_Generated");
             CodeGeneration.Sources.Add(new NowTimeVariableSource());
 
             CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);
@@ -73,7 +73,7 @@ namespace Jasper
         /// <summary>
         ///     Configure or extend the Lamar code generation
         /// </summary>
-        public JasperGenerationRules CodeGeneration { get; }
+        public GenerationRules CodeGeneration { get; }
 
         /// <summary>
         ///     Register additional services to the underlying IoC container

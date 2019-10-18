@@ -32,7 +32,7 @@ namespace Jasper.Persistence.SqlServer
             registry.Services.Add(new SqlConnectionInstance(typeof(SqlConnection)));
             registry.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
 
-            registry.CodeGeneration.Transactions = new SqlServerTransactionFrameProvider();
+            registry.CodeGeneration.SetTransactions(new SqlServerTransactionFrameProvider());
         }
     }
 }

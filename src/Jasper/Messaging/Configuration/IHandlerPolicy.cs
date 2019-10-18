@@ -1,5 +1,6 @@
 ﻿using Jasper.Configuration;
 using Jasper.Messaging.Model;
+using LamarCodeGeneration;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -14,7 +15,7 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         /// <param name="graph"></param>
         /// <param name="rules"></param>
-        void Apply(HandlerGraph graph, JasperGenerationRules rules);
+        void Apply(HandlerGraph graph, GenerationRules rules);
     }
     // ENDSAMPLE
 }

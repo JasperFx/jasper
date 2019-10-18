@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Postgresql
             registry.Services.Add(new NpgsqlConnectionInstance(typeof(NpgsqlConnection)));
             registry.Services.Add(new NpgsqlConnectionInstance(typeof(DbConnection)));
 
-            registry.CodeGeneration.Transactions = new PostgresqlTransactionFrameProvider();
+            registry.CodeGeneration.SetTransactions(new PostgresqlTransactionFrameProvider());
         }
     }
 }

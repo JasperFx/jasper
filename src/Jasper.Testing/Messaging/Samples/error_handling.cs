@@ -10,6 +10,7 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Invocation;
+using LamarCodeGeneration;
 using Polly;
 
 namespace Jasper.Testing.Messaging.Samples
@@ -21,7 +22,7 @@ namespace Jasper.Testing.Messaging.Samples
     // SAMPLE: ErrorHandlingPolicy
     public class ErrorHandlingPolicy : IHandlerPolicy
     {
-        public void Apply(HandlerGraph graph, JasperGenerationRules rules)
+        public void Apply(HandlerGraph graph, GenerationRules rules)
         {
             var matchingChains = graph.Chains.Where(x => x.MessageType.IsInNamespace("MyApp.Messages"));
 

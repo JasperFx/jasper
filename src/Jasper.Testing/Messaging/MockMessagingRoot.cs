@@ -14,6 +14,7 @@ using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Lamar;
+using LamarCodeGeneration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
@@ -53,7 +54,7 @@ namespace Jasper.Testing.Messaging
         }
 
         public void Activate(LoopbackWorkerSender localWorker,
-            JasperGenerationRules generation, IContainer container)
+            GenerationRules generation, IContainer container)
         {
         }
 

@@ -18,6 +18,7 @@ using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Lamar;
+using LamarCodeGeneration;
 
 namespace Jasper.Messaging
 {
@@ -110,7 +111,7 @@ namespace Jasper.Messaging
         }
 
         public void Activate(LoopbackWorkerSender localWorker,
-            JasperGenerationRules generation, IContainer container)
+            GenerationRules generation, IContainer container)
         {
 
             Handlers.Compile(generation, container);

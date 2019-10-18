@@ -26,7 +26,7 @@ namespace Jasper.Messaging.Model
         private IContainer _container;
 
 
-        private JasperGenerationRules _generation;
+        private GenerationRules _generation;
         private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
 
         private bool _hasGrouped;
@@ -120,7 +120,7 @@ namespace Jasper.Messaging.Model
 
 
 
-        internal void Compile(JasperGenerationRules generation, IContainer container)
+        internal void Compile(GenerationRules generation, IContainer container)
         {
             _generation = generation;
             _container = container;

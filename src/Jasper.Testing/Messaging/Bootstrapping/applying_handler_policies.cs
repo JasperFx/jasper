@@ -26,7 +26,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
     public class WrapWithSimple : IHandlerPolicy
     {
-        public void Apply(HandlerGraph graph, JasperGenerationRules rules)
+        public void Apply(HandlerGraph graph, GenerationRules rules)
         {
             foreach (var chain in graph.Chains) chain.Middleware.Add(new SimpleWrapper());
         }

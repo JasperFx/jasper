@@ -15,6 +15,7 @@ using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Lamar;
+using LamarCodeGeneration;
 
 namespace Jasper.Messaging
 {
@@ -40,7 +41,7 @@ namespace Jasper.Messaging
         IEnvelopePersistence Persistence { get; }
 
         void Activate(LoopbackWorkerSender localWorker,
-            JasperGenerationRules generation, IContainer container);
+            GenerationRules generation, IContainer container);
 
         void ApplyMessageTypeSpecificRules(Envelope envelope);
         bool ShouldBeDurable(Type messageType);
