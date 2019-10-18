@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Baseline;
+using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;

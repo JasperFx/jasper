@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
+using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.Hosting;

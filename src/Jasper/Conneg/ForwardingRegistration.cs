@@ -1,4 +1,5 @@
 using System.Linq;
+using BaselineTypeDiscovery;
 using Lamar;
 using Lamar.Scanning;
 using Lamar.Scanning.Conventions;
