@@ -119,6 +119,7 @@ namespace Jasper
             // THis is important to stop every async agent kind of thing
             var jasperOptions = _container.GetInstance<JasperOptions>();
 
+
             _host.StopAsync().GetAwaiter().GetResult();
             _host.SafeDispose();
 

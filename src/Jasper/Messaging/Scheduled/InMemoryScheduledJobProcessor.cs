@@ -10,8 +10,8 @@ namespace Jasper.Messaging.Scheduled
 {
     public class InMemoryScheduledJobProcessor : IScheduledJobProcessor, IDisposable
     {
-        private readonly ConcurrentCache<Guid, InMemoryScheduledJob> _outstandingJobs
-            = new ConcurrentCache<Guid, InMemoryScheduledJob>();
+        private readonly Cache<Guid, InMemoryScheduledJob> _outstandingJobs
+            = new Cache<Guid, InMemoryScheduledJob>();
 
         public readonly IWorkerQueue _queue;
 
