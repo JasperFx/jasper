@@ -106,6 +106,13 @@ namespace Jasper
                 .Where(a => a.HasAttribute<JasperModuleAttribute>())
                 .ToArray();
 
+            var names = _extensions.Select(x => x.GetName().Name);
+
+            Assembly[] FindDependencies(Assembly a) => _extensions.Where(x => names.Contains(x.GetName().Name)).ToArray();
+
+
+            _extensions = _extensions.TopologicalSort(FindDependencies, false).ToArray();
+
             return _extensions;
         }
 
