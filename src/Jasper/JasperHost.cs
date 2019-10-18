@@ -92,14 +92,20 @@ namespace Jasper
             registry.ApplyExtensions(extensions);
         }
 
+        private static Assembly[] _extensions;
+
         internal static Assembly[] FindExtensionAssemblies(Assembly applicationAssembly)
         {
-            return AssemblyFinder
+            if (_extensions != null) return _extensions;
+
+            _extensions = AssemblyFinder
                 .FindAssemblies(txt => { }, false)
                 .Concat(AppDomain.CurrentDomain.GetAssemblies())
                 .Distinct()
                 .Where(a => a.HasAttribute<JasperModuleAttribute>())
                 .ToArray();
+
+            return _extensions;
         }
 
         private static JasperRuntime bootstrap(JasperRegistry registry)
