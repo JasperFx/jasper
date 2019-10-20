@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Bootstrapping.Configuration2;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -21,19 +22,19 @@ namespace Jasper.Testing.Samples
 
     public static class Program
     {
-        public static void EntryPoint()
+        public static async Task EntryPoint()
         {
             // SAMPLE: QuickStart-Add-To-AspNetCore
-            var host = Host.CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(x => x.UseStartup<Startup>())
-
-                // Adds Jasper to your ASP.Net Core application
-                // with default configuration
+            var host = await Host.CreateDefaultBuilder()
+                // Adds Jasper to your .Net Core application
+                // with its default configuration
                 .UseJasper()
-                .Start();
+                .StartAsync();
 
             // ENDSAMPLE
         }
+
+
     }
 
     // SAMPLE: QuickStart-InvoiceCreated

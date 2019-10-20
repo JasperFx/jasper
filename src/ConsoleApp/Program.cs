@@ -2,6 +2,8 @@
 
 using System.Threading.Tasks;
 using Jasper;
+using Microsoft.Extensions.Hosting;
+using Oakton.AspNetCore;
 
 namespace MyApp
 {
@@ -14,6 +16,14 @@ namespace MyApp
             // application as defined by MyAppRegistry
             // until the executable is stopped
             return JasperHost.Run<MyAppRegistry>(args);
+
+            // The code above is shorthand for the following:
+            /*
+            return Host
+                .CreateDefaultBuilder()
+                .UseJasper<MyAppRegistry>()
+                .RunOaktonCommands(args);
+            */
         }
     }
 }

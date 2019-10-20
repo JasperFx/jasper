@@ -65,22 +65,11 @@ to an idiomatic ASP.Net Core application.
 While you may certainly build headless services with Jasper, it's pretty likely that you will also want to integrate Jasper into
 ASP.Net Core applications.
 
-If you prefer to use typical ASP.Net Core bootstrapping or want to add Jasper messaging support to an existing project, you can use the `UseJasper<T>()` extension method on ASP.Net Core's `IWebHostBuilder` as shown below:
+If you prefer to use typical ASP.Net Core bootstrapping or want to add Jasper messaging support to an existing project, you can use the `UseJasper<T>()` extension method on ASP.Net Core's `IHostBuilder` as shown below:
 
 <[sample:QuickStart-Add-To-AspNetCore]>
 
-See <[linkto:documentation/bootstrapping/aspnetcore]> for more information about configuring Jasper through ASP.Net Core hosting.
-
-
-## Your First HTTP Endpoint
-
-The obligatory "Hello World" http endpoint is just this:
-
-<[sample:QuickStartHomeEndpoint]>
-
-As long as that class is in the main application assembly, Jasper will find it and make the "Get" method handle the root url of your application.
-
-See <[linkto:documentation/http]> for more information about Jasper's HTTP handling features.
+See <[linkto:documentation/bootstrapping/aspnetcore]> for more information about configuring Jasper through the unified .Net Core `IHostBuilder`.
 
 
 ## Your First Message Handler
@@ -89,5 +78,8 @@ Let's say you're building an invoicing application and your application should h
 `InvoiceCreated` event. The skeleton for the message handler for that event would look like this:
 
 <[sample:QuickStart-InvoiceCreated]>
+
+And don't worry, you're more than able to author asynchronous message handlers, and probably should in any case involving calls to external systems, but Jasper
+is able to adapt to **your** code rather than making you shoehorn your code into a framework adapter interface.
 
 See <[linkto:documentation/messaging/handling/handlers]> for more information on message handler actions.
