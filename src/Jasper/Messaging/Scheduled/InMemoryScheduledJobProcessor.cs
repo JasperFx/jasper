@@ -8,8 +8,8 @@ using Jasper.Messaging.WorkerQueues;
 
 namespace Jasper.Messaging.Scheduled
 {
-    public class InMemoryScheduledJobProcessor : IScheduledJobProcessor, IDisposable
-    {
+    public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
+         {
         private readonly Cache<Guid, InMemoryScheduledJob> _outstandingJobs
             = new Cache<Guid, InMemoryScheduledJob>();
 

@@ -16,6 +16,8 @@ namespace Jasper.Messaging.Durability
         Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
         Task<Envelope[]> AllIncomingEnvelopes();
         Task<Envelope[]> AllOutgoingEnvelopes();
+
+        
     }
 
 

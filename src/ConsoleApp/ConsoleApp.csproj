@@ -8,7 +8,4 @@
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
     <ProjectReference Include="..\StorytellerSpecs\StorytellerSpecs.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 </Project>

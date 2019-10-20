@@ -37,7 +37,6 @@ namespace Jasper.Messaging.Durability
 
                 try
                 {
-                    // TODO -- this needs to be paged to keep it from being too big
                     readyToExecute = await storage.LoadScheduledToExecute(utcNow);
 
                     if (!readyToExecute.Any())
