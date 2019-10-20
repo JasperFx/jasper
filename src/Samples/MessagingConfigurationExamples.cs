@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using Baseline.Dates;
+﻿using Baseline.Dates;
 using Bootstrapping.Configuration2;
 using Jasper.Configuration;
 using Jasper.Messaging.ErrorHandling;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using TestMessages;
 
@@ -46,8 +41,6 @@ namespace Jasper.Testing.Samples
         }
     }
     // ENDSAMPLE
-
-
 
 
     // SAMPLE: LightweightTransportApp
@@ -105,15 +98,12 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
 
-
     public class Samples
     {
         public void Go()
         {
-
             // SAMPLE: using-configuration-with-jasperoptions
             var host = Host.CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(x => x.UseStartup<Startup>())
                 .UseJasper()
                 .Start();
 
@@ -134,6 +124,7 @@ namespace Jasper.Testing.Samples
                 Transports.ListenForMessagesFromUriValueInConfig("listener");
             }
         }
+
         // ENDSAMPLE
     }
 }

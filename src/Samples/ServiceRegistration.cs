@@ -1,7 +1,7 @@
 ﻿using Jasper.Messaging.Tracking;
 using Lamar;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Testing.Samples
@@ -35,7 +35,7 @@ namespace Jasper.Testing.Samples
     public class GetAtTheContainer
     {
         // SAMPLE: GetAtTheContainer
-        public void retrieve_the_container(JasperRuntime runtime, IWebHost host)
+        public void retrieve_the_container(JasperRuntime runtime, IHost host)
         {
             // The root Lamar IoC container hangs directly
             // off the JasperRuntime if you're bootstrapping
@@ -43,7 +43,7 @@ namespace Jasper.Testing.Samples
             var container = runtime.Container;
 
             // Or if you are using ASP.Net Core bootstrapping,
-            // the IWebHost.Services is actually the root
+            // the IHost.Services is actually the root
             // Lamar container
             var container2 = (IContainer) host.Services;
         }

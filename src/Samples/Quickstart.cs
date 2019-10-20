@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Bootstrapping.Configuration2;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Testing.Samples

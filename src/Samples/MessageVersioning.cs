@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime;
 using Jasper.Util;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shouldly;
@@ -142,10 +141,6 @@ namespace Jasper.Testing.Samples
             throw new NotImplementedException();
         }
 
-        public Task WriteToStream(object model, HttpResponse response)
-        {
-            throw new NotImplementedException();
-        }
     }
 
 
@@ -160,10 +155,6 @@ namespace Jasper.Testing.Samples
             throw new NotImplementedException();
         }
 
-        public Task<T> ReadFromRequest<T>(HttpRequest request)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     // SAMPLE: CustomizingJsonSerialization

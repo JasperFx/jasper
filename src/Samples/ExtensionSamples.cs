@@ -1,6 +1,4 @@
 ﻿using Jasper.Configuration;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
@@ -23,13 +21,6 @@ namespace Jasper.Testing.Samples
     }
     // ENDSAMPLE
 
-    public static class MiddlewareExtensions
-    {
-        public static IWebHostBuilder AddSomeMiddleware(this IWebHostBuilder builder)
-        {
-            return builder;
-        }
-    }
 
     public interface IFoo
     {

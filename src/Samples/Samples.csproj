@@ -17,8 +17,5 @@
       <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
     </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 
 </Project>
