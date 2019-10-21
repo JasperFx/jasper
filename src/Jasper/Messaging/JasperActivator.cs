@@ -28,7 +28,7 @@ namespace Jasper.Messaging
             {
                 await _registry.Messaging.Compiling;
 
-                _root.Activate(_registry.Messaging.LocalWorker, _registry.CodeGeneration, _container);
+                await _root.Activate(_registry.Messaging.LocalWorker, _registry.CodeGeneration, _container);
             }
             catch (Exception e)
             {

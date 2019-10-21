@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
@@ -53,9 +54,10 @@ namespace Jasper.Testing.Messaging
             return new MessageContext(this);
         }
 
-        public void Activate(LoopbackWorkerSender localWorker,
+        public Task Activate(LoopbackWorkerSender localWorker,
             GenerationRules generation, IContainer container)
         {
+            return Task.CompletedTask;
         }
 
         public void ApplyMessageTypeSpecificRules(Envelope envelope)

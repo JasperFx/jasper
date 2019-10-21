@@ -112,9 +112,16 @@ end
 
 desc 'Try out commands'
 task :commands do
-  Dir.chdir("src/Subscriber") do
-    sh "dotnet run -- ?"
-    sh "dotnet run -- export-json-schema obj/schema"
+#  Dir.chdir("src/Subscriber") do
+#    sh "dotnet run -- ?"
+#    sh "dotnet run -- export-json-schema obj/schema"
+#  end
+
+  Dir.chdir("src/ConsoleApp") do
+    sh "dotnet run -- codegen preview"
+    sh "dotnet run -- codegen test"
+    sh "dotnet run -- codegen write"
+    sh "dotnet run -- codegen delete"
   end
 end
 

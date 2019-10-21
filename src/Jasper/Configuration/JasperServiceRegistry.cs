@@ -14,6 +14,7 @@ using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.Transports.Tcp;
 using Lamar;
 using Lamar.IoC.Instances;
+using LamarCodeGeneration;
 using LamarCodeGeneration.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +44,7 @@ namespace Jasper.Configuration
 
             For<IHostedService>().Use<BackPressureAgent>();
             For<IHostedService>().Use<DurabilityAgent>();
+
 
             conneg(parent);
             messaging(parent);
@@ -116,6 +118,16 @@ namespace Jasper.Configuration
             For<IMessagePublisher>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
 
             ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
+
+            // I'm not proud of this code, but you need a non-null
+            // Container property to use the codegen
+            For<IGeneratesCode>().Use(c =>
+            {
+                var handlers = c.GetInstance<HandlerGraph>();
+                handlers.Container = (IContainer)c;
+
+                return handlers;
+            });
 
         }
 

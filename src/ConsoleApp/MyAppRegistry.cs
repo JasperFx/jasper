@@ -1,5 +1,6 @@
 ﻿using Jasper;
 using Jasper.Configuration;
+using LamarCodeGeneration;
 using StorytellerSpecs.Fixtures;
 
 namespace MyApp
@@ -14,6 +15,8 @@ namespace MyApp
             Publish.Message<Message1>();
             Publish.Message<Message2>();
             Publish.Message<Message3>();
+
+            CodeGeneration.TypeLoadMode = TypeLoadMode.LoadFromPreBuiltAssembly;
         }
     }
     // ENDSAMPLE

@@ -110,7 +110,7 @@ namespace Jasper.Messaging
             return new MessageContext(this, envelope);
         }
 
-        public void Activate(LoopbackWorkerSender localWorker,
+        public async Task Activate(LoopbackWorkerSender localWorker,
             GenerationRules generation, IContainer container)
         {
 
@@ -121,6 +121,11 @@ namespace Jasper.Messaging
 
 
             localWorker.Start(this);
+
+            if (generation.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
+            {
+                await container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
+            }
 
             if (!Options.DisableAllTransports)
             {

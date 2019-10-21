@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Baseline;
-using Jasper.Configuration;
+using BaselineTypeDiscovery;
 using Jasper.Conneg;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
@@ -11,11 +13,12 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
+using LamarCodeGeneration.Model;
 using LamarCompiler;
 
 namespace Jasper.Messaging.Model
 {
-    public class HandlerGraph : IHasRetryPolicies
+    public class HandlerGraph : IHasRetryPolicies, IGeneratesCode
     {
         public static readonly string Context = "context";
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
@@ -23,7 +26,6 @@ namespace Jasper.Messaging.Model
         private readonly object _groupingLock = new object();
 
         private ImHashMap<Type, HandlerChain> _chains = ImHashMap<Type, HandlerChain>.Empty;
-        private IContainer _container;
 
 
         private GenerationRules _generation;
@@ -37,6 +39,8 @@ namespace Jasper.Messaging.Model
             // for scheduling outgoing messages
             _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler());
         }
+
+        internal IContainer Container { get; set; }
 
         /// <summary>
         ///     Policies and routing for local message handling
@@ -96,11 +100,11 @@ namespace Jasper.Messaging.Model
                         if (chain.Handler == null)
                         {
                             var generatedAssembly = new GeneratedAssembly(_generation);
-                            chain.AssembleType(generatedAssembly, _generation);
+                            chain.AssembleType(_generation, generatedAssembly);
 
-                            new AssemblyGenerator().Compile(generatedAssembly, _container.CreateServiceVariableSource());
+                            new AssemblyGenerator().Compile(generatedAssembly, Container.CreateServiceVariableSource());
 
-                            handler = chain.CreateHandler(_container);
+                            handler = chain.CreateHandler(Container);
                         }
                         else
                         {
@@ -123,7 +127,7 @@ namespace Jasper.Messaging.Model
         internal void Compile(GenerationRules generation, IContainer container)
         {
             _generation = generation;
-            _container = container;
+            Container = container;
 
             var forwarders = container.GetInstance<Forwarders>();
             AddForwarders(forwarders);
@@ -179,5 +183,42 @@ namespace Jasper.Messaging.Model
         {
             return Chains.Select(x => x.MessageType.ToMessageTypeName()).ToArray();
         }
+
+        IServiceVariableSource IGeneratesCode.AssemblyTypes(GenerationRules rules, GeneratedAssembly assembly)
+        {
+            foreach (var chain in Chains)
+            {
+                chain.AssembleType(rules, assembly);
+            }
+
+            return Container.CreateServiceVariableSource();
+        }
+
+        async Task IGeneratesCode.AttachPreBuiltTypes(GenerationRules rules, Assembly assembly, IServiceProvider services)
+        {
+            var typeSet = await TypeRepository.ForAssembly(assembly);
+            var handlerTypes = typeSet.ClosedTypes.Concretes.Where(x => x.CanBeCastTo<MessageHandler>()).ToArray();
+
+            var container = (IContainer)services;
+
+            foreach (var chain in Chains)
+            {
+                var handler = chain.AttachPreBuiltHandler(rules, container, handlerTypes);
+                if (handler != null) _handlers = _handlers.Update(chain.MessageType, handler);
+            }
+        }
+
+        Task IGeneratesCode.AttachGeneratedTypes(GenerationRules rules, IServiceProvider services)
+        {
+            foreach (var chain in Chains)
+            {
+                var handler = chain.CreateHandler((IContainer) services);
+                _handlers = _handlers.Update(chain.MessageType, handler);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        string IGeneratesCode.CodeType => "Handlers";
     }
 }

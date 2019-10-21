@@ -95,7 +95,7 @@ namespace Jasper.Messaging.Model
             return new HandlerChain(call);
         }
 
-        internal void AssembleType(GeneratedAssembly generatedAssembly, GenerationRules rules)
+        internal void AssembleType(GenerationRules rules, GeneratedAssembly generatedAssembly)
         {
             _generatedType = generatedAssembly.AddType(TypeName, typeof(MessageHandler));
             var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
@@ -194,6 +194,19 @@ namespace Jasper.Messaging.Model
         public override bool ShouldFlushOutgoingMessages()
         {
             return false;
+        }
+
+        public MessageHandler AttachPreBuiltHandler(GenerationRules rules, IContainer container, Type[] handlerTypes)
+        {
+            var fullName = $"{rules.ApplicationNamespace}.{TypeName}";
+            var handlerType = handlerTypes.FirstOrDefault(x => x.FullName == fullName);
+
+            if (handlerType == null) return null;
+
+            Handler = (MessageHandler) container.QuickBuild(handlerType);
+            Handler.Chain = this;
+
+            return Handler;
         }
     }
 }
