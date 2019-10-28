@@ -39,7 +39,7 @@ namespace Jasper.JsonCommands
 
             foreach (var message in messages)
             {
-                var schema = await JsonSchema4.FromFileAsync(message.FilePath);
+                var schema = await JsonSchema.FromFileAsync(message.FilePath);
 
 
                 var generator = new CSharpGenerator(schema, settings);

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Baseline;
-using Jasper.Conneg;
-using Jasper.Messaging.Transports;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime
@@ -11,6 +7,27 @@ namespace Jasper.Messaging.Runtime
     [MessageIdentity("envelope")]
     public partial class Envelope
     {
+        private const string SentAttemptsHeaderKey = "sent-attempts";
+        public const string CorrelationIdKey = "correlation-id";
+        public const string SagaIdKey = "saga-id";
+        private const string IdKey = "id";
+        public const string ParentIdKey = "parent-id";
+        private const string ContentTypeKey = "content-type";
+        public const string SourceKey = "source";
+        public const string ReplyRequestedKey = "reply-requested";
+        public const string DestinationKey = "destination";
+        public const string ReplyUriKey = "reply-uri";
+        public const string ExecutionTimeKey = "time-to-send";
+        public const string ReceivedAtKey = "received-at";
+        public const string AttemptsKey = "attempts";
+        public const string AckRequestedKey = "ack-requested";
+        public const string MessageTypeKey = "message-type";
+        public const string AcceptedContentTypesKey = "accepted-content-types";
+        public const string DeliverByHeader = "deliver-by";
+        public static readonly string PingMessageType = "jasper-ping";
+
+
+
         private DateTimeOffset? _deliverBy;
 
         private DateTimeOffset? _executionTime;
@@ -22,18 +39,11 @@ namespace Jasper.Messaging.Runtime
         {
         }
 
-
-
         public Envelope(object message)
         {
             Message = message;
         }
 
-        public Envelope(object message, IMessageSerializer writer)
-        {
-            Message = message;
-            this.writer = writer;
-        }
 
         public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
@@ -61,11 +71,6 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         public int Attempts { get; set; }
 
-        /// <summary>
-        ///     Used internally to track the completion of an Envelope.
-        /// </summary>
-        public IMessageCallback Callback { get; set; }
-
 
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
@@ -79,14 +84,13 @@ namespace Jasper.Messaging.Runtime
             set => _deliverBy = value?.ToUniversalTime();
         }
 
-        internal int SentAttempts { get; set; }
 
         /// <summary>
         ///     Identifies the listener at which this envelope was received at
         /// </summary>
         public Uri ReceivedAt { get; set; }
 
-        private IMessageSerializer writer { get; set; }
+
 
         /// <summary>
         ///     The name of the service that sent this envelope
@@ -159,74 +163,8 @@ namespace Jasper.Messaging.Runtime
             set => _executionTime = value?.ToUniversalTime();
         }
 
-        // TODO -- maybe hide these?
-        /// <summary>
-        ///     Status according to the message persistence
-        /// </summary>
-        public string Status { get; set; }
-
-        /// <summary>
-        ///     Node owner of this message. 0 denotes that no node owns this message
-        /// </summary>
-        public int OwnerId { get; set; }
-
-        /// <summary>
-        ///     Used by IMessageContext.Invoke<T> to denote the response type
-        /// </summary>
-        internal Type ResponseType { get; set; }
-
-        /// <summary>
-        ///     Also used by IMessageContext.Invoke<T> to catch the response
-        /// </summary>
-        internal object Response { get; set; }
 
 
-        /// <summary>
-        ///     Create an Envelope for the given callback and raw data
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        public static Envelope ForData(byte[] data, IMessageCallback callback)
-        {
-            return new Envelope
-            {
-                Data = data,
-                Callback = callback
-            };
-        }
-
-
-        /// <summary>
-        ///     Create a new Envelope that is a response to the current
-        ///     Envelope
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public Envelope ForResponse(object message)
-        {
-            var child = ForSend(message);
-            child.CausationId = Id;
-
-            if (message.GetType().ToMessageTypeName() == ReplyRequested)
-            {
-                child.Destination = ReplyUri;
-                child.AcceptedContentTypes = AcceptedContentTypes;
-            }
-
-            return child;
-        }
-
-        internal Envelope ForSend(object message)
-        {
-            return new Envelope
-            {
-                Message = message,
-                CorrelationId = CorrelationId.IsEmpty() ? Id : CorrelationId,
-                CausationId = Id,
-                SagaId = SagaId
-            };
-        }
 
         public override string ToString()
         {
@@ -241,13 +179,6 @@ namespace Jasper.Messaging.Runtime
             return text;
         }
 
-        public Envelope Clone(IMessageSerializer writer)
-        {
-            var envelope = MemberwiseClone().As<Envelope>();
-            envelope.writer = writer;
-
-            return envelope;
-        }
 
         /// <summary>
         ///     Set the DeliverBy property to have this message thrown away
@@ -294,39 +225,6 @@ namespace Jasper.Messaging.Runtime
             return ExecutionTime.HasValue && ExecutionTime.Value > utcNow;
         }
 
-        // TODO -- hide from public consumption
-        /// <summary>
-        ///     Used internally to ensure that the contained message has been serialized
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        public void EnsureData()
-        {
-            if (Data != null) return;
-
-            if (_message == null)
-                throw new InvalidOperationException("Cannot ensure data is present when there is no message");
-
-            if (writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
-
-            Data = writer.Write(_message);
-        }
-
-        internal bool IsPing()
-        {
-            return MessageType == PingMessageType;
-        }
-
-        public static Envelope ForPing(Uri destination)
-        {
-            return new Envelope
-            {
-                MessageType = PingMessageType,
-                Data = new byte[] {1, 2, 3, 4},
-                ContentType = "jasper/ping",
-                Destination = destination
-            };
-        }
-
         /// <summary>
         ///     Has this envelope expired according to its DeliverBy value
         /// </summary>
@@ -342,32 +240,7 @@ namespace Jasper.Messaging.Runtime
             return Message?.GetType().Name ?? MessageType;
         }
 
-        private bool _enqueued;
 
-        internal ISubscriber Subscriber { get; set; }
-
-        internal Task Send()
-        {
-            if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
-
-            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
-
-            _enqueued = true;
-
-
-            return Subscriber.Send(this);
-        }
-
-        internal Task QuickSend()
-        {
-            if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
-
-            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
-
-            _enqueued = true;
-
-            return Subscriber.QuickSend(this);
-        }
 
     }
 }

@@ -19,9 +19,9 @@ namespace Jasper.JsonCommands
 {
     [Description("Exports Json schema documents for all handled message types in the current application", Name =
         "export-json-schema")]
-    public class ExportJsonSchemaCommand : OaktonAsyncCommand<ExportJsonSchemaInput>
+    public class ExportJsonSchemaCommand : OaktonCommand<ExportJsonSchemaInput>
     {
-        public override async Task<bool> Execute(ExportJsonSchemaInput input)
+        public override bool Execute(ExportJsonSchemaInput input)
         {
             var system = new FileSystem();
             var directory = input.Directory.ToFullPath();
@@ -45,7 +45,8 @@ namespace Jasper.JsonCommands
                 foreach (var messageType in messageTypes)
                 {
                     var filename = $"{messageType.ToMessageTypeName()}.json";
-                    var schema = await JsonSchema4.FromTypeAsync(messageType);
+
+                    var schema = JsonSchema.FromType(messageType);
                     var path = directory.AppendPath(filename);
 
                     Console.WriteLine("Writing file " + path);

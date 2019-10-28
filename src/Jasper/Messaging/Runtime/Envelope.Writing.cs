@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Baseline;
-using Jasper.Messaging.Transports.Tcp;
-using Jasper.Util;
+
 
 namespace Jasper.Messaging.Runtime
 {
@@ -109,7 +107,7 @@ namespace Jasper.Messaging.Runtime
             dictionary.WriteProp(SagaIdKey, SagaId);
 
             if (AcceptedContentTypes != null && AcceptedContentTypes.Any())
-                dictionary.WriteProp(AcceptedContentTypesKey, AcceptedContentTypes.Join(","));
+                dictionary.WriteProp(AcceptedContentTypesKey, string.Join(",", AcceptedContentTypes));
 
             dictionary.WriteProp(IdKey, Id);
             dictionary.WriteProp(ReplyRequestedKey, ReplyRequested);
@@ -145,7 +143,7 @@ namespace Jasper.Messaging.Runtime
             writer.WriteProp(ref count, SagaIdKey, SagaId);
 
             if (AcceptedContentTypes != null && AcceptedContentTypes.Any())
-                writer.WriteProp(ref count, AcceptedContentTypesKey, AcceptedContentTypes.Join(","));
+                writer.WriteProp(ref count, AcceptedContentTypesKey, string.Join(",", AcceptedContentTypes));
 
             writer.WriteProp(ref count, IdKey, Id);
             writer.WriteProp(ref count, ReplyRequestedKey, ReplyRequested);

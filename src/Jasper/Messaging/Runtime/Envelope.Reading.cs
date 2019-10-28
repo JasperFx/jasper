@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
-using Baseline;
-using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime
 {
@@ -11,8 +9,12 @@ namespace Jasper.Messaging.Runtime
         public void ReadPropertiesFromDictionary(IDictionary<string, object> dictionary)
         {
             foreach (var pair in dictionary)
-                if (pair.Value is string)
-                    ReadData(pair.Key, pair.Value.As<string>());
+            {
+                if (pair.Value is string value)
+                {
+                    ReadData(pair.Key, value);
+                }
+            }
         }
 
         private void ReadData(string key, string value)
@@ -30,7 +32,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case ReplyUriKey:
-                        ReplyUri = value.ToUri();
+                        ReplyUri = new Uri(value);
                         break;
 
                     case ContentTypeKey:
@@ -50,7 +52,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case DestinationKey:
-                        Destination = value.ToUri();
+                        Destination = new Uri(value);
                         break;
 
                     case AcceptedContentTypesKey:
@@ -66,7 +68,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case AckRequestedKey:
-                        AckRequested = value.EqualsIgnoreCase("true");
+                        AckRequested = value.Equals("true", StringComparison.OrdinalIgnoreCase);
                         break;
 
                     case ExecutionTimeKey:
@@ -87,7 +89,7 @@ namespace Jasper.Messaging.Runtime
                         break;
 
                     case ReceivedAtKey:
-                        ReceivedAt = value.ToUri();
+                        ReceivedAt = new Uri(value);
                         break;
 
 
