@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using Jasper.Conneg;
 using Jasper.Conneg.Json;
 using Jasper.Messaging;
@@ -44,7 +45,6 @@ namespace Jasper.Configuration
 
             For<IHostedService>().Use<BackPressureAgent>();
             For<IHostedService>().Use<DurabilityAgent>();
-
 
             conneg(parent);
             messaging(parent);

@@ -95,12 +95,12 @@ namespace Jasper.Messaging.Model
             return new HandlerChain(call);
         }
 
-        internal void AssembleType(GenerationRules rules, GeneratedAssembly generatedAssembly)
+        internal void AssembleType(GenerationRules rules, GeneratedAssembly generatedAssembly, IContainer container)
         {
             _generatedType = generatedAssembly.AddType(TypeName, typeof(MessageHandler));
             var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
             handleMethod.Sources.Add(new MessageHandlerVariableSource(MessageType));
-            handleMethod.Frames.AddRange(DetermineFrames(rules));
+            handleMethod.Frames.AddRange(DetermineFrames(rules, container));
 
             handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
                 $"context.{nameof(IMessageContext.Envelope)}"));
@@ -122,9 +122,10 @@ namespace Jasper.Messaging.Model
         /// that will be used to generate the MessageHandler
         /// </summary>
         /// <param name="rules"></param>
+        /// <param name="container"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public List<Frame> DetermineFrames(GenerationRules rules)
+        public List<Frame> DetermineFrames(GenerationRules rules, IContainer container)
         {
             if (!Handlers.Any())
                 throw new InvalidOperationException("No method handlers configured for message type " +
@@ -134,14 +135,14 @@ namespace Jasper.Messaging.Model
             {
                 hasConfiguredFrames = true;
 
-                applyAttributesAndConfigureMethods(rules);
+                applyAttributesAndConfigureMethods(rules, container);
 
                 foreach (var attribute in MessageType.GetTypeInfo()
                     .GetCustomAttributes(typeof(ModifyHandlerChainAttribute))
                     .OfType<ModifyHandlerChainAttribute>()) attribute.Modify(this, rules);
 
                 foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute))
-                    .OfType<ModifyChainAttribute>()) attribute.Modify(this, rules);
+                    .OfType<ModifyChainAttribute>()) attribute.Modify(this, rules, container);
             }
 
             var cascadingHandlers = determineCascadingMessages().ToArray();

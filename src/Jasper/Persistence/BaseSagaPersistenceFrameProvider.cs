@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Baseline.Reflection;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
+using Lamar;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 
@@ -10,7 +12,9 @@ namespace Jasper.Persistence
 {
     public abstract class BaseSagaPersistenceFrameProvider : ISagaPersistenceFrameProvider
     {
-        public abstract Frame DetermineStoreOrDeleteFrame(MethodCall sagaHandler, Variable document,
+        public abstract Frame DetermineStoreOrDeleteFrame(IContainer container, HandlerChain chain,
+            MethodCall sagaHandler,
+            Variable document,
             Type sagaHandlerType);
 
         public Type DetermineSagaIdType(Type sagaStateType)
@@ -28,7 +32,8 @@ namespace Jasper.Persistence
             return prop;
         }
 
-        public Frame DeterminePersistenceFrame(MethodCall sagaHandler, SagaStateExistence existence,
+        public Frame DeterminePersistenceFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
+            SagaStateExistence existence,
             ref Variable sagaId, Type sagaStateType,
             Variable existingState, out Variable loadedState)
         {
@@ -39,12 +44,13 @@ namespace Jasper.Persistence
                 sagaId = new Variable(prop.PropertyType, existingState.Usage + "." + prop.Name);
             }
 
-            var frame = buildPersistenceFrame(existence, sagaId, sagaStateType, ref loadedState);
+            var frame = buildPersistenceFrame(container, chain, existence, ref sagaId, sagaStateType, existingState, ref loadedState);
 
             return frame;
         }
 
-        protected abstract Frame buildPersistenceFrame(SagaStateExistence existence, Variable sagaId,
-            Type sagaStateType, ref Variable loadedState);
+        protected abstract Frame buildPersistenceFrame(IContainer container, HandlerChain chain,
+            SagaStateExistence existence, ref Variable sagaId,
+            Type sagaStateType, Variable existingState, ref Variable loadedState);
     }
 }

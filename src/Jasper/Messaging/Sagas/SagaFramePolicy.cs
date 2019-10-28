@@ -23,10 +23,10 @@ namespace Jasper.Messaging.Sagas
 
         public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
         {
-            foreach (var chain in graph.Chains.Where(IsSagaRelated)) Apply(chain, rules.GetSagaPersistence());
+            foreach (var chain in graph.Chains.Where(IsSagaRelated)) Apply(chain, rules.GetSagaPersistence(), container);
         }
 
-        public void Apply(HandlerChain chain, ISagaPersistenceFrameProvider sagaPersistenceFrameProvider)
+        public void Apply(HandlerChain chain, ISagaPersistenceFrameProvider sagaPersistenceFrameProvider, IContainer container)
         {
             if (sagaPersistenceFrameProvider == null)
                 throw new InvalidOperationException("No saga persistence strategy is registered.");
@@ -63,7 +63,7 @@ namespace Jasper.Messaging.Sagas
             // Tells the handler chain codegen to not use this as a cascading message
             existingState?.Properties.Add(HandlerChain.NotCascading, true);
 
-            var persistenceFrame = sagaPersistenceFrameProvider.DeterminePersistenceFrame(sagaHandler, existence, ref sagaIdVariable,
+            var persistenceFrame = sagaPersistenceFrameProvider.DeterminePersistenceFrame(container, chain, sagaHandler, existence, ref sagaIdVariable,
                 sagaStateType, existingState, out existingState);
             if (persistenceFrame != null) chain.Middleware.Add(persistenceFrame);
 
@@ -76,7 +76,7 @@ namespace Jasper.Messaging.Sagas
 
 
             var storeOrDeleteFrame =
-                sagaPersistenceFrameProvider.DetermineStoreOrDeleteFrame(sagaHandler, existingState, sagaHandler.HandlerType);
+                sagaPersistenceFrameProvider.DetermineStoreOrDeleteFrame(container, chain, sagaHandler, existingState, sagaHandler.HandlerType);
             chain.Postprocessors.Add(storeOrDeleteFrame);
         }
 

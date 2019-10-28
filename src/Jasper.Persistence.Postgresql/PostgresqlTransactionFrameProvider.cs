@@ -1,12 +1,13 @@
 ﻿using Jasper.Configuration;
 using Jasper.Persistence.Database;
+using Lamar;
 using Npgsql;
 
 namespace Jasper.Persistence.Postgresql
 {
     internal class PostgresqlTransactionFrameProvider : ITransactionFrameProvider
     {
-        public void ApplyTransactionSupport(IChain chain)
+        public void ApplyTransactionSupport(IChain chain, IContainer container)
         {
             var shouldFlushOutgoingMessages = chain.ShouldFlushOutgoingMessages();
 
@@ -16,5 +17,7 @@ namespace Jasper.Persistence.Postgresql
 
             chain.Middleware.Add(frame);
         }
+
+
     }
 }

@@ -104,7 +104,8 @@ namespace Jasper.Messaging.Model
                         if (chain.Handler == null)
                         {
                             var generatedAssembly = new GeneratedAssembly(_generation);
-                            chain.AssembleType(_generation, generatedAssembly);
+
+                            chain.AssembleType(_generation, generatedAssembly, Container);
 
                             new AssemblyGenerator().Compile(generatedAssembly, Container.CreateServiceVariableSource());
 
@@ -192,7 +193,7 @@ namespace Jasper.Messaging.Model
         {
             foreach (var chain in Chains)
             {
-                chain.AssembleType(rules, assembly);
+                chain.AssembleType(rules, assembly, Container);
             }
 
             return Container.CreateServiceVariableSource();

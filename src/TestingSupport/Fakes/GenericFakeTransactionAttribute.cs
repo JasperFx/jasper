@@ -4,6 +4,7 @@ using Jasper;
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
+using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
@@ -12,7 +13,7 @@ namespace TestingSupport.Fakes
 {
     public class GenericFakeTransactionAttribute : ModifyChainAttribute
     {
-        public override void Modify(IChain chain, GenerationRules rules)
+        public override void Modify(IChain chain, GenerationRules rules, IContainer container)
         {
             chain.Middleware.Add(new FakeTransaction());
         }

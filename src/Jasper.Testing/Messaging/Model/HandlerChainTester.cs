@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Jasper.Configuration;
 using Jasper.Messaging.Model;
+using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using Shouldly;
@@ -49,7 +50,7 @@ namespace Jasper.Testing.Messaging.Model
         public void apply_generic_middleware()
         {
             var chain = HandlerChain.For<Target>(x => x.Go(null));
-            var frames = chain.DetermineFrames(new GenerationRules());
+            var frames = chain.DetermineFrames(new GenerationRules(), Container.Empty());
 
             chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
             chain.Middleware.Any(x => x is FakeMiddleware2).ShouldBeTrue();

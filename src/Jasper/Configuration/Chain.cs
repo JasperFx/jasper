@@ -39,7 +39,7 @@ namespace Jasper.Configuration
         }
 
 
-        protected void applyAttributesAndConfigureMethods(GenerationRules rules)
+        protected void applyAttributesAndConfigureMethods(GenerationRules rules, IContainer container)
         {
             var handlers = HandlerCalls();
             var configureMethods = handlers.Select(x => x.HandlerType).Distinct()
@@ -60,7 +60,7 @@ namespace Jasper.Configuration
 
             var genericMethodAtts = handlers.SelectMany(x => x.Method.GetCustomAttributes<ModifyChainAttribute>());
 
-            foreach (var attribute in genericHandlerAtts.Concat(genericMethodAtts)) attribute.Modify(this, rules);
+            foreach (var attribute in genericHandlerAtts.Concat(genericMethodAtts)) attribute.Modify(this, rules, container);
         }
 
         /// <summary>

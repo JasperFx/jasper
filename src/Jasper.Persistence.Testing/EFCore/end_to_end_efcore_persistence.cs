@@ -33,6 +33,7 @@ namespace Jasper.Persistence.Testing.EFCore
         }
     }
 
+    [Collection("sqlserver")]
     public class end_to_end_efcore_persistence : IClassFixture<EFCorePersistenceContext>
     {
         private readonly EFCorePersistenceContext _context;

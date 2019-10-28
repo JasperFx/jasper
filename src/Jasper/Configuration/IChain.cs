@@ -37,6 +37,14 @@ namespace Jasper.Configuration
         bool ShouldFlushOutgoingMessages();
 
         MethodCall[] HandlerCalls();
+
+        /// <summary>
+        /// Find all of the service dependencies of the current chain
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        IEnumerable<Type> ServiceDependencies(IContainer container);
     }
     // ENDSAMPLE
 

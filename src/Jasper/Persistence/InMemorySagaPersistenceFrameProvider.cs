@@ -1,5 +1,7 @@
 ﻿using System;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
+using Lamar;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 
@@ -7,13 +9,17 @@ namespace Jasper.Persistence
 {
     public class InMemorySagaPersistenceFrameProvider : BaseSagaPersistenceFrameProvider
     {
-        public override Frame DetermineStoreOrDeleteFrame(MethodCall sagaHandler, Variable document,
+        public override Frame DetermineStoreOrDeleteFrame(IContainer container, HandlerChain chain,
+            MethodCall sagaHandler,
+            Variable document,
             Type sagaHandlerType)
         {
             return new StoreOrDeleteSagaStateFrame(document, sagaHandlerType);
         }
 
-        protected override Frame buildPersistenceFrame(SagaStateExistence existence, Variable sagaId, Type sagaStateType,
+        protected override Frame buildPersistenceFrame(IContainer container, HandlerChain chain,
+            SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
+            Variable existingState,
             ref Variable loadedState)
         {
             var frame = new InMemorySagaPersistenceFrame(sagaStateType, sagaId, existence);

@@ -1,4 +1,5 @@
 using Jasper.Persistence;
+using Lamar;
 using LamarCodeGeneration;
 
 namespace Jasper.Configuration
@@ -10,7 +11,7 @@ namespace Jasper.Configuration
 
         private static readonly ISagaPersistenceFrameProvider _nulloSagas = new InMemorySagaPersistenceFrameProvider();
         private static readonly ITransactionFrameProvider _transactions = new NulloTransactionFrameProvider();
-        
+
         /// <summary>
         ///     The currently known strategy for persisting saga state
         /// </summary>
@@ -66,10 +67,10 @@ namespace Jasper.Configuration
 
             return _transactions;
         }
-        
+
         public class NulloTransactionFrameProvider : ITransactionFrameProvider
         {
-            public void ApplyTransactionSupport(IChain chain)
+            public void ApplyTransactionSupport(IChain chain, IContainer container)
             {
                 // Nothing
             }

@@ -1,4 +1,5 @@
 ﻿using Jasper.Configuration;
+using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Util;
 
@@ -10,9 +11,9 @@ namespace Jasper.Persistence
     /// </summary>
     public class TransactionalAttribute : ModifyChainAttribute
     {
-        public override void Modify(IChain chain, GenerationRules rules)
+        public override void Modify(IChain chain, GenerationRules rules, IContainer container)
         {
-            rules.As<GenerationRules>().GetTransactions().ApplyTransactionSupport(chain);
+            rules.As<GenerationRules>().GetTransactions().ApplyTransactionSupport(chain, container);
         }
     }
 }

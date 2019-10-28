@@ -1,4 +1,5 @@
 using System;
+using Lamar;
 using LamarCodeGeneration;
 
 namespace Jasper.Configuration
@@ -10,6 +11,6 @@ namespace Jasper.Configuration
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public abstract class ModifyChainAttribute : Attribute
     {
-        public abstract void Modify(IChain chain, GenerationRules rules);
+        public abstract void Modify(IChain chain, GenerationRules rules, IContainer container);
     }
 }
