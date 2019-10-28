@@ -84,5 +84,7 @@ namespace Jasper.Testing.Messaging.Model
             var chain = HandlerChain.For<Target>(nameof(Target.GoStatic));
             chain.Retries.MaximumAttempts.HasValue.ShouldBeFalse();
         }
+
+
     }
 }

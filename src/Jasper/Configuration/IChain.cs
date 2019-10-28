@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Lamar;
 using LamarCodeGeneration.Frames;
 
 namespace Jasper.Configuration
@@ -38,4 +40,38 @@ namespace Jasper.Configuration
     }
     // ENDSAMPLE
 
+
+    public static class ChainExtensions
+    {
+
+        /// <summary>
+        /// Find all of the service dependencies of the current chain
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        public static IEnumerable<Type> ServiceDependencies(this IChain chain, IContainer container)
+        {
+            return serviceDependencies(chain, container).Distinct();
+        }
+
+        private static IEnumerable<Type> serviceDependencies(IChain chain, IContainer container)
+        {
+            foreach (var handlerCall in chain.HandlerCalls())
+            {
+                yield return handlerCall.HandlerType;
+
+                foreach (var parameter in handlerCall.Method.GetParameters())
+                {
+                    yield return parameter.ParameterType;
+                }
+
+                var @default = container.Model.For(handlerCall.HandlerType).Default;
+                foreach (var dependency in @default.Instance.Dependencies)
+                {
+                    yield return dependency.ServiceType;
+                }
+            }
+        }
+    }
 }
