@@ -12,7 +12,6 @@ namespace Jasper.Persistence.Database
 {
     public abstract class DatabaseBackedEnvelopePersistence : DataAccessor, IEnvelopePersistence
     {
-        private readonly JasperOptions _options;
         protected readonly CancellationToken _cancellation;
         private readonly string _incrementIncomingAttempts;
         private readonly string _storeIncoming;
@@ -20,31 +19,33 @@ namespace Jasper.Persistence.Database
 
         protected DatabaseBackedEnvelopePersistence(DatabaseSettings settings, JasperOptions options, IEnvelopeStorageAdmin admin, IDurabilityAgentStorage agentStorage)
         {
-            this.settings = settings;
+            this.Settings = settings;
             Admin = admin;
             AgentStorage = agentStorage;
 
-            _options = options;
+            Options = options;
             _cancellation = options.Cancellation;
 
-            _incrementIncomingAttempts = $"update {this.settings.SchemaName}.{IncomingTable} set attempts = @attempts where id = @id";
+            _incrementIncomingAttempts = $"update {this.Settings.SchemaName}.{IncomingTable} set attempts = @attempts where id = @id";
             _storeIncoming = $@"
-insert into {this.settings.SchemaName}.{IncomingTable}
+insert into {this.Settings.SchemaName}.{IncomingTable}
   (id, status, owner_id, execution_time, attempts, body)
 values
   (@id, @status, @owner, @time, @attempts, @body);
 ";
-            _insertOutgoingSql = $"insert into {this.settings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)";
+            _insertOutgoingSql = $"insert into {this.Settings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)";
         }
+
+        public JasperOptions Options { get; }
 
         public IEnvelopeStorageAdmin Admin { get; }
         public IDurabilityAgentStorage AgentStorage { get; }
 
-        protected DatabaseSettings settings { get; }
+        public DatabaseSettings Settings { get; }
 
         public Task DeleteOutgoing(Envelope envelope)
         {
-            return settings.CreateCommand($"delete from {settings.SchemaName}.{OutgoingTable} where id = @id")
+            return Settings.CreateCommand($"delete from {Settings.SchemaName}.{OutgoingTable} where id = @id")
                 .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
 
@@ -52,7 +53,7 @@ values
 
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
-            return settings.CreateCommand($"delete from {settings.SchemaName}.{IncomingTable} where id = @id")
+            return Settings.CreateCommand($"delete from {Settings.SchemaName}.{IncomingTable} where id = @id")
                 .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
         }
@@ -61,7 +62,7 @@ values
 
         public Task ScheduleExecution(Envelope[] envelopes)
         {
-            var builder = settings.ToCommandBuilder();
+            var builder = Settings.ToCommandBuilder();
 
             foreach (var envelope in envelopes)
             {
@@ -70,7 +71,7 @@ values
                 var attempts = builder.AddParameter(envelope.Attempts);
 
                 builder.Append(
-                    $"update {settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
+                    $"update {Settings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
             }
 
             return builder.ApplyAndExecuteOnce(_cancellation);
@@ -79,7 +80,7 @@ values
 
         public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
         {
-            return settings.CreateCommand(_incrementIncomingAttempts)
+            return Settings.CreateCommand(_incrementIncomingAttempts)
                 .With("attempts", envelope.Attempts)
                 .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
@@ -89,7 +90,7 @@ values
         {
             envelope.EnsureData();
 
-            return settings.CreateCommand(_storeIncoming)
+            return Settings.CreateCommand(_storeIncoming)
                 .With("id", envelope.Id)
                 .With("status", envelope.Status)
                 .With("owner", envelope.OwnerId)
@@ -101,7 +102,7 @@ values
 
         public Task StoreIncoming(DbTransaction tx, Envelope[] envelopes)
         {
-            var cmd = BuildIncomingStorageCommand(envelopes, settings);
+            var cmd = BuildIncomingStorageCommand(envelopes, Settings);
 
             cmd.Transaction = tx;
             cmd.Connection = tx.Connection;
@@ -111,9 +112,9 @@ values
 
         public async Task StoreIncoming(Envelope[] envelopes)
         {
-            var cmd = BuildIncomingStorageCommand(envelopes, settings);
+            var cmd = BuildIncomingStorageCommand(envelopes, Settings);
 
-            using (var conn = settings.CreateConnection())
+            using (var conn = Settings.CreateConnection())
             {
                 await conn.OpenAsync(_cancellation);
 
@@ -127,7 +128,7 @@ values
         {
             envelope.EnsureData();
 
-            return settings.CreateCommand(_insertOutgoingSql)
+            return Settings.CreateCommand(_insertOutgoingSql)
                 .With("id", envelope.Id)
                 .With("owner", ownerId)
                 .With("destination", envelope.Destination.ToString())
@@ -138,7 +139,7 @@ values
 
         public Task StoreOutgoing(DbTransaction tx, Envelope[] envelopes)
         {
-            var cmd = BuildOutgoingStorageCommand(envelopes, _options.UniqueNodeId, settings);
+            var cmd = BuildOutgoingStorageCommand(envelopes, Options.UniqueNodeId, Settings);
             cmd.Connection = tx.Connection;
             cmd.Transaction = tx;
 
@@ -147,9 +148,9 @@ values
 
         public async Task StoreOutgoing(Envelope[] envelopes, int ownerId)
         {
-            var cmd = BuildOutgoingStorageCommand(envelopes, ownerId, settings);
+            var cmd = BuildOutgoingStorageCommand(envelopes, ownerId, Settings);
 
-            using (var conn = settings.CreateConnection())
+            using (var conn = Settings.CreateConnection())
             {
                 await conn.OpenAsync(_cancellation);
 
@@ -212,9 +213,9 @@ values
 
         public void ClearAllStoredMessages()
         {
-            settings
+            Settings
                 .ExecuteSql(
-                    $"delete from {settings.SchemaName}.{IncomingTable};delete from {settings.SchemaName}.{OutgoingTable};delete from {settings.SchemaName}.{DeadLetterTable}");
+                    $"delete from {Settings.SchemaName}.{IncomingTable};delete from {Settings.SchemaName}.{OutgoingTable};delete from {Settings.SchemaName}.{DeadLetterTable}");
 
         }
 
@@ -229,26 +230,26 @@ values
 
         public Envelope[] AllIncomingEnvelopes()
         {
-            using (var conn = settings.CreateConnection())
+            using (var conn = Settings.CreateConnection())
             {
                 conn.Open();
 
                 return conn
                     .CreateCommand(
-                        $"select body, status, owner_id, execution_time, attempts from {settings.SchemaName}.{IncomingTable}")
+                        $"select body, status, owner_id, execution_time, attempts from {Settings.SchemaName}.{IncomingTable}")
                     .LoadEnvelopes();
             }
         }
 
         public Envelope[] AllOutgoingEnvelopes()
         {
-            using (var conn = settings.CreateConnection())
+            using (var conn = Settings.CreateConnection())
             {
                 conn.Open();
 
                 return conn
                     .CreateCommand(
-                        $"select body, '{TransportConstants.Outgoing}', owner_id, NULL from {settings.SchemaName}.{OutgoingTable}")
+                        $"select body, '{TransportConstants.Outgoing}', owner_id, NULL from {Settings.SchemaName}.{OutgoingTable}")
                     .LoadEnvelopes();
             }
         }

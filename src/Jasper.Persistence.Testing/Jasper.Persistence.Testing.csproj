@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
@@ -15,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Jasper.Persistence.Database\Jasper.Persistence.Database.csproj" />
+      <ProjectReference Include="..\Jasper.Persistence.EntityFrameworkCore\Jasper.Persistence.EntityFrameworkCore.csproj" />
       <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
       <ProjectReference Include="..\Jasper.Persistence.Postgresql\Jasper.Persistence.Postgresql.csproj" />
       <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />

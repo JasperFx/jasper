@@ -22,7 +22,11 @@ namespace Jasper.Persistence.Database
                     var bytes = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
                     var envelope = Envelope.Deserialize(bytes);
 
-                    if (reader.FieldCount == 3)
+                    if (reader.FieldCount == 2)
+                    {
+                        envelope.OwnerId = await reader.GetFieldValueAsync<int>(1, cancellation);
+                    }
+                    else if (reader.FieldCount == 3)
                     {
                         envelope.Status = await reader.GetFieldValueAsync<string>(1, cancellation);
                         envelope.OwnerId = await reader.GetFieldValueAsync<int>(2, cancellation);

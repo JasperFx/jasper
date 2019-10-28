@@ -269,7 +269,7 @@ GO
             {
                 await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, status, owner_id from {_settings.SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
+                return await conn.CreateCommand($"select body, owner_id from {_settings.SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
             }
         }
 
