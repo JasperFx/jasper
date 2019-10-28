@@ -7,6 +7,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Persistence;
+using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
@@ -20,7 +21,7 @@ namespace Jasper.Messaging.Sagas
         public const string IdentityMethodName = "Identity";
         public static readonly Type[] ValidSagaIdTypes = {typeof(Guid), typeof(int), typeof(long), typeof(string)};
 
-        public void Apply(HandlerGraph graph, GenerationRules rules)
+        public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
         {
             foreach (var chain in graph.Chains.Where(IsSagaRelated)) Apply(chain, rules.GetSagaPersistence());
         }

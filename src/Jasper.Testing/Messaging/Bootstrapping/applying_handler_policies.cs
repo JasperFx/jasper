@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
+using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using Shouldly;
@@ -26,7 +27,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
     public class WrapWithSimple : IHandlerPolicy
     {
-        public void Apply(HandlerGraph graph, GenerationRules rules)
+        public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
         {
             foreach (var chain in graph.Chains) chain.Middleware.Add(new SimpleWrapper());
         }

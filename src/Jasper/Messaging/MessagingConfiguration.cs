@@ -7,6 +7,7 @@ using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Transports;
+using Lamar;
 using LamarCodeGeneration;
 using LamarCompiler;
 
@@ -16,12 +17,10 @@ namespace Jasper.Messaging
     {
         public MessagingConfiguration()
         {
-            Handling = new HandlerConfiguration(Graph);
-
             Handling.GlobalPolicy<SagaFramePolicy>();
         }
 
-        public HandlerConfiguration Handling { get; }
+        public HandlerConfiguration Handling => Graph.Configuration;
 
 
         public SubscriberGraph Subscribers { get; } = new SubscriberGraph();
@@ -41,7 +40,6 @@ namespace Jasper.Messaging
                 if (calls != null && calls.Any()) Graph.AddRange(calls);
 
                 Graph.Group();
-                Handling.ApplyPolicies(Graph, registry.CodeGeneration);
             });
         }
 

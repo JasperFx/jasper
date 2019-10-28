@@ -6,6 +6,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten.Codegen;
+using Lamar;
 using LamarCodeGeneration;
 using Marten;
 using Shouldly;
@@ -67,7 +68,7 @@ namespace Jasper.Persistence.Testing.Marten
     // SAMPLE: CommandsAreTransactional
     public class CommandsAreTransactional : IHandlerPolicy
     {
-        public void Apply(HandlerGraph graph, GenerationRules rules)
+        public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
         {
             // Important! Create a brand new TransactionalFrame
             // for each chain

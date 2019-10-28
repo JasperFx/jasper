@@ -6,6 +6,7 @@ using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.WorkerQueues;
+using Lamar;
 using LamarCodeGeneration;
 
 namespace Jasper.Messaging.Configuration
@@ -101,9 +102,9 @@ namespace Jasper.Messaging.Configuration
         }
 
 
-        internal void ApplyPolicies(HandlerGraph graph, GenerationRules rules)
+        internal void ApplyPolicies(GenerationRules rules, IContainer container)
         {
-            foreach (var policy in _globals) policy.Apply(graph, rules);
+            foreach (var policy in _globals) policy.Apply(_graph, rules, container);
         }
     }
 }

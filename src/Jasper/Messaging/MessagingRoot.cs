@@ -114,6 +114,7 @@ namespace Jasper.Messaging
             GenerationRules generation, IContainer container)
         {
 
+            Handlers.Configuration.ApplyPolicies(generation, container);
             Handlers.Compile(generation, container);
 
 

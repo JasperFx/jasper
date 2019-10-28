@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline;
 using BaselineTypeDiscovery;
 using Jasper.Conneg;
+using Jasper.Messaging.Configuration;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
@@ -38,7 +39,10 @@ namespace Jasper.Messaging.Model
             // All of this is to seed the handler and its associated retry policies
             // for scheduling outgoing messages
             _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler());
+            Configuration = new HandlerConfiguration(this);
         }
+
+        internal HandlerConfiguration Configuration { get; }
 
         internal IContainer Container { get; set; }
 
