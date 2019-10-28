@@ -25,7 +25,7 @@ namespace Jasper.Configuration
         public abstract string Description { get; }
         public abstract bool ShouldFlushOutgoingMessages();
 
-        protected abstract MethodCall[] handlerCalls();
+        public abstract MethodCall[] HandlerCalls();
 
         private bool isConfigureMethod(MethodInfo method)
         {
@@ -40,7 +40,7 @@ namespace Jasper.Configuration
 
         protected void applyAttributesAndConfigureMethods(GenerationRules rules)
         {
-            var handlers = handlerCalls();
+            var handlers = HandlerCalls();
             var configureMethods = handlers.Select(x => x.HandlerType).Distinct()
                 .SelectMany(x => x.GetTypeInfo().GetMethods())
                 .Where(isConfigureMethod);

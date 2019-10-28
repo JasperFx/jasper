@@ -168,7 +168,7 @@ namespace Jasper.Messaging.Model
             }
         }
 
-        protected override MethodCall[] handlerCalls()
+        public override MethodCall[] HandlerCalls()
         {
             return Handlers.ToArray();
         }

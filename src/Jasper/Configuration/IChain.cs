@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using LamarCodeGeneration.Frames;
 
@@ -32,6 +33,8 @@ namespace Jasper.Configuration
         /// </summary>
         /// <returns></returns>
         bool ShouldFlushOutgoingMessages();
+
+        MethodCall[] HandlerCalls();
     }
     // ENDSAMPLE
 
