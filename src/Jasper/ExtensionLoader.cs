@@ -48,17 +48,6 @@ namespace Jasper
                 .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
                 .ToArray();
 
-
-            if (extensions.Any())
-            {
-                Console.WriteLine($"Found and applying {extensions.Length} Jasper extension(s)");
-                foreach (var extension in extensions) Console.WriteLine($"Applying {extension}");
-            }
-            else
-            {
-                Console.WriteLine("No Jasper extensions are detected");
-            }
-
             registry.ApplyExtensions(extensions);
         }
     }

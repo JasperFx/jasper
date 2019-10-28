@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Oakton.AspNetCore;
 
 namespace Jasper
@@ -64,6 +65,7 @@ namespace Jasper
         {
             return Host.CreateDefaultBuilder()
                 .UseJasper(registry)
+                .ConfigureLogging(x => x.ClearProviders())
                 .Start();
 
         }
