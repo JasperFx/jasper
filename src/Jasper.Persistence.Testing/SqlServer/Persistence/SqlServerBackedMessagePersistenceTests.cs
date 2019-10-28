@@ -8,6 +8,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Util;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -47,7 +48,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             theHost.Dispose();
         }
 
-        private readonly IJasperHost theHost;
+        private readonly IHost theHost;
         private readonly Envelope theEnvelope;
         private readonly Envelope persisted;
 

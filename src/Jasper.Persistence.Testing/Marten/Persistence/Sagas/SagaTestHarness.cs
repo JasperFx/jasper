@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using IntegrationTests;
+using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
 using Marten;
+using Microsoft.Extensions.Hosting;
 using TestingSupport;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
@@ -15,7 +17,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
         where TSagaHandler : StatefulSagaOf<TSagaState>
     {
         private readonly MessageHistory _history;
-        private readonly IJasperHost _host;
+        private readonly IHost _host;
 
         protected SagaTestHarness()
         {
@@ -64,12 +66,12 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
 
         protected Task send<T>(T message)
         {
-            return _history.WatchAsync(() => _host.Messaging.Send(message), 10000);
+            return _history.WatchAsync(() => _host.Send(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _host.Messaging.Send(message, e => e.SagaId = sagaId.ToString()),
+            return _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message, e => e.SagaId = sagaId.ToString()),
                 10000);
         }
 

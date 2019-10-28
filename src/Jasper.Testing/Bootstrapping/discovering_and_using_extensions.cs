@@ -1,4 +1,5 @@
-﻿using Module1;
+﻿using Lamar;
+using Module1;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -12,7 +13,7 @@ namespace Jasper.Testing.Bootstrapping
         {
             using (var runtime = JasperHost.For<AppWithOverrides>())
             {
-                runtime.Container.DefaultRegistrationIs<IModuleService, AppsModuleService>();
+                runtime.Get<IContainer>().DefaultRegistrationIs<IModuleService, AppsModuleService>();
 
                 // application_settings_alterations_win
                 runtime.Get<ModuleSettings>()

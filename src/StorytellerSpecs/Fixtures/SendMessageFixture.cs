@@ -13,13 +13,14 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Util;
+using Microsoft.Extensions.Hosting;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
 {
     public class SendMessageFixture : BusFixture
     {
-        private IJasperHost _host;
+        private IHost _host;
 
         public SendMessageFixture()
         {
@@ -32,7 +33,7 @@ namespace StorytellerSpecs.Fixtures
             return Embed<ServiceBusApplication>("If a service bus application is configured to")
                 .After(c =>
                 {
-                    _host = c.State.Retrieve<IJasperHost>();
+                    _host = c.State.Retrieve<IHost>();
                     try
                     {
                         _host.Get<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
@@ -207,9 +208,9 @@ namespace StorytellerSpecs.Fixtures
 
     public abstract class MessageHandler<T> where T : Message
     {
-        public void Handle(T message, MessageTracker tracker, Envelope envelope, JasperRuntime runtime)
+        public void Handle(T message, MessageTracker tracker, Envelope envelope, JasperOptions options)
         {
-            tracker.Records.Add(new MessageRecord(runtime.ServiceName, envelope.ReceivedAt, message));
+            tracker.Records.Add(new MessageRecord(options.ServiceName, envelope.ReceivedAt, message));
         }
     }
 

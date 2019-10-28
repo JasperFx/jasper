@@ -1,5 +1,6 @@
 using System;
 using Jasper.Persistence.SqlServer;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Samples
@@ -33,7 +34,7 @@ namespace Jasper.Persistence.Testing.Samples
             Host.RebuildMessageStorage();
         }
 
-        public IJasperHost Host { get;  }
+        public IHost Host { get;  }
 
         public void Dispose()
         {

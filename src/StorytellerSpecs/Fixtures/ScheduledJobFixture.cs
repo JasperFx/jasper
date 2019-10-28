@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
+using Jasper.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
@@ -11,7 +13,7 @@ namespace StorytellerSpecs.Fixtures
     public class ScheduledJobFixture : Fixture
     {
         private ScheduledMessageReceiver theReceiver;
-        private IJasperHost theHost;
+        private IHost theHost;
 
         public ScheduledJobFixture()
         {
@@ -34,13 +36,13 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Schedule message locally {id} for {seconds} seconds from now")]
         public Task ScheduleMessage(int id, int seconds)
         {
-            return theHost.Messaging.Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Get<IMessagePublisher>().Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("Schedule send message {id} for {seconds} seconds from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
-            return theHost.Messaging.ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Get<IMessagePublisher>().ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("The received message count should be {count}")]

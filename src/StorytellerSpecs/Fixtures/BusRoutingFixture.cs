@@ -5,6 +5,7 @@ using Baseline;
 using Jasper;
 using Jasper.Conneg;
 using Jasper.Messaging.Runtime.Routing;
+using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -20,7 +21,7 @@ namespace StorytellerSpecs.Fixtures
     public class BusRoutingFixture : BusFixture
     {
         private JasperRegistry _registry;
-        private IJasperHost _host;
+        private IHost _host;
         private MessageRoute[] _tracks;
 
 

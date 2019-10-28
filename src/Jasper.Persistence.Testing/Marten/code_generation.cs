@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Model;
 using Marten;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -18,7 +19,7 @@ namespace Jasper.Persistence.Testing.Marten
             runtime?.Dispose();
         }
 
-        private readonly IJasperHost runtime;
+        private readonly IHost runtime;
 
         [Fact]
         public void codegen_document_session_creation()

@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Jasper;
 using Jasper.Configuration;
+using Microsoft.Extensions.Hosting;
+using Oakton.AspNetCore;
 using TestMessages;
 
 namespace Publisher
@@ -9,7 +11,10 @@ namespace Publisher
     {
         public static Task<int> Main(string[] args)
         {
-            return JasperHost.Run<PublisherApp>(args);
+            return Host
+                .CreateDefaultBuilder()
+                .UseJasper<PublisherApp>()
+                .RunOaktonCommands(args);
         }
     }
 

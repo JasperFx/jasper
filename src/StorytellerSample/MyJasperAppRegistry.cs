@@ -33,25 +33,25 @@ namespace StorytellerSample
 
             // Note that you have access to the JasperRuntime
             // of the running application here
-            Runtime.Get<ISomeService>().StartUp();
+            Host.Services.GetService<ISomeService>().StartUp();
         }
 
         protected override void afterEach(ISpecContext context)
         {
             // Called immediately after each specification is executed
-            Runtime.Get<ISomeService>().CleanUpTestRunData();
+            Host.Services.GetService<ISomeService>().CleanUpTestRunData();
         }
 
         protected override void beforeEach()
         {
             // Called immediately before each specification is executed
-            Runtime.Get<ISomeService>().LoadTestingData();
+            Host.Services.GetService<ISomeService>().LoadTestingData();
         }
 
         protected override void afterAll()
         {
             // Called right before shutting down the Storyteller harness
-            Runtime.Get<ISomeService>().Shutdown();
+            Host.Services.GetService<ISomeService>().Shutdown();
         }
     }
     // ENDSAMPLE

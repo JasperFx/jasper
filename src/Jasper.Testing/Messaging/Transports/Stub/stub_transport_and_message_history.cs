@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
 using Shouldly;
 using TestingSupport;
@@ -19,7 +20,7 @@ namespace Jasper.Testing.Messaging.Transports.Stub
 
             var tracker = runtime1.Get<MessageHistory>();
 
-            var tracks = await tracker.WatchAsync(() => runtime1.Messaging.Send(new Question
+            var tracks = await tracker.WatchAsync(() => runtime1.Get<IMessagePublisher>().Send(new Question
             {
                 One = 3,
                 Two = 5

@@ -3,6 +3,7 @@ using Baseline.Dates;
 using Jasper.Configuration;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Shouldly;
@@ -28,9 +29,9 @@ namespace Jasper.Testing.Messaging
                 .ConfigureAppConfiguration((context, config) => config.AddJsonFile("messaging.json"))
                 .UseJasper();
 
-            using (var runtime = builder.StartJasper())
+            using (var runtime = builder.Start())
             {
-                var settings = runtime.Get<JasperOptions>();
+                var settings = runtime.Services.GetService<JasperOptions>();
 
                 // See the messaging.json file
                 settings.DisableAllTransports.ShouldBeTrue();

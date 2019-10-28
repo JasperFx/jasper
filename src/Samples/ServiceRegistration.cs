@@ -32,22 +32,5 @@ namespace Jasper.Testing.Samples
     {
     }
 
-    public class GetAtTheContainer
-    {
-        // SAMPLE: GetAtTheContainer
-        public void retrieve_the_container(JasperRuntime runtime, IHost host)
-        {
-            // The root Lamar IoC container hangs directly
-            // off the JasperRuntime if you're bootstrapping
-            // the idiomatic Jasper way
-            var container = runtime.Container;
 
-            // Or if you are using ASP.Net Core bootstrapping,
-            // the IHost.Services is actually the root
-            // Lamar container
-            var container2 = (IContainer) host.Services;
-        }
-
-        // ENDSAMPLE
-    }
 }

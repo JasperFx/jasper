@@ -3,9 +3,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Tracking;
 using Marten;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -34,8 +36,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theReceiver?.Dispose();
         }
 
-        private readonly IJasperHost theSender;
-        private readonly IJasperHost theReceiver;
+        private readonly IHost theSender;
+        private readonly IHost theReceiver;
         private readonly MessageTracker theTracker;
 
 
@@ -59,7 +61,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             };
 
 
-            await theSender.Messaging.Schedule(item, 1.Days());
+            await theSender.Get<IMessagePublisher>().Schedule(item, 1.Days());
 
             var persistor = theSender.Get<IEnvelopePersistence>();
 
@@ -83,7 +85,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             var waiter = theTracker.WaitFor<ItemCreated>();
 
-            await theReceiver.Messaging.Enqueue(item);
+            await theReceiver.Get<IMessagePublisher>().Enqueue(item);
 
             waiter.Wait(5.Seconds());
 
@@ -118,7 +120,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             var waiter = theTracker.WaitFor<ItemCreated>();
 
-            await theReceiver.Messaging.EnqueueDurably(item);
+            await theReceiver.Get<IMessagePublisher>().EnqueueDurably(item);
 
             waiter.Wait(5.Seconds());
 
@@ -160,7 +162,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             var waiter = theTracker.WaitFor<ItemCreated>();
 
-            await theSender.Messaging.Send(item);
+            await theSender.Send(item);
 
             waiter.Wait(20.Seconds());
 

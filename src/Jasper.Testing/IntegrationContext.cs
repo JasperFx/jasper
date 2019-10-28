@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace Jasper.Testing
@@ -12,16 +13,17 @@ namespace Jasper.Testing
             Host = JasperHost.Basic();
         }
 
-        public IJasperHost Host { get; private set; }
+        public IHost Host { get; private set; }
 
         public void Dispose()
         {
             Host?.Dispose();
+            Host = null;
         }
 
         public void RecycleIfNecessary()
         {
-            if (Host.IsDisposed) Host = JasperHost.Basic();
+            if (Host == null) Host = JasperHost.Basic();
         }
     }
 
@@ -38,7 +40,7 @@ namespace Jasper.Testing
             Host = _default.Host;
         }
 
-        public IJasperHost Host { get; private set; }
+        public IHost Host { get; private set; }
 
         public IMessageContext Bus => Host.Get<IMessageContext>();
 
@@ -48,7 +50,8 @@ namespace Jasper.Testing
 
         public virtual void Dispose()
         {
-            Host?.Dispose();
+            _default.Dispose();
+
         }
 
 

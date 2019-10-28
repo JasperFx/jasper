@@ -36,7 +36,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         private IEnvelopeStorageAdmin _admin;
         private int _currentNodeId;
 
-        private IJasperHost _host;
+        private IHost _host;
         private MessagingSerializationGraph _serializers;
         private PostgresqlSettings _settings;
         private RecordingWorkerQueue _workers;
@@ -97,19 +97,19 @@ namespace StorytellerSpecs.Fixtures.Marten
                         x.Retries.NodeReassignmentPollingTime = 30.Minutes();
                     });
                 })
-                .StartJasper();
+                .Start();
 
 
-            _admin = _host.Get<IEnvelopePersistence>().Admin;
+            _admin = _host.Services.GetService<IEnvelopePersistence>().Admin;
             _admin.RebuildSchemaObjects();
 
-            _settings = _host.Get<PostgresqlSettings>();
-            _serializers = _host.Get<MessagingSerializationGraph>();
+            _settings = _host.Services.GetService<PostgresqlSettings>();
+            _serializers = _host.Services.GetService<MessagingSerializationGraph>();
 
-            theStore = _host.Get<IDocumentStore>();
+            theStore = _host.Services.GetService<IDocumentStore>();
             theStore.Advanced.Clean.DeleteAllDocuments();
 
-            _currentNodeId = _host.Get<JasperOptions>().UniqueNodeId;
+            _currentNodeId = _host.Services.GetService<JasperOptions>().UniqueNodeId;
 
             _owners["This Node"] = _currentNodeId;
         }
@@ -160,7 +160,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             _host.GetStubTransport().Channels[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
-            _host.Get<ISubscriberGraph>().GetOrBuild(channel);
+            _host.Services.GetService<ISubscriberGraph>().GetOrBuild(channel);
         }
 
 
@@ -240,7 +240,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             var agent = DurabilityAgent.ForHost(_host);
 
-            var action = _host.Get<T>();
+            var action = _host.Services.GetService<T>();
             await agent.Execute(action);
         }
 

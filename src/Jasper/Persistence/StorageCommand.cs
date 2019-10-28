@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Baseline;
 using Jasper.Messaging.Durability;
+using Microsoft.Extensions.DependencyInjection;
 using Oakton;
 using Oakton.AspNetCore;
 
@@ -35,9 +36,9 @@ namespace Jasper.Persistence
 
         public override bool Execute(StorageInput input)
         {
-            using (var host = new JasperRuntime(input.BuildHost()))
+            using (var host = input.BuildHost())
             {
-                var persistor = host.Get<IEnvelopePersistence>();
+                var persistor = host.Services.GetRequiredService<IEnvelopePersistence>();
 
                 persistor.Describe(Console.Out);
 

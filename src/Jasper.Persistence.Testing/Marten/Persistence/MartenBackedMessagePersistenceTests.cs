@@ -6,6 +6,7 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -48,7 +49,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theHost.Dispose();
         }
 
-        private readonly IJasperHost theHost;
+        private readonly IHost theHost;
         private readonly Envelope theEnvelope;
         private readonly Envelope persisted;
 

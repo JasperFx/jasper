@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -21,7 +22,7 @@ namespace Jasper.Testing.Messaging.Compilation
             _host?.Dispose();
         }
 
-        private IJasperHost _host;
+        private IHost _host;
 
 
         protected Envelope theEnvelope;

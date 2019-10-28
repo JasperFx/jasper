@@ -36,7 +36,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 var watch = tracker.WaitFor<ColorChosen>();
 
-                await runtime.Messaging.Send(new ColorChosen {Name = "Red"});
+                await runtime.Send(new ColorChosen {Name = "Red"});
 
                 await watch;
 
@@ -56,7 +56,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 var watch = tracker.WaitFor<ColorChosen>();
 
-                await runtime.Messaging.Send(new ColorChosen {Name = "Red"});
+                await runtime.Send(new ColorChosen {Name = "Red"});
 
                 await watch;
 
@@ -106,7 +106,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 var watch = tracker.WaitFor<ColorChosen>();
 
-                await runtime.Messaging.Send(new ColorChosen {Name = "Red"});
+                await runtime.Send(new ColorChosen {Name = "Red"});
 
                 await watch;
 
@@ -152,7 +152,7 @@ namespace Jasper.RabbitMQ.Tests
 
             try
             {
-                await publisher.Messaging.Send(new ColorChosen {Name = "Orange"});
+                await publisher.Send(new ColorChosen {Name = "Orange"});
 
                 await wait;
 
@@ -191,7 +191,7 @@ namespace Jasper.RabbitMQ.Tests
 
             try
             {
-                await publisher.Messaging.Send(new ColorChosen {Name = "Orange"});
+                await publisher.Send(new ColorChosen {Name = "Orange"});
 
                 await wait;
 
@@ -254,7 +254,7 @@ namespace Jasper.RabbitMQ.Tests
 
             try
             {
-                await publisher.Messaging.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds());
+                await publisher.Get<IMessagePublisher>().ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds());
 
                 await wait;
 
@@ -329,7 +329,7 @@ namespace Jasper.RabbitMQ.Tests
 
             try
             {
-                await publisher.Messaging.Send(new ColorChosen {Name = "Purple"});
+                await publisher.Send(new ColorChosen {Name = "Purple"});
 
                 await wait1;
                 //await wait2;
@@ -381,7 +381,7 @@ namespace Jasper.RabbitMQ.Tests
             try
             {
                 var message = new SpecialTopic();
-                await publisher.Messaging.Send(message);
+                await publisher.Send(message);
 
                 var received = await wait;
                 received.Message.ShouldBeOfType<SpecialTopic>()
@@ -448,9 +448,9 @@ namespace Jasper.RabbitMQ.Tests
                 var topicB = new TopicB();
                 var topicC = new TopicC();
 
-                await publisher.Messaging.Send(topicA);
-                await publisher.Messaging.Send(topicB);
-                await publisher.Messaging.Send(topicC);
+                await publisher.Send(topicA);
+                await publisher.Send(topicB);
+                await publisher.Send(topicC);
 
                 var receivedA = (await waitForA).Message.ShouldBeOfType<TopicA>();
                 var receivedB = (await waitForB).Message.ShouldBeOfType<TopicB>();

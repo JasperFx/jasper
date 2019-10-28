@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Jasper.Configuration;
+using Lamar;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -51,7 +52,7 @@ namespace Jasper.Testing.Bootstrapping
 
             using (var host = JasperHost.For(registry))
             {
-                host.Container.Model.For<IColorService>().Instances
+                host.Get<IContainer>().Model.For<IColorService>().Instances
                     .Count().ShouldBe(1);
             }
         }

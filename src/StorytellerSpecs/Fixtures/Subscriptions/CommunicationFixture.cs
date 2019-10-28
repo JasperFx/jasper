@@ -6,6 +6,7 @@ using Jasper;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
 using Lamar;
+using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -15,7 +16,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
     {
         private bool _initialized;
         private NodesCollection _nodes;
-        private IJasperHost _publisher;
+        private IHost _publisher;
 
         public CommunicationFixture()
         {
@@ -89,7 +90,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() => { _publisher.Messaging.Send(message).Wait(); });
+            var waiter = history.Watch(() => { _publisher.Send(message).Wait(); });
 
             waiter.Wait(5.Seconds());
 
@@ -134,7 +135,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
     public class NodesCollection : IDisposable
     {
-        private readonly IList<IJasperHost> _hosts = new List<IJasperHost>();
+        private readonly IList<IHost> _hosts = new List<IHost>();
 
         public readonly Dictionary<Uri, Uri> Aliases = new Dictionary<Uri, Uri>();
         public readonly MessageHistory History = new MessageHistory();
@@ -146,7 +147,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             foreach (var runtime in _hosts) runtime.Dispose();
         }
 
-        public IJasperHost Add(JasperRegistry registry)
+        public IHost Add(JasperRegistry registry)
         {
             registry.Services.For<MessageTracker>().Use(Tracker);
             registry.Services.For<MessageHistory>().Use(History);

@@ -11,6 +11,7 @@ using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Marten;
+using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
 
 namespace StorytellerSpecs.Fixtures.Marten
@@ -45,7 +46,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
 
-        protected override void initializeStorage(IJasperHost theSender, IJasperHost theReceiver)
+        protected override void initializeStorage(IHost theSender, IHost theReceiver)
         {
             theSender.RebuildMessageStorage();
 
@@ -53,7 +54,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         }
 
-        protected override ItemCreated loadItem(IJasperHost receiver, Guid id)
+        protected override ItemCreated loadItem(IHost receiver, Guid id)
         {
             using (var session = receiver.Get<IDocumentStore>().QuerySession())
             {
@@ -62,7 +63,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
 
-        protected override async Task withContext(IJasperHost sender, IMessageContext context,
+        protected override async Task withContext(IHost sender, IMessageContext context,
             Func<IMessageContext, Task> action)
         {
             var senderStore = sender.Get<IDocumentStore>();
@@ -77,7 +78,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             }
         }
 
-        protected override Envelope[] loadAllOutgoingEnvelopes(IJasperHost sender)
+        protected override Envelope[] loadAllOutgoingEnvelopes(IHost sender)
         {
             var admin = sender.Get<IEnvelopePersistence>().Admin;
             return admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();

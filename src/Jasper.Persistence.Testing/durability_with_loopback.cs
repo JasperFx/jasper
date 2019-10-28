@@ -22,7 +22,7 @@ namespace Jasper.Persistence.Testing
             {
                 runtime1.RebuildMessageStorage();
 
-                await runtime1.Messaging.Send(new ReceivedMessage());
+                await runtime1.Send(new ReceivedMessage());
 
                 var counts = await runtime1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
 

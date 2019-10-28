@@ -10,6 +10,7 @@ using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Persistence;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql;
+using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StorytellerSpecs.Fixtures.Durability;
 
@@ -33,7 +34,7 @@ namespace StorytellerSpecs.Fixtures.Postgresql
         }
 
 
-        protected override void initializeStorage(IJasperHost theSender, IJasperHost theReceiver)
+        protected override void initializeStorage(IHost theSender, IHost theReceiver)
         {
             theSender.RebuildMessageStorage();
 
@@ -53,7 +54,7 @@ create table if not exists receiver.item_created
             }
         }
 
-        protected override ItemCreated loadItem(IJasperHost receiver, Guid id)
+        protected override ItemCreated loadItem(IHost receiver, Guid id)
         {
             using (var conn = new NpgsqlConnection(Servers.PostgresConnectionString))
             {
@@ -74,7 +75,7 @@ create table if not exists receiver.item_created
         }
 
 
-        protected override async Task withContext(IJasperHost sender, IMessageContext context,
+        protected override async Task withContext(IHost sender, IMessageContext context,
             Func<IMessageContext, Task> action)
         {
             // SAMPLE: basic-postgresql-outbox-sample
@@ -97,7 +98,7 @@ create table if not exists receiver.item_created
             // ENDSAMPLE
         }
 
-        protected override Envelope[] loadAllOutgoingEnvelopes(IJasperHost sender)
+        protected override Envelope[] loadAllOutgoingEnvelopes(IHost sender)
         {
             var admin = sender.Get<IEnvelopePersistence>().Admin;
             return admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();

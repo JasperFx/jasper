@@ -3,6 +3,7 @@ using IntegrationTests;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Testing.Marten;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Shouldly;
@@ -18,13 +19,14 @@ namespace Jasper.Persistence.Testing.Postgresql
             using (var runtime = JasperHost.For(x =>
                 x.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString)))
             {
-                runtime.Container.Model.HasRegistrationFor<NpgsqlConnection>().ShouldBeTrue();
-                runtime.Container.Model.HasRegistrationFor<DbConnection>().ShouldBeTrue();
+                var container = runtime.Get<IContainer>();
+                container.Model.HasRegistrationFor<NpgsqlConnection>().ShouldBeTrue();
+                container.Model.HasRegistrationFor<DbConnection>().ShouldBeTrue();
 
-                runtime.Container.Model.For<NpgsqlConnection>().Default.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+                container.Model.For<NpgsqlConnection>().Default.Lifetime.ShouldBe(ServiceLifetime.Scoped);
 
 
-                runtime.Container.Model.HasRegistrationFor<IEnvelopePersistence>().ShouldBeTrue();
+                container.Model.HasRegistrationFor<IEnvelopePersistence>().ShouldBeTrue();
 
 
                 runtime.Get<NpgsqlConnection>().ConnectionString.ShouldBe(Servers.PostgresConnectionString);

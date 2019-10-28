@@ -15,21 +15,21 @@ namespace Jasper.Testing.Messaging.Samples
         {
             // Bootstrap your application with a few overrides to
             // configuration, and slightly modify the Jasper configuration
-            JasperHost = Host.CreateDefaultBuilder()
+            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .OverrideConfigValue("outgoing", "stub://outgoing")
                 .OverrideConfigValue("incoming", "stub://incoming")
                 .UseJasper<MyJasperApp>()
 
-                // This gives you an IJasperHost, but this works as well with an
+                // This gives you an IHost, but this works as well with an
                 // IWebHost as well
-                .StartJasper();
+                .Start();
         }
 
-        public IJasperHost JasperHost { get; }
+        public IHost Host { get; }
 
         public void Dispose()
         {
-            JasperHost?.Dispose();
+            Host?.Dispose();
         }
     }
     // ENDSAMPLE
@@ -39,7 +39,7 @@ namespace Jasper.Testing.Messaging.Samples
     {
         public IntegrationContext(IntegrationFixture fixture)
         {
-            Host = fixture.JasperHost;
+            Host = fixture.Host;
 
             // Clean out any previously received messages
             // You'll likely want to use this before any test
@@ -47,7 +47,7 @@ namespace Jasper.Testing.Messaging.Samples
             Host.ClearStubTransportSentList();
         }
 
-        public IJasperHost Host { get; }
+        public IHost Host { get; }
     }
     // ENDSAMPLE
 

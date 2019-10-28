@@ -17,35 +17,6 @@ namespace Jasper.Messaging.Transports.Stub
         /// <summary>
         ///     Retrieves the instance of the StubTransport within this application
         /// </summary>
-        /// <param name="runtime"></param>
-        /// <returns></returns>
-        public static StubTransport GetStubTransport(this IJasperHost runtime)
-        {
-            return runtime.Get<IMessagingRoot>().Transports.OfType<StubTransport>().Single();
-        }
-
-        /// <summary>
-        ///     Clears all record of messages sent to the stub transport
-        /// </summary>
-        /// <param name="runtime"></param>
-        public static void ClearStubTransportSentList(this IJasperHost runtime)
-        {
-            runtime.GetStubTransport().Channels.Each(x => x.Sent.Clear());
-        }
-
-        /// <summary>
-        ///     Retrieves an array of all the envelopes sent through the stub transport
-        /// </summary>
-        /// <param name="runtime"></param>
-        /// <returns></returns>
-        public static Envelope[] GetAllEnvelopesSent(this IJasperHost runtime)
-        {
-            return runtime.GetStubTransport().Channels.SelectMany(x => x.Sent).ToArray();
-        }
-
-        /// <summary>
-        ///     Retrieves the instance of the StubTransport within this application
-        /// </summary>
         /// <param name="host"></param>
         /// <returns></returns>
         public static StubTransport GetStubTransport(this IHost host)

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Lamar;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using TestingSupport;
 using TestingSupport.Fakes;
@@ -36,7 +37,7 @@ namespace Jasper.Testing.Bootstrapping
 
             using (var runtime = JasperHost.For(registry))
             {
-                runtime.Container.DefaultRegistrationIs<IFoo, Foo>();
+                runtime.Get<IContainer>().DefaultRegistrationIs<IFoo, Foo>();
             }
         }
     }

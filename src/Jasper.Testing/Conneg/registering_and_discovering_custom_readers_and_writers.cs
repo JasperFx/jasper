@@ -14,6 +14,7 @@ namespace Jasper.Testing.Conneg
     {
         public registering_and_discovering_custom_readers_and_writers(DefaultApp @default) : base(@default)
         {
+            @default.RecycleIfNecessary();
         }
 
         public MessagingSerializationGraph theSerialization => Host.Get<MessagingSerializationGraph>();

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Util;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using TestMessages;
@@ -18,7 +20,7 @@ namespace Jasper.Testing.Messaging
             theHost?.Dispose();
         }
 
-        private IJasperHost theHost;
+        private IHost theHost;
 
         private void buildRuntime()
         {
@@ -37,7 +39,7 @@ namespace Jasper.Testing.Messaging
         public void publish_message_with_no_known_subscribers()
         {
             buildRuntime();
-            theHost.Messaging.Publish(new Message3());
+            theHost.Get<IMessagePublisher>().Publish(new Message3());
 
             theHost.GetAllEnvelopesSent().Any().ShouldBeFalse();
         }
@@ -47,8 +49,8 @@ namespace Jasper.Testing.Messaging
         {
             buildRuntime();
 
-            await theHost.Messaging.Publish(new Message1());
-            await theHost.Messaging.Publish(new Message2());
+            await theHost.Get<IMessagePublisher>().Publish(new Message1());
+            await theHost.Get<IMessagePublisher>().Publish(new Message2());
 
             var sent = theHost.GetAllEnvelopesSent();
 
@@ -65,7 +67,7 @@ namespace Jasper.Testing.Messaging
         {
             buildRuntime();
             await Should.ThrowAsync<NoRoutesException>(async () =>
-                await theHost.Messaging.Send(new Message3()));
+                await theHost.Get<IMessagePublisher>().Send(new Message3()));
         }
 
 
@@ -73,8 +75,8 @@ namespace Jasper.Testing.Messaging
         public async Task send_with_known_subscribers()
         {
             buildRuntime();
-            await theHost.Messaging.Send(new Message1());
-            await theHost.Messaging.Send(new Message2());
+            await theHost.Get<IMessagePublisher>().Send(new Message1());
+            await theHost.Get<IMessagePublisher>().Send(new Message2());
 
             var sent = theHost.GetAllEnvelopesSent();
 

@@ -9,6 +9,7 @@ using Marten;
 using Marten.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -45,13 +46,13 @@ namespace Jasper.Persistence.Testing.Marten.Sample
             theHost?.Dispose();
         }
 
-        private readonly IJasperHost theHost;
+        private readonly IHost theHost;
 
         //[Fact] -- unreliable. May not actually be useful.
         public async Task using_ExecuteAndWait()
         {
             await theHost.ExecuteAndWait(
-                () => theHost.Messaging.Invoke(new CreateUser {Name = "Tom"}));
+                () => theHost.Invoke(new CreateUser {Name = "Tom"}));
 
 
             using (var session = theHost.Get<IDocumentStore>().QuerySession())
@@ -66,7 +67,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         [Fact]
         public async Task using_ExecuteAndWaitSync()
         {
-            await theHost.ExecuteAndWait(() => { theHost.Messaging.Invoke(new CreateUser {Name = "Tom"}); });
+            await theHost.ExecuteAndWait(() => { theHost.Invoke(new CreateUser {Name = "Tom"}); });
 
 
             using (var session = theHost.Get<IDocumentStore>().QuerySession())
@@ -134,10 +135,10 @@ namespace Jasper.Persistence.Testing.Marten.Sample
                     10000);
 
                 // More general usage
-                await runtime.ExecuteAndWait(() => { return runtime.Messaging.Send(new Message1()); });
+                await runtime.ExecuteAndWait(() => runtime.Send(new Message1()));
 
                 // More general usage, but synchronously
-                await runtime.ExecuteAndWait(() => { runtime.Messaging.Send(new Message1()); });
+                await runtime.ExecuteAndWait(() => { runtime.Send(new Message1()); });
 
                 // Using an isolated message context
                 await runtime.ExecuteAndWait(c => c.Send(new Message1()));

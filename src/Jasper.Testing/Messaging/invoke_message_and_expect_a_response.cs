@@ -22,7 +22,7 @@ namespace Jasper.Testing.Messaging
         {
             StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
 
-            var answer = await theReceiver.Messaging.Invoke<Answer>(new Question {One = 3, Two = 4});
+            var answer = await theReceiver.Get<IMessagePublisher>().Invoke<Answer>(new Question {One = 3, Two = 4});
 
             answer.Sum.ShouldBe(7);
             answer.Product.ShouldBe(12);
@@ -34,7 +34,7 @@ namespace Jasper.Testing.Messaging
             StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
             await Should.ThrowAsync<ArgumentOutOfRangeException>(async () =>
             {
-                await theReceiver.Messaging.Invoke<Answer>(new QuestionWithNoHandler());
+                await theReceiver.Get<IMessagePublisher>().Invoke<Answer>(new QuestionWithNoHandler());
             });
         }
 
@@ -42,7 +42,7 @@ namespace Jasper.Testing.Messaging
         public async Task invoke_with_no_known_response_do_not_blow_up()
         {
             StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
-            (await theReceiver.Messaging.Invoke<Answer>(new QuestionWithNoAnswer()))
+            (await theReceiver.Get<IMessagePublisher>().Invoke<Answer>(new QuestionWithNoAnswer()))
                 .ShouldBeNull();
         }
 

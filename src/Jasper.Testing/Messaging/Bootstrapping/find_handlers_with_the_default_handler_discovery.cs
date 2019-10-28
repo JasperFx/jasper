@@ -12,6 +12,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
     {
         public find_handlers_with_the_default_handler_discovery(DefaultApp @default) : base(@default)
         {
+            @default.RecycleIfNecessary();
         }
 
         [Fact]

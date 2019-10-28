@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Tracking
 {
     public static class JasperHostMessageTrackingExtensions
     {
-        private static void validateMessageTrackerExists(this IJasperHost runtime)
+        private static void validateMessageTrackerExists(this IHost host)
         {
-            var history = runtime.Container.Model.For<MessageHistory>().Default;
+            var history = host.Get<IContainer>().Model.For<MessageHistory>().Default;
 
             if (history == null || history.Lifetime != ServiceLifetime.Singleton)
                 throw new InvalidOperationException(
@@ -19,17 +21,17 @@ namespace Jasper.Messaging.Tracking
         ///     Send a message through the service bus and wait until that message
         ///     and all cascading messages have been successfully processed
         /// </summary>
-        /// <param name="runtime"></param>
+        /// <param name="host"></param>
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static async Task SendMessageAndWait<T>(this IJasperHost runtime, T message,
+        public static async Task SendMessageAndWait<T>(this IHost host, T message,
             int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
-            runtime.validateMessageTrackerExists();
+            host.validateMessageTrackerExists();
 
-            var history = runtime.Get<MessageHistory>();
-            await history.WatchAsync(() => runtime.Messaging.Send(message), timeoutInMilliseconds);
+            var history = host.Get<MessageHistory>();
+            await history.WatchAsync(() => host.Get<IMessageContext>().Send(message), timeoutInMilliseconds);
 
             if (assertNoExceptions) history.AssertNoExceptions();
         }
@@ -42,7 +44,7 @@ namespace Jasper.Messaging.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this IJasperHost runtime, Func<Task> action,
+        public static async Task ExecuteAndWait(this IHost runtime, Func<Task> action,
             int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
@@ -60,7 +62,7 @@ namespace Jasper.Messaging.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this IJasperHost runtime, Action action,
+        public static async Task ExecuteAndWait(this IHost runtime, Action action,
             bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
@@ -78,7 +80,7 @@ namespace Jasper.Messaging.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this IJasperHost runtime, Func<IMessageContext, Task> action,
+        public static async Task ExecuteAndWait(this IHost runtime, Func<IMessageContext, Task> action,
             bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
@@ -97,13 +99,13 @@ namespace Jasper.Messaging.Tracking
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static async Task InvokeMessageAndWait<T>(this IJasperHost runtime, T message,
+        public static async Task InvokeMessageAndWait<T>(this IHost runtime, T message,
             int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
         {
             runtime.validateMessageTrackerExists();
 
             var history = runtime.Get<MessageHistory>();
-            await history.WatchAsync(() => runtime.Messaging.Invoke(message));
+            await history.WatchAsync(() => runtime.Get<IMessageContext>().Invoke(message));
 
             if (assertNoExceptions) history.AssertNoExceptions();
         }

@@ -9,6 +9,7 @@ namespace Jasper
     /// <summary>
     ///     Used to bootstrap a Jasper application
     /// </summary>
+    [Obsolete]
     public static class JasperHost
     {
         /// <summary>
@@ -16,7 +17,7 @@ namespace Jasper
         ///     using all the default Jasper configurations
         /// </summary>
         /// <returns></returns>
-        public static IJasperHost Basic()
+        public static IHost Basic()
         {
             return bootstrap(new JasperRegistry());
         }
@@ -26,7 +27,7 @@ namespace Jasper
         /// </summary>
         /// <param name="registry"></param>
         /// <returns></returns>
-        public static IJasperHost For(JasperRegistry registry)
+        public static IHost For(JasperRegistry registry)
         {
             return bootstrap(registry);
         }
@@ -38,7 +39,7 @@ namespace Jasper
         /// <param name="configure"></param>
         /// <typeparam name="T">The type of your JasperRegistry</typeparam>
         /// <returns></returns>
-        public static IJasperHost For<T>(Action<T> configure = null) where T : JasperRegistry, new()
+        public static IHost For<T>(Action<T> configure = null) where T : JasperRegistry, new()
         {
             var registry = new T();
             configure?.Invoke(registry);
@@ -51,7 +52,7 @@ namespace Jasper
         /// </summary>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IJasperHost For(Action<JasperRegistry> configure)
+        public static IHost For(Action<JasperRegistry> configure)
         {
             var registry = new JasperRegistry();
             configure(registry);
@@ -59,14 +60,12 @@ namespace Jasper
         }
 
 
-        private static JasperRuntime bootstrap(JasperRegistry registry)
+        private static IHost bootstrap(JasperRegistry registry)
         {
-            var host = Host.CreateDefaultBuilder()
+            return Host.CreateDefaultBuilder()
                 .UseJasper(registry)
                 .Start();
 
-
-            return new JasperRuntime(host);
         }
 
 

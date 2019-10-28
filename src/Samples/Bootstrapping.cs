@@ -8,7 +8,7 @@ namespace Jasper.Testing.Samples
 {
     public class Bootstrapping
     {
-        public static void Go()
+        public static void Go(string[] args)
         {
             // SAMPLE: Bootstrapping-Basic
             using (var host = JasperHost.Basic())
@@ -20,7 +20,7 @@ namespace Jasper.Testing.Samples
             // SAMPLE: Bootstrapping-Basic2
             using (var host = Host.CreateDefaultBuilder()
                 .UseJasper()
-                .StartJasper())
+                .Start())
             {
                 // do stuff
             }

@@ -79,7 +79,7 @@ namespace Jasper.TestSupport.Tests
             {
                 await system.Warmup();
 
-                system.Runtime.Get<JasperOptions>().ShouldNotBeNull();
+                system.Host.Services.GetService<JasperOptions>().ShouldNotBeNull();
             }
         }
 
@@ -92,7 +92,7 @@ namespace Jasper.TestSupport.Tests
 
                 using (var context = system.CreateContext())
                 {
-                    context.GetService<JasperOptions>().ShouldBeSameAs(system.Runtime.Get<JasperOptions>());
+                    context.GetService<JasperOptions>().ShouldBeSameAs(system.Host.Services.GetService<JasperOptions>());
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace Jasper.TestSupport.Tests
 
         protected override void beforeAll()
         {
-            ShouldBeNullExtensions.ShouldNotBeNull(Runtime);
+            ShouldBeNullExtensions.ShouldNotBeNull(Host);
             BeforeAllWasCalled = true;
         }
 

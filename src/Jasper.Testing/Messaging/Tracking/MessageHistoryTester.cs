@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Configuration;
+using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Shouldly;
@@ -101,7 +102,7 @@ namespace Jasper.Testing.Messaging.Tracking
             {
                 var history = runtime.Get<MessageHistory>();
 
-                await history.WatchAsync(() => runtime.Messaging.Send(new MessageThatFails()));
+                await history.WatchAsync(() => runtime.Get<IMessagePublisher>().Send(new MessageThatFails()));
 
                 var aggregate = Exception<AggregateException>.ShouldBeThrownBy(() => history.AssertNoExceptions());
                 aggregate

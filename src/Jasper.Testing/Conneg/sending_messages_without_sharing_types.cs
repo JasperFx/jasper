@@ -4,9 +4,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Conneg;
+using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Util;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -26,8 +28,8 @@ namespace Jasper.Testing.Conneg
             blueApp?.Dispose();
         }
 
-        private IJasperHost greenApp;
-        private IJasperHost blueApp;
+        private IHost greenApp;
+        private IHost blueApp;
         private readonly MessageTracker theTracker;
 
         [Fact]
@@ -41,7 +43,7 @@ namespace Jasper.Testing.Conneg
 
             var waiter = theTracker.WaitFor<BlueMessage>();
 
-            await greenApp.Messaging
+            await greenApp.Get<IMessagePublisher>()
                 .Send(new GreenMessage {Name = "Magic Johnson"}, _ => _.ContentType = "text/plain");
 
             var envelope = await waiter;
@@ -60,7 +62,7 @@ namespace Jasper.Testing.Conneg
 
             var waiter = theTracker.WaitFor<BlueMessage>();
 
-            await greenApp.Messaging.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
+            await greenApp.Get<IMessagePublisher>().Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
 
             var envelope = await waiter;
 

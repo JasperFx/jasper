@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Baseline;
 using IntegrationTests;
 using Jasper;
+using Jasper.Messaging;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Database;
@@ -25,10 +26,10 @@ namespace StorytellerSpecs.Fixtures.Marten
     {
         private StorytellerMessageLogger _messageLogger;
 
-        private LightweightCache<string, IJasperHost> _receivers;
+        private LightweightCache<string, IHost> _receivers;
         private DocumentStore _receiverStore;
 
-        private LightweightCache<string, IJasperHost> _senders;
+        private LightweightCache<string, IHost> _senders;
         private SenderLatchDetected _senderWatcher;
         private DocumentStore _sendingStore;
 
@@ -74,7 +75,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
             _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
 
-            _receivers = new LightweightCache<string, IJasperHost>(key =>
+            _receivers = new LightweightCache<string, IHost>(key =>
             {
                 var registry = new ReceiverApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
@@ -99,10 +100,10 @@ namespace StorytellerSpecs.Fixtures.Marten
                     })
 
                     .UseJasper(registry)
-                    .StartJasper();
+                    .Start();
             });
 
-            _senders = new LightweightCache<string, IJasperHost>(key =>
+            _senders = new LightweightCache<string, IHost>(key =>
             {
                 var logger = new StorytellerAspNetCoreLogger(key);
 
@@ -126,7 +127,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                         x.AddProvider(logger);
                     })
                     .UseJasper(registry)
-                    .StartJasper();
+                    .Start();
             });
         }
 
@@ -163,7 +164,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         public Task SendFrom([Header("Sending Node")] [Default("Sender1")]
             string sender, [Header("Message Name")] string name)
         {
-            return _senders[sender].Messaging.Send(new TraceMessage {Name = name});
+            return _senders[sender].Services.GetService<IMessageContext>().Send(new TraceMessage {Name = name});
         }
 
         [FormatAs("Send {count} messages from {sender}")]
@@ -174,7 +175,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             for (var i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
-                await runtime.Messaging.Send(msg);
+                await runtime.Services.GetService<IMessageContext>().Send(msg);
             }
         }
 

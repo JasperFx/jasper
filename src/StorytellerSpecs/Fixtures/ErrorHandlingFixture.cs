@@ -14,6 +14,7 @@ using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Polly;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -99,7 +100,7 @@ namespace StorytellerSpecs.Fixtures
         private HandlerChain _chain;
         private HandlerGraph _graph;
         private ErrorCausingMessage _message;
-        private IJasperHost _host;
+        private IHost _host;
         private AttemptTracker _tracker;
         private StubTransport _transport;
 

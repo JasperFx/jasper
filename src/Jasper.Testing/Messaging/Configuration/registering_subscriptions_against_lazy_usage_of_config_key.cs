@@ -4,6 +4,7 @@ using System.Linq;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Util;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
@@ -14,7 +15,7 @@ namespace Jasper.Testing.Messaging.Configuration
     {
         private readonly JasperRegistry theRegistry = new JasperRegistry();
         private IDictionary<string, string> theConfigKeys = new Dictionary<string, string>();
-        private IJasperHost _host;
+        private IHost _host;
 
 
         private JasperOptions theOptions
@@ -26,11 +27,11 @@ namespace Jasper.Testing.Messaging.Configuration
                     _host = Host.CreateDefaultBuilder()
                         .ConfigureAppConfiguration((c, builder) => builder.AddInMemoryCollection(theConfigKeys))
                         .UseJasper(theRegistry)
-                        .StartJasper();
+                        .Start();
 
                 }
 
-                return _host.Get<JasperOptions>();
+                return _host.Services.GetService<JasperOptions>();
             }
         }
 

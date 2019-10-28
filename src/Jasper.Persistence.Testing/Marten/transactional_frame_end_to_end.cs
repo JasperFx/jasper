@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Testing.Marten
             using (var runtime = JasperHost.For<MartenUsingApp>())
             {
                 var command = new CreateDocCommand();
-                await runtime.Messaging.Invoke(command);
+                await runtime.Invoke(command);
 
                 using (var query = runtime.Get<IQuerySession>())
                 {

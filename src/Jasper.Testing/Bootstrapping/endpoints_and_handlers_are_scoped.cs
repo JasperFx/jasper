@@ -1,3 +1,4 @@
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -16,7 +17,7 @@ namespace Jasper.Testing.Bootstrapping
             // forcing the container to resolve the family
             var endpoint = Host.Get<SomeHandler>();
 
-            Host.Container.Model.For<SomeHandler>().Default
+            Host.Get<IContainer>().Model.For<SomeHandler>().Default
                 .Lifetime.ShouldBe(ServiceLifetime.Scoped);
         }
     }

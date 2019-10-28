@@ -1,5 +1,6 @@
 ﻿using System;
 using Jasper.Messaging.Model;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Testing.Messaging.Bootstrapping
 {
@@ -10,7 +11,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         public readonly Uri Uri2 = new Uri("stub://2");
         public readonly Uri Uri3 = new Uri("stub://3");
         public readonly Uri Uri4 = new Uri("stub://4");
-        private IJasperHost _host;
+        private IHost _host;
 
         public BootstrappingContext()
         {
@@ -27,7 +28,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         }
 
 
-        public IJasperHost theHost()
+        public IHost theHost()
         {
             if (_host == null) _host = JasperHost.For(theRegistry);
 

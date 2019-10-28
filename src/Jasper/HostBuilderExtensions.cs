@@ -105,27 +105,31 @@ namespace Jasper
             return hostBuilder.RunOaktonCommands(args);
         }
 
-
-        /// <summary>
-        ///     Start the application and return an IJasperHost for the application
-        /// </summary>
-        /// <param name="hostBuilder"></param>
-        /// <returns></returns>
-        public static IJasperHost StartJasper(this IHostBuilder hostBuilder)
+        public static T Get<T>(this IHost host)
         {
-            var host = hostBuilder.Start();
-            return new JasperRuntime(host);
+            return host.Services.GetRequiredService<T>();
+        }
+
+        public static object Get(this IHost host, Type serviceType)
+        {
+            return host.Services.GetRequiredService(serviceType);
         }
 
         /// <summary>
-        ///     Builds the application -- but does not start the application -- and return an IJasperHost for the application
+        /// Syntactical sugar for host.Services.GetRequiredService<IMessagePublisher>().Send(message)
         /// </summary>
-        /// <param name="hostBuilder"></param>
+        /// <param name="host"></param>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IJasperHost BuildJasper(this IHostBuilder hostBuilder)
+        public static Task Send<T>(this IHost host, T message)
         {
-            var host = hostBuilder.Build();
-            return new JasperRuntime(host);
+            return host.Get<IMessagePublisher>().Send(message);
+        }
+
+        public static Task Invoke<T>(this IHost host, T command)
+        {
+            return host.Get<ICommandBus>().Invoke(command);
         }
     }
 }

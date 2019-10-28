@@ -14,7 +14,7 @@ namespace StorytellerSample
             // -- and therefore everything about the other app -- by
             // using the NodeFor() method as shown below:
             var node = NodeFor("other");
-            var otherRuntime = node.Runtime;
+            var otherRuntime = node.Host;
 
 
             // This sends a message from the external node named "Other"

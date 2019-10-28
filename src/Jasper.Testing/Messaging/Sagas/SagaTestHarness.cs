@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Messaging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
+using Microsoft.Extensions.Hosting;
 using TestingSupport;
 
 namespace Jasper.Testing.Messaging.Sagas
@@ -12,7 +14,7 @@ namespace Jasper.Testing.Messaging.Sagas
         where TSagaHandler : StatefulSagaOf<TSagaState> where TSagaState : class
     {
         private MessageHistory _history;
-        private IJasperHost _host;
+        private IHost _host;
 
         public void Dispose()
         {
@@ -49,19 +51,19 @@ namespace Jasper.Testing.Messaging.Sagas
         {
             if (_history == null) withApplication();
 
-            await _host.Messaging.Invoke(message);
+            await _host.Get<IMessagePublisher>().Invoke(message);
         }
 
         protected async Task send<T>(T message)
         {
             if (_history == null) withApplication();
 
-            await _history.WatchAsync(() => _host.Messaging.Send(message), 10000);
+            await _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _host.Messaging.Send(message, e => e.SagaId = sagaId.ToString()),
+            return _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message, e => e.SagaId = sagaId.ToString()),
                 10000);
         }
 

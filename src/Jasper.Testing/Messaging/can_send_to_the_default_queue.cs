@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Baseline;
+using Jasper.Messaging;
 using Shouldly;
 using TestMessages;
 using Xunit;
@@ -18,7 +19,7 @@ namespace Jasper.Testing.Messaging
             var waiter = theTracker.WaitFor<Message1>();
 
             var message1 = new Message1();
-            await theSender.Messaging.Send(message1);
+            await theSender.Get<IMessagePublisher>().Send(message1);
 
             var envelope = await waiter;
 
@@ -35,7 +36,7 @@ namespace Jasper.Testing.Messaging
             var waiter = theTracker.WaitFor<Message1>();
 
             var message1 = new Message1();
-            await theSender.Messaging.Send(message1);
+            await theSender.Get<IMessagePublisher>().Send(message1);
 
             var envelope = await waiter;
 

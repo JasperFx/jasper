@@ -2,6 +2,7 @@ using Jasper.Conneg;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
+using Lamar;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -17,8 +18,8 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void reader_writer_is_registered()
         {
-            Host.Container.ShouldHaveRegistration<IMessageSerializer, EnvelopeReaderWriter>();
-            Host.Container.ShouldHaveRegistration<IMessageDeserializer, EnvelopeReaderWriter>();
+            Host.Get<IContainer>().ShouldHaveRegistration<IMessageSerializer, EnvelopeReaderWriter>();
+            Host.Get<IContainer>().ShouldHaveRegistration<IMessageDeserializer, EnvelopeReaderWriter>();
         }
 
         [Fact]

@@ -15,6 +15,7 @@ using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
 using Jasper.TestSupport.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StorytellerSpecs.Fixtures.SqlServer.App;
 using StoryTeller;
@@ -26,9 +27,9 @@ namespace StorytellerSpecs.Fixtures.SqlServer
     {
         private StorytellerMessageLogger _messageLogger;
 
-        private LightweightCache<string, IJasperHost> _receivers;
+        private LightweightCache<string, IHost> _receivers;
 
-        private LightweightCache<string, IJasperHost> _senders;
+        private LightweightCache<string, IHost> _senders;
         private SenderLatchDetected _senderWatcher;
 
         public SqlServerBackedPersistenceFixture()
@@ -69,7 +70,7 @@ create table receiver.trace_doc
 ").ExecuteNonQuery();
             }
 
-            _receivers = new LightweightCache<string, IJasperHost>(key =>
+            _receivers = new LightweightCache<string, IHost>(key =>
             {
                 var registry = new ReceiverApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
@@ -77,7 +78,7 @@ create table receiver.trace_doc
                 return JasperHost.For(registry);
             });
 
-            _senders = new LightweightCache<string, IJasperHost>(key =>
+            _senders = new LightweightCache<string, IHost>(key =>
             {
                 var registry = new SenderApp();
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
@@ -116,7 +117,7 @@ create table receiver.trace_doc
         public Task SendFrom([Header("Sending Node")] [Default("Sender1")]
             string sender, [Header("Message Name")] string name)
         {
-            return _senders[sender].Messaging.Send(new TraceMessage {Name = name});
+            return _senders[sender].Send(new TraceMessage {Name = name});
         }
 
         [FormatAs("Send {count} messages from {sender}")]
@@ -127,7 +128,7 @@ create table receiver.trace_doc
             for (var i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
-                await runtime.Messaging.Send(msg);
+                await runtime.Send(msg);
             }
         }
 

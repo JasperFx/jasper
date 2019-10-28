@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Tracking;
 using Jasper.Testing.Messaging.Lightweight;
+using Microsoft.Extensions.Hosting;
 using TestingSupport;
 
 namespace Jasper.Testing.Messaging
@@ -9,8 +10,8 @@ namespace Jasper.Testing.Messaging
     {
         private readonly JasperRegistry receiverRegistry = new JasperRegistry();
         private readonly JasperRegistry senderRegistry = new JasperRegistry();
-        protected IJasperHost theReceiver;
-        protected IJasperHost theSender;
+        protected IHost theReceiver;
+        protected IHost theSender;
         protected MessageTracker theTracker;
 
         public SendingContext()

@@ -2,6 +2,7 @@
 using Baseline;
 using Baseline.Dates;
 using Jasper.Conneg;
+using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Util;
@@ -37,7 +38,7 @@ namespace Jasper.Testing.Conneg
             {
                 var waiter = tracker.WaitFor<NewMessage>();
 
-                await runtime.Messaging.Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
+                await runtime.Get<IMessagePublisher>().Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
                 {
                     e.Destination = channel;
                     e.ContentType = "application/json";

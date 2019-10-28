@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using IntegrationTests;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.SqlServer;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -17,13 +18,15 @@ namespace Jasper.Persistence.Testing.SqlServer
             using (var runtime = JasperHost.For(x =>
                 x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
-                runtime.Container.Model.HasRegistrationFor<SqlConnection>().ShouldBeTrue();
-                runtime.Container.Model.HasRegistrationFor<DbConnection>().ShouldBeTrue();
+                var container = runtime.Get<IContainer>();
 
-                runtime.Container.Model.For<SqlConnection>().Default.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+                container.Model.HasRegistrationFor<SqlConnection>().ShouldBeTrue();
+                container.Model.HasRegistrationFor<DbConnection>().ShouldBeTrue();
+
+                container.Model.For<SqlConnection>().Default.Lifetime.ShouldBe(ServiceLifetime.Scoped);
 
 
-                runtime.Container.Model.HasRegistrationFor<IEnvelopePersistence>().ShouldBeTrue();
+                container.Model.HasRegistrationFor<IEnvelopePersistence>().ShouldBeTrue();
 
 
                 runtime.Get<SqlConnection>().ConnectionString.ShouldBe(Servers.SqlServerConnectionString);

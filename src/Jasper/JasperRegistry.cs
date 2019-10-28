@@ -189,11 +189,6 @@ namespace Jasper
                 throw new InvalidOperationException("Unable to determine an application assembly");
         }
 
-        protected internal void Describe(IJasperHost runtime, TextWriter writer)
-        {
-            Messaging.Describe(runtime, writer);
-        }
-
         internal void ApplyExtensions(IJasperExtension[] extensions)
         {
             // Apply idempotency

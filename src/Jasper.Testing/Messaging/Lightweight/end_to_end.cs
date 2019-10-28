@@ -1,9 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Jasper.Messaging;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Tracking;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using TestMessages;
@@ -22,10 +24,10 @@ namespace Jasper.Testing.Messaging.Lightweight
 
         private static int port = 2114;
 
-        private IJasperHost theSender;
+        private IHost theSender;
         private readonly Uri theAddress = $"tcp://localhost:{++port}/incoming".ToUri();
         private readonly MessageTracker theTracker = new MessageTracker();
-        private IJasperHost theReceiver;
+        private IHost theReceiver;
         private FakeScheduledJobProcessor scheduledJobs;
 
 
@@ -61,7 +63,7 @@ namespace Jasper.Testing.Messaging.Lightweight
 
             var waiter = theTracker.WaitFor<Message2>();
 
-            await theSender.Messaging.Send(theAddress, new Message2());
+            await theSender.Get<IMessagePublisher>().Send(theAddress, new Message2());
 
             var env = await waiter;
 
@@ -75,7 +77,7 @@ namespace Jasper.Testing.Messaging.Lightweight
 
             var waiter = theTracker.WaitFor<Message1>();
 
-            await theSender.Messaging.Send(theAddress, new Message1());
+            await theSender.Get<IMessagePublisher>().Send(theAddress, new Message1());
 
             var env = await waiter;
 
@@ -89,7 +91,7 @@ namespace Jasper.Testing.Messaging.Lightweight
 
             var waiter = theTracker.WaitFor<Message2>();
 
-            await theSender.Messaging.Send(theAddress, new Message2());
+            await theSender.Get<IMessagePublisher>().Send(theAddress, new Message2());
 
             var env = await waiter;
 

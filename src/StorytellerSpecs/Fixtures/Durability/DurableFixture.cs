@@ -13,6 +13,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Persistence;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using StoryTeller;
 
@@ -20,8 +21,8 @@ namespace StorytellerSpecs.Fixtures.Durability
 {
     public abstract class DurableFixture<TTriggerHandler, TItemCreatedHandler> : Fixture
     {
-        private IJasperHost theReceiver;
-        private IJasperHost theSender;
+        private IHost theReceiver;
+        private IHost theSender;
         private Jasper.Messaging.Tracking.MessageTracker theTracker;
 
         public override void SetUp()
@@ -87,7 +88,7 @@ namespace StorytellerSpecs.Fixtures.Durability
         }
 
 
-        protected abstract void initializeStorage(IJasperHost sender, IJasperHost receiver);
+        protected abstract void initializeStorage(IHost sender, IHost receiver);
 
         protected abstract void configureReceiver(JasperRegistry receiverRegistry);
 
@@ -108,7 +109,7 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             var waiter = theTracker.WaitFor<CascadedMessage>();
 
-            await theSender.Messaging.Send(trigger);
+            await theSender.Send(trigger);
 
             var env = await waiter;
 
@@ -120,10 +121,10 @@ namespace StorytellerSpecs.Fixtures.Durability
             return true;
         }
 
-        protected abstract ItemCreated loadItem(IJasperHost receiver, Guid id);
+        protected abstract ItemCreated loadItem(IHost receiver, Guid id);
 
 
-        protected abstract Task withContext(IJasperHost sender, IMessageContext context,
+        protected abstract Task withContext(IHost sender, IMessageContext context,
             Func<IMessageContext, Task> action);
 
         private Task send(Func<IMessageContext, Task> action)
@@ -246,7 +247,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             return true;
         }
 
-        protected abstract Envelope[] loadAllOutgoingEnvelopes(IJasperHost sender);
+        protected abstract Envelope[] loadAllOutgoingEnvelopes(IHost sender);
 
 
         [FormatAs("Can send a scheduled message with durable storage")]

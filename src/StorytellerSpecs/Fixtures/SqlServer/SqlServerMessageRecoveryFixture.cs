@@ -20,6 +20,7 @@ using Jasper.Persistence;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using IMessagingAction = Jasper.Messaging.Durability.IMessagingAction;
@@ -37,7 +38,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
         private int _currentNodeId;
 
-        private IJasperHost _host;
+        private IHost _host;
         private RecordingSchedulingAgent _schedulerAgent;
         private MessagingSerializationGraph _serializers;
         private RecordingWorkerQueue _workers;
@@ -79,30 +80,33 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             _workers = new RecordingWorkerQueue();
             _schedulerAgent = new RecordingSchedulingAgent();
 
-            _host = JasperHost.For(_ =>
-            {
-                _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
-                _.Services.AddSingleton<IWorkerQueue>(_workers);
-                _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
-
-
-                _.Settings.Alter<JasperOptions>(x =>
+            _host = Host.CreateDefaultBuilder()
+                .UseJasper(_ =>
                 {
-                    x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
-                    x.ScheduledJobs.FirstExecution = 30.Minutes();
-                    x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
-                    x.Retries.NodeReassignmentPollingTime = 30.Minutes();
-                });
-            });
+                    _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
-            _host.Get<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
+                    _.Services.AddSingleton<IWorkerQueue>(_workers);
+                    _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
 
-            _serializers = _host.Get<MessagingSerializationGraph>();
+                    _.Settings.Alter<JasperOptions>(x =>
+                    {
+                        x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
+                        x.ScheduledJobs.FirstExecution = 30.Minutes();
+                        x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
+                        x.Retries.NodeReassignmentPollingTime = 30.Minutes();
+                    });
+                })
+                .Start();
+
+
+            _host.Services.GetService<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
+
+            _serializers = _host.Services.GetService<MessagingSerializationGraph>();
 
             _host.RebuildMessageStorage();
 
-            _currentNodeId = _host.Get<JasperOptions>().UniqueNodeId;
+            _currentNodeId = _host.Services.GetService<JasperOptions>().UniqueNodeId;
 
             _owners["This Node"] = _currentNodeId;
         }
@@ -153,7 +157,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             getStubTransport().Channels[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
-            _host.Get<ISubscriberGraph>().GetOrBuild(channel);
+            _host.Services.GetService<ISubscriberGraph>().GetOrBuild(channel);
         }
 
 
@@ -184,7 +188,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
         {
-            var persistor = _host.Get<SqlServerEnvelopePersistence>();
+            var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
             return persistor.AllIncomingEnvelopes()
                 .Concat(persistor.AllOutgoingEnvelopes())
                 .Where(x => x.OwnerId == ownerId)
@@ -221,7 +225,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private async Task runAction<T>() where T : IMessagingAction
         {
-            var persistor = _host.Get<SqlServerEnvelopePersistence>();
+            var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
 
             foreach (var envelope in _envelopes)
                 if (envelope.Status == TransportConstants.Outgoing)
@@ -231,7 +235,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             var agent = DurabilityAgent.ForHost(_host);
 
-            var action = _host.Get<T>();
+            var action = _host.Services.GetService<T>();
             await agent.Execute(action);
         }
 

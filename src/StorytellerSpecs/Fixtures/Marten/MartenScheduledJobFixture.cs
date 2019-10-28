@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
+using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Postgresql;
@@ -19,7 +20,7 @@ namespace StorytellerSpecs.Fixtures.Marten
     public class MartenScheduledJobFixture : Fixture
     {
         private ScheduledMessageReceiver theReceiver;
-        private IJasperHost theHost;
+        private IHost theHost;
 
         public MartenScheduledJobFixture()
         {
@@ -43,7 +44,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 .CreateDefaultBuilder()
                 .ConfigureLogging(x => x.AddProvider(logger))
                 .UseJasper(registry)
-                .StartJasper();
+                .Start();
 
         }
 
@@ -55,13 +56,13 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("Schedule message locally {id} for {seconds} seconds from now")]
         public Task ScheduleMessage(int id, int seconds)
         {
-            return theHost.Messaging.Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Services.GetService<IMessageContext>().Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("Schedule send message {id} for {seconds} seconds from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
-            return theHost.Messaging.ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Services.GetService<IMessageContext>().ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("The received message count should be {count}")]
@@ -85,7 +86,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("The persisted count of scheduled jobs should be {count}")]
         public async Task<int> PersistedScheduledCount()
         {
-            var counts = await theHost.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+            var counts = await theHost.Services.GetService<IEnvelopePersistence>().Admin.GetPersistedCounts();
             return counts.Scheduled;
         }
     }

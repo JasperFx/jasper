@@ -8,6 +8,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Tracking;
 using Jasper.TestSupport.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Engine;
 
@@ -49,7 +50,7 @@ namespace Jasper.TestSupport.Storyteller
 
         private StorytellerMessageLogger _messageLogger;
 
-        private IJasperHost _host;
+        private IHost _host;
         private Task _warmup;
 
 
@@ -71,7 +72,7 @@ namespace Jasper.TestSupport.Storyteller
 
         public T Registry { get; }
 
-        public IJasperHost Runtime
+        public IHost Host
         {
             get
             {
@@ -123,11 +124,10 @@ namespace Jasper.TestSupport.Storyteller
         {
             _warmup = Task.Factory.StartNew(() =>
             {
-                _host = JasperHost.For(Registry);
-                _messageLogger = _host.Get<IMessageLogger>().As<StorytellerMessageLogger>();
-                _messageLogger.ServiceName = _host.ServiceName;
+                _host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(Registry).Build();
 
-                _messageLogger = _host.Get<IMessageLogger>().As<StorytellerMessageLogger>();
+                _messageLogger = _host.Services.GetService<IMessageLogger>().As<StorytellerMessageLogger>();
+                _messageLogger.ServiceName = _host.Services.GetService<JasperOptions>().ServiceName;
 
                 foreach (var node in _nodes.Values) node.Bootstrap(_messageLogger);
 
@@ -148,7 +148,7 @@ namespace Jasper.TestSupport.Storyteller
         public ExternalNode AddNode(JasperRegistry registry)
         {
             var node = new ExternalNode(registry);
-            _nodes.Add(node.Runtime.ServiceName, node);
+            _nodes.Add(node.Host.Services.GetService<JasperOptions>().ServiceName, node);
 
             return node;
         }
@@ -204,7 +204,7 @@ namespace Jasper.TestSupport.Storyteller
 
             public TService GetService<TService>()
             {
-                return _parent._host.Get<TService>();
+                return _parent._host.Services.GetService<TService>();
             }
 
             public ExternalNode NodeFor(string nodeName)
@@ -228,22 +228,22 @@ namespace Jasper.TestSupport.Storyteller
             _registry = registry;
         }
 
-        public IJasperHost Runtime { get; private set; }
+        public IHost Host { get; private set; }
 
         internal void Bootstrap(IMessageLogger logger)
         {
             _registry.Services.AddSingleton(logger);
-            Runtime = JasperHost.For(_registry);
+            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(_registry).Start();
         }
 
         public Task Send<T>(T message)
         {
-            return Runtime.Get<IMessageContext>().Send(message);
+            return Host.Services.GetService<IMessageContext>().Send(message);
         }
 
         internal void Teardown()
         {
-            Runtime?.Dispose();
+            Host?.Dispose();
         }
     }
 }

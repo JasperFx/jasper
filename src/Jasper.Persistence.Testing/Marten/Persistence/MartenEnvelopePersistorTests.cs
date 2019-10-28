@@ -5,6 +5,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Postgresql;
 using Marten;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -24,7 +25,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theHost?.Dispose();
         }
 
-        public IJasperHost theHost = JasperHost.For<ItemReceiver>();
+        public IHost theHost = JasperHost.For<ItemReceiver>();
 
         [Fact]
         public async Task get_counts()
