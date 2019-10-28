@@ -14,7 +14,8 @@ namespace Jasper.Persistence
         clear,
         counts,
         rebuild,
-        script
+        script,
+        release
 
     }
 
@@ -67,6 +68,12 @@ namespace Jasper.Persistence
                     case (StorageAction.script):
                         Console.WriteLine("Exporting script to " + input.FileFlag.ToFullPath());
                         File.WriteAllText(input.FileFlag, persistor.Admin.CreateSql());
+
+                        break;
+
+                    case StorageAction.release:
+                        Console.WriteLine("Releasing all ownership of persisted envelopes");
+                        persistor.Admin.ReleaseAllOwnership();
 
                         break;
                 }

@@ -65,6 +65,10 @@ namespace Jasper.Messaging.Durability
             return Task.FromResult(new Envelope[0]);
         }
 
+        public void ReleaseAllOwnership()
+        {
+        }
+
         public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
         {
             return Task.CompletedTask;

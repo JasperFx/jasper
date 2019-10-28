@@ -13,6 +13,7 @@ namespace Jasper.Persistence.Testing.Marten
         [InlineData("storage counts")]
         [InlineData("storage script")]
         [InlineData("storage clear")]
+        [InlineData("storage release")]
         public async Task smoke_test_calls(string commandLine)
         {
             var args = commandLine.Split(' ');

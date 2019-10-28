@@ -223,5 +223,15 @@ namespace Jasper.Persistence.Postgresql.Schema
                 return await conn.CreateCommand($"select body, '{TransportConstants.Outgoing}', owner_id from {SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
             }
         }
+
+        public void ReleaseAllOwnership()
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                conn.CreateCommand($"update {SchemaName}.{IncomingTable} set owner_id = 0;update {SchemaName}.{OutgoingTable} set owner_id = 0");
+            }
+        }
     }
 }

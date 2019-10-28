@@ -17,7 +17,8 @@ namespace Jasper.Messaging.Durability
         Task<Envelope[]> AllIncomingEnvelopes();
         Task<Envelope[]> AllOutgoingEnvelopes();
 
-        
+
+        void ReleaseAllOwnership();
     }
 
 

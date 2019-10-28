@@ -272,5 +272,15 @@ GO
                 return await conn.CreateCommand($"select body, status, owner_id from {_settings.SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
             }
         }
+
+        public void ReleaseAllOwnership()
+        {
+            using (var conn = _settings.CreateConnection())
+            {
+                conn.Open();
+
+                conn.CreateCommand($"update {_settings.SchemaName}.{IncomingTable} set owner_id = 0;update {_settings.SchemaName}.{OutgoingTable} set owner_id = 0");
+            }
+        }
     }
 }
