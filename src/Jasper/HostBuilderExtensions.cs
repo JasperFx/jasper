@@ -76,7 +76,7 @@ namespace Jasper
             builder.UseServiceProviderFactory<IServiceCollection>(new LamarServiceProviderFactory());
             builder.UseServiceProviderFactory<ServiceRegistry>(new LamarServiceProviderFactory());
 
-            JasperHost.ApplyExtensions(registry);
+            ExtensionLoader.ApplyExtensions(registry);
 
             registry.Messaging.StartCompiling(registry);
 

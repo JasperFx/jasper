@@ -1,11 +1,5 @@
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Baseline;
-using Baseline.Reflection;
-using BaselineTypeDiscovery;
-using Jasper.Configuration;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.Hosting;
 using Oakton.AspNetCore;
@@ -64,57 +58,6 @@ namespace Jasper
             return bootstrap(registry);
         }
 
-        internal static void ApplyExtensions(JasperRegistry registry)
-        {
-            var assemblies = FindExtensionAssemblies(registry.ApplicationAssembly);
-
-            if (!assemblies.Any())
-            {
-                Console.WriteLine("No Jasper extensions are detected");
-                return;
-            }
-
-            var extensions = assemblies.Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
-                .Where(x => x != null)
-                .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
-                .ToArray();
-
-
-            if (extensions.Any())
-            {
-                Console.WriteLine($"Found and applying {extensions.Length} Jasper extension(s)");
-                foreach (var extension in extensions) Console.WriteLine($"Applying {extension}");
-            }
-            else
-            {
-                Console.WriteLine("No Jasper extensions are detected");
-            }
-
-            registry.ApplyExtensions(extensions);
-        }
-
-        private static Assembly[] _extensions;
-
-        internal static Assembly[] FindExtensionAssemblies(Assembly applicationAssembly)
-        {
-            if (_extensions != null) return _extensions;
-
-            _extensions = AssemblyFinder
-                .FindAssemblies(txt => { }, false)
-                .Concat(AppDomain.CurrentDomain.GetAssemblies())
-                .Distinct()
-                .Where(a => a.HasAttribute<JasperModuleAttribute>())
-                .ToArray();
-
-            var names = _extensions.Select(x => x.GetName().Name);
-
-            Assembly[] FindDependencies(Assembly a) => _extensions.Where(x => names.Contains(x.GetName().Name)).ToArray();
-
-
-            _extensions = _extensions.TopologicalSort(FindDependencies, false).ToArray();
-
-            return _extensions;
-        }
 
         private static JasperRuntime bootstrap(JasperRegistry registry)
         {
