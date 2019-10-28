@@ -11,9 +11,9 @@ namespace Jasper.Testing.Messaging.Model
 {
     public class finding_service_dependencies_of_a_chain
     {
-        public class FakeHandler
+        public class FakeDudeWithAction
         {
-            public FakeHandler(IService3 three, IService5 five)
+            public FakeDudeWithAction(IService3 three, IService5 five)
             {
             }
 
@@ -49,7 +49,7 @@ namespace Jasper.Testing.Messaging.Model
 
         });
 
-        private HandlerChain theChain = HandlerChain.For<FakeHandler>(x => x.Handle(null, null, null));
+        private HandlerChain theChain = HandlerChain.For<FakeDudeWithAction>(x => x.Handle(null, null, null));
 
         [Fact]
         public void find_dependencies_in_parameter_list()
