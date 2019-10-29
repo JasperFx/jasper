@@ -57,7 +57,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 //            builder.TryBuildAndCompileAll((a, s) => {});
 //
 //            var code = builder.GenerateAllCode();
-
+//
 //            File.WriteAllText("SagaCode.cs", code);
         }
 

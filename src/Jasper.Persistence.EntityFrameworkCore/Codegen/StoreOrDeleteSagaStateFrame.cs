@@ -30,10 +30,10 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
             writer.WriteComment("Delete the saga state entity");
             writer.Write($"{_context.Usage}.{nameof(DbContext.Remove)}({_state.Usage});");
             writer.FinishBlock();
-            writer.Write("BLOCK:else");
-            writer.WriteComment("Persist the saga state entity");
-            writer.Write($"{_context.Usage}.{nameof(DbContext.Add)}({_state.Usage});");
-            writer.FinishBlock();
+//            writer.Write("BLOCK:else");
+//            writer.WriteComment("Persist the saga state entity");
+//            writer.Write($"{_context.Usage}.{nameof(DbContext.Add)}({_state.Usage});");
+//            writer.FinishBlock();
 
             writer.BlankLine();
 

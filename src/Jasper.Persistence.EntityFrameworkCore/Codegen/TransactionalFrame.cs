@@ -32,7 +32,7 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
             return document;
         }
 
-        public void SaveDocument(Variable document)
+        public void InsertEntity(Variable document)
         {
             _saved.Add(document);
         }

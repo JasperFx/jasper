@@ -42,6 +42,8 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
                     existingState.Usage + "." + property.Name);
 
 
+                frame.InsertEntity(existingState);
+
                 loadedState = existingState;
             }
 
