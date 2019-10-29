@@ -65,7 +65,7 @@ namespace Jasper
         {
             return Host.CreateDefaultBuilder()
                 .UseJasper(registry)
-                .ConfigureLogging(x => x.ClearProviders())
+                //.ConfigureLogging(x => x.ClearProviders())
                 .Start();
 
         }

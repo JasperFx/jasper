@@ -5,8 +5,11 @@ namespace Jasper.Persistence.Testing.EFCore
 {
     public class SampleDbContext : DbContext
     {
-        public SampleDbContext(DbContextOptions options) : base(options)
+        private readonly DbContextOptions<SampleDbContext> _options;
+
+        public SampleDbContext(DbContextOptions<SampleDbContext> options) : base(options)
         {
+            _options = options;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

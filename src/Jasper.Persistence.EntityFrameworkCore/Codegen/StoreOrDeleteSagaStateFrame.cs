@@ -25,12 +25,17 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
+            writer.WriteComment("Check if the saga has been completed");
             writer.Write($"BLOCK:if ({_handler.Usage}.{nameof(StatefulSagaOf<string>.IsCompleted)})");
+            writer.WriteComment("Delete the saga state entity");
             writer.Write($"{_context.Usage}.{nameof(DbContext.Remove)}({_state.Usage});");
             writer.FinishBlock();
             writer.Write("BLOCK:else");
+            writer.WriteComment("Persist the saga state entity");
             writer.Write($"{_context.Usage}.{nameof(DbContext.Add)}({_state.Usage});");
             writer.FinishBlock();
+
+            writer.BlankLine();
 
             Next?.GenerateCode(method, writer);
         }
