@@ -4,15 +4,15 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
+using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Persistence;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 
-namespace Jasper.Messaging.Sagas
+namespace Jasper.Persistence
 {
     public class SagaFramePolicy : IHandlerPolicy
     {

@@ -1,4 +1,4 @@
-﻿namespace Jasper.Messaging.Sagas
+﻿namespace Jasper.Persistence
 {
     public enum SagaStateExistence
     {

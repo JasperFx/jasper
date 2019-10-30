@@ -1,5 +1,4 @@
 ﻿using System;
-using Jasper.Messaging.Sagas;
 
 namespace Jasper.Persistence.Testing.EFCore.Sagas
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Sagas;
 using Lamar;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Sagas;
 using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;

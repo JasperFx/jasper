@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 
-namespace Jasper.Messaging.Sagas
+namespace Jasper.Persistence
 {
     public class InMemorySagaPersistenceFrame : AsyncFrame
     {

@@ -5,7 +5,7 @@ using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 
-namespace Jasper.Messaging.Sagas
+namespace Jasper.Persistence
 {
     public class PullSagaIdFromEnvelopeFrame : SyncFrame
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Configuration;
-using Jasper.Messaging.Sagas;
+using Jasper.Persistence;
 using Shouldly;
 using Xunit;
 

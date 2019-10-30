@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using LamarCodeGeneration;
-using LamarCompiler;
 
-namespace Jasper.Messaging.Sagas
+namespace Jasper.Persistence
 {
     public class InMemorySagaPersistor
     {

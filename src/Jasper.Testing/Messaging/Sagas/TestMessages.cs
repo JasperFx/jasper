@@ -1,5 +1,5 @@
 ﻿using System;
-using Jasper.Messaging.Sagas;
+using Jasper.Persistence;
 
 namespace Jasper.Testing.Messaging.Sagas
 {

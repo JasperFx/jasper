@@ -8,7 +8,7 @@ using Baseline.Reflection;
 using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Sagas;
+using Jasper.Persistence;
 using Jasper.Util;
 using Lamar.Scanning;
 

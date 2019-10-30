@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging;
-using Jasper.Messaging.Sagas;
+using Jasper.Persistence;
 
 namespace Jasper.Testing.Samples
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Jasper.Configuration;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Sagas;
+using Jasper.Persistence;
 using Shouldly;
 using Xunit;
 

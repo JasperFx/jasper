@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using Jasper.Configuration;
-using Jasper.Messaging.Sagas;
 using Lamar;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;

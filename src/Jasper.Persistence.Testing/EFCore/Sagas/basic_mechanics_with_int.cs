@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Messaging.Sagas;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
