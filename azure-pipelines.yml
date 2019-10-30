@@ -9,6 +9,25 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+resources:
+  containers:
+    - container: postgresql
+      image: "clkao/postgres-plv8:latest"
+      ports:
+        - "5433:5432"
+    - container: rabbitmq
+      image: "rabbitmq:latest"
+      ports:
+        - "5672:5672"
+    - container: sqlserver
+      image: "microsoft/mssql-server-linux:2017-latest"
+      ports:
+        - "1433:1433"
+      environment:
+        - "ACCEPT_EULA=Y"
+        - "SA_PASSWORD=P@55w0rd"
+        - "MSSQL_PID=Developer"
+
 steps:
 
 - script: dotnet build Jasper.sln
@@ -19,3 +38,9 @@ steps:
 
 - script: dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore
   displayName: 'TestSupport Unit Tests'
+
+- script: dotnet test src/Jasper.RabbitMQ.Tests/Jasper.RabbitMQ.Tests.csproj --no-restore
+  displayName: 'Rabbit MQ Tests'
+
+- script: dotnet test src/Jasper.Persistence.Testing/Jasper.Persistence.Testing.csproj --no-restore
+  displayName: 'Persistence Tests'
