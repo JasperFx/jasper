@@ -16,7 +16,7 @@ namespace Jasper.Messaging.Durability
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _queue;
-        private readonly RetryPolicy _policy;
+        private readonly AsyncRetryPolicy _policy;
 
         public DurableCallback(Envelope envelope, IWorkerQueue queue, IEnvelopePersistence persistence,
             ITransportLogger logger)

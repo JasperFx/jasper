@@ -39,7 +39,7 @@ namespace Jasper.Messaging.ErrorHandling
             return context[ContextKey].As<IMessageContext>();
         }
 
-        public static Policy<IContinuation> Requeue(this PolicyBuilder<IContinuation> builder, int maxAttempts = 3)
+        public static IAsyncPolicy<IContinuation> Requeue(this PolicyBuilder<IContinuation> builder, int maxAttempts = 3)
         {
             return builder.FallbackAsync((result, context, token) =>
             {
@@ -53,7 +53,7 @@ namespace Jasper.Messaging.ErrorHandling
             }, (result, context) => Task.CompletedTask);
         }
 
-        public static Policy<IContinuation> Reschedule(this PolicyBuilder<IContinuation> builder,
+        public static IAsyncPolicy<IContinuation> Reschedule(this PolicyBuilder<IContinuation> builder,
             params TimeSpan[] delays)
         {
             return builder.FallbackAsync((result, context, token) =>
@@ -68,7 +68,7 @@ namespace Jasper.Messaging.ErrorHandling
             }, (result, context) => Task.CompletedTask);
         }
 
-        public static Policy<IContinuation> MoveToErrorQueue(this PolicyBuilder<IContinuation> builder)
+        public static IAsyncPolicy<IContinuation> MoveToErrorQueue(this PolicyBuilder<IContinuation> builder)
         {
             return builder.FallbackAsync((result, context, token) => Task.FromResult<IContinuation>(new MoveToErrorQueue(result.Exception)),
                 (result, context) =>  Task.CompletedTask);

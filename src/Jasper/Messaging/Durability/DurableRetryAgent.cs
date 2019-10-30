@@ -19,7 +19,7 @@ namespace Jasper.Messaging.Durability
         private readonly JasperOptions _options;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
-        private RetryPolicy _policy;
+        private AsyncRetryPolicy _policy;
 
         public DurableRetryAgent(ISender sender, JasperOptions options, ITransportLogger logger,
             IEnvelopePersistence persistence) : base(sender,options.Retries)
@@ -28,7 +28,7 @@ namespace Jasper.Messaging.Durability
             _logger = logger;
 
             _persistence = persistence;
-            
+
             _policy = Policy
                 .Handle<Exception>()
                 .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
@@ -42,7 +42,7 @@ namespace Jasper.Messaging.Durability
         public override Task EnqueueForRetry(OutgoingMessageBatch batch)
         {
             Task execute(CancellationToken c) => enqueueForRetry(batch);
-            
+
             return _policy.ExecuteAsync(execute, _options.Cancellation);
         }
 

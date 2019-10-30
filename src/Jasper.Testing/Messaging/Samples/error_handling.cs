@@ -126,7 +126,7 @@ namespace Jasper.Testing.Messaging.Samples
         {
             Handlers.Retries.Add(x => x.Handle<SqlException>().Requeue());
 
-            Handlers.Retries.Add(x => x.Handle<InvalidOperationException>().Retry());
+            Handlers.Retries.Add(x => x.Handle<InvalidOperationException>().RetryAsync());
         }
     }
     // ENDSAMPLE
@@ -141,7 +141,7 @@ namespace Jasper.Testing.Messaging.Samples
 
             // Try to execute the message again without going
             // back through the queue
-            Handlers.Retries.Add(x => x.Handle<SqlException>().Retry());
+            Handlers.Retries.Add(x => x.Handle<SqlException>().RetryAsync());
 
             // Retry the message again, but wait for the specified time
             Handlers.Retries.Add(x => x.Handle<SqlException>().Reschedule(3.Seconds()));

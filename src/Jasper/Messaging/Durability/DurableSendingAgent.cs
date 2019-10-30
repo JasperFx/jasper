@@ -17,7 +17,7 @@ namespace Jasper.Messaging.Durability
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
         private readonly JasperOptions _options;
-        private readonly RetryPolicy _policy;
+        private readonly AsyncRetryPolicy _policy;
 
         public DurableSendingAgent(Uri destination, ISender sender,
             ITransportLogger logger, JasperOptions options,

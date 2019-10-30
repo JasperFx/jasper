@@ -34,7 +34,7 @@ namespace Jasper.Messaging.ErrorHandling
         /// Add a single Polly error handler
         /// </summary>
         /// <param name="configure"></param>
-        public void Add(Func<PolicyBuilder, Policy<IContinuation>> configure)
+        public void Add(Func<PolicyBuilder, IAsyncPolicy<IContinuation>> configure)
         {
             var builder = new PolicyBuilder();
             var policy = configure(builder);
@@ -45,7 +45,7 @@ namespace Jasper.Messaging.ErrorHandling
         /// Add a single Polly error handler
         /// </summary>
         /// <param name="configure"></param>
-        public void AddMany(Func<PolicyBuilder, IEnumerable<Policy<IContinuation>>> configure)
+        public void AddMany(Func<PolicyBuilder, IEnumerable<IAsyncPolicy<IContinuation>>> configure)
         {
             var builder = new PolicyBuilder();
             var policies = configure(builder);
