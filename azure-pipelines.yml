@@ -1,0 +1,24 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UseRubyVersion@0
+  inputs:
+    versionSpec: '>= 2.4'
+    addToPath: true
+
+- script: |
+    CALL gem install bundler
+    bundle install --retry=3 --jobs=4
+  displayName: 'bundle install'
+
+- script: bundle exec rake compile
+  displayName: 'bundle exec rake compile'
