@@ -21,7 +21,7 @@ steps:
 - script: dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore
   displayName: 'TestSupport Unit Tests'
 
-- script: docker-compose up /Y
+- script: 'docker-compose up -d'
   displayName: 'Start Docker Containers'
 
 - script: dotnet test src/Jasper.RabbitMQ.Tests/Jasper.RabbitMQ.Tests.csproj --no-restore
