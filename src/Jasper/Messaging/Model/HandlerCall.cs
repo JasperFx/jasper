@@ -40,7 +40,7 @@ namespace Jasper.Messaging.Model
             return !hasOutput || !method.ReturnType.GetTypeInfo().IsValueType;
         }
 
-        public static HandlerCall For<T>(Expression<Action<T>> method)
+        public new static HandlerCall For<T>(Expression<Action<T>> method)
         {
             return new HandlerCall(typeof(T), ReflectionHelper.GetMethod(method));
         }

@@ -48,21 +48,6 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 
         private readonly IHost theHost;
 
-        //[Fact] -- unreliable. May not actually be useful.
-        public async Task using_ExecuteAndWait()
-        {
-            await theHost.ExecuteAndWait(
-                () => theHost.Invoke(new CreateUser {Name = "Tom"}));
-
-
-            using (var session = theHost.Get<IDocumentStore>().QuerySession())
-            {
-                session.Load<User>("Tom").ShouldNotBeNull();
-            }
-
-            theHost.Get<UserNames>()
-                .Names.Single().ShouldBe("Tom");
-        }
 
         [Fact]
         public async Task using_ExecuteAndWaitSync()

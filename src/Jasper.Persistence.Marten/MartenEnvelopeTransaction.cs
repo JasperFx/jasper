@@ -23,7 +23,7 @@ namespace Jasper.Persistence.Marten
         {
             if (bus.Advanced.Persistence is PostgresqlEnvelopePersistence persistence)
             {
-                _settings = persistence.Settings;
+                _settings = (PostgresqlSettings) persistence.Settings;
                 _nodeId = persistence.Options.UniqueNodeId;
             }
             else
@@ -31,7 +31,7 @@ namespace Jasper.Persistence.Marten
                 throw new InvalidOperationException(
                     "This Jasper application is not using Postgresql + Marten as the backing message persistence");
             }
-            
+
             _session = session;
 
         }

@@ -17,7 +17,7 @@ namespace Jasper.Util
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException($"Failed to read an expected Uri from configuration with the key '{key}'");
+                throw new InvalidOperationException($"Failed to read an expected Uri from configuration with the key '{key}'", e);
             }
         }
 

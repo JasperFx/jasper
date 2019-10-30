@@ -115,7 +115,7 @@ namespace Jasper.Persistence.Database
 
                 await _settings.GetGlobalLock(Connection, nodeId, _cancellation, Transaction);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Connection?.Dispose();
                 Connection = null;

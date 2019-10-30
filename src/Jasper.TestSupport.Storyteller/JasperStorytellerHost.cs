@@ -137,9 +137,9 @@ namespace Jasper.TestSupport.Storyteller
             return _warmup;
         }
 
-        public ExternalNode AddNode<T>(Action<T> configure = null) where T : JasperRegistry, new()
+        public ExternalNode AddNode<TRegistry>(Action<TRegistry> configure = null) where TRegistry : JasperRegistry, new()
         {
-            var registry = new T();
+            var registry = new TRegistry();
             configure?.Invoke(registry);
 
             return AddNode(registry);

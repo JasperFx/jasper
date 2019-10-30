@@ -11,7 +11,6 @@ namespace TestingSupport
 
 
         private IHost _host;
-        private bool _hasStarted;
 
         protected BaseContext(bool shouldStart)
         {

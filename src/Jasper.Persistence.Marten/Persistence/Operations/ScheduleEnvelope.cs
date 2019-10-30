@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 
         public void ConfigureCommand(CommandBuilder builder)
         {
-            var time = builder.AddParameter(_envelope.ExecutionTime, NpgsqlDbType.TimestampTZ);
+            var time = builder.AddParameter(_envelope.ExecutionTime, NpgsqlDbType.TimestampTz);
             var id = builder.AddParameter(_envelope.Id, NpgsqlDbType.Uuid);
             var attempts = builder.AddParameter(_envelope.Attempts, NpgsqlDbType.Integer);
 

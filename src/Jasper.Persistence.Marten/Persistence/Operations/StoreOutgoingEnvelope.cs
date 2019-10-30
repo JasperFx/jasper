@@ -32,7 +32,7 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
             var deliverBy =
                 builder.AddParameter(
                     Envelope.DeliverBy,
-                    NpgsqlDbType.TimestampTZ);
+                    NpgsqlDbType.TimestampTz);
 
             var body = builder.AddParameter(bytes, NpgsqlDbType.Bytea);
 

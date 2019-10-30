@@ -16,16 +16,10 @@ namespace Jasper.Persistence.Postgresql
             options, new PostgresqlEnvelopeStorageAdmin(settings),
             new PostgresqlDurabilityAgentStorage(settings, options))
         {
-            Settings = settings;
-            Options = options;
-
-
             _deleteIncomingEnvelopesSql = $"delete from {settings.SchemaName}.{IncomingTable} WHERE id = ANY(@ids);";
             _deleteOutgoingEnvelopesSql = $"delete from {settings.SchemaName}.{OutgoingTable} WHERE id = ANY(@ids);";
         }
 
-        public PostgresqlSettings Settings { get; }
-        public JasperOptions Options { get; }
 
         public override Task MoveToDeadLetterStorage(ErrorReport[] errors)
         {
