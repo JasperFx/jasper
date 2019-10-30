@@ -20,5 +20,5 @@ steps:
     bundle install --retry=3 --jobs=4
   displayName: 'bundle install'
 
-- script: bundle exec rake compile
-  displayName: 'bundle exec rake compile'
+- script: bundle exec rake test
+  displayName: 'bundle exec rake test'
