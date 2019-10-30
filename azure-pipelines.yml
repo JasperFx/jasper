@@ -10,15 +10,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: UseRubyVersion@0
-  inputs:
-    versionSpec: '>= 2.4'
-    addToPath: true
 
-- script: |
-    CALL gem install bundler
-    bundle install --retry=3 --jobs=4
-  displayName: 'bundle install'
+- script: dotnet build Jasper.sln
+  displayName: 'Compile Everything'
 
-- script: bundle exec rake test
-  displayName: 'bundle exec rake test'
+- script: dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore
+  displayName: 'Unit Tests'
+
+- script: dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore
+  displayName: 'TestSupport Unit Tests'
