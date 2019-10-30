@@ -24,8 +24,8 @@ steps:
 - script: 'docker-compose up -d'
   displayName: 'Start Docker Containers'
 
-- script: dotnet test src/Jasper.RabbitMQ.Tests/Jasper.RabbitMQ.Tests.csproj --no-restore
-  displayName: 'Rabbit MQ Tests'
+# - script: dotnet test src/Jasper.RabbitMQ.Tests/Jasper.RabbitMQ.Tests.csproj --no-restore
+#  displayName: 'Rabbit MQ Tests'
 
 - script: dotnet test src/Jasper.Persistence.Testing/Jasper.Persistence.Testing.csproj --no-restore
   displayName: 'Persistence Tests'
