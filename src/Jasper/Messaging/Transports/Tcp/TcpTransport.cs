@@ -4,7 +4,7 @@ using System.Net;
 using System.Threading;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Transports.Receiving;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging.Transports.Tcp

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Configuration;
@@ -21,9 +22,6 @@ namespace Jasper
 
 
         private readonly IList<string> _disabledTransports = new List<string>();
-
-
-        private readonly IList<Uri> _listeners = new List<Uri>();
 
 
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
@@ -151,11 +149,9 @@ namespace Jasper
         public TimeSpan BackPressurePollingInterval { get; set; } = 2.Seconds();
 
 
-        /// <summary>
-        ///     Used to control whether or not envelopes being moved to the dead letter queue are permanently stored
-        ///     with the related error report
-        /// </summary>
-        public bool PersistDeadLetterEnvelopes { get; set; } = true;
+
+        private readonly IList<Uri> _listeners = new List<Uri>();
+
 
         public Uri[] Listeners
         {
@@ -232,11 +228,6 @@ namespace Jasper
                 : TransportState.Enabled;
         }
 
-        internal void StopAll()
-        {
-            _cancellation.Cancel();
-        }
-
         /// <summary>
         ///     Add a single subscription
         /// </summary>
@@ -245,5 +236,14 @@ namespace Jasper
         {
             _subscriptions.Fill(subscription);
         }
+    }
+
+    public class ListenerSettings
+    {
+        public string Name { get; set; }
+        public string Uri { get; set; }
+        public bool IsDurable { get; set; }
+
+        public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
     }
 }

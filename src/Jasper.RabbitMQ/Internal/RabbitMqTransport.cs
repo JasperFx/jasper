@@ -2,8 +2,8 @@
 using System.Threading;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Microsoft.Extensions.Logging;
 

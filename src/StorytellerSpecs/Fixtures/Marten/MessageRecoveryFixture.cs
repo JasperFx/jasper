@@ -312,10 +312,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
-        public Task StoreIncoming(Envelope[] envelopes)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public IScheduledJobProcessor ScheduledJobs => new InMemoryScheduledJobProcessor(this);
     }

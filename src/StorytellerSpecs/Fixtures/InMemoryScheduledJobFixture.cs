@@ -53,11 +53,6 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        public Task StoreIncoming(Envelope[] envelopes)
-        {
-            throw new NotImplementedException();
-        }
-
         public IScheduledJobProcessor ScheduledJobs => theScheduledJobs;
 
         public override void SetUp()

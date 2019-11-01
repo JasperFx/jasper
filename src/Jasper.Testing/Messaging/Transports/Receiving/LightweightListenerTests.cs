@@ -1,5 +1,5 @@
-﻿using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Receiving;
+﻿using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using NSubstitute;
 using Xunit;
 

@@ -2,7 +2,6 @@
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Receiving;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal

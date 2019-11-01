@@ -7,7 +7,7 @@ using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
-using Jasper.Messaging.Transports.Receiving;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;

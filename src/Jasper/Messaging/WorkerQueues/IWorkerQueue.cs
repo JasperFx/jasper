@@ -17,7 +17,6 @@ namespace Jasper.Messaging.WorkerQueues
         void AddQueue(string queueName, int parallelization);
 
         Task ScheduleExecution(Envelope envelope);
-        Task StoreIncoming(Envelope[] envelopes);
     }
 
 

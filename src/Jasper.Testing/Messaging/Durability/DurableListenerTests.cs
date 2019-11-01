@@ -1,6 +1,6 @@
 ﻿using Jasper.Messaging.Durability;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Receiving;
 using NSubstitute;
 using Xunit;
 

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
 
-namespace Jasper.Messaging.Transports.Receiving
+namespace Jasper.Messaging.Runtime
 {
+    [Obsolete]
     public class LightweightListener : IListener
     {
         private readonly IListeningAgent _agent;

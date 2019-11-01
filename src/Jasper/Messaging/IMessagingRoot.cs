@@ -11,7 +11,6 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Lamar;

@@ -8,7 +8,6 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Postgresql;

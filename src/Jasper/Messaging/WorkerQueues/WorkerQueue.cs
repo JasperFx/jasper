@@ -92,11 +92,6 @@ namespace Jasper.Messaging.WorkerQueues
             throw new NotImplementedException();
         }
 
-        public Task StoreIncoming(Envelope[] envelopes)
-        {
-            throw new NotImplementedException();
-        }
-
         private ActionBlock<Envelope> determineReceiver(Envelope envelope)
         {
             var queueName = envelope.Destination.QueueName() ?? Pipeline.Workers.WorkerFor(envelope.MessageType);

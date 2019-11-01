@@ -1,6 +1,7 @@
 ﻿using System;
+using Jasper.Messaging.Transports;
 
-namespace Jasper.Messaging.Transports.Receiving
+namespace Jasper.Messaging.Runtime
 {
     public interface IListener : IReceiverCallback, IDisposable
     {

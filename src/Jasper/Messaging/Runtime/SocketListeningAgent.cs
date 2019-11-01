@@ -5,11 +5,12 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.Transports.Util;
 using Jasper.Util;
 
-namespace Jasper.Messaging.Transports.Receiving
+namespace Jasper.Messaging.Runtime
 {
     public class SocketListeningAgent : IListeningAgent
     {

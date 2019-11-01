@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Tcp;
 
-namespace Jasper.Messaging.Transports.Receiving
+namespace Jasper.Messaging.Runtime
 {
     public interface IReceiverCallback
     {

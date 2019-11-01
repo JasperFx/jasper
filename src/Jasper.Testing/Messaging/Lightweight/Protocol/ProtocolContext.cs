@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Receiving;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;

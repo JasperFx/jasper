@@ -7,7 +7,7 @@ using System.Threading.Tasks.Dataflow;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
 
-namespace Jasper.Messaging.Transports.Receiving
+namespace Jasper.Messaging.Runtime
 {
     // This is only really used in the automated testing now
     // to test out the wire protocol. Otherwise, this has been superceded

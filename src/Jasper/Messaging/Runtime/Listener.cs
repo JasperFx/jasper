@@ -1,30 +1,27 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
 
-namespace Jasper.Messaging.Durability
+namespace Jasper.Messaging.Runtime
 {
-
-
-    [Obsolete]
-    public class DurableListener : IListener
+    public class Listener : IListener
     {
         private readonly IListeningAgent _agent;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
-        private readonly IWorkerQueue _queues;
+        private readonly IWorkerQueue _queue;
         private readonly JasperOptions _options;
 
-        public DurableListener(IListeningAgent agent, IWorkerQueue queues, ITransportLogger logger,
+        public Listener(IListeningAgent agent, IWorkerQueue queue, ITransportLogger logger,
             JasperOptions options, IEnvelopePersistence persistence)
         {
             _agent = agent;
-            _queues = queues;
+            _queue = queue;
             _logger = logger;
             _options = options;
             _persistence = persistence;
@@ -61,6 +58,7 @@ namespace Jasper.Messaging.Durability
             return Task.CompletedTask;
         }
 
+
         public void Dispose()
         {
             // nothing
@@ -72,38 +70,38 @@ namespace Jasper.Messaging.Durability
         }
 
         // Separated for testing here.
-        public async Task<ReceivedStatus> ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] messages)
+        public async Task<ReceivedStatus> ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] envelopes)
         {
             if (_options.Cancellation.IsCancellationRequested) return ReceivedStatus.ProcessFailure;
 
             try
             {
-                foreach (var message in messages)
+                foreach (var envelope in envelopes)
                 {
-                    message.ReceivedAt = uri;
+                    envelope.ReceivedAt = uri;
 
-                    if (message.IsDelayed(now))
+                    if (envelope.IsDelayed(now))
                     {
-                        message.Status = TransportConstants.Scheduled;
-                        message.OwnerId = TransportConstants.AnyNode;
+                        envelope.Status = TransportConstants.Scheduled;
+                        envelope.OwnerId = TransportConstants.AnyNode;
+                        await _queue.ScheduleExecution(envelope);
                     }
                     else
                     {
-                        message.Status = TransportConstants.Incoming;
-                        message.OwnerId = _options.UniqueNodeId;
+                        envelope.Status = TransportConstants.Incoming;
+                        envelope.OwnerId = _options.UniqueNodeId;
                     }
                 }
 
-                await _persistence.StoreIncoming(messages);
+                await _persistence.StoreIncoming(envelopes);
 
 
-                foreach (var message in messages.Where(x => x.Status == TransportConstants.Incoming))
+                foreach (var message in envelopes.Where(x => x.Status == TransportConstants.Incoming))
                 {
-                    message.Callback = new DurableCallback(message, _queues, _persistence, _logger);
-                    await _queues.Enqueue(message);
+                    await _queue.Enqueue(message);
                 }
 
-                _logger.IncomingBatchReceived(messages);
+                _logger.IncomingBatchReceived(envelopes);
 
                 return ReceivedStatus.Successful;
             }
