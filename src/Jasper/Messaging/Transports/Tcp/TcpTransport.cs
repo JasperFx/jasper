@@ -22,29 +22,32 @@ namespace Jasper.Messaging.Transports.Tcp
             return new BatchedSender(uri, new SocketSenderProtocol(), cancellation, logger);
         }
 
-        protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
+        protected override ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming)
         {
             assertNoDuplicatePorts(incoming);
 
-            ReplyUri = incoming.FirstOrDefault();
+            ReplyUri = incoming.FirstOrDefault()?.Uri;
 
             return incoming;
         }
 
 
-        protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings, HandlerGraph handlers)
+        protected override IListeningAgent buildListeningAgent(ListenerSettings listenerSettings, JasperOptions options,
+            HandlerGraph handlers)
         {
             // check the uri for an ip address to bind to
+            var uri = listenerSettings.Uri;
+
             if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)
                 return uri.Host == "localhost"
-                    ? new SocketListeningAgent(IPAddress.Loopback, uri.Port, settings.Cancellation)
-                    : new SocketListeningAgent(IPAddress.Any, uri.Port, settings.Cancellation);
+                    ? new SocketListeningAgent(IPAddress.Loopback, uri.Port, options.Cancellation)
+                    : new SocketListeningAgent(IPAddress.Any, uri.Port, options.Cancellation);
 
             var ipaddr = IPAddress.Parse(uri.Host);
-            return new SocketListeningAgent(ipaddr, uri.Port, settings.Cancellation);
+            return new SocketListeningAgent(ipaddr, uri.Port, options.Cancellation);
         }
 
-        private static void assertNoDuplicatePorts(Uri[] incoming)
+        private static void assertNoDuplicatePorts(ListenerSettings[] incoming)
         {
             var duplicatePorts = incoming.GroupBy(x => x.Port).Where(x => x.Count() > 1).ToArray();
             if (duplicatePorts.Any())

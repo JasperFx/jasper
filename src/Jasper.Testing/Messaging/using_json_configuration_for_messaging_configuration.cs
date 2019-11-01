@@ -36,7 +36,7 @@ namespace Jasper.Testing.Messaging
                 // See the messaging.json file
                 settings.DisableAllTransports.ShouldBeTrue();
                 settings.ScheduledJobs.PollingTime.ShouldBe(10.Seconds());
-                settings.Listeners.Contains("tcp://localhost:2000".ToUri()).ShouldBeTrue();
+                settings.Listeners.Select(x => x.Uri).Contains("tcp://localhost:2000".ToUri()).ShouldBeTrue();
                 settings.Subscriptions.Contains(Subscription.All("tcp://localhost:2002".ToUri())).ShouldBeTrue();
             }
         }
@@ -45,10 +45,10 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void try_stuff()
         {
-            var settings = new JasperOptions
+            var options = new JasperOptions
             {
                 ThrowOnValidationErrors = false,
-                Listeners = new[] {"tcp://localhost:2000".ToUri(), "tcp://localhost:2001".ToUri()},
+                Listeners = new[] {"tcp://localhost:2000".ToUri(), "tcp://localhost:2001".ToUri()}.Select(x => new ListenerSettings{Uri = x}).ToArray(),
                 Subscriptions = new[]
                 {
                     Subscription.All("tcp://localhost:2002".ToUri()),
@@ -56,7 +56,7 @@ namespace Jasper.Testing.Messaging
                 }
             };
 
-            var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(options, Formatting.Indented);
 
             _output.WriteLine(json);
         }

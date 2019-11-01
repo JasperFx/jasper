@@ -79,8 +79,8 @@ namespace Jasper.Messaging.Transports.Stub
                 new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, pipeline, this));
 
 
-            var incoming = root.Options.Listeners.Where(x => x.Scheme == "stub");
-            foreach (var uri in incoming) Channels.FillDefault(uri);
+            var incoming = root.Options.Listeners.Where(x => x.Uri.Scheme == "stub");
+            foreach (var listener in incoming) Channels.FillDefault(listener.Uri);
         }
 
         public void Describe(TextWriter writer)

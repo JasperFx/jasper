@@ -63,24 +63,24 @@ namespace Jasper.Messaging.Transports
 
         public void StartListening(IMessagingRoot root)
         {
-            var settings = root.Options;
+            var options = root.Options;
 
-            if (settings.StateFor(Protocol) == TransportState.Disabled) return;
+            if (options.StateFor(Protocol) == TransportState.Disabled) return;
 
             WorkerQueue = root.Workers;
 
-            var incoming = settings.Listeners.Where(x => x.Scheme == Protocol).ToArray();
+            var incoming = options.Listeners.Where(x => x.Scheme == Protocol).ToArray();
 
             incoming = validateAndChooseReplyChannel(incoming);
 
-            foreach (var uri in incoming)
+            foreach (var listenerSettings in incoming)
             {
                 try
                 {
-                    var agent = buildListeningAgent(uri, settings, root.Handlers);
+                    var agent = buildListeningAgent(listenerSettings, options, root.Handlers);
                     agent.Status = _status;
 
-                    var listener = uri.IsDurable()
+                    var listener = listenerSettings.IsDurable
                         ? root.BuildDurableListener(agent)
                         : new LightweightListener(WorkerQueue, logger, agent);
 
@@ -90,7 +90,7 @@ namespace Jasper.Messaging.Transports
                 }
                 catch (Exception e)
                 {
-                    throw new TransportEndpointException(uri, "Could not build listening agent. See inner exception.", e);
+                    throw new TransportEndpointException(listenerSettings.Uri, "Could not build listening agent. See inner exception.", e);
                 }
             }
         }
@@ -122,7 +122,8 @@ namespace Jasper.Messaging.Transports
 
         protected abstract ISender createSender(Uri uri, CancellationToken cancellation);
 
-        protected abstract Uri[] validateAndChooseReplyChannel(Uri[] incoming);
-        protected abstract IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings, HandlerGraph handlers);
+        protected abstract ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming);
+        protected abstract IListeningAgent buildListeningAgent(ListenerSettings listenerSettings, JasperOptions options,
+            HandlerGraph handlers);
     }
 }

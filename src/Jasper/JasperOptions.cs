@@ -150,18 +150,6 @@ namespace Jasper
 
 
 
-        private readonly IList<Uri> _listeners = new List<Uri>();
-
-
-        public Uri[] Listeners
-        {
-            get => _listeners.ToArray();
-            set
-            {
-                _listeners.Clear();
-                if (value != null) _listeners.AddRange(value);
-            }
-        }
 
         /// <summary>
         ///     Array of all subscription rules for publishing messages from this
@@ -204,7 +192,14 @@ namespace Jasper
         /// <param name="uri"></param>
         public void ListenForMessagesFrom(Uri uri)
         {
-            _listeners.Fill(uri.ToCanonicalUri());
+            if (_listeners.Any(x => x.Uri.Equals(uri))) return;
+
+            var listener = new ListenerSettings
+            {
+                Uri = uri
+            };
+
+            _listeners.Add(listener);
         }
 
         /// <summary>
@@ -236,14 +231,65 @@ namespace Jasper
         {
             _subscriptions.Fill(subscription);
         }
+
+
+        private readonly IList<ListenerSettings> _listeners = new List<ListenerSettings>();
+
+
+        public ListenerSettings[] Listeners
+        {
+            get => _listeners.ToArray();
+            set
+            {
+                _listeners.Clear();
+                if (value != null) _listeners.AddRange(value);
+            }
+        }
+
+        //private readonly IList<ListenerSettings> _listeners = new List<ListenerSettings>();
     }
 
     public class ListenerSettings
     {
+
+
+        /// <summary>
+        /// Descriptive Name for this listener. Optional.
+        /// </summary>
         public string Name { get; set; }
-        public string Uri { get; set; }
+
+        /// <summary>
+        /// The actual address of the listener, including the transport scheme
+        /// </summary>
+        public Uri Uri { get; set; }
+
+        /// <summary>
+        /// Mark whether or not the receiver for this listener should use
+        /// message persistence for durability
+        /// </summary>
         public bool IsDurable { get; set; }
 
         public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
+        public string Scheme => Uri.Scheme;
+
+        public int Port => Uri.Port;
+
+        protected bool Equals(ListenerSettings other)
+        {
+            return Equals(Uri, other.Uri);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ListenerSettings) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Uri != null ? Uri.GetHashCode() : 0);
+        }
     }
 }

@@ -79,7 +79,7 @@ namespace Jasper.Testing.Messaging.Configuration
 
             theRegistry.Transports.ListenForMessagesFromUriValueInConfig("listener");
 
-            theOptions.Listeners
+            theOptions.Listeners.Select(x => x.Uri)
                 .ShouldContain(uriString.ToUri());
 
         }

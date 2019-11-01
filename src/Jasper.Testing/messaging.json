@@ -20,8 +20,8 @@
     "BackPressurePollingInterval": "00:00:02",
     "PersistDeadLetterEnvelopes": true,
     "Listeners": [
-      "tcp://localhost:2000",
-      "tcp://localhost:2001"
+      {"Uri": "tcp://localhost:2000"},
+      {"Uri": "tcp://localhost:2001"}
     ],
     "Subscriptions": [
       {

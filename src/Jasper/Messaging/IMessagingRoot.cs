@@ -47,6 +47,8 @@ namespace Jasper.Messaging
 
         ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender);
         ISendingAgent BuildDurableLoopbackAgent(Uri destination);
+
+        [Obsolete]
         IListener BuildDurableListener(IListeningAgent agent);
 
     }

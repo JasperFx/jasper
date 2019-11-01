@@ -21,9 +21,6 @@ namespace Jasper.Util
             }
         }
 
-        private static readonly HashSet<string> _locals =
-            new HashSet<string>(new[] {"localhost", "127.0.0.1"}, StringComparer.OrdinalIgnoreCase);
-
         public static Uri AtQueue(this Uri uri, string queueName)
         {
             if (queueName.IsEmpty()) return uri;
@@ -48,6 +45,7 @@ namespace Jasper.Util
             return lastSegment ?? TransportConstants.Default;
         }
 
+        [Obsolete]
         public static bool IsDurable(this Uri uri)
         {
             if (uri.Scheme == TransportConstants.Loopback && uri.Host == TransportConstants.Durable) return true;
@@ -59,6 +57,7 @@ namespace Jasper.Util
         }
 
 
+        [Obsolete]
         public static Uri ToCanonicalTcpUri(this Uri uri)
         {
             if (uri.Scheme != TransportConstants.Durable)
@@ -72,6 +71,7 @@ namespace Jasper.Util
                 : $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}/{queueName}".ToUri();
         }
 
+        [Obsolete]
         public static Uri ToCanonicalUri(this Uri uri)
         {
             switch (uri.Scheme)

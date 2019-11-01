@@ -33,20 +33,21 @@ namespace Jasper.Messaging.Transports
         protected abstract ISender buildSender(TransportUri transportUri, TEndpoint endpoint,
             CancellationToken cancellation);
 
-        protected override IListeningAgent buildListeningAgent(Uri uri, JasperOptions settings, HandlerGraph handlers)
+        protected override IListeningAgent buildListeningAgent(ListenerSettings listenerSettings, JasperOptions options,
+            HandlerGraph handlers)
         {
-            var transportUri = new TransportUri(uri);
+            var transportUri = new TransportUri(listenerSettings.Uri);
             var endpoint = _options.For(transportUri);
 
-            if (endpoint == null) throw new ArgumentOutOfRangeException(nameof(uri), $"Unknown {Protocol} connection named '{transportUri.ConnectionName}'");
+            if (endpoint == null) throw new ArgumentOutOfRangeException(nameof(listenerSettings), $"Unknown {Protocol} connection named '{transportUri.ConnectionName}'");
 
-            return buildListeningAgent(transportUri, endpoint, settings, handlers);
+            return buildListeningAgent(transportUri, endpoint, options, handlers);
         }
 
         protected abstract IListeningAgent buildListeningAgent(TransportUri transportUri, TEndpoint endpoint,
             JasperOptions settings, HandlerGraph handlers);
 
-        protected override Uri[] validateAndChooseReplyChannel(Uri[] incoming)
+        protected override ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming)
         {
             if (_options.ReplyUri == null) return incoming;
 
@@ -54,7 +55,7 @@ namespace Jasper.Messaging.Transports
             if (replies != null)
             {
                 ReplyUri = _options.ReplyUri.ToUri();
-                return incoming.Concat(new Uri[] {ReplyUri}).Distinct().ToArray();
+                return incoming.Concat(new ListenerSettings[] {new ListenerSettings{Uri = ReplyUri}}).Distinct().ToArray();
             }
 
             return incoming;
