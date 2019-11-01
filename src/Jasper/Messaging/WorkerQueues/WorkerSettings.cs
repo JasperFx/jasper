@@ -14,6 +14,7 @@ namespace Jasper.Messaging.WorkerQueues
         }
 
         // Mostly for informative reasons
+        [Obsolete("Eliminate with GH-557")]
         public Uri Uri { get; set; }
         public string Name { get; }
 
@@ -39,11 +40,15 @@ namespace Jasper.Messaging.WorkerQueues
             return this;
         }
 
+        [Obsolete("Eliminate with GH-557")]
+
         IWorkerSettings IWorkerSettings.HandleMessages(Func<Type, bool> filter)
         {
             _matches.Add(filter);
             return this;
         }
+
+        [Obsolete("Eliminate with GH-557")]
 
         IWorkerSettings IWorkerSettings.IsDurable()
         {
@@ -56,6 +61,8 @@ namespace Jasper.Messaging.WorkerQueues
             IsDurable = false;
             return this;
         }
+
+        [Obsolete("Eliminate with GH-557")]
 
         public bool Matches(Type messageType)
         {

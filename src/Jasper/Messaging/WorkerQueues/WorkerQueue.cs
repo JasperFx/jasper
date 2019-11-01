@@ -21,15 +21,15 @@ namespace Jasper.Messaging.WorkerQueues
         private readonly Dictionary<string, ActionBlock<Envelope>> _receivers
             = new Dictionary<string, ActionBlock<Envelope>>();
 
-        private readonly JasperOptions _settings;
+        private readonly JasperOptions _options;
 
 
-        public WorkerQueue(IMessageLogger logger, IHandlerPipeline pipeline, JasperOptions settings)
+        public WorkerQueue(IMessageLogger logger, IHandlerPipeline pipeline, JasperOptions options)
         {
             _logger = logger;
             Pipeline = pipeline;
-            _settings = settings;
-            _cancellationToken = _settings.Cancellation;
+            _options = options;
+            _cancellationToken = _options.Cancellation;
 
             foreach (var worker in Pipeline.Workers.AllWorkers) AddQueue(worker.Name, worker.Parallelization);
 
@@ -85,6 +85,16 @@ namespace Jasper.Messaging.WorkerQueues
 
                 _receivers.Add(queueName, receiver);
             }
+        }
+
+        public Task ScheduleExecution(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StoreIncoming(Envelope[] envelopes)
+        {
+            throw new NotImplementedException();
         }
 
         private ActionBlock<Envelope> determineReceiver(Envelope envelope)

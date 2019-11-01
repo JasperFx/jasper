@@ -30,10 +30,15 @@ namespace Jasper.Messaging.Transports.Receiving
 
         async Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
+            var now = DateTime.UtcNow;
+
+            return await ProcessReceivedMessages(uri, messages, now);
+        }
+
+        private async Task<ReceivedStatus> ProcessReceivedMessages(Uri uri, Envelope[] messages, DateTime now)
+        {
             try
             {
-                var now = DateTime.UtcNow;
-
                 foreach (var message in messages)
                 {
                     message.ReceivedAt = uri;

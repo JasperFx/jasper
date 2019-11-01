@@ -317,6 +317,16 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         {
         }
 
+        public Task ScheduleExecution(Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task StoreIncoming(Envelope[] envelopes)
+        {
+            throw new NotImplementedException();
+        }
+
         public IScheduledJobProcessor ScheduledJobs => new InMemoryScheduledJobProcessor(this);
     }
 }

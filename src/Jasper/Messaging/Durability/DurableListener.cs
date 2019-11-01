@@ -73,7 +73,7 @@ namespace Jasper.Messaging.Durability
         public async Task<ReceivedStatus> ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] messages)
         {
             if (_options.Cancellation.IsCancellationRequested) return ReceivedStatus.ProcessFailure;
-            
+
             try
             {
                 foreach (var message in messages)
@@ -92,7 +92,6 @@ namespace Jasper.Messaging.Durability
                     }
                 }
 
-                // TODO -- think this is gonna change to a distinctly different Incoming v Scheduled
                 await _persistence.StoreIncoming(messages);
 
 

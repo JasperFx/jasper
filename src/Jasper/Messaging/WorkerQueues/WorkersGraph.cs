@@ -11,7 +11,6 @@ namespace Jasper.Messaging.WorkerQueues
     {
         private readonly Dictionary<string, bool> _durableAssignments = new Dictionary<string, bool>();
         private readonly Dictionary<Type, bool> _durableAssignmentsByType = new Dictionary<Type, bool>();
-        private readonly IList<Func<Type, bool>> _durableRules = new List<Func<Type, bool>>();
 
         private readonly Dictionary<string, string> _workerAssignments = new Dictionary<string, string>();
         private readonly Dictionary<Type, string> _workerAssignmentsByType = new Dictionary<Type, string>();

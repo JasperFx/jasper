@@ -23,6 +23,7 @@ namespace Jasper.Messaging.WorkerQueues
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        [Obsolete("Eliminate with GH-557")]
         IWorkerSettings HandlesMessage<T>();
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace Jasper.Messaging.WorkerQueues
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
+        [Obsolete("Eliminate with GH-557")]
         IWorkerSettings HandleMessages(Func<Type, bool> filter);
 
         /// <summary>
