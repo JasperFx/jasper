@@ -2,6 +2,7 @@
 using System.Reflection;
 using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Routing;
+using Jasper.Messaging.Transports;
 using Jasper.Settings;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
@@ -72,8 +73,7 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         public void AllMessagesLocally()
         {
-            var rule = Subscription.All();
-            _settings.Messaging(x => x.LocalPublishing.Add(rule));
+            AllMessagesTo(TransportConstants.LoopbackUri);
         }
 
         public class MessageTrackExpression
@@ -115,12 +115,15 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             public void Locally()
             {
+                var subscription = new Subscription
+                {
+                    Scope = _routingScope, Match = _match, Uri = TransportConstants.LoopbackUri
+                };
+
                 _settings.Messaging(x =>
                 {
-                    x.LocalPublishing.Add(new Subscription
-                    {
-                        Scope = _routingScope, Match = _match
-                    });
+
+                    x.AddSubscription(subscription);
                 });
             }
 

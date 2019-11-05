@@ -125,7 +125,6 @@ namespace Jasper.Messaging.Runtime.Routing
             var modelWriter = _serializers.WriterFor(messageType);
             var supported = modelWriter.ContentTypes;
 
-            applyLocalPublishingRules(messageType, list);
 
             applyStaticPublishingRules(messageType, supported, list, modelWriter);
 
@@ -145,18 +144,6 @@ namespace Jasper.Messaging.Runtime.Routing
 
                 if (contentType.IsNotEmpty())
                     list.Add(new MessageRoute(messageType, writerCollection, channel, contentType));
-            }
-        }
-
-        private void applyLocalPublishingRules(Type messageType, List<MessageRoute> list)
-        {
-            if (_settings.DisableLocalPublishing) return;
-
-            if (_handlers.CanHandle(messageType) && _settings.LocalPublishing.Any(x => x.Matches(messageType)))
-            {
-                var route = createLocalRoute(messageType);
-
-                list.Add(route);
             }
         }
 
