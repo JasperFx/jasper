@@ -19,23 +19,6 @@ namespace Jasper
         IListenerSettings Sequential();
 
         /// <summary>
-        ///     Direct messages of type T to be handled in this worker queue
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        [Obsolete("Eliminate with GH-557")]
-        IListenerSettings HandlesMessage<T>();
-
-        /// <summary>
-        ///     Directs messages that match the filter condition to be handled in
-        ///     this worker queue
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        [Obsolete("Eliminate with GH-557")]
-        IListenerSettings HandleMessages(Func<Type, bool> filter);
-
-        /// <summary>
         ///     Force any messages enqueued to this worker queue to be durable
         /// </summary>
         /// <returns></returns>

@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace Jasper.Messaging.WorkerQueues
 {
+    [Obsolete]
     public class WorkerSettings : IListenerSettings
     {
         private readonly IList<Func<Type, bool>> _matches = new List<Func<Type, bool>>();
@@ -34,21 +35,6 @@ namespace Jasper.Messaging.WorkerQueues
             return this;
         }
 
-        IListenerSettings IListenerSettings.HandlesMessage<T>()
-        {
-            _matches.Add(x => x == typeof(T));
-            return this;
-        }
-
-        [Obsolete("Eliminate with GH-557")]
-
-        IListenerSettings IListenerSettings.HandleMessages(Func<Type, bool> filter)
-        {
-            _matches.Add(filter);
-            return this;
-        }
-
-        [Obsolete("Eliminate with GH-557")]
 
         IListenerSettings IListenerSettings.IsDurable()
         {
@@ -62,7 +48,6 @@ namespace Jasper.Messaging.WorkerQueues
             return this;
         }
 
-        [Obsolete("Eliminate with GH-557")]
 
         public bool Matches(Type messageType)
         {

@@ -66,9 +66,6 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             receiverRegistry.Transports.DurableListenerAt(receiverPort);
 
-            receiverRegistry.Handlers.Worker("items").IsDurable()
-                .HandlesMessage<ItemCreated>();
-
             receiverRegistry.Services.AddSingleton(theTracker);
 
             configureReceiver(receiverRegistry);

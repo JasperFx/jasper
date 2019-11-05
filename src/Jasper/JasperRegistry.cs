@@ -283,16 +283,6 @@ namespace Jasper
             return this;
         }
 
-        public IListenerSettings HandlesMessage<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IListenerSettings HandleMessages(Func<Type, bool> filter)
-        {
-            throw new NotImplementedException();
-        }
-
         public IListenerSettings IsDurable()
         {
             _actions.Add(x => x.IsDurable());

@@ -10,8 +10,6 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
     {
         public ItemReceiver()
         {
-            Handlers.Worker("items").IsDurable()
-                .HandlesMessage<ItemCreated>();
 
             Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 

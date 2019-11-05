@@ -7,6 +7,7 @@ namespace Jasper.Messaging.WorkerQueues
     ///     worker queue
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
+    [Obsolete]
     public class WorkerAttribute : Attribute
     {
         public WorkerAttribute(string workerName)
