@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Baseline;
 using Jasper.Configuration;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -80,9 +81,15 @@ namespace Jasper.Messaging.Transports
                     var agent = buildListeningAgent(listenerSettings, options, root.Handlers);
                     agent.Status = _status;
 
-                    var listener = listenerSettings.IsDurable
-                        ? root.BuildDurableListener(agent)
-                        : new LightweightListener(WorkerQueue, logger, agent);
+                    var worker = listenerSettings.IsDurable
+                        ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, root.Pipeline, options, root.Persistence, logger)
+                        : new LightweightWorkerQueue(listenerSettings, logger, root.Pipeline, options);
+
+                    var persistence = listenerSettings.IsDurable
+                        ? root.Persistence
+                        : new NulloEnvelopePersistence(worker);
+
+                    var listener = new Listener(agent, worker, logger, options,  persistence);
 
                     _listeners.Add(listener);
 

@@ -21,7 +21,7 @@ namespace Jasper.Configuration
         /// <param name="port"></param>
         public static void DurableListenerAt(this ITransportsExpression expression, int port)
         {
-            expression.ListenForMessagesFrom($"tcp://localhost:{port}/durable");
+            expression.ListenForMessagesFrom($"tcp://localhost:{port}").IsDurable();
         }
     }
 }

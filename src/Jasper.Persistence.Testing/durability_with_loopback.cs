@@ -7,13 +7,15 @@ using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten;
+using Jasper.Persistence.Testing.Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Persistence.Testing
 {
-    public class durability_with_loopback
+
+    public class durability_with_loopback : PostgresqlContext
     {
         [Fact]
         public async Task should_recover_persisted_messages()

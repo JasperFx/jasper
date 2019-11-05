@@ -66,7 +66,7 @@ namespace Jasper.Messaging.WorkerQueues
     {
         private readonly ActionBlock<Envelope> _receiver;
 
-        public LightweightWorkerQueue(ListenerSettings settings, IMessageLogger logger, IHandlerPipeline pipeline, JasperOptions options)
+        public LightweightWorkerQueue(ListenerSettings settings, ITransportLogger logger, IHandlerPipeline pipeline, JasperOptions options)
         {
             Pipeline = pipeline;
 

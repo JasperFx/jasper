@@ -24,7 +24,7 @@ namespace Jasper.Messaging.Tracking
             var messageType = message.GetType();
             var list = _waiters[messageType];
 
-            list.Each(x => x.SetResult(envelope));
+            list.Each(x => x.TrySetResult(envelope));
 
             list.Clear();
         }
