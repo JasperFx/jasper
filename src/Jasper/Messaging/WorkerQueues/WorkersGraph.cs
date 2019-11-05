@@ -7,7 +7,8 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.WorkerQueues
 {
-    public class WorkersGraph : IWorkersExpression
+    [Obsolete]
+    public class WorkersGraph
     {
         private readonly Dictionary<string, bool> _durableAssignments = new Dictionary<string, bool>();
         private readonly Dictionary<Type, bool> _durableAssignmentsByType = new Dictionary<Type, bool>();
@@ -29,11 +30,6 @@ namespace Jasper.Messaging.WorkerQueues
         public WorkerSettings[] AllWorkers => _workers.ToArray();
 
         public WorkerSettings this[string queueName] => _workers[queueName.ToLower()];
-
-        IListenerSettings IWorkersExpression.Worker(string queueName)
-        {
-            return _workers[queueName.ToLower()];
-        }
 
         public Uri LoopbackUriFor(Type messageType)
         {
