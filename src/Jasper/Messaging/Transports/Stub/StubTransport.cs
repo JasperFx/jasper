@@ -83,11 +83,6 @@ namespace Jasper.Messaging.Transports.Stub
             foreach (var listener in incoming) Channels.FillDefault(listener.Uri);
         }
 
-        public void Describe(TextWriter writer)
-        {
-            writer.WriteLine("'Stub' transport is active");
-        }
-
         // Not really used here
         public ListeningStatus ListeningStatus { get; set; } = ListeningStatus.Accepting;
 

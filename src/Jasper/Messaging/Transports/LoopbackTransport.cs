@@ -29,11 +29,6 @@ namespace Jasper.Messaging.Transports
             // nothing to do here
         }
 
-        public void Describe(TextWriter writer)
-        {
-            writer.WriteLine("Listening for loopback messages");
-        }
-
         // Ignored
         public ListeningStatus ListeningStatus { get; set; } = ListeningStatus.Accepting;
     }
