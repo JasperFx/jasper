@@ -15,15 +15,13 @@ namespace Jasper
     /// <summary>
     /// Configures the Jasper messaging transports in your application
     /// </summary>
-    public class JasperOptions : ITransportsExpression
+    public partial class JasperOptions : ITransportsExpression
     {
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
 
         private readonly IList<string> _disabledTransports = new List<string>();
 
-
-        private readonly IList<Subscription> _subscriptions = new List<Subscription>();
 
 
         internal readonly IList<Subscription> LocalPublishing = new List<Subscription>();
@@ -150,19 +148,6 @@ namespace Jasper
 
 
 
-        /// <summary>
-        ///     Array of all subscription rules for publishing messages from this
-        ///     application
-        /// </summary>
-        public Subscription[] Subscriptions
-        {
-            get => _subscriptions.ToArray();
-            set
-            {
-                _subscriptions.Clear();
-                if (value != null) _subscriptions.AddRange(value);
-            }
-        }
 
         internal DurabilityAgent DurabilityAgent { get; set; }
 
@@ -198,14 +183,6 @@ namespace Jasper
                 : TransportState.Enabled;
         }
 
-        /// <summary>
-        ///     Add a single subscription
-        /// </summary>
-        /// <param name="subscription"></param>
-        public void AddSubscription(Subscription subscription)
-        {
-            _subscriptions.Fill(subscription);
-        }
 
 
         private readonly IList<ListenerSettings> _listeners = new List<ListenerSettings>();
