@@ -100,7 +100,6 @@ namespace Jasper.Messaging.WorkerQueues
                 isDurable = isDurable || worker.IsDurable;
             }
 
-            if (messageType.HasAttribute<DurableAttribute>()) isDurable = true;
 
             _workerAssignmentsByType.Add(messageType, workerName);
             _workerAssignments[messageAlias] = workerName;
