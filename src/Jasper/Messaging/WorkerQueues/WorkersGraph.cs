@@ -77,7 +77,6 @@ namespace Jasper.Messaging.WorkerQueues
         private void analyzeMessageType(Type messageType)
         {
             var messageAlias = messageType.ToMessageTypeName();
-            var alias = messageAlias;
 
 
             var worker = AllWorkers.FirstOrDefault(x => x.Matches(messageType));
@@ -85,20 +84,6 @@ namespace Jasper.Messaging.WorkerQueues
             var isDurable = worker?.IsDurable ?? false;
 
             var workerName = worker?.Name ?? TransportConstants.Default;
-
-            if (messageType.HasAttribute<WorkerAttribute>())
-            {
-                var att = messageType.GetAttribute<WorkerAttribute>();
-
-                workerName = att.WorkerName;
-
-                worker = _workers[att.WorkerName];
-                worker.IsDurable = worker.IsDurable || att.IsDurable;
-
-                if (att.MaximumParallelization > 0) worker.Parallelization = att.MaximumParallelization;
-
-                isDurable = isDurable || worker.IsDurable;
-            }
 
 
             _workerAssignmentsByType.Add(messageType, workerName);
