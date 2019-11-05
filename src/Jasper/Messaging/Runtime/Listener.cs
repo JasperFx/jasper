@@ -35,24 +35,24 @@ namespace Jasper.Messaging.Runtime
             set => _agent.Status = value;
         }
 
-        public async Task<ReceivedStatus> Received(Uri uri, Envelope[] messages)
+        async Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
             var now = DateTime.UtcNow;
 
             return await ProcessReceivedMessages(now, uri, messages);
         }
 
-        public Task Acknowledged(Envelope[] messages)
+        Task IReceiverCallback.Acknowledged(Envelope[] messages)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotAcknowledged(Envelope[] messages)
+        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
         {
             return _persistence.DeleteIncomingEnvelopes(messages);
         }
 
-        public Task Failed(Exception exception, Envelope[] messages)
+        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
         {
             _logger.LogException(new MessageFailureException(messages, exception));
             return Task.CompletedTask;

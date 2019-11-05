@@ -142,7 +142,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         protected async Task<Envelope[]> afterReceivingTheEnvelopes()
         {
-            var status = await theListener.Received(theUri, theEnvelopes.ToArray());
+            var status = await theListener.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 
             status.ShouldBe(ReceivedStatus.Successful);
 

@@ -91,7 +91,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
         protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
         {
-            var status = await theListener.Received(theUri, theEnvelopes.ToArray());
+            var status = await theListener.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 
             status.ShouldBe(ReceivedStatus.Successful);
 
