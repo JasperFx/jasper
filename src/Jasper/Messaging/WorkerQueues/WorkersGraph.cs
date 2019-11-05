@@ -30,7 +30,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         public WorkerSettings this[string queueName] => _workers[queueName.ToLower()];
 
-        IWorkerSettings IWorkersExpression.Worker(string queueName)
+        IListenerSettings IWorkersExpression.Worker(string queueName)
         {
             return _workers[queueName.ToLower()];
         }

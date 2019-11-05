@@ -8,12 +8,12 @@ namespace Jasper.Configuration
         ///     Directs Jasper to set up an incoming listener for the given Uri
         /// </summary>
         /// <param name="uri"></param>
-        void ListenForMessagesFrom(Uri uri);
+        IListenerSettings ListenForMessagesFrom(Uri uri);
 
         /// <summary>
         ///     Directs Jasper to set up an incoming listener for the given Uri
         /// </summary>
-        void ListenForMessagesFrom(string uriString);
+        IListenerSettings ListenForMessagesFrom(string uriString);
 
         /// <summary>
         ///     Toggle a transport type to enabled. All transports are enabled by default though

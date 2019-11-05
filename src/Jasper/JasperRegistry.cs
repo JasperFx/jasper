@@ -133,14 +133,21 @@ namespace Jasper
         public IReadOnlyList<IJasperExtension> AppliedExtensions => _appliedExtensions;
 
 
-        void ITransportsExpression.ListenForMessagesFrom(Uri uri)
+        IListenerSettings ITransportsExpression.ListenForMessagesFrom(Uri uri)
         {
-            Settings.Alter<JasperOptions>(x => x.ListenForMessagesFrom(uri));
+            var recorder = new RecordingListenerSettings();
+            Settings.Alter<JasperOptions>(x =>
+            {
+                var listener = x.ListenForMessagesFrom(uri);
+                recorder.Modify(listener);
+            });
+
+            return recorder;
         }
 
-        void ITransportsExpression.ListenForMessagesFrom(string uriString)
+        IListenerSettings ITransportsExpression.ListenForMessagesFrom(string uriString)
         {
-            Settings.Alter<JasperOptions>(x => x.ListenForMessagesFrom(uriString.ToUri()));
+            return ((ITransportsExpression) this).ListenForMessagesFrom(uriString.ToUri());
         }
 
         void ITransportsExpression.EnableTransport(string protocol)
@@ -153,9 +160,17 @@ namespace Jasper
             Settings.Alter<JasperOptions>(x => x.DisableTransport(protocol));
         }
 
-        void IFullTransportsExpression.ListenForMessagesFromUriValueInConfig(string configKey)
+        IListenerSettings IFullTransportsExpression.ListenForMessagesFromUriValueInConfig(string configKey)
         {
-            Settings.Alter((Action<HostBuilderContext, JasperOptions>) ((c, options) => options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey))));
+            var recorder = new RecordingListenerSettings();
+
+            Settings.Alter((Action<HostBuilderContext, JasperOptions>) ((c, options) =>
+            {
+                var listener = options.ListenForMessagesFrom(c.Configuration.TryGetUri(configKey));
+
+                recorder.Modify(listener);
+            }));
+            return recorder;
         }
 
 
@@ -241,6 +256,53 @@ namespace Jasper
             combined.AddRange(all);
 
             return combined;
+        }
+    }
+
+    internal class RecordingListenerSettings : IListenerSettings
+    {
+        private readonly IList<Action<IListenerSettings>> _actions = new List<Action<IListenerSettings>>();
+
+        internal void Modify(IListenerSettings settings)
+        {
+            foreach (var action in _actions)
+            {
+                action(settings);
+            }
+        }
+
+        public IListenerSettings MaximumParallelization(int maximumParallelHandlers)
+        {
+            _actions.Add(x => x.MaximumParallelization(maximumParallelHandlers));
+            return this;
+        }
+
+        public IListenerSettings Sequential()
+        {
+            _actions.Add(x => x.Sequential());
+            return this;
+        }
+
+        public IListenerSettings HandlesMessage<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IListenerSettings HandleMessages(Func<Type, bool> filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IListenerSettings IsDurable()
+        {
+            _actions.Add(x => x.IsDurable());
+            return this;
+        }
+
+        public IListenerSettings IsNotDurable()
+        {
+            _actions.Add(x => x.IsNotDurable());
+            return this;
         }
     }
 }

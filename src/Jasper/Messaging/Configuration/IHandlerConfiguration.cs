@@ -16,7 +16,7 @@ namespace Jasper.Messaging.Configuration
         /// <summary>
         ///     Configure the default local worker queue
         /// </summary>
-        IWorkerSettings DefaultWorker { get; }
+        IListenerSettings DefaultWorker { get; }
 
         /// <summary>
         ///     Configure how Jasper discovers message handler classes to override
@@ -45,7 +45,7 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        IWorkerSettings Worker(string queueName);
+        IListenerSettings Worker(string queueName);
     }
 
 
@@ -66,12 +66,12 @@ namespace Jasper.Messaging.Configuration
             return this;
         }
 
-        public IWorkerSettings Worker(string queueName)
+        public IListenerSettings Worker(string queueName)
         {
             return _graph.Workers[queueName];
         }
 
-        public IWorkerSettings DefaultWorker => _graph.Workers[TransportConstants.Default];
+        public IListenerSettings DefaultWorker => _graph.Workers[TransportConstants.Default];
 
         // TODO -- have a Local option later
         /// <summary>

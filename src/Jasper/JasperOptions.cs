@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Configuration;
@@ -186,30 +185,6 @@ namespace Jasper
         }
 
 
-        /// <summary>
-        ///     Listen for messages at the given uri
-        /// </summary>
-        /// <param name="uri"></param>
-        public void ListenForMessagesFrom(Uri uri)
-        {
-            if (_listeners.Any(x => x.Uri.Equals(uri))) return;
-
-            var listener = new ListenerSettings
-            {
-                Uri = uri
-            };
-
-            _listeners.Add(listener);
-        }
-
-        /// <summary>
-        ///     Establish a message listener to a known location and transport
-        /// </summary>
-        /// <param name="uriString"></param>
-        public void ListenForMessagesFrom(string uriString)
-        {
-            ListenForMessagesFrom(uriString.ToUri());
-        }
 
         /// <summary>
         ///     Find the current state of an attached transport
@@ -246,50 +221,34 @@ namespace Jasper
             }
         }
 
-        //private readonly IList<ListenerSettings> _listeners = new List<ListenerSettings>();
-    }
-
-    public class ListenerSettings
-    {
-
-
         /// <summary>
-        /// Descriptive Name for this listener. Optional.
+        ///     Listen for messages at the given uri
         /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The actual address of the listener, including the transport scheme
-        /// </summary>
-        public Uri Uri { get; set; }
-
-        /// <summary>
-        /// Mark whether or not the receiver for this listener should use
-        /// message persistence for durability
-        /// </summary>
-        public bool IsDurable { get; set; }
-
-        public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
-        public string Scheme => Uri.Scheme;
-
-        public int Port => Uri.Port;
-
-        protected bool Equals(ListenerSettings other)
+        /// <param name="uri"></param>
+        public IListenerSettings ListenForMessagesFrom(Uri uri)
         {
-            return Equals(Uri, other.Uri);
+            var listener = _listeners.FirstOrDefault(x => x.Uri == uri);
+            if (listener == null)
+            {
+                listener = new ListenerSettings
+                {
+                    Uri = uri
+                };
+
+                _listeners.Add(listener);
+            }
+
+            return listener;
         }
 
-        public override bool Equals(object obj)
+        /// <summary>
+        ///     Establish a message listener to a known location and transport
+        /// </summary>
+        /// <param name="uriString"></param>
+        public IListenerSettings ListenForMessagesFrom(string uriString)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ListenerSettings) obj);
+            return ListenForMessagesFrom(uriString.ToUri());
         }
 
-        public override int GetHashCode()
-        {
-            return (Uri != null ? Uri.GetHashCode() : 0);
-        }
     }
 }

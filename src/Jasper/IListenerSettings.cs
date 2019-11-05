@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Jasper.Messaging.WorkerQueues
+namespace Jasper
 {
-    public interface IWorkerSettings
+    public interface IListenerSettings
     {
         /// <summary>
         ///     Specify the maximum number of threads that this worker queue
@@ -10,13 +10,13 @@ namespace Jasper.Messaging.WorkerQueues
         /// </summary>
         /// <param name="maximumParallelHandlers"></param>
         /// <returns></returns>
-        IWorkerSettings MaximumParallelization(int maximumParallelHandlers);
+        IListenerSettings MaximumParallelization(int maximumParallelHandlers);
 
         /// <summary>
         ///     Forces this worker queue to use no more than one thread
         /// </summary>
         /// <returns></returns>
-        IWorkerSettings Sequential();
+        IListenerSettings Sequential();
 
         /// <summary>
         ///     Direct messages of type T to be handled in this worker queue
@@ -24,7 +24,7 @@ namespace Jasper.Messaging.WorkerQueues
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         [Obsolete("Eliminate with GH-557")]
-        IWorkerSettings HandlesMessage<T>();
+        IListenerSettings HandlesMessage<T>();
 
         /// <summary>
         ///     Directs messages that match the filter condition to be handled in
@@ -33,18 +33,18 @@ namespace Jasper.Messaging.WorkerQueues
         /// <param name="filter"></param>
         /// <returns></returns>
         [Obsolete("Eliminate with GH-557")]
-        IWorkerSettings HandleMessages(Func<Type, bool> filter);
+        IListenerSettings HandleMessages(Func<Type, bool> filter);
 
         /// <summary>
         ///     Force any messages enqueued to this worker queue to be durable
         /// </summary>
         /// <returns></returns>
-        IWorkerSettings IsDurable();
+        IListenerSettings IsDurable();
 
         /// <summary>
         ///     By default, messages on this worker queue will not be durable
         /// </summary>
         /// <returns></returns>
-        IWorkerSettings IsNotDurable();
+        IListenerSettings IsNotDurable();
     }
 }

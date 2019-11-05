@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Jasper.Messaging.WorkerQueues
 {
-    public class WorkerSettings : IWorkerSettings
+    public class WorkerSettings : IListenerSettings
     {
         private readonly IList<Func<Type, bool>> _matches = new List<Func<Type, bool>>();
 
@@ -22,19 +22,19 @@ namespace Jasper.Messaging.WorkerQueues
 
         public bool IsDurable { get; set; }
 
-        IWorkerSettings IWorkerSettings.MaximumParallelization(int maximumParallelHandlers)
+        IListenerSettings IListenerSettings.MaximumParallelization(int maximumParallelHandlers)
         {
             Parallelization = maximumParallelHandlers;
             return this;
         }
 
-        IWorkerSettings IWorkerSettings.Sequential()
+        IListenerSettings IListenerSettings.Sequential()
         {
             Parallelization = 1;
             return this;
         }
 
-        IWorkerSettings IWorkerSettings.HandlesMessage<T>()
+        IListenerSettings IListenerSettings.HandlesMessage<T>()
         {
             _matches.Add(x => x == typeof(T));
             return this;
@@ -42,7 +42,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         [Obsolete("Eliminate with GH-557")]
 
-        IWorkerSettings IWorkerSettings.HandleMessages(Func<Type, bool> filter)
+        IListenerSettings IListenerSettings.HandleMessages(Func<Type, bool> filter)
         {
             _matches.Add(filter);
             return this;
@@ -50,13 +50,13 @@ namespace Jasper.Messaging.WorkerQueues
 
         [Obsolete("Eliminate with GH-557")]
 
-        IWorkerSettings IWorkerSettings.IsDurable()
+        IListenerSettings IListenerSettings.IsDurable()
         {
             IsDurable = true;
             return this;
         }
 
-        public IWorkerSettings IsNotDurable()
+        public IListenerSettings IsNotDurable()
         {
             IsDurable = false;
             return this;
