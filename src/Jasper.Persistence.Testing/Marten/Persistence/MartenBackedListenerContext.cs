@@ -67,7 +67,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
-        protected DurableListener theListener;
+        protected Listener theListener;
         protected JasperOptions theOptions;
         protected IWorkerQueue theWorkerQueue;
 
@@ -91,7 +91,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             EnvelopeStorageAdmin.RebuildSchemaObjects();
 
 
-            theListener = new DurableListener(
+            theListener = new Listener(
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
                 TransportLogger.Empty(), theOptions, new PostgresqlEnvelopePersistence(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString}, theOptions));

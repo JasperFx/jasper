@@ -165,11 +165,6 @@ namespace Jasper.Messaging
             return new DurableLoopbackSendingAgent(destination, Workers, Persistence, Serialization, _transportLogger, Options);
         }
 
-        public IListener BuildDurableListener(IListeningAgent agent)
-        {
-            return new DurableListener(agent, Workers, _transportLogger, Options, Persistence);
-        }
-
         private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
         {
             foreach (var att in messageType.GetAllAttributes<ModifyEnvelopeAttribute>())

@@ -23,7 +23,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected SqlServerSettings mssqlSettings;
-        protected DurableListener theListener;
+        protected Listener theListener;
         protected SqlServerEnvelopePersistence ThePersistence;
         protected JasperOptions theSettings;
         protected IWorkerQueue theWorkerQueue;
@@ -45,7 +45,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             ThePersistence = new SqlServerEnvelopePersistence(mssqlSettings, new JasperOptions());
 
 
-            theListener = new DurableListener(
+            theListener = new Listener(
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
                 TransportLogger.Empty(), theSettings, ThePersistence);
