@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Jasper.RabbitMQ.Tests
 {
-    public class RabbitMqSettingsTests
+    public class RabbitMqOptionsTests
     {
         [Fact]
         public void throw_with_invalid_uri_value()
