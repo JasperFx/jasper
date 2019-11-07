@@ -57,17 +57,18 @@ namespace Jasper
 
             _baseServices = new JasperServiceRegistry(this);
 
-            // TEMP!!!!
-            _baseServices.AddSingleton<GenerationRules>(CodeGeneration);
+            _baseServices.AddSingleton(CodeGeneration);
 
             Settings = new SettingsGraph(this);
-            Settings.Require<JasperOptions>();
-
+            Options = new JasperOptions();
+            Settings.Replace(Options);
 
             Publish = new PublishingExpression(Settings, Messaging);
 
             deriveServiceName();
         }
+
+        internal JasperOptions Options { get; }
 
 
         /// <summary>

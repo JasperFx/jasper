@@ -23,26 +23,6 @@ namespace Jasper.Testing.Messaging
         private readonly ITestOutputHelper _output;
 
         [Fact]
-        public void read_settings_from_json()
-        {
-            var builder = Host.CreateDefaultBuilder()
-                .ConfigureAppConfiguration((context, config) => config.AddJsonFile("messaging.json"))
-                .UseJasper();
-
-            using (var runtime = builder.Start())
-            {
-                var settings = runtime.Services.GetService<JasperOptions>();
-
-                // See the messaging.json file
-                settings.DisableAllTransports.ShouldBeTrue();
-                settings.ScheduledJobs.PollingTime.ShouldBe(10.Seconds());
-                settings.Listeners.Select(x => x.Uri).Contains("tcp://localhost:2000".ToUri()).ShouldBeTrue();
-                settings.Subscriptions.Contains(Subscription.All("tcp://localhost:2002".ToUri())).ShouldBeTrue();
-            }
-        }
-
-
-        [Fact]
         public void try_stuff()
         {
             var options = new JasperOptions
