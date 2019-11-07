@@ -74,6 +74,8 @@ namespace Jasper
 
             builder.ConfigureServices((context, services) =>
             {
+                registry.Configure(context.HostingEnvironment, context.Configuration);
+
                 customization?.Invoke(context, registry);
 
                 registry.Messaging.StartCompiling(registry);

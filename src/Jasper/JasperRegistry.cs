@@ -13,6 +13,7 @@ using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Model;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -218,7 +219,7 @@ namespace Jasper
             Include(extension);
         }
 
-        public ServiceRegistry CombineServices()
+        internal ServiceRegistry CombineServices()
         {
             var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
 
@@ -226,6 +227,17 @@ namespace Jasper
             combined.AddRange(all);
 
             return combined;
+        }
+
+        /// <summary>
+        /// Can be overridden to perform any kind of hosting environment or configuration dependent
+        /// configuration of your Jasper application
+        /// </summary>
+        /// <param name="hosting"></param>
+        /// <param name="config"></param>
+        public virtual void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            // Nothing
         }
     }
 
