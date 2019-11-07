@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.SqlServer;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -17,10 +18,10 @@ namespace Jasper.Persistence.Testing.SqlServer
         public async Task smoke_test_calls(string commandLine)
         {
             var args = commandLine.Split(' ');
-            (await JasperHost.Run(args, registry =>
+            (await Host.CreateDefaultBuilder().UseJasper(registry =>
             {
                 registry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-            })).ShouldBe(0);
+            }).RunJasper(args)).ShouldBe(0);
         }
 
     }

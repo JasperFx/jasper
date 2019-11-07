@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Jasper.Messaging.Transports.Stub;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using TestMessages;
 using Xunit;
@@ -16,8 +18,14 @@ namespace Jasper.Testing.Messaging.Samples
             // Bootstrap your application with a few overrides to
             // configuration, and slightly modify the Jasper configuration
             Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
-                .OverrideConfigValue("outgoing", "stub://outgoing")
-                .OverrideConfigValue("incoming", "stub://incoming")
+                .ConfigureAppConfiguration(builder =>
+                {
+                    builder.AddInMemoryCollection(new Dictionary<string, string>
+                    {
+                        {"outgoing", "stub://outgoing"},
+                        {"incoming", "stub://incoming"}
+                    });
+                })
                 .UseJasper<MyJasperApp>()
 
                 // This gives you an IHost, but this works as well with an

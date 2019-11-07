@@ -93,7 +93,7 @@ namespace Jasper
         /// <param name="args"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static Task<int> Run(string[] args, Action<JasperRegistry> configure)
+        public static Task<int> Run(string[] args, Action<HostBuilderContext, JasperRegistry> configure)
         {
             return Host.CreateDefaultBuilder().UseJasper(configure).RunOaktonCommands(args);
         }
