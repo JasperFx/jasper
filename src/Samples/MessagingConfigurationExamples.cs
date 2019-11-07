@@ -110,21 +110,5 @@ namespace Jasper.Testing.Samples
             // ENDSAMPLE
         }
 
-        // SAMPLE: ConfigUsingApp
-        public class ConfigUsingApp : JasperRegistry
-        {
-            public ConfigUsingApp()
-            {
-                Publish.Message<Message1>().ToUriValueInConfig("outgoing");
-
-                // or
-
-                Publish.AllMessagesToUriValueInConfig("outgoing");
-
-                Transports.ListenForMessagesFromUriValueInConfig("listener");
-            }
-        }
-
-        // ENDSAMPLE
     }
 }

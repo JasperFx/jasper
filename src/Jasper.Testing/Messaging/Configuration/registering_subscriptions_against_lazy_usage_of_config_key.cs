@@ -40,48 +40,5 @@ namespace Jasper.Testing.Messaging.Configuration
             _host?.Dispose();
         }
 
-        [Fact]
-        public void all_messages_to_config_key()
-        {
-            var uriString = "tcp://server:2000";
-
-            theConfigKeys.Add("destination", uriString);
-
-            theRegistry.Publish.AllMessagesToUriValueInConfig("destination");
-
-            var subscription = theOptions.Subscriptions.Single();
-            subscription.Scope.ShouldBe(RoutingScope.All);
-            subscription.Uri.ShouldBe(uriString.ToUri());
-        }
-
-        [Fact]
-        public void messages_by_namespace_and_config_key()
-        {
-            var uriString = "tcp://server:2000";
-
-            theConfigKeys.Add("outgoing", uriString);
-
-            theRegistry.Publish.MessagesFromNamespace("Foo")
-                .ToUriValueInConfig("outgoing");
-
-            var subscription = theOptions.Subscriptions.Single();
-            subscription.Scope.ShouldBe(RoutingScope.Namespace);
-            subscription.Match.ShouldBe("Foo");
-            subscription.Uri.ShouldBe(uriString.ToUri());
-        }
-
-        [Fact]
-        public void listen_at_config_value()
-        {
-            var uriString = "tcp://server:2000";
-
-            theConfigKeys.Add("listener", uriString);
-
-            theRegistry.Transports.ListenForMessagesFromUriValueInConfig("listener");
-
-            theOptions.Listeners.Select(x => x.Uri)
-                .ShouldContain(uriString.ToUri());
-
-        }
     }
 }

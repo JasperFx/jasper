@@ -89,11 +89,13 @@ namespace Jasper.Testing.Messaging.Samples
         {
             // This app has a single outbound publishing Uri that
             // is expected to be in configuration
-            Publish.AllMessagesToUriValueInConfig("outgoing");
+            Publish.AllMessagesTo("tcp://localhost:2222");
 
 
-            Transports.ListenForMessagesFromUriValueInConfig("incoming");
+            Transports.ListenForMessagesFrom("tcp://localhost:3333");
         }
     }
     // ENDSAMPLE
+
+
 }
