@@ -15,11 +15,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
 
             Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
 
-            Settings.Alter<JasperOptions>(_ =>
-            {
-                _.ScheduledJobs.PollingTime = 1.Seconds();
-                _.ScheduledJobs.FirstExecution = 0.Seconds();
-            });
+            Advanced.ScheduledJobs.PollingTime = 1.Seconds();
+            Advanced.ScheduledJobs.FirstExecution = 0.Seconds();
         }
     }
 }

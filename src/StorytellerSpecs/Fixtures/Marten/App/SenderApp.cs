@@ -21,11 +21,8 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Include<MartenBackedPersistence>();
 
-            Settings.Alter<JasperOptions>(_ =>
-            {
-                _.ScheduledJobs.PollingTime = 1.Seconds();
-                _.ScheduledJobs.FirstExecution = 0.Seconds();
-            });
+            Advanced.ScheduledJobs.PollingTime = 1.Seconds();
+            Advanced.ScheduledJobs.FirstExecution = 0.Seconds();
         }
     }
 }

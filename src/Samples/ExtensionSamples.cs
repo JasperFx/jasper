@@ -12,11 +12,11 @@ namespace Jasper.Testing.Samples
             // Add service registrations
             registry.Services.AddTransient<IFoo, Foo>();
 
+
+
             // Alter settings within the application
-            registry.Settings.Alter<JasperOptions>(_ =>
-            {
-                _.JsonSerialization.TypeNameHandling = TypeNameHandling.All;
-            });
+            registry.Advanced.JsonSerialization
+                .TypeNameHandling = TypeNameHandling.All;
         }
     }
     // ENDSAMPLE

@@ -88,14 +88,10 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
                     _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
-
-                    _.Settings.Alter<JasperOptions>(x =>
-                    {
-                        x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
-                        x.ScheduledJobs.FirstExecution = 30.Minutes();
-                        x.Retries.FirstNodeReassignmentExecution = 30.Minutes();
-                        x.Retries.NodeReassignmentPollingTime = 30.Minutes();
-                    });
+                    _.Advanced.Retries.FirstNodeReassignmentExecution = 30.Minutes();
+                    _.Advanced.ScheduledJobs.FirstExecution = 30.Minutes();
+                    _.Advanced.Retries.FirstNodeReassignmentExecution = 30.Minutes();
+                    _.Advanced.Retries.NodeReassignmentPollingTime = 30.Minutes();
                 })
                 .Start();
 

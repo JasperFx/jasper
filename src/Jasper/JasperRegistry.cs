@@ -136,14 +136,7 @@ namespace Jasper
 
         IListenerSettings ITransportsExpression.ListenForMessagesFrom(Uri uri)
         {
-            var recorder = new RecordingListenerSettings();
-            Settings.Alter<JasperOptions>(x =>
-            {
-                var listener = x.ListenForMessagesFrom(uri);
-                recorder.Modify(listener);
-            });
-
-            return recorder;
+            return Options.ListenForMessagesFrom(uri);
         }
 
         IListenerSettings ITransportsExpression.ListenForMessagesFrom(string uriString)
@@ -237,40 +230,4 @@ namespace Jasper
         }
     }
 
-    internal class RecordingListenerSettings : IListenerSettings
-    {
-        private readonly IList<Action<IListenerSettings>> _actions = new List<Action<IListenerSettings>>();
-
-        internal void Modify(IListenerSettings settings)
-        {
-            foreach (var action in _actions)
-            {
-                action(settings);
-            }
-        }
-
-        public IListenerSettings MaximumParallelization(int maximumParallelHandlers)
-        {
-            _actions.Add(x => x.MaximumParallelization(maximumParallelHandlers));
-            return this;
-        }
-
-        public IListenerSettings Sequential()
-        {
-            _actions.Add(x => x.Sequential());
-            return this;
-        }
-
-        public IListenerSettings IsDurable()
-        {
-            _actions.Add(x => x.IsDurable());
-            return this;
-        }
-
-        public IListenerSettings IsNotDurable()
-        {
-            _actions.Add(x => x.IsNotDurable());
-            return this;
-        }
-    }
 }

@@ -162,11 +162,9 @@ namespace Jasper.Testing.Samples
     {
         public CustomizingJsonSerialization()
         {
-            Settings.Alter<JasperOptions>(_ =>
-            {
-                // Edit the JsonSerializerSettings used by the messaging serialization
-                _.JsonSerialization.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
-            });
+            Advanced.JsonSerialization
+                .ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
+
         }
     }
 
