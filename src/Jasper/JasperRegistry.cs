@@ -35,7 +35,6 @@ namespace Jasper
 
         private readonly IList<Type> _extensionTypes = new List<Type>();
 
-        private string _serviceName;
 
         public JasperRegistry() : this(null)
         {
@@ -63,10 +62,15 @@ namespace Jasper
             Options = new JasperOptions();
             Settings.Replace(Options);
 
-            Publish = new PublishingExpression(Settings, Messaging);
+            Publish = new PublishingExpression(this, Messaging);
 
             deriveServiceName();
         }
+
+        /// <summary>
+        /// Advanced configuration options for Jasper integration
+        /// </summary>
+        public IAdvancedOptions Advanced => Options;
 
         internal JasperOptions Options { get; }
 
@@ -117,12 +121,8 @@ namespace Jasper
         /// </summary>
         public string ServiceName
         {
-            get => _serviceName;
-            set
-            {
-                _serviceName = value;
-                Settings.Messaging(x => x.ServiceName = value);
-            }
+            get => Options.ServiceName;
+            set => Options.ServiceName = value;
         }
 
         internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();

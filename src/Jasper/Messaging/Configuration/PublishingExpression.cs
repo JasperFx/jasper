@@ -11,12 +11,12 @@ namespace Jasper.Messaging.Configuration
 {
     public class PublishingExpression
     {
+        private readonly JasperRegistry _parent;
         private readonly MessagingConfiguration _bus;
-        private readonly SettingsGraph _settings;
 
-        internal PublishingExpression(SettingsGraph settings, MessagingConfiguration bus)
+        internal PublishingExpression(JasperRegistry parent, MessagingConfiguration bus)
         {
-            _settings = settings;
+            _parent = parent;
             _bus = bus;
         }
 
@@ -28,12 +28,12 @@ namespace Jasper.Messaging.Configuration
 
         public MessageTrackExpression Message(Type type)
         {
-            return new MessageTrackExpression(_settings, _bus, RoutingScope.Type, type.ToMessageTypeName());
+            return new MessageTrackExpression(_parent, _bus, RoutingScope.Type, type.ToMessageTypeName());
         }
 
         public MessageTrackExpression MessagesFromNamespace(string @namespace)
         {
-            return new MessageTrackExpression(_settings, _bus, RoutingScope.Namespace, @namespace);
+            return new MessageTrackExpression(_parent, _bus, RoutingScope.Namespace, @namespace);
         }
 
         public MessageTrackExpression MessagesFromNamespaceContaining<T>()
@@ -43,7 +43,7 @@ namespace Jasper.Messaging.Configuration
 
         public MessageTrackExpression MessagesFromAssembly(Assembly assembly)
         {
-            return new MessageTrackExpression(_settings, _bus, RoutingScope.Assembly, assembly.GetName().Name);
+            return new MessageTrackExpression(_parent, _bus, RoutingScope.Assembly, assembly.GetName().Name);
         }
 
         public MessageTrackExpression MessagesFromAssemblyContaining<T>()
@@ -64,7 +64,8 @@ namespace Jasper.Messaging.Configuration
                 Uri = uri
             };
 
-            _settings.Messaging(x => x.AddSubscription(subscription));
+            _parent.Options.AddSubscription(subscription);
+
         }
 
         /// <summary>
@@ -81,12 +82,12 @@ namespace Jasper.Messaging.Configuration
             private readonly MessagingConfiguration _bus;
             private readonly string _match;
             private readonly RoutingScope _routingScope;
-            private readonly SettingsGraph _settings;
+            private readonly JasperRegistry _parent;
 
-            internal MessageTrackExpression(SettingsGraph settings, MessagingConfiguration bus,
+            internal MessageTrackExpression(JasperRegistry parent, MessagingConfiguration bus,
                 RoutingScope routingScope, string match)
             {
-                _settings = settings;
+                _parent = parent;
                 _bus = bus;
                 _routingScope = routingScope;
                 _match = match;
@@ -101,7 +102,7 @@ namespace Jasper.Messaging.Configuration
                     Uri = address
                 };
 
-                _settings.Messaging(x => x.AddSubscription(subscription));
+                _parent.Options.AddSubscription(subscription);
             }
 
             public void To(string address)
@@ -120,11 +121,7 @@ namespace Jasper.Messaging.Configuration
                     Scope = _routingScope, Match = _match, Uri = TransportConstants.LoopbackUri
                 };
 
-                _settings.Messaging(x =>
-                {
-
-                    x.AddSubscription(subscription);
-                });
+                _parent.Options.AddSubscription(subscription);
             }
 
         }

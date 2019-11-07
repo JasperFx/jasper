@@ -12,15 +12,10 @@ using Newtonsoft.Json;
 
 namespace Jasper
 {
-    public interface IAdvancedOptions
-    {
-
-    }
-
     /// <summary>
     /// Configures the Jasper messaging transports in your application
     /// </summary>
-    public partial class JasperOptions : ITransportsExpression
+    public partial class JasperOptions : ITransportsExpression, IAdvancedOptions
     {
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 

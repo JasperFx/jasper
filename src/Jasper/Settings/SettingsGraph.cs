@@ -76,16 +76,6 @@ namespace Jasper.Settings
                 builder.Alter(alteration);
         }
 
-        /// <summary>
-        ///     Alter advanced features of the messaging support
-        /// </summary>
-        /// <param name="alteration"></param>
-        [Obsolete]
-        public void Messaging(Action<JasperOptions> alteration)
-        {
-            Alter(alteration);
-        }
-
         internal void Apply(ServiceRegistry services)
         {
             foreach (var setting in _settings)
