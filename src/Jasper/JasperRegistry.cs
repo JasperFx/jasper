@@ -60,7 +60,6 @@ namespace Jasper
 
             Settings = new SettingsGraph(this);
             Options = new JasperOptions();
-            Settings.Replace(Options);
 
             Publish = new PublishingExpression(this, Messaging);
 

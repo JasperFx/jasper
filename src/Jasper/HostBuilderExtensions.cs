@@ -84,6 +84,7 @@ namespace Jasper
 
             builder.ConfigureServices(s =>
             {
+                s.AddSingleton(registry.Options);
                 s.AddSingleton<IHostedService, JasperActivator>();
 
                 s.AddRange(registry.CombineServices());
