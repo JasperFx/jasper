@@ -127,10 +127,7 @@ namespace Jasper.Messaging
                 await container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
             }
 
-            if (!Options.DisableAllTransports)
-            {
-                ((SubscriberGraph) Subscribers).Start(this);
-            }
+            ((SubscriberGraph) Subscribers).Start(this);
         }
 
         public HandlerGraph Handlers { get; }

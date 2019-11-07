@@ -12,6 +12,11 @@ using Newtonsoft.Json;
 
 namespace Jasper
 {
+    public interface IAdvancedOptions
+    {
+
+    }
+
     /// <summary>
     /// Configures the Jasper messaging transports in your application
     /// </summary>
@@ -73,14 +78,9 @@ namespace Jasper
             }
         }
 
-        /// <summary>
-        ///     It may be valuable to disable any and all transports when bootstrapping for
-        ///     testing local message handling
-        /// </summary>
-        public bool DisableAllTransports { get; set; }
 
         /// <summary>
-        ///     Newtonsoft.Json serialization settings for messages received
+        /// Newtonsoft.Json serialization settings for messages received
         /// </summary>
         [JsonIgnore]
         public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
@@ -105,7 +105,7 @@ namespace Jasper
         [JsonIgnore] public CancellationToken Cancellation => _cancellation.Token;
 
         /// <summary>
-        ///     Timings and sizes around retrying message receiving and sending failures
+        /// Timings and sizes around retrying message receiving and sending failures
         /// </summary>
         public RetrySettings Retries { get; set; } = new RetrySettings();
 

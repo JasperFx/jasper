@@ -103,14 +103,13 @@ namespace Jasper.Messaging.Transports
         private void organizeTransports(JasperOptions settings, ITransport[] transports)
         {
             foreach (var subscription in settings.Subscriptions.Where(x => x.Uri.Scheme == TransportConstants.Durable))
+            {
                 subscription.Uri = subscription.Uri.ToCanonicalTcpUri();
+            }
 
             transports
                 .Each(t => _transports.Add(t.Protocol, t));
 
-            // Super duper hokey
-            if (_transports.ContainsKey("http") && !_transports.ContainsKey("https"))
-                _transports["https"] = _transports["http"];
         }
 
         private void assertValidTransport(Uri uri)

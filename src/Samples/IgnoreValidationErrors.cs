@@ -5,6 +5,7 @@
     {
         public IgnoreValidationErrors()
         {
+
             Settings.Messaging(_ => _.ThrowOnValidationErrors = false);
         }
     }
