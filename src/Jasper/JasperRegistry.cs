@@ -151,16 +151,6 @@ namespace Jasper
             return ((ITransportsExpression) this).ListenForMessagesFrom(uriString.ToUri());
         }
 
-        void ITransportsExpression.EnableTransport(string protocol)
-        {
-            Settings.Alter<JasperOptions>(x => x.EnableTransport(protocol));
-        }
-
-        void ITransportsExpression.DisableTransport(string protocol)
-        {
-            Settings.Alter<JasperOptions>(x => x.DisableTransport(protocol));
-        }
-
 
         private void deriveServiceName()
         {

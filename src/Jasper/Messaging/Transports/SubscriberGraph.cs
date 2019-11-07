@@ -105,7 +105,7 @@ namespace Jasper.Messaging.Transports
             foreach (var subscription in settings.Subscriptions.Where(x => x.Uri.Scheme == TransportConstants.Durable))
                 subscription.Uri = subscription.Uri.ToCanonicalTcpUri();
 
-            transports.Where(x => settings.StateFor(x.Protocol) != TransportState.Disabled)
+            transports
                 .Each(t => _transports.Add(t.Protocol, t));
 
             // Super duper hokey

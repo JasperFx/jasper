@@ -20,10 +20,6 @@ namespace Jasper
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
 
-        private readonly IList<string> _disabledTransports = new List<string>();
-
-
-
         private string _machineName;
         private string _serviceName = "Jasper";
 
@@ -142,39 +138,6 @@ namespace Jasper
 
 
         internal DurabilityAgent DurabilityAgent { get; set; }
-
-        /// <summary>
-        ///     Disable an attached transport
-        /// </summary>
-        /// <param name="protocol"></param>
-        public void DisableTransport(string protocol)
-        {
-            _disabledTransports.Fill(protocol.ToLower());
-        }
-
-        /// <summary>
-        ///     Enable an attached transport
-        /// </summary>
-        /// <param name="protocol"></param>
-        public void EnableTransport(string protocol)
-        {
-            _disabledTransports.RemoveAll(x => x == protocol.ToLower());
-        }
-
-
-
-        /// <summary>
-        ///     Find the current state of an attached transport
-        /// </summary>
-        /// <param name="protocol"></param>
-        /// <returns></returns>
-        public TransportState StateFor(string protocol)
-        {
-            return _disabledTransports.Contains(protocol.ToLower())
-                ? TransportState.Disabled
-                : TransportState.Enabled;
-        }
-
 
 
         private readonly IList<ListenerSettings> _listeners = new List<ListenerSettings>();

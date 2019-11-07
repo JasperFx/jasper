@@ -25,18 +25,6 @@ namespace Jasper.Testing
 
 
         [Fact]
-        public void enable_and_disable_transport()
-        {
-            theSettings.StateFor("tcp").ShouldBe(TransportState.Enabled);
-
-            theSettings.DisableTransport("tcp");
-            theSettings.StateFor("tcp").ShouldBe(TransportState.Disabled);
-
-            theSettings.EnableTransport("tcp");
-            theSettings.StateFor("tcp").ShouldBe(TransportState.Enabled);
-        }
-
-        [Fact]
         public void unique_node_id_is_really_unique()
         {
             var options1 = new JasperOptions();

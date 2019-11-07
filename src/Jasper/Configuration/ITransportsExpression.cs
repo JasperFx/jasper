@@ -15,18 +15,5 @@ namespace Jasper.Configuration
         /// </summary>
         IListenerSettings ListenForMessagesFrom(string uriString);
 
-        /// <summary>
-        ///     Toggle a transport type to enabled. All transports are enabled by default though
-        /// </summary>
-        /// <param name="protocol"></param>
-        void EnableTransport(string protocol);
-
-        /// <summary>
-        ///     Disable a single transport by protocol
-        /// </summary>
-        /// <param name="protocol"></param>
-        void DisableTransport(string protocol);
-
-
     }
 }

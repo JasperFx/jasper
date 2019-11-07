@@ -66,8 +66,6 @@ namespace Jasper.Messaging.Transports
         {
             var options = root.Options;
 
-            if (options.StateFor(Protocol) == TransportState.Disabled) return;
-
             WorkerQueue = root.Workers;
 
             var incoming = options.Listeners.Where(x => x.Scheme == Protocol).ToArray();

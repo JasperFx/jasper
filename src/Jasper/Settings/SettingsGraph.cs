@@ -80,6 +80,7 @@ namespace Jasper.Settings
         ///     Alter advanced features of the messaging support
         /// </summary>
         /// <param name="alteration"></param>
+        [Obsolete]
         public void Messaging(Action<JasperOptions> alteration)
         {
             Alter(alteration);
