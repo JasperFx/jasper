@@ -80,7 +80,6 @@ namespace Jasper.Configuration
 
             this.AddSingleton(parent.Messaging.Graph);
             this.AddSingleton<ISubscriberGraph>(parent.Messaging.Subscribers);
-            this.AddSingleton<ILoopbackWorkerSender>(parent.Messaging.LocalWorker);
 
 
             For<ITransport>()

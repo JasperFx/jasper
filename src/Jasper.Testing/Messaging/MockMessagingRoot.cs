@@ -53,8 +53,7 @@ namespace Jasper.Testing.Messaging
             return new MessageContext(this);
         }
 
-        public Task Activate(LoopbackWorkerSender localWorker,
-            GenerationRules generation, IContainer container)
+        public Task Activate(GenerationRules generation, IContainer container)
         {
             return Task.CompletedTask;
         }

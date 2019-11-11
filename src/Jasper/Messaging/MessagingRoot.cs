@@ -109,8 +109,7 @@ namespace Jasper.Messaging
             return new MessageContext(this, envelope);
         }
 
-        public async Task Activate(LoopbackWorkerSender localWorker,
-            GenerationRules generation, IContainer container)
+        public async Task Activate(GenerationRules generation, IContainer container)
         {
 
             Handlers.Configuration.ApplyPolicies(generation, container);
@@ -120,7 +119,6 @@ namespace Jasper.Messaging
             Handlers.Workers.Compile(Handlers.Chains.Select(x => x.MessageType));
 
 
-            localWorker.Start(this);
 
             if (generation.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
             {
