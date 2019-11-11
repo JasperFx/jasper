@@ -20,7 +20,7 @@ namespace Jasper.Messaging
             Handling.GlobalPolicy<SagaFramePolicy>();
         }
 
-        public HandlerConfiguration Handling => Graph.Configuration;
+        public IHandlerConfiguration Handling => Graph;
 
 
         public SubscriberGraph Subscribers { get; } = new SubscriberGraph();
@@ -32,7 +32,7 @@ namespace Jasper.Messaging
 
         internal void StartCompiling(JasperRegistry registry)
         {
-            Compiling = Handling.Source.FindCalls(registry).ContinueWith(t =>
+            Compiling = Graph.Source.FindCalls(registry).ContinueWith(t =>
             {
                 var calls = t.Result;
 

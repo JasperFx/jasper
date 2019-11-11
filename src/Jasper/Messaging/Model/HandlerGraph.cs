@@ -19,7 +19,7 @@ using LamarCompiler;
 
 namespace Jasper.Messaging.Model
 {
-    public class HandlerGraph : IHasRetryPolicies, IGeneratesCode
+    public class HandlerGraph : IHasRetryPolicies, IGeneratesCode, IHandlerConfiguration
     {
         public static readonly string Context = "context";
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
@@ -28,6 +28,8 @@ namespace Jasper.Messaging.Model
 
         private ImHashMap<Type, HandlerChain> _chains = ImHashMap<Type, HandlerChain>.Empty;
 
+        internal readonly HandlerSource Source = new HandlerSource();
+        private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
 
         private GenerationRules _generation;
         private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
@@ -39,10 +41,8 @@ namespace Jasper.Messaging.Model
             // All of this is to seed the handler and its associated retry policies
             // for scheduling outgoing messages
             _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler());
-            Configuration = new HandlerConfiguration(this);
         }
 
-        internal HandlerConfiguration Configuration { get; }
 
         internal IContainer Container { get; set; }
 
@@ -131,6 +131,11 @@ namespace Jasper.Messaging.Model
 
         internal void Compile(GenerationRules generation, IContainer container)
         {
+            foreach (var policy in _globals)
+            {
+                policy.Apply(this, generation, container);
+            }
+
             _generation = generation;
             Container = container;
 
@@ -225,5 +230,31 @@ namespace Jasper.Messaging.Model
         }
 
         string IGeneratesCode.CodeType => "Handlers";
+
+
+        public IHandlerConfiguration Discovery(Action<HandlerSource> configure)
+        {
+            configure(Source);
+            return this;
+        }
+
+        // TODO -- have a Local option later
+        /// <summary>
+        ///     Applies a handler policy to all known message handlers
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void GlobalPolicy<T>() where T : IHandlerPolicy, new()
+        {
+            GlobalPolicy(new T());
+        }
+
+        /// <summary>
+        ///     Applies a handler policy to all known message handlers
+        /// </summary>
+        /// <param name="policy"></param>
+        public void GlobalPolicy(IHandlerPolicy policy)
+        {
+            _globals.Add(policy);
+        }
     }
 }

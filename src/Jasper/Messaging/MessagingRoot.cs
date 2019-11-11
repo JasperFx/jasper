@@ -111,8 +111,6 @@ namespace Jasper.Messaging
 
         public async Task Activate(GenerationRules generation, IContainer container)
         {
-
-            Handlers.Configuration.ApplyPolicies(generation, container);
             Handlers.Compile(generation, container);
 
 

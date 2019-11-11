@@ -69,6 +69,7 @@ namespace Jasper.Messaging.WorkerQueues
             return _durableAssignmentsByType.ContainsKey(messageType) && _durableAssignmentsByType[messageType];
         }
 
+        [Obsolete]
         public void Compile(IEnumerable<Type> messageTypes)
         {
             foreach (var messageType in messageTypes) analyzeMessageType(messageType);
