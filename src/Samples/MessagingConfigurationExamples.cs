@@ -35,9 +35,6 @@ namespace Jasper.Testing.Samples
             // to just declare what port the transport should use
             // to listen for incoming messages
             Transports.LightweightListenerAt(2233);
-
-            // or use a Uri to declare both the transport type and port
-            Transports.ListenForMessagesFrom("tcp://localhost:2233");
         }
     }
     // ENDSAMPLE
@@ -50,9 +47,6 @@ namespace Jasper.Testing.Samples
         {
             // Set up a listener (this is optional)
             Transports.LightweightListenerAt(4000);
-
-            // Or do the exact same thing by supplying a Uri
-            Transports.ListenForMessagesFrom("tcp://localhost:4000");
 
             // Publish the message Message2 to the DNS entry "remoteserver"
             Publish.Message<Message2>().To("tcp://remoteserver:2201");
@@ -67,12 +61,6 @@ namespace Jasper.Testing.Samples
         {
             // Set up a listener (this is optional)
             Transports.DurableListenerAt(2200);
-
-            // Or, alternatively set up durable listening by Uri
-            Transports.ListenForMessagesFrom("tcp://localhost:2200/durable");
-
-            // Or, alternatively set up durable listening by Uri
-            Transports.ListenForMessagesFrom("durable://localhost:2200");
 
             // With the RabbitMQ transport
             Transports.ListenForMessagesFrom("rabbitmq://server1/durable/queue1");

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jasper.Configuration;
 using Jasper.Messaging.Transports.Stub;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -99,8 +100,7 @@ namespace Jasper.Testing.Messaging.Samples
             // is expected to be in configuration
             Publish.AllMessagesTo("tcp://localhost:2222");
 
-
-            Transports.ListenForMessagesFrom("tcp://localhost:3333");
+            Transports.LightweightListenerAt(3333);
         }
     }
     // ENDSAMPLE

@@ -50,6 +50,7 @@ namespace Jasper.Messaging.Configuration
             return MessagesFromAssembly(typeof(T).Assembly);
         }
 
+        [Obsolete]
         public void AllMessagesTo(string uriString)
         {
             AllMessagesTo(uriString.ToUri());
@@ -90,6 +91,7 @@ namespace Jasper.Messaging.Configuration
                 _match = match;
             }
 
+            [Obsolete("replace w/ more specific methods per transport type")]
             public void To(Uri address)
             {
                 var subscription = new Subscription
@@ -102,6 +104,7 @@ namespace Jasper.Messaging.Configuration
                 _parent.Options.AddSubscription(subscription);
             }
 
+            [Obsolete("replace w/ more specific methods per transport type")]
             public void To(string address)
             {
                 To(address.ToUri());

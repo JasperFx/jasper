@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
@@ -113,7 +114,7 @@ namespace Jasper.Testing.Conneg
         public BlueApp(MessageTracker tracker)
         {
             Services.ForSingletonOf<MessageTracker>().Use(tracker);
-            Transports.ListenForMessagesFrom("tcp://localhost:2555/blue");
+            Transports.LightweightListenerAt(2555);
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<BlueHandler>();
         }
