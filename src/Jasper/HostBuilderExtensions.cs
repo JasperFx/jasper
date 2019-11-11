@@ -78,7 +78,7 @@ namespace Jasper
 
                 customization?.Invoke(context, registry);
 
-                registry.Messaging.StartCompiling(registry);
+                registry.HandlerGraph.StartCompiling(registry);
 
                 registry.Settings.Apply(registry.Services);
 

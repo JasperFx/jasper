@@ -11,6 +11,7 @@ using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Persistence;
 using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
@@ -19,7 +20,7 @@ using LamarCompiler;
 
 namespace Jasper.Messaging.Model
 {
-    public class HandlerGraph : IHasRetryPolicies, IGeneratesCode, IHandlerConfiguration
+    public class HandlerGraph : IGeneratesCode, IHandlerConfiguration
     {
         public static readonly string Context = "context";
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
@@ -41,7 +42,23 @@ namespace Jasper.Messaging.Model
             // All of this is to seed the handler and its associated retry policies
             // for scheduling outgoing messages
             _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler());
+
+            GlobalPolicy<SagaFramePolicy>();
         }
+
+        internal void StartCompiling(JasperRegistry registry)
+        {
+            Compiling = Source.FindCalls(registry).ContinueWith(t =>
+            {
+                var calls = t.Result;
+
+                if (calls != null && calls.Any()) AddRange(calls);
+
+                Group();
+            });
+        }
+
+        internal Task Compiling { get; private set; }
 
 
         internal IContainer Container { get; set; }

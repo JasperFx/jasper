@@ -69,7 +69,7 @@ namespace Jasper.Configuration
 
         private void messaging(JasperRegistry parent)
         {
-            Policies.Add(new HandlerScopingPolicy(parent.Messaging.Graph));
+            Policies.Add(new HandlerScopingPolicy(parent.HandlerGraph));
 
             ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
 
@@ -78,8 +78,8 @@ namespace Jasper.Configuration
             For<IEnvelopePersistence>().Use<NulloEnvelopePersistence>();
             this.AddSingleton<InMemorySagaPersistor>();
 
-            this.AddSingleton(parent.Messaging.Graph);
-            this.AddSingleton<ISubscriberGraph>(parent.Messaging.Subscribers);
+            this.AddSingleton(parent.HandlerGraph);
+            this.AddSingleton<ISubscriberGraph>(new SubscriberGraph());
 
 
             For<ITransport>()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Jasper.Configuration;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
 using Jasper.Settings;
@@ -12,12 +13,10 @@ namespace Jasper.Messaging.Configuration
     public class PublishingExpression
     {
         private readonly JasperRegistry _parent;
-        private readonly MessagingConfiguration _bus;
 
-        internal PublishingExpression(JasperRegistry parent, MessagingConfiguration bus)
+        internal PublishingExpression(JasperRegistry parent)
         {
             _parent = parent;
-            _bus = bus;
         }
 
 
@@ -28,12 +27,12 @@ namespace Jasper.Messaging.Configuration
 
         public MessageTrackExpression Message(Type type)
         {
-            return new MessageTrackExpression(_parent, _bus, RoutingScope.Type, type.ToMessageTypeName());
+            return new MessageTrackExpression(_parent, RoutingScope.Type, type.ToMessageTypeName());
         }
 
         public MessageTrackExpression MessagesFromNamespace(string @namespace)
         {
-            return new MessageTrackExpression(_parent, _bus, RoutingScope.Namespace, @namespace);
+            return new MessageTrackExpression(_parent, RoutingScope.Namespace, @namespace);
         }
 
         public MessageTrackExpression MessagesFromNamespaceContaining<T>()
@@ -43,7 +42,7 @@ namespace Jasper.Messaging.Configuration
 
         public MessageTrackExpression MessagesFromAssembly(Assembly assembly)
         {
-            return new MessageTrackExpression(_parent, _bus, RoutingScope.Assembly, assembly.GetName().Name);
+            return new MessageTrackExpression(_parent, RoutingScope.Assembly, assembly.GetName().Name);
         }
 
         public MessageTrackExpression MessagesFromAssemblyContaining<T>()
@@ -79,16 +78,14 @@ namespace Jasper.Messaging.Configuration
 
         public class MessageTrackExpression
         {
-            private readonly MessagingConfiguration _bus;
             private readonly string _match;
             private readonly RoutingScope _routingScope;
             private readonly JasperRegistry _parent;
 
-            internal MessageTrackExpression(JasperRegistry parent, MessagingConfiguration bus,
+            internal MessageTrackExpression(JasperRegistry parent,
                 RoutingScope routingScope, string match)
             {
                 _parent = parent;
-                _bus = bus;
                 _routingScope = routingScope;
                 _match = match;
             }

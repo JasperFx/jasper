@@ -8,6 +8,7 @@ using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Model;
 using Jasper.Settings;
 using Jasper.Util;
 using Lamar;
@@ -62,7 +63,7 @@ namespace Jasper
             Settings = new SettingsGraph(this);
             Options = new JasperOptions();
 
-            Publish = new PublishingExpression(this, Messaging);
+            Publish = new PublishingExpression(this);
 
             deriveServiceName();
         }
@@ -96,13 +97,13 @@ namespace Jasper
         /// </summary>
         public Assembly ApplicationAssembly { get; private set; }
 
-        internal MessagingConfiguration Messaging { get; } = new MessagingConfiguration();
+        internal HandlerGraph HandlerGraph { get; } = new HandlerGraph();
 
         /// <summary>
         ///     Options to control how Jasper discovers message handler actions, error
         ///     handling, local worker queues, and other policies on message handling
         /// </summary>
-        public IHandlerConfiguration Handlers => Messaging.Handling;
+        public IHandlerConfiguration Handlers => HandlerGraph;
 
 
         /// <summary>
