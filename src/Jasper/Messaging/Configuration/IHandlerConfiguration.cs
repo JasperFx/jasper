@@ -14,11 +14,6 @@ namespace Jasper.Messaging.Configuration
     public interface IHandlerConfiguration : IHasRetryPolicies
     {
         /// <summary>
-        ///     Configure the default local worker queue
-        /// </summary>
-        IListenerSettings DefaultWorker { get; }
-
-        /// <summary>
         ///     Configure how Jasper discovers message handler classes to override
         ///     the built in conventions
         /// </summary>
@@ -39,13 +34,6 @@ namespace Jasper.Messaging.Configuration
         /// <param name="policy"></param>
         void GlobalPolicy(IHandlerPolicy policy);
 
-        /// <summary>
-        ///     Configure a named, local worker queue, including the routing of message
-        ///     types to local worker queue and maximum concurrency
-        /// </summary>
-        /// <param name="queueName"></param>
-        /// <returns></returns>
-        IListenerSettings Worker(string queueName);
     }
 
 
@@ -65,13 +53,6 @@ namespace Jasper.Messaging.Configuration
             configure(Source);
             return this;
         }
-
-        public IListenerSettings Worker(string queueName)
-        {
-            return _graph.Workers[queueName];
-        }
-
-        public IListenerSettings DefaultWorker => _graph.Workers[TransportConstants.Default];
 
         // TODO -- have a Local option later
         /// <summary>

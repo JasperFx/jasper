@@ -81,39 +81,6 @@ namespace Jasper.Testing.Messaging
             }
         }
 
-        [Fact]
-        public async Task enqueue_locally_with_designated_worker_queue()
-        {
-            var registry = new JasperRegistry();
-            registry.Handlers.DisableConventionalDiscovery();
 
-            registry.Services.Scan(x =>
-            {
-                x.TheCallingAssembly();
-                x.WithDefaultConventions();
-            });
-            registry.Handlers.IncludeType<MessageConsumer>();
-
-            registry.Handlers.Worker("foo").MaximumParallelization(3);
-
-            var tracker = new MessageTracker();
-            registry.Services.AddSingleton(tracker);
-
-            using (var runtime = JasperHost.For(registry))
-            {
-                var waiter = tracker.WaitFor<Message1>();
-                var message = new Message1
-                {
-                    Id = Guid.NewGuid()
-                };
-
-                await runtime.Get<IMessageContext>().Enqueue(message, "foo");
-
-                var received = await waiter;
-
-                received.Message.As<Message1>().Id.ShouldBe(message.Id);
-            }
-
-        }
     }
 }
