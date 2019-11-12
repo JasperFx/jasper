@@ -55,20 +55,20 @@ namespace Jasper.Testing
         }
 
 
-        protected void with(JasperRegistry registry)
+        protected void with(JasperOptions options)
         {
-            registry.Services.Scan(_ =>
+            options.Services.Scan(_ =>
             {
                 _.TheCallingAssembly();
                 _.WithDefaultConventions();
             });
 
-            Host = JasperHost.For(registry);
+            Host = JasperHost.For(options);
         }
 
-        protected void with(Action<JasperRegistry> configuration)
+        protected void with(Action<JasperOptions> configuration)
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperOptions();
 
 
             configuration(registry);
@@ -76,7 +76,7 @@ namespace Jasper.Testing
             with(registry);
         }
 
-        protected void with<T>() where T : JasperRegistry, new()
+        protected void with<T>() where T : JasperOptions, new()
         {
             var registry = new T();
             with(registry);

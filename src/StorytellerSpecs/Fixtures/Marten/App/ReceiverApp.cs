@@ -6,7 +6,7 @@ using Jasper.Util;
 
 namespace StorytellerSpecs.Fixtures.Marten.App
 {
-    public class ReceiverApp : JasperRegistry
+    public class ReceiverApp : JasperOptions
     {
         public static readonly Uri Listener = "tcp://localhost:2555/durable".ToUri();
 

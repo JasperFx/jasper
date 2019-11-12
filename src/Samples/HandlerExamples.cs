@@ -167,7 +167,7 @@ namespace Jasper.Testing.Samples
 
 
     // SAMPLE: ExplicitHandlerDiscovery
-    public class ExplicitHandlerDiscovery : JasperRegistry
+    public class ExplicitHandlerDiscovery : JasperOptions
     {
         public ExplicitHandlerDiscovery()
         {

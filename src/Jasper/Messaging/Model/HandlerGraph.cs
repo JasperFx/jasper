@@ -46,9 +46,9 @@ namespace Jasper.Messaging.Model
             GlobalPolicy<SagaFramePolicy>();
         }
 
-        internal void StartCompiling(JasperRegistry registry)
+        internal void StartCompiling(JasperOptions options)
         {
-            Compiling = Source.FindCalls(registry).ContinueWith(t =>
+            Compiling = Source.FindCalls(options).ContinueWith(t =>
             {
                 var calls = t.Result;
 

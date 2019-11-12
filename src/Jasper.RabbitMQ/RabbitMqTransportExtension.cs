@@ -12,10 +12,10 @@ namespace Jasper.RabbitMQ
 {
     public class RabbitMqTransportExtension : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
-            registry.Settings.Require<RabbitMqOptions>();
-            registry.Services.AddSingleton<ITransport, RabbitMqTransport>();
+            options.Settings.Require<RabbitMqOptions>();
+            options.Services.AddSingleton<ITransport, RabbitMqTransport>();
         }
     }
 }

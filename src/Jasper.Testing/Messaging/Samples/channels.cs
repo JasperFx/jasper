@@ -19,7 +19,7 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
     // SAMPLE: PingApp
-    public class PingApp : JasperRegistry
+    public class PingApp : JasperOptions
     {
         public PingApp(SampleSettings settings)
         {
@@ -33,7 +33,7 @@ namespace Jasper.Testing.Messaging.Samples
         }
     }
 
-    public class PongApp : JasperRegistry
+    public class PongApp : JasperOptions
     {
         public PongApp(SampleSettings settings)
         {
@@ -55,7 +55,7 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
     // SAMPLE: ListeningApp
-    public class ListeningApp : JasperRegistry
+    public class ListeningApp : JasperOptions
     {
         public ListeningApp(SampleSettings settings)
         {
@@ -95,7 +95,7 @@ namespace Jasper.Testing.Messaging.Samples
 
 
     // SAMPLE: StaticRoutingApp
-    public class StaticRoutingApp : JasperRegistry
+    public class StaticRoutingApp : JasperOptions
     {
         public StaticRoutingApp(AppSettings settings)
         {

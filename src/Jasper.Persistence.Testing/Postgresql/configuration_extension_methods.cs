@@ -54,7 +54,7 @@ namespace Jasper.Persistence.Testing.Postgresql
     }
 
     // SAMPLE: AppUsingPostgresql
-    public class AppUsingPostgresql : JasperRegistry
+    public class AppUsingPostgresql : JasperOptions
     {
         public AppUsingPostgresql()
         {

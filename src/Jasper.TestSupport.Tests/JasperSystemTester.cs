@@ -110,7 +110,7 @@ namespace Jasper.TestSupport.Tests
         }
     }
 
-    public class FakeStorytellerSystem : JasperStorytellerHost<JasperRegistry>
+    public class FakeStorytellerSystem : JasperStorytellerHost<JasperOptions>
     {
         public readonly DisposableGuy DisposableGuy = new DisposableGuy();
 

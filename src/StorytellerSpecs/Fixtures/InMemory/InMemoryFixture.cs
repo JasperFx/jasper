@@ -36,17 +36,17 @@ namespace StorytellerSpecs.Fixtures.InMemory
     [Hidden]
     public class InMemoryServiceBusApplication : InMemoryFixture
     {
-        private JasperRegistry _registry;
+        private JasperOptions _options;
 
         public override void SetUp()
         {
-            _registry = new JasperRegistry();
-            _registry.Services.AddSingleton(new MessageTracker());
+            _options = new JasperOptions();
+            _options.Services.AddSingleton(new MessageTracker());
         }
 
         public override void TearDown()
         {
-            var runtime = JasperHost.For(_registry);
+            var runtime = JasperHost.For(_options);
 
             var graph = runtime.Get<HandlerGraph>();
 
@@ -59,10 +59,10 @@ namespace StorytellerSpecs.Fixtures.InMemory
         {
             var type = messageTypeFor(messageType);
 
-            _registry.Publish.Message(type).To(channel);
+            _options.Publish.Message(type).To(channel);
 
             // Just makes the test harness listen for things
-            _registry.Transports.ListenForMessagesFrom(channel);
+            _options.Transports.ListenForMessagesFrom(channel);
         }
     }
 }

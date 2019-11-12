@@ -8,8 +8,8 @@ namespace Jasper.Testing.Bootstrapping
         [Fact]
         public void determine_name_from_JasperRegistry_type_name()
         {
-            new MyAppJasperRegistry().ServiceName.ShouldBe("MyApp");
-            new MyApp2Registry().ServiceName.ShouldBe("MyApp2");
+            new MyAppJasperOptions().ServiceName.ShouldBe("MyApp");
+            new MyApp2Options().ServiceName.ShouldBe("MyApp2");
             new MyApp3().ServiceName.ShouldBe("MyApp3");
         }
 
@@ -22,23 +22,23 @@ namespace Jasper.Testing.Bootstrapping
         [Fact]
         public void use_the_calling_assembly_name_if_it_is_a_basic_registry()
         {
-            new JasperRegistry().ServiceName.ShouldBe("Jasper.Testing");
+            new JasperOptions().ServiceName.ShouldBe("Jasper.Testing");
         }
     }
 
-    public class MyAppJasperRegistry : JasperRegistry
+    public class MyAppJasperOptions : JasperOptions
     {
     }
 
-    public class MyApp2Registry : JasperRegistry
+    public class MyApp2Options : JasperOptions
     {
     }
 
-    public class MyApp3 : JasperRegistry
+    public class MyApp3 : JasperOptions
     {
     }
 
-    public class MyApp4 : JasperRegistry
+    public class MyApp4 : JasperOptions
     {
         public MyApp4()
         {

@@ -13,24 +13,24 @@ namespace Jasper.Persistence.Marten
 {
     public class MartenExtension : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
-            registry.Services.AddSingleton<IDocumentStore>(x =>
+            options.Services.AddSingleton<IDocumentStore>(x =>
             {
                 var storeOptions = x.GetService<StoreOptions>();
                 var documentStore = new DocumentStore(storeOptions);
                 return documentStore;
             });
 
-            registry.Handlers.GlobalPolicy<FineGrainedSessionCreationPolicy>();
+            options.Handlers.GlobalPolicy<FineGrainedSessionCreationPolicy>();
 
 
-            registry.Services.AddScoped(c => c.GetService<IDocumentStore>().OpenSession());
-            registry.Services.AddScoped(c => c.GetService<IDocumentStore>().QuerySession());
+            options.Services.AddScoped(c => c.GetService<IDocumentStore>().OpenSession());
+            options.Services.AddScoped(c => c.GetService<IDocumentStore>().QuerySession());
 
-            registry.CodeGeneration.Sources.Add(new SessionVariableSource());
+            options.CodeGeneration.Sources.Add(new SessionVariableSource());
 
-            registry.Services.AddSingleton(x =>
+            options.Services.AddSingleton(x =>
             {
                 var options = x.GetRequiredService<StoreOptions>();
                 return new PostgresqlSettings

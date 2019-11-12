@@ -18,21 +18,21 @@ namespace Jasper.Persistence.SqlServer
     /// </summary>
     public class SqlServerBackedPersistence : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
-            registry.Settings.Require<SqlServerSettings>();
+            options.Settings.Require<SqlServerSettings>();
 
-            registry.Services.AddTransient<IEnvelopePersistence, SqlServerEnvelopePersistence>();
+            options.Services.AddTransient<IEnvelopePersistence, SqlServerEnvelopePersistence>();
 
-            registry.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
+            options.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
 
 
-            registry.Services.For<SqlConnection>().Use<SqlConnection>();
+            options.Services.For<SqlConnection>().Use<SqlConnection>();
 
-            registry.Services.Add(new SqlConnectionInstance(typeof(SqlConnection)));
-            registry.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
+            options.Services.Add(new SqlConnectionInstance(typeof(SqlConnection)));
+            options.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
 
-            registry.CodeGeneration.SetTransactions(new SqlServerTransactionFrameProvider());
+            options.CodeGeneration.SetTransactions(new SqlServerTransactionFrameProvider());
         }
     }
 }

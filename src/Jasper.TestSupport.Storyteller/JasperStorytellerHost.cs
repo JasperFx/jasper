@@ -16,22 +16,22 @@ namespace Jasper.TestSupport.Storyteller
 {
     public static class JasperStorytellerHost
     {
-        public static void Run<T>(string[] args) where T : JasperRegistry, new()
+        public static void Run<T>(string[] args) where T : JasperOptions, new()
         {
             StorytellerAgent.Run(args, For<T>());
         }
 
-        public static JasperStorytellerHost<T> For<T>() where T : JasperRegistry, new()
+        public static JasperStorytellerHost<T> For<T>() where T : JasperOptions, new()
         {
             return new JasperStorytellerHost<T>(new T());
         }
 
-        public static JasperStorytellerHost<JasperRegistry> Basic(Action<JasperRegistry> configure = null)
+        public static JasperStorytellerHost<JasperOptions> Basic(Action<JasperOptions> configure = null)
         {
-            var jasperRegistry = new JasperRegistry();
+            var jasperRegistry = new JasperOptions();
             configure?.Invoke(jasperRegistry);
 
-            return new JasperStorytellerHost<JasperRegistry>(jasperRegistry);
+            return new JasperStorytellerHost<JasperOptions>(jasperRegistry);
         }
     }
 
@@ -40,7 +40,7 @@ namespace Jasper.TestSupport.Storyteller
         ExternalNode NodeFor(string serviceName);
     }
 
-    public class JasperStorytellerHost<T> : ISystem, INodes where T : JasperRegistry
+    public class JasperStorytellerHost<T> : ISystem, INodes where T : JasperOptions
     {
         private readonly Dictionary<string, ExternalNode> _nodes = new Dictionary<string, ExternalNode>();
 
@@ -137,7 +137,7 @@ namespace Jasper.TestSupport.Storyteller
             return _warmup;
         }
 
-        public ExternalNode AddNode<TRegistry>(Action<TRegistry> configure = null) where TRegistry : JasperRegistry, new()
+        public ExternalNode AddNode<TRegistry>(Action<TRegistry> configure = null) where TRegistry : JasperOptions, new()
         {
             var registry = new TRegistry();
             configure?.Invoke(registry);
@@ -145,9 +145,9 @@ namespace Jasper.TestSupport.Storyteller
             return AddNode(registry);
         }
 
-        public ExternalNode AddNode(JasperRegistry registry)
+        public ExternalNode AddNode(JasperOptions options)
         {
-            var node = new ExternalNode(registry);
+            var node = new ExternalNode(options);
             _nodes.Add(node.Host.Services.GetService<JasperOptions>().ServiceName, node);
 
             return node;
@@ -221,19 +221,19 @@ namespace Jasper.TestSupport.Storyteller
 
     public class ExternalNode
     {
-        private readonly JasperRegistry _registry;
+        private readonly JasperOptions _options;
 
-        public ExternalNode(JasperRegistry registry)
+        public ExternalNode(JasperOptions options)
         {
-            _registry = registry;
+            _options = options;
         }
 
         public IHost Host { get; private set; }
 
         internal void Bootstrap(IMessageLogger logger)
         {
-            _registry.Services.AddSingleton(logger);
-            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(_registry).Start();
+            _options.Services.AddSingleton(logger);
+            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(_options).Start();
         }
 
         public Task Send<T>(T message)

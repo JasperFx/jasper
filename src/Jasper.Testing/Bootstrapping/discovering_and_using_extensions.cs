@@ -28,7 +28,7 @@ namespace Jasper.Testing.Bootstrapping
     }
 
 
-    public class AppWithOverrides : JasperRegistry
+    public class AppWithOverrides : JasperOptions
     {
         public AppWithOverrides()
         {

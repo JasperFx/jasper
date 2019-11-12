@@ -3,7 +3,7 @@
 namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
 {
     // SAMPLE: SagaApp-with-Marten
-    public class MartenSagaApp : JasperRegistry
+    public class MartenSagaApp : JasperOptions
     {
         public MartenSagaApp()
         {

@@ -11,7 +11,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         [Fact]
         public void picks_up_on_handlers_from_extension()
         {
-            theRegistry.Include<MyExtension>();
+            theOptions.Include<MyExtension>();
 
             var handlerChain = (theHandlers()).HandlerFor<ExtensionMessage>().Chain;
             handlerChain.Handlers.Single()
@@ -21,9 +21,9 @@ namespace Jasper.Testing.Messaging.Bootstrapping
 
     public class MyExtension : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
-            registry.Handlers.IncludeType<ExtensionThing>();
+            options.Handlers.IncludeType<ExtensionThing>();
         }
     }
 

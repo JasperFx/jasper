@@ -23,26 +23,26 @@ namespace StorytellerSpecs.Fixtures.Marten
             Title = "Marten Outbox & Scheduled Message Mechanics";
         }
 
-        protected override void configureReceiver(JasperRegistry receiverRegistry)
+        protected override void configureReceiver(JasperOptions receiverOptions)
         {
-            receiverRegistry.Settings.ConfigureMarten(marten =>
+            receiverOptions.Settings.ConfigureMarten(marten =>
             {
                 marten.Connection(Servers.PostgresConnectionString);
                 marten.DatabaseSchemaName = "outbox_receiver";
             });
 
-            receiverRegistry.Include<MartenBackedPersistence>();
+            receiverOptions.Include<MartenBackedPersistence>();
         }
 
-        protected override void configureSender(JasperRegistry senderRegistry)
+        protected override void configureSender(JasperOptions senderOptions)
         {
-            senderRegistry.Settings.ConfigureMarten(marten =>
+            senderOptions.Settings.ConfigureMarten(marten =>
             {
                 marten.Connection(Servers.PostgresConnectionString);
                 marten.DatabaseSchemaName = "outbox_sender";
             });
 
-            senderRegistry.Include<MartenBackedPersistence>();
+            senderOptions.Include<MartenBackedPersistence>();
         }
 
 

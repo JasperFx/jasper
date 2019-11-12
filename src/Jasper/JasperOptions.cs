@@ -1,57 +1,93 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Baseline;
-using Baseline.Dates;
+using BaselineTypeDiscovery;
 using Jasper.Configuration;
-using Jasper.Messaging.Durability;
+using Jasper.Messaging;
+using Jasper.Messaging.Configuration;
+using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
+using Jasper.Settings;
 using Jasper.Util;
+using Lamar;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Model;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 
 namespace Jasper
 {
     /// <summary>
-    /// Configures the Jasper messaging transports in your application
+    ///     Completely defines and configures a Jasper application
     /// </summary>
     public partial class JasperOptions : ITransportsExpression
     {
+        [Obsolete("Replace w/ app cancellation token later")]
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
 
-        private string _serviceName = "Jasper";
 
-        public JasperOptions()
+        protected static Assembly _rememberedCallingAssembly;
+
+        protected readonly ServiceRegistry _applicationServices = new ServiceRegistry();
+
+        private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();
+        protected readonly ServiceRegistry _baseServices;
+
+        private readonly IList<Action<IHostBuilder>> _builderAlterations
+            = new List<Action<IHostBuilder>>();
+
+        private readonly IList<Type> _extensionTypes = new List<Type>();
+
+
+        public JasperOptions() : this(null)
         {
+        }
+
+        public JasperOptions(string assemblyName)
+        {
+            Services = _applicationServices;
+
+            establishApplicationAssembly(assemblyName);
+
+            var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
+            CodeGeneration = new GenerationRules($"{name.Replace(".", "_")}_Generated");
+            CodeGeneration.Sources.Add(new NowTimeVariableSource());
+
+            CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+            CodeGeneration.Assemblies.Add(ApplicationAssembly);
+
+
+            _baseServices = new JasperServiceRegistry(this);
+
+            _baseServices.AddSingleton(CodeGeneration);
+
+            Settings = new SettingsGraph(this);
+
+            Publish = new PublishingExpression(this);
+
+            deriveServiceName();
+
+
+
             ListenForMessagesFrom(TransportConstants.RetryUri);
             ListenForMessagesFrom(TransportConstants.ScheduledUri);
             ListenForMessagesFrom(TransportConstants.RepliesUri);
 
-            ServiceName = "Jasper";
-
             UniqueNodeId = Guid.NewGuid().ToString().GetDeterministicHashCode();
         }
 
-        [JsonIgnore] public int UniqueNodeId { get; }
+        // TODO -- see if this can be made internal?
+        public int UniqueNodeId { get; }
 
-
-        /// <summary>
-        ///     Logical service name of this application used for instrumentation purposes
-        /// </summary>
-        /// <exception cref="ArgumentNullException"></exception>
-        [JsonIgnore]
-        public string ServiceName
-        {
-            get => _serviceName;
-            set
-            {
-                if (ServiceName.IsEmpty()) throw new ArgumentNullException(nameof(ServiceName));
-
-                _serviceName = value;
-            }
-        }
-
+        // TODO -- see if this can be made internal?
+        public CancellationToken Cancellation => _cancellation.Token;
 
         /// <summary>
         /// Advanced configuration options for Jasper message processing,
@@ -60,50 +96,165 @@ namespace Jasper
         public AdvancedSettings Advanced { get; } = new AdvancedSettings();
 
 
-        [JsonIgnore] public CancellationToken Cancellation => _cancellation.Token;
+        /// <summary>
+        ///     Configure or extend the Lamar code generation
+        /// </summary>
+        public GenerationRules CodeGeneration { get; }
+
+        /// <summary>
+        ///     Register additional services to the underlying IoC container
+        /// </summary>
+        public ServiceRegistry Services { get; private set; }
+
+        /// <summary>
+        ///     Access to the strong typed configuration settings and alterations within
+        ///     a Jasper application
+        /// </summary>
+        public SettingsGraph Settings { get; }
+
+        /// <summary>
+        ///     The main application assembly for this Jasper system
+        /// </summary>
+        public Assembly ApplicationAssembly { get; private set; }
+
+        internal HandlerGraph HandlerGraph { get; } = new HandlerGraph();
+
+        /// <summary>
+        ///     Options to control how Jasper discovers message handler actions, error
+        ///     handling, local worker queues, and other policies on message handling
+        /// </summary>
+        public IHandlerConfiguration Handlers => HandlerGraph;
 
 
-        private readonly IList<ListenerSettings> _listeners = new List<ListenerSettings>();
+        /// <summary>
+        ///     Configure static message routing rules and message publishing rules
+        /// </summary>
+        public PublishingExpression Publish { get; }
 
+        /// <summary>
+        ///     Configure or disable the built in transports
+        /// </summary>
+        public ITransportsExpression Transports => this;
 
-        public ListenerSettings[] Listeners
+        /// <summary>
+        ///     Get or set the logical Jasper service name. By default, this is
+        ///     derived from the name of a custom JasperOptions
+        /// </summary>
+        public string ServiceName { get; set; }
+
+        internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();
+
+        /// <summary>
+        ///     Read only view of the extensions that have been applied to this
+        ///     JasperOptions
+        /// </summary>
+        public IReadOnlyList<IJasperExtension> AppliedExtensions => _appliedExtensions;
+
+        private void deriveServiceName()
         {
-            get => _listeners.ToArray();
-            set
+            if (GetType() == typeof(JasperOptions))
+                ServiceName = ApplicationAssembly?.GetName().Name ?? "JasperService";
+            else
+                ServiceName = GetType().Name.Replace("JasperOptions", "").Replace("Registry", "").Replace("Options", "");
+        }
+
+        private void establishApplicationAssembly(string assemblyName)
+        {
+            if (assemblyName.IsNotEmpty())
             {
-                _listeners.Clear();
-                if (value != null) _listeners.AddRange(value);
+                ApplicationAssembly = Assembly.Load(assemblyName);
             }
+            else if (GetType() == typeof(JasperOptions) || GetType() == typeof(JasperOptions))
+            {
+                if (_rememberedCallingAssembly == null)
+                    _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+
+                ApplicationAssembly = _rememberedCallingAssembly;
+            }
+            else
+            {
+                ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+            }
+
+            if (ApplicationAssembly == null)
+                throw new InvalidOperationException("Unable to determine an application assembly");
+        }
+
+        internal void ApplyExtensions(IJasperExtension[] extensions)
+        {
+            // Apply idempotency
+            extensions = extensions.Where(x => !_extensionTypes.Contains(x.GetType())).ToArray();
+
+            Settings.ApplyingExtensions = true;
+            Services = ExtensionServices;
+
+
+            foreach (var extension in extensions)
+            {
+                extension.Configure(this);
+                _appliedExtensions.Add(extension);
+            }
+
+
+            Services = _applicationServices;
+            Settings.ApplyingExtensions = false;
+
+            _extensionTypes.Fill(extensions.Select(x => x.GetType()));
         }
 
         /// <summary>
-        ///     Listen for messages at the given uri
+        ///     Applies the extension to this application
         /// </summary>
-        /// <param name="uri"></param>
-        public IListenerSettings ListenForMessagesFrom(Uri uri)
+        /// <param name="extension"></param>
+        public void Include(IJasperExtension extension)
         {
-            var listener = _listeners.FirstOrDefault(x => x.Uri == uri);
-            if (listener == null)
-            {
-                listener = new ListenerSettings
-                {
-                    Uri = uri
-                };
-
-                _listeners.Add(listener);
-            }
-
-            return listener;
+            ApplyExtensions(new[] {extension});
         }
 
         /// <summary>
-        ///     Establish a message listener to a known location and transport
+        ///     Applies the extension with optional configuration to the application
         /// </summary>
-        /// <param name="uriString"></param>
-        public IListenerSettings ListenForMessagesFrom(string uriString)
+        /// <param name="configure"></param>
+        /// <typeparam name="T"></typeparam>
+        public void Include<T>(Action<T> configure = null) where T : IJasperExtension, new()
         {
-            return ListenForMessagesFrom(uriString.ToUri());
+            var extension = new T();
+            configure?.Invoke(extension);
+
+            Include(extension);
         }
+
+        internal ServiceRegistry CombineServices()
+        {
+            var all = _baseServices.Concat(ExtensionServices).Concat(_applicationServices);
+
+            var combined = new ServiceRegistry();
+            combined.AddRange(all);
+
+            return combined;
+        }
+
+        /// <summary>
+        /// Can be overridden to perform any kind of hosting environment or configuration dependent
+        /// configuration of your Jasper application
+        /// </summary>
+        /// <param name="hosting"></param>
+        /// <param name="config"></param>
+        public virtual void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            // Nothing
+        }
+
+        /// <summary>
+        /// Newtonsoft.Json serialization settings for messages sent or received
+        /// </summary>
+        public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+        };
+
 
     }
+
 }

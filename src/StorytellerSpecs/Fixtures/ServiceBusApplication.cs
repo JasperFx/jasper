@@ -16,22 +16,22 @@ namespace StorytellerSpecs.Fixtures
     [Hidden]
     public class ServiceBusApplication : BusFixture
     {
-        private JasperRegistry _registry;
+        private JasperOptions _options;
 
         public override void SetUp()
         {
-            _registry = new JasperRegistry();
+            _options = new JasperOptions();
 
-            _registry.Services.AddSingleton(new MessageTracker());
-            _registry.Services.AddSingleton(new MessageHistory());
+            _options.Services.AddSingleton(new MessageTracker());
+            _options.Services.AddSingleton(new MessageHistory());
 
 
-            _registry.Services.For<IMessageLogger>().Use<StorytellerMessageLogger>().Singleton();
+            _options.Services.For<IMessageLogger>().Use<StorytellerMessageLogger>().Singleton();
         }
 
         public override void TearDown()
         {
-            var runtime = JasperHost.For(_registry);
+            var runtime = JasperHost.For(_options);
 
             // Goofy, but gets things hooked up here
             runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>().Start(Context);
@@ -49,28 +49,28 @@ namespace StorytellerSpecs.Fixtures
         {
             var type = messageTypeFor(messageType);
 
-            _registry.Publish.Message(type).To(channel);
+            _options.Publish.Message(type).To(channel);
 
             // Just makes the test harness listen for things
-            _registry.Transports.ListenForMessagesFrom(channel);
+            _options.Transports.ListenForMessagesFrom(channel);
         }
 
         [FormatAs("When a Message1 is received, it cascades a matching Message2")]
         public void ReceivingMessage1CascadesMessage2()
         {
-            _registry.Handlers.IncludeType<Cascader1>();
+            _options.Handlers.IncludeType<Cascader1>();
         }
 
         [FormatAs("When Message2 is received, it cascades matching Message3 and Message4")]
         public void ReceivingMessage2CascadesMultiples()
         {
-            _registry.Handlers.IncludeType<Cascader2>();
+            _options.Handlers.IncludeType<Cascader2>();
         }
 
         [FormatAs("Listen for incoming messages from {channel}")]
         public void ListenForMessagesFrom([SelectionList("Channels")] Uri channel)
         {
-            _registry.Transports.ListenForMessagesFrom(channel);
+            _options.Transports.ListenForMessagesFrom(channel);
         }
     }
 }

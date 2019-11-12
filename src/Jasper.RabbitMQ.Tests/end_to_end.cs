@@ -471,7 +471,7 @@ namespace Jasper.RabbitMQ.Tests
     }
 
 
-    public class RabbitMqUsingApp : JasperRegistry
+    public class RabbitMqUsingApp : JasperOptions
     {
         public RabbitMqUsingApp()
         {
@@ -489,7 +489,7 @@ namespace Jasper.RabbitMQ.Tests
         }
     }
 
-    public class RabbitMqUsingApp2 : JasperRegistry
+    public class RabbitMqUsingApp2 : JasperOptions
     {
         public RabbitMqUsingApp2()
         {

@@ -53,7 +53,7 @@ namespace Jasper.Persistence.Testing
         }
     }
 
-    public class DurableSender : JasperRegistry
+    public class DurableSender : JasperOptions
     {
         public DurableSender(bool latched)
         {

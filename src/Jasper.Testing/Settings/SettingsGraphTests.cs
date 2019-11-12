@@ -9,15 +9,15 @@ namespace Jasper.Testing.Settings
     {
         public SettingsGraphTests()
         {
-            theRegistry = new JasperRegistry();
-            theRegistry.Handlers.DisableConventionalDiscovery();
+            theOptions = new JasperOptions();
+            theOptions.Handlers.DisableConventionalDiscovery();
         }
 
-        private readonly JasperRegistry theRegistry;
+        private readonly JasperOptions theOptions;
 
         private void with<T>(Action<T> action)
         {
-            using (var runtime = JasperHost.For(theRegistry))
+            using (var runtime = JasperHost.For(theOptions))
             {
                 var service = runtime.Get<T>();
                 action(service);
@@ -36,7 +36,7 @@ namespace Jasper.Testing.Settings
         [Fact]
         public void can_alter_settings()
         {
-            theRegistry.Settings.Alter<MyFakeSettings>(s => { s.SomeSetting = 5; });
+            theOptions.Settings.Alter<MyFakeSettings>(s => { s.SomeSetting = 5; });
 
 
             with<MyFakeSettings>(x => x.SomeSetting.ShouldBe(5));

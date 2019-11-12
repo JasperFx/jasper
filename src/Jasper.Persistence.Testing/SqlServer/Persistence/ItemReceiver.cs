@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Persistence.Testing.SqlServer.Persistence
 {
-    public class ItemReceiver : JasperRegistry
+    public class ItemReceiver : JasperOptions
     {
         public ItemReceiver()
         {

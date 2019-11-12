@@ -42,7 +42,7 @@ namespace Jasper.Testing.Messaging.Sagas
             return _host.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
         }
 
-        protected virtual void configure(JasperRegistry registry)
+        protected virtual void configure(JasperOptions options)
         {
             // nothing
         }

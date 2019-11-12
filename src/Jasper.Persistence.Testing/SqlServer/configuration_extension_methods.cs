@@ -54,7 +54,7 @@ namespace Jasper.Persistence.Testing.SqlServer
     }
 
     // SAMPLE: AppUsingSqlServer
-    public class AppUsingSqlServer : JasperRegistry
+    public class AppUsingSqlServer : JasperOptions
     {
         public AppUsingSqlServer()
         {

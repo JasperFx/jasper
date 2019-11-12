@@ -36,7 +36,7 @@ namespace Jasper.Persistence.Testing.Marten
         public Guid Id { get; set; }
     }
 
-    public class MartenUsingApp : JasperRegistry
+    public class MartenUsingApp : JasperOptions
     {
         public MartenUsingApp()
         {

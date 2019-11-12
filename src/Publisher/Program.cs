@@ -19,7 +19,7 @@ namespace Publisher
     }
 
     // SAMPLE: PublisherApp
-    public class PublisherApp : JasperRegistry
+    public class PublisherApp : JasperOptions
     {
         public PublisherApp()
         {

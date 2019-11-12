@@ -46,7 +46,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             return Embed<NodeFixture>("For a service")
                 .After(c =>
                 {
-                    var registry = c.State.Retrieve<JasperRegistry>();
+                    var registry = c.State.Retrieve<JasperOptions>();
                     _nodes.Add(registry);
                     _initialized = false;
                 });
@@ -72,7 +72,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             {
                 if (_publisher == null)
                 {
-                    var registry = new JasperRegistry
+                    var registry = new JasperOptions
                     {
                         ServiceName = "Publisher"
                     };
@@ -102,7 +102,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
     [Hidden]
     public class NodeFixture : BusFixture
     {
-        private JasperRegistry _registry;
+        private JasperOptions _options;
 
         public NodeFixture()
         {
@@ -111,25 +111,25 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
         public override void SetUp()
         {
-            _registry = new JasperRegistry();
-            _registry.Handlers.DisableConventionalDiscovery();
+            _options = new JasperOptions();
+            _options.Handlers.DisableConventionalDiscovery();
 
-            _registry.Handlers.IncludeType<Message1Handler>();
-            _registry.Handlers.IncludeType<Message2Handler>();
-            _registry.Handlers.IncludeType<Message3Handler>();
-            _registry.Handlers.IncludeType<Message4Handler>();
-            _registry.Handlers.IncludeType<Message5Handler>();
+            _options.Handlers.IncludeType<Message1Handler>();
+            _options.Handlers.IncludeType<Message2Handler>();
+            _options.Handlers.IncludeType<Message3Handler>();
+            _options.Handlers.IncludeType<Message4Handler>();
+            _options.Handlers.IncludeType<Message5Handler>();
         }
 
         public override void TearDown()
         {
-            Context.State.Store(_registry);
+            Context.State.Store(_options);
         }
 
         [FormatAs("The service name is {serviceName}")]
         public void ForService(string serviceName)
         {
-            _registry.ServiceName = serviceName;
+            _options.ServiceName = serviceName;
         }
     }
 
@@ -147,14 +147,14 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             foreach (var runtime in _hosts) runtime.Dispose();
         }
 
-        public IHost Add(JasperRegistry registry)
+        public IHost Add(JasperOptions options)
         {
-            registry.Services.For<MessageTracker>().Use(Tracker);
-            registry.Services.For<MessageHistory>().Use(History);
+            options.Services.For<MessageTracker>().Use(Tracker);
+            options.Services.For<MessageHistory>().Use(History);
 
-            registry.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
+            options.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
 
-            var runtime = JasperHost.For(registry);
+            var runtime = JasperHost.For(options);
             _hosts.Add(runtime);
 
             return runtime;

@@ -23,14 +23,14 @@ namespace StorytellerSpecs.Fixtures.Postgresql
             Title = "Postgresql-Only Outbox & Scheduled Message Mechanics";
         }
 
-        protected override void configureReceiver(JasperRegistry receiverRegistry)
+        protected override void configureReceiver(JasperOptions receiverOptions)
         {
-            receiverRegistry.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_receiver");
+            receiverOptions.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_receiver");
         }
 
-        protected override void configureSender(JasperRegistry senderRegistry)
+        protected override void configureSender(JasperOptions senderOptions)
         {
-            senderRegistry.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_sender");
+            senderOptions.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_sender");
         }
 
 

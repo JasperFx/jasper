@@ -14,21 +14,21 @@ namespace Jasper.Persistence.Postgresql
     /// </summary>
     public class PostgresqlBackedPersistence : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
-            registry.Settings.Require<PostgresqlSettings>();
+            options.Settings.Require<PostgresqlSettings>();
 
-            registry.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
+            options.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
 
-            registry.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
+            options.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
 
 
-            registry.Services.For<NpgsqlConnection>().Use<NpgsqlConnection>();
+            options.Services.For<NpgsqlConnection>().Use<NpgsqlConnection>();
 
-            registry.Services.Add(new NpgsqlConnectionInstance(typeof(NpgsqlConnection)));
-            registry.Services.Add(new NpgsqlConnectionInstance(typeof(DbConnection)));
+            options.Services.Add(new NpgsqlConnectionInstance(typeof(NpgsqlConnection)));
+            options.Services.Add(new NpgsqlConnectionInstance(typeof(DbConnection)));
 
-            registry.CodeGeneration.SetTransactions(new PostgresqlTransactionFrameProvider());
+            options.CodeGeneration.SetTransactions(new PostgresqlTransactionFrameProvider());
         }
     }
 }

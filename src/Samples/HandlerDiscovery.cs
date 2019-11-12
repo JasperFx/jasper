@@ -111,7 +111,7 @@ namespace Jasper.Testing.Samples.HandlerDiscovery
 
 
     // SAMPLE: CustomHandlerApp
-    public class CustomHandlerApp : JasperRegistry
+    public class CustomHandlerApp : JasperOptions
     {
         public CustomHandlerApp()
         {

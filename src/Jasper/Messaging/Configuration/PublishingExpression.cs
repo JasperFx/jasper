@@ -12,9 +12,9 @@ namespace Jasper.Messaging.Configuration
 {
     public class PublishingExpression
     {
-        private readonly JasperRegistry _parent;
+        private readonly JasperOptions _parent;
 
-        internal PublishingExpression(JasperRegistry parent)
+        internal PublishingExpression(JasperOptions parent)
         {
             _parent = parent;
         }
@@ -64,7 +64,7 @@ namespace Jasper.Messaging.Configuration
                 Uri = uri
             };
 
-            _parent.Options.AddSubscription(subscription);
+            _parent.AddSubscription(subscription);
 
         }
 
@@ -81,9 +81,9 @@ namespace Jasper.Messaging.Configuration
         {
             private readonly string _match;
             private readonly RoutingScope _routingScope;
-            private readonly JasperRegistry _parent;
+            private readonly JasperOptions _parent;
 
-            internal MessageTrackExpression(JasperRegistry parent,
+            internal MessageTrackExpression(JasperOptions parent,
                 RoutingScope routingScope, string match)
             {
                 _parent = parent;
@@ -101,7 +101,7 @@ namespace Jasper.Messaging.Configuration
                     Uri = address
                 };
 
-                _parent.Options.AddSubscription(subscription);
+                _parent.AddSubscription(subscription);
             }
 
             [Obsolete("replace w/ more specific methods per transport type")]
@@ -121,7 +121,7 @@ namespace Jasper.Messaging.Configuration
                     Scope = _routingScope, Match = _match, Uri = TransportConstants.LoopbackUri
                 };
 
-                _parent.Options.AddSubscription(subscription);
+                _parent.AddSubscription(subscription);
             }
 
         }

@@ -14,7 +14,7 @@ namespace Jasper.Testing.Messaging.Compilation
     {
         public CompilationContext()
         {
-            theRegistry.Handlers.DisableConventionalDiscovery();
+            theOptions.Handlers.DisableConventionalDiscovery();
         }
 
         public void Dispose()
@@ -28,11 +28,11 @@ namespace Jasper.Testing.Messaging.Compilation
         protected Envelope theEnvelope;
 
 
-        public readonly JasperRegistry theRegistry = new JasperRegistry();
+        public readonly JasperOptions theOptions = new JasperOptions();
 
         protected void AllHandlersCompileSuccessfully()
         {
-            using (var runtime = JasperHost.For(theRegistry))
+            using (var runtime = JasperHost.For(theOptions))
             {
                 runtime.Get<HandlerGraph>().Chains.Length.ShouldBeGreaterThan(0);
             }
@@ -41,7 +41,7 @@ namespace Jasper.Testing.Messaging.Compilation
 
         public MessageHandler HandlerFor<TMessage>()
         {
-            if (_host == null) _host = JasperHost.For(theRegistry);
+            if (_host == null) _host = JasperHost.For(theOptions);
 
 
             return _host.Get<HandlerGraph>().HandlerFor(typeof(TMessage));

@@ -9,7 +9,7 @@ namespace Jasper.Testing.Messaging.Compilation
     {
         public abstract_and_interface_calls()
         {
-            theRegistry.Handlers.IncludeType<HandlerWithMultipleCalls>();
+            theOptions.Handlers.IncludeType<HandlerWithMultipleCalls>();
         }
 
         [Fact]

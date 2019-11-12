@@ -25,7 +25,7 @@ namespace Jasper.Configuration
 {
     internal class JasperServiceRegistry : ServiceRegistry
     {
-        public JasperServiceRegistry(JasperRegistry parent)
+        public JasperServiceRegistry(JasperOptions parent)
         {
             For<IMetrics>().Use<NulloMetrics>();
             For<IHostedService>().Use<MetricsCollector>();
@@ -49,7 +49,7 @@ namespace Jasper.Configuration
         }
 
 
-        private void conneg(JasperRegistry parent)
+        private void conneg(JasperOptions parent)
         {
             this.AddOptions();
 
@@ -65,7 +65,7 @@ namespace Jasper.Configuration
             });
         }
 
-        private void messaging(JasperRegistry parent)
+        private void messaging(JasperOptions parent)
         {
             Policies.Add(new HandlerScopingPolicy(parent.HandlerGraph));
 

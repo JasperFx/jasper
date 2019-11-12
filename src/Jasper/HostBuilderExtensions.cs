@@ -16,14 +16,14 @@ namespace Jasper
     {
 
         /// <summary>
-        ///     Add Jasper to an ASP.Net Core application using a custom JasperOptionsBuilder (or JasperRegistry) type
+        ///     Add Jasper to an ASP.Net Core application using a custom JasperOptionsBuilder (or JasperOptions) type
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="overrides"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IHostBuilder UseJasper<T>(this IHostBuilder builder, Action<HostBuilderContext, JasperRegistry> overrides = null)
-            where T : JasperRegistry, new()
+        public static IHostBuilder UseJasper<T>(this IHostBuilder builder, Action<HostBuilderContext, JasperOptions> overrides = null)
+            where T : JasperOptions, new()
         {
             return builder.UseJasper(new T(), overrides);
         }
@@ -34,10 +34,10 @@ namespace Jasper
         /// <param name="builder"></param>
         /// <param name="overrides">Programmatically configure Jasper options</param>
         /// <returns></returns>
-        public static IHostBuilder UseJasper(this IHostBuilder builder, Action<HostBuilderContext, JasperRegistry> overrides = null)
+        public static IHostBuilder UseJasper(this IHostBuilder builder, Action<HostBuilderContext, JasperOptions> overrides = null)
         {
 
-            var registry = new JasperRegistry();
+            var registry = new JasperOptions();
 
             return builder.UseJasper(registry, overrides);
         }
@@ -48,18 +48,18 @@ namespace Jasper
         /// <param name="builder"></param>
         /// <param name="overrides">Programmatically configure Jasper options</param>
         /// <returns></returns>
-        public static IHostBuilder UseJasper(this IHostBuilder builder, Action<JasperRegistry> overrides)
+        public static IHostBuilder UseJasper(this IHostBuilder builder, Action<JasperOptions> overrides)
         {
-            return builder.UseJasper(new JasperRegistry(), (c, r) => overrides(r));
+            return builder.UseJasper(new JasperOptions(), (c, r) => overrides(r));
         }
 
         /// <summary>
         ///     Add Jasper to an ASP.Net Core application with a pre-built JasperOptionsBuilder
         /// </summary>
         /// <param name="builder"></param>
-        /// <param name="registry"></param>
+        /// <param name="optionsy"></param>
         /// <returns></returns>
-        public static IHostBuilder UseJasper(this IHostBuilder builder, JasperRegistry registry, Action<HostBuilderContext, JasperRegistry> customization = null)
+        public static IHostBuilder UseJasper(this IHostBuilder builder, JasperOptions options, Action<HostBuilderContext, JasperOptions> customization = null)
         {
             var appliedKey = "JASPER_HAS_BEEN_APPLIED";
             if (builder.Properties.ContainsKey(appliedKey))
@@ -70,23 +70,23 @@ namespace Jasper
             builder.UseServiceProviderFactory<IServiceCollection>(new LamarServiceProviderFactory());
             builder.UseServiceProviderFactory<ServiceRegistry>(new LamarServiceProviderFactory());
 
-            ExtensionLoader.ApplyExtensions(registry);
+            ExtensionLoader.ApplyExtensions(options);
 
             builder.ConfigureServices((context, services) =>
             {
-                registry.Configure(context.HostingEnvironment, context.Configuration);
+                options.Configure(context.HostingEnvironment, context.Configuration);
 
-                customization?.Invoke(context, registry);
+                customization?.Invoke(context, options);
 
-                registry.HandlerGraph.StartCompiling(registry);
+                options.HandlerGraph.StartCompiling(options);
 
-                registry.Settings.Apply(registry.Services);
+                options.Settings.Apply(options.Services);
 
-                services.AddSingleton(registry.Options);
+                services.AddSingleton(options);
                 services.AddSingleton<IHostedService, JasperActivator>();
 
-                services.AddRange(registry.CombineServices());
-                services.AddSingleton(registry);
+                services.AddRange(options.CombineServices());
+                services.AddSingleton(options);
             });
 
             return builder;

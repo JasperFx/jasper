@@ -51,13 +51,13 @@ namespace Jasper.Messaging.Configuration
             return this;
         }
 
-        internal async Task<HandlerCall[]> FindCalls(JasperRegistry registry)
+        internal async Task<HandlerCall[]> FindCalls(JasperOptions options)
         {
             if (_conventionalDiscoveryDisabled) return _explicitTypes.SelectMany(actionsFromType).ToArray();
 
-            if (registry.ApplicationAssembly == null) return new HandlerCall[0];
+            if (options.ApplicationAssembly == null) return new HandlerCall[0];
 
-            _assemblies.Add(registry.ApplicationAssembly);
+            _assemblies.Add(options.ApplicationAssembly);
 
             // TODO -- need to expose the module assemblies off of this
 

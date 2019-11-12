@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence
 {
-    public class ItemReceiver : JasperRegistry
+    public class ItemReceiver : JasperOptions
     {
         public ItemReceiver()
         {

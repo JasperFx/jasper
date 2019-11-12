@@ -12,11 +12,11 @@ namespace Jasper.Persistence.EntityFrameworkCore
     /// </summary>
     public class EntityFrameworkCoreBackedPersistence : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
             var frameProvider = new EFCorePersistenceFrameProvider();
-            registry.CodeGeneration.SetSagaPersistence(frameProvider);
-            registry.CodeGeneration.SetTransactions(frameProvider);
+            options.CodeGeneration.SetSagaPersistence(frameProvider);
+            options.CodeGeneration.SetTransactions(frameProvider);
         }
     }
 }

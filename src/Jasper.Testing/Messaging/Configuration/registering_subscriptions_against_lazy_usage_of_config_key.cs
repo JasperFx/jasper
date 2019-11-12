@@ -13,7 +13,7 @@ namespace Jasper.Testing.Messaging.Configuration
 {
     public class registering_subscriptions_against_lazy_usage_of_config_key : IDisposable
     {
-        private readonly JasperRegistry theRegistry = new JasperRegistry();
+        private readonly JasperOptions _options = new JasperOptions();
         private IDictionary<string, string> theConfigKeys = new Dictionary<string, string>();
         private IHost _host;
 
@@ -26,12 +26,12 @@ namespace Jasper.Testing.Messaging.Configuration
                 {
                     _host = Host.CreateDefaultBuilder()
                         .ConfigureAppConfiguration((c, builder) => builder.AddInMemoryCollection(theConfigKeys))
-                        .UseJasper(theRegistry)
+                        .UseJasper(_options)
                         .Start();
 
                 }
 
-                return _host.Services.GetService<JasperOptions>();
+                return _options;
             }
         }
 

@@ -44,7 +44,7 @@ namespace Jasper.Testing.Samples
     {
         public int Threshold { get; set; } = 10;
 
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
             // apply alterations
         }
@@ -52,7 +52,7 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
     // SAMPLE: AppWithExtensions
-    public class AppWithExtensions : JasperRegistry
+    public class AppWithExtensions : JasperOptions
     {
         public AppWithExtensions()
         {
@@ -78,7 +78,7 @@ namespace Jasper.Testing.Samples
     }
 
     // SAMPLE: Bootstrapping-ServiceRegistrations
-    public class MyJasperApp : JasperRegistry
+    public class MyJasperApp : JasperOptions
     {
         public MyJasperApp()
         {
@@ -96,7 +96,7 @@ namespace Jasper.Testing.Samples
 
 namespace Bootstrapping.Configuration
 {
-    public class MyJasperApp : JasperRegistry
+    public class MyJasperApp : JasperOptions
     {
 
     }
@@ -105,7 +105,7 @@ namespace Bootstrapping.Configuration
 namespace Bootstrapping.Configuration2
 {
     // SAMPLE: CustomJasperRegistry
-    public class MyJasperApp : JasperRegistry
+    public class MyJasperApp : JasperOptions
     {
         public MyJasperApp()
         {
@@ -120,7 +120,7 @@ namespace Bootstrapping.Configuration2
     {
         public static void Go()
         {
-            // SAMPLE: Bootstrapping-with-custom-JasperRegistry
+            // SAMPLE: Bootstrapping-with-custom-JasperOptions
             using (var runtime = JasperHost.For<MyJasperApp>())
             {
                 // do stuff
@@ -137,10 +137,10 @@ namespace Bootstrapping.Configuration2
         }
     }
 
-    // SAMPLE: CustomServiceRegistry
-    public class CustomServiceRegistry : JasperRegistry
+    // SAMPLE: CustomServiceOptions
+    public class CustomServiceOptions : JasperOptions
     {
-        public CustomServiceRegistry()
+        public CustomServiceOptions()
         {
             // The derived default would be "CustomService"
             ServiceName = "My Custom Service";

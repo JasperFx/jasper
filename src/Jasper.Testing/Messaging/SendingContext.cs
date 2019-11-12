@@ -8,8 +8,8 @@ namespace Jasper.Testing.Messaging
 {
     public abstract class SendingContext : IDisposable
     {
-        private readonly JasperRegistry receiverRegistry = new JasperRegistry();
-        private readonly JasperRegistry senderRegistry = new JasperRegistry();
+        private readonly JasperOptions receiverOptions = new JasperOptions();
+        private readonly JasperOptions senderOptions = new JasperOptions();
         protected IHost theReceiver;
         protected IHost theSender;
         protected MessageTracker theTracker;
@@ -17,11 +17,11 @@ namespace Jasper.Testing.Messaging
         public SendingContext()
         {
             theTracker = new MessageTracker();
-            receiverRegistry.Handlers
+            receiverOptions.Handlers
                 .DisableConventionalDiscovery()
                 .IncludeType<MessageConsumer>();
 
-            receiverRegistry.Services.For<MessageTracker>().Use(theTracker);
+            receiverOptions.Services.For<MessageTracker>().Use(theTracker);
         }
 
 
@@ -31,15 +31,15 @@ namespace Jasper.Testing.Messaging
             theReceiver?.Dispose();
         }
 
-        protected void StartTheSender(Action<JasperRegistry> configure)
+        protected void StartTheSender(Action<JasperOptions> configure)
         {
-            configure(senderRegistry);
-            theSender = JasperHost.For(senderRegistry);
+            configure(senderOptions);
+            theSender = JasperHost.For(senderOptions);
         }
 
         protected void RestartTheSender()
         {
-            theSender = JasperHost.For(senderRegistry);
+            theSender = JasperHost.For(senderOptions);
         }
 
         protected void StopTheSender()
@@ -47,15 +47,15 @@ namespace Jasper.Testing.Messaging
             theSender?.Dispose();
         }
 
-        protected void StartTheReceiver(Action<JasperRegistry> configure)
+        protected void StartTheReceiver(Action<JasperOptions> configure)
         {
-            configure(receiverRegistry);
-            theReceiver = JasperHost.For(receiverRegistry);
+            configure(receiverOptions);
+            theReceiver = JasperHost.For(receiverOptions);
         }
 
         protected void RestartTheReceiver()
         {
-            theSender = JasperHost.For(receiverRegistry);
+            theSender = JasperHost.For(receiverOptions);
         }
 
         protected void StopTheReceiver()

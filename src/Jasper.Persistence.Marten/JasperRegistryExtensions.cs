@@ -14,14 +14,14 @@ namespace Jasper.Persistence.Marten
             settings.Alter<StoreOptions>(x => x.Connection(connectionString));
         }
 
-        public static void MartenConnectionStringIs(this JasperRegistry registry, string connectionString)
+        public static void MartenConnectionStringIs(this JasperOptions options, string connectionString)
         {
-            registry.Settings.MartenConnectionStringIs(connectionString);
+            options.Settings.MartenConnectionStringIs(connectionString);
         }
 
-        public static void ConfigureMarten(this JasperRegistry registry, Action<StoreOptions> configuration)
+        public static void ConfigureMarten(this JasperOptions options, Action<StoreOptions> configuration)
         {
-            registry.Settings.ConfigureMarten(configuration);
+            options.Settings.ConfigureMarten(configuration);
         }
 
         public static void ConfigureMarten(this SettingsGraph settings, Action<StoreOptions> configuration)

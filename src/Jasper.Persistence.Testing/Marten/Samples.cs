@@ -4,7 +4,7 @@ using Jasper.Persistence.Marten;
 namespace Jasper.Persistence.Testing.Marten
 {
     // SAMPLE: AppUsingMartenMessagePersistence
-    public class AppUsingMartenMessagePersistence : JasperRegistry
+    public class AppUsingMartenMessagePersistence : JasperOptions
     {
         public AppUsingMartenMessagePersistence()
         {

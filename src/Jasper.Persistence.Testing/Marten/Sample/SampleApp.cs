@@ -16,7 +16,7 @@ using Xunit;
 namespace Jasper.Persistence.Testing.Marten.Sample
 {
     // SAMPLE: MartenUsingApp
-    public class MartenUsingApp : JasperRegistry
+    public class MartenUsingApp : JasperOptions
     {
         public MartenUsingApp()
         {
@@ -81,7 +81,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
     }
 
     // SAMPLE: AppUsingMessageTracking
-    public class AppUsingMessageTracking : JasperRegistry
+    public class AppUsingMessageTracking : JasperOptions
     {
         public AppUsingMessageTracking()
         {
@@ -140,7 +140,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
     }
 
 
-    public class SampleApp : JasperRegistry
+    public class SampleApp : JasperOptions
     {
         public SampleApp()
         {

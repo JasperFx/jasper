@@ -7,10 +7,10 @@
     public interface IJasperExtension
     {
         /// <summary>
-        ///     Make any alterations to the JasperRegistry for the application
+        ///     Make any alterations to the JasperOptions for the application
         /// </summary>
-        /// <param name="registry"></param>
-        void Configure(JasperRegistry registry);
+        /// <param name="optionsy"></param>
+        void Configure(JasperOptions options);
     }
 
     // ENDSAMPLE

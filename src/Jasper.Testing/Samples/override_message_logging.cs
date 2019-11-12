@@ -10,7 +10,7 @@ namespace Jasper.Testing.Samples
     }
 
     // SAMPLE: AppWithCustomLogging
-    public class AppWithCustomLogging : JasperRegistry
+    public class AppWithCustomLogging : JasperOptions
     {
         public AppWithCustomLogging()
         {

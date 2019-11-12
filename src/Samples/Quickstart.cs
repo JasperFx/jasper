@@ -4,15 +4,15 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Testing.Samples
 {
-    // SAMPLE: MyAppRegistry
-    public class MyAppRegistry : JasperRegistry
+    // SAMPLE: MyAppOptions
+    public class MyAppOptions : JasperOptions
     {
     }
     // ENDSAMPLE
 
 
     // SAMPLE: ServiceBusApp
-    public class ServiceBusApp : JasperRegistry
+    public class ServiceBusApp : JasperOptions
     {
     }
     // ENDSAMPLE
@@ -54,7 +54,7 @@ namespace Jasper.Testing.Samples
 namespace Jasper.Testing.Samples2
 {
     // SAMPLE: MyAppRegistry2
-    public class MyAppRegistry : JasperRegistry
+    public class MyAppOptions : JasperOptions
     {
 
     }

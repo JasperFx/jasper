@@ -81,7 +81,7 @@ namespace Jasper.Persistence.Testing.Marten
     // ENDSAMPLE
 
     // SAMPLE: Using-CommandsAreTransactional
-    public class CommandsAreTransactionalApp : JasperRegistry
+    public class CommandsAreTransactionalApp : JasperOptions
     {
         public CommandsAreTransactionalApp()
         {

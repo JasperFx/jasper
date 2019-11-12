@@ -7,8 +7,8 @@ using TestMessages;
 
 namespace Jasper.Testing.Samples
 {
-    // SAMPLE: configuring-messaging-with-JasperRegistry
-    public class MyMessagingApp : JasperRegistry
+    // SAMPLE: configuring-messaging-with-JasperOptions
+    public class MyMessagingApp : JasperOptions
     {
         public MyMessagingApp()
         {
@@ -27,7 +27,7 @@ namespace Jasper.Testing.Samples
 
 
     // SAMPLE: MyListeningApp
-    public class MyListeningApp : JasperRegistry
+    public class MyListeningApp : JasperOptions
     {
         public MyListeningApp()
         {
@@ -41,7 +41,7 @@ namespace Jasper.Testing.Samples
 
 
     // SAMPLE: LightweightTransportApp
-    public class LightweightTransportApp : JasperRegistry
+    public class LightweightTransportApp : JasperOptions
     {
         public LightweightTransportApp()
         {
@@ -55,7 +55,7 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
     // SAMPLE: DurableTransportApp
-    public class DurableTransportApp : JasperRegistry
+    public class DurableTransportApp : JasperOptions
     {
         public DurableTransportApp()
         {
@@ -70,7 +70,7 @@ namespace Jasper.Testing.Samples
 
 
     // SAMPLE: LoopbackTransportApp
-    public class LoopbackTransportApp : JasperRegistry
+    public class LoopbackTransportApp : JasperOptions
     {
         public LoopbackTransportApp()
         {

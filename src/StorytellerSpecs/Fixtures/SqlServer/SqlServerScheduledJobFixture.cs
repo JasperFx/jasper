@@ -90,7 +90,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         }
     }
 
-    public class ScheduledMessageApp : JasperRegistry
+    public class ScheduledMessageApp : JasperOptions
     {
         public readonly ScheduledMessageReceiver Receiver = new ScheduledMessageReceiver();
 

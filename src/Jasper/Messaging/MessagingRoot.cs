@@ -44,9 +44,6 @@ namespace Jasper.Messaging
             ITransportLogger transportLogger
             )
         {
-            // This is important!
-            container.As<Container>().DisposalLock = DisposalLock.ThrowOnDispose;
-
             Options = options;
             Handlers = handlers;
             _transportLogger = transportLogger;

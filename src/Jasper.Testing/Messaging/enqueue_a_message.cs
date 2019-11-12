@@ -20,7 +20,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task enqueue_locally()
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperOptions();
             registry.Handlers.DisableConventionalDiscovery();
 
             registry.Services.Scan(x =>
@@ -55,7 +55,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task enqueue_locally_lightweight()
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperOptions();
 
 
             registry.Handlers.IncludeType<RecordCallHandler>();

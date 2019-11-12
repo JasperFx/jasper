@@ -12,7 +12,7 @@ namespace Jasper.Testing.Messaging.Compilation
     {
         public simple_async_message_handlers()
         {
-            theRegistry.Handlers.IncludeType<AsyncHandler>();
+            theOptions.Handlers.IncludeType<AsyncHandler>();
         }
 
         [Fact]

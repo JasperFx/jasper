@@ -5,19 +5,19 @@ namespace Module1
 {
     public class Module1Extension : IJasperExtension
     {
-        public static JasperRegistry Registry { get; set; }
+        public static JasperOptions Options { get; set; }
 
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
-            Registry = registry;
+            Options = options;
 
-            registry.Settings.Alter<ModuleSettings>(_ =>
+            options.Settings.Alter<ModuleSettings>(_ =>
             {
                 _.From = "Module1";
                 _.Count = 100;
             });
 
-            registry.Services.For<IModuleService>().Use<ServiceFromModule>();
+            options.Services.For<IModuleService>().Use<ServiceFromModule>();
         }
     }
 

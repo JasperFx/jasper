@@ -8,24 +8,24 @@ namespace Jasper.Settings
 {
     public interface IHasRegistryParent
     {
-        JasperRegistry Parent { get; }
+        JasperOptions Parent { get; }
     }
 
     public class SettingsGraph : IHasRegistryParent
     {
-        private readonly JasperRegistry _parent;
+        private readonly JasperOptions _parent;
 
         private readonly Dictionary<Type, ISettingsBuilder> _settings
             = new Dictionary<Type, ISettingsBuilder>();
 
-        public SettingsGraph(JasperRegistry parent)
+        public SettingsGraph(JasperOptions parent)
         {
             _parent = parent;
         }
 
         internal bool ApplyingExtensions { private get; set; }
 
-        JasperRegistry IHasRegistryParent.Parent => _parent;
+        JasperOptions IHasRegistryParent.Parent => _parent;
 
         private SettingsBuilder<T> forType<T>(Func<HostBuilderContext, T> source = null) where T : class
         {

@@ -35,7 +35,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             var publishingUri = $"tcp://localhost:{receiverPort}/durable";
 
 
-            var senderRegistry = new JasperRegistry();
+            var senderRegistry = new JasperOptions();
             senderRegistry.Handlers
                 .DisableConventionalDiscovery()
                 .IncludeType<CascadeReceiver>()
@@ -57,7 +57,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             theSender.RebuildMessageStorage();
 
 
-            var receiverRegistry = new JasperRegistry();
+            var receiverRegistry = new JasperOptions();
             receiverRegistry.Handlers.DisableConventionalDiscovery()
                 .IncludeType<TTriggerHandler>()
                 .IncludeType<TItemCreatedHandler>()
@@ -87,9 +87,9 @@ namespace StorytellerSpecs.Fixtures.Durability
 
         protected abstract void initializeStorage(IHost sender, IHost receiver);
 
-        protected abstract void configureReceiver(JasperRegistry receiverRegistry);
+        protected abstract void configureReceiver(JasperOptions receiverOptions);
 
-        protected abstract void configureSender(JasperRegistry senderRegistry);
+        protected abstract void configureSender(JasperOptions senderOptions);
 
         public override void TearDown()
         {

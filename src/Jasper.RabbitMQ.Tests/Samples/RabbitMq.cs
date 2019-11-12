@@ -9,7 +9,7 @@ using RabbitMQ.Client;
 namespace IntegrationTests.Samples
 {
     // SAMPLE: AppWithRabbitMq
-    public class AppWithRabbitMq : JasperRegistry
+    public class AppWithRabbitMq : JasperOptions
     {
         public AppWithRabbitMq()
         {
@@ -48,7 +48,7 @@ namespace IntegrationTests.Samples
 
 
     // SAMPLE: rabbit-MessageSpecificTopicRoutingApp
-    public class MessageSpecificTopicRoutingApp : JasperRegistry
+    public class MessageSpecificTopicRoutingApp : JasperOptions
     {
         public MessageSpecificTopicRoutingApp()
         {
@@ -66,7 +66,7 @@ namespace IntegrationTests.Samples
     // ENDSAMPLE
 
     // SAMPLE: HardCodedRabbitConnection
-    public class HardCodedConnectionApp : JasperRegistry
+    public class HardCodedConnectionApp : JasperOptions
     {
         public HardCodedConnectionApp()
         {
@@ -118,13 +118,13 @@ namespace IntegrationTests.Samples
     }
 
     // SAMPLE: CustomizedRabbitApp
-    public class CustomizedRabbitMqApp : JasperRegistry
+    public class CustomizedRabbitMqApp : JasperOptions
     {
         public CustomizedRabbitMqApp()
         {
             // There is another overload that will give you access
             // to the application's IHostingEnvironment and IConfiguration as well
-            // if you prefer putting this into the JasperRegistry rather than
+            // if you prefer putting this into the JasperOptions rather than
             // using Startup.Configure()
             Settings.ConfigureRabbitMq((options, hosting, config) =>
             {

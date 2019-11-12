@@ -13,15 +13,15 @@ namespace MyApp
         private static Task<int> Main(string[] args)
         {
             // This bootstraps and runs the Jasper
-            // application as defined by MyAppRegistry
+            // application as defined by MyAppOptions
             // until the executable is stopped
-            return JasperHost.Run<MyAppRegistry>(args);
+            return JasperHost.Run<MyAppOptions>(args);
 
             // The code above is shorthand for the following:
             /*
             return Host
                 .CreateDefaultBuilder()
-                .UseJasper<MyAppRegistry>()
+                .UseJasper<MyAppOptions>()
                 .RunOaktonCommands(args);
             */
         }

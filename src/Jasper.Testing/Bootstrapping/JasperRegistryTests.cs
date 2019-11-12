@@ -17,20 +17,20 @@ namespace Jasper.Testing.Bootstrapping
         {
         }
 
-        public class MyRegistry : JasperRegistry
+        public class MyOptions : JasperOptions
         {
         }
 
         [Fact]
         public void can_determine_the_root_assembly_on_subclass()
         {
-            new MyRegistry().ApplicationAssembly.ShouldBe(typeof(JasperRegistryTests).Assembly);
+            new MyOptions().ApplicationAssembly.ShouldBe(typeof(JasperRegistryTests).Assembly);
         }
 
         [Fact]
         public void sets_up_the_container_with_services()
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperOptions();
             registry.Handlers.DisableConventionalDiscovery();
             registry.Services.For<IFoo>().Use<Foo>();
             registry.Services.AddTransient<IFakeStore, FakeStore>();

@@ -15,21 +15,21 @@ namespace Jasper.Persistence.Marten
     /// </summary>
     public class MartenBackedPersistence : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
 
 
-            registry.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
-            registry.Settings.Alter<StoreOptions>(options =>
+            options.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
+            options.Settings.Alter<StoreOptions>(options =>
             {
                 options.Schema.For<ErrorReport>().Duplicate(x => x.MessageType).Duplicate(x => x.ExceptionType);
             });
 
-            registry.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
+            options.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
 
             var frameProvider = new MartenSagaPersistenceFrameProvider();
-            registry.CodeGeneration.SetSagaPersistence(frameProvider);
-            registry.CodeGeneration.SetTransactions(frameProvider);
+            options.CodeGeneration.SetSagaPersistence(frameProvider);
+            options.CodeGeneration.SetTransactions(frameProvider);
         }
     }
 

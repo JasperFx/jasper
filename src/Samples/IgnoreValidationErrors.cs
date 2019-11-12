@@ -1,7 +1,7 @@
 ﻿namespace Jasper.Testing.Samples
 {
     // SAMPLE: IgnoreValidationErrors
-    public class IgnoreValidationErrors : JasperRegistry
+    public class IgnoreValidationErrors : JasperOptions
     {
         public IgnoreValidationErrors()
         {

@@ -20,7 +20,7 @@ namespace StorytellerSpecs.Fixtures
 
     public class BusRoutingFixture : BusFixture
     {
-        private JasperRegistry _registry;
+        private JasperOptions _options;
         private IHost _host;
         private MessageRoute[] _tracks;
 
@@ -40,21 +40,21 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
             var handlerType = typeof(Handler<>).MakeGenericType(messageType);
-            _registry.Handlers.IncludeType(handlerType);
+            _options.Handlers.IncludeType(handlerType);
         }
 
 
         [FormatAs("The application is configured to publish all messages locally")]
         public void PublishAllLocally()
         {
-            _registry.Publish.AllMessagesLocally();
+            _options.Publish.AllMessagesLocally();
         }
 
         [FormatAs("The application is configured to publish the message {MessageType} locally")]
         public void PublishLocally([SelectionList("MessageTypes")] string MessageType)
         {
             var messageType = messageTypeFor(MessageType);
-            _registry.Publish.Message(messageType).Locally();
+            _options.Publish.Message(messageType).Locally();
         }
 
 
@@ -64,10 +64,10 @@ namespace StorytellerSpecs.Fixtures
         {
             var type = messageTypeFor(messageType);
 
-            _registry.Publish.Message(type).To(channel);
+            _options.Publish.Message(type).To(channel);
 
             // Just makes the test harness listen for things
-            _registry.Transports.ListenForMessagesFrom(channel);
+            _options.Transports.ListenForMessagesFrom(channel);
         }
 
         [FormatAs("Additional serializers have content types {contentTypes}")]
@@ -76,7 +76,7 @@ namespace StorytellerSpecs.Fixtures
             contentTypes.Each(contentType =>
             {
                 var serializer = new FakeSerializerFactory(contentType);
-                _registry.Services.For<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>().Add(serializer);
+                _options.Services.For<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>().Add(serializer);
             });
         }
 
@@ -85,7 +85,7 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
             var writer = new FakeWriter(messageType, ContentType);
-            _registry.Services.For<IMessageSerializer>().Add(writer);
+            _options.Services.For<IMessageSerializer>().Add(writer);
         }
 
         [FormatAs("For message type {MessageType}")]
@@ -93,7 +93,7 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
 
-            if (_host == null) _host = JasperHost.For(_registry);
+            if (_host == null) _host = JasperHost.For(_options);
 
             var router = _host.Get<IMessageRouter>();
 
@@ -119,9 +119,9 @@ namespace StorytellerSpecs.Fixtures
 
         public override void SetUp()
         {
-            _registry = new JasperRegistry();
+            _options = new JasperOptions();
 
-            _registry.Handlers.DisableConventionalDiscovery();
+            _options.Handlers.DisableConventionalDiscovery();
         }
 
         public override void TearDown()

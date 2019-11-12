@@ -20,27 +20,27 @@ namespace Jasper
         /// <returns></returns>
         public static IHost Basic()
         {
-            return bootstrap(new JasperRegistry());
+            return bootstrap(new JasperOptions());
         }
 
         /// <summary>
-        ///     Builds and initializes a JasperRuntime for the registry
+        ///     Builds and initializes a JasperRuntime for the options
         /// </summary>
-        /// <param name="registry"></param>
+        /// <param name="optionsy"></param>
         /// <returns></returns>
-        public static IHost For(JasperRegistry registry)
+        public static IHost For(JasperOptions options)
         {
-            return bootstrap(registry);
+            return bootstrap(options);
         }
 
         /// <summary>
-        ///     Builds and initializes a JasperRuntime for the JasperRegistry of
+        ///     Builds and initializes a JasperRuntime for the JasperOptions of
         ///     type T
         /// </summary>
         /// <param name="configure"></param>
-        /// <typeparam name="T">The type of your JasperRegistry</typeparam>
+        /// <typeparam name="T">The type of your JasperOptions</typeparam>
         /// <returns></returns>
-        public static IHost For<T>(Action<T> configure = null) where T : JasperRegistry, new()
+        public static IHost For<T>(Action<T> configure = null) where T : JasperOptions, new()
         {
             var registry = new T();
             configure?.Invoke(registry);
@@ -49,22 +49,22 @@ namespace Jasper
         }
 
         /// <summary>
-        ///     Builds and initializes a JasperRuntime for the configured JasperRegistry
+        ///     Builds and initializes a JasperRuntime for the configured JasperOptions
         /// </summary>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IHost For(Action<JasperRegistry> configure)
+        public static IHost For(Action<JasperOptions> configure)
         {
-            var registry = new JasperRegistry();
+            var registry = new JasperOptions();
             configure(registry);
             return bootstrap(registry);
         }
 
 
-        private static IHost bootstrap(JasperRegistry registry)
+        private static IHost bootstrap(JasperOptions options)
         {
             return Host.CreateDefaultBuilder()
-                .UseJasper(registry)
+                .UseJasper(options)
                 //.ConfigureLogging(x => x.ClearProviders())
                 .Start();
 
@@ -73,14 +73,14 @@ namespace Jasper
 
         /// <summary>
         ///     Shortcut to create a new empty WebHostBuilder with Jasper's default
-        ///     settings, add the JasperRegistry, and bootstrap the application
+        ///     settings, add the JasperOptions, and bootstrap the application
         ///     from the command line
         /// </summary>
         /// <param name="args"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static Task<int> Run<T>(string[] args) where T : JasperRegistry, new()
+        public static Task<int> Run<T>(string[] args) where T : JasperOptions, new()
         {
             return Host.CreateDefaultBuilder().UseJasper<T>().RunOaktonCommands(args);
         }
@@ -93,7 +93,7 @@ namespace Jasper
         /// <param name="args"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static Task<int> Run(string[] args, Action<HostBuilderContext, JasperRegistry> configure)
+        public static Task<int> Run(string[] args, Action<HostBuilderContext, JasperOptions> configure)
         {
             return Host.CreateDefaultBuilder().UseJasper(configure).RunOaktonCommands(args);
         }

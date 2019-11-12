@@ -13,10 +13,10 @@ namespace Jasper.Testing.Messaging.Compilation
     {
         public use_wrappers()
         {
-            theRegistry.Handlers.IncludeType<TransactionalHandler>();
+            theOptions.Handlers.IncludeType<TransactionalHandler>();
 
-            theRegistry.Services.AddSingleton(theTracking);
-            theRegistry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+            theOptions.Services.AddSingleton(theTracking);
+            theOptions.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
         }
 
         private readonly TestingSupport.Fakes.Tracking theTracking = new TestingSupport.Fakes.Tracking();

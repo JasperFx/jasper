@@ -52,7 +52,7 @@ namespace Jasper.Testing.Bootstrapping
         }
     }
 
-    public class EnvironmentalJasperApp : JasperRegistry
+    public class EnvironmentalJasperApp : JasperOptions
     {
         public override void Configure(IHostEnvironment hosting, IConfiguration config)
         {

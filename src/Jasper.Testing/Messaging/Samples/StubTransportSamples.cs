@@ -92,7 +92,7 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
     // SAMPLE: StubTransport-MyJasperApp
-    public class MyJasperApp : JasperRegistry
+    public class MyJasperApp : JasperOptions
     {
         public MyJasperApp()
         {

@@ -109,7 +109,7 @@ namespace Jasper.Testing.Conneg
     }
     // ENDSAMPLE
 
-    public class BlueApp : JasperRegistry
+    public class BlueApp : JasperOptions
     {
         public BlueApp(MessageTracker tracker)
         {
@@ -120,7 +120,7 @@ namespace Jasper.Testing.Conneg
         }
     }
 
-    public class GreenApp : JasperRegistry
+    public class GreenApp : JasperOptions
     {
         public GreenApp()
         {

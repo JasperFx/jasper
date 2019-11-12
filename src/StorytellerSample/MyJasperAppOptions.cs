@@ -6,9 +6,9 @@ using StoryTeller;
 
 namespace StorytellerSample
 {
-    public class MyJasperAppRegistry : JasperRegistry
+    public class MyJasperAppOptions : JasperOptions
     {
-        public MyJasperAppRegistry()
+        public MyJasperAppOptions()
         {
             Services.AddSingleton<IncrementCounter>();
             Transports.LightweightListenerAt(4444);
@@ -16,7 +16,7 @@ namespace StorytellerSample
     }
 
     // SAMPLE: MyJasperStorytellerHarness
-    public class MyJasperStorytellerHarness : JasperStorytellerHost<MyJasperAppRegistry>
+    public class MyJasperStorytellerHarness : JasperStorytellerHost<MyJasperAppOptions>
     {
         public MyJasperStorytellerHarness()
         {

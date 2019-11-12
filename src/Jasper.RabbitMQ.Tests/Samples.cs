@@ -6,7 +6,7 @@ using RabbitMQ.Client;
 namespace Jasper.RabbitMQ.Tests
 {
     // SAMPLE: AppListeningToRabbitMQ
-    public class AppListeningToRabbitMQ : JasperRegistry
+    public class AppListeningToRabbitMQ : JasperOptions
     {
         public AppListeningToRabbitMQ()
         {
@@ -18,7 +18,7 @@ namespace Jasper.RabbitMQ.Tests
     // ENDSAMPLE
 
     // SAMPLE: AppPublishingToRabbitMQ
-    public class AppPublishingToRabbitMQ : JasperRegistry
+    public class AppPublishingToRabbitMQ : JasperOptions
     {
         public AppPublishingToRabbitMQ()
         {
@@ -29,7 +29,7 @@ namespace Jasper.RabbitMQ.Tests
 
 
     // SAMPLE: CustomizedRabbitMQApp
-    public class CustomizedRabbitMQApp : JasperRegistry
+    public class CustomizedRabbitMQApp : JasperOptions
     {
         public CustomizedRabbitMQApp()
         {

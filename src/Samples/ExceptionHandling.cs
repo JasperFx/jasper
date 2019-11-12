@@ -12,7 +12,7 @@ namespace Jasper.Testing.Samples
     }
 
     // SAMPLE: AppWithErrorHandling
-    public class AppWithErrorHandling : JasperRegistry
+    public class AppWithErrorHandling : JasperOptions
     {
         public AppWithErrorHandling()
         {

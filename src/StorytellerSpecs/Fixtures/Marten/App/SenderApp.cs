@@ -5,7 +5,7 @@ using Jasper.Persistence.Marten;
 
 namespace StorytellerSpecs.Fixtures.Marten.App
 {
-    public class SenderApp : JasperRegistry
+    public class SenderApp : JasperOptions
     {
         public SenderApp()
         {

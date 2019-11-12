@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace Jasper.Testing.Samples
 {
     // SAMPLE: JasperAppWithServices
-    public class JasperAppWithServices : JasperRegistry
+    public class JasperAppWithServices : JasperOptions
     {
         public JasperAppWithServices()
         {

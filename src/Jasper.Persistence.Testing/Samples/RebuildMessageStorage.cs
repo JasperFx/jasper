@@ -6,7 +6,7 @@ using Xunit;
 namespace Jasper.Persistence.Testing.Samples
 {
     // SAMPLE: SqlServerPersistedMessageApp
-    public class MyJasperApp : JasperRegistry
+    public class MyJasperApp : JasperOptions
     {
         public MyJasperApp()
         {

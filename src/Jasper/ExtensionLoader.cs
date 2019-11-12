@@ -33,9 +33,9 @@ namespace Jasper
             return _extensions;
         }
 
-        internal static void ApplyExtensions(JasperRegistry registry)
+        internal static void ApplyExtensions(JasperOptions options)
         {
-            var assemblies = FindExtensionAssemblies(registry.ApplicationAssembly);
+            var assemblies = FindExtensionAssemblies(options.ApplicationAssembly);
 
             if (!assemblies.Any())
             {
@@ -48,7 +48,7 @@ namespace Jasper
                 .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())
                 .ToArray();
 
-            registry.ApplyExtensions(extensions);
+            options.ApplyExtensions(extensions);
         }
     }
 }

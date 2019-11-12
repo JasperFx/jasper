@@ -6,9 +6,9 @@ using StorytellerSpecs.Fixtures;
 namespace MyApp
 {
     // SAMPLE: MyAppRegistryWithOptions
-    public class MyAppRegistry : JasperRegistry
+    public class MyAppOptions : JasperOptions
     {
-        public MyAppRegistry()
+        public MyAppOptions()
         {
             Transports.LightweightListenerAt(2222);
 

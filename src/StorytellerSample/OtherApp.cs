@@ -3,7 +3,7 @@ using Jasper.Messaging.Runtime.Invocation;
 
 namespace StorytellerSample
 {
-    public class OtherApp : JasperRegistry
+    public class OtherApp : JasperOptions
     {
         public OtherApp()
         {

@@ -4,12 +4,12 @@ using Microsoft.Extensions.Configuration;
 namespace Jasper.Persistence.Testing.Marten
 {
     // SAMPLE: AppWithMarten
-    public class AppWithMarten : JasperRegistry
+    public class AppWithMarten : JasperOptions
     {
         public AppWithMarten()
         {
             // StoreOptions is a Marten object that fulfills the same
-            // role as JasperRegistry
+            // role as JasperOptions
             Settings.ConfigureMarten((context, marten) =>
             {
                 // At the simplest, you would just need to tell Marten

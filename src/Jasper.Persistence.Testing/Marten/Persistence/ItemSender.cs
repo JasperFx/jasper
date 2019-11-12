@@ -6,7 +6,7 @@ using Marten;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence
 {
-    public class ItemSender : JasperRegistry
+    public class ItemSender : JasperOptions
     {
         public ItemSender()
         {

@@ -39,7 +39,7 @@ namespace Jasper.Testing.Messaging.Lightweight
                 _.Services.AddSingleton(theTracker);
             });
 
-            var receiver = new JasperRegistry();
+            var receiver = new JasperOptions();
             receiver.Handlers.DisableConventionalDiscovery();
 
             receiver.Transports.ListenForMessagesFrom(theAddress);

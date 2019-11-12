@@ -18,7 +18,7 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
     // SAMPLE: ConfigureMissingHandler
-    public class ConfigureMissingHandlerApp : JasperRegistry
+    public class ConfigureMissingHandlerApp : JasperOptions
     {
         public ConfigureMissingHandlerApp()
         {

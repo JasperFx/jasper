@@ -7,15 +7,15 @@ namespace Jasper.Testing.Samples
     // SAMPLE: SampleExtension
     public class SampleExtension : IJasperExtension
     {
-        public void Configure(JasperRegistry registry)
+        public void Configure(JasperOptions options)
         {
             // Add service registrations
-            registry.Services.AddTransient<IFoo, Foo>();
+            options.Services.AddTransient<IFoo, Foo>();
 
 
 
             // Alter settings within the application
-            registry.JsonSerialization
+            options.JsonSerialization
                 .TypeNameHandling = TypeNameHandling.All;
         }
     }

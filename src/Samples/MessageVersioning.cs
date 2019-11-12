@@ -121,7 +121,7 @@ namespace Jasper.Testing.Samples
 
 
     // SAMPLE: RegisteringCustomReadersAndWriters
-    public class RegisteringCustomReadersAndWriters : JasperRegistry
+    public class RegisteringCustomReadersAndWriters : JasperOptions
     {
         public RegisteringCustomReadersAndWriters()
         {
@@ -158,7 +158,7 @@ namespace Jasper.Testing.Samples
     }
 
     // SAMPLE: CustomizingJsonSerialization
-    public class CustomizingJsonSerialization : JasperRegistry
+    public class CustomizingJsonSerialization : JasperOptions
     {
         public CustomizingJsonSerialization()
         {

@@ -38,7 +38,7 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
     // SAMPLE: MyApp-with-error-handling
-    public class MyApp : JasperRegistry
+    public class MyApp : JasperOptions
     {
         public MyApp()
         {
@@ -48,7 +48,7 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
     // SAMPLE: GlobalErrorHandlingConfiguration
-    public class GlobalRetryApp : JasperRegistry
+    public class GlobalRetryApp : JasperOptions
     {
         public GlobalRetryApp()
         {
@@ -120,7 +120,7 @@ namespace Jasper.Testing.Messaging.Samples
     }
 
     // SAMPLE: filtering-by-exception-type
-    public class FilteredApp : JasperRegistry
+    public class FilteredApp : JasperOptions
     {
         public FilteredApp()
         {
@@ -132,7 +132,7 @@ namespace Jasper.Testing.Messaging.Samples
     // ENDSAMPLE
 
     // SAMPLE: continuation-actions
-    public class ContinuationTypes : JasperRegistry
+    public class ContinuationTypes : JasperOptions
     {
         public ContinuationTypes()
         {
