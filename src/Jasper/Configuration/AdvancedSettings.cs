@@ -1,5 +1,6 @@
 using System;
 using Baseline.Dates;
+using Newtonsoft.Json;
 
 namespace Jasper.Configuration
 {
@@ -63,6 +64,15 @@ namespace Jasper.Configuration
         /// Polling interval for executing scheduled messages
         /// </summary>
         public TimeSpan ScheduledJobPollingTime { get; set; } = 5.Seconds();
+
+        /// <summary>
+        /// Newtonsoft.Json serialization settings for messages sent or received
+        /// </summary>
+        public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+        };
 
     }
 }

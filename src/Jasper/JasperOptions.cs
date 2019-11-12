@@ -245,14 +245,6 @@ namespace Jasper
             // Nothing
         }
 
-        /// <summary>
-        /// Newtonsoft.Json serialization settings for messages sent or received
-        /// </summary>
-        public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects
-        };
 
 
     }

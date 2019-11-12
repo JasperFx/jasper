@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Conneg.Json;
 using Jasper.Messaging.Model;
@@ -28,10 +29,7 @@ namespace Jasper.Messaging.Runtime.Serializers
 
         public static MessagingSerializationGraph Basic()
         {
-            return new MessagingSerializationGraph(new HandlerGraph(), new List<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>{new NewtonsoftSerializerFactory(new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.All
-                }, new DefaultObjectPoolProvider())}, new List<IMessageDeserializer>(),
+            return new MessagingSerializationGraph(new HandlerGraph(), new List<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>{new NewtonsoftSerializerFactory(new AdvancedSettings(), new DefaultObjectPoolProvider())}, new List<IMessageDeserializer>(),
                 new List<IMessageSerializer>());
         }
 

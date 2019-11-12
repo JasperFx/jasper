@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.IO;
+using Jasper.Configuration;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 
@@ -13,9 +14,9 @@ namespace Jasper.Conneg.Json
         private readonly ArrayPool<char> _charPool;
         private readonly ObjectPool<JsonSerializer> _serializerPool;
 
-        public NewtonsoftSerializerFactory(JsonSerializerSettings settings, ObjectPoolProvider pooling)
+        public NewtonsoftSerializerFactory(AdvancedSettings settings, ObjectPoolProvider pooling)
         {
-            _serializerPool = pooling.Create(new JsonSerializerObjectPolicy(settings));
+            _serializerPool = pooling.Create(new JsonSerializerObjectPolicy(settings.JsonSerialization));
 
             _charPool = ArrayPool<char>.Shared;
             _bytePool = ArrayPool<byte>.Shared;
