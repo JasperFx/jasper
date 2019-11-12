@@ -82,7 +82,6 @@ namespace Jasper.Messaging.Durability
 
         public bool SupportsNativeScheduledSend { get; } = true;
 
-        public int QueuedCount { get; } = 0;
 
         private void writeMessageData(Envelope envelope)
         {

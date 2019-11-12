@@ -97,8 +97,6 @@ namespace Jasper.Messaging.Transports.Sending
 
         public bool SupportsNativeScheduledSend => _sender.SupportsNativeScheduledSend;
 
-        public int QueuedCount => _sender.QueuedCount;
-
         public void Dispose()
         {
             _sender?.Dispose();

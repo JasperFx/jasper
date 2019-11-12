@@ -57,6 +57,5 @@ namespace Jasper.Messaging.Transports
 
         public bool SupportsNativeScheduledSend { get; } = true;
 
-        public int QueuedCount { get; } = 0;
     }
 }
