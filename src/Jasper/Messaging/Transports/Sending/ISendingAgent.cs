@@ -24,8 +24,6 @@ namespace Jasper.Messaging.Transports.Sending
         // indirectly
         Task StoreAndForward(Envelope envelope);
 
-        Task StoreAndForwardMany(IEnumerable<Envelope> envelopes);
-
         void Start();
 
         bool SupportsNativeScheduledSend { get; }

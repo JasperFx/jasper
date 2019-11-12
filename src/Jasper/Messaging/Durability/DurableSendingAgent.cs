@@ -64,17 +64,6 @@ namespace Jasper.Messaging.Durability
             await EnqueueOutgoing(envelope);
         }
 
-        public override async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
-        {
-            var outgoing = envelopes.ToArray();
-
-            foreach (var envelope in outgoing) setDefaults(envelope);
-
-            await _persistence.StoreOutgoing(outgoing, _settings.UniqueNodeId);
-
-            foreach (var envelope in outgoing) await _sender.Enqueue(envelope);
-        }
-
         public override Task Successful(OutgoingMessageBatch outgoing)
         {
             return _policy.ExecuteAsync(c => _persistence.DeleteOutgoing(outgoing.Messages.ToArray()), _settings.Cancellation);

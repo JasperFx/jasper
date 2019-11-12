@@ -30,11 +30,6 @@ namespace Jasper.Messaging.Transports.Sending
             return EnqueueOutgoing(envelope);
         }
 
-        public override async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
-        {
-            foreach (var envelope in envelopes) await EnqueueOutgoing(envelope);
-        }
-
         public override Task Successful(OutgoingMessageBatch outgoing)
         {
             return _retries.MarkSuccess();

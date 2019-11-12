@@ -75,33 +75,6 @@ namespace Jasper.Messaging.Durability
             }
         }
 
-        public async Task StoreAndForwardMany(IEnumerable<Envelope> envelopes)
-        {
-            var array = envelopes.ToArray();
-            foreach (var envelope in array)
-            {
-                envelope.Status = envelope.IsDelayed(DateTime.UtcNow)
-                    ? TransportConstants.Scheduled
-                    : TransportConstants.Incoming;
-
-
-                writeMessageData(envelope);
-
-                if(envelope.Status == TransportConstants.Incoming)
-                {
-                    // This envelop will immediately be queued to run on this node
-                    envelope.OwnerId = _settings.UniqueNodeId;
-                }
-            }
-
-            await _persistence.StoreIncoming(array);
-
-            foreach (var envelope in array.Where(x => x.Status == TransportConstants.Incoming))
-            {
-                await EnqueueOutgoing(envelope);
-            }
-        }
-
         public void Start()
         {
             // Nothing

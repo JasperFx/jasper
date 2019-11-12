@@ -89,7 +89,6 @@ namespace Jasper.Messaging.Transports.Sending
 
         public abstract Task EnqueueOutgoing(Envelope envelope);
         public abstract Task StoreAndForward(Envelope envelope);
-        public abstract Task StoreAndForwardMany(IEnumerable<Envelope> envelopes);
 
         public void Start()
         {
