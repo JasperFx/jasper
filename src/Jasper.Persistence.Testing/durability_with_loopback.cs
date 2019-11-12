@@ -9,6 +9,7 @@ using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Testing.Marten;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
@@ -28,6 +29,8 @@ namespace Jasper.Persistence.Testing
 
                 var counts = await runtime1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
 
+                await runtime1.StopAsync();
+
                 counts.Incoming.ShouldBe(1);
             }
 
@@ -44,6 +47,8 @@ namespace Jasper.Persistence.Testing
                 runtime1.Get<ReceivingSettings>().Latched = false;
 
                 (await waiter).ShouldNotBeNull();
+
+                await runtime1.StopAsync();
             }
         }
     }

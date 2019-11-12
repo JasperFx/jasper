@@ -48,5 +48,6 @@ namespace Jasper.Messaging
         ISendingAgent BuildDurableLoopbackAgent(Uri destination);
 
 
+        Task StopAsync(CancellationToken cancellationToken);
     }
 }

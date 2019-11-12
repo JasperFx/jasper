@@ -17,9 +17,14 @@ namespace Jasper.Messaging.Durability
 
     public class DurabilityAgent : IHostedService, IDurabilityAgent, IDisposable
     {
+        /// <summary>
+        /// Strictly a testing helper
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
         public static DurabilityAgent ForHost(IHost host)
         {
-            return host.Services.GetService<JasperOptions>().DurabilityAgent;
+            return host.Services.GetService<IMessagingRoot>().As<MessagingRoot>().Durability;
         }
 
         private readonly IMessagingAction IncomingMessages;
@@ -47,15 +52,14 @@ namespace Jasper.Messaging.Durability
             ILogger<DurabilityAgent> trace,
             IWorkerQueue workers,
             IEnvelopePersistence persistence,
-            ISubscriberGraph subscribers, AdvancedSettings settings)
+            ISubscriberGraph subscribers,
+            AdvancedSettings settings)
         {
             if (persistence is NulloEnvelopePersistence)
             {
                 _disabled = true;
                 return;
             }
-
-            options.DurabilityAgent = this;
 
             _options = options;
             Logger = logger;

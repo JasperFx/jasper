@@ -63,10 +63,6 @@ namespace Jasper
         [JsonIgnore] public CancellationToken Cancellation => _cancellation.Token;
 
 
-
-        internal DurabilityAgent DurabilityAgent { get; set; }
-
-
         private readonly IList<ListenerSettings> _listeners = new List<ListenerSettings>();
 
 

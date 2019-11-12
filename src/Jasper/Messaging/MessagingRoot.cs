@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
@@ -18,6 +20,8 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Messaging
 {
@@ -29,6 +33,7 @@ namespace Jasper.Messaging
         private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
         private readonly Lazy<IEnvelopePersistence> _persistence;
+        private IContainer _container;
 
         public MessagingRoot(MessagingSerializationGraph serialization,
             JasperOptions options,
@@ -39,6 +44,9 @@ namespace Jasper.Messaging
             ITransportLogger transportLogger
             )
         {
+            // This is important!
+            container.As<Container>().DisposalLock = DisposalLock.ThrowOnDispose;
+
             Options = options;
             Handlers = handlers;
             _transportLogger = transportLogger;
@@ -59,12 +67,16 @@ namespace Jasper.Messaging
             Router = new MessageRouter(this, handlers);
 
             _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
+
+            _container = container;
         }
 
         public void Dispose()
         {
             ScheduledJobs.Dispose();
         }
+
+        public DurabilityAgent Durability { get; private set; }
 
         public ListeningStatus ListeningStatus
         {
@@ -124,11 +136,16 @@ namespace Jasper.Messaging
             }
 
             ((SubscriberGraph) Subscribers).Start(this);
+
+            var durabilityLogger = container.GetInstance<ILogger<DurabilityAgent>>();
+            Durability = new DurabilityAgent(Options, _transportLogger, durabilityLogger, Workers, Persistence, Subscribers, Options.Advanced);
+            // TODO -- use the cancellation token from the app!
+            await Durability.StartAsync(Options.Cancellation);
         }
 
         public HandlerGraph Handlers { get; }
 
-
+        // TODO -- gather this up into its own class and OPTIMIZE
         public void ApplyMessageTypeSpecificRules(Envelope envelope)
         {
             if (envelope.Message == null) return;
@@ -141,6 +158,13 @@ namespace Jasper.Messaging
             }
 
             foreach (var action in rules) action(envelope);
+        }
+
+        // Gather this into its own class
+        private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
+        {
+            foreach (var att in messageType.GetAllAttributes<ModifyEnvelopeAttribute>())
+                yield return e => att.Modify(e);
         }
 
         [Obsolete("Get rid of this")]
@@ -159,10 +183,14 @@ namespace Jasper.Messaging
             return new DurableLoopbackSendingAgent(destination, Workers, Persistence, Serialization, _transportLogger, Options);
         }
 
-        private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
+        public Task StopAsync(CancellationToken cancellationToken)
         {
-            foreach (var att in messageType.GetAllAttributes<ModifyEnvelopeAttribute>())
-                yield return e => att.Modify(e);
+            // This is important!
+            _container.As<Container>().DisposalLock = DisposalLock.Unlocked;
+
+            return Durability.StopAsync(cancellationToken);
+
+
         }
     }
 }

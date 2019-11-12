@@ -39,7 +39,7 @@ namespace Jasper.Messaging
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            return _root.StopAsync(cancellationToken);
         }
     }
 }

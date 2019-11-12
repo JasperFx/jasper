@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging;
@@ -75,6 +76,11 @@ namespace Jasper.Testing.Messaging
         public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
         {
             throw new NotImplementedException();
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
         }
 
         public IListener BuildDurableListener(IListeningAgent agent)

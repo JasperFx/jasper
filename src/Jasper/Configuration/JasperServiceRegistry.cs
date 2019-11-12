@@ -44,8 +44,6 @@ namespace Jasper.Configuration
             this.AddSingleton(parent.Advanced);
             this.AddSingleton(parent.CodeGeneration);
 
-            For<IHostedService>().Use<DurabilityAgent>();
-
             conneg(parent);
             messaging(parent);
         }
