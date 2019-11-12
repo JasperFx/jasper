@@ -162,7 +162,7 @@ namespace Jasper.Testing.Samples
     {
         public CustomizingJsonSerialization()
         {
-            Advanced.JsonSerialization
+            JsonSerialization
                 .ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
 
         }

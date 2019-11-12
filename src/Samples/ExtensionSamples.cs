@@ -15,7 +15,7 @@ namespace Jasper.Testing.Samples
 
 
             // Alter settings within the application
-            registry.Advanced.JsonSerialization
+            registry.JsonSerialization
                 .TypeNameHandling = TypeNameHandling.All;
         }
     }

@@ -52,15 +52,7 @@ namespace Jasper
             }
         }
 
-        /// <summary>
-        /// Newtonsoft.Json serialization settings for messages received
-        /// </summary>
-        [JsonIgnore]
-        public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects
-        };
+
 
         /// <summary>
         ///     Default is true. Should Jasper throw an exception on start up if any validation errors

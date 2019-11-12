@@ -6,10 +6,6 @@ namespace Jasper
 {
     public interface IAdvancedOptions
     {
-        /// <summary>
-        /// Newtonsoft.Json serialization settings for messages received
-        /// </summary>
-        JsonSerializerSettings JsonSerialization { get; set; }
 
         /// <summary>
         ///     Default is true. Should Jasper throw an exception on start up if any validation errors
