@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -9,12 +10,12 @@ namespace Jasper.Messaging.Durability
 {
     internal class RunScheduledJobs : IMessagingAction
     {
-        private readonly JasperOptions _options;
+        private readonly AdvancedSettings _settings;
         private readonly ITransportLogger _logger;
 
-        public RunScheduledJobs(JasperOptions options, ITransportLogger logger)
+        public RunScheduledJobs(AdvancedSettings settings, ITransportLogger logger)
         {
-            _options = options;
+            _settings = settings;
             _logger = logger;
         }
 
@@ -45,7 +46,7 @@ namespace Jasper.Messaging.Durability
                         return readyToExecute;
                     }
 
-                    await storage.Incoming.Reassign(_options.UniqueNodeId, readyToExecute);
+                    await storage.Incoming.Reassign(_settings.UniqueNodeId, readyToExecute);
 
                     await storage.Session.Commit();
                 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using IntegrationTests;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
@@ -23,7 +24,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 = new SqlServerEnvelopePersistence(new SqlServerSettings
                 {
                     ConnectionString = Servers.SqlServerConnectionString
-                }, new JasperOptions());
+                }, new AdvancedSettings());
         }
 
 

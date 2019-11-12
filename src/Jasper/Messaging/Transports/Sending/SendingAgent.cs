@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Tcp;
@@ -16,7 +17,7 @@ namespace Jasper.Messaging.Transports.Sending
         protected readonly RetryAgent _retries;
         protected readonly ISender _sender;
 
-        protected SendingAgent(Uri destination, ISender sender, ITransportLogger logger, JasperOptions options,
+        protected SendingAgent(Uri destination, ISender sender, ITransportLogger logger,
             RetryAgent retries)
         {
             _sender = sender;

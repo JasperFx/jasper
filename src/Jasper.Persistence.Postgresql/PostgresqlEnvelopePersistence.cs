@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql.Schema;
@@ -12,18 +13,18 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _deleteIncomingEnvelopesSql;
         private readonly string _deleteOutgoingEnvelopesSql;
 
-        public PostgresqlEnvelopePersistence(PostgresqlSettings settings, JasperOptions options) : base(settings,
-            options, new PostgresqlEnvelopeStorageAdmin(settings),
-            new PostgresqlDurabilityAgentStorage(settings, options))
+        public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings,
+            settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings),
+            new PostgresqlDurabilityAgentStorage(databaseSettings, settings))
         {
-            _deleteIncomingEnvelopesSql = $"delete from {settings.SchemaName}.{IncomingTable} WHERE id = ANY(@ids);";
-            _deleteOutgoingEnvelopesSql = $"delete from {settings.SchemaName}.{OutgoingTable} WHERE id = ANY(@ids);";
+            _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{IncomingTable} WHERE id = ANY(@ids);";
+            _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{OutgoingTable} WHERE id = ANY(@ids);";
         }
 
 
         public override Task MoveToDeadLetterStorage(ErrorReport[] errors)
         {
-            var cmd = Settings.CreateCommand(_deleteIncomingEnvelopesSql)
+            var cmd = DatabaseSettings.CreateCommand(_deleteIncomingEnvelopesSql)
                 .With("ids", errors);
 
             var builder = new CommandBuilder(cmd);
@@ -41,7 +42,7 @@ namespace Jasper.Persistence.Postgresql
                 var body = builder.AddParameter(error.RawData);
 
                 builder.Append(
-                    $"insert into {Settings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
+                    $"insert into {DatabaseSettings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
             }
 
             return builder.ApplyAndExecuteOnce(_cancellation);
@@ -49,15 +50,15 @@ namespace Jasper.Persistence.Postgresql
 
         public override Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
-            return Settings.CreateCommand(_deleteIncomingEnvelopesSql)
+            return DatabaseSettings.CreateCommand(_deleteIncomingEnvelopesSql)
                 .With("ids", envelopes)
                 .ExecuteOnce(_cancellation);
         }
 
         public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
-            return Settings.CreateCommand(_deleteOutgoingEnvelopesSql +
-                                          $";update {Settings.SchemaName}.{OutgoingTable} set owner_id = @node where id = ANY(@rids)")
+            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql +
+                                          $";update {DatabaseSettings.SchemaName}.{OutgoingTable} set owner_id = @node where id = ANY(@rids)")
                 .With("ids", discards)
                 .With("node", nodeId)
                 .With("rids", reassigned)
@@ -66,14 +67,14 @@ namespace Jasper.Persistence.Postgresql
 
         public override Task DeleteOutgoing(Envelope[] envelopes)
         {
-            return Settings.CreateCommand(_deleteOutgoingEnvelopesSql)
+            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql)
                 .With("ids", envelopes)
                 .ExecuteOnce(_cancellation);
         }
 
         public override void Describe(TextWriter writer)
         {
-            writer.WriteLine($"Persistent Envelope storage using Postgresql in schema '{Settings.SchemaName}'");
+            writer.WriteLine($"Persistent Envelope storage using Postgresql in schema '{DatabaseSettings.SchemaName}'");
         }
     }
 }

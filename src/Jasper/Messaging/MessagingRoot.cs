@@ -59,7 +59,7 @@ namespace Jasper.Messaging
                 container.QuickBuildAll<IMissingHandler>(),
                 this);
 
-            Workers = new WorkerQueue(Logger, Pipeline, options);
+            Workers = new WorkerQueue(Logger, Pipeline, options.Advanced);
 
             Router = new MessageRouter(this, handlers);
 
@@ -135,9 +135,9 @@ namespace Jasper.Messaging
             ((SubscriberGraph) Subscribers).Start(this);
 
             var durabilityLogger = container.GetInstance<ILogger<DurabilityAgent>>();
-            Durability = new DurabilityAgent(Options, _transportLogger, durabilityLogger, Workers, Persistence, Subscribers, Options.Advanced);
+            Durability = new DurabilityAgent(_transportLogger, durabilityLogger, Workers, Persistence, Subscribers, Options.Advanced);
             // TODO -- use the cancellation token from the app!
-            await Durability.StartAsync(Options.Cancellation);
+            await Durability.StartAsync(Options.Advanced.Cancellation);
         }
 
         public HandlerGraph Handlers { get; }
@@ -172,12 +172,12 @@ namespace Jasper.Messaging
 
         public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
         {
-            return new DurableSendingAgent(destination, sender, _transportLogger, Options, Persistence);
+            return new DurableSendingAgent(destination, sender, _transportLogger, Options.Advanced, Persistence);
         }
 
         public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
         {
-            return new DurableLoopbackSendingAgent(destination, Workers, Persistence, Serialization, _transportLogger, Options);
+            return new DurableLoopbackSendingAgent(destination, Workers, Persistence, Serialization, _transportLogger, Options.Advanced);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

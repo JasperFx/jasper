@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -15,13 +16,14 @@ namespace Jasper.Messaging.WorkerQueues
         private readonly ITransportLogger _transportLogger;
         private readonly ActionBlock<Envelope> _receiver;
 
-        public DurableWorkerQueue(ListenerSettings settings, IHandlerPipeline pipeline, JasperOptions options, IEnvelopePersistence persistence, ITransportLogger transportLogger)
+        public DurableWorkerQueue(ListenerSettings listenerSettings, IHandlerPipeline pipeline,
+            AdvancedSettings settings1, IEnvelopePersistence persistence, ITransportLogger transportLogger)
         {
             _persistence = persistence;
             _transportLogger = transportLogger;
             ScheduledJobs = new InMemoryScheduledJobProcessor(this);
 
-            settings.ExecutionOptions.CancellationToken = options.Cancellation;
+            listenerSettings.ExecutionOptions.CancellationToken = settings1.Cancellation;
 
             _receiver = new ActionBlock<Envelope>(async envelope =>
             {
@@ -36,7 +38,7 @@ namespace Jasper.Messaging.WorkerQueues
                     // This *should* never happen, but of course it will
                     transportLogger.LogException(e);
                 }
-            }, settings.ExecutionOptions);
+            }, listenerSettings.ExecutionOptions);
         }
 
         public int QueuedCount => _receiver.InputCount;
@@ -66,13 +68,14 @@ namespace Jasper.Messaging.WorkerQueues
     {
         private readonly ActionBlock<Envelope> _receiver;
 
-        public LightweightWorkerQueue(ListenerSettings settings, ITransportLogger logger, IHandlerPipeline pipeline, JasperOptions options)
+        public LightweightWorkerQueue(ListenerSettings listenerSettings, ITransportLogger logger,
+            IHandlerPipeline pipeline, AdvancedSettings settings1)
         {
             Pipeline = pipeline;
 
             ScheduledJobs = new InMemoryScheduledJobProcessor(this);
 
-            settings.ExecutionOptions.CancellationToken = options.Cancellation;
+            listenerSettings.ExecutionOptions.CancellationToken = settings1.Cancellation;
 
             _receiver = new ActionBlock<Envelope>(async envelope =>
             {
@@ -87,7 +90,7 @@ namespace Jasper.Messaging.WorkerQueues
                     // This *should* never happen, but of course it will
                     logger.LogException(e);
                 }
-            }, settings.ExecutionOptions);
+            }, listenerSettings.ExecutionOptions);
         }
 
         public IHandlerPipeline Pipeline { get; }

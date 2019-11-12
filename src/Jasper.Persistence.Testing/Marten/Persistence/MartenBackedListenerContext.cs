@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -29,7 +30,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
             persisted.Status.ShouldBe(TransportConstants.Incoming);
-            persisted.OwnerId.ShouldBe(theOptions.UniqueNodeId);
+            persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
             persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
@@ -42,7 +43,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
             persisted.Status.ShouldBe(TransportConstants.Incoming);
-            persisted.OwnerId.ShouldBe(theOptions.UniqueNodeId);
+            persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
             persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
@@ -68,7 +69,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected Listener theListener;
-        protected JasperOptions theOptions;
+        protected AdvancedSettings theSettings;
         protected IWorkerQueue theWorkerQueue;
 
         protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin = new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString});
@@ -85,7 +86,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
-            theOptions = new JasperOptions();
+            theSettings = new AdvancedSettings();
 
 
             EnvelopeStorageAdmin.RebuildSchemaObjects();
@@ -94,7 +95,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theListener = new Listener(
                 Substitute.For<IListeningAgent>(),
                 theWorkerQueue,
-                TransportLogger.Empty(), theOptions, new PostgresqlEnvelopePersistence(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString}, theOptions));
+                TransportLogger.Empty(), theSettings, new PostgresqlEnvelopePersistence(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString}, theSettings));
         }
 
         public void Dispose()

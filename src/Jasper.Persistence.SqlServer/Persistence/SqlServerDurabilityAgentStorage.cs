@@ -1,4 +1,5 @@
 using System.Data;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
@@ -7,20 +8,22 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerDurabilityAgentStorage : DurabilityAgentStorage
     {
-        public SqlServerDurabilityAgentStorage(DatabaseSettings settings, JasperOptions options) : base(settings, options)
+        public SqlServerDurabilityAgentStorage(DatabaseSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings, settings)
         {
         }
 
-        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession, DatabaseSettings settings,
-            JasperOptions options)
+        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession,
+            DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
         {
-            return new SqlServerDurableOutgoing(durableStorageSession, settings, options);
+            return new SqlServerDurableOutgoing(durableStorageSession, databaseSettings, settings);
         }
 
-        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession, DatabaseSettings settings,
-            JasperOptions options)
+        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
+            DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
         {
-            return new SqlServerDurableIncoming(durableStorageSession, settings, options);
+            return new SqlServerDurableIncoming(durableStorageSession, databaseSettings, settings);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -20,7 +21,7 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _reassignSql;
         private readonly CancellationToken _cancellation;
 
-        public PostgresqlDurableOutgoing(DurableStorageSession session, DatabaseSettings settings, JasperOptions options)
+        public PostgresqlDurableOutgoing(DurableStorageSession session, DatabaseSettings settings, AdvancedSettings options)
             : base(session, settings, options)
         {
             _session = session;
@@ -34,9 +35,9 @@ namespace Jasper.Persistence.Postgresql
         }
 
 
-        protected override string determineOutgoingEnvelopeSql(DatabaseSettings settings, JasperOptions options)
+        protected override string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings)
         {
-            return $"select body from {settings.SchemaName}.{OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {options.Advanced.RecoveryBatchSize}";
+            return $"select body from {databaseSettings.SchemaName}.{OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {settings.RecoveryBatchSize}";
         }
 
         public override Task Reassign(int ownerId, Envelope[] outgoing)

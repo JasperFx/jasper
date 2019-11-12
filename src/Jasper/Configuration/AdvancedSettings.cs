@@ -1,11 +1,18 @@
 using System;
+using System.Threading;
 using Baseline.Dates;
+using Jasper.Util;
 using Newtonsoft.Json;
 
 namespace Jasper.Configuration
 {
     public class AdvancedSettings
     {
+        [Obsolete("Replace w/ app cancellation token later")]
+        private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+
+
+
         /// <summary>
         /// Duration of time to wait before attempting to "ping" a transport
         /// in an attempt to resume a broken sending circuit
@@ -73,6 +80,13 @@ namespace Jasper.Configuration
             TypeNameHandling = TypeNameHandling.Auto,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects
         };
+
+        // TODO -- see if this can be made internal?
+        public int UniqueNodeId { get; } = Guid.NewGuid().ToString().GetDeterministicHashCode();
+
+        // TODO -- see if this can be made internal?
+        public CancellationToken Cancellation => _cancellation.Token;
+
 
     }
 }

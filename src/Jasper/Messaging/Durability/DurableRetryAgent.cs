@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -16,15 +17,15 @@ namespace Jasper.Messaging.Durability
 {
     public class DurableRetryAgent : RetryAgent
     {
-        private readonly JasperOptions _options;
+        private readonly AdvancedSettings _settings;
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
         private AsyncRetryPolicy _policy;
 
-        public DurableRetryAgent(ISender sender, JasperOptions options, ITransportLogger logger,
-            IEnvelopePersistence persistence) : base(sender,options.Advanced)
+        public DurableRetryAgent(ISender sender, AdvancedSettings settings, ITransportLogger logger,
+            IEnvelopePersistence persistence) : base(sender, settings)
         {
-            _options = options;
+            _settings = settings;
             _logger = logger;
 
             _persistence = persistence;
@@ -43,12 +44,12 @@ namespace Jasper.Messaging.Durability
         {
             Task execute(CancellationToken c) => enqueueForRetry(batch);
 
-            return _policy.ExecuteAsync(execute, _options.Cancellation);
+            return _policy.ExecuteAsync(execute, _settings.Cancellation);
         }
 
         private async Task enqueueForRetry(OutgoingMessageBatch batch)
         {
-            if (_options.Cancellation.IsCancellationRequested) return;
+            if (_settings.Cancellation.IsCancellationRequested) return;
 
             var expiredInQueue = Queued.Where(x => x.IsExpired()).ToArray();
             var expiredInBatch = batch.Messages.Where(x => x.IsExpired()).ToArray();
@@ -59,13 +60,13 @@ namespace Jasper.Messaging.Durability
                 .ToList();
 
             var reassigned = new Envelope[0];
-            if (all.Count > _settings.MaximumEnvelopeRetryStorage)
-                reassigned = all.Skip(_settings.MaximumEnvelopeRetryStorage).ToArray();
+            if (all.Count > base._settings.MaximumEnvelopeRetryStorage)
+                reassigned = all.Skip(base._settings.MaximumEnvelopeRetryStorage).ToArray();
 
             await _persistence.DiscardAndReassignOutgoing(expired, reassigned, TransportConstants.AnyNode);
             _logger.DiscardedExpired(expired);
 
-            Queued = all.Take(_settings.MaximumEnvelopeRetryStorage).ToList();
+            Queued = all.Take(base._settings.MaximumEnvelopeRetryStorage).ToList();
         }
 
         protected override async Task afterRestarting(ISender sender)

@@ -32,7 +32,6 @@ namespace Jasper.Messaging.Durability
         private readonly IMessagingAction ScheduledJobs;
         private readonly IMessagingAction NodeReassignment;
 
-        private readonly JasperOptions _options;
         private readonly IEnvelopePersistence _persistence;
         private readonly AdvancedSettings _settings;
         private readonly IDurabilityAgentStorage _storage;
@@ -47,8 +46,7 @@ namespace Jasper.Messaging.Durability
         private bool _hasStarted;
 
 
-        public DurabilityAgent(JasperOptions options,
-            ITransportLogger logger,
+        public DurabilityAgent(ITransportLogger logger,
             ILogger<DurabilityAgent> trace,
             IWorkerQueue workers,
             IEnvelopePersistence persistence,
@@ -61,7 +59,6 @@ namespace Jasper.Messaging.Durability
                 return;
             }
 
-            _options = options;
             Logger = logger;
             _trace = trace;
             _workers = workers;
@@ -74,15 +71,15 @@ namespace Jasper.Messaging.Durability
             _worker = new ActionBlock<IMessagingAction>(processAction, new ExecutionDataflowBlockOptions
             {
                 MaxDegreeOfParallelism = 1,
-                CancellationToken = _options.Cancellation
+                CancellationToken = _settings.Cancellation
             });
 
-            NodeId = _options.UniqueNodeId;
+            NodeId = _settings.UniqueNodeId;
 
-            IncomingMessages = new RecoverIncomingMessages(persistence, workers, options, logger);
-            OutgoingMessages = new RecoverOutgoingMessages(subscribers, options, logger);
-            NodeReassignment = new NodeReassignment(options, logger);
-            ScheduledJobs = new RunScheduledJobs(options, logger);
+            IncomingMessages = new RecoverIncomingMessages(persistence, workers, settings, logger);
+            OutgoingMessages = new RecoverOutgoingMessages(subscribers, settings, logger);
+            NodeReassignment = new NodeReassignment(settings);
+            ScheduledJobs = new RunScheduledJobs(settings, logger);
         }
 
         public ITransportLogger Logger { get; }
@@ -166,15 +163,15 @@ namespace Jasper.Messaging.Durability
                 _worker.Post(ScheduledJobs);
                 _worker.Post(IncomingMessages);
                 _worker.Post(OutgoingMessages);
-            }, _options, _settings.ScheduledJobFirstExecution, _settings.ScheduledJobPollingTime);
+            }, _settings, _settings.ScheduledJobFirstExecution, _settings.ScheduledJobPollingTime);
 
-            _nodeReassignmentTimer = new Timer(s => { _worker.Post(NodeReassignment); }, _options,
+            _nodeReassignmentTimer = new Timer(s => { _worker.Post(NodeReassignment); }, _settings,
                 _settings.FirstNodeReassignmentExecution, _settings.NodeReassignmentPollingTime);
         }
 
         private async Task processAction(IMessagingAction action)
         {
-            if (_options.Cancellation.IsCancellationRequested) return;
+            if (_settings.Cancellation.IsCancellationRequested) return;
 
             await tryRestartConnection();
 
@@ -196,10 +193,10 @@ namespace Jasper.Messaging.Durability
             catch (Exception e)
             {
                 Logger.LogException(e, message: "Error trying to run " + action);
-                await _storage.Session.ReleaseNodeLock(_options.UniqueNodeId);
+                await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
             }
 
-            await _storage.Session.GetNodeLock(_options.UniqueNodeId);
+            await _storage.Session.GetNodeLock(_settings.UniqueNodeId);
         }
 
         private async Task tryRestartConnection()
@@ -208,7 +205,7 @@ namespace Jasper.Messaging.Durability
 
             try
             {
-                await _storage.Session.ConnectAndLockCurrentNode(Logger, _options.UniqueNodeId);
+                await _storage.Session.ConnectAndLockCurrentNode(Logger, _settings.UniqueNodeId);
             }
             catch (Exception e)
             {
@@ -225,10 +222,10 @@ namespace Jasper.Messaging.Durability
 
             await _worker.Completion;
 
-            await _storage.Session.ReleaseNodeLock(_options.UniqueNodeId);
+            await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
 
             // Release all envelopes tagged to this node in message persistence to any node
-            await _storage.Nodes.ReassignDormantNodeToAnyNode(_options.UniqueNodeId);
+            await _storage.Nodes.ReassignDormantNodeToAnyNode(_settings.UniqueNodeId);
 
             _storage.Dispose();
         }
@@ -239,7 +236,7 @@ namespace Jasper.Messaging.Durability
 
             if (_storage.Session.IsConnected())
             {
-                _storage.Session.ReleaseNodeLock(_options.UniqueNodeId).GetAwaiter().GetResult();
+                _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId).GetAwaiter().GetResult();
                 _storage.SafeDispose();
             }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
@@ -15,15 +16,15 @@ namespace Jasper.Messaging.Runtime
         private readonly ITransportLogger _logger;
         private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _queue;
-        private readonly JasperOptions _options;
+        private readonly AdvancedSettings _settings;
 
         public Listener(IListeningAgent agent, IWorkerQueue queue, ITransportLogger logger,
-            JasperOptions options, IEnvelopePersistence persistence)
+            AdvancedSettings settings, IEnvelopePersistence persistence)
         {
             _agent = agent;
             _queue = queue;
             _logger = logger;
-            _options = options;
+            _settings = settings;
             _persistence = persistence;
         }
 
@@ -72,7 +73,7 @@ namespace Jasper.Messaging.Runtime
         // Separated for testing here.
         public async Task<ReceivedStatus> ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] envelopes)
         {
-            if (_options.Cancellation.IsCancellationRequested) return ReceivedStatus.ProcessFailure;
+            if (_settings.Cancellation.IsCancellationRequested) return ReceivedStatus.ProcessFailure;
 
             try
             {
@@ -89,7 +90,7 @@ namespace Jasper.Messaging.Runtime
                     else
                     {
                         envelope.Status = TransportConstants.Incoming;
-                        envelope.OwnerId = _options.UniqueNodeId;
+                        envelope.OwnerId = _settings.UniqueNodeId;
                     }
                 }
 

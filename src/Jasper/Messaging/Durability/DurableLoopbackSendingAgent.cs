@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -15,18 +16,18 @@ namespace Jasper.Messaging.Durability
     public class DurableLoopbackSendingAgent : ISendingAgent
     {
         private readonly ITransportLogger _logger;
-        private readonly JasperOptions _options;
+        private readonly AdvancedSettings _settings;
         private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _queues;
         private readonly MessagingSerializationGraph _serializers;
 
         public DurableLoopbackSendingAgent(Uri destination, IWorkerQueue queues, IEnvelopePersistence persistence,
-            MessagingSerializationGraph serializers, ITransportLogger logger, JasperOptions options)
+            MessagingSerializationGraph serializers, ITransportLogger logger, AdvancedSettings settings)
         {
             _queues = queues;
             _serializers = serializers;
             _logger = logger;
-            _options = options;
+            _settings = settings;
 
             _persistence = persistence;
 
@@ -63,7 +64,7 @@ namespace Jasper.Messaging.Durability
                 : TransportConstants.Incoming;
 
             envelope.OwnerId = envelope.Status == TransportConstants.Incoming
-                ? _options.UniqueNodeId
+                ? _settings.UniqueNodeId
                 : TransportConstants.AnyNode;
 
             await _persistence.StoreIncoming(envelope);
@@ -89,7 +90,7 @@ namespace Jasper.Messaging.Durability
                 if(envelope.Status == TransportConstants.Incoming)
                 {
                     // This envelop will immediately be queued to run on this node
-                    envelope.OwnerId = _options.UniqueNodeId;
+                    envelope.OwnerId = _settings.UniqueNodeId;
                 }
             }
 

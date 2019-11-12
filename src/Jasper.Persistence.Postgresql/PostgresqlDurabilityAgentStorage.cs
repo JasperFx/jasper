@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -12,21 +13,23 @@ namespace Jasper.Persistence.Postgresql
 {
     public class PostgresqlDurabilityAgentStorage : DurabilityAgentStorage
     {
-        public PostgresqlDurabilityAgentStorage(PostgresqlSettings settings, JasperOptions options) : base(settings, options)
+        public PostgresqlDurabilityAgentStorage(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings, settings)
         {
 
         }
 
-        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession, DatabaseSettings settings,
-            JasperOptions options)
+        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession,
+            DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
         {
-            return  new PostgresqlDurableOutgoing(durableStorageSession, settings, options);
+            return  new PostgresqlDurableOutgoing(durableStorageSession, databaseSettings, settings);
         }
 
-        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession, DatabaseSettings settings,
-            JasperOptions options)
+        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
+            DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
         {
-            return new PostgresqlDurableIncoming(durableStorageSession, settings, options);
+            return new PostgresqlDurableIncoming(durableStorageSession, databaseSettings, settings);
         }
     }
 }

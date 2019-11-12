@@ -15,7 +15,7 @@ namespace Jasper.Messaging.Transports
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
         private IMessageLogger _logger;
         private IMessagingRoot _root;
-        private JasperOptions _settings;
+        private AdvancedSettings _settings;
 
 
         private ImHashMap<Uri, ISubscriber> _subscribers = ImHashMap<Uri, ISubscriber>.Empty;
@@ -65,7 +65,7 @@ namespace Jasper.Messaging.Transports
         {
             var settings = root.Options;
 
-            _settings = settings;
+            _settings = settings.Advanced;
             _logger = root.Logger;
             _root = root;
 

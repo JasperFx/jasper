@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -25,7 +26,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         protected SqlServerSettings mssqlSettings;
         protected Listener theListener;
         protected SqlServerEnvelopePersistence ThePersistence;
-        protected JasperOptions theSettings;
+        protected AdvancedSettings theSettings;
         protected IWorkerQueue theWorkerQueue;
 
 
@@ -35,14 +36,14 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             theWorkerQueue = Substitute.For<IWorkerQueue>();
 
-            theSettings = new JasperOptions();
+            theSettings = new AdvancedSettings();
 
             mssqlSettings = new SqlServerSettings
             {
                 ConnectionString = Servers.SqlServerConnectionString
             };
 
-            ThePersistence = new SqlServerEnvelopePersistence(mssqlSettings, new JasperOptions());
+            ThePersistence = new SqlServerEnvelopePersistence(mssqlSettings, theSettings);
 
 
             theListener = new Listener(

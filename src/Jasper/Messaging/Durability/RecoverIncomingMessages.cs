@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -12,15 +13,15 @@ namespace Jasper.Messaging.Durability
     {
         private readonly IEnvelopePersistence _persistence;
         private readonly IWorkerQueue _workers;
-        private readonly JasperOptions _options;
+        private readonly AdvancedSettings _settings;
         private readonly ITransportLogger _logger;
 
-        public RecoverIncomingMessages(IEnvelopePersistence persistence, IWorkerQueue workers, JasperOptions options,
+        public RecoverIncomingMessages(IEnvelopePersistence persistence, IWorkerQueue workers, AdvancedSettings settings,
             ITransportLogger logger)
         {
             _persistence = persistence;
             _workers = workers;
-            _options = options;
+            this._settings = settings;
             _logger = logger;
         }
 
@@ -50,7 +51,7 @@ namespace Jasper.Messaging.Durability
                     return;
                 }
 
-                await storage.Incoming.Reassign(_options.UniqueNodeId, incoming);
+                await storage.Incoming.Reassign(_settings.UniqueNodeId, incoming);
 
                 await storage.Session.Commit();
             }
@@ -68,13 +69,13 @@ namespace Jasper.Messaging.Durability
 
             foreach (var envelope in incoming)
             {
-                envelope.OwnerId = _options.UniqueNodeId;
+                envelope.OwnerId = _settings.UniqueNodeId;
                 envelope.Callback = new DurableCallback(envelope, _workers, _persistence,_logger);
                 await _workers.Enqueue(envelope);
             }
 
             // TODO -- this should be smart enough later to check for back pressure before rescheduling
-            if (incoming.Length == _options.Advanced.RecoveryBatchSize)
+            if (incoming.Length == _settings.RecoveryBatchSize)
                 agent.RescheduleIncomingRecovery();
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -11,7 +12,7 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqTransport : ExternalTransportBase<RabbitMqOptions, RabbitMqEndpoint>
     {
-        public RabbitMqTransport(RabbitMqOptions options, ITransportLogger logger, JasperOptions jasperOptions) : base("rabbitmq", options, logger, jasperOptions)
+        public RabbitMqTransport(RabbitMqOptions options, ITransportLogger logger, AdvancedSettings settings) : base("rabbitmq", options, logger, settings)
         {
         }
 
@@ -22,7 +23,7 @@ namespace Jasper.RabbitMQ.Internal
         }
 
         protected override IListeningAgent buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint,
-            JasperOptions settings, HandlerGraph handlers)
+            AdvancedSettings settings, HandlerGraph handlers)
         {
             if (endpoint == null)
             {

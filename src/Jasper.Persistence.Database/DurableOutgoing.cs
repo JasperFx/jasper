@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -18,23 +19,24 @@ namespace Jasper.Persistence.Database
         private readonly string _findOutgoingEnvelopesSql;
 
 
-        protected DurableOutgoing(IDatabaseSession session, DatabaseSettings settings, JasperOptions options)
+        protected DurableOutgoing(IDatabaseSession session, DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
         {
             _session = session;
             _findUniqueDestinations =
-                $"select distinct destination from {settings.SchemaName}.{OutgoingTable}";
+                $"select distinct destination from {databaseSettings.SchemaName}.{OutgoingTable}";
 
             _deleteOutgoingSql =
-                $"delete from {settings.SchemaName}.{OutgoingTable} where owner_id = :owner and destination = @destination";
+                $"delete from {databaseSettings.SchemaName}.{OutgoingTable} where owner_id = :owner and destination = @destination";
 
-            _cancellation = options.Cancellation;
+            _cancellation = settings.Cancellation;
 
             _findOutgoingEnvelopesSql =
-                determineOutgoingEnvelopeSql(settings, options);
+                determineOutgoingEnvelopeSql(databaseSettings, settings);
 
         }
 
-        protected abstract string determineOutgoingEnvelopeSql(DatabaseSettings settings, JasperOptions options);
+        protected abstract string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings);
 
         public Task<Envelope[]> Load(Uri destination)
         {

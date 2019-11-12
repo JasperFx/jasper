@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -19,27 +20,27 @@ namespace Jasper.Persistence.SqlServer.Persistence
 {
     public class SqlServerEnvelopePersistence : DatabaseBackedEnvelopePersistence
     {
-        private readonly SqlServerSettings _settings;
+        private readonly SqlServerSettings _databaseSettings;
 
 
-        public SqlServerEnvelopePersistence(SqlServerSettings settings, JasperOptions options)
-            : base(settings, options, new SqlServerEnvelopeStorageAdmin(settings), new SqlServerDurabilityAgentStorage(settings, options))
+        public SqlServerEnvelopePersistence(SqlServerSettings databaseSettings, AdvancedSettings settings)
+            : base(databaseSettings,settings, new SqlServerEnvelopeStorageAdmin(databaseSettings), new SqlServerDurabilityAgentStorage(databaseSettings, settings))
         {
-            _settings = settings;
+            _databaseSettings = databaseSettings;
         }
 
         public override Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
-            return _settings.CallFunction("uspDeleteIncomingEnvelopes")
-                .WithIdList(_settings, envelopes)
+            return _databaseSettings.CallFunction("uspDeleteIncomingEnvelopes")
+                .WithIdList(_databaseSettings, envelopes)
                 .ExecuteOnce(_cancellation);
         }
 
 
         public override Task DeleteOutgoing(Envelope[] envelopes)
         {
-            return _settings.CallFunction("uspDeleteOutgoingEnvelopes")
-                .WithIdList(_settings, envelopes)
+            return _databaseSettings.CallFunction("uspDeleteOutgoingEnvelopes")
+                .WithIdList(_databaseSettings, envelopes)
                 .ExecuteOnce(_cancellation);
         }
 
@@ -55,9 +56,9 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             var list = builder.AddNamedParameter("IDLIST", table).As<SqlParameter>();
             list.SqlDbType = SqlDbType.Structured;
-            list.TypeName = $"{_settings.SchemaName}.EnvelopeIdList";
+            list.TypeName = $"{_databaseSettings.SchemaName}.EnvelopeIdList";
 
-            builder.Append($"EXEC {_settings.SchemaName}.uspDeleteIncomingEnvelopes @IDLIST;");
+            builder.Append($"EXEC {_databaseSettings.SchemaName}.uspDeleteIncomingEnvelopes @IDLIST;");
 
             foreach (var error in errors)
             {
@@ -71,12 +72,12 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 var body = builder.AddParameter(error.RawData);
 
                 builder.Append(
-                    $"insert into {_settings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
+                    $"insert into {_databaseSettings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
             }
 
             builder.Apply();
 
-            using (var conn = new SqlConnection(_settings.ConnectionString))
+            using (var conn = new SqlConnection(_databaseSettings.ConnectionString))
             {
                 await conn.OpenAsync(_cancellation);
                 cmd.Connection = conn;
@@ -86,9 +87,9 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
-            var cmd = _settings.CallFunction("uspDiscardAndReassignOutgoing")
-                .WithIdList(_settings, discards, "discards")
-                .WithIdList(_settings, reassigned, "reassigned")
+            var cmd = _databaseSettings.CallFunction("uspDiscardAndReassignOutgoing")
+                .WithIdList(_databaseSettings, discards, "discards")
+                .WithIdList(_databaseSettings, reassigned, "reassigned")
                 .With("ownerId", nodeId);
 
             return cmd.ExecuteOnce(_cancellation);
@@ -100,7 +101,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public override void Describe(TextWriter writer)
         {
-            writer.WriteLine($"Sql Server Envelope Storage in Schema '{_settings.SchemaName}'");
+            writer.WriteLine($"Sql Server Envelope Storage in Schema '{_databaseSettings.SchemaName}'");
         }
 
 

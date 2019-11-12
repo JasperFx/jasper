@@ -23,8 +23,8 @@ namespace Jasper.Persistence.Marten
         {
             if (bus.Advanced.Persistence is PostgresqlEnvelopePersistence persistence)
             {
-                _settings = (PostgresqlSettings) persistence.Settings;
-                _nodeId = persistence.Options.UniqueNodeId;
+                _settings = (PostgresqlSettings) persistence.DatabaseSettings;
+                _nodeId = persistence.Settings.UniqueNodeId;
             }
             else
             {

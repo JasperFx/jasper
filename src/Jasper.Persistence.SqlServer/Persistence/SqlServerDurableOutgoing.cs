@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Persistence.Database;
@@ -18,16 +19,16 @@ namespace Jasper.Persistence.SqlServer.Persistence
         private readonly DatabaseSettings _settings;
         private readonly CancellationToken _cancellation;
 
-        public SqlServerDurableOutgoing(IDatabaseSession session, DatabaseSettings settings, JasperOptions options) : base(session, settings, options)
+        public SqlServerDurableOutgoing(IDatabaseSession session, DatabaseSettings settings, AdvancedSettings options) : base(session, settings, options)
         {
             _session = session;
             _settings = settings;
             _cancellation = options.Cancellation;
         }
 
-        protected override string determineOutgoingEnvelopeSql(Database.DatabaseSettings settings, JasperOptions options)
+        protected override string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings)
         {
-            return $"select top {options.Advanced.RecoveryBatchSize} body from {settings.SchemaName}.{OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
+            return $"select top {settings.RecoveryBatchSize} body from {databaseSettings.SchemaName}.{OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
         }
 
         public override Task Reassign(int ownerId, Envelope[] outgoing)

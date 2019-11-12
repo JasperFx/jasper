@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -11,18 +12,18 @@ namespace Jasper.Persistence.SqlServer.Persistence
     public class SqlServerDurableIncoming : DataAccessor, IDurableIncoming
     {
         private readonly IDatabaseSession _session;
-        private readonly DatabaseSettings _settings;
+        private readonly DatabaseSettings _databaseSettings;
         private readonly string _findAtLargeEnvelopesSql;
         private readonly CancellationToken _cancellation;
 
-        public SqlServerDurableIncoming(IDatabaseSession session, DatabaseSettings settings, JasperOptions options)
+        public SqlServerDurableIncoming(IDatabaseSession session, DatabaseSettings databaseSettings, AdvancedSettings settings)
         {
             _session = session;
-            _settings = settings;
+            _databaseSettings = databaseSettings;
             _findAtLargeEnvelopesSql =
-                $"select top {options.Advanced.RecoveryBatchSize} body from {settings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
+                $"select top {settings.RecoveryBatchSize} body from {databaseSettings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
 
-            _cancellation = options.Cancellation;
+            _cancellation = settings.Cancellation;
         }
 
         public Task<Envelope[]> LoadPageOfLocallyOwned()
@@ -34,7 +35,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public Task Reassign(int ownerId, Envelope[] incoming)
         {
             return _session.CallFunction("uspMarkIncomingOwnership")
-                .WithIdList(_settings, incoming)
+                .WithIdList(_databaseSettings, incoming)
                 .With("owner", ownerId)
                 .ExecuteNonQueryAsync(_cancellation);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Tcp;
@@ -10,8 +11,8 @@ namespace Jasper.Messaging.Transports.Sending
     public class LightweightSendingAgent : SendingAgent
     {
         public LightweightSendingAgent(Uri destination, ISender sender, ITransportLogger logger,
-            JasperOptions options)
-            : base(destination, sender, logger, options, new LightweightRetryAgent(sender, options.Advanced))
+            AdvancedSettings settings)
+            : base(destination, sender, logger, new LightweightRetryAgent(sender, settings))
         {
         }
 

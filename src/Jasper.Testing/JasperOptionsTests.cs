@@ -11,12 +11,12 @@ namespace Jasper.Testing
         [Fact]
         public void unique_node_id_is_really_unique()
         {
-            var options1 = new JasperOptions();
-            var options2 = new JasperOptions();
-            var options3 = new JasperOptions();
-            var options4 = new JasperOptions();
-            var options5 = new JasperOptions();
-            var options6 = new JasperOptions();
+            var options1 = new AdvancedSettings();
+            var options2 = new AdvancedSettings();
+            var options3 = new AdvancedSettings();
+            var options4 = new AdvancedSettings();
+            var options5 = new AdvancedSettings();
+            var options6 = new AdvancedSettings();
 
             options1.UniqueNodeId.ShouldNotBe(options2.UniqueNodeId);
             options1.UniqueNodeId.ShouldNotBe(options3.UniqueNodeId);

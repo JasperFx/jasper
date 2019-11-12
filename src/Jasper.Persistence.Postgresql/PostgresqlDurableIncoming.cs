@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -17,16 +18,16 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _reassignSql;
         private readonly CancellationToken _cancellation;
 
-        public PostgresqlDurableIncoming(DurableStorageSession session, DatabaseSettings settings, JasperOptions options)
+        public PostgresqlDurableIncoming(DurableStorageSession session, DatabaseSettings databaseSettings, AdvancedSettings settings)
         {
             _session = session;
             _findAtLargeEnvelopesSql =
-                $"select body from {settings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}' limit {options.Advanced.RecoveryBatchSize}";
+                $"select body from {databaseSettings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}' limit {settings.RecoveryBatchSize}";
 
             _reassignSql =
-                $"UPDATE {settings.SchemaName}.{IncomingTable} SET owner_id = @owner, status = '{TransportConstants.Incoming}' WHERE id = ANY(@ids)";
+                $"UPDATE {databaseSettings.SchemaName}.{IncomingTable} SET owner_id = @owner, status = '{TransportConstants.Incoming}' WHERE id = ANY(@ids)";
 
-            _cancellation = options.Cancellation;
+            _cancellation = settings.Cancellation;
         }
 
         public Task<Envelope[]> LoadPageOfLocallyOwned()

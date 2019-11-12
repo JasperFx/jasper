@@ -8,6 +8,7 @@ using Baseline;
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
@@ -102,7 +103,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             _host.RebuildMessageStorage();
 
-            _currentNodeId = _host.Services.GetService<JasperOptions>().UniqueNodeId;
+            _currentNodeId = _host.Services.GetService<AdvancedSettings>().UniqueNodeId;
 
             _owners["This Node"] = _currentNodeId;
         }

@@ -22,16 +22,16 @@ namespace Jasper.Messaging.Transports
         private ListeningStatus _status = ListeningStatus.Accepting;
 
         public TransportBase(string protocol, ITransportLogger logger,
-            JasperOptions options)
+            AdvancedSettings settings)
         {
             this.logger = logger;
-            JasperOptions = options;
+            Settings = settings;
             Protocol = protocol;
         }
 
         public IWorkerQueue WorkerQueue { get; private set; }
 
-        public JasperOptions JasperOptions { get; }
+        public AdvancedSettings Settings { get; }
 
         protected ITransportLogger logger { get; }
 
@@ -49,7 +49,7 @@ namespace Jasper.Messaging.Transports
 
                 var agent = uri.IsDurable()
                     ? root.BuildDurableSendingAgent(uri, batchedSender)
-                    : new LightweightSendingAgent(uri, batchedSender, logger, JasperOptions);
+                    : new LightweightSendingAgent(uri, batchedSender, logger, Settings);
 
                 agent.DefaultReplyUri = ReplyUri;
                 agent.Start();
@@ -76,18 +76,18 @@ namespace Jasper.Messaging.Transports
             {
                 try
                 {
-                    var agent = buildListeningAgent(listenerSettings, options, root.Handlers);
+                    var agent = buildListeningAgent(listenerSettings, root.Options.Advanced, root.Handlers);
                     agent.Status = _status;
 
                     var worker = listenerSettings.IsDurable
-                        ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, root.Pipeline, options, root.Persistence, logger)
-                        : new LightweightWorkerQueue(listenerSettings, logger, root.Pipeline, options);
+                        ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, root.Pipeline, options.Advanced, root.Persistence, logger)
+                        : new LightweightWorkerQueue(listenerSettings, logger, root.Pipeline, options.Advanced);
 
                     var persistence = listenerSettings.IsDurable
                         ? root.Persistence
                         : new NulloEnvelopePersistence(worker);
 
-                    var listener = new Listener(agent, worker, logger, options,  persistence);
+                    var listener = new Listener(agent, worker, logger, root.Options.Advanced,  persistence);
 
                     _listeners.Add(listener);
 
@@ -122,7 +122,8 @@ namespace Jasper.Messaging.Transports
         protected abstract ISender createSender(Uri uri, CancellationToken cancellation);
 
         protected abstract ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming);
-        protected abstract IListeningAgent buildListeningAgent(ListenerSettings listenerSettings, JasperOptions options,
+        protected abstract IListeningAgent buildListeningAgent(ListenerSettings listenerSettings,
+            AdvancedSettings settings,
             HandlerGraph handlers);
     }
 }

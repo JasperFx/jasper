@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -13,8 +14,8 @@ namespace Jasper.Messaging.Transports
         private readonly TSettings _options;
 
         public ExternalTransportBase(string protocol, TSettings options, ITransportLogger logger,
-            JasperOptions jasperOptions)
-            : base(protocol, logger, jasperOptions)
+            AdvancedSettings settings)
+            : base(protocol, logger, settings)
         {
             _options = options;
         }
@@ -33,7 +34,8 @@ namespace Jasper.Messaging.Transports
         protected abstract ISender buildSender(TransportUri transportUri, TEndpoint endpoint,
             CancellationToken cancellation);
 
-        protected override IListeningAgent buildListeningAgent(ListenerSettings listenerSettings, JasperOptions options,
+        protected override IListeningAgent buildListeningAgent(ListenerSettings listenerSettings,
+            AdvancedSettings settings,
             HandlerGraph handlers)
         {
             var transportUri = new TransportUri(listenerSettings.Uri);
@@ -41,11 +43,11 @@ namespace Jasper.Messaging.Transports
 
             if (endpoint == null) throw new ArgumentOutOfRangeException(nameof(listenerSettings), $"Unknown {Protocol} connection named '{transportUri.ConnectionName}'");
 
-            return buildListeningAgent(transportUri, endpoint, options, handlers);
+            return buildListeningAgent(transportUri, endpoint, settings, handlers);
         }
 
         protected abstract IListeningAgent buildListeningAgent(TransportUri transportUri, TEndpoint endpoint,
-            JasperOptions settings, HandlerGraph handlers);
+            AdvancedSettings settings, HandlerGraph handlers);
 
         protected override ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming)
         {

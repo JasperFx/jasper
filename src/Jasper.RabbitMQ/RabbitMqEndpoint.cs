@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -236,7 +237,7 @@ namespace Jasper.RabbitMQ
             return new RabbitMqSender(logger, this, cancellation);
         }
 
-        internal IListeningAgent CreateListeningAgent(Uri uri, JasperOptions options, ITransportLogger logger)
+        internal IListeningAgent CreateListeningAgent(Uri uri, AdvancedSettings options, ITransportLogger logger)
         {
             return new RabbitMqListeningAgent(uri, logger, Protocol, this);
         }

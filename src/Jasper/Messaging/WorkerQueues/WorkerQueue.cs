@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
@@ -13,6 +14,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.WorkerQueues
 {
+    [Obsolete("Replace with NewWorkerQueue")]
     public class WorkerQueue : IWorkerQueue
     {
         private readonly CancellationToken _cancellationToken;
@@ -21,15 +23,15 @@ namespace Jasper.Messaging.WorkerQueues
         private readonly Dictionary<string, ActionBlock<Envelope>> _receivers
             = new Dictionary<string, ActionBlock<Envelope>>();
 
-        private readonly JasperOptions _options;
+        private readonly AdvancedSettings _settings;
 
 
-        public WorkerQueue(IMessageLogger logger, IHandlerPipeline pipeline, JasperOptions options)
+        public WorkerQueue(IMessageLogger logger, IHandlerPipeline pipeline, AdvancedSettings settings)
         {
             _logger = logger;
             Pipeline = pipeline;
-            _options = options;
-            _cancellationToken = _options.Cancellation;
+            _settings = settings;
+            _cancellationToken = _settings.Cancellation;
 
             foreach (var worker in Pipeline.Workers.AllWorkers) AddQueue(worker.Name, worker.Parallelization);
 

@@ -28,11 +28,6 @@ namespace Jasper
     /// </summary>
     public partial class JasperOptions : ITransportsExpression
     {
-        [Obsolete("Replace w/ app cancellation token later")]
-        private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
-
-
-
         protected static Assembly _rememberedCallingAssembly;
 
         protected readonly ServiceRegistry _applicationServices = new ServiceRegistry();
@@ -80,14 +75,9 @@ namespace Jasper
             ListenForMessagesFrom(TransportConstants.ScheduledUri);
             ListenForMessagesFrom(TransportConstants.RepliesUri);
 
-            UniqueNodeId = Guid.NewGuid().ToString().GetDeterministicHashCode();
         }
 
-        // TODO -- see if this can be made internal?
-        public int UniqueNodeId { get; }
 
-        // TODO -- see if this can be made internal?
-        public CancellationToken Cancellation => _cancellation.Token;
 
         /// <summary>
         /// Advanced configuration options for Jasper message processing,

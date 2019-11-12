@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports;
 
@@ -8,13 +9,11 @@ namespace Jasper.Messaging.Durability
 {
     public class NodeReassignment : IMessagingAction
     {
-        private readonly JasperOptions _options;
-        private readonly ITransportLogger _logger;
+        private readonly AdvancedSettings _settings;
 
-        public NodeReassignment(JasperOptions options, ITransportLogger logger)
+        public NodeReassignment(AdvancedSettings settings)
         {
-            _options = options;
-            _logger = logger;
+            _settings = settings;
         }
 
         public string Description { get; } = "Dormant node reassignment";
@@ -32,11 +31,11 @@ namespace Jasper.Messaging.Durability
 
             try
             {
-                var owners = await storage.Nodes.FindUniqueOwners(_options.UniqueNodeId);
+                var owners = await storage.Nodes.FindUniqueOwners(_settings.UniqueNodeId);
 
                 foreach (var owner in owners.Where(x => x != TransportConstants.AnyNode))
                 {
-                    if (owner == _options.UniqueNodeId) continue;
+                    if (owner == _settings.UniqueNodeId) continue;
 
                     if (await storage.Session.TryGetGlobalTxLock(owner))
                     {

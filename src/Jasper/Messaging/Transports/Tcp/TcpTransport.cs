@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -11,8 +12,8 @@ namespace Jasper.Messaging.Transports.Tcp
 {
     public class TcpTransport : TransportBase
     {
-        public TcpTransport(ITransportLogger logger, JasperOptions options) :
-            base("tcp", logger, options)
+        public TcpTransport(ITransportLogger logger, AdvancedSettings settings) :
+            base("tcp", logger, settings)
         {
         }
 
@@ -32,7 +33,8 @@ namespace Jasper.Messaging.Transports.Tcp
         }
 
 
-        protected override IListeningAgent buildListeningAgent(ListenerSettings listenerSettings, JasperOptions options,
+        protected override IListeningAgent buildListeningAgent(ListenerSettings listenerSettings,
+            AdvancedSettings settings,
             HandlerGraph handlers)
         {
             // check the uri for an ip address to bind to
@@ -40,11 +42,11 @@ namespace Jasper.Messaging.Transports.Tcp
 
             if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)
                 return uri.Host == "localhost"
-                    ? new SocketListeningAgent(IPAddress.Loopback, uri.Port, options.Cancellation)
-                    : new SocketListeningAgent(IPAddress.Any, uri.Port, options.Cancellation);
+                    ? new SocketListeningAgent(IPAddress.Loopback, uri.Port, settings.Cancellation)
+                    : new SocketListeningAgent(IPAddress.Any, uri.Port, settings.Cancellation);
 
             var ipaddr = IPAddress.Parse(uri.Host);
-            return new SocketListeningAgent(ipaddr, uri.Port, options.Cancellation);
+            return new SocketListeningAgent(ipaddr, uri.Port, settings.Cancellation);
         }
 
         private static void assertNoDuplicatePorts(ListenerSettings[] incoming)

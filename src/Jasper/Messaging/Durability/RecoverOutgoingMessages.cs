@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -10,10 +11,10 @@ namespace Jasper.Messaging.Durability
     public class RecoverOutgoingMessages : IMessagingAction
     {
         private readonly ISubscriberGraph _subscribers;
-        private readonly JasperOptions _settings;
+        private readonly AdvancedSettings _settings;
         private readonly ITransportLogger _logger;
 
-        public RecoverOutgoingMessages(ISubscriberGraph subscribers, JasperOptions settings, ITransportLogger logger)
+        public RecoverOutgoingMessages(ISubscriberGraph subscribers, AdvancedSettings settings, ITransportLogger logger)
         {
             _subscribers = subscribers;
             _settings = settings;
@@ -38,7 +39,7 @@ namespace Jasper.Messaging.Durability
                     count += found;
                 }
 
-                var wasMaxedOut = count >= _settings.Advanced.RecoveryBatchSize;
+                var wasMaxedOut = count >= _settings.RecoveryBatchSize;
 
                 if (wasMaxedOut) agent.RescheduleOutgoingRecovery();
             }

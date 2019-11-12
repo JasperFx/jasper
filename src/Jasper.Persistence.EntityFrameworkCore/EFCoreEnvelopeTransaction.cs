@@ -20,8 +20,8 @@ namespace Jasper.Persistence.EntityFrameworkCore
         {
             if (messaging.Advanced.Persistence is DatabaseBackedEnvelopePersistence persistence)
             {
-                _settings = persistence.Settings;
-                _nodeId = persistence.Options.UniqueNodeId;
+                _settings = persistence.DatabaseSettings;
+                _nodeId = persistence.Settings.UniqueNodeId;
             }
             else
             {

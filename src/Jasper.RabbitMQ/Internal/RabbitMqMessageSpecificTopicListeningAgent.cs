@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -14,7 +15,7 @@ namespace Jasper.RabbitMQ.Internal
 
 
         public RabbitMqMessageSpecificTopicListeningAgent(RabbitMqEndpoint endpoint, HandlerGraph handlers,
-            TransportUri transportUri, ITransportLogger logger, JasperOptions settings)
+            TransportUri transportUri, ITransportLogger logger, AdvancedSettings settings)
         {
             Address = endpoint.Uri.ToUri();
 
