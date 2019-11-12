@@ -20,7 +20,6 @@ namespace Jasper.Messaging.Runtime.Routing
         private readonly MessagingSerializationGraph _serializers;
         private readonly AdvancedSettings _settings;
         private readonly ISubscriberGraph _subscribers;
-        private readonly WorkersGraph _workers;
 
         private ImHashMap<Type, MessageRoute[]> _routes = ImHashMap<Type, MessageRoute[]>.Empty;
 
@@ -32,7 +31,6 @@ namespace Jasper.Messaging.Runtime.Routing
             _serializers = serializers;
             _settings = settings;
             _subscribers = subscribers;
-            _workers = handlers.Workers;
         }
 
         public void ClearAll()
@@ -151,7 +149,7 @@ namespace Jasper.Messaging.Runtime.Routing
 
         private MessageRoute createLocalRoute(Type messageType)
         {
-            var destination = _workers.LoopbackUriFor(messageType);
+            var destination = TransportConstants.LoopbackUri;
             var route = new MessageRoute(messageType, destination, "application/json")
             {
                 Subscriber = _subscribers.GetOrBuild(destination)
