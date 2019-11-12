@@ -39,15 +39,10 @@ namespace Jasper.Messaging
 
         IEnvelopePersistence Persistence { get; }
 
-        Task StartAsync(CancellationToken cancellationToken);
-
-        void ApplyMessageTypeSpecificRules(Envelope envelope);
         bool ShouldBeDurable(Type messageType);
 
         ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender);
         ISendingAgent BuildDurableLoopbackAgent(Uri destination);
 
-
-        Task StopAsync(CancellationToken cancellationToken);
     }
 }

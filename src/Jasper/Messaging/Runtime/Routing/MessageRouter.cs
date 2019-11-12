@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
@@ -22,6 +23,9 @@ namespace Jasper.Messaging.Runtime.Routing
         private readonly WorkersGraph _workers;
 
         private ImHashMap<Type, MessageRoute[]> _routes = ImHashMap<Type, MessageRoute[]>.Empty;
+
+        private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
+
 
         public MessageRouter(IMessagingRoot root, HandlerGraph handlers)
         {
@@ -155,5 +159,26 @@ namespace Jasper.Messaging.Runtime.Routing
             };
             return route;
         }
+
+        public void ApplyMessageTypeSpecificRules(Envelope envelope)
+        {
+            if (envelope.Message == null) return;
+
+            var messageType = envelope.Message.GetType();
+            if (!_messageRules.TryFind(messageType, out var rules))
+            {
+                rules = findMessageTypeCustomizations(messageType).ToArray();
+                _messageRules = _messageRules.AddOrUpdate(messageType, rules);
+            }
+
+            foreach (var action in rules) action(envelope);
+        }
+
+        private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
+        {
+            foreach (var att in messageType.GetAllAttributes<ModifyEnvelopeAttribute>())
+                yield return e => att.Modify(e);
+        }
+
     }
 }

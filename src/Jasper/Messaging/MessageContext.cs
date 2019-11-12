@@ -63,7 +63,7 @@ namespace Jasper.Messaging
             {
                 for (int i = 0; i < outgoing.Length; i++)
                 {
-                    _root.ApplyMessageTypeSpecificRules(outgoing[i]);
+                    _root.Router.ApplyMessageTypeSpecificRules(outgoing[i]);
 
                     var subscriber = _root.Subscribers.GetOrBuild(outgoing[i].Destination);
 
@@ -75,7 +75,7 @@ namespace Jasper.Messaging
             }
             else
             {
-                foreach (var env in outgoing) _root.ApplyMessageTypeSpecificRules(env);
+                foreach (var env in outgoing) _root.Router.ApplyMessageTypeSpecificRules(env);
             }
 
 

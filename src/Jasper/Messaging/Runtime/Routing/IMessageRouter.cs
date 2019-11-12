@@ -9,5 +9,6 @@ namespace Jasper.Messaging.Runtime.Routing
         MessageRoute RouteForDestination(Envelope envelopeDestination);
 
         Envelope[] Route(Envelope envelope);
+        void ApplyMessageTypeSpecificRules(Envelope envelope);
     }
 }

@@ -30,7 +30,6 @@ namespace Jasper.Messaging
         private readonly ITransportLogger _transportLogger;
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
-        private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
         private readonly Lazy<IEnvelopePersistence> _persistence;
         private readonly IContainer _container;
@@ -153,27 +152,6 @@ namespace Jasper.Messaging
 
         public HandlerGraph Handlers { get; }
 
-        // TODO -- gather this up into its own class and OPTIMIZE
-        public void ApplyMessageTypeSpecificRules(Envelope envelope)
-        {
-            if (envelope.Message == null) return;
-
-            var messageType = envelope.Message.GetType();
-            if (!_messageRules.TryFind(messageType, out var rules))
-            {
-                rules = findMessageTypeCustomizations(messageType).ToArray();
-                _messageRules = _messageRules.AddOrUpdate(messageType, rules);
-            }
-
-            foreach (var action in rules) action(envelope);
-        }
-
-        // Gather this into its own class
-        private IEnumerable<Action<Envelope>> findMessageTypeCustomizations(Type messageType)
-        {
-            foreach (var att in messageType.GetAllAttributes<ModifyEnvelopeAttribute>())
-                yield return e => att.Modify(e);
-        }
 
         [Obsolete("Get rid of this")]
         public bool ShouldBeDurable(Type messageType)

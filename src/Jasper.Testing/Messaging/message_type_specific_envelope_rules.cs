@@ -6,6 +6,7 @@ using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Routing;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
@@ -21,13 +22,13 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void apply_message_type_rules_from_attributes()
         {
-            var root = Host.Get<IMessagingRoot>();
+            var router = Host.Get<IMessageRouter>();
             var envelope = new Envelope
             {
                 Message = new MySpecialMessage()
             };
 
-            root.ApplyMessageTypeSpecificRules(envelope);
+            router.ApplyMessageTypeSpecificRules(envelope);
 
             envelope.Headers["special"].ShouldBe("true");
         }
@@ -36,13 +37,13 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void deliver_by_mechanics()
         {
-            var root = Host.Get<IMessagingRoot>();
+            var router = Host.Get<IMessageRouter>();
             var envelope = new Envelope
             {
                 Message = new MySpecialMessage()
             };
 
-            root.ApplyMessageTypeSpecificRules(envelope);
+            router.ApplyMessageTypeSpecificRules(envelope);
 
             envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
         }
