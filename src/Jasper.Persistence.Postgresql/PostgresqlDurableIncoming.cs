@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Postgresql
         {
             _session = session;
             _findAtLargeEnvelopesSql =
-                $"select body from {settings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}' limit {options.Retries.RecoveryBatchSize}";
+                $"select body from {settings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}' limit {options.Advanced.RecoveryBatchSize}";
 
             _reassignSql =
                 $"UPDATE {settings.SchemaName}.{IncomingTable} SET owner_id = @owner, status = '{TransportConstants.Incoming}' WHERE id = ANY(@ids)";

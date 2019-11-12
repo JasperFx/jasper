@@ -15,7 +15,7 @@ namespace Jasper
     /// <summary>
     /// Configures the Jasper messaging transports in your application
     /// </summary>
-    public partial class JasperOptions : ITransportsExpression, IAdvancedOptions
+    public partial class JasperOptions : ITransportsExpression
     {
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
@@ -53,31 +53,15 @@ namespace Jasper
         }
 
 
-
         /// <summary>
-        ///     Default is true. Should Jasper throw an exception on start up if any validation errors
-        ///     are detected
+        /// Advanced configuration options for Jasper message processing,
+        /// job scheduling, validation, and resiliency features
         /// </summary>
-        public bool ThrowOnValidationErrors { get; set; } = true;
+        public AdvancedSettings Advanced { get; } = new AdvancedSettings();
+
 
         [JsonIgnore] public CancellationToken Cancellation => _cancellation.Token;
 
-        /// <summary>
-        /// Timings and sizes around retrying message receiving and sending failures
-        /// </summary>
-        public RetrySettings Retries { get; set; } = new RetrySettings();
-
-
-        /// <summary>
-        ///     Timing configuration around the Scheduled Job feature
-        /// </summary>
-        public ScheduledJobSettings ScheduledJobs { get; set; } = new ScheduledJobSettings();
-
-
-        /// <summary>
-        ///     Interval between collecting persisted and queued message metrics
-        /// </summary>
-        public TimeSpan MetricsCollectionSamplingInterval { get; set; } = 5.Seconds();
 
 
         internal DurabilityAgent DurabilityAgent { get; set; }

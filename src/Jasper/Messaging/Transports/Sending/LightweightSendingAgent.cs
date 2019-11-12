@@ -11,7 +11,7 @@ namespace Jasper.Messaging.Transports.Sending
     {
         public LightweightSendingAgent(Uri destination, ISender sender, ITransportLogger logger,
             JasperOptions options)
-            : base(destination, sender, logger, options, new LightweightRetryAgent(sender, options.Retries))
+            : base(destination, sender, logger, options, new LightweightRetryAgent(sender, options.Advanced))
         {
         }
 

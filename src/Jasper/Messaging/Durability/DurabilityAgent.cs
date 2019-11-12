@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.WorkerQueues;
@@ -28,6 +29,7 @@ namespace Jasper.Messaging.Durability
 
         private readonly JasperOptions _options;
         private readonly IEnvelopePersistence _persistence;
+        private readonly AdvancedSettings _settings;
         private readonly IDurabilityAgentStorage _storage;
         private readonly ILogger<DurabilityAgent> _trace;
         private readonly IWorkerQueue _workers;
@@ -45,7 +47,7 @@ namespace Jasper.Messaging.Durability
             ILogger<DurabilityAgent> trace,
             IWorkerQueue workers,
             IEnvelopePersistence persistence,
-            ISubscriberGraph subscribers)
+            ISubscriberGraph subscribers, AdvancedSettings settings)
         {
             if (persistence is NulloEnvelopePersistence)
             {
@@ -60,7 +62,7 @@ namespace Jasper.Messaging.Durability
             _trace = trace;
             _workers = workers;
             _persistence = persistence;
-
+            _settings = settings;
 
 
             _storage = _persistence.AgentStorage;
@@ -160,10 +162,10 @@ namespace Jasper.Messaging.Durability
                 _worker.Post(ScheduledJobs);
                 _worker.Post(IncomingMessages);
                 _worker.Post(OutgoingMessages);
-            }, _options, _options.ScheduledJobs.FirstExecution, _options.ScheduledJobs.PollingTime);
+            }, _options, _settings.ScheduledJobFirstExecution, _settings.ScheduledJobPollingTime);
 
             _nodeReassignmentTimer = new Timer(s => { _worker.Post(NodeReassignment); }, _options,
-                _options.Retries.FirstNodeReassignmentExecution, _options.Retries.NodeReassignmentPollingTime);
+                _settings.FirstNodeReassignmentExecution, _settings.NodeReassignmentPollingTime);
         }
 
         private async Task processAction(IMessagingAction action)

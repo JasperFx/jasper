@@ -12,16 +12,16 @@ namespace Jasper.Messaging.Logging
         private readonly IMessageLogger _logger;
         private readonly IMetrics _metrics;
         private readonly IEnvelopePersistence _persistence;
-        private readonly JasperOptions _settings;
+        private readonly JasperOptions _options;
         private readonly IWorkerQueue _workers;
 
         public MetricsCollector(IMetrics metrics, IEnvelopePersistence persistence, IMessageLogger logger,
-            JasperOptions settings, IWorkerQueue workers)
+            JasperOptions options, IWorkerQueue workers)
         {
             _metrics = metrics;
             _persistence = persistence;
             _logger = logger;
-            _settings = settings;
+            _options = options;
             _workers = workers;
         }
 
@@ -29,7 +29,7 @@ namespace Jasper.Messaging.Logging
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(_settings.MetricsCollectionSamplingInterval, stoppingToken);
+                await Task.Delay(_options.Advanced.MetricsCollectionSamplingInterval, stoppingToken);
 
                 _metrics.LogLocalWorkerQueueDepth(_workers.QueuedCount);
 

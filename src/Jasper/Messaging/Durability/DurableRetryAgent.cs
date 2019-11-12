@@ -22,7 +22,7 @@ namespace Jasper.Messaging.Durability
         private AsyncRetryPolicy _policy;
 
         public DurableRetryAgent(ISender sender, JasperOptions options, ITransportLogger logger,
-            IEnvelopePersistence persistence) : base(sender,options.Retries)
+            IEnvelopePersistence persistence) : base(sender,options.Advanced)
         {
             _options = options;
             _logger = logger;

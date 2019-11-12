@@ -27,7 +27,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         protected override string determineOutgoingEnvelopeSql(Database.DatabaseSettings settings, JasperOptions options)
         {
-            return $"select top {options.Retries.RecoveryBatchSize} body from {settings.SchemaName}.{OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
+            return $"select top {options.Advanced.RecoveryBatchSize} body from {settings.SchemaName}.{OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
         }
 
         public override Task Reassign(int ownerId, Envelope[] outgoing)

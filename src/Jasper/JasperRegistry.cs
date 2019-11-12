@@ -62,7 +62,6 @@ namespace Jasper
             _baseServices.AddSingleton(CodeGeneration);
 
             Settings = new SettingsGraph(this);
-            Options = new JasperOptions();
 
             Publish = new PublishingExpression(this);
 
@@ -70,11 +69,12 @@ namespace Jasper
         }
 
         /// <summary>
-        /// Advanced configuration options for Jasper integration
+        /// Advanced configuration options for Jasper message processing,
+        /// job scheduling, validation, and resiliency features
         /// </summary>
-        public IAdvancedOptions Advanced => Options;
+        public AdvancedSettings Advanced => Options.Advanced;
 
-        internal JasperOptions Options { get; }
+        internal JasperOptions Options { get; } = new JasperOptions();
 
 
         /// <summary>

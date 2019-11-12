@@ -74,7 +74,7 @@ namespace Jasper.Messaging.Durability
             }
 
             // TODO -- this should be smart enough later to check for back pressure before rescheduling
-            if (incoming.Length == _options.Retries.RecoveryBatchSize)
+            if (incoming.Length == _options.Advanced.RecoveryBatchSize)
                 agent.RescheduleIncomingRecovery();
         }
 

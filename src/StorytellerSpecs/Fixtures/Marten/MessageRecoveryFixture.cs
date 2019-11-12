@@ -89,10 +89,10 @@ namespace StorytellerSpecs.Fixtures.Marten
 
                     _.Include<MartenBackedPersistence>();
 
-                    _.Advanced.Retries.FirstNodeReassignmentExecution = 30.Minutes();
-                    _.Advanced.ScheduledJobs.FirstExecution = 30.Minutes();
-                    _.Advanced.Retries.FirstNodeReassignmentExecution = 30.Minutes();
-                    _.Advanced.Retries.NodeReassignmentPollingTime = 30.Minutes();
+                    _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
+                    _.Advanced.ScheduledJobFirstExecution = 30.Minutes();
+                    _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
+                    _.Advanced.NodeReassignmentPollingTime = 30.Minutes();
                 })
                 .Start();
 

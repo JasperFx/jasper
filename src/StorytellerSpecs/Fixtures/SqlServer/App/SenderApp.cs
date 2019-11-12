@@ -15,8 +15,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
 
             Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
 
-            Advanced.ScheduledJobs.PollingTime = 1.Seconds();
-            Advanced.ScheduledJobs.FirstExecution = 0.Seconds();
+            Advanced.ScheduledJobPollingTime = 1.Seconds();
+            Advanced.ScheduledJobFirstExecution = 0.Seconds();
         }
     }
 }

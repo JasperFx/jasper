@@ -38,7 +38,7 @@ namespace Jasper.Messaging.Durability
                     count += found;
                 }
 
-                var wasMaxedOut = count >= _settings.Retries.RecoveryBatchSize;
+                var wasMaxedOut = count >= _settings.Advanced.RecoveryBatchSize;
 
                 if (wasMaxedOut) agent.RescheduleOutgoingRecovery();
             }

@@ -41,6 +41,7 @@ namespace Jasper.Configuration
             For<IMessageDeserializer>().Use<EnvelopeReaderWriter>();
 
 
+            this.AddSingleton(parent.Advanced);
             this.AddSingleton(parent.CodeGeneration);
 
             For<IHostedService>().Use<DurabilityAgent>();

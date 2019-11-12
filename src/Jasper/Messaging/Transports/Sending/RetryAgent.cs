@@ -8,11 +8,11 @@ namespace Jasper.Messaging.Transports.Sending
     public abstract class RetryAgent : IDisposable
     {
         protected readonly ISender _sender;
-        protected readonly RetrySettings _settings;
+        protected readonly AdvancedSettings _settings;
         private int _failureCount;
         private Pinger _pinger;
 
-        public RetryAgent(ISender sender, RetrySettings settings)
+        public RetryAgent(ISender sender, AdvancedSettings settings)
         {
             _sender = sender;
             _settings = settings;

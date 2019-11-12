@@ -23,7 +23,7 @@ namespace StorytellerSpecs.Fixtures
         private bool _pingFails;
         private bool _unlatched;
         protected LightweightRetryAgent theRetryAgent;
-        protected RetrySettings theSettings;
+        protected AdvancedSettings theSettings;
 
         public RetryAgentFixture()
         {
@@ -77,7 +77,7 @@ namespace StorytellerSpecs.Fixtures
             _unlatched = false;
             _pingFails = false;
 
-            theSettings = new RetrySettings();
+            theSettings = new AdvancedSettings();
 
             theRetryAgent = new LightweightRetryAgent(this, theSettings);
 
@@ -140,19 +140,19 @@ namespace StorytellerSpecs.Fixtures
             return theRetryAgent.Queued.All(x => !x.IsExpired());
         }
 
-        [FormatAs("RetrySettings.FailuresBeforeCircuitBreaks is {count}")]
+        [FormatAs("AdvancedSettings.FailuresBeforeCircuitBreaks is {count}")]
         public void FailuresBeforeCircuitBreaks(int count)
         {
             theSettings.FailuresBeforeCircuitBreaks = count;
         }
 
-        [FormatAs("RetrySettings.Cooldown = 50 ms")]
+        [FormatAs("AdvancedSettings.Cooldown = 50 ms")]
         public void CooldownIs50Ms()
         {
             theSettings.Cooldown = 50.Milliseconds();
         }
 
-        [FormatAs("RetrySettings.MaximumEnvelopeRetryStorage = {number}")]
+        [FormatAs("AdvancedSettings.MaximumEnvelopeRetryStorage = {number}")]
         public void MaximumEnvelopeRetryStorage(int number)
         {
             theSettings.MaximumEnvelopeRetryStorage = number;

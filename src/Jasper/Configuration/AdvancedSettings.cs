@@ -3,7 +3,7 @@ using Baseline.Dates;
 
 namespace Jasper.Configuration
 {
-    public class RetrySettings
+    public class AdvancedSettings
     {
         /// <summary>
         /// Duration of time to wait before attempting to "ping" a transport
@@ -40,5 +40,29 @@ namespace Jasper.Configuration
         /// execute after application startup.
         /// </summary>
         public TimeSpan FirstNodeReassignmentExecution { get; set; } = 0.Seconds();
+
+        /// <summary>
+        ///     Default is true. Should Jasper throw an exception on start up if any validation errors
+        ///     are detected
+        /// </summary>
+        public bool ThrowOnValidationErrors { get; set; } = true;
+
+
+        /// <summary>
+        ///     Interval between collecting persisted and queued message metrics
+        /// </summary>
+        public TimeSpan MetricsCollectionSamplingInterval { get; set; } = 5.Seconds();
+
+        /// <summary>
+        /// How long to wait before the first execution of polling
+        /// for ready, persisted scheduled messages
+        /// </summary>
+        public TimeSpan ScheduledJobFirstExecution { get; set; } = 0.Seconds();
+
+        /// <summary>
+        /// Polling interval for executing scheduled messages
+        /// </summary>
+        public TimeSpan ScheduledJobPollingTime { get; set; } = 5.Seconds();
+
     }
 }

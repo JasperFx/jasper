@@ -20,7 +20,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _session = session;
             _settings = settings;
             _findAtLargeEnvelopesSql =
-                $"select top {options.Retries.RecoveryBatchSize} body from {settings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
+                $"select top {options.Advanced.RecoveryBatchSize} body from {settings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{TransportConstants.Incoming}'";
 
             _cancellation = options.Cancellation;
         }

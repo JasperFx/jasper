@@ -21,8 +21,8 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Include<MartenBackedPersistence>();
 
-            Advanced.ScheduledJobs.PollingTime = 1.Seconds();
-            Advanced.ScheduledJobs.FirstExecution = 0.Seconds();
+            Advanced.ScheduledJobPollingTime = 1.Seconds();
+            Advanced.ScheduledJobFirstExecution = 0.Seconds();
         }
     }
 }
