@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
@@ -15,9 +16,8 @@ namespace Jasper.Messaging.Runtime.Routing
     public class MessageRouter : IMessageRouter
     {
         private readonly HandlerGraph _handlers;
-        private readonly IMessageLogger _logger;
         private readonly MessagingSerializationGraph _serializers;
-        private readonly JasperOptions _settings;
+        private readonly AdvancedSettings _settings;
         private readonly ISubscriberGraph _subscribers;
         private readonly WorkersGraph _workers;
 
@@ -28,8 +28,7 @@ namespace Jasper.Messaging.Runtime.Routing
             _serializers = root.Serialization;
             _subscribers = root.Subscribers;
             _handlers = handlers;
-            _logger = root.Logger;
-            _settings = root.Options;
+            _settings = root.Options.Advanced;
             _workers = _handlers.Workers;
         }
 

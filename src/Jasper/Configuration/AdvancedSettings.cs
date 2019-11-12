@@ -87,6 +87,11 @@ namespace Jasper.Configuration
         // TODO -- see if this can be made internal?
         public CancellationToken Cancellation => _cancellation.Token;
 
+        /// <summary>
+        ///     Get or set the logical Jasper service name. By default, this is
+        ///     derived from the name of a custom JasperOptions
+        /// </summary>
 
+        public string ServiceName { get; set; }
     }
 }

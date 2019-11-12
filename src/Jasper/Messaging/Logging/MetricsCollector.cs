@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.WorkerQueues;
 using Microsoft.Extensions.Hosting;
@@ -10,18 +11,18 @@ namespace Jasper.Messaging.Logging
     public class MetricsCollector : BackgroundService
     {
         private readonly IMessageLogger _logger;
+        private readonly AdvancedSettings _settings;
         private readonly IMetrics _metrics;
         private readonly IEnvelopePersistence _persistence;
-        private readonly JasperOptions _options;
         private readonly IWorkerQueue _workers;
 
         public MetricsCollector(IMetrics metrics, IEnvelopePersistence persistence, IMessageLogger logger,
-            JasperOptions options, IWorkerQueue workers)
+            AdvancedSettings settings, IWorkerQueue workers)
         {
             _metrics = metrics;
             _persistence = persistence;
             _logger = logger;
-            _options = options;
+            _settings = settings;
             _workers = workers;
         }
 
@@ -29,7 +30,7 @@ namespace Jasper.Messaging.Logging
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(_options.Advanced.MetricsCollectionSamplingInterval, stoppingToken);
+                await Task.Delay(_settings.MetricsCollectionSamplingInterval, stoppingToken);
 
                 _metrics.LogLocalWorkerQueueDepth(_workers.QueuedCount);
 

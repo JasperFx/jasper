@@ -126,11 +126,6 @@ namespace Jasper
         /// </summary>
         public ITransportsExpression Transports => this;
 
-        /// <summary>
-        ///     Get or set the logical Jasper service name. By default, this is
-        ///     derived from the name of a custom JasperOptions
-        /// </summary>
-        public string ServiceName { get; set; }
 
         internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();
 
@@ -143,9 +138,19 @@ namespace Jasper
         private void deriveServiceName()
         {
             if (GetType() == typeof(JasperOptions))
-                ServiceName = ApplicationAssembly?.GetName().Name ?? "JasperService";
+                Advanced.ServiceName = ApplicationAssembly?.GetName().Name ?? "JasperService";
             else
-                ServiceName = GetType().Name.Replace("JasperOptions", "").Replace("Registry", "").Replace("Options", "");
+                Advanced.ServiceName  = GetType().Name.Replace("JasperOptions", "").Replace("Registry", "").Replace("Options", "");
+        }
+
+        /// <summary>
+        ///     Get or set the logical Jasper service name. By default, this is
+        ///     derived from the name of a custom JasperOptions
+        /// </summary>
+        public string ServiceName
+        {
+            get => Advanced.ServiceName;
+            set => Advanced.ServiceName = value;
         }
 
         private void establishApplicationAssembly(string assemblyName)
