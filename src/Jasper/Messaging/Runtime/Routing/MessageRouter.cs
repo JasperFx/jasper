@@ -90,7 +90,7 @@ namespace Jasper.Messaging.Runtime.Routing
         public Envelope[] Route(Envelope envelope)
         {
             var envelopes = route(envelope);
-            foreach (var outgoing in envelopes) outgoing.Source = _settings.NodeId;
+            foreach (var outgoing in envelopes) outgoing.Source = _settings.ServiceName;
 
             return envelopes;
         }

@@ -14,6 +14,7 @@ namespace Jasper.Messaging.Runtime.Invocation
 {
     public interface IHandlerPipeline
     {
+        [Obsolete]
         WorkersGraph Workers { get; }
         Task Invoke(Envelope envelope);
         Task InvokeNow(Envelope envelope);

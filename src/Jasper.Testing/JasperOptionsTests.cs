@@ -9,22 +9,6 @@ namespace Jasper.Testing
         private readonly JasperOptions theSettings = new JasperOptions();
 
         [Fact]
-        public void derive_the_node_id()
-        {
-            theSettings.MachineName = "SomeMachine";
-            theSettings.ServiceName = "MyService";
-
-            theSettings.NodeId.ShouldBe("MyService@SomeMachine");
-
-            theSettings.MachineName = "OtherMachine";
-            theSettings.NodeId.ShouldBe("MyService@OtherMachine");
-
-            theSettings.ServiceName = "OtherService";
-            theSettings.NodeId.ShouldBe("OtherService@OtherMachine");
-        }
-
-
-        [Fact]
         public void unique_node_id_is_really_unique()
         {
             var options1 = new JasperOptions();

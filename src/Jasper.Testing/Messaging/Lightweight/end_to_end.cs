@@ -95,7 +95,7 @@ namespace Jasper.Testing.Messaging.Lightweight
 
             var env = await waiter;
 
-            env.Source.ShouldBe(theSender.Get<JasperOptions>().NodeId);
+            env.Source.ShouldBe(theSender.Get<JasperOptions>().ServiceName);
         }
     }
 }

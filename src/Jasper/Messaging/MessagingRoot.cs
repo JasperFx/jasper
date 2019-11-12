@@ -143,6 +143,7 @@ namespace Jasper.Messaging
             foreach (var action in rules) action(envelope);
         }
 
+        [Obsolete("Get rid of this")]
         public bool ShouldBeDurable(Type messageType)
         {
             return Handlers.Workers.ShouldBeDurable(messageType);

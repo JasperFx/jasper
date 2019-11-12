@@ -20,7 +20,6 @@ namespace Jasper
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
 
-        private string _machineName;
         private string _serviceName = "Jasper";
 
         public JasperOptions()
@@ -29,7 +28,6 @@ namespace Jasper
             ListenForMessagesFrom(TransportConstants.ScheduledUri);
             ListenForMessagesFrom(TransportConstants.RepliesUri);
 
-            _machineName = Environment.MachineName;
             ServiceName = "Jasper";
 
             UniqueNodeId = Guid.NewGuid().ToString().GetDeterministicHashCode();
@@ -51,28 +49,8 @@ namespace Jasper
                 if (ServiceName.IsEmpty()) throw new ArgumentNullException(nameof(ServiceName));
 
                 _serviceName = value;
-                NodeId = $"{_serviceName}@{_machineName}";
             }
         }
-
-        /// <summary>
-        ///     Environment.MachineName by default. This is used to create the unique node id
-        ///     of the running Jasper application that uniquely identifies a running node of this
-        ///     application name
-        /// </summary>
-        /// <exception cref="ArgumentNullException"></exception>
-        public string MachineName
-        {
-            get => _machineName;
-            set
-            {
-                if (value.IsEmpty()) throw new ArgumentNullException(nameof(MachineName));
-
-                _machineName = value;
-                NodeId = $"{_serviceName}@{_machineName}";
-            }
-        }
-
 
         /// <summary>
         /// Newtonsoft.Json serialization settings for messages received
@@ -89,13 +67,6 @@ namespace Jasper
         ///     are detected
         /// </summary>
         public bool ThrowOnValidationErrors { get; set; } = true;
-
-        /// <summary>
-        ///     The unique id of this instance of the logical Jasper service
-        /// </summary>
-        [JsonIgnore]
-        public string NodeId { get; private set; }
-
 
         [JsonIgnore] public CancellationToken Cancellation => _cancellation.Token;
 
