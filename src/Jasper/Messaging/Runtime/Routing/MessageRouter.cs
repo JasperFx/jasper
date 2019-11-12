@@ -26,14 +26,13 @@ namespace Jasper.Messaging.Runtime.Routing
 
         private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
-
-        public MessageRouter(IMessagingRoot root, HandlerGraph handlers)
+        public MessageRouter(HandlerGraph handlers, MessagingSerializationGraph serializers, AdvancedSettings settings, ISubscriberGraph subscribers)
         {
-            _serializers = root.Serialization;
-            _subscribers = root.Subscribers;
             _handlers = handlers;
-            _settings = root.Options.Advanced;
-            _workers = _handlers.Workers;
+            _serializers = serializers;
+            _settings = settings;
+            _subscribers = subscribers;
+            _workers = handlers.Workers;
         }
 
         public void ClearAll()

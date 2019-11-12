@@ -36,7 +36,6 @@ namespace Jasper.Messaging
 
         public MessagingRoot(MessagingSerializationGraph serialization,
             JasperOptions options,
-            HandlerGraph handlers,
             ISubscriberGraph subscribers,
             IMessageLogger messageLogger,
             IContainer container,
@@ -44,7 +43,7 @@ namespace Jasper.Messaging
             )
         {
             Options = options;
-            Handlers = handlers;
+            Handlers = options.HandlerGraph;
             _transportLogger = transportLogger;
             Subscribers = subscribers;
             Transports = container.QuickBuildAll<ITransport>().ToArray();
@@ -54,13 +53,13 @@ namespace Jasper.Messaging
 
             Logger = messageLogger;
 
-            Pipeline = new HandlerPipeline(Serialization, handlers, Logger,
+            Pipeline = new HandlerPipeline(Serialization, Handlers, Logger,
                 container.QuickBuildAll<IMissingHandler>(),
                 this);
 
             Workers = new WorkerQueue(Logger, Pipeline, options.Advanced);
 
-            Router = new MessageRouter(this, handlers);
+            Router = new MessageRouter(Handlers, serialization, Options.Advanced, subscribers);
 
             _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
 
