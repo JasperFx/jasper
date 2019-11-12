@@ -83,7 +83,9 @@ namespace Jasper
                 options.Settings.Apply(options.Services);
 
                 services.AddSingleton(options);
-                services.AddSingleton<IHostedService, JasperActivator>();
+
+                // The messaging root is also a hosted service
+                services.AddSingleton(s => (IHostedService)s.GetService<IMessagingRoot>());
 
                 services.AddRange(options.CombineServices());
                 services.AddSingleton(options);

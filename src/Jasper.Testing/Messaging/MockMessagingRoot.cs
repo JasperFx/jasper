@@ -54,7 +54,7 @@ namespace Jasper.Testing.Messaging
             return new MessageContext(this);
         }
 
-        public Task Activate(IContainer container)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

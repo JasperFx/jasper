@@ -39,7 +39,7 @@ namespace Jasper.Messaging
 
         IEnvelopePersistence Persistence { get; }
 
-        Task Activate(IContainer container);
+        Task StartAsync(CancellationToken cancellationToken);
 
         void ApplyMessageTypeSpecificRules(Envelope envelope);
         bool ShouldBeDurable(Type messageType);

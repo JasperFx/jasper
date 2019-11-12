@@ -25,7 +25,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Messaging
 {
-    public class MessagingRoot : IDisposable, IMessagingRoot
+    public class MessagingRoot : IDisposable, IMessagingRoot, IHostedService
     {
         private readonly ITransportLogger _transportLogger;
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
@@ -33,7 +33,7 @@ namespace Jasper.Messaging
         private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
         private readonly Lazy<IEnvelopePersistence> _persistence;
-        private IContainer _container;
+        private readonly IContainer _container;
 
         public MessagingRoot(MessagingSerializationGraph serialization,
             JasperOptions options,
@@ -98,6 +98,7 @@ namespace Jasper.Messaging
 
         public IMessageRouter Router { get; }
 
+        [Obsolete]
         public IWorkerQueue Workers { get; }
 
         public IHandlerPipeline Pipeline { get; }
@@ -118,28 +119,36 @@ namespace Jasper.Messaging
             return new MessageContext(this, envelope);
         }
 
-        public async Task Activate(IContainer container)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await Handlers.Compiling;
-
-            Handlers.Compile(Options.CodeGeneration, container);
-
-
-            Handlers.Workers.Compile(Handlers.Chains.Select(x => x.MessageType));
-
-
-
-            if (Options.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
+            try
             {
-                await container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
+                await Handlers.Compiling;
+
+                Handlers.Compile(Options.CodeGeneration, _container);
+
+
+                Handlers.Workers.Compile(Handlers.Chains.Select(x => x.MessageType));
+
+
+
+                if (Options.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
+                {
+                    await _container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
+                }
+
+                ((SubscriberGraph) Subscribers).Start(this);
+
+                var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
+                Durability = new DurabilityAgent(_transportLogger, durabilityLogger, Workers, Persistence, Subscribers, Options.Advanced);
+                // TODO -- use the cancellation token from the app!
+                await Durability.StartAsync(Options.Advanced.Cancellation);
             }
-
-            ((SubscriberGraph) Subscribers).Start(this);
-
-            var durabilityLogger = container.GetInstance<ILogger<DurabilityAgent>>();
-            Durability = new DurabilityAgent(_transportLogger, durabilityLogger, Workers, Persistence, Subscribers, Options.Advanced);
-            // TODO -- use the cancellation token from the app!
-            await Durability.StartAsync(Options.Advanced.Cancellation);
+            catch (Exception e)
+            {
+                Logger.LogException(e, message:"Failed to start the Jasper messaging");
+                throw;
+            }
         }
 
         public HandlerGraph Handlers { get; }
