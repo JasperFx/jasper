@@ -28,16 +28,5 @@ namespace Jasper
         /// </summary>
         TimeSpan MetricsCollectionSamplingInterval { get; set; }
 
-        /// <summary>
-        ///     Used to govern the incoming and outgoing message recovery process by making slowing down
-        ///     the recovery process when the local worker queues have this many enqueued
-        ///     messages
-        /// </summary>
-        int MaximumLocalEnqueuedBackPressureThreshold { get; set; }
-
-        /// <summary>
-        ///     Polling interval for applying back pressure checking. Default is 2 seconds
-        /// </summary>
-        TimeSpan BackPressurePollingInterval { get; set; }
     }
 }

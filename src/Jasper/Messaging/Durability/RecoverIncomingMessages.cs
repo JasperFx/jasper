@@ -26,7 +26,7 @@ namespace Jasper.Messaging.Durability
 
         public async Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent)
         {
-            if (_workers.QueuedCount > _options.MaximumLocalEnqueuedBackPressureThreshold) return;
+            // TODO -- enforce back pressure here on the retries listener!
 
             await storage.Session.Begin();
 
@@ -73,8 +73,8 @@ namespace Jasper.Messaging.Durability
                 await _workers.Enqueue(envelope);
             }
 
-            if (incoming.Length == _options.Retries.RecoveryBatchSize &&
-                _workers.QueuedCount < _options.MaximumLocalEnqueuedBackPressureThreshold)
+            // TODO -- this should be smart enough later to check for back pressure before rescheduling
+            if (incoming.Length == _options.Retries.RecoveryBatchSize)
                 agent.RescheduleIncomingRecovery();
         }
 

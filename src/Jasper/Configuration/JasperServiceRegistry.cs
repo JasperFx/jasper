@@ -43,7 +43,6 @@ namespace Jasper.Configuration
 
             this.AddSingleton(parent.CodeGeneration);
 
-            For<IHostedService>().Use<BackPressureAgent>();
             For<IHostedService>().Use<DurabilityAgent>();
 
             conneg(parent);
