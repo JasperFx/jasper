@@ -22,8 +22,6 @@ namespace Jasper.Messaging.Scheduled
         public Uri ReplyUri { get; }= TransportConstants.DurableLoopbackUri;
         public bool Latched { get; } = false;
         public bool IsDurable { get; } = true;
-        public int QueuedCount { get; } = 0;
-        public string[] ContentTypes { get; set; } = new string[]{TransportConstants.SerializedEnvelope};
         public bool SupportsNativeScheduledSend { get; } = true;
 
         public bool ShouldSendMessage(Type messageType)

@@ -26,7 +26,6 @@ namespace Jasper.Messaging
         public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
         public Uri Uri { get; }
 
-        public string[] ContentTypes { get; set; } = {"application/json"};
 
         public bool ShouldSendMessage(Type messageType)
         {
@@ -45,7 +44,6 @@ namespace Jasper.Messaging
         }
 
         public bool IsDurable => _agent.IsDurable;
-        public int QueuedCount => _agent.QueuedCount;
 
         public async Task QuickSend(Envelope envelope)
         {

@@ -13,13 +13,10 @@ namespace Jasper.Messaging
 
         bool IsDurable { get; }
 
-        int QueuedCount { get; }
-        string[] ContentTypes { get; set; }
         bool SupportsNativeScheduledSend { get; }
 
         bool ShouldSendMessage(Type messageType);
 
-        // Rename this to FullSend?
         Task Send(Envelope envelope);
 
 
