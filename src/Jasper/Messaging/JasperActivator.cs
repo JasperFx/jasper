@@ -11,13 +11,11 @@ namespace Jasper.Messaging
     /// </summary>
     public class JasperActivator : IHostedService
     {
-        private readonly JasperOptions _options;
         private readonly IMessagingRoot _root;
         private readonly IContainer _container;
 
-        public JasperActivator(JasperOptions options, IMessagingRoot root, IContainer container)
+        public JasperActivator(IMessagingRoot root, IContainer container)
         {
-            _options = options;
             _root = root;
             _container = container;
         }
@@ -26,9 +24,7 @@ namespace Jasper.Messaging
         {
             try
             {
-                await _options.HandlerGraph.Compiling;
-
-                await _root.Activate(_options.CodeGeneration, _container);
+                await _root.Activate(_container);
             }
             catch (Exception e)
             {

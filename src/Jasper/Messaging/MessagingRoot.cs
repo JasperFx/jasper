@@ -118,16 +118,18 @@ namespace Jasper.Messaging
             return new MessageContext(this, envelope);
         }
 
-        public async Task Activate(GenerationRules generation, IContainer container)
+        public async Task Activate(IContainer container)
         {
-            Handlers.Compile(generation, container);
+            await Handlers.Compiling;
+
+            Handlers.Compile(Options.CodeGeneration, container);
 
 
             Handlers.Workers.Compile(Handlers.Chains.Select(x => x.MessageType));
 
 
 
-            if (generation.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
+            if (Options.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
             {
                 await container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
             }

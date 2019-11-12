@@ -39,7 +39,7 @@ namespace Jasper.Messaging
 
         IEnvelopePersistence Persistence { get; }
 
-        Task Activate(GenerationRules generation, IContainer container);
+        Task Activate(IContainer container);
 
         void ApplyMessageTypeSpecificRules(Envelope envelope);
         bool ShouldBeDurable(Type messageType);
