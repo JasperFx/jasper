@@ -43,11 +43,6 @@ namespace StorytellerSpecs.Fixtures
 
         int IWorkerQueue.QueuedCount => 5;
 
-        void IWorkerQueue.AddQueue(string queueName, int parallelization)
-        {
-            // nothing
-        }
-
         public Task ScheduleExecution(Envelope envelope)
         {
             throw new NotImplementedException();

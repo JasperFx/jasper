@@ -51,12 +51,6 @@ namespace Jasper.Messaging.WorkerQueues
             return Task.CompletedTask;
         }
 
-        [Obsolete]
-        public void AddQueue(string queueName, int parallelization)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public Task ScheduleExecution(Envelope envelope)
         {
             return Task.CompletedTask;

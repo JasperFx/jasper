@@ -310,10 +310,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public int QueuedCount => 5;
 
-        public void AddQueue(string queueName, int parallelization)
-        {
-        }
-
         public Task ScheduleExecution(Envelope envelope)
         {
             throw new NotImplementedException();

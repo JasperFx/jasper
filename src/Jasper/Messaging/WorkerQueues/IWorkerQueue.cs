@@ -13,9 +13,6 @@ namespace Jasper.Messaging.WorkerQueues
         IScheduledJobProcessor ScheduledJobs { get; }
         Task Enqueue(Envelope envelope);
 
-        [Obsolete("Delete with GH-557")]
-        void AddQueue(string queueName, int parallelization);
-
         Task ScheduleExecution(Envelope envelope);
     }
 
