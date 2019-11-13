@@ -168,13 +168,6 @@ namespace Jasper.Messaging
 
         public HandlerGraph Handlers { get; }
 
-
-        [Obsolete("Get rid of this")]
-        public bool ShouldBeDurable(Type messageType)
-        {
-            return Handlers.Workers.ShouldBeDurable(messageType);
-        }
-
         public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
         {
             return new DurableSendingAgent(destination, sender, _transportLogger, Options.Advanced, Persistence);

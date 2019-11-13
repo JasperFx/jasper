@@ -38,9 +38,6 @@ namespace Jasper.Messaging
         IEnvelopePersistence Persistence { get; }
 
         [Obsolete("Get rid of this")]
-        bool ShouldBeDurable(Type messageType);
-
-        [Obsolete("Get rid of this")]
         ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender);
 
         [Obsolete("Get rid of this")]

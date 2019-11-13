@@ -319,13 +319,10 @@ namespace Jasper.Messaging
 
         public Task Enqueue<T>(T message, string workerQueue = null)
         {
-            var isDurable = _root.ShouldBeDurable(typeof(T));
-            var destination = isDurable ? TransportConstants.DurableLoopbackUri : TransportConstants.LoopbackUri;
-
             var envelope = new Envelope
             {
                 Message = message,
-                Destination = destination.AtQueue(workerQueue),
+                Destination = TransportConstants.LoopbackUri.AtQueue(workerQueue),
             };
 
             return SendEnvelope(envelope);

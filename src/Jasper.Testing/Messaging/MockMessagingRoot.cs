@@ -42,11 +42,6 @@ namespace Jasper.Testing.Messaging
             return new MessageContext(this);
         }
 
-        public virtual bool ShouldBeDurable(Type messageType)
-        {
-            return false;
-        }
-
         public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
         {
             throw new NotImplementedException();
