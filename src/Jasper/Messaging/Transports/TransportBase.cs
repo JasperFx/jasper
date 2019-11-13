@@ -19,7 +19,6 @@ namespace Jasper.Messaging.Transports
     {
         private readonly IList<IListener> _listeners = new List<IListener>();
 
-        private ListeningStatus _status = ListeningStatus.Accepting;
 
         public TransportBase(string protocol, ITransportLogger logger,
             AdvancedSettings settings)
@@ -79,22 +78,8 @@ namespace Jasper.Messaging.Transports
             try
             {
                 var agent = buildListeningAgent(listenerSettings, root.Options.Advanced, root.Handlers);
-                agent.Status = _status;
 
-                var worker = listenerSettings.IsDurable
-                    ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, root.Pipeline, options.Advanced, root.Persistence,
-                        logger)
-                    : new LightweightWorkerQueue(listenerSettings, logger, root.Pipeline, options.Advanced);
-
-                var persistence = listenerSettings.IsDurable
-                    ? root.Persistence
-                    : new NulloEnvelopePersistence(worker);
-
-                var listener = new Listener(agent, worker, logger, root.Options.Advanced, persistence);
-
-                _listeners.Add(listener);
-
-                listener.Start();
+                AddListener(root, listenerSettings, options, agent);
             }
             catch (Exception e)
             {
@@ -103,7 +88,25 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        public IEnumerable<IListener> Listeners => _listeners;
+        public void AddListener(IMessagingRoot root, ListenerSettings listenerSettings, JasperOptions options,
+            IListeningAgent agent)
+        {
+            var worker = listenerSettings.IsDurable
+                ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, root.Pipeline, options.Advanced, root.Persistence,
+                    logger)
+                : new LightweightWorkerQueue(listenerSettings, logger, root.Pipeline, options.Advanced);
+
+            var persistence = listenerSettings.IsDurable
+                ? root.Persistence
+                : new NulloEnvelopePersistence(worker);
+
+            var listener = new Listener(agent, worker, logger, root.Options.Advanced, persistence);
+
+            _listeners.Add(listener);
+
+            listener.Start();
+        }
+
 
         public void Dispose()
         {

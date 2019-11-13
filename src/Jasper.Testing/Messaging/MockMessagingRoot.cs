@@ -42,15 +42,6 @@ namespace Jasper.Testing.Messaging
             return new MessageContext(this);
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        public void ApplyMessageTypeSpecificRules(Envelope envelope)
-        {
-        }
-
         public virtual bool ShouldBeDurable(Type messageType)
         {
             return false;

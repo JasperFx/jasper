@@ -45,33 +45,6 @@ namespace Jasper.RabbitMQ.Tests
 
 
 
-        [Fact]
-        public void use_explicit_replies_if_it_exists()
-        {
-            using (var runtime = JasperHost.For(x =>
-            {
-
-                x.Settings.Alter<RabbitMqOptions>(settings =>
-                {
-                    settings.Connections.Add("messages3", "host=localhost");
-                    settings.Connections.Add("replies", "host=localhost");
-                    settings.Connections.Add("replies2", "host=localhost");
-
-                    settings.ReplyUri = new TransportUri("rabbitmq://replies2/queue/replies2");
-                });
-
-                x.Transports.ListenForMessagesFrom("rabbitmq://messages3/queue/messages3");
-
-            }))
-            {
-                var transport = runtime.Get<ITransport[]>().OfType<RabbitMqTransport>().Single();
-
-                var uri = "rabbitmq://replies2/queue/replies2".ToUri();
-                transport.ReplyUri.ShouldBe(uri);
-
-                transport.Listeners.Any(x => x.Address == new Uri("rabbitmq://replies2/queue/replies2")).ShouldBeTrue();
-            }
-        }
 
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_using_connection_string()
