@@ -24,6 +24,7 @@ namespace Jasper.Messaging.Transports.Sending
 
         void Start();
 
+        [Obsolete("Let's try to get this encapsulated'")]
         bool SupportsNativeScheduledSend { get; }
     }
 }
