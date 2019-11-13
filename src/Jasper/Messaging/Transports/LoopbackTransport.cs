@@ -13,7 +13,7 @@ namespace Jasper.Messaging.Transports
             // Nothing really
         }
 
-        public string Protocol => TransportConstants.Loopback;
+        public string Protocol { get; } = TransportConstants.Loopback;
 
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
@@ -24,7 +24,7 @@ namespace Jasper.Messaging.Transports
 
         public Uri ReplyUri => TransportConstants.RetryUri;
 
-        public void StartListening(IMessagingRoot root)
+        public void InitializeSendersAndListeners(IMessagingRoot root)
         {
             // nothing to do here
         }

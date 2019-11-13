@@ -56,7 +56,7 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        public void StartListening(IMessagingRoot root)
+        public void InitializeSendersAndListeners(IMessagingRoot root)
         {
             var options = root.Options;
 

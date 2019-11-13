@@ -71,7 +71,7 @@ namespace Jasper.Messaging.Transports.Stub
 
         public Uri ReplyUri { get; }
 
-        public void StartListening(IMessagingRoot root)
+        public void InitializeSendersAndListeners(IMessagingRoot root)
         {
             var pipeline = root.Workers.As<WorkerQueue>().Pipeline;
 

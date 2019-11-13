@@ -152,7 +152,7 @@ namespace Jasper.Messaging
             assertNoUnknownTransportsInSubscribers(Options);
             assertNoUnknownTransportsInListeners(Options);
 
-            foreach (var transport in Transports) transport.StartListening(this);
+            foreach (var transport in Transports) transport.InitializeSendersAndListeners(this);
 
             buildInitialSendingAgents(this);
 
