@@ -29,8 +29,6 @@ namespace Jasper.Messaging.Transports
             Protocol = protocol;
         }
 
-        public IWorkerQueue WorkerQueue { get; private set; }
-
         public AdvancedSettings Settings { get; }
 
         protected ITransportLogger logger { get; }
@@ -65,8 +63,6 @@ namespace Jasper.Messaging.Transports
         public void StartListening(IMessagingRoot root)
         {
             var options = root.Options;
-
-            WorkerQueue = root.Workers;
 
             var incoming = options.Listeners.Where(x => x.Scheme == Protocol).ToArray();
 
