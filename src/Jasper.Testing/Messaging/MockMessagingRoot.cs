@@ -37,19 +37,6 @@ namespace Jasper.Testing.Messaging
         public ITransport[] Transports { get; } =
             {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
 
-        public ListeningStatus ListeningStatus
-        {
-            get => _listeningStatus;
-            set
-            {
-                _listeningStatus = value;
-
-
-                foreach (var transport in Transports) transport.ListeningStatus = value;
-            }
-        }
-
-
         public IMessageContext NewContext()
         {
             return new MessageContext(this);

@@ -70,43 +70,40 @@ namespace Jasper.Messaging.Transports
 
             foreach (var listenerSettings in incoming)
             {
-                try
-                {
-                    var agent = buildListeningAgent(listenerSettings, root.Options.Advanced, root.Handlers);
-                    agent.Status = _status;
+                buildListener(root, listenerSettings, options);
+            }
+        }
 
-                    var worker = listenerSettings.IsDurable
-                        ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, root.Pipeline, options.Advanced, root.Persistence, logger)
-                        : new LightweightWorkerQueue(listenerSettings, logger, root.Pipeline, options.Advanced);
+        private void buildListener(IMessagingRoot root, ListenerSettings listenerSettings, JasperOptions options)
+        {
+            try
+            {
+                var agent = buildListeningAgent(listenerSettings, root.Options.Advanced, root.Handlers);
+                agent.Status = _status;
 
-                    var persistence = listenerSettings.IsDurable
-                        ? root.Persistence
-                        : new NulloEnvelopePersistence(worker);
+                var worker = listenerSettings.IsDurable
+                    ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, root.Pipeline, options.Advanced, root.Persistence,
+                        logger)
+                    : new LightweightWorkerQueue(listenerSettings, logger, root.Pipeline, options.Advanced);
 
-                    var listener = new Listener(agent, worker, logger, root.Options.Advanced,  persistence);
+                var persistence = listenerSettings.IsDurable
+                    ? root.Persistence
+                    : new NulloEnvelopePersistence(worker);
 
-                    _listeners.Add(listener);
+                var listener = new Listener(agent, worker, logger, root.Options.Advanced, persistence);
 
-                    listener.Start();
-                }
-                catch (Exception e)
-                {
-                    throw new TransportEndpointException(listenerSettings.Uri, "Could not build listening agent. See inner exception.", e);
-                }
+                _listeners.Add(listener);
+
+                listener.Start();
+            }
+            catch (Exception e)
+            {
+                throw new TransportEndpointException(listenerSettings.Uri, "Could not build listening agent. See inner exception.",
+                    e);
             }
         }
 
         public IEnumerable<IListener> Listeners => _listeners;
-
-        public ListeningStatus ListeningStatus
-        {
-            get => _status;
-            set
-            {
-                _status = value;
-                foreach (var listener in _listeners) listener.Status = value;
-            }
-        }
 
         public void Dispose()
         {

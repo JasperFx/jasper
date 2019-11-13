@@ -11,8 +11,6 @@ namespace Jasper.Messaging.Transports
 
         Uri ReplyUri { get; }
 
-        ListeningStatus ListeningStatus { get; set; }
-
         ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation);
 
         void StartListening(IMessagingRoot root);

@@ -83,9 +83,6 @@ namespace Jasper.Messaging.Transports.Stub
             foreach (var listener in incoming) Channels.FillDefault(listener.Uri);
         }
 
-        // Not really used here
-        public ListeningStatus ListeningStatus { get; set; } = ListeningStatus.Accepting;
-
         public StubMessageCallback LastCallback()
         {
             return Callbacks.LastOrDefault();

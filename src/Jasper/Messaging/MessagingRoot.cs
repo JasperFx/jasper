@@ -83,18 +83,6 @@ namespace Jasper.Messaging
 
         public DurabilityAgent Durability { get; private set; }
 
-        public ListeningStatus ListeningStatus
-        {
-            get => _listeningStatus;
-            set
-            {
-                _transportLogger.ListeningStatusChange(value);
-                _listeningStatus = value;
-
-
-                foreach (var transport in Transports) transport.ListeningStatus = value;
-            }
-        }
 
         public ITransport[] Transports { get; }
 

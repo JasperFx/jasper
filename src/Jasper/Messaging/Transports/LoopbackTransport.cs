@@ -29,7 +29,5 @@ namespace Jasper.Messaging.Transports
             // nothing to do here
         }
 
-        // Ignored
-        public ListeningStatus ListeningStatus { get; set; } = ListeningStatus.Accepting;
     }
 }

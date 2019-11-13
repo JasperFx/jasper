@@ -22,30 +22,6 @@ namespace Jasper.RabbitMQ.Tests
     [Collection("marten")]
     public class end_to_end : RabbitMQContext
     {
-        [Fact]
-        public async Task can_stop_and_start()
-        {
-            using (var runtime = JasperHost.For<RabbitMqUsingApp>())
-            {
-                var root = runtime.Get<IMessagingRoot>();
-                root.ListeningStatus = ListeningStatus.TooBusy;
-                root.ListeningStatus = ListeningStatus.Accepting;
-
-
-                var tracker = runtime.Get<MessageTracker>();
-
-                var watch = tracker.WaitFor<ColorChosen>();
-
-                await runtime.Send(new ColorChosen {Name = "Red"});
-
-                await watch;
-
-                var colors = runtime.Get<ColorHistory>();
-
-                colors.Name.ShouldBe("Red");
-            }
-
-        }
 
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq()

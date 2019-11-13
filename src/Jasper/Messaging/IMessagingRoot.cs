@@ -30,7 +30,6 @@ namespace Jasper.Messaging
 
 
         ITransport[] Transports { get; }
-        ListeningStatus ListeningStatus { get; set; }
         HandlerGraph Handlers { get; }
 
         IMessageContext NewContext();
