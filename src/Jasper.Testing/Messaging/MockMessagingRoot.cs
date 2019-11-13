@@ -57,6 +57,11 @@ namespace Jasper.Testing.Messaging
             throw new NotImplementedException();
         }
 
+        public void AddListener(ListenerSettings listenerSettings, IListeningAgent agent)
+        {
+
+        }
+
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;

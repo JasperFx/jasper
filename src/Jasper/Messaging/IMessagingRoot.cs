@@ -46,5 +46,6 @@ namespace Jasper.Messaging
         [Obsolete("Get rid of this")]
         ISendingAgent BuildDurableLoopbackAgent(Uri destination);
 
+        void AddListener(ListenerSettings listenerSettings, IListeningAgent agent);
     }
 }

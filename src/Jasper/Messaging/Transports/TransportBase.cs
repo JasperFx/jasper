@@ -17,9 +17,6 @@ namespace Jasper.Messaging.Transports
 {
     public abstract class TransportBase : ITransport
     {
-        private readonly IList<IListener> _listeners = new List<IListener>();
-
-
         public TransportBase(string protocol, ITransportLogger logger,
             AdvancedSettings settings)
         {
@@ -79,7 +76,7 @@ namespace Jasper.Messaging.Transports
             {
                 var agent = buildListeningAgent(listenerSettings, root.Options.Advanced, root.Handlers);
 
-                AddListener(root, listenerSettings, options, agent);
+                root.AddListener(listenerSettings, agent);
             }
             catch (Exception e)
             {
@@ -88,31 +85,12 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        public void AddListener(IMessagingRoot root, ListenerSettings listenerSettings, JasperOptions options,
-            IListeningAgent agent)
-        {
-            var worker = listenerSettings.IsDurable
-                ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, root.Pipeline, options.Advanced, root.Persistence,
-                    logger)
-                : new LightweightWorkerQueue(listenerSettings, logger, root.Pipeline, options.Advanced);
 
-            var persistence = listenerSettings.IsDurable
-                ? root.Persistence
-                : new NulloEnvelopePersistence(worker);
-
-            var listener = new Listener(agent, worker, logger, root.Options.Advanced, persistence);
-
-            _listeners.Add(listener);
-
-            listener.Start();
-        }
 
 
         public void Dispose()
         {
-            foreach (var listener in _listeners) listener.SafeDispose();
 
-            _listeners.Clear();
         }
 
         protected abstract ISender createSender(Uri uri, CancellationToken cancellation);

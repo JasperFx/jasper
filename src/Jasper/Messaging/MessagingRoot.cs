@@ -27,6 +27,8 @@ namespace Jasper.Messaging
 {
     public class MessagingRoot : IDisposable, IMessagingRoot, IHostedService, ISubscriberGraph
     {
+        private readonly IList<IListener> _listeners = new List<IListener>();
+
         private readonly object _channelLock = new object();
 
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
@@ -73,6 +75,10 @@ namespace Jasper.Messaging
 
         public void Dispose()
         {
+            foreach (var listener in _listeners) listener.SafeDispose();
+
+            _listeners.Clear();
+
             foreach (var channel in _subscribers.Enumerate()) channel.Value.Dispose();
 
 
@@ -271,6 +277,25 @@ namespace Jasper.Messaging
             if (unknowns.Length > 0)
                 throw new UnknownTransportException(
                     $"Unknown transports referenced in {unknowns.Select(x => x.Uri.ToString()).Join(", ")}");
+        }
+
+
+        public void AddListener(ListenerSettings listenerSettings, IListeningAgent agent)
+        {
+            var worker = listenerSettings.IsDurable
+                ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, Pipeline, _settings, Persistence,
+                    _transportLogger)
+                : new LightweightWorkerQueue(listenerSettings, _transportLogger, Pipeline, _settings);
+
+            var persistence = listenerSettings.IsDurable
+                ? Persistence
+                : new NulloEnvelopePersistence(worker);
+
+            var listener = new Listener(agent, worker, _transportLogger, _settings, persistence);
+
+            _listeners.Add(listener);
+
+            listener.Start();
         }
     }
 }
