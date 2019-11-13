@@ -9,17 +9,6 @@ namespace Jasper.Util
 {
     public static class UriExtensions
     {
-        public static Uri TryGetUri(this IConfiguration config, string key)
-        {
-            try
-            {
-                return config[key].ToUri();
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException($"Failed to read an expected Uri from configuration with the key '{key}'", e);
-            }
-        }
 
         public static Uri AtQueue(this Uri uri, string queueName)
         {
@@ -56,37 +45,5 @@ namespace Jasper.Util
             return TransportConstants.Durable == firstSegment.TrimEnd('/');
         }
 
-
-        [Obsolete]
-        public static Uri ToCanonicalTcpUri(this Uri uri)
-        {
-            if (uri.Scheme != TransportConstants.Durable)
-                throw new ArgumentOutOfRangeException(nameof(uri),
-                    "This only applies to Uri's with the scheme 'durable'");
-
-            var queueName = uri.QueueName();
-
-            return queueName == TransportConstants.Default
-                ? $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}".ToUri()
-                : $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}/{queueName}".ToUri();
-        }
-
-        [Obsolete]
-        public static Uri ToCanonicalUri(this Uri uri)
-        {
-            switch (uri.Scheme)
-            {
-                case "tcp":
-                    return uri.IsDurable()
-                        ? $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}".ToUri()
-                        : $"tcp://{uri.Host}:{uri.Port}".ToUri();
-
-                case "durable":
-                    return $"tcp://{uri.Host}:{uri.Port}/{TransportConstants.Durable}".ToUri();
-
-                default:
-                    return uri;
-            }
-        }
     }
 }

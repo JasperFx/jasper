@@ -18,7 +18,7 @@ namespace Jasper.Persistence.Testing.Marten
                 _.Include<MartenBackedPersistence>();
             }))
             {
-                var channels = runtime.Get<ISubscriberGraph>();
+                var channels = runtime.Get<IMessagingRoot>();
                 channels.GetOrBuild("loopback://one".ToUri()).IsDurable.ShouldBeFalse();
                 channels.GetOrBuild("loopback://durable/two".ToUri()).IsDurable.ShouldBeTrue();
 

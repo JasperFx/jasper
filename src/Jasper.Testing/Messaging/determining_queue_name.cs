@@ -7,15 +7,6 @@ namespace Jasper.Testing.Messaging
 {
     public class determining_queue_name_and_is_durable
     {
-        [Fact]
-        public void converting_from_old_durable_scheme()
-        {
-            "durable://localhost:2200".ToUri().ToCanonicalTcpUri()
-                .ShouldBe("tcp://localhost:2200/durable".ToUri());
-
-            "durable://localhost:2200/one".ToUri().ToCanonicalTcpUri()
-                .ShouldBe("tcp://localhost:2200/durable/one".ToUri());
-        }
 
         [Fact]
         public void queue_at_extension()
