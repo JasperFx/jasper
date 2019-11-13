@@ -39,7 +39,7 @@ namespace Jasper.Testing.Messaging
             {
                 var subscriber = Substitute.For<ISubscriber>();
                 subscriber.IsDurable.Returns(true);
-                theMessagingRoot.Subscribers.GetOrBuild(env.Destination).Returns(subscriber);
+                theMessagingRoot.Subscribers.Add(env.Destination, subscriber);
 
             }
 

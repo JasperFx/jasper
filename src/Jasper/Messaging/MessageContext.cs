@@ -65,7 +65,7 @@ namespace Jasper.Messaging
                 {
                     _root.Router.ApplyMessageTypeSpecificRules(outgoing[i]);
 
-                    var subscriber = _root.Subscribers.GetOrBuild(outgoing[i].Destination);
+                    var subscriber = _root.GetOrBuild(outgoing[i].Destination);
 
                     if (!subscriber.SupportsNativeScheduledSend)
                     {
@@ -408,7 +408,7 @@ namespace Jasper.Messaging
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(x => _root.Subscribers.GetOrBuild(x.Destination).IsDurable).ToArray());
+                await Transaction.Persist(outgoing.Where(x => _root.GetOrBuild(x.Destination).IsDurable).ToArray());
 
                 _outstanding.AddRange(outgoing);
             }

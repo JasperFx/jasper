@@ -18,7 +18,7 @@ using LamarCodeGeneration;
 
 namespace Jasper.Messaging
 {
-    public interface IMessagingRoot
+    public interface IMessagingRoot : ISubscriberGraph
     {
         IScheduledJobProcessor ScheduledJobs { get; }
         IMessageRouter Router { get; }
@@ -26,7 +26,6 @@ namespace Jasper.Messaging
         IHandlerPipeline Pipeline { get; }
         IMessageLogger Logger { get; }
         MessagingSerializationGraph Serialization { get; }
-        ISubscriberGraph Subscribers { get; }
         JasperOptions Options { get; }
 
 
@@ -39,6 +38,7 @@ namespace Jasper.Messaging
 
         IEnvelopePersistence Persistence { get; }
 
+        [Obsolete("Get rid of this")]
         bool ShouldBeDurable(Type messageType);
 
         ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Configuration;
@@ -47,7 +49,6 @@ namespace Jasper.Testing.Messaging
             }
         }
 
-        public ISubscriberGraph Subscribers { get; } = Substitute.For<ISubscriberGraph>();
 
         public IMessageContext NewContext()
         {
@@ -96,5 +97,27 @@ namespace Jasper.Testing.Messaging
         public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
+
+        public readonly Dictionary<Uri, ISubscriber> Subscribers = new Dictionary<Uri,ISubscriber>();
+
+        public ISubscriber GetOrBuild(Uri address)
+        {
+            if (Subscribers.TryGetValue(address, out var subscriber))
+            {
+                return subscriber;
+            }
+
+            return null;
+        }
+
+        public bool HasSubscriber(Uri uri)
+        {
+            return Subscribers.ContainsKey(uri);
+        }
+
+        public ISubscriber[] AllKnown()
+        {
+            return Subscribers.Values.ToArray();
+        }
     }
 }

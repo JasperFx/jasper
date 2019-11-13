@@ -77,7 +77,6 @@ namespace Jasper.Configuration
             this.AddSingleton<InMemorySagaPersistor>();
 
             this.AddSingleton(parent.HandlerGraph);
-            this.AddSingleton<ISubscriberGraph>(new SubscriberGraph());
 
 
             For<ITransport>()

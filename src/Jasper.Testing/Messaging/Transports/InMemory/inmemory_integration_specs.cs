@@ -34,14 +34,6 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
             });
         }
 
-        [Fact]
-        public void automatically_sticks_in_replies_queue()
-        {
-            configure();
-            Subscribers.HasSubscriber(TransportConstants.RetryUri)
-                .ShouldBeTrue();
-        }
-
 
         [Fact]
         public async Task send_a_message_and_get_the_response()
