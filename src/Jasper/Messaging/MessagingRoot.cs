@@ -64,8 +64,6 @@ namespace Jasper.Messaging
                 container.QuickBuildAll<IMissingHandler>(),
                 this);
 
-            Workers = new WorkerQueue(Logger, Pipeline, options.Advanced);
-
             Router = new MessageRouter(Handlers, serialization, Options.Advanced, this);
 
             _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
@@ -92,14 +90,17 @@ namespace Jasper.Messaging
 
         public ITransport[] Transports { get; }
 
-        public IScheduledJobProcessor ScheduledJobs => Workers.ScheduledJobs;
+        public IScheduledJobProcessor ScheduledJobs
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public JasperOptions Options { get; }
 
         public IMessageRouter Router { get; }
-
-        [Obsolete]
-        public IWorkerQueue Workers { get; }
 
         public IHandlerPipeline Pipeline { get; }
 
@@ -138,10 +139,6 @@ namespace Jasper.Messaging
 
             Handlers.Compile(Options.CodeGeneration, _container);
 
-
-            Handlers.Workers.Compile(Handlers.Chains.Select(x => x.MessageType));
-
-
             if (Options.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
             {
                 await _container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
@@ -160,7 +157,10 @@ namespace Jasper.Messaging
             GetOrBuild(TransportConstants.RetryUri);
 
             var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
-            Durability = new DurabilityAgent(_transportLogger, durabilityLogger, Workers, Persistence, this,
+
+            // TODO -- use the worker queue for Retries?
+            var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, _settings, Persistence, _transportLogger);
+            Durability = new DurabilityAgent(_transportLogger, durabilityLogger, worker, Persistence, this,
                 Options.Advanced);
             // TODO -- use the cancellation token from the app!
             await Durability.StartAsync(Options.Advanced.Cancellation);
@@ -173,9 +173,11 @@ namespace Jasper.Messaging
             return new DurableSendingAgent(destination, sender, _transportLogger, Options.Advanced, Persistence);
         }
 
+        [Obsolete("Move more of this to the LoopbackTransport")]
         public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
         {
-            return new DurableLoopbackSendingAgent(destination, Workers, Persistence, Serialization, _transportLogger, Options.Advanced);
+            var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, _settings, Persistence, _transportLogger);
+            return new DurableLoopbackSendingAgent(destination, worker, Persistence, Serialization, _transportLogger, Options.Advanced);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

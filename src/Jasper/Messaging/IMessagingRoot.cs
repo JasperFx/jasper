@@ -22,7 +22,6 @@ namespace Jasper.Messaging
     {
         IScheduledJobProcessor ScheduledJobs { get; }
         IMessageRouter Router { get; }
-        IWorkerQueue Workers { get; }
         IHandlerPipeline Pipeline { get; }
         IMessageLogger Logger { get; }
         MessagingSerializationGraph Serialization { get; }

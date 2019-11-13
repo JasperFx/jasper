@@ -63,11 +63,6 @@ namespace Jasper.Messaging.Model
 
         internal IContainer Container { get; set; }
 
-        /// <summary>
-        ///     Policies and routing for local message handling
-        /// </summary>
-        public WorkersGraph Workers { get; } = new WorkersGraph();
-
         public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
 
         public RetryPolicyCollection Retries { get; set; } = new RetryPolicyCollection();
@@ -75,12 +70,6 @@ namespace Jasper.Messaging.Model
         private void assertNotGrouped()
         {
             if (_hasGrouped) throw new InvalidOperationException("This HandlerGraph has already been grouped/compiled");
-        }
-
-        public void Add(HandlerCall call)
-        {
-            assertNotGrouped();
-            _calls.Add(call);
         }
 
         public void AddRange(IEnumerable<HandlerCall> calls)

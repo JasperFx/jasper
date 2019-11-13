@@ -14,8 +14,7 @@ namespace Jasper.Messaging.Runtime.Invocation
 {
     public interface IHandlerPipeline
     {
-        [Obsolete]
-        WorkersGraph Workers { get; }
+
         Task Invoke(Envelope envelope);
         Task InvokeNow(Envelope envelope);
     }
@@ -45,8 +44,6 @@ namespace Jasper.Messaging.Runtime.Invocation
 
 
         public IMessageLogger Logger { get; }
-
-        public WorkersGraph Workers => _graph.Workers;
 
         public async Task Invoke(Envelope envelope)
         {

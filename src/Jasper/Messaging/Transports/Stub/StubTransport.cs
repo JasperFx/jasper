@@ -73,7 +73,7 @@ namespace Jasper.Messaging.Transports.Stub
 
         public void InitializeSendersAndListeners(IMessagingRoot root)
         {
-            var pipeline = root.Workers.As<WorkerQueue>().Pipeline;
+            var pipeline = root.Pipeline;
 
             Channels =
                 new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, pipeline, this));

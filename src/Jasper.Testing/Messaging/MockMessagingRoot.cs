@@ -28,7 +28,6 @@ namespace Jasper.Testing.Messaging
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
         public IMessageRouter Router { get; } = Substitute.For<IMessageRouter>();
-        public IWorkerQueue Workers { get; } = Substitute.For<IWorkerQueue>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger Logger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();

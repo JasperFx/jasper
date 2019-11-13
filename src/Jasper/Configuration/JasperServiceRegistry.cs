@@ -28,7 +28,7 @@ namespace Jasper.Configuration
         public JasperServiceRegistry(JasperOptions parent)
         {
             For<IMetrics>().Use<NulloMetrics>();
-            For<IHostedService>().Use<MetricsCollector>();
+            //For<IHostedService>().Use<MetricsCollector>();
 
             this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());
 
@@ -99,7 +99,6 @@ namespace Jasper.Configuration
 
             ForSingletonOf<ObjectPoolProvider>().Use(new DefaultObjectPoolProvider());
 
-            MessagingRootService(x => x.Workers);
             MessagingRootService(x => x.Pipeline);
 
             MessagingRootService(x => x.Router);

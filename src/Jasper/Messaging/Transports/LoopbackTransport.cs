@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using Jasper.Messaging.Transports.Sending;
+using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Transports
@@ -17,9 +18,9 @@ namespace Jasper.Messaging.Transports
 
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {
-            return uri.IsDurable()
-                ? root.BuildDurableLoopbackAgent(uri)
-                : new LoopbackSendingAgent(uri, root.Workers);
+//            return uri.IsDurable()
+//                ? root.BuildDurableLoopbackAgent(uri)
+//                : new LoopbackSendingAgent(uri, roo);
         }
 
         public Uri ReplyUri => TransportConstants.RetryUri;
