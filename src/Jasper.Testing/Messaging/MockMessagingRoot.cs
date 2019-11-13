@@ -110,11 +110,6 @@ namespace Jasper.Testing.Messaging
             return null;
         }
 
-        public bool HasSubscriber(Uri uri)
-        {
-            return Subscribers.ContainsKey(uri);
-        }
-
         public ISubscriber[] AllKnown()
         {
             return Subscribers.Values.ToArray();

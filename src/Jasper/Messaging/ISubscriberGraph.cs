@@ -6,8 +6,6 @@ namespace Jasper.Messaging
     {
         ISubscriber GetOrBuild(Uri address);
 
-        bool HasSubscriber(Uri uri);
-
         ISubscriber[] AllKnown();
     }
 }

@@ -221,11 +221,6 @@ namespace Jasper.Messaging
             }
         }
 
-        public bool HasSubscriber(Uri uri)
-        {
-            return _subscribers.TryFind(uri, out var channel);
-        }
-
         public ISubscriber[] AllKnown()
         {
             return _subscribers.Enumerate().Select(x => x.Value).ToArray();
