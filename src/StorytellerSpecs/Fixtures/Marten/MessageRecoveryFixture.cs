@@ -14,6 +14,7 @@ using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
+using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence.Operations;
@@ -292,6 +293,8 @@ namespace StorytellerSpecs.Fixtures.Marten
     public class RecordingWorkerQueue : IWorkerQueue
     {
         public readonly IList<Envelope> Enqueued = new List<Envelope>();
+        private Uri _address;
+        private ListeningStatus _status;
 
         public Task Enqueue(Envelope envelope)
         {
@@ -306,7 +309,43 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
+        void IWorkerQueue.StartListening(IListeningAgent agent)
+        {
+            throw new NotImplementedException();
+        }
 
 
+        Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.Acknowledged(Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDisposable.Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        Uri IListener.Address => _address;
+
+        ListeningStatus IListener.Status
+        {
+            get => _status;
+            set => _status = value;
+        }
     }
 }

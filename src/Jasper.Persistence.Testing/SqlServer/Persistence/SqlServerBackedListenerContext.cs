@@ -8,6 +8,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer;
@@ -24,17 +25,16 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected SqlServerSettings mssqlSettings;
-        protected Listener theListener;
         protected SqlServerEnvelopePersistence ThePersistence;
         protected AdvancedSettings theSettings;
-        protected IWorkerQueue theWorkerQueue;
+        protected DurableWorkerQueue theWorkerQueue;
+        private IHandlerPipeline thePipeline;
 
 
         public SqlServerBackedListenerContext()
         {
             new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString}).RecreateAll();
 
-            theWorkerQueue = Substitute.For<IWorkerQueue>();
 
             theSettings = new AdvancedSettings();
 
@@ -46,10 +46,9 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             ThePersistence = new SqlServerEnvelopePersistence(mssqlSettings, theSettings);
 
 
-            theListener = new Listener(
-                Substitute.For<IListeningAgent>(),
-                theWorkerQueue,
-                TransportLogger.Empty(), theSettings, ThePersistence);
+            thePipeline = Substitute.For<IHandlerPipeline>();
+            theWorkerQueue = new DurableWorkerQueue(new ListenerSettings(), thePipeline, theSettings, ThePersistence, TransportLogger.Empty());
+
         }
 
         protected Envelope notScheduledEnvelope()
@@ -92,7 +91,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
         protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
         {
-            var status = await theListener.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
+            var status = await theWorkerQueue.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 
             status.ShouldBe(ReceivedStatus.Successful);
 
@@ -101,12 +100,12 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)
         {
-            theWorkerQueue.Received().Enqueue(envelope);
+            thePipeline.Received().Invoke(envelope);
         }
 
         protected void assertEnvelopeWasNotEnqueued(Envelope envelope)
         {
-            theWorkerQueue.DidNotReceive().Enqueue(envelope);
+            thePipeline.DidNotReceive().Invoke(envelope);
         }
     }
 }

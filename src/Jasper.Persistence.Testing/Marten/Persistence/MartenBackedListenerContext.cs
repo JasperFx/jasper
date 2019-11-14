@@ -8,6 +8,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
@@ -68,11 +69,11 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
-        protected Listener theListener;
         protected AdvancedSettings theSettings;
-        protected IWorkerQueue theWorkerQueue;
+        protected DurableWorkerQueue theWorkerQueue;
 
         protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin = new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString});
+        private IHandlerPipeline thePipeline;
 
 
         public MartenBackedListenerContext()
@@ -84,18 +85,20 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             });
 
 
-            theWorkerQueue = Substitute.For<IWorkerQueue>();
-
             theSettings = new AdvancedSettings();
 
 
             EnvelopeStorageAdmin.RebuildSchemaObjects();
 
+            var persistence =
+                new PostgresqlEnvelopePersistence(
+                    new PostgresqlSettings {ConnectionString = Servers.PostgresConnectionString}, theSettings);
+            thePipeline = Substitute.For<IHandlerPipeline>();
+            theWorkerQueue = new DurableWorkerQueue(new ListenerSettings(), thePipeline, theSettings, persistence, TransportLogger.Empty());
 
-            theListener = new Listener(
-                Substitute.For<IListeningAgent>(),
-                theWorkerQueue,
-                TransportLogger.Empty(), theSettings, new PostgresqlEnvelopePersistence(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString}, theSettings));
+
+            var agent = Substitute.For<IListeningAgent>();
+            theWorkerQueue.StartListening(agent);
         }
 
         public void Dispose()
@@ -143,7 +146,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         protected async Task<Envelope[]> afterReceivingTheEnvelopes()
         {
-            var status = await theListener.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
+            var status = await theWorkerQueue.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 
             status.ShouldBe(ReceivedStatus.Successful);
 
@@ -152,12 +155,12 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)
         {
-            theWorkerQueue.Received().Enqueue(envelope);
+            thePipeline.Received().Invoke(envelope);
         }
 
         protected void assertEnvelopeWasNotEnqueued(Envelope envelope)
         {
-            theWorkerQueue.DidNotReceive().Enqueue(envelope);
+            thePipeline.DidNotReceive().Invoke(envelope);
         }
     }
 }

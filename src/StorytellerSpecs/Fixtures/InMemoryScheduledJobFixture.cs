@@ -6,6 +6,7 @@ using Baseline.Dates;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 using NSubstitute;
@@ -21,6 +22,8 @@ namespace StorytellerSpecs.Fixtures
 
         private readonly IList<Envelope> sent = new List<Envelope>();
         private InMemoryScheduledJobProcessor theScheduledJobs;
+        private Uri _address;
+        private ListeningStatus _status;
 
 
         public InMemoryScheduledJobFixture()
@@ -47,6 +50,11 @@ namespace StorytellerSpecs.Fixtures
         {
             theScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
             return Task.CompletedTask;
+        }
+
+        void IWorkerQueue.StartListening(IListeningAgent agent)
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -170,6 +178,39 @@ namespace StorytellerSpecs.Fixtures
             theScheduledJobs.Count().ShouldBe(1);
 
             return true;
+        }
+
+        Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.Acknowledged(Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDisposable.Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        Uri IListener.Address => _address;
+
+        ListeningStatus IListener.Status
+        {
+            get => _status;
+            set => _status = value;
         }
     }
 

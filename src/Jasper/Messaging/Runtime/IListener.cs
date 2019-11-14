@@ -7,6 +7,5 @@ namespace Jasper.Messaging.Runtime
     {
         Uri Address { get; }
         ListeningStatus Status { get; set; }
-        void Start();
     }
 }

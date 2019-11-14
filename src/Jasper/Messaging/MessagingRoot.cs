@@ -289,15 +289,10 @@ namespace Jasper.Messaging
                     TransportLogger)
                 : new LightweightWorkerQueue(listenerSettings, TransportLogger, Pipeline, Settings);
 
-            var persistence = listenerSettings.IsDurable
-                ? Persistence
-                : new NulloEnvelopePersistence(worker);
 
-            var listener = new Listener(agent, worker, TransportLogger, Settings, persistence);
+            _listeners.Add(worker);
 
-            _listeners.Add(listener);
-
-            listener.Start();
+            worker.StartListening(agent);
         }
     }
 }
