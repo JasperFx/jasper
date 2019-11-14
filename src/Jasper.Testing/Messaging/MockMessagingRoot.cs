@@ -43,15 +43,6 @@ namespace Jasper.Testing.Messaging
 
         public AdvancedSettings Settings { get; } = new AdvancedSettings();
 
-        public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
-        {
-            throw new NotImplementedException();
-        }
 
         public void AddListener(ListenerSettings listenerSettings, IListeningAgent agent)
         {

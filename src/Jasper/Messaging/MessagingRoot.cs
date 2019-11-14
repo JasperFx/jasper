@@ -175,18 +175,6 @@ namespace Jasper.Messaging
 
         public HandlerGraph Handlers { get; }
 
-        public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
-        {
-            return new DurableSendingAgent(destination, sender, TransportLogger, Options.Advanced, Persistence);
-        }
-
-        [Obsolete("Move more of this to the LoopbackTransport")]
-        public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
-        {
-            var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, Settings, Persistence, TransportLogger);
-            return new DurableLoopbackSendingAgent(destination, worker, Persistence, Serialization, TransportLogger, Options.Advanced);
-        }
-
         public Task StopAsync(CancellationToken cancellationToken)
         {
             // This is important!

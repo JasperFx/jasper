@@ -38,11 +38,6 @@ namespace Jasper.Messaging
         ITransportLogger TransportLogger { get; }
         AdvancedSettings Settings { get; }
 
-        [Obsolete("Get rid of this")]
-        ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender);
-
-        [Obsolete("Get rid of this")]
-        ISendingAgent BuildDurableLoopbackAgent(Uri destination);
 
         void AddListener(ListenerSettings listenerSettings, IListeningAgent agent);
     }

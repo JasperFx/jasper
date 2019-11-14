@@ -42,7 +42,7 @@ namespace Jasper.Messaging.Transports
 
 
                 var agent = uri.IsDurable()
-                    ? root.BuildDurableSendingAgent(uri, batchedSender)
+                    ? (ISendingAgent)new DurableSendingAgent(uri, batchedSender, root.TransportLogger, root.Settings, root.Persistence)
                     : new LightweightSendingAgent(uri, batchedSender, logger, Settings);
 
                 agent.DefaultReplyUri = ReplyUri;
