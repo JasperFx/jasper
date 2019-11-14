@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Jasper.Configuration;
+using Jasper.Messaging;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -12,18 +13,19 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqTransport : ExternalTransportBase<RabbitMqOptions, RabbitMqEndpoint>
     {
-        public RabbitMqTransport(RabbitMqOptions options, ITransportLogger logger, AdvancedSettings settings) : base("rabbitmq", options, logger, settings)
+        public RabbitMqTransport(RabbitMqOptions options) : base("rabbitmq", options)
         {
         }
 
-        protected override ISender buildSender(TransportUri transportUri, RabbitMqEndpoint endpoint, CancellationToken cancellation)
+        protected override ISender buildSender(TransportUri transportUri, RabbitMqEndpoint endpoint,
+            CancellationToken cancellation, IMessagingRoot root)
         {
             endpoint.Connect();
-            return endpoint.CreateSender(logger, cancellation);
+            return endpoint.CreateSender(root.TransportLogger, cancellation);
         }
 
         protected override IListener buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint,
-            AdvancedSettings settings, HandlerGraph handlers)
+            AdvancedSettings settings, HandlerGraph handlers, IMessagingRoot root)
         {
             if (endpoint == null)
             {
@@ -32,12 +34,12 @@ namespace Jasper.RabbitMQ.Internal
 
             if (transportUri.IsMessageSpecificTopic())
             {
-                return new RabbitMqMessageSpecificTopicListener(endpoint, handlers, transportUri, logger, settings);
+                return new RabbitMqMessageSpecificTopicListener(endpoint, handlers, transportUri, root.TransportLogger, settings);
             }
             else
             {
                 endpoint.Connect();
-                return endpoint.CreateListeningAgent(transportUri.ToUri(), settings, logger);
+                return endpoint.CreateListeningAgent(transportUri.ToUri(), settings, root.TransportLogger);
             }
 
 

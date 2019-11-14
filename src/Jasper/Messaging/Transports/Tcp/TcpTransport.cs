@@ -12,15 +12,15 @@ namespace Jasper.Messaging.Transports.Tcp
 {
     public class TcpTransport : TransportBase
     {
-        public TcpTransport(ITransportLogger logger, AdvancedSettings settings) :
-            base("tcp", logger, settings)
+        public TcpTransport() :
+            base("tcp")
         {
         }
 
 
-        protected override ISender createSender(Uri uri, CancellationToken cancellation)
+        protected override ISender createSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
         {
-            return new BatchedSender(uri, new SocketSenderProtocol(), cancellation, logger);
+            return new BatchedSender(uri, new SocketSenderProtocol(), cancellation, root.TransportLogger);
         }
 
         protected override ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming)
@@ -35,7 +35,7 @@ namespace Jasper.Messaging.Transports.Tcp
 
         protected override IListener buildListeningAgent(ListenerSettings listenerSettings,
             AdvancedSettings settings,
-            HandlerGraph handlers)
+            HandlerGraph handlers, IMessagingRoot root)
         {
             // check the uri for an ip address to bind to
             var uri = listenerSettings.Uri;

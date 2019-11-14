@@ -17,17 +17,12 @@ namespace Jasper.Messaging.Transports
 {
     public abstract class TransportBase : ITransport
     {
-        public TransportBase(string protocol, ITransportLogger logger,
-            AdvancedSettings settings)
+        public TransportBase(string protocol)
         {
-            this.logger = logger;
-            Settings = settings;
             Protocol = protocol;
         }
 
-        public AdvancedSettings Settings { get; }
 
-        protected ITransportLogger logger { get; }
 
         public string Protocol { get; }
         public Uri ReplyUri { get; protected set; }
@@ -38,12 +33,12 @@ namespace Jasper.Messaging.Transports
         {
             try
             {
-                var batchedSender = createSender(uri, cancellation);
+                var batchedSender = createSender(uri, cancellation, root);
 
 
                 var agent = uri.IsDurable()
                     ? (ISendingAgent)new DurableSendingAgent(uri, batchedSender, root.TransportLogger, root.Settings, root.Persistence)
-                    : new LightweightSendingAgent(uri, batchedSender, logger, Settings);
+                    : new LightweightSendingAgent(uri, batchedSender, root.TransportLogger, root.Settings);
 
                 agent.DefaultReplyUri = ReplyUri;
                 agent.Start();
@@ -74,7 +69,7 @@ namespace Jasper.Messaging.Transports
             foreach (var @group in groups)
             {
                 var subscriber = new Subscriber(@group.Key, @group);
-                var agent = BuildSendingAgent(subscriber.Uri, root, Settings.Cancellation);
+                var agent = BuildSendingAgent(subscriber.Uri, root, root.Settings.Cancellation);
 
 
                 subscriber.StartSending(root.Logger, agent, ReplyUri);
@@ -88,7 +83,7 @@ namespace Jasper.Messaging.Transports
         {
             try
             {
-                var agent = buildListeningAgent(listenerSettings, root.Options.Advanced, root.Handlers);
+                var agent = buildListeningAgent(listenerSettings, root.Options.Advanced, root.Handlers, root);
 
                 root.AddListener(listenerSettings, agent);
             }
@@ -107,11 +102,11 @@ namespace Jasper.Messaging.Transports
 
         }
 
-        protected abstract ISender createSender(Uri uri, CancellationToken cancellation);
+        protected abstract ISender createSender(Uri uri, CancellationToken cancellation, IMessagingRoot root);
 
         protected abstract ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming);
         protected abstract IListener buildListeningAgent(ListenerSettings listenerSettings,
             AdvancedSettings settings,
-            HandlerGraph handlers);
+            HandlerGraph handlers, IMessagingRoot root);
     }
 }
