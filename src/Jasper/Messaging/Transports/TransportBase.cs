@@ -68,6 +68,20 @@ namespace Jasper.Messaging.Transports
             {
                 buildListener(root, listenerSettings, options);
             }
+
+            // TODO -- later this configuration will be directly on here
+            var groups = root.Options.Subscriptions.Where(x => x.Uri.Scheme == Protocol).GroupBy(x => x.Uri);
+            foreach (var @group in groups)
+            {
+                var subscriber = new Subscriber(@group.Key, @group);
+                var agent = BuildSendingAgent(subscriber.Uri, root, Settings.Cancellation);
+
+
+                subscriber.StartSending(root.Logger, agent, ReplyUri);
+
+                root.AddSubscriber(subscriber);
+            }
+
         }
 
         private void buildListener(IMessagingRoot root, ListenerSettings listenerSettings, JasperOptions options)

@@ -81,6 +81,19 @@ namespace Jasper.Messaging.Transports.Stub
 
             var incoming = root.Options.Listeners.Where(x => x.Uri.Scheme == "stub");
             foreach (var listener in incoming) Channels.FillDefault(listener.Uri);
+
+            // TODO -- later this configuration will be directly on here
+            var groups = root.Options.Subscriptions.Where(x => x.Uri.Scheme == Protocol).GroupBy(x => x.Uri);
+            foreach (var @group in groups)
+            {
+                var subscriber = new Subscriber(@group.Key, @group);
+                var agent = BuildSendingAgent(subscriber.Uri, root, root.Settings.Cancellation);
+
+
+                subscriber.StartSending(root.Logger, agent, ReplyUri);
+
+                root.AddSubscriber(subscriber);
+            }
         }
 
         public StubMessageCallback LastCallback()

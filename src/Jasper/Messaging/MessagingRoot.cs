@@ -151,10 +151,10 @@ namespace Jasper.Messaging
             assertNoUnknownTransportsInSubscribers(Options);
             assertNoUnknownTransportsInListeners(Options);
 
-            foreach (var transport in Transports) transport.InitializeSendersAndListeners(this);
-
-            buildInitialSendingAgents(this);
-
+            foreach (var transport in Transports)
+            {
+                transport.InitializeSendersAndListeners(this);
+            }
 
             GetOrBuild(TransportConstants.RetryUri);
 
@@ -171,6 +171,11 @@ namespace Jasper.Messaging
                 // TODO -- use the cancellation token from the app!
                 await Durability.StartAsync(Options.Advanced.Cancellation);
             }
+        }
+
+        public void AddSubscriber(ISubscriber subscriber)
+        {
+            _subscribers = _subscribers.AddOrUpdate(subscriber.Uri, subscriber);
         }
 
         public HandlerGraph Handlers { get; }
@@ -208,22 +213,6 @@ namespace Jasper.Messaging
         public ISubscriber[] AllKnown()
         {
             return _subscribers.Enumerate().Select(x => x.Value).ToArray();
-        }
-
-        private void buildInitialSendingAgents(IMessagingRoot root)
-        {
-            var groups = root.Options.Subscriptions.GroupBy(x => x.Uri);
-            foreach (var group in groups)
-            {
-                var subscriber = new Subscriber(group.Key, group);
-                var transport = _transports[subscriber.Uri.Scheme];
-                var agent = transport.BuildSendingAgent(subscriber.Uri, root, Settings.Cancellation);
-
-                subscriber.StartSending(Logger, agent, transport.ReplyUri);
-
-
-                _subscribers = _subscribers.AddOrUpdate(subscriber.Uri, subscriber);
-            }
         }
 
         private void organizeTransports()

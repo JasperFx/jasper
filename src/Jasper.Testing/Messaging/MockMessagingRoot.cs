@@ -85,5 +85,10 @@ namespace Jasper.Testing.Messaging
         {
             return Subscribers.Values.ToArray();
         }
+
+        public void AddSubscriber(ISubscriber subscriber)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
