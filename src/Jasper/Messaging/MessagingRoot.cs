@@ -35,13 +35,11 @@ namespace Jasper.Messaging
 
         private ImHashMap<Uri, ISubscriber> _subscribers = ImHashMap<Uri, ISubscriber>.Empty;
 
-        private readonly ITransportLogger _transportLogger;
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
 
         private readonly Lazy<IEnvelopePersistence> _persistence;
         private readonly IContainer _container;
-        private AdvancedSettings _settings;
 
         public MessagingRoot(MessagingSerializationGraph serialization,
             JasperOptions options,
@@ -52,10 +50,10 @@ namespace Jasper.Messaging
         {
             Options = options;
             Handlers = options.HandlerGraph;
-            _transportLogger = transportLogger;
+            TransportLogger = transportLogger;
             Transports = container.QuickBuildAll<ITransport>().ToArray();
 
-            _settings = options.Advanced;
+            Settings = options.Advanced;
             Serialization = serialization;
 
             Logger = messageLogger;
@@ -84,6 +82,10 @@ namespace Jasper.Messaging
 
             ScheduledJobs.Dispose();
         }
+
+        public AdvancedSettings Settings { get; }
+
+        public ITransportLogger TransportLogger { get; }
 
         public DurabilityAgent Durability { get; private set; }
 
@@ -158,26 +160,31 @@ namespace Jasper.Messaging
 
             var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 
-            // TODO -- use the worker queue for Retries?
-            var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, _settings, Persistence, _transportLogger);
-            Durability = new DurabilityAgent(_transportLogger, durabilityLogger, worker, Persistence, this,
-                Options.Advanced);
-            // TODO -- use the cancellation token from the app!
-            await Durability.StartAsync(Options.Advanced.Cancellation);
+
+            // HOKEY, BUT IT WORKS
+            if (_container.Model.DefaultTypeFor<IEnvelopePersistence>() != typeof(NulloEnvelopePersistence))
+            {
+                // TODO -- use the worker queue for Retries?
+                var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, Settings, Persistence, TransportLogger);
+                Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, this,
+                    Options.Advanced);
+                // TODO -- use the cancellation token from the app!
+                await Durability.StartAsync(Options.Advanced.Cancellation);
+            }
         }
 
         public HandlerGraph Handlers { get; }
 
         public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
         {
-            return new DurableSendingAgent(destination, sender, _transportLogger, Options.Advanced, Persistence);
+            return new DurableSendingAgent(destination, sender, TransportLogger, Options.Advanced, Persistence);
         }
 
         [Obsolete("Move more of this to the LoopbackTransport")]
         public ISendingAgent BuildDurableLoopbackAgent(Uri destination)
         {
-            var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, _settings, Persistence, _transportLogger);
-            return new DurableLoopbackSendingAgent(destination, worker, Persistence, Serialization, _transportLogger, Options.Advanced);
+            var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, Settings, Persistence, TransportLogger);
+            return new DurableLoopbackSendingAgent(destination, worker, Persistence, Serialization, TransportLogger, Options.Advanced);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -222,7 +229,7 @@ namespace Jasper.Messaging
             {
                 var subscriber = new Subscriber(group.Key, group);
                 var transport = _transports[subscriber.Uri.Scheme];
-                var agent = transport.BuildSendingAgent(subscriber.Uri, root, _settings.Cancellation);
+                var agent = transport.BuildSendingAgent(subscriber.Uri, root, Settings.Cancellation);
 
                 subscriber.StartSending(Logger, agent, transport.ReplyUri);
 
@@ -249,7 +256,7 @@ namespace Jasper.Messaging
             assertValidTransport(uri);
 
             var transport = _transports[uri.Scheme];
-            var agent = transport.BuildSendingAgent(uri, this, _settings.Cancellation);
+            var agent = transport.BuildSendingAgent(uri, this, Settings.Cancellation);
 
             var subscriber = new Subscriber(uri, new Subscription[0]);
             subscriber.StartSending(Logger, agent, transport.ReplyUri);
@@ -278,15 +285,15 @@ namespace Jasper.Messaging
         public void AddListener(ListenerSettings listenerSettings, IListeningAgent agent)
         {
             var worker = listenerSettings.IsDurable
-                ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, Pipeline, _settings, Persistence,
-                    _transportLogger)
-                : new LightweightWorkerQueue(listenerSettings, _transportLogger, Pipeline, _settings);
+                ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, Pipeline, Settings, Persistence,
+                    TransportLogger)
+                : new LightweightWorkerQueue(listenerSettings, TransportLogger, Pipeline, Settings);
 
             var persistence = listenerSettings.IsDurable
                 ? Persistence
                 : new NulloEnvelopePersistence(worker);
 
-            var listener = new Listener(agent, worker, _transportLogger, _settings, persistence);
+            var listener = new Listener(agent, worker, TransportLogger, Settings, persistence);
 
             _listeners.Add(listener);
 

@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.WorkerQueues;
 
@@ -17,7 +19,13 @@ namespace Jasper.Messaging.Durability
         public NulloEnvelopePersistence(IWorkerQueue worker)
         {
             _worker = worker;
-            ScheduledJobs = new InMemoryScheduledJobProcessor(worker);
+        }
+
+        // For IoC
+        public NulloEnvelopePersistence(ITransportLogger logger, IHandlerPipeline pipeline, AdvancedSettings settings)
+        {
+            // TODO -- change this to use the default local queue?
+            _worker = new LightweightWorkerQueue(new ListenerSettings(), logger, pipeline, settings);
         }
 
         public Task DeleteIncomingEnvelopes(Envelope[] envelopes)

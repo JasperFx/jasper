@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
+using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging.WorkerQueues
 {

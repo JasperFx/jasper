@@ -41,6 +41,8 @@ namespace Jasper.Testing.Messaging
             return new MessageContext(this);
         }
 
+        public AdvancedSettings Settings { get; } = new AdvancedSettings();
+
         public ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender)
         {
             throw new NotImplementedException();
@@ -72,6 +74,7 @@ namespace Jasper.Testing.Messaging
         }
 
         public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();
+        public ITransportLogger TransportLogger { get; } = Substitute.For<ITransportLogger>();
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
 

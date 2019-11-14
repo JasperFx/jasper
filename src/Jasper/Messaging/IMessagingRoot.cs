@@ -35,6 +35,8 @@ namespace Jasper.Messaging
         IMessageContext ContextFor(Envelope envelope);
 
         IEnvelopePersistence Persistence { get; }
+        ITransportLogger TransportLogger { get; }
+        AdvancedSettings Settings { get; }
 
         [Obsolete("Get rid of this")]
         ISendingAgent BuildDurableSendingAgent(Uri destination, ISender sender);
