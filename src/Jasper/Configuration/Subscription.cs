@@ -32,7 +32,6 @@ namespace Jasper.Configuration
         /// <summary>
         /// The outgoing address to send matching messages
         /// </summary>
-        [Obsolete("Needs to move to Endpoint")]
         public Uri Uri { get; set; }
 
         /// <summary>

@@ -12,7 +12,6 @@ namespace Jasper.Messaging.WorkerQueues
 
         Task Enqueue(Envelope envelope);
 
-        [Obsolete("Make this go away with the collapse of IListener into IWorkerQueue") ]
         Task ScheduleExecution(Envelope envelope);
 
         void StartListening(IListeningAgent agent);

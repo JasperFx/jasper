@@ -18,7 +18,6 @@ namespace Jasper.Messaging.Transports
         public const string SerializedEnvelope = "binary/envelope";
         public const string ScheduledEnvelope = "scheduled-envelope";
 
-        [Obsolete]
         public const string Durable = "durable";
         public static readonly string Loopback = "loopback";
 

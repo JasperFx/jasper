@@ -34,7 +34,6 @@ namespace Jasper.Util
             return lastSegment ?? TransportConstants.Default;
         }
 
-        [Obsolete]
         public static bool IsDurable(this Uri uri)
         {
             if (uri.Scheme == TransportConstants.Loopback && uri.Host == TransportConstants.Durable) return true;

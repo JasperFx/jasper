@@ -26,7 +26,7 @@ namespace Jasper
         /// <summary>
         ///     Builds and initializes a JasperRuntime for the options
         /// </summary>
-        /// <param name="optionsy"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
         public static IHost For(JasperOptions options)
         {

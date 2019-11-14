@@ -91,7 +91,6 @@ namespace Jasper.Messaging.Configuration
                 _match = match;
             }
 
-            [Obsolete("replace w/ more specific methods per transport type")]
             public void To(Uri address)
             {
                 var subscription = new Subscription
@@ -104,7 +103,6 @@ namespace Jasper.Messaging.Configuration
                 _parent.AddSubscription(subscription);
             }
 
-            [Obsolete("replace w/ more specific methods per transport type")]
             public void To(string address)
             {
                 To(address.ToUri());
