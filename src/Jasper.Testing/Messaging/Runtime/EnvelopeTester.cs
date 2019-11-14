@@ -156,5 +156,58 @@ namespace Jasper.Testing.Messaging.Runtime
             envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(-5));
             envelope.DeliverBy.Value.ShouldBeLessThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(5));
         }
+
+        [Fact]
+        public void mark_received_when_not_delayed_execution()
+        {
+            var envelope = ObjectMother.Envelope();
+            envelope.ExecutionTime = null;
+
+            var uri = TransportConstants.LoopbackUri;
+            var uniqueNodeId = 3;
+
+            envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
+
+            envelope.Status.ShouldBe(TransportConstants.Incoming);
+            envelope.OwnerId.ShouldBe(uniqueNodeId);
+
+            envelope.ReceivedAt.ShouldBe(uri);
+        }
+
+
+        [Fact]
+        public void mark_received_when_expired_execution()
+        {
+            var envelope = ObjectMother.Envelope();
+            envelope.ExecutionTime = DateTime.UtcNow.AddDays(-1);
+
+            var uri = TransportConstants.LoopbackUri;
+            var uniqueNodeId = 3;
+
+            envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
+
+            envelope.Status.ShouldBe(TransportConstants.Incoming);
+            envelope.OwnerId.ShouldBe(uniqueNodeId);
+
+            envelope.ReceivedAt.ShouldBe(uri);
+        }
+
+        [Fact]
+        public void mark_received_when_it_has_a_later_execution_time()
+        {
+            var envelope = ObjectMother.Envelope();
+            envelope.ExecutionTime = DateTime.UtcNow.AddDays(1);
+
+            var uri = TransportConstants.LoopbackUri;
+            var uniqueNodeId = 3;
+
+            envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
+
+            envelope.Status.ShouldBe(TransportConstants.Scheduled);
+            envelope.OwnerId.ShouldBe(TransportConstants.AnyNode);
+
+            envelope.ReceivedAt.ShouldBe(uri);
+        }
+
     }
 }

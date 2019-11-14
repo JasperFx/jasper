@@ -6,8 +6,27 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime
 {
+    // Why is this a partial you ask?
+    // The elements in this file are all things that only matter
+    // inside the Jasper runtime so we can keep it out of the WireProtocol
     public partial class Envelope
     {
+        public void MarkReceived(Uri uri, DateTime now, int currentNodeId)
+        {
+            ReceivedAt = uri;
+
+            if (IsDelayed(now))
+            {
+                Status = TransportConstants.Scheduled;
+                OwnerId = TransportConstants.AnyNode;
+            }
+            else
+            {
+                Status = TransportConstants.Incoming;
+                OwnerId = currentNodeId;
+            }
+        }
+
         /// <summary>
         ///     Used internally to track the completion of an Envelope.
         /// </summary>

@@ -79,21 +79,15 @@ namespace Jasper.Messaging.Runtime
             {
                 foreach (var envelope in envelopes)
                 {
-                    envelope.ReceivedAt = uri;
-
-                    if (envelope.IsDelayed(now))
+                    envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
+                    if (envelope.Status == TransportConstants.Scheduled)
                     {
-                        envelope.Status = TransportConstants.Scheduled;
-                        envelope.OwnerId = TransportConstants.AnyNode;
+                        // This doesn't apply to durable queues
                         await _queue.ScheduleExecution(envelope);
-                    }
-                    else
-                    {
-                        envelope.Status = TransportConstants.Incoming;
-                        envelope.OwnerId = _settings.UniqueNodeId;
                     }
                 }
 
+                // This doesn't apply to lightweight
                 await _persistence.StoreIncoming(envelopes);
 
 
