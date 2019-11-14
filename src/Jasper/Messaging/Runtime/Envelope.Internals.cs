@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Messaging.Transports;
@@ -11,6 +12,18 @@ namespace Jasper.Messaging.Runtime
     // inside the Jasper runtime so we can keep it out of the WireProtocol
     public partial class Envelope
     {
+        public static void MarkReceived(Envelope[] messages, Uri uri, DateTime now, int currentNodeId, out Envelope[] scheduled,
+            out Envelope[] incoming)
+        {
+            foreach (var envelope in messages)
+            {
+                envelope.MarkReceived(uri, now, currentNodeId);
+            }
+
+            scheduled = messages.Where(x => x.Status == TransportConstants.Scheduled).ToArray();
+            incoming = messages.Where(x => x.Status == TransportConstants.Incoming).ToArray();
+        }
+
         public void MarkReceived(Uri uri, DateTime now, int currentNodeId)
         {
             ReceivedAt = uri;

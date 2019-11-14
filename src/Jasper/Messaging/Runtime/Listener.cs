@@ -77,21 +77,19 @@ namespace Jasper.Messaging.Runtime
 
             try
             {
-                foreach (var envelope in envelopes)
+                Envelope.MarkReceived(envelopes, uri, DateTime.UtcNow, _settings.UniqueNodeId, out var scheduled, out var incoming);
+
+
+                foreach (var envelope in scheduled)
                 {
-                    envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
-                    if (envelope.Status == TransportConstants.Scheduled)
-                    {
-                        // This doesn't apply to durable queues
-                        await _queue.ScheduleExecution(envelope);
-                    }
+                    await _queue.ScheduleExecution(envelope);
                 }
 
                 // This doesn't apply to lightweight
                 await _persistence.StoreIncoming(envelopes);
 
 
-                foreach (var message in envelopes.Where(x => x.Status == TransportConstants.Incoming))
+                foreach (var message in incoming)
                 {
                     await _queue.Enqueue(message);
                 }
