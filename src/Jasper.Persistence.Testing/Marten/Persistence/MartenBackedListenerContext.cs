@@ -97,7 +97,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theWorkerQueue = new DurableWorkerQueue(new ListenerSettings(), thePipeline, theSettings, persistence, TransportLogger.Empty());
 
 
-            var agent = Substitute.For<IListeningAgent>();
+            var agent = Substitute.For<IListener>();
             theWorkerQueue.StartListening(agent);
         }
 

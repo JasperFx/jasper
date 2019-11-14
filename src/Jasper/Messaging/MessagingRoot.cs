@@ -27,7 +27,7 @@ namespace Jasper.Messaging
 {
     public class MessagingRoot : IDisposable, IMessagingRoot, IHostedService, ISubscriberGraph
     {
-        private readonly IList<IListener> _listeners = new List<IListener>();
+        private readonly IList<IListeningWorkerQueue> _listeners = new List<IListeningWorkerQueue>();
 
         private readonly object _channelLock = new object();
 
@@ -270,7 +270,7 @@ namespace Jasper.Messaging
         }
 
 
-        public void AddListener(ListenerSettings listenerSettings, IListeningAgent agent)
+        public void AddListener(ListenerSettings listenerSettings, IListener agent)
         {
             var worker = listenerSettings.IsDurable
                 ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, Pipeline, Settings, Persistence,

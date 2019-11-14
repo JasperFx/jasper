@@ -34,7 +34,7 @@ namespace Jasper.Messaging.Transports
         protected abstract ISender buildSender(TransportUri transportUri, TEndpoint endpoint,
             CancellationToken cancellation);
 
-        protected override IListeningAgent buildListeningAgent(ListenerSettings listenerSettings,
+        protected override IListener buildListeningAgent(ListenerSettings listenerSettings,
             AdvancedSettings settings,
             HandlerGraph handlers)
         {
@@ -46,7 +46,7 @@ namespace Jasper.Messaging.Transports
             return buildListeningAgent(transportUri, endpoint, settings, handlers);
         }
 
-        protected abstract IListeningAgent buildListeningAgent(TransportUri transportUri, TEndpoint endpoint,
+        protected abstract IListener buildListeningAgent(TransportUri transportUri, TEndpoint endpoint,
             AdvancedSettings settings, HandlerGraph handlers);
 
         protected override ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming)

@@ -6,7 +6,7 @@ using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging.WorkerQueues
 {
-    public interface IWorkerQueue : IListener
+    public interface IWorkerQueue : IListeningWorkerQueue
     {
         int QueuedCount { get; }
 
@@ -14,7 +14,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         Task ScheduleExecution(Envelope envelope);
 
-        void StartListening(IListeningAgent agent);
+        void StartListening(IListener agent);
     }
 
 

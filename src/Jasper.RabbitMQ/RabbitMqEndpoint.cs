@@ -237,9 +237,9 @@ namespace Jasper.RabbitMQ
             return new RabbitMqSender(logger, this, cancellation);
         }
 
-        internal IListeningAgent CreateListeningAgent(Uri uri, AdvancedSettings options, ITransportLogger logger)
+        internal IListener CreateListeningAgent(Uri uri, AdvancedSettings options, ITransportLogger logger)
         {
-            return new RabbitMqListeningAgent(uri, logger, Protocol, this);
+            return new RabbitMqListener(uri, logger, Protocol, this);
         }
 
         internal Task Ping(Action<IModel> action)

@@ -96,7 +96,7 @@ namespace Jasper.Messaging.Transports
         protected abstract ISender createSender(Uri uri, CancellationToken cancellation);
 
         protected abstract ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming);
-        protected abstract IListeningAgent buildListeningAgent(ListenerSettings listenerSettings,
+        protected abstract IListener buildListeningAgent(ListenerSettings listenerSettings,
             AdvancedSettings settings,
             HandlerGraph handlers);
     }

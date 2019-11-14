@@ -309,7 +309,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
-        void IWorkerQueue.StartListening(IListeningAgent agent)
+        void IWorkerQueue.StartListening(IListener agent)
         {
             throw new NotImplementedException();
         }
@@ -340,9 +340,9 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
-        Uri IListener.Address => _address;
+        Uri IListeningWorkerQueue.Address => _address;
 
-        ListeningStatus IListener.Status
+        ListeningStatus IListeningWorkerQueue.Status
         {
             get => _status;
             set => _status = value;

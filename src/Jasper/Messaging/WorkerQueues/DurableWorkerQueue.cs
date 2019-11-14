@@ -18,7 +18,7 @@ namespace Jasper.Messaging.WorkerQueues
         private readonly IEnvelopePersistence _persistence;
         private readonly ITransportLogger _logger;
         private readonly ActionBlock<Envelope> _receiver;
-        private IListeningAgent _agent;
+        private IListener _agent;
 
         public DurableWorkerQueue(ListenerSettings listenerSettings, IHandlerPipeline pipeline,
             AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger)
@@ -59,7 +59,7 @@ namespace Jasper.Messaging.WorkerQueues
             return Task.CompletedTask;
         }
 
-        public void StartListening(IListeningAgent agent)
+        public void StartListening(IListener agent)
         {
             _agent = agent;
             _agent.Start(this);

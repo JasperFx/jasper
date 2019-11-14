@@ -44,7 +44,7 @@ namespace Jasper.Testing.Messaging
         public AdvancedSettings Settings { get; } = new AdvancedSettings();
 
 
-        public void AddListener(ListenerSettings listenerSettings, IListeningAgent agent)
+        public void AddListener(ListenerSettings listenerSettings, IListener agent)
         {
 
         }
@@ -54,7 +54,7 @@ namespace Jasper.Testing.Messaging
             return Task.CompletedTask;
         }
 
-        public IListener BuildDurableListener(IListeningAgent agent)
+        public IListeningWorkerQueue BuildDurableListener(IListener agent)
         {
             throw new NotImplementedException();
         }

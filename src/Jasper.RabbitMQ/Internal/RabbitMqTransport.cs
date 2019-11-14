@@ -22,7 +22,7 @@ namespace Jasper.RabbitMQ.Internal
             return endpoint.CreateSender(logger, cancellation);
         }
 
-        protected override IListeningAgent buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint,
+        protected override IListener buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint,
             AdvancedSettings settings, HandlerGraph handlers)
         {
             if (endpoint == null)
@@ -32,7 +32,7 @@ namespace Jasper.RabbitMQ.Internal
 
             if (transportUri.IsMessageSpecificTopic())
             {
-                return new RabbitMqMessageSpecificTopicListeningAgent(endpoint, handlers, transportUri, logger, settings);
+                return new RabbitMqMessageSpecificTopicListener(endpoint, handlers, transportUri, logger, settings);
             }
             else
             {

@@ -39,6 +39,6 @@ namespace Jasper.Messaging
         AdvancedSettings Settings { get; }
 
 
-        void AddListener(ListenerSettings listenerSettings, IListeningAgent agent);
+        void AddListener(ListenerSettings listenerSettings, IListener agent);
     }
 }

@@ -33,7 +33,7 @@ namespace Jasper.Messaging.Transports.Tcp
         }
 
 
-        protected override IListeningAgent buildListeningAgent(ListenerSettings listenerSettings,
+        protected override IListener buildListeningAgent(ListenerSettings listenerSettings,
             AdvancedSettings settings,
             HandlerGraph handlers)
         {
@@ -42,11 +42,11 @@ namespace Jasper.Messaging.Transports.Tcp
 
             if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)
                 return uri.Host == "localhost"
-                    ? new SocketListeningAgent(IPAddress.Loopback, uri.Port, settings.Cancellation)
-                    : new SocketListeningAgent(IPAddress.Any, uri.Port, settings.Cancellation);
+                    ? new SocketListener(IPAddress.Loopback, uri.Port, settings.Cancellation)
+                    : new SocketListener(IPAddress.Any, uri.Port, settings.Cancellation);
 
             var ipaddr = IPAddress.Parse(uri.Host);
-            return new SocketListeningAgent(ipaddr, uri.Port, settings.Cancellation);
+            return new SocketListener(ipaddr, uri.Port, settings.Cancellation);
         }
 
         private static void assertNoDuplicatePorts(ListenerSettings[] incoming)

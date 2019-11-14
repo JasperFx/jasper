@@ -17,7 +17,7 @@ namespace Jasper.Messaging.WorkerQueues
         private readonly AdvancedSettings _settings;
         private readonly ActionBlock<Envelope> _receiver;
         private readonly InMemoryScheduledJobProcessor _scheduler;
-        private IListeningAgent _agent;
+        private IListener _agent;
 
         public LightweightWorkerQueue(ListenerSettings listenerSettings, ITransportLogger logger,
             IHandlerPipeline pipeline, AdvancedSettings settings)
@@ -68,7 +68,7 @@ namespace Jasper.Messaging.WorkerQueues
         }
 
 
-        public void StartListening(IListeningAgent agent)
+        public void StartListening(IListener agent)
         {
             _agent = agent;
             _agent.Start(this);

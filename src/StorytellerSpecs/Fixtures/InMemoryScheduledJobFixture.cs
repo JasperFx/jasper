@@ -52,7 +52,7 @@ namespace StorytellerSpecs.Fixtures
             return Task.CompletedTask;
         }
 
-        void IWorkerQueue.StartListening(IListeningAgent agent)
+        void IWorkerQueue.StartListening(IListener agent)
         {
             throw new NotImplementedException();
         }
@@ -205,9 +205,9 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        Uri IListener.Address => _address;
+        Uri IListeningWorkerQueue.Address => _address;
 
-        ListeningStatus IListener.Status
+        ListeningStatus IListeningWorkerQueue.Status
         {
             get => _status;
             set => _status = value;

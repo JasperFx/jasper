@@ -6,7 +6,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqListeningAgent : IListeningAgent
+    public class RabbitMqListener : IListener
     {
         private readonly RabbitMqEndpoint _agent;
         private readonly ITransportLogger _logger;
@@ -15,7 +15,7 @@ namespace Jasper.RabbitMQ.Internal
         private IReceiverCallback _callback;
         private MessageConsumer _consumer;
 
-        public RabbitMqListeningAgent(Uri address, ITransportLogger logger, IRabbitMqProtocol mapper,
+        public RabbitMqListener(Uri address, ITransportLogger logger, IRabbitMqProtocol mapper,
             RabbitMqEndpoint agent)
         {
             _logger = logger;

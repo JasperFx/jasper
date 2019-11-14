@@ -8,13 +8,13 @@ using Jasper.Messaging.Transports;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqMessageSpecificTopicListeningAgent : IListeningAgent
+    public class RabbitMqMessageSpecificTopicListener : IListener
     {
-        private readonly IList<IListeningAgent> _inner = new List<IListeningAgent>();
+        private readonly IList<IListener> _inner = new List<IListener>();
         private ListeningStatus _status = ListeningStatus.Accepting;
 
 
-        public RabbitMqMessageSpecificTopicListeningAgent(RabbitMqEndpoint endpoint, HandlerGraph handlers,
+        public RabbitMqMessageSpecificTopicListener(RabbitMqEndpoint endpoint, HandlerGraph handlers,
             TransportUri transportUri, ITransportLogger logger, AdvancedSettings settings)
         {
             Address = endpoint.Uri.ToUri();

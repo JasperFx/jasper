@@ -3,10 +3,9 @@ using Jasper.Messaging.Transports;
 
 namespace Jasper.Messaging.Runtime
 {
-    public interface IListeningAgent : IDisposable
+    public interface IListeningWorkerQueue : IReceiverCallback, IDisposable
     {
         Uri Address { get; }
         ListeningStatus Status { get; set; }
-        void Start(IReceiverCallback callback);
     }
 }

@@ -12,7 +12,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime
 {
-    public class SocketListeningAgent : IListeningAgent
+    public class SocketListener : IListener
     {
         private readonly CancellationToken _cancellationToken;
         private readonly IPAddress _ipaddr;
@@ -21,7 +21,7 @@ namespace Jasper.Messaging.Runtime
         private Task _receivingLoop;
         private ActionBlock<Socket> _socketHandling;
 
-        public SocketListeningAgent(IPAddress ipaddr, int port, CancellationToken cancellationToken)
+        public SocketListener(IPAddress ipaddr, int port, CancellationToken cancellationToken)
         {
             _port = port;
             _ipaddr = ipaddr;
