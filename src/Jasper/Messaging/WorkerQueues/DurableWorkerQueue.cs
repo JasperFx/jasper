@@ -21,7 +21,6 @@ namespace Jasper.Messaging.WorkerQueues
         {
             _persistence = persistence;
             _transportLogger = transportLogger;
-            ScheduledJobs = new InMemoryScheduledJobProcessor(this);
 
             listenerSettings.ExecutionOptions.CancellationToken = settings1.Cancellation;
 
@@ -42,7 +41,6 @@ namespace Jasper.Messaging.WorkerQueues
         }
 
         public int QueuedCount => _receiver.InputCount;
-        public IScheduledJobProcessor ScheduledJobs { get; }
         public Task Enqueue(Envelope envelope)
         {
             envelope.Callback = new DurableCallback(envelope, this, _persistence, _transportLogger);

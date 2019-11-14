@@ -12,13 +12,14 @@ namespace Jasper.Messaging.WorkerQueues
     public class LightweightWorkerQueue : IWorkerQueue
     {
         private readonly ActionBlock<Envelope> _receiver;
+        private InMemoryScheduledJobProcessor _scheduler;
 
         public LightweightWorkerQueue(ListenerSettings listenerSettings, ITransportLogger logger,
             IHandlerPipeline pipeline, AdvancedSettings settings1)
         {
             Pipeline = pipeline;
 
-            ScheduledJobs = new InMemoryScheduledJobProcessor(this);
+            _scheduler = new InMemoryScheduledJobProcessor(this);
 
             listenerSettings.ExecutionOptions.CancellationToken = settings1.Cancellation;
 
@@ -41,7 +42,6 @@ namespace Jasper.Messaging.WorkerQueues
         public IHandlerPipeline Pipeline { get; }
 
         public int QueuedCount => _receiver.InputCount;
-        public IScheduledJobProcessor ScheduledJobs { get; }
         public Task Enqueue(Envelope envelope)
         {
             if (envelope.IsPing()) return Task.CompletedTask;
@@ -54,7 +54,9 @@ namespace Jasper.Messaging.WorkerQueues
 
         public Task ScheduleExecution(Envelope envelope)
         {
-            ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+            if (!envelope.ExecutionTime.HasValue) throw new ArgumentOutOfRangeException(nameof(envelope), $"There is no {nameof(Envelope.ExecutionTime)} value");
+
+            _scheduler.Enqueue(envelope.ExecutionTime.Value, envelope);
             return Task.CompletedTask;
         }
 

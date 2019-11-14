@@ -36,13 +36,9 @@ namespace Jasper.Messaging.Transports
             envelope.ReceivedAt = Destination;
             envelope.Callback = new LightweightCallback(_queues);
 
-            if (envelope.IsDelayed(DateTime.UtcNow))
-            {
-                _queues.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
-                return Task.CompletedTask;
-            }
-
-            return _queues.Enqueue(envelope);
+            return envelope.IsDelayed(DateTime.UtcNow)
+                ? _queues.ScheduleExecution(envelope)
+                : _queues.Enqueue(envelope);
         }
 
         public Task StoreAndForward(Envelope envelope)

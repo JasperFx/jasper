@@ -315,6 +315,5 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             throw new NotImplementedException();
         }
 
-        public IScheduledJobProcessor ScheduledJobs => new InMemoryScheduledJobProcessor(this);
     }
 }

@@ -10,8 +10,6 @@ namespace Jasper.Messaging.WorkerQueues
     {
         int QueuedCount { get; }
 
-        [Obsolete("Delete with GH-557")]
-        IScheduledJobProcessor ScheduledJobs { get; }
         Task Enqueue(Envelope envelope);
 
         Task ScheduleExecution(Envelope envelope);

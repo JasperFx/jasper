@@ -31,8 +31,8 @@ namespace Jasper.Messaging.WorkerQueues
 
         public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
         {
-            _queue.ScheduledJobs.Enqueue(time, envelope);
-            return Task.CompletedTask;
+            envelope.ExecutionTime = time;
+            return _queue.ScheduleExecution(envelope);
         }
     }
 }

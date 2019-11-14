@@ -308,6 +308,5 @@ namespace StorytellerSpecs.Fixtures.Marten
 
 
 
-        public IScheduledJobProcessor ScheduledJobs => new InMemoryScheduledJobProcessor(this);
     }
 }

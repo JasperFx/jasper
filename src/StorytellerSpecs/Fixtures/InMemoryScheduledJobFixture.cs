@@ -45,21 +45,16 @@ namespace StorytellerSpecs.Fixtures
 
         public Task ScheduleExecution(Envelope envelope)
         {
-            throw new NotImplementedException();
+            theScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+            return Task.CompletedTask;
         }
 
-        public IScheduledJobProcessor ScheduledJobs => theScheduledJobs;
 
         public override void SetUp()
         {
             theScheduledJobs = new InMemoryScheduledJobProcessor(this);
             sent.Clear();
             _callbacks.Clear();
-        }
-
-        public override void TearDown()
-        {
-            base.TearDown();
         }
 
         private Task<Envelope> waitForReceipt(Envelope envelope)
