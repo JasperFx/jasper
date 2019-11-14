@@ -19,18 +19,18 @@ namespace Jasper.Messaging.Transports
         public const string ScheduledEnvelope = "scheduled-envelope";
 
         public const string Durable = "durable";
-        public static readonly string Loopback = "loopback";
+        public static readonly string Local = "local";
 
         public static readonly string Default = "default";
         public static readonly string Replies = "replies";
         public static readonly string Retries = "retries";
 
-        public static readonly Uri RetryUri = "loopback://retries".ToUri();
-        public static readonly Uri RepliesUri = "loopback://replies".ToUri();
-        public static readonly Uri ScheduledUri = "loopback://delayed".ToUri();
+        public static readonly Uri RetryUri = "local://retries".ToUri();
+        public static readonly Uri RepliesUri = "local://replies".ToUri();
+        public static readonly Uri ScheduledUri = "local://delayed".ToUri();
 
-        public static readonly Uri DurableLoopbackUri = "loopback://durable".ToUri();
-        public static readonly Uri LoopbackUri = "loopback://".ToUri();
+        public static readonly Uri DurableLoopbackUri = "local://durable".ToUri();
+        public static readonly Uri LoopbackUri = "local://".ToUri();
 
         public static readonly string Scheduled = "Scheduled";
         public static readonly string Incoming = "Incoming";

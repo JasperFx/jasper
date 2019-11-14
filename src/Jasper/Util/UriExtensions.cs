@@ -14,9 +14,9 @@ namespace Jasper.Util
         {
             if (queueName.IsEmpty()) return uri;
 
-            if (uri.Scheme == TransportConstants.Loopback && uri.Host != TransportConstants.Durable)
+            if (uri.Scheme == TransportConstants.Local && uri.Host != TransportConstants.Durable)
             {
-                return new Uri("loopback://" + queueName);
+                return new Uri("local://" + queueName);
             }
 
             return new Uri(uri, queueName);
@@ -26,7 +26,7 @@ namespace Jasper.Util
         {
             if (uri == null) return null;
 
-            if (uri.Scheme == TransportConstants.Loopback && uri.Host != TransportConstants.Durable) return uri.Host;
+            if (uri.Scheme == TransportConstants.Local && uri.Host != TransportConstants.Durable) return uri.Host;
 
             var lastSegment = uri.Segments.Skip(1).LastOrDefault();
             if (lastSegment == TransportConstants.Durable) return TransportConstants.Default;
@@ -36,7 +36,7 @@ namespace Jasper.Util
 
         public static bool IsDurable(this Uri uri)
         {
-            if (uri.Scheme == TransportConstants.Loopback && uri.Host == TransportConstants.Durable) return true;
+            if (uri.Scheme == TransportConstants.Local && uri.Host == TransportConstants.Durable) return true;
 
             var firstSegment = uri.Segments.Skip(1).FirstOrDefault();
             if (firstSegment == null) return false;

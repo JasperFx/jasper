@@ -18,10 +18,10 @@ namespace Jasper.Testing
         {
             _host = Host.CreateDefaultBuilder().UseJasper(x =>
             {
-                x.Transports.ListenForMessagesFrom("loopback://one").Sequential();
-                x.Transports.ListenForMessagesFrom("loopback://two").MaximumParallelization(11);
-                x.Transports.ListenForMessagesFrom("loopback://three").IsDurable();
-                x.Transports.ListenForMessagesFrom("loopback://four").IsDurable().IsNotDurable();
+                x.Transports.ListenForMessagesFrom("local://one").Sequential();
+                x.Transports.ListenForMessagesFrom("local://two").MaximumParallelization(11);
+                x.Transports.ListenForMessagesFrom("local://three").IsDurable();
+                x.Transports.ListenForMessagesFrom("local://four").IsDurable().IsNotDurable();
 
             }).Build();
 
@@ -36,7 +36,7 @@ namespace Jasper.Testing
         [Fact]
         public void configure_sequential()
         {
-            theOptions.ListenForMessagesFrom("loopback://one")
+            theOptions.ListenForMessagesFrom("local://one")
                 .As<ListenerSettings>()
                 .ExecutionOptions
                 .MaxDegreeOfParallelism
@@ -46,7 +46,7 @@ namespace Jasper.Testing
         [Fact]
         public void configure_max_parallelization()
         {
-            theOptions.ListenForMessagesFrom("loopback://two")
+            theOptions.ListenForMessagesFrom("local://two")
                 .As<ListenerSettings>()
                 .ExecutionOptions
                 .MaxDegreeOfParallelism
@@ -56,7 +56,7 @@ namespace Jasper.Testing
         [Fact]
         public void configure_durable()
         {
-            theOptions.ListenForMessagesFrom("loopback://three")
+            theOptions.ListenForMessagesFrom("local://three")
                 .As<ListenerSettings>()
                 .IsDurable
                 .ShouldBeTrue();
@@ -65,7 +65,7 @@ namespace Jasper.Testing
         [Fact]
         public void configure_not_durable()
         {
-            theOptions.ListenForMessagesFrom("loopback://four")
+            theOptions.ListenForMessagesFrom("local://four")
                 .As<ListenerSettings>()
                 .IsDurable
                 .ShouldBeFalse();
@@ -79,7 +79,7 @@ namespace Jasper.Testing
         {
             var options = new JasperOptions();
 
-            var uri = "loopback://one".ToUri();
+            var uri = "local://one".ToUri();
 
             var listener1 = options.ListenForMessagesFrom(uri);
             listener1.ShouldNotBeNull();
@@ -98,7 +98,7 @@ namespace Jasper.Testing
         {
             var options = new JasperOptions();
 
-            var uri = "loopback://one".ToUri();
+            var uri = "local://one".ToUri();
 
             var listener = options.ListenForMessagesFrom(uri);
 
@@ -116,7 +116,7 @@ namespace Jasper.Testing
         {
             var options = new JasperOptions();
 
-            var uri = "loopback://one".ToUri();
+            var uri = "local://one".ToUri();
 
             var listener = options.ListenForMessagesFrom(uri);
 
@@ -134,7 +134,7 @@ namespace Jasper.Testing
         {
             var options = new JasperOptions();
 
-            var uri = "loopback://one".ToUri();
+            var uri = "local://one".ToUri();
 
             var listener = options.ListenForMessagesFrom(uri);
 
@@ -151,7 +151,7 @@ namespace Jasper.Testing
         {
             var options = new JasperOptions();
 
-            var uri = "loopback://one".ToUri();
+            var uri = "local://one".ToUri();
 
             var listener = options.ListenForMessagesFrom(uri);
 

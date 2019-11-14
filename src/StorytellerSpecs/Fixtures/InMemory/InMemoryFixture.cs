@@ -9,10 +9,10 @@ namespace StorytellerSpecs.Fixtures.InMemory
 {
     public abstract class InMemoryFixture : Fixture
     {
-        public static Uri Channel1 = new Uri("loopback://one");
-        public static Uri Channel2 = new Uri("loopback://two");
-        public static Uri Channel3 = new Uri("loopback://three");
-        public static Uri Channel4 = new Uri("loopback://four");
+        public static Uri Channel1 = new Uri("local://one");
+        public static Uri Channel2 = new Uri("local://two");
+        public static Uri Channel3 = new Uri("local://three");
+        public static Uri Channel4 = new Uri("local://four");
 
         protected readonly Type[] messageTypes =
         {

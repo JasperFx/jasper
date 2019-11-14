@@ -57,7 +57,7 @@ namespace Jasper.Persistence.Testing
     {
         public DurableSender(bool latched)
         {
-            Publish.AllMessagesTo("loopback://durable/one");
+            Publish.AllMessagesTo("local://durable/one");
 
             Settings.PersistMessagesWithMarten(Servers.PostgresConnectionString);
 

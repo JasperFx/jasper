@@ -11,17 +11,17 @@
     [ServiceBusApplication]
     |> ListenForMessagesFrom
     ``` channel
-    loopback://one
+    local://one
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    loopback://one
+    local://one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    loopback://one
+    local://one
     ```
 
 
@@ -30,7 +30,7 @@ There is no handler for UnhandledMessage in this configuration
 
 |> SendGarbledMessage
 ``` address
-loopback://one
+local://one
 ```
 
 |> SendMessage messageType=Message1, name=Suzy
@@ -38,7 +38,7 @@ loopback://one
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt                 |MessageType|Name   |
-    |loopback://one|Message1   |Suzy   |
-    |loopback://one|Message2   |Russell|
+    |local://one|Message1   |Suzy   |
+    |local://one|Message2   |Russell|
 
 ~~~

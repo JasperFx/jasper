@@ -33,7 +33,7 @@ namespace StorytellerSpecs.Fixtures
 
         public Uri Uri { get; }
         public Uri ReplyUri { get; }
-        public Uri Destination { get; } = "loopback://delayed".ToUri();
+        public Uri Destination { get; } = "local://delayed".ToUri();
         public Uri Alias { get; }
 
         Task IWorkerQueue.Enqueue(Envelope envelope)

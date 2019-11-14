@@ -75,7 +75,7 @@ namespace Jasper.Testing.Samples
         public LoopbackTransportApp()
         {
             // Publish the message Message2 the important queue
-            Publish.Message<Message2>().To("loopback://important");
+            Publish.Message<Message2>().To("local://important");
         }
     }
 

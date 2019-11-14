@@ -19,8 +19,8 @@ namespace Jasper.Persistence.Testing.Marten
             }))
             {
                 var channels = runtime.Get<IMessagingRoot>();
-                channels.GetOrBuild("loopback://one".ToUri()).IsDurable.ShouldBeFalse();
-                channels.GetOrBuild("loopback://durable/two".ToUri()).IsDurable.ShouldBeTrue();
+                channels.GetOrBuild("local://one".ToUri()).IsDurable.ShouldBeFalse();
+                channels.GetOrBuild("local://durable/two".ToUri()).IsDurable.ShouldBeTrue();
 
                 channels.GetOrBuild("tcp://server1".ToUri()).IsDurable.ShouldBeFalse();
                 channels.GetOrBuild("tcp://server2/durable".ToUri()).IsDurable.ShouldBeTrue();

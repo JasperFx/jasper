@@ -17,12 +17,12 @@
     [rows]
     |Destination             |ContentType     |
     |tcp://localhost:2201/one|application/json|
-    |loopback://default      |application/json|
+    |local://default      |application/json|
 
 |> ForMessage MessageType=Message2
 |> TheRoutesShouldBe
     [rows]
-    |> TheRoutesShouldBe-row Destination=loopback://default, ContentType=application/json
+    |> TheRoutesShouldBe-row Destination=local://default, ContentType=application/json
 
 |> ForMessage MessageType=Message5
 |> NoRoutesFor

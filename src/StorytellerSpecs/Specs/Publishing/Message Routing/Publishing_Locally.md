@@ -24,7 +24,7 @@ Message1 is handled, published locally, and has an additional subscriber
     [rows]
     |Destination             |ContentType     |
     |tcp://localhost:2201/one|application/json|
-    |loopback://default      |application/json|
+    |local://default      |application/json|
 
 
 Message2 is handled and published locally
@@ -32,7 +32,7 @@ Message2 is handled and published locally
 |> ForMessage MessageType=Message2
 |> TheRoutesShouldBe
     [rows]
-    |> TheRoutesShouldBe-row Destination=loopback://default, ContentType=application/json
+    |> TheRoutesShouldBe-row Destination=local://default, ContentType=application/json
 
 
 Message 3 is not handled, so no routes
@@ -53,6 +53,6 @@ Message 5 has a handler, but no other publishing rules, so handle it locally
 |> ForMessage MessageType=Message5
 |> TheRoutesShouldBe
     [rows]
-    |> TheRoutesShouldBe-row Destination=loopback://default, ContentType=application/json
+    |> TheRoutesShouldBe-row Destination=local://default, ContentType=application/json
 
 ~~~

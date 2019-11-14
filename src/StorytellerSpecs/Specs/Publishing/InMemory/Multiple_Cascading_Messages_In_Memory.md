@@ -11,22 +11,22 @@
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    loopback://one
+    local://one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    loopback://two
+    local://two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    loopback://three
+    local://three
     ```
 
     |> SendMessage messageType=Message4
     ``` channel
-    loopback://four
+    local://four
     ```
 
     |> ReceivingMessage2CascadesMultiples
@@ -35,8 +35,8 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt    |MessageType|Name      |
-    |loopback://two  |Message2   |Tamba Hali|
-    |loopback://three|Message3   |Tamba Hali|
-    |loopback://four |Message4   |Tamba Hali|
+    |local://two  |Message2   |Tamba Hali|
+    |local://three|Message3   |Tamba Hali|
+    |local://four |Message4   |Tamba Hali|
 
 ~~~

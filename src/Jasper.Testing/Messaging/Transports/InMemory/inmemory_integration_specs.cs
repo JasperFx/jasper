@@ -22,7 +22,7 @@ namespace Jasper.Testing.Messaging.Transports.InMemory
         {
             with(_ =>
             {
-                _.Publish.Message<Message1>().To("loopback://incoming");
+                _.Publish.Message<Message1>().To("local://incoming");
 
                 _.Services.AddSingleton(theTracker);
 

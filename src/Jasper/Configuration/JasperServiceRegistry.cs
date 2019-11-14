@@ -80,7 +80,7 @@ namespace Jasper.Configuration
 
 
             For<ITransport>()
-                .Use<LoopbackTransport>();
+                .Use<LocalTransport>();
 
             For<ITransport>()
                 .Use<TcpTransport>();

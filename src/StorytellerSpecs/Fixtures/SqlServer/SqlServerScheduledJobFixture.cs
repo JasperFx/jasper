@@ -99,9 +99,9 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             Services.AddSingleton(Receiver);
 
             Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
-                .To("loopback://durable/incoming");
+                .To("local://durable/incoming");
 
-            Transports.ListenForMessagesFrom("loopback://durable/incoming");
+            Transports.ListenForMessagesFrom("local://durable/incoming");
 
             Handlers.Discovery(x =>
             {

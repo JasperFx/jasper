@@ -73,9 +73,9 @@ namespace StorytellerSpecs.Fixtures
             Services.AddSingleton(Receiver);
 
             Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
-                .To("loopback://incoming");
+                .To("local://incoming");
 
-            Transports.ListenForMessagesFrom("loopback://incoming");
+            Transports.ListenForMessagesFrom("local://incoming");
 
             Handlers.Discovery(x =>
             {

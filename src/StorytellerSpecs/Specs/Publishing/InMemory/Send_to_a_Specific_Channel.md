@@ -12,35 +12,35 @@
     |> SendMessage messageType=Message1, channel=stub://one
     |> SendMessage messageType=Message2
     ``` channel
-    loopback://two
+    local://two
     ```
 
     |> SendMessage messageType=Message3
     ``` channel
-    loopback://three
+    local://three
     ```
 
     |> SendMessage messageType=Message1
     ``` channel
-    loopback://four
+    local://four
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    loopback://four
+    local://four
     ```
 
 
 |> SendMessageDirectly messageType=Message1, name=Hank
 ``` address
-loopback://three
+local://three
 ```
 
 |> TheMessagesSentShouldBe
     [rows]
     |> TheMessagesSentShouldBe-row MessageType=Message1, Name=Hank
     ``` ReceivedAt
-    loopback://three
+    local://three
     ```
 
 

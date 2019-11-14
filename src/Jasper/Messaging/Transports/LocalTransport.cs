@@ -9,14 +9,14 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Transports
 {
-    public class LoopbackTransport : ITransport
+    public class LocalTransport : ITransport
     {
         public void Dispose()
         {
             // Nothing really
         }
 
-        public string Protocol { get; } = TransportConstants.Loopback;
+        public string Protocol { get; } = TransportConstants.Local;
 
         public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
         {

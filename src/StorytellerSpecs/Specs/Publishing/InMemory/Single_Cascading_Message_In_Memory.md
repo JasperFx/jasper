@@ -11,18 +11,18 @@
     [ServiceBusApplication]
     |> SendMessage messageType=Message1
     ``` channel
-    loopback://one
+    local://one
     ```
 
     |> SendMessage messageType=Message2
     ``` channel
-    loopback://two
+    local://two
     ```
 
     |> ReceivingMessage1CascadesMessage2
     |> ListenForMessagesFrom
     ``` channel
-    loopback://two
+    local://two
     ```
 
 
@@ -30,7 +30,7 @@
 |> TheMessagesSentShouldBe
     [rows]
     |ReceivedAt  |MessageType|Name          |
-    |loopback://one|Message1   |Jamaal Charles|
-    |loopback://two|Message2   |Jamaal Charles|
+    |local://one|Message1   |Jamaal Charles|
+    |local://two|Message2   |Jamaal Charles|
 
 ~~~

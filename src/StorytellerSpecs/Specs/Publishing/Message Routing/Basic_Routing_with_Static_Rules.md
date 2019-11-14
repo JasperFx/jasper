@@ -10,19 +10,19 @@
 
 Nothing happening here but the default Json serializer and static publishing rules
 
-|> SendMessage messageType=Message1, channel=loopback://three/
-|> SendMessage messageType=Message1, channel=loopback://one/
-|> SendMessage messageType=Message2, channel=loopback://four/
+|> SendMessage messageType=Message1, channel=local://three/
+|> SendMessage messageType=Message1, channel=local://one/
+|> SendMessage messageType=Message2, channel=local://four/
 |> ForMessage MessageType=Message1
 |> TheRoutesShouldBe
     [rows]
     |Destination   |ContentType     |
-    |loopback://one  |application/json|
-    |loopback://three|application/json|
+    |local://one  |application/json|
+    |local://three|application/json|
 
 |> ForMessage MessageType=Message2
 |> TheRoutesShouldBe
     [rows]
-    |> TheRoutesShouldBe-row Destination=loopback://four, ContentType=application/json
+    |> TheRoutesShouldBe-row Destination=local://four, ContentType=application/json
 
 ~~~

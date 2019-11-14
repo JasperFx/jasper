@@ -42,8 +42,8 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void negative_case_with_loopback()
         {
-            "loopback://default".ToUri().IsDurable().ShouldBeFalse();
-            "loopback://replies".ToUri().IsDurable().ShouldBeFalse();
+            "local://default".ToUri().IsDurable().ShouldBeFalse();
+            "local://replies".ToUri().IsDurable().ShouldBeFalse();
         }
 
         [Fact]
@@ -56,8 +56,8 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void positive_case_with_loopback()
         {
-            "loopback://durable".ToUri().IsDurable().ShouldBeTrue();
-            "loopback://durable/replies".ToUri().IsDurable().ShouldBeTrue();
+            "local://durable".ToUri().IsDurable().ShouldBeTrue();
+            "local://durable/replies".ToUri().IsDurable().ShouldBeTrue();
         }
 
         [Fact]
