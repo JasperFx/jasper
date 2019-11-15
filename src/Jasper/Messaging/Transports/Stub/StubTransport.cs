@@ -49,7 +49,6 @@ namespace Jasper.Messaging.Transports.Stub
         public LightweightCache<Uri, StubChannel> Channels;
 
         public StubTransport()
-
         {
             ReplyUri = new Uri("stub://replies");
         }
