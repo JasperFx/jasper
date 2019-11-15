@@ -34,10 +34,7 @@ namespace Jasper
 
         private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();
         protected readonly ServiceRegistry _baseServices;
-
-        private readonly IList<Action<IHostBuilder>> _builderAlterations
-            = new List<Action<IHostBuilder>>();
-
+        
         private readonly IList<Type> _extensionTypes = new List<Type>();
 
 
