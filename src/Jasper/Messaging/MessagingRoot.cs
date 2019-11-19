@@ -136,15 +136,19 @@ namespace Jasper.Messaging
             }
 
 
-
+            // Start all the listeners and senders
             Runtime.As<TransportRuntime>().Initialize();
 
-            var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
+            await startDurabilityAgent();
+        }
 
-
+        private async Task startDurabilityAgent()
+        {
             // HOKEY, BUT IT WORKS
             if (_container.Model.DefaultTypeFor<IEnvelopePersistence>() != typeof(NulloEnvelopePersistence))
             {
+                var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
+
                 // TODO -- use the worker queue for Retries?
                 var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, Settings, Persistence, TransportLogger);
                 Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, Runtime,
