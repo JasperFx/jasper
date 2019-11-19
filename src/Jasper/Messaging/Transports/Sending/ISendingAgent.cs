@@ -8,11 +8,15 @@ namespace Jasper.Messaging.Transports.Sending
     public interface ISendingAgent : IDisposable
     {
         Uri Destination { get; }
-        Uri DefaultReplyUri { get; set; }
+        Uri ReplyUri { get; set; }
         bool Latched { get; }
 
 
         bool IsDurable { get; }
+
+        bool SupportsNativeScheduledSend { get; }
+
+
 
         // This would be called in the future by the outbox, assuming
         // that the envelope is already persisted and just needs to be sent out
@@ -22,8 +26,6 @@ namespace Jasper.Messaging.Transports.Sending
         // indirectly
         Task StoreAndForward(Envelope envelope);
 
-        void Start();
 
-        bool SupportsNativeScheduledSend { get; }
     }
 }

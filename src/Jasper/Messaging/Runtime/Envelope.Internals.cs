@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Conneg;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime
@@ -121,29 +122,29 @@ namespace Jasper.Messaging.Runtime
 
         private bool _enqueued;
 
-        internal ISubscriber Subscriber { get; set; }
+        internal ISendingAgent Sender { get; set; }
 
         internal Task Send()
         {
             if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
 
-            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
+            if (Sender == null) throw new InvalidOperationException("This envelope has not been routed");
 
             _enqueued = true;
 
 
-            return Subscriber.Send(this);
+            return Sender.StoreAndForward(this);
         }
 
         internal Task QuickSend()
         {
             if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
 
-            if (Subscriber == null) throw new InvalidOperationException("This envelope has not been routed");
+            if (Sender == null) throw new InvalidOperationException("This envelope has not been routed");
 
             _enqueued = true;
 
-            return Subscriber.QuickSend(this);
+            return Sender.EnqueueOutgoing(this);
         }
 
 

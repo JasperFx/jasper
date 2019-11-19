@@ -25,15 +25,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Messaging
 {
-    public class MessagingRoot : IDisposable, IMessagingRoot, IHostedService, ISubscriberGraph
+    public class MessagingRoot : IDisposable, IMessagingRoot, IHostedService
     {
+        [Obsolete("")]
         private readonly IList<IListeningWorkerQueue> _listeners = new List<IListeningWorkerQueue>();
-
-        private readonly object _channelLock = new object();
-
-        private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
-
-        private ImHashMap<Uri, ISubscriber> _subscribers = ImHashMap<Uri, ISubscriber>.Empty;
 
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
@@ -51,22 +46,26 @@ namespace Jasper.Messaging
             Options = options;
             Handlers = options.HandlerGraph;
             TransportLogger = transportLogger;
-            Transports = container.QuickBuildAll<ITransport>().ToArray();
 
             Settings = options.Advanced;
             Serialization = serialization;
 
-            Logger = messageLogger;
+            MessageLogger = messageLogger;
 
-            Pipeline = new HandlerPipeline(Serialization, Handlers, Logger,
+            Pipeline = new HandlerPipeline(Serialization, Handlers, MessageLogger,
                 container.QuickBuildAll<IMissingHandler>(),
                 this);
 
-            Router = new MessageRouter(Handlers, serialization, Options.Advanced, this);
+            Runtime = new TransportRuntime(this);
+            Router = new MessageRouter(Handlers, serialization, Options.Advanced, Runtime);
 
             _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
 
             _container = container;
+
+
+            ScheduledJobs = new InMemoryScheduledJobProcessor(new LightweightWorkerQueue(new ListenerSettings(), transportLogger, Pipeline, Settings));
+
         }
 
         public void Dispose()
@@ -75,13 +74,12 @@ namespace Jasper.Messaging
 
             _listeners.Clear();
 
-            foreach (var channel in _subscribers.Enumerate()) channel.Value.Dispose();
-
-
-            _subscribers = ImHashMap<Uri, ISubscriber>.Empty;
+            Runtime.Dispose();
 
             ScheduledJobs.Dispose();
         }
+
+        public ITransportRuntime Runtime { get; }
 
         public AdvancedSettings Settings { get; }
 
@@ -89,16 +87,7 @@ namespace Jasper.Messaging
 
         public DurabilityAgent Durability { get; private set; }
 
-
-        public ITransport[] Transports { get; }
-
-        public IScheduledJobProcessor ScheduledJobs
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public IScheduledJobProcessor ScheduledJobs { get; }
 
         public JasperOptions Options { get; }
 
@@ -106,7 +95,7 @@ namespace Jasper.Messaging
 
         public IHandlerPipeline Pipeline { get; }
 
-        public IMessageLogger Logger { get; }
+        public IMessageLogger MessageLogger { get; }
 
         public MessagingSerializationGraph Serialization { get; }
 
@@ -130,7 +119,7 @@ namespace Jasper.Messaging
             }
             catch (Exception e)
             {
-                Logger.LogException(e, message:"Failed to start the Jasper messaging");
+                MessageLogger.LogException(e, message:"Failed to start the Jasper messaging");
                 throw;
             }
         }
@@ -146,17 +135,9 @@ namespace Jasper.Messaging
                 await _container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
             }
 
-            organizeTransports();
 
-            assertNoUnknownTransportsInSubscribers(Options);
-            assertNoUnknownTransportsInListeners(Options);
 
-            foreach (var transport in Transports)
-            {
-                transport.InitializeSendersAndListeners(this);
-            }
-
-            GetOrBuild(TransportConstants.RetryUri);
+            Runtime.As<TransportRuntime>().Initialize();
 
             var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 
@@ -166,17 +147,13 @@ namespace Jasper.Messaging
             {
                 // TODO -- use the worker queue for Retries?
                 var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, Settings, Persistence, TransportLogger);
-                Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, this,
+                Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, Runtime,
                     Options.Advanced);
                 // TODO -- use the cancellation token from the app!
                 await Durability.StartAsync(Options.Advanced.Cancellation);
             }
         }
 
-        public void AddSubscriber(ISubscriber subscriber)
-        {
-            _subscribers = _subscribers.AddOrUpdate(subscriber.Uri, subscriber);
-        }
 
         public HandlerGraph Handlers { get; }
 
@@ -190,86 +167,5 @@ namespace Jasper.Messaging
 
         }
 
-        public string[] ValidTransports => _transports.Keys.ToArray();
-
-        public ISubscriber GetOrBuild(Uri address)
-        {
-            assertValidTransport(address);
-
-            if (_subscribers.TryFind(address, out var channel)) return channel;
-
-            lock (_channelLock)
-            {
-                if (!_subscribers.TryFind(address, out channel))
-                {
-                    channel = buildChannel(address);
-                    _subscribers = _subscribers.AddOrUpdate(address, channel);
-                }
-
-                return channel;
-            }
-        }
-
-        public ISubscriber[] AllKnown()
-        {
-            return _subscribers.Enumerate().Select(x => x.Value).ToArray();
-        }
-
-        private void organizeTransports()
-        {
-            Transports
-                .Each(t => _transports.Add(t.Protocol, t));
-
-        }
-
-        private void assertValidTransport(Uri uri)
-        {
-            if (!_transports.ContainsKey(uri.Scheme))
-                throw new ArgumentOutOfRangeException(nameof(uri), $"Unrecognized transport scheme '{uri.Scheme}'");
-        }
-
-        private ISubscriber buildChannel(Uri uri)
-        {
-            assertValidTransport(uri);
-
-            var transport = _transports[uri.Scheme];
-            var agent = transport.BuildSendingAgent(uri, this, Settings.Cancellation);
-
-            var subscriber = new Subscriber(uri, new Subscription[0]);
-            subscriber.StartSending(Logger, agent, transport.ReplyUri);
-
-            return subscriber;
-        }
-
-        private void assertNoUnknownTransportsInListeners(JasperOptions settings)
-        {
-            var unknowns = settings.Listeners.Where(x => !ValidTransports.Contains(x.Scheme)).ToArray();
-
-            if (unknowns.Any())
-                throw new UnknownTransportException(
-                    $"Unknown transports referenced in listeners: {unknowns.Select(x => x.ToString()).Join(", ")}");
-        }
-
-        private void assertNoUnknownTransportsInSubscribers(JasperOptions settings)
-        {
-            var unknowns = settings.Subscriptions.Where(x => !ValidTransports.Contains(x.Uri.Scheme)).ToArray();
-            if (unknowns.Length > 0)
-                throw new UnknownTransportException(
-                    $"Unknown transports referenced in {unknowns.Select(x => x.Uri.ToString()).Join(", ")}");
-        }
-
-
-        public void AddListener(ListenerSettings listenerSettings, IListener agent)
-        {
-            var worker = listenerSettings.IsDurable
-                ? (IWorkerQueue) new DurableWorkerQueue(listenerSettings, Pipeline, Settings, Persistence,
-                    TransportLogger)
-                : new LightweightWorkerQueue(listenerSettings, TransportLogger, Pipeline, Settings);
-
-
-            _listeners.Add(worker);
-
-            worker.StartListening(agent);
-        }
     }
 }

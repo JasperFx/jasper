@@ -58,7 +58,7 @@ namespace Jasper.Testing.Messaging.Sagas
         {
             if (_history == null) withApplication();
 
-            await _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message), 10000);
+            await _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message), 60000);
         }
 
         protected Task send<T>(T message, object sagaId)

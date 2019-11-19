@@ -19,11 +19,11 @@ namespace Jasper.Persistence.Testing.Marten
             }))
             {
                 var channels = runtime.Get<IMessagingRoot>();
-                channels.GetOrBuild("local://one".ToUri()).IsDurable.ShouldBeFalse();
-                channels.GetOrBuild("local://durable/two".ToUri()).IsDurable.ShouldBeTrue();
+                channels.Runtime.GetOrBuildSendingAgent("local://one".ToUri()).IsDurable.ShouldBeFalse();
+                channels.Runtime.GetOrBuildSendingAgent("local://durable/two".ToUri()).IsDurable.ShouldBeTrue();
 
-                channels.GetOrBuild("tcp://server1".ToUri()).IsDurable.ShouldBeFalse();
-                channels.GetOrBuild("tcp://server2/durable".ToUri()).IsDurable.ShouldBeTrue();
+                channels.Runtime.GetOrBuildSendingAgent("tcp://server1".ToUri()).IsDurable.ShouldBeFalse();
+                channels.Runtime.GetOrBuildSendingAgent("tcp://server2/durable".ToUri()).IsDurable.ShouldBeTrue();
             }
         }
     }

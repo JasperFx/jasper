@@ -58,7 +58,6 @@ namespace Jasper.Testing.Messaging
 
         public IMessageContext Bus => Host.Get<IMessageContext>();
 
-        public ISubscriberGraph Subscribers => Host.Get<ISubscriberGraph>();
 
         public HandlerGraph Handlers => Host.Get<HandlerGraph>();
 

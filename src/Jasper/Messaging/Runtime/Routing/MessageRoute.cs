@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Jasper.Conneg;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime.Routing
@@ -18,19 +19,19 @@ namespace Jasper.Messaging.Runtime.Routing
             ContentType = contentType;
         }
 
-        public MessageRoute(Type messageType, WriterCollection<IMessageSerializer> writerCollection, ISubscriber subscriber, string contentType)
-            : this(messageType, subscriber.Uri, contentType)
+        public MessageRoute(Type messageType, WriterCollection<IMessageSerializer> writerCollection, ISendingAgent sender, string contentType)
+            : this(messageType, sender.Destination, contentType)
         {
             Writer = writerCollection[contentType];
-            Subscriber = subscriber;
+            Sender = sender;
         }
 
-        public MessageRoute(Envelope envelope, ISubscriber subscriber)
+        public MessageRoute(Envelope envelope, ISendingAgent sender)
         {
             if (envelope.Destination == null) throw new ArgumentNullException(nameof(envelope.Destination));
 
             MessageType = envelope.MessageType;
-            Subscriber = subscriber;
+            Sender = sender;
         }
 
         public IMessageSerializer Writer { get; internal set; }
@@ -41,7 +42,7 @@ namespace Jasper.Messaging.Runtime.Routing
         public Uri Destination { get; }
         public string ContentType { get; }
 
-        public ISubscriber Subscriber { get; set; }
+        public ISendingAgent Sender { get; set; }
 
 
         public Envelope CloneForSending(Envelope envelope)
@@ -55,13 +56,13 @@ namespace Jasper.Messaging.Runtime.Routing
 
             sending.Data = envelope.Data;
 
-            sending.ReplyUri = envelope.ReplyUri ?? Subscriber.ReplyUri;
+            sending.ReplyUri = envelope.ReplyUri ?? Sender.ReplyUri;
 
             sending.ContentType = envelope.ContentType ?? ContentType;
 
             sending.Destination = Destination;
 
-            sending.Subscriber = Subscriber;
+            sending.Sender = Sender;
 
             return sending;
         }

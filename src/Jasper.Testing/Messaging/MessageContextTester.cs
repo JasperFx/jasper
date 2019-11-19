@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 using NSubstitute;
 using Shouldly;
@@ -37,9 +39,9 @@ namespace Jasper.Testing.Messaging
 
             foreach (var env in outgoing)
             {
-                var subscriber = Substitute.For<ISubscriber>();
-                subscriber.IsDurable.Returns(true);
-                theMessagingRoot.Subscribers.Add(env.Destination, subscriber);
+                var sender = Substitute.For<ISendingAgent>();
+                sender.IsDurable.Returns(true);
+                theMessagingRoot.Subscribers.Add(env.Destination, new Subscriber(sender, new Subscription[0]));
 
             }
 

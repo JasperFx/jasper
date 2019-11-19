@@ -17,7 +17,9 @@ namespace Jasper.Testing.Samples
             Handlers.Retries.Add(x => x.Handle<SqlException>().Reschedule(3.Seconds()));
 
             // Declare published messages
-            Publish.Message<Message1>().To("tcp://server1:2222");
+            Publish.Message<Message1>()
+                .ToServerAndPort("server1", 2222);
+
 
             // Configure the built in transports
             Transports.LightweightListenerAt(2233);
@@ -49,7 +51,7 @@ namespace Jasper.Testing.Samples
             Transports.LightweightListenerAt(4000);
 
             // Publish the message Message2 to the DNS entry "remoteserver"
-            Publish.Message<Message2>().To("tcp://remoteserver:2201");
+            Publish.Message<Message2>().ToServerAndPort("remoteserver", 2201);
         }
     }
     // ENDSAMPLE
@@ -75,7 +77,8 @@ namespace Jasper.Testing.Samples
         public LoopbackTransportApp()
         {
             // Publish the message Message2 the important queue
-            Publish.Message<Message2>().To("local://important");
+            Publish.Message<Message2>()
+                .ToLocalQueue("important");
         }
     }
 

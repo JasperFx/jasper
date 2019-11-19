@@ -6,6 +6,7 @@ using Jasper.Configuration;
 using Jasper.Conneg;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
@@ -13,25 +14,27 @@ using Jasper.Messaging.WorkerQueues;
 
 namespace Jasper.Messaging.Durability
 {
-    public class DurableLoopbackSendingAgent : ISendingAgent
+    public class DurableLocalSendingAgent : DurableWorkerQueue, ISendingAgent
     {
         private readonly ITransportLogger _logger;
         private readonly AdvancedSettings _settings;
         private readonly IEnvelopePersistence _persistence;
-        private readonly IWorkerQueue _queues;
         private readonly MessagingSerializationGraph _serializers;
+        private readonly IMessageLogger _messageLogger;
 
-        public DurableLoopbackSendingAgent(Uri destination, IWorkerQueue queues, IEnvelopePersistence persistence,
-            MessagingSerializationGraph serializers, ITransportLogger logger, AdvancedSettings settings)
+        public DurableLocalSendingAgent(ListenerSettings listenerSettings, IHandlerPipeline pipeline,
+            AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger,
+            MessagingSerializationGraph serializers, IMessageLogger messageLogger) : base(listenerSettings, pipeline, settings, persistence, logger)
         {
-            _queues = queues;
-            _serializers = serializers;
-            _logger = logger;
             _settings = settings;
-
             _persistence = persistence;
+            _logger = logger;
+            _serializers = serializers;
+            _messageLogger = messageLogger;
+            Destination = listenerSettings.Uri;
 
-            Destination = destination;
+
+            ReplyUri = TransportConstants.RepliesUri;
         }
 
         public Uri Destination { get; }
@@ -41,7 +44,7 @@ namespace Jasper.Messaging.Durability
             // nothing
         }
 
-        public Uri DefaultReplyUri { get; set; }
+        public Uri ReplyUri { get; set; }
 
         public bool Latched => false;
 
@@ -49,13 +52,15 @@ namespace Jasper.Messaging.Durability
 
         public Task EnqueueOutgoing(Envelope envelope)
         {
-            envelope.Callback = new DurableCallback(envelope, _queues, _persistence, _logger);
+            _messageLogger.Sent(envelope);
+            envelope.Callback = new DurableCallback(envelope, this, _persistence, _logger);
 
-            return _queues.Enqueue(envelope);
+            return Enqueue(envelope);
         }
 
         public async Task StoreAndForward(Envelope envelope)
         {
+            _messageLogger.Sent(envelope);
             writeMessageData(envelope);
 
             // TODO -- have to watch this one
@@ -73,11 +78,6 @@ namespace Jasper.Messaging.Durability
             {
                 await EnqueueOutgoing(envelope);
             }
-        }
-
-        public void Start()
-        {
-            // Nothing
         }
 
         public bool SupportsNativeScheduledSend { get; } = true;

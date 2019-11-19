@@ -78,16 +78,6 @@ namespace Jasper.Configuration
 
             this.AddSingleton(parent.HandlerGraph);
 
-
-            For<ITransport>()
-                .Use<LocalTransport>();
-
-            For<ITransport>()
-                .Use<TcpTransport>();
-
-            For<ITransport>()
-                .Use<StubTransport>().Singleton();
-
             Scan(x =>
             {
                 x.AssemblyContainingType<JasperServiceRegistry>();

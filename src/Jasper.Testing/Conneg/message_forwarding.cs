@@ -19,7 +19,6 @@ namespace Jasper.Testing.Conneg
         public async Task send_message_via_forwarding()
         {
             var tracker = new MessageTracker();
-            var channel = "tcp://localhost:2345/incoming".ToUri();
 
 
             var runtime = JasperHost.For(_ =>
@@ -30,8 +29,9 @@ namespace Jasper.Testing.Conneg
                 _.Services.AddSingleton(tracker);
 
 
-                _.Publish.Message<OriginalMessage>().To(channel);
-                _.Transports.ListenForMessagesFrom(channel);
+                _.Publish.Message<OriginalMessage>().ToPort(2345);
+
+                _.Transports.LightweightListenerAt(2345);
             });
 
             try
@@ -40,7 +40,7 @@ namespace Jasper.Testing.Conneg
 
                 await runtime.Get<IMessagePublisher>().Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
                 {
-                    e.Destination = channel;
+                    e.Destination = "tcp://localhost:2345".ToUri();
                     e.ContentType = "application/json";
                 });
 

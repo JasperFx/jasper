@@ -11,38 +11,48 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqTransport : ExternalTransportBase<RabbitMqOptions, RabbitMqEndpoint>
+    public class RabbitMqTransport : TransportBase
     {
-        public RabbitMqTransport(RabbitMqOptions options) : base("rabbitmq", options)
+        public RabbitMqTransport(RabbitMqOptions options) : base("rabbitmq")
         {
         }
 
-        protected override ISender buildSender(TransportUri transportUri, RabbitMqEndpoint endpoint,
-            CancellationToken cancellation, IMessagingRoot root)
+        protected override IListener createListener(ListenerSettings settings, IMessagingRoot root)
         {
-            endpoint.Connect();
-            return endpoint.CreateSender(root.TransportLogger, cancellation);
+            throw new NotImplementedException();
         }
 
-        protected override IListener buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint,
-            AdvancedSettings settings, HandlerGraph handlers, IMessagingRoot root)
+        public override ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(transportUri), $"Could not resolve a Rabbit MQ endpoint for the Uri '{transportUri}'");
-            }
-
-            if (transportUri.IsMessageSpecificTopic())
-            {
-                return new RabbitMqMessageSpecificTopicListener(endpoint, handlers, transportUri, root.TransportLogger, settings);
-            }
-            else
-            {
-                endpoint.Connect();
-                return endpoint.CreateListeningAgent(transportUri.ToUri(), settings, root.TransportLogger);
-            }
-
-
+            throw new NotImplementedException();
         }
+
+//        protected override ISender buildSender(TransportUri transportUri, RabbitMqEndpoint endpoint,
+//            CancellationToken cancellation, IMessagingRoot root)
+//        {
+//            endpoint.Connect();
+//            return endpoint.CreateSender(root.TransportLogger, cancellation);
+//        }
+//
+//        protected override IListener buildListeningAgent(TransportUri transportUri, RabbitMqEndpoint endpoint,
+//            AdvancedSettings settings, HandlerGraph handlers, IMessagingRoot root)
+//        {
+//            if (endpoint == null)
+//            {
+//                throw new ArgumentOutOfRangeException(nameof(transportUri), $"Could not resolve a Rabbit MQ endpoint for the Uri '{transportUri}'");
+//            }
+//
+//            if (transportUri.IsMessageSpecificTopic())
+//            {
+//                return new RabbitMqMessageSpecificTopicListener(endpoint, handlers, transportUri, root.TransportLogger, settings);
+//            }
+//            else
+//            {
+//                endpoint.Connect();
+//                return endpoint.CreateListeningAgent(transportUri.ToUri(), settings, root.TransportLogger);
+//            }
+//
+//
+//        }
     }
 }

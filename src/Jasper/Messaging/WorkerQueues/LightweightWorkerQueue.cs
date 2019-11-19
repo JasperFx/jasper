@@ -68,9 +68,9 @@ namespace Jasper.Messaging.WorkerQueues
         }
 
 
-        public void StartListening(IListener agent)
+        public void StartListening(IListener listener)
         {
-            _agent = agent;
+            _agent = listener;
             _agent.Start(this);
         }
 

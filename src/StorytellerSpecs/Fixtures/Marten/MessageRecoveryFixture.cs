@@ -159,7 +159,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             _host.GetStubTransport().Channels[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
-            _host.Services.GetService<ISubscriberGraph>().GetOrBuild(channel);
+            _host.Services.GetService<IMessagingRoot>().Runtime.GetOrBuildSendingAgent(channel);
         }
 
 
@@ -309,7 +309,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
-        void IWorkerQueue.StartListening(IListener agent)
+        void IWorkerQueue.StartListening(IListener listener)
         {
             throw new NotImplementedException();
         }

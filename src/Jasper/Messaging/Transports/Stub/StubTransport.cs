@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
@@ -21,7 +22,7 @@ namespace Jasper.Messaging.Transports.Stub
         /// <returns></returns>
         public static StubTransport GetStubTransport(this IHost host)
         {
-            return host.Services.GetRequiredService<IMessagingRoot>().Transports.OfType<StubTransport>().Single();
+            return host.Services.GetRequiredService<IMessagingRoot>().Options.Transports.Get<StubTransport>();
         }
 
         /// <summary>
@@ -53,46 +54,56 @@ namespace Jasper.Messaging.Transports.Stub
             ReplyUri = new Uri("stub://replies");
         }
 
-        public bool WasDisposed { get; set; }
-        public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
-
         public void Dispose()
         {
-            WasDisposed = true;
+
         }
+
+        public readonly IList<Subscription> Subscriptions = new List<Subscription>();
 
         public string Protocol { get; } = "stub";
-
-        public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
-        {
-            return Channels[uri];
-        }
-
-        public Uri ReplyUri { get; }
-
-        public void InitializeSendersAndListeners(IMessagingRoot root)
+        public void Initialize(IMessagingRoot root, ITransportRuntime runtime)
         {
             var pipeline = root.Pipeline;
 
             Channels =
-                new LightweightCache<Uri, StubChannel>(uri => new StubChannel(uri, pipeline, this));
+                new LightweightCache<Uri, StubChannel>(u => new StubChannel(u, pipeline, this));
 
 
-            var incoming = root.Options.Listeners.Where(x => x.Uri.Scheme == "stub");
-            foreach (var listener in incoming) Channels.FillDefault(listener.Uri);
+            foreach (var listener in _listeners) Channels.FillDefault(listener);
 
-            // TODO -- later this configuration will be directly on here
-            var groups = root.Options.Subscriptions.Where(x => x.Uri.Scheme == Protocol).GroupBy(x => x.Uri);
+            var groups = Subscriptions.GroupBy(x => x.Uri);
             foreach (var @group in groups)
             {
-                var subscriber = new Subscriber(@group.Key, @group);
-                var agent = BuildSendingAgent(subscriber.Uri, root, root.Settings.Cancellation);
-
-
-                subscriber.StartSending(root.Logger, agent, ReplyUri);
-
-                root.AddSubscriber(subscriber);
+                var agent = Channels[@group.Key];
+                runtime.AddSubscriber(agent, @group.ToArray());
             }
+        }
+
+        public ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
+        {
+            throw new NotSupportedException();
+        }
+
+
+        public void Subscribe(Subscription subscription)
+        {
+            Subscriptions.Add(subscription);
+        }
+
+
+        public bool WasDisposed { get; set; }
+        public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
+
+
+        public Uri ReplyUri { get; }
+
+        private readonly IList<Uri> _listeners = new List<Uri>();
+
+        public IListenerSettings ListenTo(Uri uri)
+        {
+            _listeners.Add(uri);
+            return null;
         }
 
         public StubMessageCallback LastCallback()

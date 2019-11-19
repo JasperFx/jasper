@@ -3,6 +3,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 using NSubstitute;
 using Shouldly;
@@ -14,7 +15,7 @@ namespace Jasper.Testing.Messaging
     {
         private Envelope theOriginal;
         private Envelope theScheduledEnvelope;
-        private ISubscriber theSubscriber;
+        private ISendingAgent theSubscriber;
 
         public when_building_an_envelope_for_scheduled_send()
         {
@@ -22,7 +23,7 @@ namespace Jasper.Testing.Messaging
             theOriginal.ExecutionTime = DateTime.UtcNow.Date.AddDays(2);
             theOriginal.Destination = "tcp://server3:2345".ToUri();
 
-            theSubscriber = Substitute.For<ISubscriber>();
+            theSubscriber = Substitute.For<ISendingAgent>();
 
             theScheduledEnvelope = theOriginal.ForScheduledSend(theSubscriber);
         }

@@ -52,7 +52,7 @@ namespace StorytellerSpecs.Fixtures
             return Task.CompletedTask;
         }
 
-        void IWorkerQueue.StartListening(IListener agent)
+        void IWorkerQueue.StartListening(IListener listener)
         {
             throw new NotImplementedException();
         }

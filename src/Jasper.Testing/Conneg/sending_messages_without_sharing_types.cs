@@ -124,7 +124,9 @@ namespace Jasper.Testing.Conneg
     {
         public GreenApp()
         {
-            Publish.Message<GreenMessage>().To("tcp://localhost:2555/blue");
+            Publish.Message<GreenMessage>()
+                .ToPort(2555);
+
             Handlers.DisableConventionalDiscovery();
         }
     }

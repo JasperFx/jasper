@@ -14,7 +14,7 @@ namespace Jasper.Messaging.WorkerQueues
 
         Task ScheduleExecution(Envelope envelope);
 
-        void StartListening(IListener agent);
+        void StartListening(IListener listener);
     }
 
 

@@ -19,18 +19,18 @@ namespace Jasper.Messaging.Runtime.Routing
         private readonly HandlerGraph _handlers;
         private readonly MessagingSerializationGraph _serializers;
         private readonly AdvancedSettings _settings;
-        private readonly ISubscriberGraph _subscribers;
+        private readonly ITransportRuntime _runtime;
 
         private ImHashMap<Type, MessageRoute[]> _routes = ImHashMap<Type, MessageRoute[]>.Empty;
 
         private ImHashMap<Type, Action<Envelope>[]> _messageRules = ImHashMap<Type, Action<Envelope>[]>.Empty;
 
-        public MessageRouter(HandlerGraph handlers, MessagingSerializationGraph serializers, AdvancedSettings settings, ISubscriberGraph subscribers)
+        public MessageRouter(HandlerGraph handlers, MessagingSerializationGraph serializers, AdvancedSettings settings, ITransportRuntime runtime)
         {
             _handlers = handlers;
             _serializers = serializers;
             _settings = settings;
-            _subscribers = subscribers;
+            _runtime = runtime;
         }
 
         public void ClearAll()
@@ -50,7 +50,7 @@ namespace Jasper.Messaging.Runtime.Routing
 
         public MessageRoute RouteForDestination(Envelope envelope)
         {
-            var channel = _subscribers.GetOrBuild(envelope.Destination);
+            var channel = _runtime.GetOrBuildSendingAgent(envelope.Destination);
 
 
             if (envelope.Message != null)
@@ -138,12 +138,12 @@ namespace Jasper.Messaging.Runtime.Routing
         private void applyStaticPublishingRules(Type messageType, string[] supported, List<MessageRoute> list,
             WriterCollection<IMessageSerializer> writerCollection)
         {
-            foreach (var channel in _subscribers.AllKnown().Where(x => x.ShouldSendMessage(messageType)))
+            foreach (var agent in _runtime.FindSubscribers(messageType))
             {
                 var contentType = supported.FirstOrDefault(x => x != "application/json") ?? "application/json";
 
                 if (contentType.IsNotEmpty())
-                    list.Add(new MessageRoute(messageType, writerCollection, channel, contentType));
+                    list.Add(new MessageRoute(messageType, writerCollection, agent, contentType));
             }
         }
 
@@ -152,7 +152,7 @@ namespace Jasper.Messaging.Runtime.Routing
             var destination = TransportConstants.LoopbackUri;
             var route = new MessageRoute(messageType, destination, "application/json")
             {
-                Subscriber = _subscribers.GetOrBuild(destination)
+                Sender = _runtime.GetOrBuildSendingAgent(destination)
             };
             return route;
         }

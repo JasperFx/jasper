@@ -65,7 +65,7 @@ namespace Jasper.Messaging
                 {
                     _root.Router.ApplyMessageTypeSpecificRules(outgoing[i]);
 
-                    var subscriber = _root.GetOrBuild(outgoing[i].Destination);
+                    var subscriber = _root.Runtime.GetOrBuildSendingAgent(outgoing[i].Destination);
 
                     if (!subscriber.SupportsNativeScheduledSend)
                     {
@@ -85,7 +85,7 @@ namespace Jasper.Messaging
 
             if (!outgoing.Any())
             {
-                _root.Logger.NoRoutesFor(envelope);
+                _root.MessageLogger.NoRoutesFor(envelope);
 
                 throw new NoRoutesException(envelope);
             }
@@ -163,7 +163,7 @@ namespace Jasper.Messaging
             return _root.Pipeline.Invoke(Envelope);
         }
 
-        public IMessageLogger Logger => _root.Logger;
+        public IMessageLogger Logger => _root.MessageLogger;
 
         public async Task SendAcknowledgement()
         {
@@ -210,7 +210,7 @@ namespace Jasper.Messaging
 
             if (!outgoing.Any())
             {
-                _root.Logger.NoRoutesFor(envelope);
+                _root.MessageLogger.NoRoutesFor(envelope);
                 return Task.CompletedTask;
             }
 
@@ -405,7 +405,7 @@ namespace Jasper.Messaging
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(x => _root.GetOrBuild(x.Destination).IsDurable).ToArray());
+                await Transaction.Persist(outgoing.Where(x => _root.Runtime.GetOrBuildSendingAgent(x.Destination).IsDurable).ToArray());
 
                 _outstanding.AddRange(outgoing);
             }

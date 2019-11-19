@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -7,38 +6,128 @@ using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Tcp;
-using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Sending
 {
     public abstract class SendingAgent : ISendingAgent, ISenderCallback
     {
         private readonly ITransportLogger _logger;
-        protected readonly RetryAgent _retries;
+        private readonly IMessageLogger _messageLogger;
         protected readonly ISender _sender;
+        protected readonly AdvancedSettings _settings;
+        private int _failureCount;
+        private Pinger _pinger;
 
-        protected SendingAgent(Uri destination, ISender sender, ITransportLogger logger,
-            RetryAgent retries)
+        public SendingAgent(ITransportLogger logger, IMessageLogger messageLogger, ISender sender,
+            AdvancedSettings settings)
         {
-            _sender = sender;
             _logger = logger;
-            Destination = destination;
-
-            _retries = retries;
+            _messageLogger = messageLogger;
+            _sender = sender;
+            _settings = settings;
         }
 
+        public Uri ReplyUri { get; set; }
 
-        public abstract Task Successful(OutgoingMessageBatch outgoing);
+        public Uri Destination => _sender.Destination;
 
-        public abstract Task Successful(Envelope outgoing);
+        public void Dispose()
+        {
+            _pinger?.Dispose();
+            _sender.Dispose();
+        }
 
-        public Task TimedOut(OutgoingMessageBatch outgoing)
+        public bool Latched => _sender.Latched;
+        public abstract bool IsDurable { get; }
+
+        private void setDefaults(Envelope envelope)
+        {
+            envelope.Status = TransportConstants.Outgoing;
+            envelope.EnsureData();
+            envelope.OwnerId = _settings.UniqueNodeId;
+            envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
+        }
+
+        public async Task EnqueueOutgoing(Envelope envelope)
+        {
+            setDefaults(envelope);
+            await _sender.Enqueue(envelope);
+            _messageLogger.Sent(envelope);
+        }
+
+        public async Task StoreAndForward(Envelope envelope)
+        {
+            setDefaults(envelope);
+
+            await storeAndForward(envelope);
+
+            _messageLogger.Sent(envelope);
+        }
+
+        protected abstract Task storeAndForward(Envelope envelope);
+
+        public bool SupportsNativeScheduledSend => _sender.SupportsNativeScheduledSend;
+
+
+        public async Task MarkFailed(OutgoingMessageBatch batch)
+        {
+            // If it's already latched, just enqueue again
+            if (_sender.Latched)
+            {
+                await EnqueueForRetry(batch);
+                return;
+            }
+
+            _failureCount++;
+
+            if (_failureCount >= _settings.FailuresBeforeCircuitBreaks)
+            {
+                await _sender.LatchAndDrain();
+                await EnqueueForRetry(batch);
+                _pinger = new Pinger(_sender, _settings.Cooldown, restartSending);
+            }
+            else
+            {
+                foreach (var envelope in batch.Messages)
+                {
+#pragma warning disable 4014
+                    _sender.Enqueue(envelope);
+#pragma warning restore 4014
+                }
+            }
+        }
+
+        public abstract Task EnqueueForRetry(OutgoingMessageBatch batch);
+
+        private Task restartSending()
+        {
+            _pinger.Dispose();
+            _pinger = null;
+
+            _sender.Unlatch();
+
+            return afterRestarting(_sender);
+        }
+
+        protected abstract Task afterRestarting(ISender sender);
+
+        public Task MarkSuccess()
+        {
+            _failureCount = 0;
+            _sender.Unlatch();
+            _pinger?.Dispose();
+            _pinger = null;
+
+            return Task.CompletedTask;
+        }
+
+        Task ISenderCallback.TimedOut(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing);
-            return _retries.MarkFailed(outgoing);
+            return MarkFailed(outgoing);
         }
 
-        public Task SerializationFailure(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.SerializationFailure(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing);
             // Can't really happen now, but what the heck.
@@ -48,66 +137,43 @@ namespace Jasper.Messaging.Transports.Sending
             return Task.CompletedTask;
         }
 
-        public Task QueueDoesNotExist(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.QueueDoesNotExist(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing, new QueueDoesNotExistException(outgoing));
 
             return Task.CompletedTask;
         }
 
-        public Task ProcessingFailure(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing);
-            return _retries.MarkFailed(outgoing);
+            return MarkFailed(outgoing);
         }
 
-        public Task ProcessingFailure(Envelope outgoing, Exception exception)
+        Task ISenderCallback.ProcessingFailure(Envelope outgoing, Exception exception)
         {
             var batch = new OutgoingMessageBatch(outgoing.Destination, new[] {outgoing});
             _logger.OutgoingBatchFailed(batch, exception);
-            return _retries.MarkFailed(batch);
+            return MarkFailed(batch);
         }
 
-        public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
+        Task ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
         {
             _logger.LogException(exception,
                 message: $"Failure trying to send a message batch to {outgoing.Destination}");
             _logger.OutgoingBatchFailed(outgoing, exception);
-            return _retries.MarkFailed(outgoing);
+            return MarkFailed(outgoing);
         }
 
-        public Task SenderIsLatched(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.SenderIsLatched(OutgoingMessageBatch outgoing)
         {
-            return _retries.MarkFailed(outgoing);
+            return MarkFailed(outgoing);
         }
 
-        public Uri Destination { get; }
-        public Uri DefaultReplyUri { get; set; }
-        public bool Latched => _sender.Latched;
+        public abstract Task Successful(OutgoingMessageBatch outgoing);
 
-        public abstract bool IsDurable { get; }
+        public abstract Task Successful(Envelope outgoing);
 
-        public abstract Task EnqueueOutgoing(Envelope envelope);
-        public abstract Task StoreAndForward(Envelope envelope);
 
-        public void Start()
-        {
-            _sender.Start(this);
-        }
-
-        public bool SupportsNativeScheduledSend => _sender.SupportsNativeScheduledSend;
-
-        public void Dispose()
-        {
-            _sender?.Dispose();
-        }
-    }
-
-    public class QueueDoesNotExistException : Exception
-    {
-        public QueueDoesNotExistException(OutgoingMessageBatch outgoing) : base(
-            $"Queue '{outgoing.Destination.QueueName()}' does not exist at {outgoing.Destination}")
-        {
-        }
     }
 }

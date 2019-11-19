@@ -25,29 +25,9 @@ namespace Jasper
         public bool IsDurable { get; set; }
 
         public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
-        public string Scheme => Uri.Scheme;
 
-        public int Port => Uri.Port;
 
-        protected bool Equals(ListenerSettings other)
-        {
-            return Equals(Uri, other.Uri);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ListenerSettings) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (Uri != null ? Uri.GetHashCode() : 0);
-        }
-
-        IListenerSettings IListenerSettings.MaximumParallelization(int maximumParallelHandlers)
+        IListenerSettings IListenerSettings.MaximumThreads(int maximumParallelHandlers)
         {
             ExecutionOptions.MaxDegreeOfParallelism = maximumParallelHandlers;
             return this;
@@ -59,13 +39,13 @@ namespace Jasper
             return this;
         }
 
-        IListenerSettings IListenerSettings.IsDurable()
+        IListenerSettings IListenerSettings.Durably()
         {
             IsDurable = true;
             return this;
         }
 
-        IListenerSettings IListenerSettings.IsNotDurable()
+        IListenerSettings IListenerSettings.Lightweight()
         {
             IsDurable = false;
             return this;

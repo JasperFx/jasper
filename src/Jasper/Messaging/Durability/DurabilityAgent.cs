@@ -50,7 +50,7 @@ namespace Jasper.Messaging.Durability
             ILogger<DurabilityAgent> trace,
             IWorkerQueue workers,
             IEnvelopePersistence persistence,
-            ISubscriberGraph subscribers,
+            ITransportRuntime runtime,
             AdvancedSettings settings)
         {
             if (persistence is NulloEnvelopePersistence)
@@ -77,7 +77,7 @@ namespace Jasper.Messaging.Durability
             NodeId = _settings.UniqueNodeId;
 
             IncomingMessages = new RecoverIncomingMessages(persistence, workers, settings, logger);
-            OutgoingMessages = new RecoverOutgoingMessages(subscribers, settings, logger);
+            OutgoingMessages = new RecoverOutgoingMessages(runtime, settings, logger);
             NodeReassignment = new NodeReassignment(settings);
             ScheduledJobs = new RunScheduledJobs(settings, logger);
         }

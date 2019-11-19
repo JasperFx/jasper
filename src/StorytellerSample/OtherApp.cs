@@ -10,7 +10,8 @@ namespace StorytellerSample
             Handlers.Discovery(x => x.DisableConventionalDiscovery().IncludeType<OtherGuyMessages>());
             ServiceName = "Other";
 
-            Publish.Message<Increment>().To("tcp://localhost:4444");
+            Publish.Message<Increment>()
+                .ToPort(4444);
         }
     }
 

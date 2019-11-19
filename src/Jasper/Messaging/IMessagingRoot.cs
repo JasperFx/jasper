@@ -18,17 +18,28 @@ using LamarCodeGeneration;
 
 namespace Jasper.Messaging
 {
-    public interface IMessagingRoot : ISubscriberGraph
+    // Replaces ISubscriberGraph
+    public interface ITransportRuntime : IDisposable
+    {
+        ISendingAgent AddSubscriber(Uri replyUri, ISender sender, Subscription[] subscriptions);
+        ISendingAgent GetOrBuildSendingAgent(Uri address);
+        void AddListener(IListener listener, ListenerSettings settings);
+        Task Stop();
+        ISendingAgent[] FindSubscribers(Type messageType);
+        void AddSubscriber(ISendingAgent replyUri, Subscription[] subscriptions);
+    }
+
+
+    public interface IMessagingRoot
     {
         IScheduledJobProcessor ScheduledJobs { get; }
         IMessageRouter Router { get; }
         IHandlerPipeline Pipeline { get; }
-        IMessageLogger Logger { get; }
+        IMessageLogger MessageLogger { get; }
         MessagingSerializationGraph Serialization { get; }
         JasperOptions Options { get; }
 
 
-        ITransport[] Transports { get; }
         HandlerGraph Handlers { get; }
 
         IMessageContext NewContext();
@@ -37,8 +48,6 @@ namespace Jasper.Messaging
         IEnvelopePersistence Persistence { get; }
         ITransportLogger TransportLogger { get; }
         AdvancedSettings Settings { get; }
-
-
-        void AddListener(ListenerSettings listenerSettings, IListener agent);
+        ITransportRuntime Runtime { get; }
     }
 }

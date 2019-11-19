@@ -1,6 +1,7 @@
 ﻿using System;
 using Jasper.Messaging.Runtime;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Jasper.Messaging.Logging
 {
@@ -29,6 +30,11 @@ namespace Jasper.Messaging.Logging
         private readonly Action<ILogger, string, Guid, Uri, Uri, Exception> _received;
         private readonly Action<ILogger, string, Guid, Uri, Exception> _sent;
         private readonly Action<ILogger, Envelope, Exception> _undeliverable;
+
+        public static MessageLogger Empty()
+        {
+            return new MessageLogger(new NullLoggerFactory(), new NulloMetrics());
+        }
 
         public MessageLogger(ILoggerFactory factory, IMetrics metrics)
         {

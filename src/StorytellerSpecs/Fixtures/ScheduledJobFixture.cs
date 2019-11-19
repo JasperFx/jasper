@@ -73,7 +73,7 @@ namespace StorytellerSpecs.Fixtures
             Services.AddSingleton(Receiver);
 
             Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
-                .To("local://incoming");
+                .ToLocalQueue("incoming");
 
             Transports.ListenForMessagesFrom("local://incoming");
 

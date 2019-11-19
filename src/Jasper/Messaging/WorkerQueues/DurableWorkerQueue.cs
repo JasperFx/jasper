@@ -48,6 +48,7 @@ namespace Jasper.Messaging.WorkerQueues
         public int QueuedCount => _receiver.InputCount;
         public Task Enqueue(Envelope envelope)
         {
+
             envelope.Callback = new DurableCallback(envelope, this, _persistence, _logger);
             _receiver.Post(envelope);
 
@@ -59,9 +60,9 @@ namespace Jasper.Messaging.WorkerQueues
             return Task.CompletedTask;
         }
 
-        public void StartListening(IListener agent)
+        public void StartListening(IListener listener)
         {
-            _agent = agent;
+            _agent = listener;
             _agent.Start(this);
         }
 

@@ -10,13 +10,13 @@ namespace Jasper.Messaging.Durability
 {
     public class RecoverOutgoingMessages : IMessagingAction
     {
-        private readonly ISubscriberGraph _subscribers;
+        private readonly ITransportRuntime _runtime;
         private readonly AdvancedSettings _settings;
         private readonly ITransportLogger _logger;
 
-        public RecoverOutgoingMessages(ISubscriberGraph subscribers, AdvancedSettings settings, ITransportLogger logger)
+        public RecoverOutgoingMessages(ITransportRuntime runtime, AdvancedSettings settings, ITransportLogger logger)
         {
-            _subscribers = subscribers;
+            _runtime = runtime;
             _settings = settings;
             _logger = logger;
         }
@@ -58,7 +58,7 @@ namespace Jasper.Messaging.Durability
                 Envelope[] filtered = null;
                 Envelope[] outgoing = null;
 
-                if (_subscribers.GetOrBuild(destination).Latched) return 0;
+                if (_runtime.GetOrBuildSendingAgent(destination).Latched) return 0;
 
                 await storage.Session.Begin();
 
@@ -76,7 +76,7 @@ namespace Jasper.Messaging.Durability
                     // Might easily try to do this in the time between starting
                     // and having the data fetched. Was able to make that happen in
                     // (contrived) testing
-                    if (_subscribers.GetOrBuild(destination).Latched || !filtered.Any())
+                    if (_runtime.GetOrBuildSendingAgent(destination).Latched || !filtered.Any())
                     {
                         await storage.Session.Rollback();
                         return 0;
@@ -98,7 +98,7 @@ namespace Jasper.Messaging.Durability
                 foreach (var envelope in filtered)
                     try
                     {
-                        await _subscribers.GetOrBuild(destination).QuickSend(envelope);
+                        await _runtime.GetOrBuildSendingAgent(destination).EnqueueOutgoing(envelope);
                     }
                     catch (Exception e)
                     {

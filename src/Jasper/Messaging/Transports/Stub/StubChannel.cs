@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Transports.Sending;
@@ -14,6 +15,8 @@ namespace Jasper.Messaging.Transports.Stub
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
         public readonly IList<Envelope> Sent = new List<Envelope>();
+
+
 
         public StubChannel(Uri destination, IHandlerPipeline pipeline, StubTransport stubTransport)
         {
@@ -31,12 +34,12 @@ namespace Jasper.Messaging.Transports.Stub
         public bool IsDurable => false;
 
         public Uri Destination { get; }
-        public Uri DefaultReplyUri { get; set; }
+        public Uri ReplyUri { get; set; }
 
         public Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.ReceivedAt = Destination;
-            envelope.ReplyUri = envelope.ReplyUri ?? DefaultReplyUri;
+            envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
 
             var callback = new StubMessageCallback(this);
             Callbacks.Add(callback);
@@ -59,10 +62,6 @@ namespace Jasper.Messaging.Transports.Stub
         public Task StoreAndForward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
-        }
-
-        public void Start()
-        {
         }
 
         public bool SupportsNativeScheduledSend { get; } = true;

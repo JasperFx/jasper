@@ -4,6 +4,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Tcp;
 using Jasper.Settings;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
@@ -50,7 +51,6 @@ namespace Jasper.Messaging.Configuration
             return MessagesFromAssembly(typeof(T).Assembly);
         }
 
-        [Obsolete]
         public void AllMessagesTo(string uriString)
         {
             AllMessagesTo(uriString.ToUri());
@@ -58,15 +58,14 @@ namespace Jasper.Messaging.Configuration
 
         public void AllMessagesTo(Uri uri)
         {
-            var subscription = new Subscription
+            _parent.Transports.Subscribe(new Subscription
             {
                 Scope = RoutingScope.All,
                 Uri = uri
-            };
-
-            _parent.AddSubscription(subscription);
-
+            });
         }
+
+
 
         /// <summary>
         ///     Directs Jasper to try to publish all messages locally even if there are other
@@ -100,7 +99,7 @@ namespace Jasper.Messaging.Configuration
                     Uri = address
                 };
 
-                _parent.AddSubscription(subscription);
+                _parent.Transports.Subscribe(subscription);
             }
 
             public void To(string address)
@@ -114,14 +113,56 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             public void Locally()
             {
+                // TODO -- stick directly on LocalTransport
                 var subscription = new Subscription
                 {
                     Scope = _routingScope, Match = _match, Uri = TransportConstants.LoopbackUri
                 };
 
-                _parent.AddSubscription(subscription);
+                _parent.Transports.Subscribe(subscription);
             }
 
+            /// <summary>
+            /// Publish the designated message types using Jasper's lightweight
+            /// TCP transport locally to the designated port number
+            /// </summary>
+            /// <param name="port"></param>
+            /// <exception cref="NotImplementedException"></exception>
+            public void ToPort(int port)
+            {
+                To($"tcp://localhost:{port}".ToUri());
+            }
+
+            public void DurablyToPort(int port)
+            {
+                To($"tcp://localhost:{port}/durable");
+            }
+
+            public IListenerSettings ToLocalQueue(string queueName)
+            {
+                var settings = _parent.Transports.LocalQueue(queueName);
+                _parent.Transports.Subscribe(new Subscription
+                {
+                    Scope = _routingScope, Match = _match, Uri = $"local://{queueName}".ToUri()
+                });
+
+                return settings;
+            }
+
+            public void ToServerAndPort(string serverName, int port)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ToStub(string queueName)
+            {
+                To("stub://" + queueName);
+            }
+
+            public IListenerSettings DurablyToLocalQueue(string queueName)
+            {
+                return ToLocalQueue(queueName).Durably();
+            }
         }
 
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Configuration;
+using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
@@ -22,7 +23,7 @@ namespace StorytellerSpecs.Fixtures
 
         private bool _pingFails;
         private bool _unlatched;
-        protected LightweightRetryAgent theRetryAgent;
+        protected LightweightSendingAgent theRetryAgent;
         protected AdvancedSettings theSettings;
 
         public RetryAgentFixture()
@@ -79,7 +80,7 @@ namespace StorytellerSpecs.Fixtures
 
             theSettings = new AdvancedSettings();
 
-            theRetryAgent = new LightweightRetryAgent(this, theSettings);
+            theRetryAgent = new LightweightSendingAgent(TransportLogger.Empty(), MessageLogger.Empty(),this, theSettings);
 
             for (var i = 0; i < batches.Length; i++) batches[i] = batchForEnvelopes(15);
 

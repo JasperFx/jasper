@@ -26,7 +26,7 @@ namespace Jasper
     /// <summary>
     ///     Completely defines and configures a Jasper application
     /// </summary>
-    public partial class JasperOptions : ITransportsExpression
+    public partial class JasperOptions
     {
         protected static Assembly _rememberedCallingAssembly;
 
@@ -34,7 +34,7 @@ namespace Jasper
 
         private readonly List<IJasperExtension> _appliedExtensions = new List<IJasperExtension>();
         protected readonly ServiceRegistry _baseServices;
-        
+
         private readonly IList<Type> _extensionTypes = new List<Type>();
 
 
@@ -65,13 +65,6 @@ namespace Jasper
             Publish = new PublishingExpression(this);
 
             deriveServiceName();
-
-
-
-            ListenForMessagesFrom(TransportConstants.RetryUri);
-            ListenForMessagesFrom(TransportConstants.ScheduledUri);
-            ListenForMessagesFrom(TransportConstants.RepliesUri);
-
         }
 
 
@@ -119,10 +112,9 @@ namespace Jasper
         public PublishingExpression Publish { get; }
 
         /// <summary>
-        ///     Configure or disable the built in transports
+        /// Configure message listeners or sending endpoints
         /// </summary>
-        public ITransportsExpression Transports => this;
-
+        public TransportCollection Transports { get; } = new TransportCollection();
 
         internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();
 

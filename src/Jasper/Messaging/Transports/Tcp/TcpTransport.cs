@@ -17,46 +17,38 @@ namespace Jasper.Messaging.Transports.Tcp
         {
         }
 
+        protected override IListener createListener(ListenerSettings settings, IMessagingRoot root)
+        {
+            // check the uri for an ip address to bind to
+            var uri = settings.Uri;
+            var cancellation = root.Settings.Cancellation;
 
-        protected override ISender createSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
+            if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)
+                return uri.Host == "localhost"
+                    ? new SocketListener(IPAddress.Loopback, uri.Port, cancellation)
+                    : new SocketListener(IPAddress.Any, uri.Port, cancellation);
+
+            var ipaddr = IPAddress.Parse(uri.Host);
+            return new SocketListener(ipaddr, uri.Port, cancellation);
+        }
+
+        public override ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
         {
             return new BatchedSender(uri, new SocketSenderProtocol(), cancellation, root.TransportLogger);
         }
 
-        protected override ListenerSettings[] validateAndChooseReplyChannel(ListenerSettings[] incoming)
-        {
-            assertNoDuplicatePorts(incoming);
 
-            ReplyUri = incoming.FirstOrDefault()?.Uri;
-
-            return incoming;
-        }
-
-
-        protected override IListener buildListeningAgent(ListenerSettings listenerSettings,
-            AdvancedSettings settings,
-            HandlerGraph handlers, IMessagingRoot root)
-        {
-            // check the uri for an ip address to bind to
-            var uri = listenerSettings.Uri;
-
-            if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)
-                return uri.Host == "localhost"
-                    ? new SocketListener(IPAddress.Loopback, uri.Port, settings.Cancellation)
-                    : new SocketListener(IPAddress.Any, uri.Port, settings.Cancellation);
-
-            var ipaddr = IPAddress.Parse(uri.Host);
-            return new SocketListener(ipaddr, uri.Port, settings.Cancellation);
-        }
-
+        // TODO -- bring this back!
         private static void assertNoDuplicatePorts(ListenerSettings[] incoming)
         {
-            var duplicatePorts = incoming.GroupBy(x => x.Port).Where(x => x.Count() > 1).ToArray();
+            var duplicatePorts = incoming.GroupBy(x => x.Uri.Port).Where(x => x.Count() > 1).ToArray();
             if (duplicatePorts.Any())
             {
                 var portString = string.Join(", ", duplicatePorts.Select(x => x.ToString()));
                 throw new Exception("Multiple TCP listeners configured for ports " + portString);
             }
         }
+
+
     }
 }

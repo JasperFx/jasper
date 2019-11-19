@@ -94,7 +94,7 @@ namespace IntegrationTests.Samples
 
             // Listen for messages from the 'queue1' queue at the connection string
             // configured above
-            jasper.ListenForMessagesFrom("rabbitmq://rabbit/queue/queue1");
+            jasper.Transports.ListenForMessagesFrom("rabbitmq://rabbit/queue/queue1");
         }
 
         public void ConfigureServices(IServiceCollection services)

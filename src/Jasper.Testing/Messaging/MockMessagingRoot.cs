@@ -29,7 +29,7 @@ namespace Jasper.Testing.Messaging
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
         public IMessageRouter Router { get; } = Substitute.For<IMessageRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
-        public IMessageLogger Logger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());
+        public IMessageLogger MessageLogger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
         public JasperOptions Options { get; } = new JasperOptions();
 
@@ -42,6 +42,7 @@ namespace Jasper.Testing.Messaging
         }
 
         public AdvancedSettings Settings { get; } = new AdvancedSettings();
+        public ITransportRuntime Runtime { get; } = Substitute.For<ITransportRuntime>();
 
 
         public void AddListener(ListenerSettings listenerSettings, IListener agent)
@@ -69,24 +70,25 @@ namespace Jasper.Testing.Messaging
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
 
-        public readonly Dictionary<Uri, ISubscriber> Subscribers = new Dictionary<Uri,ISubscriber>();
+        public readonly Dictionary<Uri, Subscriber> Subscribers = new Dictionary<Uri,Subscriber>();
 
-        public ISubscriber GetOrBuild(Uri address)
+        public ISendingAgent GetOrBuild(Uri address)
         {
-            if (Subscribers.TryGetValue(address, out var subscriber))
-            {
-                return subscriber;
-            }
-
-            return null;
+            throw new NotSupportedException();
+//            if (Subscribers.TryGetValue(address, out var subscriber))
+//            {
+//                return subscriber;
+//            }
+//
+//            return null;
         }
 
-        public ISubscriber[] AllKnown()
+        public Subscriber[] AllKnown()
         {
             return Subscribers.Values.ToArray();
         }
 
-        public void AddSubscriber(ISubscriber subscriber)
+        public void AddSubscriber(Subscriber subscriber)
         {
             throw new NotImplementedException();
         }

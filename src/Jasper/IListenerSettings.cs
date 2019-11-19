@@ -10,7 +10,7 @@ namespace Jasper
         /// </summary>
         /// <param name="maximumParallelHandlers"></param>
         /// <returns></returns>
-        IListenerSettings MaximumParallelization(int maximumParallelHandlers);
+        IListenerSettings MaximumThreads(int maximumParallelHandlers);
 
         /// <summary>
         ///     Forces this worker queue to use no more than one thread
@@ -22,12 +22,13 @@ namespace Jasper
         ///     Force any messages enqueued to this worker queue to be durable
         /// </summary>
         /// <returns></returns>
-        IListenerSettings IsDurable();
+        IListenerSettings Durably();
 
         /// <summary>
-        ///     By default, messages on this worker queue will not be durable
+        /// By default, messages on this worker queue will not be persisted until
+        /// being successfully handled
         /// </summary>
         /// <returns></returns>
-        IListenerSettings IsNotDurable();
+        IListenerSettings Lightweight();
     }
 }
