@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
@@ -15,9 +13,7 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
-using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
 using Microsoft.Extensions.Hosting;
@@ -27,21 +23,18 @@ namespace Jasper.Messaging
 {
     public class MessagingRoot : IDisposable, IMessagingRoot, IHostedService
     {
-        [Obsolete("")]
-        private readonly IList<IListeningWorkerQueue> _listeners = new List<IListeningWorkerQueue>();
-
-        private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
-
+        private readonly IContainer _container;
 
         private readonly Lazy<IEnvelopePersistence> _persistence;
-        private readonly IContainer _container;
+
+        private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
         public MessagingRoot(MessagingSerializationGraph serialization,
             JasperOptions options,
             IMessageLogger messageLogger,
             IContainer container,
             ITransportLogger transportLogger
-            )
+        )
         {
             Options = options;
             Handlers = options.HandlerGraph;
@@ -64,19 +57,39 @@ namespace Jasper.Messaging
             _container = container;
 
 
-            ScheduledJobs = new InMemoryScheduledJobProcessor(new LightweightWorkerQueue(new ListenerSettings(), transportLogger, Pipeline, Settings));
-
+            ScheduledJobs =
+                new InMemoryScheduledJobProcessor(new LightweightWorkerQueue(new ListenerSettings(), transportLogger,
+                    Pipeline, Settings));
         }
+
+        public DurabilityAgent Durability { get; private set; }
 
         public void Dispose()
         {
-            foreach (var listener in _listeners) listener.SafeDispose();
-
-            _listeners.Clear();
-
             Runtime.Dispose();
 
             ScheduledJobs.Dispose();
+        }
+
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await bootstrap();
+            }
+            catch (Exception e)
+            {
+                MessageLogger.LogException(e, message: "Failed to start the Jasper messaging");
+                throw;
+            }
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            // This is important!
+            _container.As<Container>().DisposalLock = DisposalLock.Unlocked;
+
+            return Durability.StopAsync(cancellationToken);
         }
 
         public ITransportRuntime Runtime { get; }
@@ -84,8 +97,6 @@ namespace Jasper.Messaging
         public AdvancedSettings Settings { get; }
 
         public ITransportLogger TransportLogger { get; }
-
-        public DurabilityAgent Durability { get; private set; }
 
         public IScheduledJobProcessor ScheduledJobs { get; }
 
@@ -111,25 +122,16 @@ namespace Jasper.Messaging
             return new MessageContext(this, envelope);
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await bootstrap();
-            }
-            catch (Exception e)
-            {
-                MessageLogger.LogException(e, message:"Failed to start the Jasper messaging");
-                throw;
-            }
-        }
+
+        public HandlerGraph Handlers { get; }
 
         private async Task bootstrap()
         {
+            // Build up the message handlers
             await Handlers.Compiling;
-
             Handlers.Compile(Options.CodeGeneration, _container);
 
+            // If set, use pre-generated message handlers for quicker starts
             if (Options.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
             {
                 await _container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
@@ -150,26 +152,13 @@ namespace Jasper.Messaging
                 var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 
                 // TODO -- use the worker queue for Retries?
-                var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, Settings, Persistence, TransportLogger);
+                var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, Settings, Persistence,
+                    TransportLogger);
                 Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, Runtime,
                     Options.Advanced);
                 // TODO -- use the cancellation token from the app!
                 await Durability.StartAsync(Options.Advanced.Cancellation);
             }
         }
-
-
-        public HandlerGraph Handlers { get; }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            // This is important!
-            _container.As<Container>().DisposalLock = DisposalLock.Unlocked;
-
-            return Durability.StopAsync(cancellationToken);
-
-
-        }
-
     }
 }
