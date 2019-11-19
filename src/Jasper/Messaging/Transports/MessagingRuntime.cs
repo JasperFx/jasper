@@ -23,6 +23,8 @@ namespace Jasper.Messaging.Transports
         private readonly object _channelLock = new object();
 
         private ImTools.ImHashMap<Uri, ISendingAgent> _senders = ImTools.ImHashMap<Uri, ISendingAgent>.Empty;
+
+
         private readonly IMessagingRoot _root;
         private TransportCollection _transports;
 
@@ -72,6 +74,22 @@ namespace Jasper.Messaging.Transports
 
             var subscriber = new Subscriber(agent, subscriptions);
             _subscribers.Add(subscriber);
+        }
+
+        private ImTools.ImHashMap<string, ISendingAgent> _localSenders = ImTools.ImHashMap<string, ISendingAgent>.Empty;
+
+        public ISendingAgent AgentForLocalQueue(string queueName)
+        {
+            queueName = queueName ?? TransportConstants.Default;
+            if (_localSenders.TryFind(queueName, out var agent))
+            {
+                return agent;
+            }
+
+            agent = GetOrBuildSendingAgent($"local://{queueName}".ToUri());
+            _localSenders = _localSenders.AddOrUpdate(queueName, agent);
+
+            return agent;
         }
 
         public ISendingAgent GetOrBuildSendingAgent(Uri address)

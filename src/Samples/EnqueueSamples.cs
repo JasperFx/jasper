@@ -14,11 +14,6 @@ namespace Jasper.Testing.Samples
             // for the message type
             await bus.Enqueue(new Message1());
 
-            // Enqueue a message locally non-durably
-            await bus.EnqueueLightweight(new Message1());
-
-            // Enqueue a message locally & durably
-            await bus.EnqueueDurably(new Message1());
         }
 
         // ENDSAMPLE

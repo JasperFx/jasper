@@ -319,35 +319,23 @@ namespace Jasper.Messaging
 
         public Task Enqueue<T>(T message, string workerQueue = null)
         {
+            var agent = _root.Runtime.AgentForLocalQueue(workerQueue);
+
             var envelope = new Envelope
             {
                 Message = message,
-                Destination = TransportConstants.LoopbackUri.AtQueue(workerQueue),
+                Destination = agent.Destination,
+                Sender = agent
             };
 
-            return SendEnvelope(envelope);
-        }
-
-        public Task EnqueueLightweight<T>(T message, string workerQueue = null)
-        {
-            var envelope = new Envelope
+            if (EnlistedInTransaction && agent.IsDurable)
             {
-                Message = message,
-                Destination = TransportConstants.LoopbackUri.AtQueue(workerQueue),
-            };
-
-            return SendEnvelope(envelope);
-        }
-
-        public Task EnqueueDurably<T>(T message, string workerQueue = null)
-        {
-            var envelope = new Envelope
+                return Transaction.Persist(envelope);
+            }
+            else
             {
-                Message = message,
-                Destination = TransportConstants.DurableLoopbackUri.AtQueue(workerQueue),
-            };
-
-            return SendEnvelope(envelope);
+                return envelope.Send();
+            }
         }
 
         public Task ScheduleSend<T>(T message, DateTime time)

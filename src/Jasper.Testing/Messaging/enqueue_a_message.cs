@@ -72,7 +72,7 @@ namespace Jasper.Testing.Messaging
                     Id = Guid.NewGuid()
                 };
 
-                await runtime.Get<IMessageContext>().EnqueueLightweight(message);
+                await runtime.Get<IMessageContext>().Enqueue(message);
 
                 waiter.Wait(5.Seconds());
                 var received = waiter.Result;

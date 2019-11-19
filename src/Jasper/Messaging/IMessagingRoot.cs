@@ -27,6 +27,8 @@ namespace Jasper.Messaging
         Task Stop();
         ISendingAgent[] FindSubscribers(Type messageType);
         void AddSubscriber(ISendingAgent replyUri, Subscription[] subscriptions);
+
+        ISendingAgent AgentForLocalQueue(string queueName);
     }
 
 

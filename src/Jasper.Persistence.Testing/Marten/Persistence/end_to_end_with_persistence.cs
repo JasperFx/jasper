@@ -109,47 +109,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             incoming.Any().ShouldBeFalse();
         }
 
-        [Fact]
-        public async Task enqueue_locally_durably()
-        {
-            var item = new ItemCreated
-            {
-                Name = "Shoe",
-                Id = Guid.NewGuid()
-            };
-
-            var waiter = theTracker.WaitFor<ItemCreated>();
-
-            await theReceiver.Get<IMessagePublisher>().EnqueueDurably(item);
-
-            waiter.Wait(5.Seconds());
-
-            waiter.IsCompleted.ShouldBeTrue();
-
-            using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
-            {
-                var item2 = session.Load<ItemCreated>(item.Id);
-                if (item2 == null)
-                {
-                    Thread.Sleep(500);
-                    item2 = session.Load<ItemCreated>(item.Id);
-                }
-
-
-                item2.Name.ShouldBe("Shoe");
-
-
-            }
-
-            var admin = theReceiver.Get<IEnvelopePersistence>().Admin;
-
-            var deleted = (await admin.AllIncomingEnvelopes()).Any();
-            if (!deleted)
-            {
-                Thread.Sleep(500);
-                (await admin.AllIncomingEnvelopes()).Any().ShouldBeFalse();
-            }
-        }
 
         [Fact]
         public async Task send_end_to_end()
