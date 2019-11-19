@@ -27,19 +27,22 @@ namespace Jasper.Messaging.Transports
         public string Protocol { get; }
         public Uri ReplyUri { get; protected set; }
 
-        public void Initialize(IMessagingRoot root, ITransportRuntime runtime)
+        public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {
-            foreach (var settings in _listeners)
-            {
-                var listener = createListener(settings, root);
-                runtime.AddListener(listener, settings);
-            }
-
             var endpoints = _subscriptions.GroupBy(x => x.Uri);
             foreach (var endpoint in endpoints)
             {
                 var sender = CreateSender(endpoint.Key, root.Settings.Cancellation, root);
                 runtime.AddSubscriber(ReplyUri, sender, endpoint.ToArray());
+            }
+        }
+
+        public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
+        {
+            foreach (var settings in _listeners)
+            {
+                var listener = createListener(settings, root);
+                runtime.AddListener(listener, settings);
             }
         }
 

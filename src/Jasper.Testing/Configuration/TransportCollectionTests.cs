@@ -102,6 +102,16 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
+            public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
+            {
+                throw new NotImplementedException();
+            }
+
             public void Initialize(IMessagingRoot root, ITransportRuntime runtime)
             {
                 throw new NotImplementedException();

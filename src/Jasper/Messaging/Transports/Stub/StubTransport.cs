@@ -62,7 +62,8 @@ namespace Jasper.Messaging.Transports.Stub
         public readonly IList<Subscription> Subscriptions = new List<Subscription>();
 
         public string Protocol { get; } = "stub";
-        public void Initialize(IMessagingRoot root, ITransportRuntime runtime)
+
+        public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {
             var pipeline = root.Pipeline;
 
@@ -70,14 +71,17 @@ namespace Jasper.Messaging.Transports.Stub
                 new LightweightCache<Uri, StubChannel>(u => new StubChannel(u, pipeline, this));
 
 
-            foreach (var listener in _listeners) Channels.FillDefault(listener);
-
             var groups = Subscriptions.GroupBy(x => x.Uri);
             foreach (var @group in groups)
             {
                 var agent = Channels[@group.Key];
                 runtime.AddSubscriber(agent, @group.ToArray());
             }
+        }
+
+        public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
+        {
+            foreach (var listener in _listeners) Channels.FillDefault(listener);
         }
 
         public ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)

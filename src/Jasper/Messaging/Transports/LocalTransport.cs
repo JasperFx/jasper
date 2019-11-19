@@ -31,12 +31,17 @@ namespace Jasper.Messaging.Transports
 
         public string Protocol { get; } = TransportConstants.Local;
 
-        public void Initialize(IMessagingRoot root, ITransportRuntime runtime)
+        public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {
             foreach (var queue in _queues)
             {
                 addQueue(root, runtime, queue);
             }
+        }
+
+        public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
+        {
+            // Nothing
         }
 
         public ISendingAgent AddSenderForDestination(string queueName, IMessagingRoot root, ITransportRuntime runtime)

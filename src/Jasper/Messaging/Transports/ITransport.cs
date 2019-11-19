@@ -18,7 +18,8 @@ namespace Jasper.Messaging.Transports
 
         IListenerSettings ListenTo(Uri uri);
 
-        void Initialize(IMessagingRoot root, ITransportRuntime runtime);
+        void StartSenders(IMessagingRoot root, ITransportRuntime runtime);
+        void StartListeners(IMessagingRoot root, ITransportRuntime runtime);
 
         ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root);
 
