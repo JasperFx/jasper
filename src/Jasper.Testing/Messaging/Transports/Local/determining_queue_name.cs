@@ -11,32 +11,32 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void queue_at_extension()
         {
-            var uri = TransportConstants.LoopbackUri.AtQueue("one");
+            var uri = LocalTransport.AtQueue(TransportConstants.LoopbackUri, (string) "one");
 
-            uri.QueueName().ShouldBe("one");
+            LocalTransport.QueueName(uri).ShouldBe("one");
         }
 
         [Fact]
         public void queue_at_extension_durable()
         {
-            var uri = TransportConstants.DurableLoopbackUri.AtQueue("one");
+            var uri = LocalTransport.AtQueue(TransportConstants.DurableLoopbackUri, (string) "one");
 
-            uri.QueueName().ShouldBe("one");
+            LocalTransport.QueueName(uri).ShouldBe("one");
         }
 
 
         [Fact]
         public void queue_at_other_queue()
         {
-            var uri = "tcp://localhost:2222".ToUri().AtQueue("one");
+            var uri = LocalTransport.AtQueue("tcp://localhost:2222".ToUri(), (string) "one");
 
-            uri.QueueName().ShouldBe("one");
+            LocalTransport.QueueName(uri).ShouldBe("one");
         }
 
         [Fact]
         public void fall_back_to_the_default_queue_if_no_segments()
         {
-            "tcp://localhost:2222".ToUri().QueueName().ShouldBe(TransportConstants.Default);
+            LocalTransport.QueueName("tcp://localhost:2222".ToUri()).ShouldBe(TransportConstants.Default);
         }
 
         [Fact]
@@ -70,14 +70,14 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void still_get_queue_name_with_durable()
         {
-            "tcp://localhost:2222/durable".ToUri().QueueName().ShouldBe(TransportConstants.Default);
-            "tcp://localhost:2222/durable/incoming".ToUri().QueueName().ShouldBe("incoming");
+            LocalTransport.QueueName("tcp://localhost:2222/durable".ToUri()).ShouldBe(TransportConstants.Default);
+            LocalTransport.QueueName("tcp://localhost:2222/durable/incoming".ToUri()).ShouldBe("incoming");
         }
 
         [Fact]
         public void use_the_last_segment_if_it_exists()
         {
-            "tcp://localhost:2222/incoming".ToUri().QueueName().ShouldBe("incoming");
+            LocalTransport.QueueName("tcp://localhost:2222/incoming".ToUri()).ShouldBe("incoming");
         }
     }
 }

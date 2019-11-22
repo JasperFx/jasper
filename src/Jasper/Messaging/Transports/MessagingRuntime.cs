@@ -115,7 +115,7 @@ namespace Jasper.Messaging.Transports
             if (uri.Scheme == TransportConstants.Local)
             {
                 var local = (LocalTransport)transport;
-                var agent = local.AddSenderForDestination(uri.QueueName(), _root, this);
+                var agent = local.AddSenderForDestination(uri, _root, this);
 
                 AddSubscriber(agent, new Subscription[0]);
 

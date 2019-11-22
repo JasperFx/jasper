@@ -2,19 +2,18 @@
 using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
-using Jasper.Messaging.Transports;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Transports.InMemory
+namespace Jasper.Testing.Messaging.Transports.Local
 {
-    public class inmemory_integration_specs : IntegrationContext
+    public class local_integration_specs : IntegrationContext
     {
         private readonly MessageTracker theTracker = new MessageTracker();
 
-        public inmemory_integration_specs(DefaultApp @default) : base(@default)
+        public local_integration_specs(DefaultApp @default) : base(@default)
         {
         }
 

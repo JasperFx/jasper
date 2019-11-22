@@ -90,12 +90,42 @@ namespace Jasper.Messaging.Transports
 
         public LocalQueueSettings RetrieveQueueByUri(Uri uri)
         {
-            var queueName = uri.QueueName();
+            var queueName = QueueName(uri);
             var settings = _queues[queueName];
 
             if (uri.IsDurable()) settings.IsDurable = true;
 
             return settings;
+        }
+
+        public static string QueueName(Uri uri)
+        {
+            if (uri == null) return null;
+
+            if (uri.Scheme == TransportConstants.Local && uri.Host != TransportConstants.Durable) return uri.Host;
+
+            var lastSegment = uri.Segments.Skip(1).LastOrDefault();
+            if (lastSegment == TransportConstants.Durable) return TransportConstants.Default;
+
+            return lastSegment ?? TransportConstants.Default;
+        }
+
+        public static Uri AtQueue(Uri uri, string queueName)
+        {
+            if (queueName.IsEmpty()) return uri;
+
+            if (uri.Scheme == TransportConstants.Local && uri.Host != TransportConstants.Durable)
+            {
+                return new Uri("local://" + queueName);
+            }
+
+            return new Uri(uri, queueName);
+        }
+
+        public ISendingAgent AddSenderForDestination(Uri uri, IMessagingRoot root, TransportRuntime runtime)
+        {
+            var queueName = QueueName(uri);
+            return AddSenderForDestination(queueName, root, runtime);
         }
     }
 
