@@ -1,12 +1,15 @@
 ﻿using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging
+namespace Jasper.Testing.Messaging.Transports.Local
 {
-    public class determining_queue_name_and_is_durable
+    public class LocalTransportTests
     {
+
+
 
         [Fact]
         public void queue_at_extension()

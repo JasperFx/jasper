@@ -6,6 +6,7 @@ using ImTools;
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;

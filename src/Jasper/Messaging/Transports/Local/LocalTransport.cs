@@ -8,7 +8,7 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 
-namespace Jasper.Messaging.Transports
+namespace Jasper.Messaging.Transports.Local
 {
     // TODO -- UT this beast
     public class LocalTransport : ITransport

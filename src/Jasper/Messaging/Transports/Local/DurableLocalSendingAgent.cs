@@ -1,18 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Configuration;
-using Jasper.Conneg;
+using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 
-namespace Jasper.Messaging.Durability
+namespace Jasper.Messaging.Transports.Local
 {
     public class DurableLocalSendingAgent : DurableWorkerQueue, ISendingAgent
     {

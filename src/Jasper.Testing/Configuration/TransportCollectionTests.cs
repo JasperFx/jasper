@@ -4,6 +4,7 @@ using System.Threading;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.Transports.Tcp;

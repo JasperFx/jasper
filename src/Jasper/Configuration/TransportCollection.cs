@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
