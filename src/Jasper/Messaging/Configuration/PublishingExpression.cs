@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using Jasper.Configuration;
-using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Tcp;
-using Jasper.Settings;
 using Jasper.Util;
-using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Configuration
 {
@@ -66,7 +62,6 @@ namespace Jasper.Messaging.Configuration
         }
 
 
-
         /// <summary>
         ///     Directs Jasper to try to publish all messages locally even if there are other
         ///     subscribers for the message type
@@ -79,8 +74,8 @@ namespace Jasper.Messaging.Configuration
         public class MessageTrackExpression
         {
             private readonly string _match;
-            private readonly RoutingScope _routingScope;
             private readonly JasperOptions _parent;
+            private readonly RoutingScope _routingScope;
 
             internal MessageTrackExpression(JasperOptions parent,
                 RoutingScope routingScope, string match)
@@ -109,7 +104,8 @@ namespace Jasper.Messaging.Configuration
 
 
             /// <summary>
-            ///     Publishes the matching messages locally in  addition to any other subscriber rules
+            ///     Publishes the matching messages locally to the default
+            ///     local queue
             /// </summary>
             public void Locally()
             {
@@ -123,8 +119,8 @@ namespace Jasper.Messaging.Configuration
             }
 
             /// <summary>
-            /// Publish the designated message types using Jasper's lightweight
-            /// TCP transport locally to the designated port number
+            ///     Publish the designated message types using Jasper's lightweight
+            ///     TCP transport locally to the designated port number
             /// </summary>
             /// <param name="port"></param>
             /// <exception cref="NotImplementedException"></exception>
@@ -133,11 +129,22 @@ namespace Jasper.Messaging.Configuration
                 To($"tcp://localhost:{port}".ToUri());
             }
 
+            /// <summary>
+            ///     Publish the designated message types using Jasper's built in
+            ///     TCP transport with durable message persistence
+            /// </summary>
+            /// <param name="port"></param>
             public void DurablyToPort(int port)
             {
                 To($"tcp://localhost:{port}/durable");
             }
 
+            /// <summary>
+            ///     Publish the designated message types to the named
+            ///     local queue
+            /// </summary>
+            /// <param name="queueName"></param>
+            /// <returns></returns>
             public IListenerSettings ToLocalQueue(string queueName)
             {
                 var settings = _parent.LocalQueues.ByName(queueName);
@@ -149,9 +156,15 @@ namespace Jasper.Messaging.Configuration
                 return settings;
             }
 
+            /// <summary>
+            ///     Publish messages using the TCP transport to the specified
+            ///     server name and port
+            /// </summary>
+            /// <param name="serverName"></param>
+            /// <param name="port"></param>
             public void ToServerAndPort(string serverName, int port)
             {
-                throw new NotImplementedException();
+                To($"tcp://{serverName}:{port}");
             }
 
             public void ToStub(string queueName)
@@ -159,12 +172,16 @@ namespace Jasper.Messaging.Configuration
                 To("stub://" + queueName);
             }
 
+            /// <summary>
+            ///     Send messages to the named local queue with durable message
+            ///     persistence
+            /// </summary>
+            /// <param name="queueName"></param>
+            /// <returns></returns>
             public IListenerSettings DurablyToLocalQueue(string queueName)
             {
                 return ToLocalQueue(queueName).Durably();
             }
         }
-
-
     }
 }
