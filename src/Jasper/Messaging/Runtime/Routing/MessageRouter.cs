@@ -149,7 +149,7 @@ namespace Jasper.Messaging.Runtime.Routing
 
         private MessageRoute createLocalRoute(Type messageType)
         {
-            var destination = TransportConstants.LoopbackUri;
+            var destination = TransportConstants.LocalUri;
             var route = new MessageRoute(messageType, destination, "application/json")
             {
                 Sender = _runtime.GetOrBuildSendingAgent(destination)

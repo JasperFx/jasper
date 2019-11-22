@@ -29,8 +29,8 @@ namespace Jasper.Messaging.Transports
         public static readonly Uri RepliesUri = "local://replies".ToUri();
         public static readonly Uri ScheduledUri = "local://delayed".ToUri();
 
-        public static readonly Uri DurableLoopbackUri = "local://durable".ToUri();
-        public static readonly Uri LoopbackUri = "local://".ToUri();
+        public static readonly Uri DurableLocalUri = "local://durable/durable".ToUri();
+        public static readonly Uri LocalUri = "local://".ToUri();
 
         public static readonly string Scheduled = "Scheduled";
         public static readonly string Incoming = "Incoming";

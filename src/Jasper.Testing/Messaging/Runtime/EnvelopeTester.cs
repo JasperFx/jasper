@@ -39,7 +39,7 @@ namespace Jasper.Testing.Messaging.Runtime
         [Fact]
         public void envelope_for_ping()
         {
-            var envelope = Envelope.ForPing(TransportConstants.LoopbackUri);
+            var envelope = Envelope.ForPing(TransportConstants.LocalUri);
             envelope.MessageType.ShouldBe(Envelope.PingMessageType);
             envelope.Data.ShouldNotBeNull();
         }
@@ -163,7 +163,7 @@ namespace Jasper.Testing.Messaging.Runtime
             var envelope = ObjectMother.Envelope();
             envelope.ExecutionTime = null;
 
-            var uri = TransportConstants.LoopbackUri;
+            var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
 
             envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
@@ -181,7 +181,7 @@ namespace Jasper.Testing.Messaging.Runtime
             var envelope = ObjectMother.Envelope();
             envelope.ExecutionTime = DateTime.UtcNow.AddDays(-1);
 
-            var uri = TransportConstants.LoopbackUri;
+            var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
 
             envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
@@ -198,7 +198,7 @@ namespace Jasper.Testing.Messaging.Runtime
             var envelope = ObjectMother.Envelope();
             envelope.ExecutionTime = DateTime.UtcNow.AddDays(1);
 
-            var uri = TransportConstants.LoopbackUri;
+            var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
 
             envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);

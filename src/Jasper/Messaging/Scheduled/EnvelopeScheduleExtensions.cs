@@ -16,7 +16,7 @@ namespace Jasper.Messaging.Scheduled
                 MessageType = TransportConstants.ScheduledEnvelope,
                 ExecutionTime = envelope.ExecutionTime,
                 ContentType = TransportConstants.SerializedEnvelope,
-                Destination = TransportConstants.DurableLoopbackUri,
+                Destination = TransportConstants.DurableLocalUri,
                 Status = TransportConstants.Scheduled,
                 OwnerId = TransportConstants.AnyNode,
                 Sender = sender

@@ -73,7 +73,7 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         public void AllMessagesLocally()
         {
-            AllMessagesTo(TransportConstants.LoopbackUri);
+            AllMessagesTo(TransportConstants.LocalUri);
         }
 
         public class MessageTrackExpression
@@ -116,7 +116,7 @@ namespace Jasper.Messaging.Configuration
                 // TODO -- stick directly on LocalTransport
                 var subscription = new Subscription
                 {
-                    Scope = _routingScope, Match = _match, Uri = TransportConstants.LoopbackUri
+                    Scope = _routingScope, Match = _match, Uri = TransportConstants.LocalUri
                 };
 
                 _parent.Transports.Subscribe(subscription);

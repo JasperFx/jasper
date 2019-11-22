@@ -231,7 +231,7 @@ namespace Jasper.Messaging
             var envelope = new Envelope(message)
             {
                 ExecutionTime = executionTime,
-                Destination = TransportConstants.DurableLoopbackUri
+                Destination = TransportConstants.DurableLocalUri
             };
 
             if (envelope.Data == null || envelope.Data.Length == 0)

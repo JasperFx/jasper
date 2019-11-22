@@ -71,10 +71,10 @@ namespace Jasper.Testing.Samples
     // ENDSAMPLE
 
 
-    // SAMPLE: LoopbackTransportApp
-    public class LoopbackTransportApp : JasperOptions
+    // SAMPLE: LocalTransportApp
+    public class LocalTransportApp : JasperOptions
     {
-        public LoopbackTransportApp()
+        public LocalTransportApp()
         {
             // Publish the message Message2 the important queue
             Publish.Message<Message2>()

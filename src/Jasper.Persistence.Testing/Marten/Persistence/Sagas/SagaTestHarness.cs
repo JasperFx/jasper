@@ -35,7 +35,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
                     }
                 );
 
-                _.Publish.AllMessagesTo(TransportConstants.LoopbackUri);
+                _.Publish.AllMessagesTo(TransportConstants.LocalUri);
 
                 configure(_);
             });

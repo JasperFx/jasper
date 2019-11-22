@@ -97,7 +97,7 @@ namespace Jasper.Testing.Messaging.Tracking
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<MessageThatFailsHandler>();
                 _.Include<MessageTrackingExtension>();
-                _.Publish.AllMessagesTo(TransportConstants.LoopbackUri);
+                _.Publish.AllMessagesTo(TransportConstants.LocalUri);
             }))
             {
                 var history = runtime.Get<MessageHistory>();

@@ -116,9 +116,9 @@ namespace StorytellerSpecs.Fixtures
 
             for (var i = 0; i < expired; i++) list.Add(expiredEnvelope());
 
-            foreach (var envelope in list) envelope.Destination = TransportConstants.LoopbackUri;
+            foreach (var envelope in list) envelope.Destination = TransportConstants.LocalUri;
 
-            return new OutgoingMessageBatch(TransportConstants.LoopbackUri, list);
+            return new OutgoingMessageBatch(TransportConstants.LocalUri, list);
         }
 
         [FormatAs("Sending a batch of {count} envelopes fails in the sender")]

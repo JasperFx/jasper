@@ -56,7 +56,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         [Fact]
         public void queue_at_extension()
         {
-            var uri = LocalTransport.AtQueue(TransportConstants.LoopbackUri, (string) "one");
+            var uri = LocalTransport.AtQueue(TransportConstants.LocalUri, (string) "one");
 
             LocalTransport.QueueName(uri).ShouldBe("one");
         }
@@ -64,7 +64,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         [Fact]
         public void queue_at_extension_durable()
         {
-            var uri = LocalTransport.AtQueue(TransportConstants.DurableLoopbackUri, (string) "one");
+            var uri = LocalTransport.AtQueue(TransportConstants.DurableLocalUri, (string) "one");
 
             LocalTransport.QueueName(uri).ShouldBe("one");
         }
@@ -85,7 +85,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         }
 
         [Fact]
-        public void negative_case_with_loopback()
+        public void negative_case_with_local()
         {
             "local://default".ToUri().IsDurable().ShouldBeFalse();
             "local://replies".ToUri().IsDurable().ShouldBeFalse();
@@ -99,7 +99,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         }
 
         [Fact]
-        public void positive_case_with_loopback()
+        public void positive_case_with_local()
         {
             "local://durable".ToUri().IsDurable().ShouldBeTrue();
             "local://durable/replies".ToUri().IsDurable().ShouldBeTrue();

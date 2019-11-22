@@ -43,7 +43,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void destination_is_scheduled_queue()
         {
-            theScheduledEnvelope.Destination.ShouldBe(TransportConstants.DurableLoopbackUri);
+            theScheduledEnvelope.Destination.ShouldBe(TransportConstants.DurableLocalUri);
         }
 
         [Fact]

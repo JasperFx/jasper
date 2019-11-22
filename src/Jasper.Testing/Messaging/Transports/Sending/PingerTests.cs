@@ -56,7 +56,7 @@ namespace Jasper.Testing.Messaging.Transports.Sending
             return Task.CompletedTask;
         }
 
-        public Uri Destination { get; } = TransportConstants.LoopbackUri;
+        public Uri Destination { get; } = TransportConstants.LocalUri;
 
         public int QueuedCount => 0;
 
