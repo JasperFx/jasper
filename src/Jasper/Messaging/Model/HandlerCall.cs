@@ -37,7 +37,7 @@ namespace Jasper.Messaging.Model
 
             if (method.ReturnType.IsValueTuple()) return true;
 
-            return !hasOutput || !method.ReturnType.GetTypeInfo().IsValueType;
+            return !hasOutput || !method.ReturnType.IsPrimitive;
         }
 
         public new static HandlerCall For<T>(Expression<Action<T>> method)
