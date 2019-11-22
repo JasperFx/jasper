@@ -1,4 +1,7 @@
-﻿using Jasper.Messaging.Transports;
+﻿using System.Linq;
+using Baseline;
+using Jasper.Configuration;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
 using Jasper.Util;
 using Shouldly;
@@ -8,7 +11,46 @@ namespace Jasper.Testing.Messaging.Transports.Local
 {
     public class LocalTransportTests
     {
+        [Theory]
+        [InlineData(TransportConstants.Default)]
+        [InlineData(TransportConstants.Retries)]
+        [InlineData(TransportConstants.Replies)]
+        public void has_default_queues(string queueName)
+        {
+            new LocalTransport()
+                .AllQueues().Any(x => x.Name == queueName)
+                .ShouldBeTrue();
+        }
 
+        [Fact]
+        public void LocalQueueSettings_forces_the_queue_name_to_be_lower_case()
+        {
+            new LocalQueueSettings("Foo")
+                .Name.ShouldBe("foo");
+        }
+
+
+        [Fact]
+        public void add_subscription()
+        {
+            var subscription = Subscription.All("local://one");
+            var transport = new LocalTransport();
+
+            transport.As<ITransport>().Subscribe(subscription);
+
+            transport.QueueFor("one")
+                .Subscriptions.Single()
+                .ShouldBeSameAs(subscription);
+        }
+
+        [Fact]
+        public void case_insensitive_queue_find()
+        {
+            var transport = new LocalTransport();
+
+            transport.QueueFor("One")
+                .ShouldBeSameAs(transport.QueueFor("one"));
+        }
 
 
         [Fact]
@@ -82,5 +124,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         {
             LocalTransport.QueueName("tcp://localhost:2222/incoming".ToUri()).ShouldBe("incoming");
         }
+
+
     }
 }

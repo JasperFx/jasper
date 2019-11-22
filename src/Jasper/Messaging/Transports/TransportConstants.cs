@@ -21,9 +21,9 @@ namespace Jasper.Messaging.Transports
         public const string Durable = "durable";
         public static readonly string Local = "local";
 
-        public static readonly string Default = "default";
-        public static readonly string Replies = "replies";
-        public static readonly string Retries = "retries";
+        public const string Default = "default";
+        public const string Replies = "replies";
+        public const string Retries = "retries";
 
         public static readonly Uri RetryUri = "local://retries".ToUri();
         public static readonly Uri RepliesUri = "local://replies".ToUri();

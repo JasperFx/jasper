@@ -101,12 +101,9 @@ namespace Jasper.Configuration
         /// <param name="port"></param>
         public IListenerSettings DurableListenerAt(int port)
         {
-            return Get<TcpTransport>().ListenTo($"tcp://localhost:{port}".ToUri()).Durably();
+            return Get<TcpTransport>()
+                .ListenTo($"tcp://localhost:{port}".ToUri()).Durably();
         }
 
-        public IListenerSettings LocalQueue(string queueName)
-        {
-            return Get<LocalTransport>().ListenTo($"local://{queueName}".ToUri());
-        }
     }
 }

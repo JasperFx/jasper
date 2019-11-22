@@ -11,6 +11,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Settings;
 using Jasper.Util;
 using Lamar;
@@ -141,6 +142,12 @@ namespace Jasper
             get => Advanced.ServiceName;
             set => Advanced.ServiceName = value;
         }
+
+        /// <summary>
+        /// Direct access to configure or add local queues for durability,
+        /// maximum parallel threads, and other settings
+        /// </summary>
+        public ILocalQueues LocalQueues => (ILocalQueues)Transports.Get<LocalTransport>();
 
         private void establishApplicationAssembly(string assemblyName)
         {

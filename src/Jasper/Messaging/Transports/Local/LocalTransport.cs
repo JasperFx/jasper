@@ -4,14 +4,12 @@ using System.Linq;
 using System.Threading;
 using Baseline;
 using Jasper.Configuration;
-using Jasper.Messaging.Durability;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Local
 {
-    // TODO -- UT this beast
-    public class LocalTransport : ITransport
+    public class LocalTransport : ITransport, ILocalQueues
     {
         private readonly Cache<string, LocalQueueSettings> _queues = new Cache<string, LocalQueueSettings>(name =>
             new LocalQueueSettings(name)
@@ -28,6 +26,11 @@ namespace Jasper.Messaging.Transports.Local
             _queues.FillDefault(TransportConstants.Replies);
         }
 
+        public IEnumerable<LocalQueueSettings> AllQueues()
+        {
+            return _queues;
+        }
+
         public void Dispose()
         {
             // Nothing really
@@ -35,38 +38,32 @@ namespace Jasper.Messaging.Transports.Local
 
         public string Protocol { get; } = TransportConstants.Local;
 
-        public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
+        void ITransport.StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {
             foreach (var queue in _queues) addQueue(root, runtime, queue);
         }
 
-        public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
+        void ITransport.StartListeners(IMessagingRoot root, ITransportRuntime runtime)
         {
             // Nothing
         }
 
-        public ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
+        ISender ITransport.CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
         {
             throw new NotSupportedException();
         }
 
-        public void Subscribe(Subscription subscription)
+        void ITransport.Subscribe(Subscription subscription)
         {
-            RetrieveQueueByUri(subscription.Uri).Subscriptions.Add(subscription);
+            findByUri(subscription.Uri).Subscriptions.Add(subscription);
         }
 
 
-        public Uri ReplyUri => TransportConstants.RepliesUri;
+        Uri ITransport.ReplyUri => TransportConstants.RepliesUri;
 
-        public IListenerSettings ListenTo(Uri uri)
+        IListenerSettings ITransport.ListenTo(Uri uri)
         {
-            return RetrieveQueueByUri(uri);
-        }
-
-        public ISendingAgent AddSenderForDestination(string queueName, IMessagingRoot root, ITransportRuntime runtime)
-        {
-            var queue = _queues[queueName];
-            return addQueue(root, runtime, queue);
+            return findByUri(uri);
         }
 
         private ISendingAgent addQueue(IMessagingRoot root, ITransportRuntime runtime, LocalQueueSettings queue)
@@ -88,7 +85,7 @@ namespace Jasper.Messaging.Transports.Local
                     root.MessageLogger);
         }
 
-        public LocalQueueSettings RetrieveQueueByUri(Uri uri)
+        private LocalQueueSettings findByUri(Uri uri)
         {
             var queueName = QueueName(uri);
             var settings = _queues[queueName];
@@ -96,6 +93,16 @@ namespace Jasper.Messaging.Transports.Local
             if (uri.IsDurable()) settings.IsDurable = true;
 
             return settings;
+        }
+
+        /// <summary>
+        /// Retrieves a local queue by name
+        /// </summary>
+        /// <param name="queueName"></param>
+        /// <returns></returns>
+        public LocalQueueSettings QueueFor(string queueName)
+        {
+            return _queues[queueName.ToLowerInvariant()];
         }
 
         public static string QueueName(Uri uri)
@@ -115,28 +122,26 @@ namespace Jasper.Messaging.Transports.Local
             if (queueName.IsEmpty()) return uri;
 
             if (uri.Scheme == TransportConstants.Local && uri.Host != TransportConstants.Durable)
-            {
                 return new Uri("local://" + queueName);
-            }
 
             return new Uri(uri, queueName);
         }
 
-        public ISendingAgent AddSenderForDestination(Uri uri, IMessagingRoot root, TransportRuntime runtime)
+        internal ISendingAgent AddSenderForDestination(Uri uri, IMessagingRoot root, TransportRuntime runtime)
         {
             var queueName = QueueName(uri);
-            return AddSenderForDestination(queueName, root, runtime);
+            var queue = _queues[queueName];
+            return addQueue(root, runtime, queue);
         }
-    }
 
-    public class LocalQueueSettings : ListenerSettings
-    {
-        public LocalQueueSettings(string name)
+        IListenerSettings ILocalQueues.ByName(string queueName)
         {
-            Name = name;
+            return QueueFor(queueName);
         }
 
-
-        public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
+        IListenerSettings ILocalQueues.Default()
+        {
+            return QueueFor(TransportConstants.Default);
+        }
     }
 }

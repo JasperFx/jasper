@@ -140,7 +140,7 @@ namespace Jasper.Messaging.Configuration
 
             public IListenerSettings ToLocalQueue(string queueName)
             {
-                var settings = _parent.Transports.LocalQueue(queueName);
+                var settings = _parent.LocalQueues.ByName(queueName);
                 _parent.Transports.Subscribe(new Subscription
                 {
                     Scope = _routingScope, Match = _match, Uri = $"local://{queueName}".ToUri()

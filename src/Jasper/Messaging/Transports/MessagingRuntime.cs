@@ -164,5 +164,6 @@ namespace Jasper.Messaging.Transports
         {
             // TODO -- do stuff
         }
+
     }
 }
