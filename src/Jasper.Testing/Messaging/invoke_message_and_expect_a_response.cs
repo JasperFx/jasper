@@ -28,6 +28,18 @@ namespace Jasper.Testing.Messaging
             answer.Product.ShouldBe(12);
         }
 
+
+        [Fact]
+        public async Task invoke_expecting_a_response_with_struct()
+        {
+            StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
+
+            var answer = await theReceiver.Get<IMessagePublisher>().Invoke<AnswerStruct>(new QuestionStruct {One = 3, Two = 4});
+
+            answer.Sum.ShouldBe(7);
+            answer.Product.ShouldBe(12);
+        }
+
         [Fact]
         public async Task invoke_with_expected_response_when_there_is_no_receiver()
         {
@@ -61,6 +73,18 @@ namespace Jasper.Testing.Messaging
         public int Product { get; set; }
     }
 
+    public struct QuestionStruct
+    {
+        public int One { get; set; }
+        public int Two { get; set; }
+    }
+
+    public struct AnswerStruct
+    {
+        public int Sum { get; set; }
+        public int Product { get; set; }
+    }
+
     public class QuestionWithNoHandler
     {
     }
@@ -74,6 +98,15 @@ namespace Jasper.Testing.Messaging
         public Answer Handle(Question question)
         {
             return new Answer
+            {
+                Sum = question.One + question.Two,
+                Product = question.One * question.Two
+            };
+        }
+
+        public AnswerStruct Handle(QuestionStruct question)
+        {
+            return new AnswerStruct
             {
                 Sum = question.One + question.Two,
                 Product = question.One * question.Two

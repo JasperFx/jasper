@@ -305,7 +305,7 @@ namespace Jasper.Messaging
             });
         }
 
-        public async Task<T> Invoke<T>(object message) where T : class
+        public async Task<T> Invoke<T>(object message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -320,7 +320,12 @@ namespace Jasper.Messaging
 
             await _root.Pipeline.InvokeNow(envelope);
 
-            return envelope.Response as T;
+            if (envelope.Response == null)
+            {
+                return default(T);
+            }
+
+            return (T)envelope.Response;
         }
 
         public Task Enqueue<T>(T message, string workerQueue = null)

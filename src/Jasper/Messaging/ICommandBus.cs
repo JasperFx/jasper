@@ -28,7 +28,7 @@ namespace Jasper.Messaging
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<T> Invoke<T>(object message) where T : class;
+        Task<T> Invoke<T>(object message);
 
         /// <summary>
         ///     Enqueues the message locally. Uses the message type to worker queue routing to determine
