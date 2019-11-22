@@ -6,27 +6,16 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Scheduled;
+using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 
 namespace Jasper.Messaging.Durability
 {
     public class NulloEnvelopePersistence : IEnvelopePersistence, IEnvelopeStorageAdmin
     {
-        private readonly IWorkerQueue _worker;
         public IEnvelopeStorageAdmin Admin => this;
         public IDurabilityAgentStorage AgentStorage { get; } = null;
-
-        public NulloEnvelopePersistence(IWorkerQueue worker)
-        {
-            _worker = worker;
-        }
-
-        // For IoC
-        public NulloEnvelopePersistence(ITransportLogger logger, IHandlerPipeline pipeline, AdvancedSettings settings)
-        {
-            // TODO -- change this to use the default local queue?
-            _worker = new LightweightWorkerQueue(new ListenerSettings(), logger, pipeline, settings);
-        }
 
         public Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {

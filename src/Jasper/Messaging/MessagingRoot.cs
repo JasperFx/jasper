@@ -57,9 +57,7 @@ namespace Jasper.Messaging
             _container = container;
 
 
-            ScheduledJobs =
-                new InMemoryScheduledJobProcessor(new LightweightWorkerQueue(new ListenerSettings(), transportLogger,
-                    Pipeline, Settings));
+
         }
 
         public DurabilityAgent Durability { get; private set; }
@@ -98,7 +96,7 @@ namespace Jasper.Messaging
 
         public ITransportLogger TransportLogger { get; }
 
-        public IScheduledJobProcessor ScheduledJobs { get; }
+        public IScheduledJobProcessor ScheduledJobs { get; set; }
 
         public JasperOptions Options { get; }
 
@@ -140,6 +138,9 @@ namespace Jasper.Messaging
 
             // Start all the listeners and senders
             Runtime.As<TransportRuntime>().Initialize();
+
+            ScheduledJobs =
+                new InMemoryScheduledJobProcessor((IWorkerQueue) Runtime.AgentForLocalQueue(TransportConstants.Replies));
 
             await startDurabilityAgent();
         }
