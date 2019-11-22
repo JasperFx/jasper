@@ -259,6 +259,12 @@ namespace Jasper.Messaging
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.Status = TransportConstants.Scheduled;
 
+            if (Persistence is NulloEnvelopePersistence)
+            {
+                _root.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+                return Task.CompletedTask;
+            }
+
 
             return EnlistedInTransaction
                 ? Transaction.ScheduleJob(envelope)

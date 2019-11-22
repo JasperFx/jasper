@@ -125,14 +125,9 @@ namespace Jasper.Messaging.Durability
 
         public Task ScheduleJob(Envelope envelope)
         {
-            if (!envelope.ExecutionTime.HasValue)
-                throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
-
-            ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
-            return Task.CompletedTask;
+            throw new NotSupportedException();
         }
 
-        public IScheduledJobProcessor ScheduledJobs { get; set; }
 
     }
 }
