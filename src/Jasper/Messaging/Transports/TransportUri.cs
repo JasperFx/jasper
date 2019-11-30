@@ -7,7 +7,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Transports
 {
-
+    [Obsolete("Is this thing necessary?")]
     public class TransportUri
     {
         private readonly Dictionary<string, string> _values = new Dictionary<string, string>();

@@ -1,22 +1,26 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks.Dataflow;
 using Jasper.Configuration;
+using Jasper.Messaging.Durability;
+using Jasper.Messaging.Transports;
 
-namespace Jasper.Messaging.Transports
+namespace Jasper.Messaging.Configuration
 {
-    public interface ISenderSettings
+    public interface IEndpoint
     {
         /// <summary>
         /// Force any messages enqueued to be sent by this sender to be durable
         /// </summary>
         /// <returns></returns>
-        ISenderSettings Durably();
+        IEndpoint Durably();
 
         /// <summary>
         /// By default, messages on this sender will not be persisted until
         /// being successfully handled
         /// </summary>
         /// <returns></returns>
-        ISenderSettings Lightweight();
+        IEndpoint Lightweight();
 
 
 
@@ -25,17 +29,40 @@ namespace Jasper.Messaging.Transports
         /// </summary>
         /// <param name="subscription"></param>
         /// <returns></returns>
-        ISenderSettings Subscribe(Subscription subscription);
+        IEndpoint Subscribe(Subscription subscription);
+
+
+        IEndpoint ListenForMessages(Action<ExecutionDataflowBlockOptions> configure = null);
     }
 
-    public abstract class SenderSettings<TSelf> : ISenderSettings where TSelf : ISenderSettings
+    public abstract class Endpoint<TSelf> : IEndpoint where TSelf : IEndpoint
     {
+        /// <summary>
+        /// Descriptive Name for this listener. Optional.
+        /// </summary>
+        public string Name { get; set; }
+
+        public abstract TSelf Parse(Uri uri);
+
+        public Uri Uri { get; protected set; }
+
         private bool _isDurable;
 
+        /// <summary>
+        /// Should this transport endpoint be wrapped
+        /// with persistent, durable messaging?
+        /// </summary>
         public bool IsDurable()
         {
             return _isDurable;
         }
+
+        public bool IsListener()
+        {
+            return _isListening;
+        }
+
+        public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
 
         protected abstract TSelf returnThis();
 
@@ -61,10 +88,22 @@ namespace Jasper.Messaging.Transports
         }
 
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
+        private bool _isListening;
 
         public TSelf Subscribe(Subscription subscription)
         {
             _subscriptions.Add(subscription);
+            return returnThis();
+        }
+
+        IEndpoint IEndpoint.ListenForMessages(Action<ExecutionDataflowBlockOptions> configure = null)
+        {
+            return ListenForMessages(configure);
+        }
+
+        public TSelf ListenForMessages(Action<ExecutionDataflowBlockOptions> configure = null)
+        {
+            _isListening = true;
             return returnThis();
         }
 
@@ -73,19 +112,22 @@ namespace Jasper.Messaging.Transports
             return _subscriptions;
         }
 
-        ISenderSettings ISenderSettings.Durably()
+        IEndpoint IEndpoint.Durably()
         {
             return Durably();
         }
 
-        ISenderSettings ISenderSettings.Lightweight()
+        IEndpoint IEndpoint.Lightweight()
         {
             return Lightweight();
         }
 
-        ISenderSettings ISenderSettings.Subscribe(Subscription subscription)
+        IEndpoint IEndpoint.Subscribe(Subscription subscription)
         {
             return Subscribe(subscription);
         }
+
+
     }
+
 }

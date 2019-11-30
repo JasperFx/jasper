@@ -6,6 +6,7 @@ namespace Jasper
     /// <summary>
     /// Configuration for a single message listener within a Jasper application
     /// </summary>
+    [Obsolete("Going to fold into Endpoint")]
     public class ListenerSettings : IListenerSettings
     {
         /// <summary>
