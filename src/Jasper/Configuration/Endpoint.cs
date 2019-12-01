@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Messaging;
 
 namespace Jasper.Configuration
 {
@@ -40,5 +41,8 @@ namespace Jasper.Configuration
         public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
 
         public bool IsListener { get; set; }
+
+
+        protected internal abstract void StartListening(IMessagingRoot root, ITransportRuntime runtime);
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
@@ -13,25 +15,33 @@ namespace Jasper.Messaging.Transports.Tcp
 {
     public class TcpTransport : TransportBase<TcpEndpoint>
     {
+        private readonly LightweightCache<Uri, TcpEndpoint> _listeners =
+            new LightweightCache<Uri, TcpEndpoint>(uri =>
+            {
+                var endpoint = new TcpEndpoint();
+                endpoint.Parse(uri);
+
+                return endpoint;
+            });
+
         public TcpTransport() :
             base("tcp")
         {
         }
 
-        protected override IListener createListener(TcpEndpoint endpoint, IMessagingRoot root)
+        protected override Uri canonicizeUri(Uri uri)
         {
-            // check the uri for an ip address to bind to
-            var cancellation = root.Settings.Cancellation;
+            return new Uri($"tcp://{uri.Host}:{uri.Port}");
+        }
 
-            var hostNameType = System.Uri.CheckHostName(endpoint.HostName);
+        protected override IEnumerable<TcpEndpoint> endpoints()
+        {
+            return _listeners;
+        }
 
-            if (hostNameType != UriHostNameType.IPv4 && hostNameType != UriHostNameType.IPv6)
-                return endpoint.HostName == "localhost"
-                    ? new SocketListener(IPAddress.Loopback, endpoint.Port, cancellation)
-                    : new SocketListener(IPAddress.Any, endpoint.Port, cancellation);
-
-            var ipaddr = IPAddress.Parse(endpoint.HostName);
-            return new SocketListener(ipaddr, endpoint.Port, cancellation);
+        protected override TcpEndpoint findEndpointByUri(Uri uri)
+        {
+            return _listeners[uri];
         }
 
         public override ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)

@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Baseline;
 using Jasper.Configuration;
-using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 
@@ -12,22 +10,18 @@ namespace Jasper.Messaging.Transports
 {
     public abstract class TransportBase<TEndpoint> : ITransport where TEndpoint : Endpoint, new()
     {
-        private readonly LightweightCache<Uri, TEndpoint> _listeners =
-            new LightweightCache<Uri, TEndpoint>(uri =>
-            {
-                var endpoint = new TEndpoint();
-                endpoint.Parse(uri);
 
-                return endpoint;
-            });
-
+        [Obsolete]
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
+
+
 
         public TransportBase(string protocol)
         {
             Protocol = protocol;
         }
 
+        protected abstract IEnumerable<TEndpoint> endpoints();
 
         public string Protocol { get; }
         public Uri ReplyUri { get; protected set; }
@@ -55,10 +49,9 @@ namespace Jasper.Messaging.Transports
 
         public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
         {
-            foreach (var settings in _listeners)
+            foreach (var endpoint in endpoints())
             {
-                var listener = createListener(settings, root);
-                runtime.AddListener(listener, settings);
+                endpoint.StartListening(root, runtime);
             }
         }
 
@@ -66,28 +59,29 @@ namespace Jasper.Messaging.Transports
 
         public void Subscribe(Uri uri, Subscription subscription)
         {
-            subscription.Uri = uri;
+            subscription.Uri = canonicizeUri(uri);
             _subscriptions.Add(subscription);
         }
 
         public Endpoint ListenTo(Uri uri)
         {
             uri = canonicizeUri(uri);
-            var listener = _listeners[uri];
+            var endpoint = findEndpointByUri(uri);
 
             if (uri.IsDurable())
             {
-                listener.IsDurable = true;
+                endpoint.IsDurable = true;
             }
 
-            return listener;
+            return endpoint;
         }
+
+        protected abstract TEndpoint findEndpointByUri(Uri uri);
 
 
         public void Dispose()
         {
         }
 
-        protected abstract IListener createListener(TEndpoint endpoint, IMessagingRoot root);
     }
 }
