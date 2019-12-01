@@ -45,14 +45,14 @@ namespace Jasper.Messaging.Transports.Local
             // Nothing
         }
 
-        ISender ITransport.CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
-        {
-            throw new NotSupportedException();
-        }
-
         void ITransport.Subscribe(Uri uri, Subscription subscription)
         {
             findByUri(uri).Subscriptions.Add(subscription);
+        }
+
+        public Endpoint DetermineEndpoint(Uri uri)
+        {
+            return findByUri(uri);
         }
 
 

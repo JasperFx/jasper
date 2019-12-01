@@ -21,8 +21,9 @@ namespace Jasper.Messaging.Transports
         void StartSenders(IMessagingRoot root, ITransportRuntime runtime);
         void StartListeners(IMessagingRoot root, ITransportRuntime runtime);
 
-        ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root);
-
         void Subscribe(Uri uri, Subscription subscription);
+
+
+        Endpoint DetermineEndpoint(Uri uri);
     }
 }

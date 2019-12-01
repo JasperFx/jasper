@@ -124,8 +124,8 @@ namespace Jasper.Messaging.Transports
             }
             else
             {
-                var sender = transport.CreateSender(uri, _root.Settings.Cancellation, _root);
-                return AddSubscriber(transport.ReplyUri, sender, new Subscription[0]);
+                var endpoint = transport.DetermineEndpoint(uri);
+                return endpoint.StartSending(_root, _root.Runtime, transport.ReplyUri);
             }
 
 

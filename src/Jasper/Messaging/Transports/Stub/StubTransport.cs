@@ -79,15 +79,16 @@ namespace Jasper.Messaging.Transports.Stub
             }
         }
 
+        public Endpoint DetermineEndpoint(Uri uri)
+        {
+            throw new NotSupportedException();
+        }
+
         public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
         {
             foreach (var listener in _listeners) Channels.FillDefault(listener);
         }
 
-        public ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
-        {
-            throw new NotSupportedException();
-        }
 
 
         public void Subscribe(Uri uri, Subscription subscription)
@@ -97,7 +98,6 @@ namespace Jasper.Messaging.Transports.Stub
         }
 
 
-        public bool WasDisposed { get; set; }
         public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
 
 

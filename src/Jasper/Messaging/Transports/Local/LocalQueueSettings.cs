@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Jasper.Configuration;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Local
@@ -28,6 +29,12 @@ namespace Jasper.Messaging.Transports.Local
         public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected internal override ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime,
+            Uri replyUri)
         {
             throw new NotImplementedException();
         }

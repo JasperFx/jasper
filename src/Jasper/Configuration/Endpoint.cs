@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Messaging;
+using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Configuration
 {
@@ -44,5 +46,9 @@ namespace Jasper.Configuration
 
 
         protected internal abstract void StartListening(IMessagingRoot root, ITransportRuntime runtime);
+        protected internal abstract ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime,
+            Uri replyUri);
+
+        public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
     }
 }

@@ -44,12 +44,5 @@ namespace Jasper.Messaging.Transports.Tcp
             return _listeners[uri];
         }
 
-        public override ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
-        {
-            return new BatchedSender(uri, new SocketSenderProtocol(), cancellation, root.TransportLogger);
-        }
-
-
-
     }
 }
