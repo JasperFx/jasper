@@ -37,35 +37,36 @@ namespace Jasper
 
     public class ListenerConfiguration : IListenerConfiguration
     {
-        private readonly Endpoint _settings;
+        private readonly Endpoint _endpoint;
 
-        public ListenerConfiguration(Endpoint settings)
+        public ListenerConfiguration(Endpoint endpoint)
         {
-            _settings = settings;
+            _endpoint = endpoint;
+            endpoint.IsListener = true;
         }
 
         IListenerConfiguration IListenerConfiguration.MaximumThreads(int maximumParallelHandlers)
         {
-            _settings.ExecutionOptions.MaxDegreeOfParallelism = maximumParallelHandlers;
+            _endpoint.ExecutionOptions.MaxDegreeOfParallelism = maximumParallelHandlers;
             return this;
         }
 
         IListenerConfiguration IListenerConfiguration.Sequential()
         {
-            _settings.ExecutionOptions.MaxDegreeOfParallelism = 1;
-            _settings.ExecutionOptions.EnsureOrdered = true;
+            _endpoint.ExecutionOptions.MaxDegreeOfParallelism = 1;
+            _endpoint.ExecutionOptions.EnsureOrdered = true;
             return this;
         }
 
         IListenerConfiguration IListenerConfiguration.Durably()
         {
-            _settings.IsDurable = true;
+            _endpoint.IsDurable = true;
             return this;
         }
 
         IListenerConfiguration IListenerConfiguration.Lightweight()
         {
-            _settings.IsDurable = false;
+            _endpoint.IsDurable = false;
             return this;
         }
     }
