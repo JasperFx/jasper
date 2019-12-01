@@ -61,7 +61,7 @@ namespace Jasper.Messaging.Transports.Local
 
         Uri ITransport.ReplyUri => TransportConstants.RepliesUri;
 
-        ListenerSettings ITransport.ListenTo(Uri uri)
+        Endpoint ITransport.ListenTo(Uri uri)
         {
             return findByUri(uri);
         }

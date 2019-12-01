@@ -17,7 +17,7 @@ namespace Jasper.RabbitMQ.Internal
         {
         }
 
-        protected override IListener createListener(ListenerSettings settings, IMessagingRoot root)
+        protected override IListener createListener(Endpoint settings, IMessagingRoot root)
         {
             throw new NotImplementedException();
         }

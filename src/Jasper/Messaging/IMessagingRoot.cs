@@ -23,7 +23,7 @@ namespace Jasper.Messaging
     {
         ISendingAgent AddSubscriber(Uri replyUri, ISender sender, Subscription[] subscriptions);
         ISendingAgent GetOrBuildSendingAgent(Uri address);
-        void AddListener(IListener listener, ListenerSettings settings);
+        void AddListener(IListener listener, Endpoint settings);
         Task Stop();
         ISendingAgent[] FindSubscribers(Type messageType);
         void AddSubscriber(ISendingAgent replyUri, Subscription[] subscriptions);

@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Configuration;
 
 namespace Jasper
 {
@@ -36,9 +37,9 @@ namespace Jasper
 
     public class ListenerConfiguration : IListenerConfiguration
     {
-        private readonly ListenerSettings _settings;
+        private readonly Endpoint _settings;
 
-        public ListenerConfiguration(ListenerSettings settings)
+        public ListenerConfiguration(Endpoint settings)
         {
             _settings = settings;
         }

@@ -98,7 +98,7 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
-            public ListenerSettings ListenTo(Uri uri)
+            public Endpoint ListenTo(Uri uri)
             {
                 throw new NotImplementedException();
             }

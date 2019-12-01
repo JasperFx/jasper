@@ -153,7 +153,7 @@ namespace Jasper.Messaging
                 var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 
                 // TODO -- use the worker queue for Retries?
-                var worker = new DurableWorkerQueue(new ListenerSettings(), Pipeline, Settings, Persistence,
+                var worker = new DurableWorkerQueue(new Endpoint(), Pipeline, Settings, Persistence,
                     TransportLogger);
                 Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, Runtime,
                     Options.Advanced);

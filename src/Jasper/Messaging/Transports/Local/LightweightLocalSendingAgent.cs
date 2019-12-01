@@ -14,11 +14,11 @@ namespace Jasper.Messaging.Transports.Local
     {
         private readonly IMessageLogger _messageLogger;
 
-        public LightweightLocalSendingAgent(ListenerSettings listenerSettings, ITransportLogger logger,
-            IHandlerPipeline pipeline, AdvancedSettings settings, IMessageLogger messageLogger) : base(listenerSettings, logger, pipeline, settings)
+        public LightweightLocalSendingAgent(Endpoint endpoint, ITransportLogger logger,
+            IHandlerPipeline pipeline, AdvancedSettings settings, IMessageLogger messageLogger) : base(endpoint, logger, pipeline, settings)
         {
             _messageLogger = messageLogger;
-            Destination = listenerSettings.Uri;
+            Destination = endpoint.Uri;
         }
 
         public Uri Destination { get; }

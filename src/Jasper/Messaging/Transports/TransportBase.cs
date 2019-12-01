@@ -46,7 +46,7 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        protected abstract IListener createListener(ListenerSettings settings, IMessagingRoot root);
+        protected abstract IListener createListener(Endpoint settings, IMessagingRoot root);
 
         public abstract ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root);
 
@@ -57,9 +57,9 @@ namespace Jasper.Messaging.Transports
             _subscriptions.Add(subscription);
         }
 
-        private readonly LightweightCache<Uri, ListenerSettings> _listeners = new LightweightCache<Uri, ListenerSettings>(uri => new ListenerSettings{Uri = uri});
+        private readonly LightweightCache<Uri, Endpoint> _listeners = new LightweightCache<Uri, Endpoint>(uri => new Endpoint{Uri = uri});
 
-        public ListenerSettings ListenTo(Uri uri)
+        public Endpoint ListenTo(Uri uri)
         {
             return _listeners[uri];
         }

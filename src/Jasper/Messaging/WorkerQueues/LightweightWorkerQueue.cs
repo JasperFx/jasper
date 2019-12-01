@@ -19,7 +19,7 @@ namespace Jasper.Messaging.WorkerQueues
         private readonly InMemoryScheduledJobProcessor _scheduler;
         private IListener _agent;
 
-        public LightweightWorkerQueue(ListenerSettings listenerSettings, ITransportLogger logger,
+        public LightweightWorkerQueue(Endpoint endpoint, ITransportLogger logger,
             IHandlerPipeline pipeline, AdvancedSettings settings)
         {
             _logger = logger;
@@ -28,7 +28,7 @@ namespace Jasper.Messaging.WorkerQueues
 
             _scheduler = new InMemoryScheduledJobProcessor(this);
 
-            listenerSettings.ExecutionOptions.CancellationToken = settings.Cancellation;
+            endpoint.ExecutionOptions.CancellationToken = settings.Cancellation;
 
             _receiver = new ActionBlock<Envelope>(async envelope =>
             {
@@ -43,7 +43,7 @@ namespace Jasper.Messaging.WorkerQueues
                     // This *should* never happen, but of course it will
                     logger.LogException(e);
                 }
-            }, listenerSettings.ExecutionOptions);
+            }, endpoint.ExecutionOptions);
         }
 
         public IHandlerPipeline Pipeline { get; }

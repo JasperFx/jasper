@@ -94,7 +94,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 new PostgresqlEnvelopePersistence(
                     new PostgresqlSettings {ConnectionString = Servers.PostgresConnectionString}, theSettings);
             thePipeline = Substitute.For<IHandlerPipeline>();
-            theWorkerQueue = new DurableWorkerQueue(new ListenerSettings(), thePipeline, theSettings, persistence, TransportLogger.Empty());
+            theWorkerQueue = new DurableWorkerQueue(new Endpoint(), thePipeline, theSettings, persistence, TransportLogger.Empty());
 
 
             var agent = Substitute.For<IListener>();

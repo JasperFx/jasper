@@ -16,7 +16,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMqEndpoint : Endpoint<IRabbitMqProtocol>
+    public class RabbitMqEndpoint : ObsoleteExternalEndpoint<IRabbitMqProtocol>
     {
         private readonly object _locker = new object();
         private IConnection _connection;

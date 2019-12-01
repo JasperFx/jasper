@@ -20,14 +20,14 @@ namespace Jasper.Messaging.WorkerQueues
         private readonly ActionBlock<Envelope> _receiver;
         private IListener _agent;
 
-        public DurableWorkerQueue(ListenerSettings listenerSettings, IHandlerPipeline pipeline,
+        public DurableWorkerQueue(Endpoint endpoint, IHandlerPipeline pipeline,
             AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger)
         {
             _settings = settings;
             _persistence = persistence;
             _logger = logger;
 
-            listenerSettings.ExecutionOptions.CancellationToken = settings.Cancellation;
+            endpoint.ExecutionOptions.CancellationToken = settings.Cancellation;
 
             _receiver = new ActionBlock<Envelope>(async envelope =>
             {
@@ -42,7 +42,7 @@ namespace Jasper.Messaging.WorkerQueues
                     // This *should* never happen, but of course it will
                     logger.LogException(e);
                 }
-            }, listenerSettings.ExecutionOptions);
+            }, endpoint.ExecutionOptions);
         }
 
         public int QueuedCount => _receiver.InputCount;

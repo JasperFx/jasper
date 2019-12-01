@@ -104,7 +104,7 @@ namespace Jasper.Messaging.Transports.Stub
 
         private readonly IList<Uri> _listeners = new List<Uri>();
 
-        public ListenerSettings ListenTo(Uri uri)
+        public Endpoint ListenTo(Uri uri)
         {
             _listeners.Add(uri);
             return null;

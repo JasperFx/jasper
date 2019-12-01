@@ -17,7 +17,7 @@ namespace Jasper.Messaging.Transports.Tcp
         {
         }
 
-        protected override IListener createListener(ListenerSettings settings, IMessagingRoot root)
+        protected override IListener createListener(Endpoint settings, IMessagingRoot root)
         {
             // check the uri for an ip address to bind to
             var uri = settings.Uri;
@@ -39,7 +39,7 @@ namespace Jasper.Messaging.Transports.Tcp
 
 
         // TODO -- bring this back!
-        private static void assertNoDuplicatePorts(ListenerSettings[] incoming)
+        private static void assertNoDuplicatePorts(Endpoint[] incoming)
         {
             var duplicatePorts = incoming.GroupBy(x => x.Uri.Port).Where(x => x.Count() > 1).ToArray();
             if (duplicatePorts.Any())

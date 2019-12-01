@@ -1,49 +1,31 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Baseline;
+using System.Threading.Tasks.Dataflow;
 
 namespace Jasper.Configuration
 {
+    /// <summary>
+    /// Configuration for a single message listener within a Jasper application
+    /// </summary>
     public class Endpoint
     {
+        /// <summary>
+        /// Descriptive Name for this listener. Optional.
+        /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// The outgoing address to send matching messages
+        /// The actual address of the listener, including the transport scheme
         /// </summary>
         public Uri Uri { get; set; }
 
+        /// <summary>
+        /// Mark whether or not the receiver for this listener should use
+        /// message persistence for durability
+        /// </summary>
         public bool IsDurable { get; set; }
 
-        public Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
-
-        public int BatchSize { get; set; }
+        public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
 
 
-        private readonly IList<Subscription> _subscriptions = new List<Subscription>();
-
-        /// <summary>
-        ///     Array of all subscription rules for publishing messages from this
-        ///     application
-        /// </summary>
-        public Subscription[] Subscriptions
-        {
-            get => _subscriptions.ToArray();
-            set
-            {
-                _subscriptions.Clear();
-                if (value != null) _subscriptions.AddRange(value);
-            }
-        }
-
-        /// <summary>
-        ///     Add a single subscription
-        /// </summary>
-        /// <param name="subscription"></param>
-        public void AddSubscription(Subscription subscription)
-        {
-            _subscriptions.Fill(subscription);
-        }
     }
 }

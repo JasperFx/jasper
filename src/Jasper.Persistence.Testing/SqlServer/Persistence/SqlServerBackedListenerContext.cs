@@ -47,7 +47,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
 
             thePipeline = Substitute.For<IHandlerPipeline>();
-            theWorkerQueue = new DurableWorkerQueue(new ListenerSettings(), thePipeline, theSettings, ThePersistence, TransportLogger.Empty());
+            theWorkerQueue = new DurableWorkerQueue(new Endpoint(), thePipeline, theSettings, ThePersistence, TransportLogger.Empty());
 
         }
 

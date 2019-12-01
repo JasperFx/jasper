@@ -16,7 +16,7 @@ namespace Jasper.Messaging.Transports
 
         Uri ReplyUri { get; }
 
-        ListenerSettings ListenTo(Uri uri);
+        Endpoint ListenTo(Uri uri);
 
         void StartSenders(IMessagingRoot root, ITransportRuntime runtime);
         void StartListeners(IMessagingRoot root, ITransportRuntime runtime);

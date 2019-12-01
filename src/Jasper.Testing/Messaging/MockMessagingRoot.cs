@@ -45,7 +45,7 @@ namespace Jasper.Testing.Messaging
         public ITransportRuntime Runtime { get; } = Substitute.For<ITransportRuntime>();
 
 
-        public void AddListener(ListenerSettings listenerSettings, IListener agent)
+        public void AddListener(Endpoint endpoint, IListener agent)
         {
 
         }

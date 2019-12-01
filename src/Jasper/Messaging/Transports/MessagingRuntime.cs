@@ -131,7 +131,7 @@ namespace Jasper.Messaging.Transports
 
         }
 
-        public void AddListener(IListener listener, ListenerSettings settings)
+        public void AddListener(IListener listener, Endpoint settings)
         {
             var worker = settings.IsDurable
                 ? (IWorkerQueue) new DurableWorkerQueue(settings, _root.Pipeline, _root.Settings, _root.Persistence,

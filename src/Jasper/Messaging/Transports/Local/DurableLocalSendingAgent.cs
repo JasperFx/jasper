@@ -19,16 +19,16 @@ namespace Jasper.Messaging.Transports.Local
         private readonly MessagingSerializationGraph _serializers;
         private readonly IMessageLogger _messageLogger;
 
-        public DurableLocalSendingAgent(ListenerSettings listenerSettings, IHandlerPipeline pipeline,
+        public DurableLocalSendingAgent(Endpoint endpoint, IHandlerPipeline pipeline,
             AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger,
-            MessagingSerializationGraph serializers, IMessageLogger messageLogger) : base(listenerSettings, pipeline, settings, persistence, logger)
+            MessagingSerializationGraph serializers, IMessageLogger messageLogger) : base(endpoint, pipeline, settings, persistence, logger)
         {
             _settings = settings;
             _persistence = persistence;
             _logger = logger;
             _serializers = serializers;
             _messageLogger = messageLogger;
-            Destination = listenerSettings.Uri;
+            Destination = endpoint.Uri;
 
 
             ReplyUri = TransportConstants.RepliesUri;

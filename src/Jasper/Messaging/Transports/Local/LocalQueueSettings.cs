@@ -3,7 +3,7 @@ using Jasper.Configuration;
 
 namespace Jasper.Messaging.Transports.Local
 {
-    public class LocalQueueSettings : ListenerSettings
+    public class LocalQueueSettings : Endpoint
     {
         public LocalQueueSettings(string name)
         {
