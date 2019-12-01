@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Transports.Sending;
-using Jasper.Testing.Messaging.Lightweight.Protocol;
+using Jasper.Testing.Messaging.Transports.Tcp.Protocol;
 using Jasper.Util;
 using Shouldly;
 using Xunit;

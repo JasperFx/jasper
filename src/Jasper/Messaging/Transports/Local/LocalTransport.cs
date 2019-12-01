@@ -12,10 +12,7 @@ namespace Jasper.Messaging.Transports.Local
     public class LocalTransport : ITransport, ILocalQueues
     {
         private readonly Cache<string, LocalQueueSettings> _queues = new Cache<string, LocalQueueSettings>(name =>
-            new LocalQueueSettings(name)
-            {
-                Uri = new Uri($"local://{name}")
-            });
+            new LocalQueueSettings(name));
 
         private ImHashMap<string, ISendingAgent> _agents = ImHashMap<string, ISendingAgent>.Empty;
 

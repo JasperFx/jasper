@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Jasper.Configuration;
+using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Local
 {
@@ -8,6 +10,18 @@ namespace Jasper.Messaging.Transports.Local
         public LocalQueueSettings(string name)
         {
             Name = name.ToLowerInvariant();
+            Uri = $"local://{name}".ToUri();
+        }
+
+        public LocalQueueSettings(Uri uri) : base(uri)
+        {
+
+        }
+
+        public override void Parse(Uri uri)
+        {
+            Name = LocalTransport.QueueName(uri);
+            IsDurable = uri.IsDurable();
         }
 
 

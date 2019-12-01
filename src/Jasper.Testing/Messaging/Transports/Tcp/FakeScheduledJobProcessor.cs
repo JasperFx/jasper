@@ -4,7 +4,7 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.WorkerQueues;
 
-namespace Jasper.Testing.Messaging.Lightweight
+namespace Jasper.Testing.Messaging.Transports.Tcp
 {
     public class FakeScheduledJobProcessor : IScheduledJobProcessor
     {

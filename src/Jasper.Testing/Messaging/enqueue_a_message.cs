@@ -4,7 +4,7 @@ using Baseline;
 using Baseline.Dates;
 using Jasper.Messaging;
 using Jasper.Messaging.Tracking;
-using Jasper.Testing.Messaging.Lightweight;
+using Jasper.Testing.Messaging.Transports.Tcp;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute.Routing.Handlers;
 using Shouldly;

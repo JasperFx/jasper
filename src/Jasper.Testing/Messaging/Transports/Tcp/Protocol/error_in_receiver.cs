@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Lightweight.Protocol
+namespace Jasper.Testing.Messaging.Transports.Tcp.Protocol
 {
     public class error_in_receiver : ProtocolContext
     {

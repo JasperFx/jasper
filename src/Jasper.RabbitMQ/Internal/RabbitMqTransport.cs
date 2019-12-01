@@ -11,13 +11,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqTransport : TransportBase
+    public class RabbitMqEndpoint : Endpoint
+    {
+        public override void Parse(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>
     {
         public RabbitMqTransport(RabbitMqOptions options) : base("rabbitmq")
         {
         }
 
-        protected override IListener createListener(Endpoint settings, IMessagingRoot root)
+        protected override IListener createListener(RabbitMqEndpoint endpoint, IMessagingRoot root)
         {
             throw new NotImplementedException();
         }

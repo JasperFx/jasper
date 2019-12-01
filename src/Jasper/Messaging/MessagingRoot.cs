@@ -13,6 +13,7 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.WorkerQueues;
 using Lamar;
 using LamarCodeGeneration;
@@ -153,7 +154,7 @@ namespace Jasper.Messaging
                 var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 
                 // TODO -- use the worker queue for Retries?
-                var worker = new DurableWorkerQueue(new Endpoint(), Pipeline, Settings, Persistence,
+                var worker = new DurableWorkerQueue(new LocalQueueSettings("scheduled"), Pipeline, Settings, Persistence,
                     TransportLogger);
                 Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, Runtime,
                     Options.Advanced);

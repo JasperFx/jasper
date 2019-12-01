@@ -22,7 +22,8 @@ namespace Jasper.RabbitMQ.Internal
             _mapper = mapper;
             _agent = agent;
             Address = address;
-            _queue = agent.TransportUri.QueueName;
+            throw new NotImplementedException();
+            //_queue = agent.TransportUri.QueueName;
         }
 
         public void Dispose()
@@ -35,12 +36,14 @@ namespace Jasper.RabbitMQ.Internal
             get => _consumer != null ? ListeningStatus.Accepting : ListeningStatus.TooBusy;
             set
             {
+                throw new NotImplementedException();
+
                 switch (value)
                 {
                     case ListeningStatus.TooBusy when _consumer != null:
                         _consumer.Dispose();
 
-                        _agent.Channel.BasicCancel(_consumer.ConsumerTag);
+                        //_agent.Channel.BasicCancel(_consumer.ConsumerTag);
                         _consumer = null;
                         break;
                     case ListeningStatus.Accepting when _consumer == null:
@@ -52,15 +55,17 @@ namespace Jasper.RabbitMQ.Internal
 
         public void Start(IReceiverCallback callback)
         {
-            if (callback == null) return;
+            throw new NotImplementedException();
 
-            _callback = callback;
-            _consumer = new MessageConsumer(callback, _logger, _agent.Channel, _mapper, Address)
-            {
-                ConsumerTag = Guid.NewGuid().ToString()
-            };
-
-            _agent.Channel.BasicConsume(_consumer, _queue);
+//            if (callback == null) return;
+//
+//            _callback = callback;
+//            _consumer = new MessageConsumer(callback, _logger, _agent.Channel, _mapper, Address)
+//            {
+//                ConsumerTag = Guid.NewGuid().ToString()
+//            };
+//
+//            _agent.Channel.BasicConsume(_consumer, _queue);
         }
 
 

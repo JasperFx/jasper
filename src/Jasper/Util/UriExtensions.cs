@@ -9,9 +9,6 @@ namespace Jasper.Util
 {
     public static class UriExtensions
     {
-
-
-        [Obsolete("This needs to go away. Might hurt in Storyteller world")]
         public static bool IsDurable(this Uri uri)
         {
             if (uri.Scheme == TransportConstants.Local && uri.Host == TransportConstants.Durable) return true;

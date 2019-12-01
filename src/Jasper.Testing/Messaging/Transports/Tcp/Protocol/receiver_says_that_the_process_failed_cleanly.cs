@@ -3,7 +3,7 @@ using Jasper.Messaging.Transports.Tcp;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Lightweight.Protocol
+namespace Jasper.Testing.Messaging.Transports.Tcp.Protocol
 {
     public class receiver_says_that_the_process_failed_cleanly : ProtocolContext
     {

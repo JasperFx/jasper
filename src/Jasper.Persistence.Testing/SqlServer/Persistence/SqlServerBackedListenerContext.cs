@@ -9,6 +9,7 @@ using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.SqlServer;
@@ -47,7 +48,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
 
             thePipeline = Substitute.For<IHandlerPipeline>();
-            theWorkerQueue = new DurableWorkerQueue(new Endpoint(), thePipeline, theSettings, ThePersistence, TransportLogger.Empty());
+            theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings, ThePersistence, TransportLogger.Empty());
 
         }
 

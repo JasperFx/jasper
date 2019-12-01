@@ -10,6 +10,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence.Postgresql;
@@ -94,7 +95,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 new PostgresqlEnvelopePersistence(
                     new PostgresqlSettings {ConnectionString = Servers.PostgresConnectionString}, theSettings);
             thePipeline = Substitute.For<IHandlerPipeline>();
-            theWorkerQueue = new DurableWorkerQueue(new Endpoint(), thePipeline, theSettings, persistence, TransportLogger.Empty());
+            theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings, persistence, TransportLogger.Empty());
 
 
             var agent = Substitute.For<IListener>();

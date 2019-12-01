@@ -1,6 +1,6 @@
 ﻿using System;
 using Jasper.Messaging.Tracking;
-using Jasper.Testing.Messaging.Lightweight;
+using Jasper.Testing.Messaging.Transports.Tcp;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;
 

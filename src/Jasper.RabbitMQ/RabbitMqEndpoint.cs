@@ -234,12 +234,14 @@ namespace Jasper.RabbitMQ
 
         internal ISender CreateSender(ITransportLogger logger, CancellationToken cancellation)
         {
-            return new RabbitMqSender(logger, this, cancellation);
+            throw new NotImplementedException();
+            //return new RabbitMqSender(logger, this, cancellation);
         }
 
         internal IListener CreateListeningAgent(Uri uri, AdvancedSettings options, ITransportLogger logger)
         {
-            return new RabbitMqListener(uri, logger, Protocol, this);
+            throw new NotImplementedException();
+            //return new RabbitMqListener(uri, logger, Protocol, this);
         }
 
         internal Task Ping(Action<IModel> action)

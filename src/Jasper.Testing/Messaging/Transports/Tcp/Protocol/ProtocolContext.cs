@@ -12,7 +12,7 @@ using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Lightweight.Protocol
+namespace Jasper.Testing.Messaging.Transports.Tcp.Protocol
 {
     [Collection("protocol")]
     public abstract class ProtocolContext : IDisposable

@@ -2,7 +2,7 @@
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Lightweight.Protocol
+namespace Jasper.Testing.Messaging.Transports.Tcp.Protocol
 {
     public class super_duper_happy_path : ProtocolContext
     {

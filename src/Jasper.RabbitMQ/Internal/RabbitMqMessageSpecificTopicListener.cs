@@ -17,15 +17,16 @@ namespace Jasper.RabbitMQ.Internal
         public RabbitMqMessageSpecificTopicListener(RabbitMqEndpoint endpoint, HandlerGraph handlers,
             TransportUri transportUri, ITransportLogger logger, AdvancedSettings settings)
         {
-            Address = endpoint.Uri.ToUri();
-
-            var endpoints = endpoint.SpreadForMessageSpecificTopics(handlers.ValidMessageTypeNames());
-            foreach (var topicEndpoint in endpoints)
-            {
-                topicEndpoint.Connect();
-                var agent = topicEndpoint.CreateListeningAgent(transportUri.ToUri(), settings, logger);
-                _inner.Add(agent);
-            }
+            throw new NotImplementedException();
+//            Address = endpoint.Uri.ToUri();
+//
+//            var endpoints = endpoint.SpreadForMessageSpecificTopics(handlers.ValidMessageTypeNames());
+//            foreach (var topicEndpoint in endpoints)
+//            {
+//                topicEndpoint.Connect();
+//                var agent = topicEndpoint.CreateListeningAgent(transportUri.ToUri(), settings, logger);
+//                _inner.Add(agent);
+//            }
         }
 
         public void Dispose()

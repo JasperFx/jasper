@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading;
 using Jasper.Configuration;
 using Jasper.Messaging.Logging;
@@ -10,26 +11,27 @@ using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging.Transports.Tcp
 {
-    public class TcpTransport : TransportBase
+    public class TcpTransport : TransportBase<TcpEndpoint>
     {
         public TcpTransport() :
             base("tcp")
         {
         }
 
-        protected override IListener createListener(Endpoint settings, IMessagingRoot root)
+        protected override IListener createListener(TcpEndpoint endpoint, IMessagingRoot root)
         {
             // check the uri for an ip address to bind to
-            var uri = settings.Uri;
             var cancellation = root.Settings.Cancellation;
 
-            if (uri.HostNameType != UriHostNameType.IPv4 && uri.HostNameType != UriHostNameType.IPv6)
-                return uri.Host == "localhost"
-                    ? new SocketListener(IPAddress.Loopback, uri.Port, cancellation)
-                    : new SocketListener(IPAddress.Any, uri.Port, cancellation);
+            var hostNameType = System.Uri.CheckHostName(endpoint.HostName);
 
-            var ipaddr = IPAddress.Parse(uri.Host);
-            return new SocketListener(ipaddr, uri.Port, cancellation);
+            if (hostNameType != UriHostNameType.IPv4 && hostNameType != UriHostNameType.IPv6)
+                return endpoint.HostName == "localhost"
+                    ? new SocketListener(IPAddress.Loopback, endpoint.Port, cancellation)
+                    : new SocketListener(IPAddress.Any, endpoint.Port, cancellation);
+
+            var ipaddr = IPAddress.Parse(endpoint.HostName);
+            return new SocketListener(ipaddr, endpoint.Port, cancellation);
         }
 
         public override ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
@@ -37,17 +39,6 @@ namespace Jasper.Messaging.Transports.Tcp
             return new BatchedSender(uri, new SocketSenderProtocol(), cancellation, root.TransportLogger);
         }
 
-
-        // TODO -- bring this back!
-        private static void assertNoDuplicatePorts(Endpoint[] incoming)
-        {
-            var duplicatePorts = incoming.GroupBy(x => x.Uri.Port).Where(x => x.Count() > 1).ToArray();
-            if (duplicatePorts.Any())
-            {
-                var portString = string.Join(", ", duplicatePorts.Select(x => x.ToString()));
-                throw new Exception("Multiple TCP listeners configured for ports " + portString);
-            }
-        }
 
 
     }

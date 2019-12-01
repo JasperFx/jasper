@@ -11,7 +11,7 @@ using TestingSupport;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Lightweight
+namespace Jasper.Testing.Messaging.Transports.Tcp
 {
     [Collection("integration")]
     public class end_to_end : IDisposable
