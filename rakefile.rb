@@ -96,7 +96,7 @@ task :integrationtests => [:compile] do
 
   sh "docker-compose up -d"
 
-  sh "dotnet test src/Jasper.RabbitMQ.Tests/Jasper.RabbitMQ.Tests.csproj --no-restore"
+  #sh "dotnet test src/Jasper.RabbitMQ.Tests/Jasper.RabbitMQ.Tests.csproj --no-restore"
   sh "dotnet test src/Jasper.Persistence.Testing/Jasper.Persistence.Testing.csproj --no-restore"
 
 
@@ -139,7 +139,7 @@ task :pack do
   pack_nuget 'Jasper.Persistence.Postgresql'
   pack_nuget 'Jasper.TestSupport.Storyteller'
   pack_nuget 'Jasper.TestSupport.Alba'
-  pack_nuget 'Jasper.RabbitMQ'
+  #pack_nuget 'Jasper.RabbitMQ'
   pack_nuget 'Jasper.JsonCommands'
 end
 
