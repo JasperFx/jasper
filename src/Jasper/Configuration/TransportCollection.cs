@@ -47,15 +47,15 @@ namespace Jasper.Configuration
             return GetEnumerator();
         }
 
-        public void Subscribe(Subscription subscription)
+        public void Subscribe(Uri uri, Subscription subscription)
         {
-            var transport = TransportForScheme(subscription.Uri.Scheme);
+            var transport = TransportForScheme(uri.Scheme);
             if (transport == null)
             {
                 throw new InvalidOperationException($"Unknown Transport scheme '{transport.Protocol}'");
             }
 
-            transport.Subscribe(subscription);
+            transport.Subscribe(uri, subscription);
         }
 
         /// <summary>

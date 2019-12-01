@@ -33,10 +33,10 @@ namespace Jasper.Testing.Messaging.Transports.Local
         [Fact]
         public void add_subscription()
         {
-            var subscription = Subscription.All("local://one");
+            var subscription = Subscription.All();
             var transport = new LocalTransport();
 
-            transport.As<ITransport>().Subscribe(subscription);
+            transport.As<ITransport>().Subscribe("local://one".ToUri(), subscription);
 
             transport.QueueFor("one")
                 .Subscriptions.Single()

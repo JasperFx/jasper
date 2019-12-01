@@ -50,9 +50,9 @@ namespace Jasper.Messaging.Transports.Local
             throw new NotSupportedException();
         }
 
-        void ITransport.Subscribe(Subscription subscription)
+        void ITransport.Subscribe(Uri uri, Subscription subscription)
         {
-            findByUri(subscription.Uri).Subscriptions.Add(subscription);
+            findByUri(uri).Subscriptions.Add(subscription);
         }
 
 

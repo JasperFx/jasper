@@ -54,10 +54,9 @@ namespace Jasper.Messaging.Configuration
 
         public void AllMessagesTo(Uri uri)
         {
-            _parent.Transports.Subscribe(new Subscription
+            _parent.Transports.Subscribe(uri, new Subscription
             {
-                Scope = RoutingScope.All,
-                Uri = uri
+                Scope = RoutingScope.All
             });
         }
 
@@ -90,11 +89,10 @@ namespace Jasper.Messaging.Configuration
                 var subscription = new Subscription
                 {
                     Match = _match,
-                    Scope = _routingScope,
-                    Uri = address
+                    Scope = _routingScope
                 };
 
-                _parent.Transports.Subscribe(subscription);
+                _parent.Transports.Subscribe(address, subscription);
             }
 
             public void To(string address)
@@ -109,13 +107,12 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             public void Locally()
             {
-                // TODO -- stick directly on LocalTransport
                 var subscription = new Subscription
                 {
-                    Scope = _routingScope, Match = _match, Uri = TransportConstants.LocalUri
+                    Scope = _routingScope, Match = _match
                 };
 
-                _parent.Transports.Subscribe(subscription);
+                _parent.Transports.Subscribe(TransportConstants.LocalUri, subscription);
             }
 
             /// <summary>
@@ -148,9 +145,9 @@ namespace Jasper.Messaging.Configuration
             public IListenerConfiguration ToLocalQueue(string queueName)
             {
                 var settings = _parent.LocalQueues.ByName(queueName);
-                _parent.Transports.Subscribe(new Subscription
+                settings.Subscriptions.Add(new Subscription
                 {
-                    Scope = _routingScope, Match = _match, Uri = $"local://{queueName}".ToUri()
+                    Scope = _routingScope, Match = _match
                 });
 
                 return new ListenerConfiguration(settings);

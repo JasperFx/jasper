@@ -64,8 +64,9 @@ namespace Jasper.Messaging.Transports
 
         public abstract ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root);
 
-        public void Subscribe(Subscription subscription)
+        public void Subscribe(Uri uri, Subscription subscription)
         {
+            subscription.Uri = uri;
             _subscriptions.Add(subscription);
         }
 

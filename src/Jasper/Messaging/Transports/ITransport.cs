@@ -23,6 +23,6 @@ namespace Jasper.Messaging.Transports
 
         ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root);
 
-        void Subscribe(Subscription subscription);
+        void Subscribe(Uri uri, Subscription subscription);
     }
 }

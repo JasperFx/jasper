@@ -149,27 +149,6 @@ namespace Jasper.Configuration
             }
         }
 
-        /// <summary>
-        /// Create a subscription for all messages published in this application
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <returns></returns>
-        public static Subscription All(Uri uri)
-        {
-            var subscription = All();
-            subscription.Uri = uri;
 
-            return subscription;
-        }
-
-        /// <summary>
-        /// Create a subscription for all messages published in this application
-        /// </summary>
-        /// <param name="uriString"></param>
-        /// <returns></returns>
-        public static Subscription All(string uriString)
-        {
-            return All(uriString.ToUri());
-        }
     }
 }

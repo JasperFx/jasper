@@ -90,8 +90,9 @@ namespace Jasper.Messaging.Transports.Stub
         }
 
 
-        public void Subscribe(Subscription subscription)
+        public void Subscribe(Uri uri, Subscription subscription)
         {
+            subscription.Uri = uri;
             Subscriptions.Add(subscription);
         }
 
