@@ -145,7 +145,7 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             /// <param name="queueName"></param>
             /// <returns></returns>
-            public IListenerSettings ToLocalQueue(string queueName)
+            public IListenerConfiguration ToLocalQueue(string queueName)
             {
                 var settings = _parent.LocalQueues.ByName(queueName);
                 _parent.Transports.Subscribe(new Subscription
@@ -153,7 +153,7 @@ namespace Jasper.Messaging.Configuration
                     Scope = _routingScope, Match = _match, Uri = $"local://{queueName}".ToUri()
                 });
 
-                return settings;
+                return new ListenerConfiguration(settings);
             }
 
             /// <summary>
@@ -178,7 +178,7 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             /// <param name="queueName"></param>
             /// <returns></returns>
-            public IListenerSettings DurablyToLocalQueue(string queueName)
+            public IListenerConfiguration DurablyToLocalQueue(string queueName)
             {
                 return ToLocalQueue(queueName).Durably();
             }

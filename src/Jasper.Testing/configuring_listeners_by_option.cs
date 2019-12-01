@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Testing.Messaging.Transports.Stub;
 using Jasper.Util;
 using LamarCodeGeneration.Util;
@@ -36,8 +37,7 @@ namespace Jasper.Testing
         [Fact]
         public void configure_sequential()
         {
-            theOptions.Transports.ListenForMessagesFrom("local://one")
-                .As<ListenerSettings>()
+            theOptions.Transports.Get<LocalTransport>().QueueFor("one")
                 .ExecutionOptions
                 .MaxDegreeOfParallelism
                 .ShouldBe(1);
@@ -46,8 +46,7 @@ namespace Jasper.Testing
         [Fact]
         public void configure_max_parallelization()
         {
-            theOptions.Transports.ListenForMessagesFrom("local://two")
-                .As<ListenerSettings>()
+            theOptions.Transports.Get<LocalTransport>().QueueFor("two")
                 .ExecutionOptions
                 .MaxDegreeOfParallelism
                 .ShouldBe(11);
@@ -56,8 +55,14 @@ namespace Jasper.Testing
         [Fact]
         public void configure_durable()
         {
-            theOptions.Transports.ListenForMessagesFrom("local://three")
-                .As<ListenerSettings>()
+            theOptions
+                .Transports
+                .ListenForMessagesFrom("local://three")
+                .Durably();
+
+
+            theOptions.Transports.Get<LocalTransport>()
+                .QueueFor("three")
                 .IsDurable
                 .ShouldBeTrue();
         }
@@ -65,8 +70,10 @@ namespace Jasper.Testing
         [Fact]
         public void configure_not_durable()
         {
-            theOptions.Transports.ListenForMessagesFrom("local://four")
-                .As<ListenerSettings>()
+            theOptions.Transports.ListenForMessagesFrom("local://four");
+
+            theOptions.Transports.Get<LocalTransport>()
+                .QueueFor("four")
                 .IsDurable
                 .ShouldBeFalse();
         }
@@ -82,11 +89,13 @@ namespace Jasper.Testing
 
             var uri = "local://one".ToUri();
 
-            var listener = options.Transports.ListenForMessagesFrom(uri);
+            options
+                .Transports
+                .ListenForMessagesFrom(uri)
+                .MaximumThreads(11);
 
-            listener.MaximumThreads(11).ShouldBeSameAs(listener);
-
-            listener.As<ListenerSettings>()
+            options.Transports.Get<LocalTransport>()
+                .QueueFor("one")
                 .ExecutionOptions
                 .MaxDegreeOfParallelism
                 .ShouldBe(11);
@@ -100,14 +109,20 @@ namespace Jasper.Testing
 
             var uri = "local://one".ToUri();
 
-            var listener = options.Transports.ListenForMessagesFrom(uri);
+            options
+                .Transports
+                .ListenForMessagesFrom(uri)
+                .Sequential();
 
-            listener.Sequential().ShouldBeSameAs(listener);
+            var executionOptions = options.Transports.Get<LocalTransport>()
+                .QueueFor("one")
+                .ExecutionOptions;
 
-            listener.As<ListenerSettings>()
-                .ExecutionOptions
+            executionOptions
                 .MaxDegreeOfParallelism
                 .ShouldBe(1);
+
+            executionOptions.EnsureOrdered.ShouldBeTrue();
 
         }
 
@@ -118,11 +133,10 @@ namespace Jasper.Testing
 
             var uri = "local://one".ToUri();
 
-            var listener = options.Transports.ListenForMessagesFrom(uri);
+            options.Transports.ListenForMessagesFrom(uri).Durably();
 
-            listener.Durably().ShouldBeSameAs(listener);
-
-            listener.As<ListenerSettings>()
+            options.Transports.Get<LocalTransport>()
+                .QueueFor("one")
                 .IsDurable
                 .ShouldBeTrue();
 
@@ -135,13 +149,13 @@ namespace Jasper.Testing
 
             var uri = "local://one".ToUri();
 
-            var listener = options.Transports.ListenForMessagesFrom(uri);
+            options.Transports.ListenForMessagesFrom(uri).Lightweight();
 
-            listener.Durably().Lightweight().ShouldBeSameAs(listener);
-
-            listener.As<ListenerSettings>()
+            options.Transports.Get<LocalTransport>()
+                .QueueFor("one")
                 .IsDurable
                 .ShouldBeFalse();
+
 
         }
 

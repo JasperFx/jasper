@@ -62,11 +62,12 @@ namespace Jasper.Configuration
         ///     Directs Jasper to set up an incoming listener for the given Uri
         /// </summary>
         /// <param name="uri"></param>
-        public IListenerSettings ListenForMessagesFrom(Uri uri)
+        public IListenerConfiguration ListenForMessagesFrom(Uri uri)
         {
             if (_transports.TryGetValue(uri.Scheme, out var transport))
             {
-                return transport.ListenTo(uri);
+                var settings = transport.ListenTo(uri);
+                return new ListenerConfiguration(settings);
             }
             else
             {
@@ -77,7 +78,7 @@ namespace Jasper.Configuration
         /// <summary>
         ///     Directs Jasper to set up an incoming listener for the given Uri
         /// </summary>
-        public IListenerSettings ListenForMessagesFrom(string uriString)
+        public IListenerConfiguration ListenForMessagesFrom(string uriString)
         {
             return ListenForMessagesFrom(new Uri(uriString));
         }
@@ -88,9 +89,11 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="port"></param>
-        public IListenerSettings LightweightListenerAt(int port)
+        public IListenerConfiguration LightweightListenerAt(int port)
         {
-            return Get<TcpTransport>().ListenTo($"tcp://localhost:{port}".ToUri());
+            // TODO -- move logic into TcpTransport
+            var settings = Get<TcpTransport>().ListenTo($"tcp://localhost:{port}".ToUri());
+            return new ListenerConfiguration(settings);
         }
 
         /// <summary>
@@ -99,10 +102,9 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="port"></param>
-        public IListenerSettings DurableListenerAt(int port)
+        public IListenerConfiguration DurableListenerAt(int port)
         {
-            return Get<TcpTransport>()
-                .ListenTo($"tcp://localhost:{port}".ToUri()).Durably();
+            return LightweightListenerAt(port).Durably();
         }
 
     }

@@ -8,13 +8,13 @@ namespace Jasper.Messaging.Transports.Local
         /// </summary>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        IListenerSettings ByName(string queueName);
+        LocalQueueSettings ByName(string queueName);
 
         /// <summary>
         /// Access the configuration for the default local queue
         /// </summary>
         /// <returns></returns>
-        IListenerSettings Default();
+        LocalQueueSettings Default();
 
 
     }

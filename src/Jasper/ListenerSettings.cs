@@ -6,8 +6,7 @@ namespace Jasper
     /// <summary>
     /// Configuration for a single message listener within a Jasper application
     /// </summary>
-    [Obsolete("Going to fold into Endpoint")]
-    public class ListenerSettings : IListenerSettings
+    public class ListenerSettings
     {
         /// <summary>
         /// Descriptive Name for this listener. Optional.
@@ -28,28 +27,5 @@ namespace Jasper
         public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
 
 
-        IListenerSettings IListenerSettings.MaximumThreads(int maximumParallelHandlers)
-        {
-            ExecutionOptions.MaxDegreeOfParallelism = maximumParallelHandlers;
-            return this;
-        }
-
-        IListenerSettings IListenerSettings.Sequential()
-        {
-            ExecutionOptions.MaxDegreeOfParallelism = 1;
-            return this;
-        }
-
-        IListenerSettings IListenerSettings.Durably()
-        {
-            IsDurable = true;
-            return this;
-        }
-
-        IListenerSettings IListenerSettings.Lightweight()
-        {
-            IsDurable = false;
-            return this;
-        }
     }
 }

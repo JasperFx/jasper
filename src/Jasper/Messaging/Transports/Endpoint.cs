@@ -2,6 +2,7 @@ using System;
 
 namespace Jasper.Messaging.Transports
 {
+    [Obsolete("Won't be necessary with the new Endpoint model'")]
     public abstract class Endpoint<TProtocol> : IDisposable
     {
         public TransportUri Uri { get; }

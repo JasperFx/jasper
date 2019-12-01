@@ -61,7 +61,7 @@ namespace Jasper.Messaging.Transports.Local
 
         Uri ITransport.ReplyUri => TransportConstants.RepliesUri;
 
-        IListenerSettings ITransport.ListenTo(Uri uri)
+        ListenerSettings ITransport.ListenTo(Uri uri)
         {
             return findByUri(uri);
         }
@@ -134,12 +134,12 @@ namespace Jasper.Messaging.Transports.Local
             return addQueue(root, runtime, queue);
         }
 
-        IListenerSettings ILocalQueues.ByName(string queueName)
+        LocalQueueSettings ILocalQueues.ByName(string queueName)
         {
             return QueueFor(queueName);
         }
 
-        IListenerSettings ILocalQueues.Default()
+        LocalQueueSettings ILocalQueues.Default()
         {
             return QueueFor(TransportConstants.Default);
         }

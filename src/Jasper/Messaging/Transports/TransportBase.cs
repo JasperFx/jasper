@@ -59,7 +59,7 @@ namespace Jasper.Messaging.Transports
 
         private readonly LightweightCache<Uri, ListenerSettings> _listeners = new LightweightCache<Uri, ListenerSettings>(uri => new ListenerSettings{Uri = uri});
 
-        public IListenerSettings ListenTo(Uri uri)
+        public ListenerSettings ListenTo(Uri uri)
         {
             return _listeners[uri];
         }
