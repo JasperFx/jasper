@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 _.DatabaseSchemaName = "sender";
             });
 
-            Transports.LightweightListenerAt(2567);
+            Transports.ListenAtPort(2567);
 
         }
     }

@@ -13,7 +13,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task can_still_receive_if_the_queue_does_not_exist()
         {
-            StartTheReceiver(_ => { _.Transports.LightweightListenerAt(2270); });
+            StartTheReceiver(_ => { _.Transports.ListenAtPort(2270); });
 
             StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2270/unknown"); });
 
@@ -30,7 +30,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task send_to_the_default_queue()
         {
-            StartTheReceiver(_ => { _.Transports.LightweightListenerAt(2258); });
+            StartTheReceiver(_ => { _.Transports.ListenAtPort(2258); });
 
             StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2258"); });
 

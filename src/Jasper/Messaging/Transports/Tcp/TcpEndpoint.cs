@@ -23,7 +23,12 @@ namespace Jasper.Messaging.Transports.Tcp
             HostName = hostName;
             Port = port;
 
-            Uri = $"tcp://{hostName}:{port}".ToUri();
+            Uri = ToUri(port, hostName);
+        }
+
+        public static Uri ToUri(int port, string hostName = "localhost")
+        {
+            return $"tcp://{hostName}:{port}".ToUri();
         }
 
         public string HostName { get; set; } = "localhost";
@@ -40,7 +45,7 @@ namespace Jasper.Messaging.Transports.Tcp
             HostName = uri.Host;
             Port = uri.Port;
 
-            Uri = $"tcp://{HostName}:{Port}".ToUri();
+            Uri = ToUri(Port, HostName);
 
             if (uri.IsDurable())
             {

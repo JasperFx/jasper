@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             Services.AddSingleton<MessageTracker>();
 
-            Transports.DurableListenerAt(2345);
+            Transports.ListenAtPort(2345).Durably();
 
         }
     }

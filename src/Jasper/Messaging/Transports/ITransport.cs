@@ -10,10 +10,6 @@ namespace Jasper.Messaging.Transports
     {
         string Protocol { get; }
 
-        // TODO -- later!
-        //void AssertUriIsValid(Uri uri);
-        //Uri CanonicizeUri(Uri uri);
-
         Uri ReplyUri { get; }
 
         Endpoint ListenTo(Uri uri);

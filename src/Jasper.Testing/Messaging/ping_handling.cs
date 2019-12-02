@@ -16,7 +16,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task ping_happy_path_with_tcp()
         {
-            using (var runtime = JasperHost.For(_ => { _.Transports.LightweightListenerAt(2222); }))
+            using (var runtime = JasperHost.For(_ => { _.Transports.ListenAtPort(2222); }))
             {
                 var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
                     CancellationToken.None, TransportLogger.Empty());

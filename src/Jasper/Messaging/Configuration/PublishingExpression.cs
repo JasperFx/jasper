@@ -4,6 +4,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
+using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Configuration
@@ -132,8 +133,8 @@ namespace Jasper.Messaging.Configuration
             /// <exception cref="NotImplementedException"></exception>
             public ISubscriberConfiguration ToPort(int port)
             {
-                // TODO -- find by port from TcpTransport
-                return To($"tcp://localhost:{port}".ToUri());
+                var uri = TcpEndpoint.ToUri(port);
+                return To(uri);
             }
 
             /// <summary>
@@ -157,12 +158,12 @@ namespace Jasper.Messaging.Configuration
             ///     Publish messages using the TCP transport to the specified
             ///     server name and port
             /// </summary>
-            /// <param name="serverName"></param>
+            /// <param name="hostName"></param>
             /// <param name="port"></param>
-            public ISubscriberConfiguration ToServerAndPort(string serverName, int port)
+            public ISubscriberConfiguration ToServerAndPort(string hostName, int port)
             {
-                // TODO -- get the Uri logic out
-                return To($"tcp://{serverName}:{port}");
+                var uri = TcpEndpoint.ToUri(port, hostName);
+                return To(uri);
             }
 
 

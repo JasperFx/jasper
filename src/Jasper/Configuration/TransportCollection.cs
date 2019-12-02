@@ -88,25 +88,13 @@ namespace Jasper.Configuration
         ///     Directs the application to listen at the designated port in a
         ///     fast, but non-durable way
         /// </summary>
-        /// <param name="expression"></param>
         /// <param name="port"></param>
-        public IListenerConfiguration LightweightListenerAt(int port)
+        public IListenerConfiguration ListenAtPort(int port)
         {
-            // TODO -- move logic into TcpTransport
-            var settings = Get<TcpTransport>().ListenTo($"tcp://localhost:{port}".ToUri());
+            var settings = Get<TcpTransport>().ListenTo(TcpEndpoint.ToUri(port));
             return new ListenerConfiguration(settings);
         }
 
-        /// <summary>
-        ///     Directs the application to listen at the designated port in a
-        ///     durable way
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <param name="port"></param>
-        public IListenerConfiguration DurableListenerAt(int port)
-        {
-            return LightweightListenerAt(port).Durably();
-        }
 
     }
 }

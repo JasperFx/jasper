@@ -27,7 +27,7 @@ namespace Jasper.Persistence.Testing.Marten
             // persisted with Marten upon receipt and
             // deleted only when the message is successfully
             // processed
-            Transports.DurableListenerAt(2222);
+            Transports.ListenAtPort(2222).Durably();
         }
     }
 

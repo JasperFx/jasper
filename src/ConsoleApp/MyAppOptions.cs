@@ -10,7 +10,7 @@ namespace MyApp
     {
         public MyAppOptions()
         {
-            Transports.LightweightListenerAt(2222);
+            Transports.ListenAtPort(2222);
 
             Publish.Message<Message1>();
             Publish.Message<Message2>();

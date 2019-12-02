@@ -29,7 +29,7 @@ namespace Jasper.Testing.Samples
             // SAMPLE: Bootstrapping-Basic3
             using (var runtime = JasperHost.For(_ =>
             {
-                _.Transports.LightweightListenerAt(2001);
+                _.Transports.ListenAtPort(2001);
             }))
             {
                 // do stuff
@@ -111,7 +111,7 @@ namespace Bootstrapping.Configuration2
         {
             ServiceName = "My Jasper App";
 
-            Transports.DurableListenerAt(2111);
+            Transports.ListenAtPort(2111).Durably();
         }
     }
     // ENDSAMPLE

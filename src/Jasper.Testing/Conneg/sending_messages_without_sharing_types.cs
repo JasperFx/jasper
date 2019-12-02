@@ -114,7 +114,7 @@ namespace Jasper.Testing.Conneg
         public BlueApp(MessageTracker tracker)
         {
             Services.ForSingletonOf<MessageTracker>().Use(tracker);
-            Transports.LightweightListenerAt(2555);
+            Transports.ListenAtPort(2555);
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<BlueHandler>();
         }
