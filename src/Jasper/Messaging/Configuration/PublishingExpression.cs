@@ -3,6 +3,7 @@ using System.Reflection;
 using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Local;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Configuration
@@ -47,14 +48,14 @@ namespace Jasper.Messaging.Configuration
             return MessagesFromAssembly(typeof(T).Assembly);
         }
 
-        public void AllMessagesTo(string uriString)
+        public ISubscriberConfiguration AllMessagesTo(string uriString)
         {
-            AllMessagesTo(uriString.ToUri());
+            return AllMessagesTo(uriString.ToUri());
         }
 
-        public void AllMessagesTo(Uri uri)
+        public ISubscriberConfiguration AllMessagesTo(Uri uri)
         {
-            _parent.Transports.Subscribe(uri, new Subscription
+            return _parent.Transports.Subscribe(uri, new Subscription
             {
                 Scope = RoutingScope.All
             });
@@ -65,9 +66,9 @@ namespace Jasper.Messaging.Configuration
         ///     Directs Jasper to try to publish all messages locally even if there are other
         ///     subscribers for the message type
         /// </summary>
-        public void AllMessagesLocally()
+        public ISubscriberConfiguration AllMessagesLocally()
         {
-            AllMessagesTo(TransportConstants.LocalUri);
+            return AllMessagesTo(TransportConstants.LocalUri);
         }
 
         public class MessageTrackExpression
@@ -84,7 +85,7 @@ namespace Jasper.Messaging.Configuration
                 _match = match;
             }
 
-            public void To(Uri address)
+            public ISubscriberConfiguration To(Uri address)
             {
                 var subscription = new Subscription
                 {
@@ -92,12 +93,17 @@ namespace Jasper.Messaging.Configuration
                     Scope = _routingScope
                 };
 
-                _parent.Transports.Subscribe(address, subscription);
+                return _parent.Transports.Subscribe(address, subscription);
             }
 
-            public void To(string address)
+            /// <summary>
+            /// Send all the matching messages to the designated Uri string
+            /// </summary>
+            /// <param name="uriString"></param>
+            /// <returns></returns>
+            public ISubscriberConfiguration To(string uriString)
             {
-                To(address.ToUri());
+                return To(uriString.ToUri());
             }
 
 
@@ -105,14 +111,17 @@ namespace Jasper.Messaging.Configuration
             ///     Publishes the matching messages locally to the default
             ///     local queue
             /// </summary>
-            public void Locally()
+            public IListenerConfiguration Locally()
             {
                 var subscription = new Subscription
                 {
                     Scope = _routingScope, Match = _match
                 };
 
-                _parent.Transports.Subscribe(TransportConstants.LocalUri, subscription);
+                var settings = _parent.Transports.Get<LocalTransport>().QueueFor(TransportConstants.Default);
+                settings.Subscriptions.Add(subscription);
+
+                return new ListenerConfiguration(settings);
             }
 
             /// <summary>
@@ -121,19 +130,10 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             /// <param name="port"></param>
             /// <exception cref="NotImplementedException"></exception>
-            public void ToPort(int port)
+            public ISubscriberConfiguration ToPort(int port)
             {
-                To($"tcp://localhost:{port}".ToUri());
-            }
-
-            /// <summary>
-            ///     Publish the designated message types using Jasper's built in
-            ///     TCP transport with durable message persistence
-            /// </summary>
-            /// <param name="port"></param>
-            public void DurablyToPort(int port)
-            {
-                To($"tcp://localhost:{port}/durable");
+                // TODO -- find by port from TcpTransport
+                return To($"tcp://localhost:{port}".ToUri());
             }
 
             /// <summary>
@@ -159,26 +159,17 @@ namespace Jasper.Messaging.Configuration
             /// </summary>
             /// <param name="serverName"></param>
             /// <param name="port"></param>
-            public void ToServerAndPort(string serverName, int port)
+            public ISubscriberConfiguration ToServerAndPort(string serverName, int port)
             {
-                To($"tcp://{serverName}:{port}");
+                // TODO -- get the Uri logic out
+                return To($"tcp://{serverName}:{port}");
             }
 
 
             public void ToStub(string queueName)
             {
+                // TODO -- get the Uri logic out of here
                 To("stub://" + queueName);
-            }
-
-            /// <summary>
-            ///     Send messages to the named local queue with durable message
-            ///     persistence
-            /// </summary>
-            /// <param name="queueName"></param>
-            /// <returns></returns>
-            public IListenerConfiguration DurablyToLocalQueue(string queueName)
-            {
-                return ToLocalQueue(queueName).Durably();
             }
         }
     }

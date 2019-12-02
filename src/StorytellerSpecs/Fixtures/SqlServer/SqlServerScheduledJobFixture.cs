@@ -99,7 +99,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             Services.AddSingleton(Receiver);
 
             Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
-                .DurablyToLocalQueue("incoming");
+                .ToLocalQueue("incoming").Durably();
 
             Handlers.Discovery(x =>
             {

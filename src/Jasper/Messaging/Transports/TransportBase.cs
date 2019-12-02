@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Jasper.Configuration;
 using Jasper.Util;
+using Newtonsoft.Json;
 
 namespace Jasper.Messaging.Transports
 {
@@ -27,10 +28,13 @@ namespace Jasper.Messaging.Transports
             foreach (var endpoint in endpoints()) endpoint.StartListening(root, runtime);
         }
 
-        public void Subscribe(Uri uri, Subscription subscription)
+        public Endpoint Subscribe(Uri uri, Subscription subscription)
         {
             uri = canonicizeUri(uri);
-            findEndpointByUri(uri).Subscriptions.Add(subscription);
+            var endpoint = findEndpointByUri(uri);
+            endpoint.Subscriptions.Add(subscription);
+
+            return endpoint;
         }
 
         public Endpoint ListenTo(Uri uri)
@@ -64,7 +68,18 @@ namespace Jasper.Messaging.Transports
 
         public Endpoint DetermineEndpoint(Uri uri)
         {
-            return findEndpointByUri(canonicizeUri(uri));
+            var shouldBeDurable = uri.IsDurable();
+
+            var endpoint = findEndpointByUri(canonicizeUri(uri));
+
+            // It's coded this way so you don't override
+            // durability if it's already set
+            if (shouldBeDurable)
+            {
+                endpoint.IsDurable = true;
+            }
+
+            return endpoint;
         }
 
         protected abstract TEndpoint findEndpointByUri(Uri uri);

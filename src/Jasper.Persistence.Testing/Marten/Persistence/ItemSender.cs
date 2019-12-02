@@ -11,9 +11,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         public ItemSender()
         {
             Include<MartenBackedPersistence>();
-            Publish.Message<ItemCreated>().DurablyToPort(2345);
+            Publish.Message<ItemCreated>().ToPort(2345).Durably();
 
-            Publish.Message<Question>().DurablyToPort(2345);
+            Publish.Message<Question>().ToPort(2345).Durably();
 
             Settings.Alter<StoreOptions>(_ =>
             {

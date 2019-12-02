@@ -48,18 +48,18 @@ namespace Jasper.Messaging.Transports
             }
         }
 
-        public ISendingAgent AddSubscriber(Uri replyUri, ISender sender, Subscription[] subscriptions)
+        public ISendingAgent AddSubscriber(Uri replyUri, ISender sender, Endpoint endpoint)
         {
             try
             {
-                var agent = sender.Destination.IsDurable()
+                var agent = endpoint.IsDurable
                     ? (ISendingAgent)new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger, _root.Persistence)
                     : new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings);
 
                 agent.ReplyUri = replyUri;
                 sender.Start((ISenderCallback) agent);
 
-                AddSubscriber(agent, subscriptions);
+                AddSubscriber(agent, endpoint.Subscriptions.ToArray());
 
                 return agent;
             }

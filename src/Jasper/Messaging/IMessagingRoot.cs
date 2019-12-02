@@ -21,7 +21,7 @@ namespace Jasper.Messaging
     // Replaces ISubscriberGraph
     public interface ITransportRuntime : IDisposable
     {
-        ISendingAgent AddSubscriber(Uri replyUri, ISender sender, Subscription[] subscriptions);
+        ISendingAgent AddSubscriber(Uri replyUri, ISender sender, Endpoint endpoint);
         ISendingAgent GetOrBuildSendingAgent(Uri address);
         void AddListener(IListener listener, Endpoint settings);
         Task Stop();

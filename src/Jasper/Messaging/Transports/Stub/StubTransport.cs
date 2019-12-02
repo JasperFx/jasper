@@ -91,10 +91,12 @@ namespace Jasper.Messaging.Transports.Stub
 
 
 
-        public void Subscribe(Uri uri, Subscription subscription)
+        public Endpoint Subscribe(Uri uri, Subscription subscription)
         {
             subscription.Uri = uri;
             Subscriptions.Add(subscription);
+
+            return null;
         }
 
 

@@ -45,9 +45,12 @@ namespace Jasper.Messaging.Transports.Local
             // Nothing
         }
 
-        void ITransport.Subscribe(Uri uri, Subscription subscription)
+        Endpoint ITransport.Subscribe(Uri uri, Subscription subscription)
         {
-            findByUri(uri).Subscriptions.Add(subscription);
+            var endpoint = findByUri(uri);
+            endpoint.Subscriptions.Add(subscription);
+
+            return endpoint;
         }
 
         public Endpoint DetermineEndpoint(Uri uri)
@@ -128,6 +131,12 @@ namespace Jasper.Messaging.Transports.Local
         {
             var queueName = QueueName(uri);
             var queue = _queues[queueName];
+
+            if (uri.IsDurable())
+            {
+                queue.IsDurable = true;
+            }
+
             return addQueue(root, runtime, queue);
         }
 

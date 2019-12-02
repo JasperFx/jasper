@@ -21,7 +21,7 @@ namespace Jasper.Messaging.Transports
         void StartSenders(IMessagingRoot root, ITransportRuntime runtime);
         void StartListeners(IMessagingRoot root, ITransportRuntime runtime);
 
-        void Subscribe(Uri uri, Subscription subscription);
+        Endpoint Subscribe(Uri uri, Subscription subscription);
 
 
         Endpoint DetermineEndpoint(Uri uri);
