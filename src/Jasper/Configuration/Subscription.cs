@@ -44,27 +44,6 @@ namespace Jasper.Configuration
         /// </summary>
         public string Match { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Create a subscription for a specific message type
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static Subscription ForType<T>(Uri uri)
-        {
-            return ForType(typeof(T));
-        }
-
-        /// <summary>
-        /// Create a subscription for a specific message type
-        /// </summary>
-        /// <param name="uriString"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static Subscription ForType<T>(string uriString)
-        {
-            return ForType(typeof(T));
-        }
 
 
         /// <summary>

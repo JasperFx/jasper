@@ -28,8 +28,11 @@ namespace Jasper.Testing.Messaging
             {
                 _.Handlers.DisableConventionalDiscovery();
 
-                _.Publish.Message<Message1>().ToStub("one");
-                _.Publish.Message<Message2>().ToStub("one");
+                _.Publish
+                    .Message<Message1>()
+                    .Message<Message2>()
+                    .ToStub("one");
+
                 _.Publish.Message<Message2>().ToStub("two");
 
             });

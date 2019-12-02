@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using Jasper.Configuration;
 using Jasper.Util;
 using Newtonsoft.Json;
@@ -28,11 +29,11 @@ namespace Jasper.Messaging.Transports
             foreach (var endpoint in endpoints()) endpoint.StartListening(root, runtime);
         }
 
-        public Endpoint Subscribe(Uri uri, Subscription subscription)
+        public Endpoint Subscribe(Uri uri, Subscription[] subscriptions)
         {
             uri = canonicizeUri(uri);
             var endpoint = findEndpointByUri(uri);
-            endpoint.Subscriptions.Add(subscription);
+            endpoint.Subscriptions.AddRange(subscriptions);
 
             return endpoint;
         }

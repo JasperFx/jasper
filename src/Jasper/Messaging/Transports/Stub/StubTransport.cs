@@ -87,9 +87,9 @@ namespace Jasper.Messaging.Transports.Stub
 
         private readonly LightweightCache<Uri, List<Subscription>> _subscriptions = new LightweightCache<Uri, List<Subscription>>(u => new List<Subscription>());
 
-        public Endpoint Subscribe(Uri uri, Subscription subscription)
+        public Endpoint Subscribe(Uri uri, Subscription[] subscriptions)
         {
-            _subscriptions[uri].Add(subscription);
+            _subscriptions[uri].AddRange(subscriptions);
 
             return null;
         }

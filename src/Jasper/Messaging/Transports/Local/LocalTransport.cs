@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging.Transports.Sending;
@@ -33,6 +32,8 @@ namespace Jasper.Messaging.Transports.Local
             // Nothing really
         }
 
+
+
         public string Protocol { get; } = TransportConstants.Local;
 
         void ITransport.StartSenders(IMessagingRoot root, ITransportRuntime runtime)
@@ -45,10 +46,10 @@ namespace Jasper.Messaging.Transports.Local
             // Nothing
         }
 
-        Endpoint ITransport.Subscribe(Uri uri, Subscription subscription)
+        Endpoint ITransport.Subscribe(Uri uri, Subscription[] subscriptions)
         {
             var endpoint = findByUri(uri);
-            endpoint.Subscriptions.Add(subscription);
+            endpoint.Subscriptions.AddRange(subscriptions);
 
             return endpoint;
         }

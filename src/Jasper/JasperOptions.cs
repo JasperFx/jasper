@@ -63,8 +63,6 @@ namespace Jasper
 
             Settings = new SettingsGraph(this);
 
-            Publish = new PublishingExpression(this);
-
             deriveServiceName();
         }
 
@@ -108,9 +106,10 @@ namespace Jasper
 
 
         /// <summary>
-        ///     Configure static message routing rules and message publishing rules
+        /// Configure static message routing rules and message publishing rules.
+        /// Caution! You receive a new instance on each invocation
         /// </summary>
-        public PublishingExpression Publish { get; }
+        public PublishingExpression Publish => new PublishingExpression(this);
 
         /// <summary>
         /// Configure message listeners or sending endpoints

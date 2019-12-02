@@ -36,7 +36,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
             var subscription = Subscription.All();
             var transport = new LocalTransport();
 
-            transport.As<ITransport>().Subscribe("local://one".ToUri(), subscription);
+            transport.As<ITransport>().Subscribe("local://one".ToUri(), new Subscription[]{ subscription});
 
             transport.QueueFor("one")
                 .Subscriptions.Single()

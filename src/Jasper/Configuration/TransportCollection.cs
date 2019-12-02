@@ -47,7 +47,7 @@ namespace Jasper.Configuration
             return GetEnumerator();
         }
 
-        public ISubscriberConfiguration Subscribe(Uri uri, Subscription subscription)
+        public ISubscriberConfiguration Subscribe(Uri uri, params Subscription[] subscriptions)
         {
             var transport = TransportForScheme(uri.Scheme);
             if (transport == null)
@@ -55,9 +55,10 @@ namespace Jasper.Configuration
                 throw new InvalidOperationException($"Unknown Transport scheme '{transport.Protocol}'");
             }
 
-            var endpoint = transport.Subscribe(uri, subscription);
+            var endpoint = transport.Subscribe(uri, subscriptions);
             return new SubscriberConfiguration(endpoint);
         }
+
 
         /// <summary>
         ///     Directs Jasper to set up an incoming listener fvoidor the given Uri
@@ -94,6 +95,7 @@ namespace Jasper.Configuration
             var settings = Get<TcpTransport>().ListenTo(TcpEndpoint.ToUri(port));
             return new ListenerConfiguration(settings);
         }
+
 
 
     }
