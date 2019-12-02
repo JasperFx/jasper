@@ -29,11 +29,6 @@ namespace Jasper.Configuration
         [JsonConverter(typeof(StringEnumConverter))]
         public RoutingScope Scope { get; set; } = RoutingScope.All;
 
-        /// <summary>
-        /// The outgoing address to send matching messages
-        /// </summary>
-        [Obsolete("Get rid of this")]
-        public Uri Uri { get; set; }
 
         /// <summary>
         /// The legal, accepted content types for the receivers. The default is ["application/json"]
@@ -57,7 +52,7 @@ namespace Jasper.Configuration
         /// <returns></returns>
         public static Subscription ForType<T>(Uri uri)
         {
-            return ForType(typeof(T), uri);
+            return ForType(typeof(T));
         }
 
         /// <summary>
@@ -68,7 +63,7 @@ namespace Jasper.Configuration
         /// <returns></returns>
         public static Subscription ForType<T>(string uriString)
         {
-            return ForType(typeof(T), uriString.ToUri());
+            return ForType(typeof(T));
         }
 
 
@@ -76,15 +71,13 @@ namespace Jasper.Configuration
         /// Create a subscription for a specific message type
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="uri"></param>
         /// <returns></returns>
-        public static Subscription ForType(Type type, Uri uri)
+        public static Subscription ForType(Type type)
         {
             return new Subscription
             {
                 Scope = RoutingScope.Type,
                 Match = type.FullName,
-                Uri = uri
             };
         }
 
@@ -125,7 +118,7 @@ namespace Jasper.Configuration
 
         protected bool Equals(Subscription other)
         {
-            return Scope == other.Scope && Equals(Uri, other.Uri) && ContentTypes.SequenceEqual(other.ContentTypes) &&
+            return Scope == other.Scope && ContentTypes.SequenceEqual(other.ContentTypes) &&
                    string.Equals(Match, other.Match);
         }
 
@@ -142,7 +135,6 @@ namespace Jasper.Configuration
             unchecked
             {
                 var hashCode = (int) Scope;
-                hashCode = (hashCode * 397) ^ (Uri != null ? Uri.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (ContentTypes != null ? ContentTypes.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Match != null ? Match.GetHashCode() : 0);
                 return hashCode;
