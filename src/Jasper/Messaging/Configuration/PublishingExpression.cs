@@ -164,6 +164,7 @@ namespace Jasper.Messaging.Configuration
                 To($"tcp://{serverName}:{port}");
             }
 
+
             public void ToStub(string queueName)
             {
                 To("stub://" + queueName);
