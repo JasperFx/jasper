@@ -85,6 +85,23 @@ namespace Jasper.Testing.Configuration
 
         }
 
+        [Fact]
+        public void configure_execution_options()
+        {
+            var options = new JasperOptions();
+
+            var uri = "local://one".ToUri();
+
+            options.Transports.ListenForMessagesFrom(uri)
+                .ConfigureExecution(o => o.BoundedCapacity = 13);
+
+            options.Transports.Get<LocalTransport>()
+                .QueueFor("one")
+                .ExecutionOptions
+                .BoundedCapacity
+                .ShouldBe(13);
+        }
+
 
 
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks.Dataflow;
 using Jasper.Configuration;
 
 namespace Jasper
@@ -31,6 +32,14 @@ namespace Jasper
         /// </summary>
         /// <returns></returns>
         IListenerConfiguration Lightweight();
+
+
+        /// <summary>
+        /// Fine tune the internal message handling queue for this listener
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        IListenerConfiguration ConfigureExecution(Action<ExecutionDataflowBlockOptions> configure);
 
 
     }
@@ -67,6 +76,12 @@ namespace Jasper
         IListenerConfiguration IListenerConfiguration.Lightweight()
         {
             _endpoint.IsDurable = false;
+            return this;
+        }
+
+        public IListenerConfiguration ConfigureExecution(Action<ExecutionDataflowBlockOptions> configure)
+        {
+            configure(_endpoint.ExecutionOptions);
             return this;
         }
     }
