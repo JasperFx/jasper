@@ -43,10 +43,17 @@ namespace StorytellerSpecs.Fixtures.Durability
             senderRegistry.Services.AddSingleton(theTracker);
 
 
-            senderRegistry.Publish.Message<TriggerMessage>().ToPort(receiverPort).Durably();
-            senderRegistry.Publish.Message<ItemCreated>().ToPort(receiverPort).Durably();
-            senderRegistry.Publish.Message<Question>().ToPort(receiverPort).Durably();
-            senderRegistry.Publish.Message<ScheduledMessage>().ToPort(receiverPort).Durably();
+
+            senderRegistry.Endpoints.Publish(x =>
+            {
+                x.Message<TriggerMessage>();
+                x.Message<ItemCreated>();
+                x.Message<Question>();
+                x.Message<ScheduledMessage>();
+
+                x.ToPort(receiverPort).Durably();
+
+            });
 
 
             senderRegistry.Endpoints.ListenAtPort(senderPort).Durably();

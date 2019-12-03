@@ -15,7 +15,7 @@ namespace Jasper.Testing.Messaging
         {
             StartTheReceiver(_ => { _.Endpoints.ListenAtPort(2270); });
 
-            StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2270/unknown"); });
+            StartTheSender(_ => { _.Endpoints.PublishAllMessages().To("tcp://localhost:2270/unknown"); });
 
             var waiter = theTracker.WaitFor<Message1>();
 
@@ -32,7 +32,7 @@ namespace Jasper.Testing.Messaging
         {
             StartTheReceiver(_ => { _.Endpoints.ListenAtPort(2258); });
 
-            StartTheSender(_ => { _.Publish.AllMessagesTo("tcp://localhost:2258"); });
+            StartTheSender(_ => { _.Endpoints.PublishAllMessages().To("tcp://localhost:2258"); });
 
             var waiter = theTracker.WaitFor<Message1>();
 

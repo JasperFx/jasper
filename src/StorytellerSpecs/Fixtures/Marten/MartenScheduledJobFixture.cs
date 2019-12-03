@@ -99,8 +99,8 @@ namespace StorytellerSpecs.Fixtures.Marten
         {
             Services.AddSingleton(Receiver);
 
-            Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
-                .ToLocalQueue("incoming").Durably();
+            Endpoints.Publish(x => x.MessagesFromAssemblyContaining<ScheduledMessageApp>()
+                .ToLocalQueue("incoming").Durably());
 
             Handlers.Discovery(x =>
             {

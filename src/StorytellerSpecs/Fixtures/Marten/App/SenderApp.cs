@@ -11,7 +11,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
         {
             Handlers.DisableConventionalDiscovery();
 
-            Publish.Message<TraceMessage>().To(ReceiverApp.Listener);
+            Endpoints.Publish(x => x.Message<TraceMessage>().To(ReceiverApp.Listener));
 
             Settings.ConfigureMarten(_ =>
             {

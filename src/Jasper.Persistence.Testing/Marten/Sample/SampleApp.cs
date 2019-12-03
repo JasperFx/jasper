@@ -146,7 +146,8 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         {
             Settings.Alter<StoreOptions>(_ => { _.Connection(Servers.PostgresConnectionString); });
 
-            Publish.AllMessagesLocally();
+            Endpoints.PublishAllMessages().Locally();
+
             Services.AddSingleton<UserNames>();
 
             Include<MartenBackedPersistence>();

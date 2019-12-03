@@ -29,7 +29,7 @@ namespace Jasper.Testing.Messaging.Sagas
 
                 _.Include<MessageTrackingExtension>();
 
-                _.Publish.AllMessagesTo(TransportConstants.LocalUri);
+                _.Endpoints.PublishAllMessages().To(TransportConstants.LocalUri);
 
                 configure(_);
             });

@@ -24,7 +24,7 @@ namespace Jasper.Testing.Messaging
             var host = JasperHost.For(x =>
             {
                 x.Handlers.DisableConventionalDiscovery().IncludeType<ExecutedMessageGuy>();
-                x.Publish.AllMessagesTo("stub://outgoing");
+                x.Endpoints.PublishAllMessages().To("stub://outgoing");
 
                 x.Services.AddSingleton(catcher);
             });

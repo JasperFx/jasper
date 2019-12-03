@@ -44,7 +44,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         public void public_to_with_durable()
         {
             var options = new JasperOptions();
-            options.Publish.AllMessagesTo("local://one/durable");
+            options.Endpoints.PublishAllMessages().To("local://one/durable");
 
             options.LocalQueues.ByName("one")
                 .As<LocalQueueSettings>()
@@ -56,7 +56,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         public void public_to_with_not_durable()
         {
             var options = new JasperOptions();
-            options.Publish.AllMessagesTo("local://one");
+            options.Endpoints.PublishAllMessages().To("local://one");
 
             options.LocalQueues.ByName("one")
                 .As<LocalQueueSettings>()

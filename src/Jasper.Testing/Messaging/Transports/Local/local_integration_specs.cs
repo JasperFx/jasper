@@ -21,8 +21,8 @@ namespace Jasper.Testing.Messaging.Transports.Local
         {
             with(_ =>
             {
-                _.Publish.Message<Message1>()
-                    .ToLocalQueue("incoming");
+                _.Endpoints.Publish(x => x.Message<Message1>()
+                    .ToLocalQueue("incoming"));
 
                 _.Services.AddSingleton(theTracker);
 

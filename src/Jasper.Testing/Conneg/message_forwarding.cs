@@ -28,8 +28,11 @@ namespace Jasper.Testing.Conneg
 
                 _.Services.AddSingleton(tracker);
 
-
-                _.Publish.Message<OriginalMessage>().ToPort(2345);
+                _.Endpoints.Publish(x =>
+                {
+                    x.Message<OriginalMessage>();
+                    x.ToPort(2345);
+                });
 
                 _.Endpoints.ListenAtPort(2345);
             });

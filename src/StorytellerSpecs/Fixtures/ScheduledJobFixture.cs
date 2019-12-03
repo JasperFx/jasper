@@ -72,8 +72,8 @@ namespace StorytellerSpecs.Fixtures
         {
             Services.AddSingleton(Receiver);
 
-            Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
-                .ToLocalQueue("incoming");
+            Endpoints.Publish(x => x.MessagesFromAssemblyContaining<ScheduledMessageApp>()
+                .ToLocalQueue("incoming"));
 
             Endpoints.ListenForMessagesFrom("local://incoming");
 

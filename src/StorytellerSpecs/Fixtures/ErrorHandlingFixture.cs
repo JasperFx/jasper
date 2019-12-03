@@ -111,8 +111,9 @@ namespace StorytellerSpecs.Fixtures
             var registry = new JasperOptions();
             registry.Endpoints.ListenForMessagesFrom("stub://1".ToUri());
             registry.Services.AddSingleton(_tracker);
-            registry.Publish.Message<ErrorCausingMessage>()
-                .To("stub://1".ToUri());
+
+            registry.Endpoints.Publish(x => x.Message<ErrorCausingMessage>()
+                .To("stub://1".ToUri()));
 
             _host = JasperHost.For(registry);
 

@@ -41,7 +41,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
                 _.Include<MessageTrackingExtension>();
 
-                _.Publish.AllMessagesTo(TransportConstants.LocalUri);
+                _.Endpoints.PublishAllMessages().Locally();
 
                 configure(_);
             });

@@ -34,7 +34,7 @@ namespace Jasper.Configuration
         /// Publish all message types to a messaging endpoint
         /// </summary>
         /// <returns></returns>
-        IPublishToExpression PublishAll();
+        IPublishToExpression PublishAllMessages();
 
 
     }

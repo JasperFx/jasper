@@ -98,7 +98,7 @@ namespace Jasper.Testing.Messaging.Samples
         {
             // This app has a single outbound publishing Uri that
             // is expected to be in configuration
-            Publish.AllMessagesTo("tcp://localhost:2222");
+            Endpoints.PublishAllMessages().To("tcp://localhost:2222");
 
             Endpoints.ListenAtPort(3333);
         }

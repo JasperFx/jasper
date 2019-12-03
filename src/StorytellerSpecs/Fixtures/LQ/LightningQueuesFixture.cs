@@ -60,7 +60,7 @@ namespace StorytellerSpecs.Fixtures.LQ
         {
             var type = messageTypeFor(messageType);
 
-            _options.Publish.Message(type).To(channel);
+            _options.Endpoints.Publish(x => x.Message(type).To(channel));
 
             // Just makes the test harness listen for things
             _options.Endpoints.ListenForMessagesFrom(channel);

@@ -25,9 +25,6 @@ namespace Publisher
         {
             Endpoints.ListenAtPort(2211);
 
-            // 100% Optional for diagnostics
-            Publish.Message<NewUser>();
-            Publish.Message<DeleteUser>();
         }
     }
     // ENDSAMPLE

@@ -20,7 +20,6 @@ namespace Jasper.Messaging.Configuration
 
         private readonly IList<Endpoint> _endpoints = new List<Endpoint>();
 
-        // TODO -- take in TransportCollection instead?
         internal PublishingExpression(TransportCollection parent)
         {
             _parent = parent;
@@ -112,8 +111,12 @@ namespace Jasper.Messaging.Configuration
         {
             var endpoint = _parent.GetOrCreateEndpoint(uri);
 
-            // KILL THIS WHEN IT's USED IN NESTED CLOSURE
-            endpoint.Subscriptions.AddRange(_subscriptions);
+            _endpoints.Add(endpoint);
+
+            if (AutoAddSubscriptions)
+            {
+                endpoint.Subscriptions.AddRange(_subscriptions);
+            }
 
             return new SubscriberConfiguration(endpoint);
         }
@@ -161,7 +164,13 @@ namespace Jasper.Messaging.Configuration
         public IListenerConfiguration ToLocalQueue(string queueName)
         {
             var settings = _parent.Get<LocalTransport>().QueueFor(queueName);
-            settings.Subscriptions.AddRange(_subscriptions);
+
+            if (AutoAddSubscriptions)
+            {
+                settings.Subscriptions.AddRange(_subscriptions);
+            }
+
+            _endpoints.Add(settings);
 
             return new ListenerConfiguration(settings);
         }
