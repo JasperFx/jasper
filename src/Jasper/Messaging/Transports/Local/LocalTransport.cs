@@ -8,7 +8,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Local
 {
-    public class LocalTransport : ITransport, ILocalQueues
+    public class LocalTransport : ITransport
     {
         private readonly Cache<string, LocalQueueSettings> _queues = new Cache<string, LocalQueueSettings>(name =>
             new LocalQueueSettings(name));
@@ -140,14 +140,5 @@ namespace Jasper.Messaging.Transports.Local
             return addQueue(root, runtime, queue);
         }
 
-        LocalQueueSettings ILocalQueues.ByName(string queueName)
-        {
-            return QueueFor(queueName);
-        }
-
-        LocalQueueSettings ILocalQueues.Default()
-        {
-            return QueueFor(TransportConstants.Default);
-        }
     }
 }

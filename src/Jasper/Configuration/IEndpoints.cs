@@ -36,6 +36,18 @@ namespace Jasper.Configuration
         /// <returns></returns>
         IPublishToExpression PublishAllMessages();
 
+        /// <summary>
+        /// Retrieve the configuration for a local queue by name. Case insensitive.
+        /// Will create a new queue if one with this name does not already exist
+        /// </summary>
+        /// <param name="queueName"></param>
+        /// <returns></returns>
+        IListenerConfiguration LocalQueue(string queueName);
 
+        /// <summary>
+        /// Access the configuration for the default local queueLocalQueueSettings
+        /// </summary>
+        /// <value></value>
+        IListenerConfiguration DefaultLocalQueue { get; }
     }
 }

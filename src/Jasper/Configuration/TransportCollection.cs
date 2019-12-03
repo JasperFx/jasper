@@ -114,7 +114,7 @@ namespace Jasper.Configuration
             expression.AttachSubscriptions();
         }
 
-        public IPublishToExpression PublishAll()
+        public IPublishToExpression PublishAllMessages()
         {
             var expression = new PublishingExpression(this)
             {
@@ -123,6 +123,17 @@ namespace Jasper.Configuration
 
             expression.AddSubscriptionForAllMessages();
             return expression;
+        }
+
+        public IListenerConfiguration LocalQueue(string queueName)
+        {
+            var settings = Get<LocalTransport>().QueueFor(queueName);
+            return new ListenerConfiguration(settings);
+        }
+
+        public IListenerConfiguration DefaultLocalQueue
+        {
+            get { return LocalQueue(TransportConstants.Default); }
         }
     }
 }
