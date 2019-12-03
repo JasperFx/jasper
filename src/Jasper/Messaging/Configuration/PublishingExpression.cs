@@ -18,6 +18,9 @@ namespace Jasper.Messaging.Configuration
 
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
 
+        private readonly IList<Endpoint> _endpoints = new List<Endpoint>();
+
+        // TODO -- take in TransportCollection instead?
         internal PublishingExpression(JasperOptions parent)
         {
             _parent = parent;
@@ -76,10 +79,14 @@ namespace Jasper.Messaging.Configuration
                 throw new InvalidOperationException($"{nameof(AllMessagesTo)} is only valid if there are no other message matching rules in this expression");
             }
 
-            return _parent.Transports.Subscribe(uri, new Subscription
+            var subscription = new Subscription
             {
                 Scope = RoutingScope.All
-            });
+            };
+
+            _subscriptions.Add(subscription);
+
+            return To(uri);
         }
 
 
@@ -97,11 +104,16 @@ namespace Jasper.Messaging.Configuration
         /// All matching records are to be sent to the configured subscriber
         /// by Uri
         /// </summary>
-        /// <param name="address"></param>
+        /// <param name="uri"></param>
         /// <returns></returns>
-        public ISubscriberConfiguration To(Uri address)
+        public ISubscriberConfiguration To(Uri uri)
         {
-            return _parent.Transports.Subscribe(address, _subscriptions.ToArray());
+            var endpoint = _parent.Transports.GetOrCreateEndpoint(uri);
+
+            // KILL THIS WHEN IT's USED IN NESTED CLOSURE
+            endpoint.Subscriptions.AddRange(_subscriptions);
+
+            return new SubscriberConfiguration(endpoint);
         }
 
         /// <summary>

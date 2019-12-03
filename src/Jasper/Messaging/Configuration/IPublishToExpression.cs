@@ -11,7 +11,7 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        ISubscriberConfiguration To(Uri address);
+        ISubscriberConfiguration To(Uri uri);
 
         /// <summary>
         /// Send all the matching messages to the designated Uri string
@@ -19,12 +19,6 @@ namespace Jasper.Messaging.Configuration
         /// <param name="uriString"></param>
         /// <returns></returns>
         ISubscriberConfiguration To(string uriString);
-
-        /// <summary>
-        ///     Publishes the matching messages locally to the default
-        ///     local queue
-        /// </summary>
-        IListenerConfiguration Locally();
 
         /// <summary>
         ///     Publish the designated message types using Jasper's lightweight
@@ -55,5 +49,11 @@ namespace Jasper.Messaging.Configuration
         /// </summary>
         /// <param name="queueName"></param>
         void ToStub(string queueName);
+
+        /// <summary>
+        ///     Publishes the matching messages locally to the default
+        ///     local queue
+        /// </summary>
+        IListenerConfiguration Locally();
     }
 }

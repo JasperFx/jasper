@@ -47,18 +47,6 @@ namespace Jasper.Configuration
             return GetEnumerator();
         }
 
-        // TODO -- ditch this and add a new For(Uri) : Endpoint method
-        [Obsolete]
-        public ISubscriberConfiguration Subscribe(Uri uri, params Subscription[] subscriptions)
-        {
-            var endpoint = GetOrCreateEndpoint(uri);
-
-            // TODO -- remove the responsibility for adding subscriptions here and into PublishingExpression
-            endpoint.Subscriptions.AddRange(subscriptions);
-
-            return new SubscriberConfiguration(endpoint);
-        }
-
         public Endpoint GetEndpoint(Uri uri)
         {
             var transport = TransportForScheme(uri.Scheme);

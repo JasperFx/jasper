@@ -146,6 +146,7 @@ namespace Jasper
         /// Direct access to configure or add local queues for durability,
         /// maximum parallel threads, and other settings
         /// </summary>
+        [Obsolete("pull this into Endpoints")]
         public ILocalQueues LocalQueues => Transports.Get<LocalTransport>();
 
         private void establishApplicationAssembly(string assemblyName)
