@@ -12,7 +12,7 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Configuration
 {
-    public class PublishingExpression
+    public class PublishingExpression : IPublishToExpression
     {
         private readonly JasperOptions _parent;
 
@@ -62,11 +62,13 @@ namespace Jasper.Messaging.Configuration
             return MessagesFromAssembly(typeof(T).Assembly);
         }
 
+        [Obsolete]
         public ISubscriberConfiguration AllMessagesTo(string uriString)
         {
             return AllMessagesTo(uriString.ToUri());
         }
 
+        [Obsolete]
         public ISubscriberConfiguration AllMessagesTo(Uri uri)
         {
             if (_subscriptions.Any())
@@ -85,6 +87,7 @@ namespace Jasper.Messaging.Configuration
         ///     Directs Jasper to try to publish all messages locally even if there are other
         ///     subscribers for the message type
         /// </summary>
+        [Obsolete]
         public ISubscriberConfiguration AllMessagesLocally()
         {
             return AllMessagesTo(TransportConstants.LocalUri);

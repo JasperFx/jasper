@@ -11,7 +11,7 @@ using Jasper.Util;
 
 namespace Jasper.Configuration
 {
-    public class TransportCollection : IEnumerable<ITransport>
+    public class TransportCollection : IEnumerable<ITransport>, IEndpoints
     {
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
