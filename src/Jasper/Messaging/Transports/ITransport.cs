@@ -17,10 +17,7 @@ namespace Jasper.Messaging.Transports
         void StartSenders(IMessagingRoot root, ITransportRuntime runtime);
         void StartListeners(IMessagingRoot root, ITransportRuntime runtime);
 
-        // TODO -- make this NOT take in the subscriptions
-        Endpoint Subscribe(Uri uri, Subscription[] subscriptions);
-
-
-        Endpoint DetermineEndpoint(Uri uri);
+        Endpoint GetOrCreateEndpoint(Uri uri);
+        Endpoint TryGetEndpoint(Uri uri);
     }
 }

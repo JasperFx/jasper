@@ -56,6 +56,11 @@ namespace Jasper.Messaging.Transports.Stub
                 new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
         }
 
+        public Endpoint TryGetEndpoint(Uri uri)
+        {
+            return Channels.TryRetrieve(uri, out var endpoint) ? endpoint : null;
+        }
+
         public void Dispose()
         {
 

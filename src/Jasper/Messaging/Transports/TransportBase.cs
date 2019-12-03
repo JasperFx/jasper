@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Baseline;
 using Jasper.Configuration;
 using Jasper.Util;
-using Newtonsoft.Json;
 
 namespace Jasper.Messaging.Transports
 {
@@ -45,6 +43,24 @@ namespace Jasper.Messaging.Transports
         {
         }
 
+        public Endpoint GetOrCreateEndpoint(Uri uri)
+        {
+            var shouldBeDurable = uri.IsDurable();
+
+            var endpoint = findEndpointByUri(canonicizeUri(uri));
+
+            // It's coded this way so you don't override
+            // durability if it's already set
+            if (shouldBeDurable) endpoint.IsDurable = true;
+
+            return endpoint;
+        }
+
+        public Endpoint TryGetEndpoint(Uri uri)
+        {
+            return findEndpointByUri(canonicizeUri(uri));
+        }
+
         protected abstract IEnumerable<TEndpoint> endpoints();
 
         /// <summary>
@@ -56,22 +72,6 @@ namespace Jasper.Messaging.Transports
         protected virtual Uri canonicizeUri(Uri uri)
         {
             return uri;
-        }
-
-        public Endpoint GetOrCreateEndpoint(Uri uri)
-        {
-            var shouldBeDurable = uri.IsDurable();
-
-            var endpoint = findEndpointByUri(canonicizeUri(uri));
-
-            // It's coded this way so you don't override
-            // durability if it's already set
-            if (shouldBeDurable)
-            {
-                endpoint.IsDurable = true;
-            }
-
-            return endpoint;
         }
 
         protected abstract TEndpoint findEndpointByUri(Uri uri);

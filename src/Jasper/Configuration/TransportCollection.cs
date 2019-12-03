@@ -48,7 +48,18 @@ namespace Jasper.Configuration
         }
 
         // TODO -- ditch this and add a new For(Uri) : Endpoint method
+        [Obsolete]
         public ISubscriberConfiguration Subscribe(Uri uri, params Subscription[] subscriptions)
+        {
+            var endpoint = GetOrCreateEndpoint(uri);
+
+            // TODO -- remove the responsibility for adding subscriptions here and into PublishingExpression
+            endpoint.Subscriptions.AddRange(subscriptions);
+
+            return new SubscriberConfiguration(endpoint);
+        }
+
+        public Endpoint GetEndpoint(Uri uri)
         {
             var transport = TransportForScheme(uri.Scheme);
             if (transport == null)
@@ -56,12 +67,18 @@ namespace Jasper.Configuration
                 throw new InvalidOperationException($"Unknown Transport scheme '{transport.Protocol}'");
             }
 
-            var endpoint = transport.GetOrCreateEndpoint(uri);
+            return transport.TryGetEndpoint(uri);
+        }
 
-            // TODO -- remove the responsibility for adding subscriptions here and into PublishingExpression
-            endpoint.Subscriptions.AddRange(subscriptions);
+        public Endpoint GetOrCreateEndpoint(Uri uri)
+        {
+            var transport = TransportForScheme(uri.Scheme);
+            if (transport == null)
+            {
+                throw new InvalidOperationException($"Unknown Transport scheme '{transport.Protocol}'");
+            }
 
-            return new SubscriberConfiguration(endpoint);
+            return transport.GetOrCreateEndpoint(uri);
         }
 
 

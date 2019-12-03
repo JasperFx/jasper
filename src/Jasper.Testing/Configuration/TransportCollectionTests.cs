@@ -127,6 +127,11 @@ namespace Jasper.Testing.Configuration
             {
                 throw new NotImplementedException();
             }
+
+            public Endpoint TryGetEndpoint(Uri uri)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

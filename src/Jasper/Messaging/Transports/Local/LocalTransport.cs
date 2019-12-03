@@ -52,6 +52,12 @@ namespace Jasper.Messaging.Transports.Local
             return findByUri(uri);
         }
 
+        public Endpoint TryGetEndpoint(Uri uri)
+        {
+            var queueName = QueueName(uri);
+            return _queues.TryFind(queueName, out var settings) ? settings : null;
+        }
+
 
         Uri ITransport.ReplyUri => TransportConstants.RepliesUri;
 
