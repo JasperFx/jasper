@@ -17,7 +17,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
 
             Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
-            Transports.ListenForMessagesFrom(Listener);
+            Endpoints.ListenForMessagesFrom(Listener);
         }
     }
 }

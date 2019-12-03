@@ -67,7 +67,7 @@ namespace StorytellerSpecs.Fixtures
             _options.Publish.Message(type).To(channel);
 
             // Just makes the test harness listen for things
-            _options.Transports.ListenForMessagesFrom(channel);
+            _options.Endpoints.ListenForMessagesFrom(channel);
         }
 
         [FormatAs("Additional serializers have content types {contentTypes}")]

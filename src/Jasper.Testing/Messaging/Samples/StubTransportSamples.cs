@@ -100,7 +100,7 @@ namespace Jasper.Testing.Messaging.Samples
             // is expected to be in configuration
             Publish.AllMessagesTo("tcp://localhost:2222");
 
-            Transports.ListenAtPort(3333);
+            Endpoints.ListenAtPort(3333);
         }
     }
     // ENDSAMPLE

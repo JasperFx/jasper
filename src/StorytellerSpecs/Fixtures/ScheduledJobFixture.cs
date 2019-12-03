@@ -75,7 +75,7 @@ namespace StorytellerSpecs.Fixtures
             Publish.MessagesFromAssemblyContaining<ScheduledMessageApp>()
                 .ToLocalQueue("incoming");
 
-            Transports.ListenForMessagesFrom("local://incoming");
+            Endpoints.ListenForMessagesFrom("local://incoming");
 
             Handlers.Discovery(x =>
             {

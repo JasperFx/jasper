@@ -63,7 +63,7 @@ namespace StorytellerSpecs.Fixtures.LQ
             _options.Publish.Message(type).To(channel);
 
             // Just makes the test harness listen for things
-            _options.Transports.ListenForMessagesFrom(channel);
+            _options.Endpoints.ListenForMessagesFrom(channel);
         }
     }
 }

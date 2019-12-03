@@ -1,10 +1,22 @@
+using Jasper.Configuration;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
 using Jasper.Util;
+using LamarCodeGeneration.Util;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Configuration
 {
+    public static class EndpointsExtensions
+    {
+
+        public static T GetTransport<T>(this IEndpoints endpoints) where T : ITransport, new()
+        {
+            return endpoints.As<TransportCollection>().Get<T>();
+        }
+    }
+
     public class configuring_listeners_by_option
     {
 
@@ -16,11 +28,11 @@ namespace Jasper.Testing.Configuration
             var uri = "local://one".ToUri();
 
             options
-                .Transports
+                .Endpoints
                 .ListenForMessagesFrom(uri)
                 .MaximumThreads(11);
 
-            options.Transports.Get<LocalTransport>()
+            options.Endpoints.GetTransport<LocalTransport>()
                 .QueueFor("one")
                 .ExecutionOptions
                 .MaxDegreeOfParallelism
@@ -36,11 +48,11 @@ namespace Jasper.Testing.Configuration
             var uri = "local://one".ToUri();
 
             options
-                .Transports
+                .Endpoints
                 .ListenForMessagesFrom(uri)
                 .Sequential();
 
-            var executionOptions = options.Transports.Get<LocalTransport>()
+            var executionOptions = options.Endpoints.GetTransport<LocalTransport>()
                 .QueueFor("one")
                 .ExecutionOptions;
 
@@ -59,9 +71,9 @@ namespace Jasper.Testing.Configuration
 
             var uri = "local://one".ToUri();
 
-            options.Transports.ListenForMessagesFrom(uri).Durably();
+            options.Endpoints.ListenForMessagesFrom(uri).Durably();
 
-            options.Transports.Get<LocalTransport>()
+            options.Endpoints.GetTransport<LocalTransport>()
                 .QueueFor("one")
                 .IsDurable
                 .ShouldBeTrue();
@@ -75,9 +87,9 @@ namespace Jasper.Testing.Configuration
 
             var uri = "local://one".ToUri();
 
-            options.Transports.ListenForMessagesFrom(uri).Lightweight();
+            options.Endpoints.ListenForMessagesFrom(uri).Lightweight();
 
-            options.Transports.Get<LocalTransport>()
+            options.Endpoints.GetTransport<LocalTransport>()
                 .QueueFor("one")
                 .IsDurable
                 .ShouldBeFalse();
@@ -92,10 +104,10 @@ namespace Jasper.Testing.Configuration
 
             var uri = "local://one".ToUri();
 
-            options.Transports.ListenForMessagesFrom(uri)
+            options.Endpoints.ListenForMessagesFrom(uri)
                 .ConfigureExecution(o => o.BoundedCapacity = 13);
 
-            options.Transports.Get<LocalTransport>()
+            options.Endpoints.GetTransport<LocalTransport>()
                 .QueueFor("one")
                 .ExecutionOptions
                 .BoundedCapacity

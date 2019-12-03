@@ -22,7 +22,7 @@ namespace Jasper.Testing.Samples
 
 
             // Configure the built in transports
-            Transports.ListenAtPort(2233);
+            Endpoints.ListenAtPort(2233);
         }
     }
     // ENDSAMPLE
@@ -36,7 +36,7 @@ namespace Jasper.Testing.Samples
             // Use the simpler, but transport specific syntax
             // to just declare what port the transport should use
             // to listen for incoming messages
-            Transports.ListenAtPort(2233);
+            Endpoints.ListenAtPort(2233);
         }
     }
     // ENDSAMPLE
@@ -48,7 +48,7 @@ namespace Jasper.Testing.Samples
         public LightweightTransportApp()
         {
             // Set up a listener (this is optional)
-            Transports.ListenAtPort(4000);
+            Endpoints.ListenAtPort(4000);
 
             // Publish the message Message2 to the DNS entry "remoteserver"
             Publish.Message<Message2>().ToServerAndPort("remoteserver", 2201);
@@ -62,10 +62,10 @@ namespace Jasper.Testing.Samples
         public DurableTransportApp()
         {
             // Set up a listener (this is optional)
-            Transports.ListenAtPort(2200).Durably();
+            Endpoints.ListenAtPort(2200).Durably();
 
             // With the RabbitMQ transport
-            Transports.ListenForMessagesFrom("rabbitmq://server1/durable/queue1");
+            Endpoints.ListenForMessagesFrom("rabbitmq://server1/durable/queue1");
         }
     }
     // ENDSAMPLE

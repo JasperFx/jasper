@@ -31,7 +31,7 @@ namespace Jasper.Testing.Conneg
 
                 _.Publish.Message<OriginalMessage>().ToPort(2345);
 
-                _.Transports.ListenAtPort(2345);
+                _.Endpoints.ListenAtPort(2345);
             });
 
             try

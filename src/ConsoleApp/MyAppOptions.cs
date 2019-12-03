@@ -10,7 +10,7 @@ namespace MyApp
     {
         public MyAppOptions()
         {
-            Transports.ListenAtPort(2222);
+            Endpoints.ListenAtPort(2222);
 
             Publish.Message<Message1>();
             Publish.Message<Message2>();

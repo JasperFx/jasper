@@ -15,10 +15,10 @@ namespace Jasper.Testing.Configuration
         {
             _host = Host.CreateDefaultBuilder().UseJasper(x =>
             {
-                x.Transports.ListenForMessagesFrom("local://one").Sequential();
-                x.Transports.ListenForMessagesFrom("local://two").MaximumThreads(11);
-                x.Transports.ListenForMessagesFrom("local://three").Durably();
-                x.Transports.ListenForMessagesFrom("local://four").Durably().Lightweight();
+                x.Endpoints.ListenForMessagesFrom("local://one").Sequential();
+                x.Endpoints.ListenForMessagesFrom("local://two").MaximumThreads(11);
+                x.Endpoints.ListenForMessagesFrom("local://three").Durably();
+                x.Endpoints.ListenForMessagesFrom("local://four").Durably().Lightweight();
 
             }).Build();
 
@@ -33,7 +33,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void configure_sequential()
         {
-            theOptions.Transports.Get<LocalTransport>().QueueFor("one")
+            theOptions.Endpoints.GetTransport<LocalTransport>().QueueFor("one")
                 .ExecutionOptions
                 .MaxDegreeOfParallelism
                 .ShouldBe(1);
@@ -42,7 +42,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void configure_max_parallelization()
         {
-            theOptions.Transports.Get<LocalTransport>().QueueFor("two")
+            theOptions.Endpoints.GetTransport<LocalTransport>().QueueFor("two")
                 .ExecutionOptions
                 .MaxDegreeOfParallelism
                 .ShouldBe(11);
@@ -52,12 +52,12 @@ namespace Jasper.Testing.Configuration
         public void configure_durable()
         {
             theOptions
-                .Transports
+                .Endpoints
                 .ListenForMessagesFrom("local://three")
                 .Durably();
 
 
-            theOptions.Transports.Get<LocalTransport>()
+            theOptions.Endpoints.GetTransport<LocalTransport>()
                 .QueueFor("three")
                 .IsDurable
                 .ShouldBeTrue();
@@ -66,9 +66,9 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void configure_not_durable()
         {
-            theOptions.Transports.ListenForMessagesFrom("local://four");
+            theOptions.Endpoints.ListenForMessagesFrom("local://four");
 
-            theOptions.Transports.Get<LocalTransport>()
+            theOptions.Endpoints.GetTransport<LocalTransport>()
                 .QueueFor("four")
                 .IsDurable
                 .ShouldBeFalse();

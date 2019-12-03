@@ -42,7 +42,7 @@ namespace Jasper.Testing.Messaging.Transports.Tcp
             var receiver = new JasperOptions();
             receiver.Handlers.DisableConventionalDiscovery();
 
-            receiver.Transports.ListenForMessagesFrom(theAddress);
+            receiver.Endpoints.ListenForMessagesFrom(theAddress);
 
             receiver.Handlers.Retries.MaximumAttempts = 3;
             receiver.Handlers.IncludeType<MessageConsumer>();

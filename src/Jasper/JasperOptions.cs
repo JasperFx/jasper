@@ -109,12 +109,15 @@ namespace Jasper
         /// Configure static message routing rules and message publishing rules.
         /// Caution! You receive a new instance on each invocation
         /// </summary>
+        [Obsolete]
         public PublishingExpression Publish => new PublishingExpression(Transports);
 
         /// <summary>
         /// Configure message listeners or sending endpoints
         /// </summary>
-        public TransportCollection Transports { get; } = new TransportCollection();
+        public IEndpoints Endpoints => Transports;
+
+        internal TransportCollection Transports { get; } = new TransportCollection();
 
         internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();
 

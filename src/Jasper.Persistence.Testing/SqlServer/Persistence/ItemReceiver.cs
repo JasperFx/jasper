@@ -15,7 +15,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             Services.AddSingleton<MessageTracker>();
 
-            Transports.ListenAtPort(2345).Durably();
+            Endpoints.ListenAtPort(2345).Durably();
         }
     }
 }

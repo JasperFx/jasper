@@ -52,7 +52,7 @@ namespace StorytellerSpecs.Fixtures
             _options.Publish.Message(type).To(channel);
 
             // Just makes the test harness listen for things
-            _options.Transports.ListenForMessagesFrom(channel);
+            _options.Endpoints.ListenForMessagesFrom(channel);
         }
 
         [FormatAs("When a Message1 is received, it cascades a matching Message2")]
@@ -70,7 +70,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Listen for incoming messages from {channel}")]
         public void ListenForMessagesFrom([SelectionList("Channels")] Uri channel)
         {
-            _options.Transports.ListenForMessagesFrom(channel);
+            _options.Endpoints.ListenForMessagesFrom(channel);
         }
     }
 }

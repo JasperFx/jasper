@@ -1,5 +1,6 @@
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
+using Jasper.Testing.Configuration;
 using LamarCodeGeneration.Util;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Shouldly;
@@ -14,7 +15,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         {
             var options = new JasperOptions();
 
-            var localTransport = options.Transports.Get<LocalTransport>();
+            var localTransport = options.Endpoints.GetTransport<LocalTransport>();
             options.LocalQueues.Default()
                 .ShouldBeSameAs(localTransport.QueueFor(TransportConstants.Default));
         }
@@ -24,7 +25,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
         {
             var options = new JasperOptions();
 
-            var localTransport = options.Transports.Get<LocalTransport>();
+            var localTransport = options.Endpoints.GetTransport<LocalTransport>();
             options.LocalQueues.ByName(TransportConstants.Replies)
                 .ShouldBeSameAs(localTransport.QueueFor(TransportConstants.Replies));
         }
@@ -35,7 +36,7 @@ namespace Jasper.Testing.Messaging.Transports.Local
             var options = new JasperOptions();
             var one = options.LocalQueues.ByName("One");
 
-            var localTransport = options.Transports.Get<LocalTransport>();
+            var localTransport = options.Endpoints.GetTransport<LocalTransport>();
             one.ShouldBeSameAs(localTransport.QueueFor("one"));
         }
 

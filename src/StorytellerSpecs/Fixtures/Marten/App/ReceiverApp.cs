@@ -23,7 +23,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Include<MartenBackedPersistence>();
 
-            Transports.ListenForMessagesFrom(Listener);
+            Endpoints.ListenForMessagesFrom(Listener);
         }
     }
 }

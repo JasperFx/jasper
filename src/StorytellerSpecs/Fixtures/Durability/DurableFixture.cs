@@ -49,7 +49,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             senderRegistry.Publish.Message<ScheduledMessage>().ToPort(receiverPort).Durably();
 
 
-            senderRegistry.Transports.ListenAtPort(senderPort).Durably();
+            senderRegistry.Endpoints.ListenAtPort(senderPort).Durably();
 
             configureSender(senderRegistry);
 
@@ -64,7 +64,7 @@ namespace StorytellerSpecs.Fixtures.Durability
                 .IncludeType<QuestionHandler>()
                 .IncludeType<ScheduledMessageHandler>();
 
-            receiverRegistry.Transports.ListenAtPort(receiverPort).Durably();
+            receiverRegistry.Endpoints.ListenAtPort(receiverPort).Durably();
 
             receiverRegistry.Services.AddSingleton(theTracker);
 

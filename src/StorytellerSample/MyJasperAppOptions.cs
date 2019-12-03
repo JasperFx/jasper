@@ -11,7 +11,7 @@ namespace StorytellerSample
         public MyJasperAppOptions()
         {
             Services.AddSingleton<IncrementCounter>();
-            Transports.ListenAtPort(4444);
+            Endpoints.ListenAtPort(4444);
         }
     }
 

@@ -23,7 +23,7 @@ namespace Publisher
     {
         public PublisherApp()
         {
-            Transports.ListenAtPort(2211);
+            Endpoints.ListenAtPort(2211);
 
             // 100% Optional for diagnostics
             Publish.Message<NewUser>();
