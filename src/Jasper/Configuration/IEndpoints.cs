@@ -1,4 +1,5 @@
 using System;
+using Jasper.Messaging.Configuration;
 
 namespace Jasper.Configuration
 {
@@ -21,5 +22,20 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="port"></param>
         IListenerConfiguration ListenAtPort(int port);
+
+        /// <summary>
+        /// Create a message publishing rule for a subset of message types
+        /// and one or more messaging endpoints
+        /// </summary>
+        /// <param name="configuration"></param>
+        void Publish(Action<PublishingExpression> configuration);
+
+        /// <summary>
+        /// Publish all message types to a messaging endpoint
+        /// </summary>
+        /// <returns></returns>
+        IPublishToExpression PublishAll();
+
+
     }
 }

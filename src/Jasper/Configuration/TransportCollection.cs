@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Jasper.Messaging.Configuration;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Stub;
@@ -106,7 +107,22 @@ namespace Jasper.Configuration
             return new ListenerConfiguration(settings);
         }
 
+        public void Publish(Action<PublishingExpression> configuration)
+        {
+            var expression = new PublishingExpression(this);
+            configuration(expression);
+            expression.AttachSubscriptions();
+        }
 
+        public IPublishToExpression PublishAll()
+        {
+            var expression = new PublishingExpression(this)
+            {
+                AutoAddSubscriptions = true
+            };
 
+            expression.AddSubscriptionForAllMessages();
+            return expression;
+        }
     }
 }

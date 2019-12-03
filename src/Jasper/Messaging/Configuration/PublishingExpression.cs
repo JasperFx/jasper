@@ -14,17 +14,19 @@ namespace Jasper.Messaging.Configuration
 {
     public class PublishingExpression : IPublishToExpression
     {
-        private readonly JasperOptions _parent;
+        private readonly TransportCollection _parent;
 
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
 
         private readonly IList<Endpoint> _endpoints = new List<Endpoint>();
 
         // TODO -- take in TransportCollection instead?
-        internal PublishingExpression(JasperOptions parent)
+        internal PublishingExpression(TransportCollection parent)
         {
             _parent = parent;
         }
+
+        internal bool AutoAddSubscriptions { get; set; }
 
 
         public PublishingExpression Message<T>()
@@ -108,7 +110,7 @@ namespace Jasper.Messaging.Configuration
         /// <returns></returns>
         public ISubscriberConfiguration To(Uri uri)
         {
-            var endpoint = _parent.Transports.GetOrCreateEndpoint(uri);
+            var endpoint = _parent.GetOrCreateEndpoint(uri);
 
             // KILL THIS WHEN IT's USED IN NESTED CLOSURE
             endpoint.Subscriptions.AddRange(_subscriptions);
@@ -133,7 +135,7 @@ namespace Jasper.Messaging.Configuration
         public IListenerConfiguration Locally()
         {
 
-            var settings = _parent.Transports.Get<LocalTransport>().QueueFor(TransportConstants.Default);
+            var settings = _parent.Get<LocalTransport>().QueueFor(TransportConstants.Default);
             settings.Subscriptions.AddRange(_subscriptions);
 
             return new ListenerConfiguration(settings);
@@ -158,7 +160,7 @@ namespace Jasper.Messaging.Configuration
         /// <returns></returns>
         public IListenerConfiguration ToLocalQueue(string queueName)
         {
-            var settings = _parent.LocalQueues.ByName(queueName);
+            var settings = _parent.Get<LocalTransport>().QueueFor(queueName);
             settings.Subscriptions.AddRange(_subscriptions);
 
             return new ListenerConfiguration(settings);
@@ -182,5 +184,22 @@ namespace Jasper.Messaging.Configuration
             To("stub://" + queueName);
         }
 
+        internal void AttachSubscriptions()
+        {
+            if (!_endpoints.Any())
+            {
+                throw new InvalidOperationException("No subscriber endpoint(s) are specified!");
+            }
+
+            foreach (var endpoint in _endpoints)
+            {
+                endpoint.Subscriptions.AddRange(_subscriptions);
+            }
+        }
+
+        internal void AddSubscriptionForAllMessages()
+        {
+            _subscriptions.Add(Subscription.All());
+        }
     }
 }
