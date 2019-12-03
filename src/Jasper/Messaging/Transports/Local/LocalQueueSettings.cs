@@ -25,9 +25,6 @@ namespace Jasper.Messaging.Transports.Local
             IsDurable = uri.IsDurable();
         }
 
-
-        public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
-
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
             throw new NotImplementedException();

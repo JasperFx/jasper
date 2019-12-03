@@ -30,18 +30,6 @@ namespace Jasper.Testing.Messaging.Transports.Local
         }
 
 
-        [Fact]
-        public void add_subscription()
-        {
-            var subscription = Subscription.All();
-            var transport = new LocalTransport();
-
-            transport.As<ITransport>().Subscribe("local://one".ToUri(), new Subscription[]{ subscription});
-
-            transport.QueueFor("one")
-                .Subscriptions.Single()
-                .ShouldBeSameAs(subscription);
-        }
 
         [Fact]
         public void case_insensitive_queue_find()

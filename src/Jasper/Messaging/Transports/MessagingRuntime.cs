@@ -124,7 +124,7 @@ namespace Jasper.Messaging.Transports
             }
             else
             {
-                var endpoint = transport.DetermineEndpoint(uri);
+                var endpoint = transport.GetOrCreateEndpoint(uri);
                 return endpoint.StartSending(_root, _root.Runtime, transport.ReplyUri);
             }
 

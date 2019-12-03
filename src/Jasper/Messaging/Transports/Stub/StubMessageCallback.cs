@@ -7,12 +7,12 @@ namespace Jasper.Messaging.Transports.Stub
 {
     public class StubMessageCallback : IMessageCallback
     {
-        private readonly StubChannel _channel;
+        private readonly StubEndpoint _endpoint;
         public readonly IList<Envelope> Sent = new List<Envelope>();
 
-        public StubMessageCallback(StubChannel channel)
+        public StubMessageCallback(StubEndpoint endpoint)
         {
-            _channel = channel;
+            _endpoint = endpoint;
         }
 
         public bool MarkedSucessful { get; set; }
@@ -44,7 +44,7 @@ namespace Jasper.Messaging.Transports.Stub
             Requeued = true;
 
 
-            return _channel.EnqueueOutgoing(envelope);
+            return _endpoint.EnqueueOutgoing(envelope);
         }
 
         public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)

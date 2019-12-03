@@ -29,15 +29,6 @@ namespace Jasper.Messaging.Transports
             foreach (var endpoint in endpoints()) endpoint.StartListening(root, runtime);
         }
 
-        public Endpoint Subscribe(Uri uri, Subscription[] subscriptions)
-        {
-            uri = canonicizeUri(uri);
-            var endpoint = findEndpointByUri(uri);
-            endpoint.Subscriptions.AddRange(subscriptions);
-
-            return endpoint;
-        }
-
         public Endpoint ListenTo(Uri uri)
         {
             uri = canonicizeUri(uri);
@@ -67,7 +58,7 @@ namespace Jasper.Messaging.Transports
             return uri;
         }
 
-        public Endpoint DetermineEndpoint(Uri uri)
+        public Endpoint GetOrCreateEndpoint(Uri uri)
         {
             var shouldBeDurable = uri.IsDurable();
 

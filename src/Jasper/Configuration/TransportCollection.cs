@@ -47,6 +47,7 @@ namespace Jasper.Configuration
             return GetEnumerator();
         }
 
+        // TODO -- ditch this and add a new For(Uri) : Endpoint method
         public ISubscriberConfiguration Subscribe(Uri uri, params Subscription[] subscriptions)
         {
             var transport = TransportForScheme(uri.Scheme);
@@ -55,13 +56,17 @@ namespace Jasper.Configuration
                 throw new InvalidOperationException($"Unknown Transport scheme '{transport.Protocol}'");
             }
 
-            var endpoint = transport.Subscribe(uri, subscriptions);
+            var endpoint = transport.GetOrCreateEndpoint(uri);
+
+            // TODO -- remove the responsibility for adding subscriptions here and into PublishingExpression
+            endpoint.Subscriptions.AddRange(subscriptions);
+
             return new SubscriberConfiguration(endpoint);
         }
 
 
         /// <summary>
-        ///     Directs Jasper to set up an incoming listener fvoidor the given Uri
+        ///     Directs Jasper to set up an incoming listener for the given Uri
         /// </summary>
         /// <param name="uri"></param>
         public IListenerConfiguration ListenForMessagesFrom(Uri uri)

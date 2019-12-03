@@ -46,15 +46,8 @@ namespace Jasper.Messaging.Transports.Local
             // Nothing
         }
 
-        Endpoint ITransport.Subscribe(Uri uri, Subscription[] subscriptions)
-        {
-            var endpoint = findByUri(uri);
-            endpoint.Subscriptions.AddRange(subscriptions);
 
-            return endpoint;
-        }
-
-        public Endpoint DetermineEndpoint(Uri uri)
+        public Endpoint GetOrCreateEndpoint(Uri uri)
         {
             return findByUri(uri);
         }

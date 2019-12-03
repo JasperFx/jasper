@@ -8,9 +8,9 @@ using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging.Transports.Stub
 {
-    public class StubChannel : ISendingAgent, IDisposable
+    public class StubEndpoint : Endpoint, ISendingAgent, IDisposable
     {
-        private readonly IHandlerPipeline _pipeline;
+        private IHandlerPipeline _pipeline;
         private readonly StubTransport _stubTransport;
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
@@ -18,11 +18,30 @@ namespace Jasper.Messaging.Transports.Stub
 
 
 
-        public StubChannel(Uri destination, IHandlerPipeline pipeline, StubTransport stubTransport)
+        public StubEndpoint(Uri destination, StubTransport stubTransport)
         {
-            _pipeline = pipeline;
             _stubTransport = stubTransport;
             Destination = destination;
+        }
+
+        public void Start(IHandlerPipeline pipeline)
+        {
+            _pipeline = pipeline;
+        }
+
+        public override void Parse(Uri uri)
+        {
+            // Nothing
+        }
+
+        protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        {
+            // Nothing
+        }
+
+        protected internal override ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime, Uri replyUri)
+        {
+            return this;
         }
 
         public void Dispose()
@@ -30,8 +49,6 @@ namespace Jasper.Messaging.Transports.Stub
         }
 
         public bool Latched { get; set; } = false;
-
-        public bool IsDurable => false;
 
         public Uri Destination { get; }
         public Uri ReplyUri { get; set; }

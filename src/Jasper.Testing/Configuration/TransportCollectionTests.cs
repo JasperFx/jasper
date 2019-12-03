@@ -123,12 +123,7 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
-            public Endpoint Subscribe(Uri uri, Subscription[] subscriptions)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Endpoint DetermineEndpoint(Uri uri)
+            public Endpoint GetOrCreateEndpoint(Uri uri)
             {
                 throw new NotImplementedException();
             }

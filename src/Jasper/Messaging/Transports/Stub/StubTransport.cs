@@ -47,11 +47,13 @@ namespace Jasper.Messaging.Transports.Stub
 
     public class StubTransport : ITransport
     {
-        public LightweightCache<Uri, StubChannel> Channels;
+        public readonly LightweightCache<Uri, StubEndpoint> Channels;
 
         public StubTransport()
         {
             ReplyUri = new Uri("stub://replies");
+            Channels =
+                new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
         }
 
         public void Dispose()
@@ -65,35 +67,23 @@ namespace Jasper.Messaging.Transports.Stub
         {
             var pipeline = root.Pipeline;
 
-            Channels =
-                new LightweightCache<Uri, StubChannel>(u => new StubChannel(u, pipeline, this));
-
-            _subscriptions.Each((uri, subscriptions) =>
+            foreach (var channel in Channels)
             {
-                var agent = Channels[uri];
-                runtime.AddSubscriber(agent, subscriptions.ToArray());
-            });
+                channel.Start(pipeline);
+
+                runtime.AddSubscriber(channel, channel.Subscriptions.ToArray());
+            }
         }
 
-        public Endpoint DetermineEndpoint(Uri uri)
+        public Endpoint GetOrCreateEndpoint(Uri uri)
         {
-            throw new NotSupportedException();
+            return Channels[uri];
         }
 
         public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
         {
             foreach (var listener in _listeners) Channels.FillDefault(listener);
         }
-
-        private readonly LightweightCache<Uri, List<Subscription>> _subscriptions = new LightweightCache<Uri, List<Subscription>>(u => new List<Subscription>());
-
-        public Endpoint Subscribe(Uri uri, Subscription[] subscriptions)
-        {
-            _subscriptions[uri].AddRange(subscriptions);
-
-            return null;
-        }
-
 
         public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
 
