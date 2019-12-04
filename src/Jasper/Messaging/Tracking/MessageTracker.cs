@@ -34,6 +34,7 @@ namespace Jasper.Messaging.Tracking
             var source = new TaskCompletionSource<Envelope>();
             _waiters[typeof(T)].Add(source);
 
+            // This is a timeout
             Task.Delay(30.Seconds()).ContinueWith(x => { source.TrySetCanceled(); });
 
             return source.Task;

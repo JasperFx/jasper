@@ -16,6 +16,11 @@ namespace Jasper.Messaging.Transports
         public string Protocol { get; }
         public Uri ReplyUri { get; protected set; }
 
+        public IEnumerable<Endpoint> Endpoints()
+        {
+            return endpoints();
+        }
+
         public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {
             foreach (var endpoint in endpoints().Where(x => x.Subscriptions.Any()))

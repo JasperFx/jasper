@@ -31,7 +31,7 @@ namespace Jasper.Messaging.Transports.Stub
         /// <param name="host"></param>
         public static void ClearStubTransportSentList(this IHost host)
         {
-            host.GetStubTransport().Channels.Each(x => x.Sent.Clear());
+            host.GetStubTransport().Endpoints.Each(x => x.Sent.Clear());
         }
 
         /// <summary>
@@ -41,24 +41,29 @@ namespace Jasper.Messaging.Transports.Stub
         /// <returns></returns>
         public static Envelope[] GetAllEnvelopesSent(this IHost host)
         {
-            return host.GetStubTransport().Channels.SelectMany(x => x.Sent).ToArray();
+            return host.GetStubTransport().Endpoints.SelectMany(x => x.Sent).ToArray();
         }
     }
 
     public class StubTransport : ITransport
     {
-        public readonly LightweightCache<Uri, StubEndpoint> Channels;
+        public readonly LightweightCache<Uri, StubEndpoint> Endpoints;
 
         public StubTransport()
         {
             ReplyUri = new Uri("stub://replies");
-            Channels =
+            Endpoints =
                 new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
         }
 
         public Endpoint TryGetEndpoint(Uri uri)
         {
-            return Channels.TryRetrieve(uri, out var endpoint) ? endpoint : null;
+            return Endpoints.TryRetrieve(uri, out var endpoint) ? endpoint : null;
+        }
+
+        IEnumerable<Endpoint> ITransport.Endpoints()
+        {
+            return Endpoints;
         }
 
         public void Dispose()
@@ -72,7 +77,7 @@ namespace Jasper.Messaging.Transports.Stub
         {
             var pipeline = root.Pipeline;
 
-            foreach (var channel in Channels)
+            foreach (var channel in Endpoints)
             {
                 channel.Start(pipeline);
 
@@ -82,12 +87,12 @@ namespace Jasper.Messaging.Transports.Stub
 
         public Endpoint GetOrCreateEndpoint(Uri uri)
         {
-            return Channels[uri];
+            return Endpoints[uri];
         }
 
         public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
         {
-            foreach (var listener in _listeners) Channels.FillDefault(listener);
+            foreach (var listener in _listeners) Endpoints.FillDefault(listener);
         }
 
         public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();

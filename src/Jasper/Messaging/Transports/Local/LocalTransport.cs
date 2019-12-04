@@ -32,6 +32,10 @@ namespace Jasper.Messaging.Transports.Local
             // Nothing really
         }
 
+        public IEnumerable<Endpoint> Endpoints()
+        {
+            return _queues;
+        }
 
 
         public string Protocol { get; } = TransportConstants.Local;

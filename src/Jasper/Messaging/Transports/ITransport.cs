@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Jasper.Configuration;
@@ -19,5 +20,7 @@ namespace Jasper.Messaging.Transports
 
         Endpoint GetOrCreateEndpoint(Uri uri);
         Endpoint TryGetEndpoint(Uri uri);
+
+        IEnumerable<Endpoint> Endpoints();
     }
 }

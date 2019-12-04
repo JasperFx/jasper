@@ -35,5 +35,10 @@ namespace Jasper.Messaging.Transports.Local
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return $"Local Queue '{Name}'";
+        }
     }
 }

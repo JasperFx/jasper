@@ -156,7 +156,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("Channel {channel} is unavailable and latched for sending")]
         public void ChannelIsLatched(Uri channel)
         {
-            _host.GetStubTransport().Channels[channel].Latched = true;
+            _host.GetStubTransport().Endpoints[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
             _host.Services.GetService<IMessagingRoot>().Runtime.GetOrBuildSendingAgent(channel);
@@ -167,7 +167,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         {
             var stub = getStubTransport();
 
-            return stub.Channels.SelectMany(x =>
+            return stub.Endpoints.SelectMany(x =>
             {
                 return x.Sent.Select(c => new OutgoingMessageAction
                 {

@@ -1,15 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Jasper.Configuration;
 using Jasper.Messaging;
+using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.Transports.Tcp;
+using Jasper.Util;
 using NSubstitute;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Testing.Configuration
@@ -27,6 +31,16 @@ namespace Jasper.Testing.Configuration
             collection.ShouldContain(transport);
 
 
+        }
+
+        [Fact]
+        public void try_to_get_endpoint_from_invalid_transport()
+        {
+            var collection = new TransportCollection();
+            Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
+            {
+                collection.TryGetEndpoint("wrong://server".ToUri());
+            });
         }
 
         [Fact]
@@ -67,6 +81,48 @@ namespace Jasper.Testing.Configuration
             new TransportCollection()
                 .Get<LocalTransport>()
                 .ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void all_endpoints()
+        {
+            var collection = new TransportCollection();
+            collection.ListenAtPort(2222);
+            collection.PublishAllMessages().ToStub("one");
+
+            // 3 default local queues + the 2 added here
+            collection.AllEndpoints()
+                .Length.ShouldBe(5);
+        }
+
+        [Fact]
+        public void publish_mechanism_with_multiple_subscribers()
+        {
+            var collection = new TransportCollection();
+            collection.Publish(x =>
+            {
+                x.MessagesFromNamespace("One");
+                x.MessagesFromNamespace("Two");
+
+                x.ToPort(3333);
+                x.ToPort(4444);
+            });
+
+            var endpoint3333 = collection.TryGetEndpoint("tcp://localhost:3333".ToUri());
+            var endpoint4444 = collection.TryGetEndpoint("tcp://localhost:4444".ToUri());
+
+            endpoint3333.Subscriptions[0]
+                .ShouldBe(new Subscription{Scope = RoutingScope.Namespace, Match = "One"});
+
+            endpoint3333.Subscriptions[1]
+                .ShouldBe(new Subscription{Scope = RoutingScope.Namespace, Match = "Two"});
+
+            endpoint4444.Subscriptions[0]
+                .ShouldBe(new Subscription{Scope = RoutingScope.Namespace, Match = "One"});
+
+            endpoint4444.Subscriptions[1]
+                .ShouldBe(new Subscription{Scope = RoutingScope.Namespace, Match = "Two"});
+
         }
 
         [Fact]
@@ -129,6 +185,11 @@ namespace Jasper.Testing.Configuration
             }
 
             public Endpoint TryGetEndpoint(Uri uri)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<Endpoint> Endpoints()
             {
                 throw new NotImplementedException();
             }

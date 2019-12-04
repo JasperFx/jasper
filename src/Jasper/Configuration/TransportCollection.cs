@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Messaging.Configuration;
+using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Stub;
@@ -25,7 +26,9 @@ namespace Jasper.Configuration
 
         public ITransport TransportForScheme(string scheme)
         {
-            return _transports[scheme];
+            return _transports.TryGetValue(scheme.ToLowerInvariant(), out var transport)
+                ? transport
+                : null;
         }
 
         public void Add(ITransport transport)
@@ -48,26 +51,30 @@ namespace Jasper.Configuration
             return GetEnumerator();
         }
 
-        public Endpoint GetEndpoint(Uri uri)
+        IListenerConfiguration IEndpoints.LocalQueue(string queueName)
+        {
+            return LocalQueue(queueName);
+        }
+
+        public Endpoint TryGetEndpoint(Uri uri)
+        {
+            return findTransport(uri).TryGetEndpoint(uri);
+        }
+
+        private ITransport findTransport(Uri uri)
         {
             var transport = TransportForScheme(uri.Scheme);
             if (transport == null)
             {
-                throw new InvalidOperationException($"Unknown Transport scheme '{transport.Protocol}'");
+                throw new InvalidOperationException($"Unknown Transport scheme '{uri.Scheme}'");
             }
 
-            return transport.TryGetEndpoint(uri);
+            return transport;
         }
 
         public Endpoint GetOrCreateEndpoint(Uri uri)
         {
-            var transport = TransportForScheme(uri.Scheme);
-            if (transport == null)
-            {
-                throw new InvalidOperationException($"Unknown Transport scheme '{transport.Protocol}'");
-            }
-
-            return transport.GetOrCreateEndpoint(uri);
+            return findTransport(uri).GetOrCreateEndpoint(uri);
         }
 
 
@@ -77,15 +84,8 @@ namespace Jasper.Configuration
         /// <param name="uri"></param>
         public IListenerConfiguration ListenForMessagesFrom(Uri uri)
         {
-            if (_transports.TryGetValue(uri.Scheme, out var transport))
-            {
-                var settings = transport.ListenTo(uri);
-                return new ListenerConfiguration(settings);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException($"Unknown transport of type '{uri.Scheme}'");
-            }
+            var settings = findTransport(uri).ListenTo(uri);
+            return new ListenerConfiguration(settings);
         }
 
         /// <summary>
@@ -131,9 +131,12 @@ namespace Jasper.Configuration
             return new ListenerConfiguration(settings);
         }
 
-        public IListenerConfiguration DefaultLocalQueue
+        public IListenerConfiguration DefaultLocalQueue => LocalQueue(TransportConstants.Default);
+
+        public Endpoint[] AllEndpoints()
         {
-            get { return LocalQueue(TransportConstants.Default); }
+            return _transports.Values.SelectMany(x => x.Endpoints()).ToArray();
         }
+
     }
 }
