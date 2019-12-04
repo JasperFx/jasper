@@ -28,7 +28,6 @@ namespace Jasper.Messaging
 
         private readonly Lazy<IEnvelopePersistence> _persistence;
 
-        private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
 
         public MessagingRoot(MessagingSerializationGraph serialization,
             JasperOptions options,

@@ -66,40 +66,6 @@ namespace Jasper.Messaging.Configuration
             return MessagesFromAssembly(typeof(T).Assembly);
         }
 
-        [Obsolete]
-        public ISubscriberConfiguration AllMessagesTo(string uriString)
-        {
-            return AllMessagesTo(uriString.ToUri());
-        }
-
-        [Obsolete]
-        public ISubscriberConfiguration AllMessagesTo(Uri uri)
-        {
-            if (_subscriptions.Any())
-            {
-                throw new InvalidOperationException($"{nameof(AllMessagesTo)} is only valid if there are no other message matching rules in this expression");
-            }
-
-            var subscription = new Subscription
-            {
-                Scope = RoutingScope.All
-            };
-
-            _subscriptions.Add(subscription);
-
-            return To(uri);
-        }
-
-
-        /// <summary>
-        ///     Directs Jasper to try to publish all messages locally even if there are other
-        ///     subscribers for the message type
-        /// </summary>
-        [Obsolete]
-        public ISubscriberConfiguration AllMessagesLocally()
-        {
-            return AllMessagesTo(TransportConstants.LocalUri);
-        }
 
         /// <summary>
         /// All matching records are to be sent to the configured subscriber
