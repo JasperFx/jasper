@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jasper.Messaging.Model
 {
@@ -8,7 +9,7 @@ namespace Jasper.Messaging.Model
         public HandlerChain Chain { get; set; }
 
         // This method actually processes the incoming Envelope
-        public abstract Task Handle(IMessageContext context);
+        public abstract Task Handle(IMessageContext context, CancellationToken cancellation);
     }
 
     // ENDSAMPLE

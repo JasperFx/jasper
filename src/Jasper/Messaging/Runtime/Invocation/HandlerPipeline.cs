@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Logging;
@@ -30,6 +31,8 @@ namespace Jasper.Messaging.Runtime.Invocation
         private ImHashMap<Type, Func<IMessageContext, Task<IContinuation>>> _executors =
             ImHashMap<Type, Func<IMessageContext, Task<IContinuation>>>.Empty;
 
+        private readonly CancellationToken _cancellation;
+
 
         public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IMessageLogger logger,
             IEnumerable<IMissingHandler> missingHandlers, IMessagingRoot root)
@@ -38,6 +41,7 @@ namespace Jasper.Messaging.Runtime.Invocation
             _graph = graph;
             _root = root;
             _missingHandlers = missingHandlers.ToArray();
+            _cancellation = root.Cancellation;
 
             Logger = logger;
         }
@@ -85,7 +89,7 @@ namespace Jasper.Messaging.Runtime.Invocation
 
             try
             {
-                await handler.Handle(context);
+                await handler.Handle(context, _cancellation);
 
                 // TODO -- what do we do here if this fails? Compensating actions?
                 await context.SendAllQueuedOutgoingMessages();
@@ -223,7 +227,7 @@ namespace Jasper.Messaging.Runtime.Invocation
                     {
                         try
                         {
-                            await handler.Handle(messageContext);
+                            await handler.Handle(messageContext, _cancellation);
                         }
                         catch (Exception e)
                         {
@@ -261,7 +265,7 @@ namespace Jasper.Messaging.Runtime.Invocation
                             var context = c.MessageContext();
                             try
                             {
-                                await handler.Handle(context);
+                                await handler.Handle(context, _cancellation);
                             }
                             catch (Exception e)
                             {

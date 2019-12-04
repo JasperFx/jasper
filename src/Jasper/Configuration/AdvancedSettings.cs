@@ -8,10 +8,15 @@ namespace Jasper.Configuration
 {
     public class AdvancedSettings
     {
-        [Obsolete("Replace w/ app cancellation token later")]
+
+
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
 
+        public AdvancedSettings()
+        {
+            Console.Write("foo");
+        }
 
         /// <summary>
         /// Duration of time to wait before attempting to "ping" a transport
@@ -81,10 +86,8 @@ namespace Jasper.Configuration
             PreserveReferencesHandling = PreserveReferencesHandling.Objects
         };
 
-        // TODO -- see if this can be made internal?
         public int UniqueNodeId { get; } = Guid.NewGuid().ToString().GetDeterministicHashCode();
 
-        // TODO -- see if this can be made internal?
         public CancellationToken Cancellation => _cancellation.Token;
 
         /// <summary>

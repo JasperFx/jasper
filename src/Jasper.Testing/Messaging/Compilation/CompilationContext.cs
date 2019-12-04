@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Model;
@@ -53,7 +54,7 @@ namespace Jasper.Testing.Messaging.Compilation
             theEnvelope = new Envelope(message);
             var context = _host.Get<IMessagingRoot>().ContextFor(theEnvelope);
 
-            await handler.Handle(context);
+            await handler.Handle(context, default(CancellationToken));
 
             return context;
         }

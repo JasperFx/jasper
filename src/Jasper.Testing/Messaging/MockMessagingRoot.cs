@@ -43,6 +43,7 @@ namespace Jasper.Testing.Messaging
 
         public AdvancedSettings Settings { get; } = new AdvancedSettings();
         public ITransportRuntime Runtime { get; } = Substitute.For<ITransportRuntime>();
+        public CancellationToken Cancellation { get; } = default(CancellationToken);
 
 
         public void AddListener(Endpoint endpoint, IListener agent)

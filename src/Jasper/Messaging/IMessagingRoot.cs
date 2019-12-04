@@ -41,9 +41,6 @@ namespace Jasper.Messaging
         MessagingSerializationGraph Serialization { get; }
         JasperOptions Options { get; }
 
-
-        HandlerGraph Handlers { get; }
-
         IMessageContext NewContext();
         IMessageContext ContextFor(Envelope envelope);
 
@@ -51,5 +48,6 @@ namespace Jasper.Messaging
         ITransportLogger TransportLogger { get; }
         AdvancedSettings Settings { get; }
         ITransportRuntime Runtime { get; }
+        CancellationToken Cancellation { get; }
     }
 }

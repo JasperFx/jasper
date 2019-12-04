@@ -56,7 +56,7 @@ namespace Jasper.Messaging
 
             _container = container;
 
-
+            Cancellation = Settings.Cancellation;
 
         }
 
@@ -91,6 +91,7 @@ namespace Jasper.Messaging
         }
 
         public ITransportRuntime Runtime { get; }
+        public CancellationToken Cancellation { get; }
 
         public AdvancedSettings Settings { get; }
 
