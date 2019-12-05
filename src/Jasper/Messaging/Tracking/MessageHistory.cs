@@ -9,9 +9,6 @@ namespace Jasper.Messaging.Tracking
 {
     public class MessageHistory
     {
-        private readonly Dictionary<Type, TaskCompletionSource<MessageTrack>> _backgroundWaiters =
-            new Dictionary<Type, TaskCompletionSource<MessageTrack>>();
-
         private readonly IList<MessageTrack> _completed = new List<MessageTrack>();
 
         private readonly IList<Exception> _exceptions = new List<Exception>();
@@ -42,17 +39,6 @@ namespace Jasper.Messaging.Tracking
             return waiter.Task;
         }
 
-
-        public Task<MessageTrack> WaitFor<T>(int timeoutInMilliseconds = 5000)
-        {
-            var waiter = new TaskCompletionSource<MessageTrack>();
-            lock (_lock)
-            {
-                _backgroundWaiters.Add(typeof(T), waiter);
-            }
-
-            return waiter.Task.TimeoutAfter(5000);
-        }
 
         public async Task<MessageTrack[]> WatchAsync(Func<Task> func, int timeoutInMilliseconds = 5000)
         {
@@ -92,14 +78,6 @@ namespace Jasper.Messaging.Tracking
                     _completed.Add(track);
 
                     processCompletion();
-                }
-                else if (messageType != null && _backgroundWaiters.ContainsKey(messageType))
-                {
-                    var waiter = _backgroundWaiters[messageType];
-                    _backgroundWaiters.Remove(messageType);
-                    var track = new MessageTrack(envelope, activity);
-                    track.Finish(envelope, ex);
-                    waiter.SetResult(track);
                 }
             }
         }
