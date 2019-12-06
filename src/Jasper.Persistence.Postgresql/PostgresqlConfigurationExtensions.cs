@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using Baseline;
-using Jasper.Settings;
-using Microsoft.Extensions.Hosting;
+﻿using Baseline;
 
 namespace Jasper.Persistence.Postgresql
 {
@@ -20,12 +16,8 @@ namespace Jasper.Persistence.Postgresql
             extensions.Include<PostgresqlBackedPersistence>(o =>
             {
                 o.Settings.ConnectionString = connectionString;
-                if (schema.IsNotEmpty())
-                {
-                    o.Settings.SchemaName = schema;
-                }
+                if (schema.IsNotEmpty()) o.Settings.SchemaName = schema;
             });
         }
-
     }
 }

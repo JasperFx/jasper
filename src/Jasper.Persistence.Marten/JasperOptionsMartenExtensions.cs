@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Linq;
-using Baseline;
-using Jasper.Settings;
 using Marten;
-using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.Marten
 {
     public static class JasperOptionsMartenExtensions
     {
         /// <summary>
-        /// Integrate Marten with this Jasper application. Adds basic Marten IDocumentStore,
-        /// IDocumentSession, IQuerySession, enabling Marten backed Saga persistence,
-        /// and using Postgresql for message durability using default Marten configuration
+        ///     Integrate Marten with this Jasper application. Adds basic Marten IDocumentStore,
+        ///     IDocumentSession, IQuerySession, enabling Marten backed Saga persistence,
+        ///     and using Postgresql for message durability using default Marten configuration
         /// </summary>
         /// <param name="options"></param>
         /// <param name="connectionString"></param>
@@ -22,10 +18,10 @@ namespace Jasper.Persistence.Marten
         }
 
         /// <summary>
-        /// Integrate Marten with this Jasper application. Adds basic Marten IDocumentStore,
-        /// IDocumentSession, IQuerySession, enabling Marten backed Saga persistence,
-        /// and using Postgresql for message durability. This overload allows for customizing
-        /// Marten's StoreOptions
+        ///     Integrate Marten with this Jasper application. Adds basic Marten IDocumentStore,
+        ///     IDocumentSession, IQuerySession, enabling Marten backed Saga persistence,
+        ///     and using Postgresql for message durability. This overload allows for customizing
+        ///     Marten's StoreOptions
         /// </summary>
         /// <param name="options"></param>
         /// <param name="connectionString"></param>

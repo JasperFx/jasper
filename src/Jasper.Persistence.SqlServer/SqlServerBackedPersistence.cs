@@ -2,14 +2,11 @@
 using System.Data.SqlClient;
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
-using Jasper.Settings;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.SqlServer
 {
@@ -18,6 +15,8 @@ namespace Jasper.Persistence.SqlServer
     /// </summary>
     public class SqlServerBackedPersistence : IJasperExtension
     {
+        public SqlServerSettings Settings { get; } = new SqlServerSettings();
+
         public void Configure(JasperOptions options)
         {
             options.Services.AddSingleton(Settings);
@@ -34,7 +33,5 @@ namespace Jasper.Persistence.SqlServer
 
             options.CodeGeneration.SetTransactions(new SqlServerTransactionFrameProvider());
         }
-
-        public SqlServerSettings Settings { get; } = new SqlServerSettings();
     }
 }

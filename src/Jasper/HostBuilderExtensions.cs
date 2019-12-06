@@ -80,8 +80,6 @@ namespace Jasper
 
                 options.HandlerGraph.StartCompiling(options);
 
-                options.Settings.Apply(options.Services);
-
                 services.AddSingleton(options);
 
                 // The messaging root is also a hosted service

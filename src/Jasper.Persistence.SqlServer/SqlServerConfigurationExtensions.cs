@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using Baseline;
-using Jasper.Settings;
-using Microsoft.Extensions.Hosting;
+﻿using Baseline;
 
 namespace Jasper.Persistence.SqlServer
 {
@@ -21,12 +17,8 @@ namespace Jasper.Persistence.SqlServer
             {
                 x.Settings.ConnectionString = connectionString;
 
-                if (schema.IsNotEmpty())
-                {
-                    x.Settings.SchemaName = schema;
-                }
+                if (schema.IsNotEmpty()) x.Settings.SchemaName = schema;
             });
-
         }
     }
 }
