@@ -31,6 +31,17 @@ namespace Jasper.Messaging.Transports.Tcp
             return $"tcp://{hostName}:{port}".ToUri();
         }
 
+        public override Uri ReplyUri()
+        {
+            var uri = ToUri(Port, HostName);
+            if (!IsDurable)
+            {
+                return uri;
+            }
+
+            return $"{uri}durable".ToUri();
+        }
+
         public string HostName { get; set; } = "localhost";
 
         public int Port { get; private set; }

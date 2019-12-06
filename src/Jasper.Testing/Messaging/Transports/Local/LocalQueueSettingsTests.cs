@@ -1,5 +1,6 @@
 using System;
 using Jasper.Messaging.Transports.Local;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -36,6 +37,24 @@ namespace Jasper.Testing.Messaging.Transports.Local
             var endpoint = new LocalQueueSettings(new Uri("local://durable/foo"));
             endpoint.IsDurable.ShouldBeTrue();
             endpoint.Name.ShouldBe("foo");
+        }
+
+        [Fact]
+        public void reply_uri_when_durable()
+        {
+            var endpoint = new LocalQueueSettings("foo");
+            endpoint.IsDurable = true;
+
+            endpoint.ReplyUri().ShouldBe("local://durable/foo".ToUri());
+        }
+
+        [Fact]
+        public void replay_uri_when_not_durable()
+        {
+            var endpoint = new LocalQueueSettings("foo");
+            endpoint.IsDurable = false;
+
+            endpoint.ReplyUri().ShouldBe("local://foo".ToUri());
         }
     }
 }

@@ -33,6 +33,22 @@ namespace Jasper.Testing.Messaging.Transports.Tcp
             endpoint.IsDurable.ShouldBe(isDurable);
         }
 
+        [Fact]
+        public void reply_uri_when_durable()
+        {
+            var endpoint = new TcpEndpoint(4444);
+            endpoint.IsDurable = true;
 
+            endpoint.ReplyUri().ShouldBe($"tcp://localhost:4444/durable".ToUri());
+        }
+
+        [Fact]
+        public void reply_uri_when_not_durable()
+        {
+            var endpoint = new TcpEndpoint(4444);
+            endpoint.IsDurable = false;
+
+            endpoint.ReplyUri().ShouldBe($"tcp://localhost:4444".ToUri());
+        }
     }
 }

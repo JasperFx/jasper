@@ -25,6 +25,11 @@ namespace Jasper.Messaging.Transports.Local
             IsDurable = uri.IsDurable();
         }
 
+        public override Uri ReplyUri()
+        {
+            return IsDurable ? $"local://durable/{Name}".ToUri() : $"local://{Name}".ToUri();
+        }
+
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
             throw new NotImplementedException();

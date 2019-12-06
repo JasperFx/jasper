@@ -26,6 +26,12 @@ namespace Jasper.Configuration
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Uri as formulated for replies. Should include a notation
+        /// of "durable" as needed
+        /// </summary>
+        public abstract Uri ReplyUri();
+
 
         public abstract void Parse(Uri uri);
 

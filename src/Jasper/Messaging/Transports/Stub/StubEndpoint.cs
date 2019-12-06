@@ -15,7 +15,7 @@ namespace Jasper.Messaging.Transports.Stub
         public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
 
         public readonly IList<Envelope> Sent = new List<Envelope>();
-
+        private Uri _replyUri;
 
 
         public StubEndpoint(Uri destination, StubTransport stubTransport)
@@ -27,6 +27,11 @@ namespace Jasper.Messaging.Transports.Stub
         public void Start(IHandlerPipeline pipeline)
         {
             _pipeline = pipeline;
+        }
+
+        public override Uri ReplyUri()
+        {
+            return _replyUri;
         }
 
         public override void Parse(Uri uri)
@@ -51,12 +56,17 @@ namespace Jasper.Messaging.Transports.Stub
         public bool Latched { get; set; } = false;
 
         public Uri Destination { get; }
-        public Uri ReplyUri { get; set; }
+
+        Uri ISendingAgent.ReplyUri
+        {
+            get => _replyUri;
+            set => _replyUri = value;
+        }
 
         public Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.ReceivedAt = Destination;
-            envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
+            envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri();
 
             var callback = new StubMessageCallback(this);
             Callbacks.Add(callback);
