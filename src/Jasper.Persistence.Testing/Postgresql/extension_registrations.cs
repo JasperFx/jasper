@@ -17,7 +17,7 @@ namespace Jasper.Persistence.Testing.Postgresql
         public void registrations()
         {
             using (var runtime = JasperHost.For(x =>
-                x.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString)))
+                x.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString)))
             {
                 var container = runtime.Get<IContainer>();
                 container.Model.HasRegistrationFor<NpgsqlConnection>().ShouldBeTrue();

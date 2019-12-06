@@ -25,12 +25,12 @@ namespace StorytellerSpecs.Fixtures.Postgresql
 
         protected override void configureReceiver(JasperOptions receiverOptions)
         {
-            receiverOptions.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_receiver");
+            receiverOptions.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_receiver");
         }
 
         protected override void configureSender(JasperOptions senderOptions)
         {
-            senderOptions.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_sender");
+            senderOptions.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_sender");
         }
 
 

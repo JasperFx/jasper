@@ -11,37 +11,21 @@ namespace Jasper.Persistence.Postgresql
         /// <summary>
         ///     Register sql server backed message persistence to a known connection string
         /// </summary>
-        /// <param name="settings"></param>
+        /// <param name="extensions"></param>
         /// <param name="connectionString"></param>
         /// <param name="schema"></param>
-        public static void PersistMessagesWithPostgresql(this SettingsGraph settings, string connectionString,
+        public static void PersistMessagesWithPostgresql(this IExtensions extensions, string connectionString,
             string schema = null)
         {
-            var parent = settings.As<IHasRegistryParent>().Parent;
-            if (!parent.AppliedExtensions.OfType<PostgresqlBackedPersistence>().Any())
-                parent.Extensions.Include<PostgresqlBackedPersistence>();
-
-            settings.Alter<PostgresqlSettings>(x =>
+            extensions.Include<PostgresqlBackedPersistence>(o =>
             {
-                x.ConnectionString = connectionString;
-                if (schema.IsNotEmpty()) x.SchemaName = schema;
+                o.Settings.ConnectionString = connectionString;
+                if (schema.IsNotEmpty())
+                {
+                    o.Settings.SchemaName = schema;
+                }
             });
         }
 
-        /// <summary>
-        ///     Register sql server backed message persistence based on configuration and the
-        ///     development environment
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="configure"></param>
-        public static void PersistMessagesWithPostgresql(this SettingsGraph settings,
-            Action<HostBuilderContext, PostgresqlSettings> configure)
-        {
-            var parent = settings.As<IHasRegistryParent>().Parent;
-            if (!parent.AppliedExtensions.OfType<PostgresqlBackedPersistence>().Any())
-                parent.Extensions.Include<PostgresqlBackedPersistence>();
-
-            settings.Alter(configure);
-        }
     }
 }

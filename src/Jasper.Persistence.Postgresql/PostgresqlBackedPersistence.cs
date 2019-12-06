@@ -16,7 +16,7 @@ namespace Jasper.Persistence.Postgresql
     {
         public void Configure(JasperOptions options)
         {
-            options.Settings.Require<PostgresqlSettings>();
+            options.Services.AddSingleton(Settings);
 
             options.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
 
@@ -30,5 +30,7 @@ namespace Jasper.Persistence.Postgresql
 
             options.CodeGeneration.SetTransactions(new PostgresqlTransactionFrameProvider());
         }
+
+        public PostgresqlSettings Settings { get; } = new PostgresqlSettings();
     }
 }

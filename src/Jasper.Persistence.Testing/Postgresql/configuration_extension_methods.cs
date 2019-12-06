@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using IntegrationTests;
 using Jasper.Persistence.Postgresql;
+using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.Testing.Marten;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,17 +18,14 @@ namespace Jasper.Persistence.Testing.Postgresql
         public void bootstrap_with_configuration()
         {
             var builder = Host.CreateDefaultBuilder()
-                .UseJasper(x =>
-                {
-                    x.Settings.PersistMessagesWithPostgresql((c, s) =>
-                    {
-                        s.ConnectionString = c.Configuration["connection"];
-                    });
-                })
                 .ConfigureAppConfiguration((_, config) =>
+                    {
+                        config.AddInMemoryCollection(new Dictionary<string, string>
+                            {{"connection", Servers.PostgresConnectionString}});
+                    })
+                .UseJasper((context, x) =>
                 {
-                    config.AddInMemoryCollection(new Dictionary<string, string>
-                        {{"connection", Servers.PostgresConnectionString}});
+                    x.PersistMessagesWithPostgresql(context.Configuration["connection"]);
                 });
 
 
@@ -44,7 +42,7 @@ namespace Jasper.Persistence.Testing.Postgresql
         public void bootstrap_with_connection_string()
         {
             using (var runtime = JasperHost.For(x =>
-                x.Settings.PersistMessagesWithPostgresql(Servers.PostgresConnectionString)))
+                x.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString)))
             {
 
                 runtime.Get<PostgresqlSettings>()
@@ -59,12 +57,18 @@ namespace Jasper.Persistence.Testing.Postgresql
         public AppUsingPostgresql()
         {
             // If you know the connection string
-            Settings.PersistMessagesWithPostgresql("your connection string", "my_app_schema");
+            Extensions.PersistMessagesWithPostgresql("your connection string", "my_app_schema");
 
-            // Or using application configuration
-            Settings.PersistMessagesWithPostgresql((context, settings) =>
+
+        }
+
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            // Or if you need access to the application configuration and hosting
+            // But this time you may need to work directly with the PostgresqlBackedPersistence
+            Extensions.Include<PostgresqlBackedPersistence>(ext =>
             {
-                if (context.HostingEnvironment.IsDevelopment())
+                if (hosting.IsDevelopment())
                 {
                     // if so desired, the context argument gives you
                     // access to both the IConfiguration and IHostingEnvironment
@@ -72,11 +76,12 @@ namespace Jasper.Persistence.Testing.Postgresql
                     // environment specific configuration here
                 }
 
-                settings.ConnectionString = context.Configuration["sqlserver"];
+                ext.Settings.ConnectionString = config["postgresql"];
 
                 // If your application uses a schema besides "dbo"
-                settings.SchemaName = "my_app_schema";
+                ext.Settings.SchemaName = "my_app_schema";
             });
+
         }
     }
 
