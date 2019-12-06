@@ -27,6 +27,7 @@ namespace Jasper.Messaging
         private readonly IContainer _container;
 
         private readonly Lazy<IEnvelopePersistence> _persistence;
+        private bool _hasStopped;
 
 
         public MessagingRoot(MessagingSerializationGraph serialization,
@@ -64,9 +65,16 @@ namespace Jasper.Messaging
 
         public void Dispose()
         {
+            if (_hasStopped)
+            {
+                StopAsync(Settings.Cancellation).GetAwaiter().GetResult();
+            }
+
             Runtime.Dispose();
 
             ScheduledJobs.Dispose();
+
+
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -82,12 +90,18 @@ namespace Jasper.Messaging
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
+            _hasStopped = true;
+
             // This is important!
             _container.As<Container>().DisposalLock = DisposalLock.Unlocked;
 
-            return Durability.StopAsync(cancellationToken);
+
+
+            await Durability.StopAsync(cancellationToken);
+
+            Settings.Cancel();
         }
 
         public ITransportRuntime Runtime { get; }

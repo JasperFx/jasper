@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using ImTools;
 using Jasper.Configuration;
 using Jasper.Messaging.Durability;
@@ -172,7 +173,15 @@ namespace Jasper.Messaging.Transports
 
         public void Dispose()
         {
-            // TODO -- do stuff
+            foreach (var kv in _senders.Enumerate())
+            {
+                kv.Value.SafeDispose();
+            }
+
+            foreach (var listener in _listeners)
+            {
+                listener.SafeDispose();
+            }
         }
 
     }

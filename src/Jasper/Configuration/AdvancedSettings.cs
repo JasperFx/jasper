@@ -12,6 +12,10 @@ namespace Jasper.Configuration
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
 
+        internal void Cancel()
+        {
+            _cancellation.Cancel();
+        }
 
         public AdvancedSettings()
         {
