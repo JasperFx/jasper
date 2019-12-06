@@ -339,6 +339,8 @@ namespace Jasper.Messaging
                 Sender = agent
             };
 
+            _root.Router.ApplyMessageTypeSpecificRules(envelope);
+
             if (EnlistedInTransaction && agent.IsDurable)
             {
                 return Transaction.Persist(envelope);

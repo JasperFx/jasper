@@ -130,7 +130,7 @@ namespace Jasper.Messaging.Runtime.Routing
 
             if (!list.Any())
                 if (_handlers.CanHandle(messageType))
-                    list.Add(createLocalRoute(messageType));
+                    list.Add(CreateLocalRoute(messageType));
 
             return list;
         }
@@ -147,7 +147,7 @@ namespace Jasper.Messaging.Runtime.Routing
             }
         }
 
-        private MessageRoute createLocalRoute(Type messageType)
+        public MessageRoute CreateLocalRoute(Type messageType)
         {
             var destination = TransportConstants.LocalUri;
             var route = new MessageRoute(messageType, destination, "application/json")
